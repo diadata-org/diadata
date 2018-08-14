@@ -6,7 +6,7 @@ main
 *.test
 *.out
 .glide/
-*/config/secrets/*
-go.*
-*-workspace
+config/secrets/*
 *.sh
+go.*
+blockchain-scrapers
