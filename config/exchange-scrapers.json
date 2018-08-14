@@ -1,0 +1,129 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName": "XXBTZEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "CoinBase"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC-USD",
+      "Exchange": "CoinBase"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH-USD",
+      "Exchange": "CoinBase"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "XETHZEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "BCC",
+      "ForeignName": "BCCUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "DSH",
+      "ForeignName": "DSHUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "MIOTA",
+      "ForeignName": "IOTUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "VEN",
+      "ForeignName": "VENUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECUSD",
+      "Exchange": "Bitfinex"
+    }
+  ]
+}
