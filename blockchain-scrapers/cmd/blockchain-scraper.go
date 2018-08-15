@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/go-bitcoind"
 	"github.com/tkanos/gonfig"
-	"github.com/toorop/go-bitcoind"
 	"log"
 	"time"
 )
@@ -17,11 +17,6 @@ const (
 	WALLET_PASSPHRASE = "WalletPassphrase"
 	SYMBOL            = "BTC"
 )
-
-func postValue(s *dia.Supply) error {
-	log.Println(s)
-	return nil
-}
 
 func numberOfCoinsFor(blockNumber float64) float64 {
 	subsidy := 50.0
@@ -37,21 +32,25 @@ func numberOfCoinsFor(blockNumber float64) float64 {
 	return totalCoins
 }
 
-var c dia.ConfigApi
+var api *dia.Client
 
 func init() {
-	configFile := "/run/secrets/api"
+	var c dia.ConfigApi
+	configFile := "/run/secrets/api_diadata"
 	err := gonfig.GetConf(configFile, &c)
 	if err != nil {
-		configFile = "./config/secrets/api.json"
+		configFile = "../config/secrets/api_diadata.json"
 		err = gonfig.GetConf(configFile, &c)
 	}
-	if err == nil {
-		log.Println("Loaded secret", configFile)
-	} else {
+	if err != nil {
 		log.Println(err)
+	} else {
+		log.Println("Loaded secret in", configFile)
 	}
-	log.Println("Loaded secret", c)
+	api = dia.NewClient(&c)
+	if api == nil {
+		log.Fatalln("Couldnt log in to api")
+	}
 }
 
 func main() {
@@ -71,7 +70,7 @@ func main() {
 			}
 			if last != rinfo.Blocks && rinfo.Initialblockdownload == false {
 				last = rinfo.Blocks
-				err = postValue(&dia.Supply{
+				err = api.SendSupply(&dia.Supply{
 					Symbol:            "BTC",
 					CirculatingSupply: numberOfCoinsFor(rinfo.Blocks),
 				})

@@ -10,6 +10,6 @@ RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/blockchain-scrapers /bin/blockchain-scrapers
+COPY --from=build /go/bin/cmd /bin/blockchain-scrapers
 
 CMD ["blockchain-scrapers"]
