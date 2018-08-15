@@ -8,28 +8,34 @@ services:
     ports:
       - "8332"
     volumes:
-      - type: volume
-        source: bitcoin
-        target: /bitcoin
-        volume:
-          nocopy: true
+      - /home/srv/bitcoind:/bitcoin
     command: btc_oneshot -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
         max-size: "50m"
     networks:
       - scrapers-network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.bitcoind==true
+      restart_policy:
+        delay: 2s
+        window: 20s
 
   btc: 
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-btc
-    image: btc:latest
+    image: blockchain-scrapers_btc 
     networks:
       - scrapers-network
     logging:
       options:
         max-size: "50m"
+    secrets:
+      - api_diadata
 
 volumes:
   bitcoin:
@@ -38,5 +44,5 @@ networks:
   scrapers-network:
 
 secrets:
-  api:
-    file: config/secrets/api.json
+  api_diadata:
+    file: config/secrets/api_diadata.json
