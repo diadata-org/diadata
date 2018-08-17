@@ -9,7 +9,7 @@ services:
       - "8332"
     volumes:
       - /home/srv/bitcoind:/bitcoin
-    command: btc_oneshot -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
+    command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
         max-size: "50m"
@@ -23,12 +23,35 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  litecoind:
+    image:
+      uphold/litecoin-core
+    ports:
+      - "9332"
+    volumes:
+      - /home/srv/litecoind:/var/lib/litecoind
+    command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
 
+    environment:
+      - LITECOIN_DATA=/var/lib/litecoind
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.litecoind==true
+      restart_policy:
+        delay: 2s
+        window: 20s
   btc: 
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-btc
-    image: blockchain-scrapers_btc 
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc 
     networks:
       - scrapers-network
     logging:
@@ -36,7 +59,18 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
-
+  ltc: 
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-ltc
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
 volumes:
   bitcoin:
 

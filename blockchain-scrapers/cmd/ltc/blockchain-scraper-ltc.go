@@ -1,5 +1,7 @@
 package main
 
+//docker run -p 9332:9332 --rm uphold/litecoin-core   -printtoconsole   -rpcallowip=::/0  -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
+
 import (
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/go-bitcoind"
@@ -9,10 +11,10 @@ import (
 )
 
 const (
-	SERVER_HOST       = "bitcoind"
-	SERVER_PORT       = 8332
+	SERVER_HOST       = "litecoind"
+	SERVER_PORT       = 9332
 	USER              = "mysecretrpcdiauser"
-	PASSWD            = "mysecretrpcdiapassword"
+	PASSWD            = "njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E="
 	USESSL            = false
 	WALLET_PASSPHRASE = "WalletPassphrase"
 	SYMBOL            = "BTC"
@@ -63,25 +65,29 @@ func main() {
 	last := 0.0
 	for {
 		rinfo, err := bc.GetBlockchainInfo()
+		log.Println(rinfo)
 		if err == nil {
 			if rinfo.Initialblockdownload && showMessage {
 				showMessage = false
-				log.Println("Node catching up with the latest block... please wait...")
+				log.Println("Node catching up with the latest block... please wait...", rinfo.Blocks)
 			}
 			if last != rinfo.Blocks && rinfo.Initialblockdownload == false {
 				last = rinfo.Blocks
 				err = api.SendSupply(&dia.Supply{
-					Symbol:            "BTC",
+					Symbol:            "LTC",
 					CirculatingSupply: numberOfCoinsFor(rinfo.Blocks),
 				})
 				if err != nil {
 					log.Println("Err communicating with api:", err)
+				} else {
+					showMessage = false
+					log.Println("Started sending supply to diadata.org...", rinfo.Blocks)
 				}
 				last = rinfo.Blocks
 			}
 		} else {
 			log.Println("Err communicating with node:", err)
 		}
-		time.Sleep(10 * time.Second)
+		*time.Sleep(10 * time.Second)
 	}
 }
