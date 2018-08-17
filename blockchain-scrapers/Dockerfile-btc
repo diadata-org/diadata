@@ -4,12 +4,12 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/cmd
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/cmd/btc
 
 RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/cmd /bin/blockchain-scrapers
+COPY --from=build /go/bin/btc /bin/btc
 
-CMD ["blockchain-scrapers"]
+CMD ["btc"]

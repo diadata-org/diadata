@@ -134,7 +134,7 @@ func (c *Client) SendSupply(s *Supply) error {
 		return err
 	}
 
-	url := baseURL + "dia/supply"
+	url := baseURL + "v1/supply"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 

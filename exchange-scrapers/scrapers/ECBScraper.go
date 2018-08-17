@@ -210,7 +210,7 @@ func (s *ECBScraper) update() error {
 					ps.lastRecord = time
 					t := &dia.Trade{
 						Pair:   pair,
-						Symbol: pair[0:3],
+						Symbol: pair,
 						Price:  rate,
 						Volume: 0,
 						Time:   time,
