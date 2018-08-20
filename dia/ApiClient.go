@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/tkanos/gonfig"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -80,7 +81,24 @@ func (c *Client) login() error {
 	return nil
 }
 
+func GetConfigApi() *ConfigApi {
+	var c ConfigApi
+	configFile := "/run/secrets/api_diadata"
+	err := gonfig.GetConf(configFile, &c)
+	if err != nil {
+		configFile = "../../config/secrets/api_diadata.json"
+		err = gonfig.GetConf(configFile, &c)
+	}
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Loaded secret in", configFile)
+	}
+	return &c
+}
+
 func NewClient(config *ConfigApi) *Client {
+
 	c := &Client{
 		config: config,
 		token:  "",
