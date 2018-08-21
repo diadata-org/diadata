@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/tkanos/gonfig"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Client struct {
@@ -80,13 +82,31 @@ func (c *Client) login() error {
 	return nil
 }
 
+func GetConfigApi() *ConfigApi {
+	var c ConfigApi
+	configFile := "/run/secrets/api_diadata"
+	err := gonfig.GetConf(configFile, &c)
+	if err != nil {
+		configFile = "../../config/secrets/api_diadata.json"
+		err = gonfig.GetConf(configFile, &c)
+	}
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Loaded secret in", configFile)
+	}
+	return &c
+}
+
 func NewClient(config *ConfigApi) *Client {
+
 	c := &Client{
 		config: config,
 		token:  "",
 	}
 	err := c.login()
 	if err != nil {
+		log.Println(err)
 		return nil
 	}
 	return c
@@ -128,7 +148,8 @@ func (c *Client) doRequest(req *http.Request, refresh bool) ([]byte, error) {
 
 func (c *Client) SendSupply(s *Supply) error {
 
-	log.Println(s)
+	s.Source = Diadata
+	s.Time = time.Now()
 	jsonStr, err := json.Marshal(s)
 	if err != nil {
 		return err
