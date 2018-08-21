@@ -19,18 +19,25 @@ type BlockchainScraper struct {
 	lastCirculatingSupply float64
 }
 
-func numberOfCoinsFor(blockNumber float64) float64 {
-	subsidy := 50.0
-	totalCoins := 50.0
+func numberOfCoinsFor(blockNumber float64, subsidy float64, totalCoins float64, rewardModulo int64) float64 {
 	var i int64 = 1
 	for i < int64(blockNumber) {
-		if i%210000 == 0 {
+		if i%rewardModulo == 0 {
 			subsidy = subsidy / 2
 		}
 		totalCoins += subsidy
 		i++
 	}
 	return totalCoins
+}
+
+func (s *BlockchainScraper) numberOfCoinsFor(blockNumber float64) float64 {
+	switch s.symbol {
+	case "LTC":
+		return numberOfCoinsFor(blockNumber, 50.0, 50.0, 840000)
+	default:
+		return numberOfCoinsFor(blockNumber, 50.0, 50.0, 210000)
+	}
 }
 
 func NewScraper(client *dia.Client, symbol string, serverHost string, serverPort int, user string, passwd string, elapsedTime int) *BlockchainScraper {
@@ -55,7 +62,7 @@ func (s *BlockchainScraper) Run() {
 			log.Println("GetBlockchainInfo:", rinfo)
 			m := time.Unix(rinfo.Mediantime, 0)
 			l := time.Now().Sub(m)
-			circulatingSupply := numberOfCoinsFor(rinfo.Blocks)
+			circulatingSupply := s.numberOfCoinsFor(rinfo.Blocks)
 			log.Println("ElapsedTime block:", l, circulatingSupply, s.lastCirculatingSupply)
 			if l < s.elapsedTime && s.lastCirculatingSupply != circulatingSupply {
 				err = s.client.SendSupply(&dia.Supply{

@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 type Client struct {
@@ -148,8 +147,6 @@ func (c *Client) doRequest(req *http.Request, refresh bool) ([]byte, error) {
 
 func (c *Client) SendSupply(s *Supply) error {
 
-	s.Source = Diadata
-	s.Time = time.Now()
 	jsonStr, err := json.Marshal(s)
 	if err != nil {
 		return err
