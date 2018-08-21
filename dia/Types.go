@@ -4,9 +4,15 @@ import (
 	"time"
 )
 
+const (
+	Diadata = "diadata.org"
+)
+
 type Supply struct {
-	Symbol            string  `json:"symbol"`
-	CirculatingSupply float64 `json:"circulatingSupply"`
+	Symbol            string
+	CirculatingSupply float64
+	Source            string
+	Time              time.Time
 }
 
 type Pair struct {

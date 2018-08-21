@@ -1,4 +1,4 @@
-# docker stack deploy -c docker-compose.yml blockchain-scrapers 
+# docker stack deploy -c docker-compose.yml blockchain-scrapers
 version: '3.2'
 
 services:
@@ -8,29 +8,105 @@ services:
     ports:
       - "8332"
     volumes:
-      - type: volume
-        source: bitcoin
-        target: /bitcoin
-        volume:
-          nocopy: true
-    command: btc_oneshot -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
+      - /home/srv/bitcoind:/bitcoin
+    command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
         max-size: "50m"
     networks:
       - scrapers-network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.bitcoind==true
+      restart_policy:
+        delay: 2s
+        window: 20s
+  litecoind:
+    image:
+      uphold/litecoin-core
+    ports:
+      - "9332"
+    volumes:
+      - /home/srv/litecoind:/var/lib/litecoind
+    command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
 
-  btc: 
+    environment:
+      - LITECOIN_DATA=/var/lib/litecoind
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.litecoind==true
+      restart_policy:
+        delay: 2s
+        window: 20s
+  geth:
+    image:
+      ethereum/client-go:alpine
+    ports:
+      - "8545"
+      - "30303"
+    volumes:
+      - /home/srv/geth:/root/.ethereum
+    command: --rpc --rpcaddr "0.0.0.0" --syncmode "light" --cache 1024 --rpc
+
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.geth==true
+      restart_policy:
+        delay: 2s
+        window: 20s
+  btc:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-btc
-    image: btc:latest
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc
     networks:
       - scrapers-network
     logging:
       options:
         max-size: "50m"
-
+    secrets:
+      - api_diadata
+  ltc:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-ltc
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+  erc20:
+    build:
+      context: ../..
+      dockerfile: api-golang/blockchain-scrapers/Dockerfile-erc20
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_erc20
+    command: -symbol BNC -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
 volumes:
   bitcoin:
 
@@ -38,5 +114,5 @@ networks:
   scrapers-network:
 
 secrets:
-  api:
-    file: config/secrets/api.json
+  api_diadata:
+    file: config/secrets/api_diadata.json

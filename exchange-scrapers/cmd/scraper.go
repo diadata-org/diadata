@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/exchange-scrapers"
+	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
 	"github.com/tkanos/gonfig"
 	"log"
 	"sync"

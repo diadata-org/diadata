@@ -1,0 +1,19 @@
+FROM golang:latest as build
+
+RUN go get github.com/ethereum/go-ethereum
+
+RUN mkdir -p $GOPATH/src/github.com/diadata-org/
+
+COPY . $GOPATH/src/github.com/diadata-org/
+
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/cmd/erc20
+
+RUN go get ./...
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/erc20 /bin/erc20
+
+ENTRYPOINT ["erc20"]
