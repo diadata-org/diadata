@@ -16,7 +16,7 @@ import (
 //Be sure to run : abigen --abi erc20.abi --pkg main --type Token --out erc20.go
 //erc20.abi taken from https://github.com/ethereum/wiki/wiki/Contract-ERC20-ABI
 var (
-	rpcEndpoint = flag.String("rpc", "http://127.0.0.1:8545", "geth RPC endpoint")
+	rpcEndpoint = flag.String("rpc", "http://geth:8545", "geth RPC endpoint")
 	symbol      = flag.String("symbol", "", "ERC20 token name")
 	address     = flag.String("address", "", "The address at which the contract was deployed")
 	dev         = flag.Bool("dev", false, "Dev mode - prints to stdout instead of sending to dia")
