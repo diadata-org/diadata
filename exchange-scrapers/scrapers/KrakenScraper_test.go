@@ -3,7 +3,7 @@ package scrapers_test
 import (
 	"github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/exchange-scrapers"
+	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
 	"github.com/tkanos/gonfig"
 	"testing"
 )
