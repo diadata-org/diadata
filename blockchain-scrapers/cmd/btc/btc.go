@@ -11,11 +11,21 @@ const (
 	USER        = "mysecretrpcdiauser"
 	PASSWD      = "mysecretrpcdiapassword"
 	SYMBOL      = "BTC"
+	TIP_TIME    = 60 * 20
 )
 
 func main() {
 	config := dia.GetConfigApi()
+	if config == nil {
+		panic("Couldnt load config")
+	}
 	client := dia.NewClient(config)
-	b := blockchainscrapers.NewScraper(client, SYMBOL, SERVER_HOST, SERVER_PORT, USER, PASSWD)
-	b.Run()
+	if client == nil {
+		panic("Couldnt load client")
+	}
+	scraper := blockchainscrapers.NewScraper(client, SYMBOL, SERVER_HOST, SERVER_PORT, USER, PASSWD, TIP_TIME)
+	if scraper == nil {
+		panic("Couldnt load scraper")
+	}
+	scraper.Run()
 }

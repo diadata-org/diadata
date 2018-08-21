@@ -12,9 +12,11 @@ const (
 )
 
 type BlockchainScraper struct {
-	bitcoind *bitcoind.Bitcoind
-	client   *dia.Client
-	symbol   string
+	bitcoind              *bitcoind.Bitcoind
+	client                *dia.Client
+	symbol                string
+	elapsedTime           time.Duration
+	lastCirculatingSupply float64
 }
 
 func numberOfCoinsFor(blockNumber float64) float64 {
@@ -31,16 +33,17 @@ func numberOfCoinsFor(blockNumber float64) float64 {
 	return totalCoins
 }
 
-func NewScraper(client *dia.Client, symbol string, SERVER_HOST string, SERVER_PORT int, USER string, PASSWD string) *BlockchainScraper {
-	bc, err := bitcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
+func NewScraper(client *dia.Client, symbol string, serverHost string, serverPort int, user string, passwd string, elapsedTime int) *BlockchainScraper {
+	bc, err := bitcoind.New(serverHost, serverPort, user, passwd, USESSL)
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
 	t := &BlockchainScraper{
-		bitcoind: bc,
-		client:   client,
-		symbol:   symbol,
+		bitcoind:    bc,
+		client:      client,
+		symbol:      symbol,
+		elapsedTime: time.Duration(elapsedTime) * time.Second,
 	}
 	return t
 }
@@ -49,17 +52,20 @@ func (s *BlockchainScraper) Run() {
 	for {
 		rinfo, err := s.bitcoind.GetBlockchainInfo()
 		if err == nil {
-			log.Println("GetBlockchainInfo", rinfo)
+			log.Println("GetBlockchainInfo:", rinfo)
 			m := time.Unix(rinfo.Mediantime, 0)
 			l := time.Now().Sub(m)
-			log.Println("lapse time", l)
-			if l < 60 {
+			circulatingSupply := numberOfCoinsFor(rinfo.Blocks)
+			log.Println("ElapsedTime block:", l, circulatingSupply, s.lastCirculatingSupply)
+			if l < s.elapsedTime && s.lastCirculatingSupply != circulatingSupply {
 				err = s.client.SendSupply(&dia.Supply{
 					Symbol:            s.symbol,
-					CirculatingSupply: numberOfCoinsFor(rinfo.Blocks),
+					CirculatingSupply: circulatingSupply,
 				})
 				if err != nil {
 					log.Println("Err communicating with api:", err)
+				} else {
+					s.lastCirculatingSupply = circulatingSupply
 				}
 			}
 		} else {
