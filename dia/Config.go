@@ -5,6 +5,7 @@ const (
 	BitfinexExchange = "Bitfinex"
 	BinanceExchange  = "Binance"
 	CoinBaseExchange = "CoinBase"
+	HitBTCExchange   = "HitBTC"
 	UnknownExchange  = "Unknown"
 )
 

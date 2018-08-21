@@ -124,6 +124,11 @@
       "Symbol": "ZEC",
       "ForeignName": "ZECUSD",
       "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName" : "ETHBTC",
+      "Exchange" : "HitBTC"
     }
   ]
 }
