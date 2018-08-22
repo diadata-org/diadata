@@ -17,9 +17,6 @@ services:
       - scrapers-network
     deploy:
       mode: global
-      placement:
-        constraints:
-          - node.labels.bitcoind==true
       restart_policy:
         delay: 2s
         window: 20s
@@ -41,9 +38,6 @@ services:
       - scrapers-network
     deploy:
       mode: global
-      placement:
-        constraints:
-          - node.labels.litecoind==true
       restart_policy:
         delay: 2s
         window: 20s
@@ -55,7 +49,7 @@ services:
       - "30303"
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --rpc --rpcaddr "0.0.0.0" --syncmode "light" --cache 1024 --rpc
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --syncmode "light" --cache 1024 --rpc
 
     logging:
       options:
@@ -64,9 +58,6 @@ services:
       - scrapers-network
     deploy:
       mode: global
-      placement:
-        constraints:
-          - node.labels.geth==true
       restart_policy:
         delay: 2s
         window: 20s
@@ -96,10 +87,10 @@ services:
       - api_diadata
   erc20:
     build:
-      context: ../..
-      dockerfile: api-golang/blockchain-scrapers/Dockerfile-erc20
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-erc20
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_erc20
-    command: -symbol BNC -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+    command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
     networks:
       - scrapers-network
     logging:

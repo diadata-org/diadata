@@ -27,7 +27,7 @@ func (c *Client) refresh() error {
 
 	req, err := http.NewRequest("GET", url, nil)
 
-	bytes, err := c.doRequest(req, false)
+	bytes, err := c.DoRequest(req, false)
 	if err != nil {
 		return err
 	}
@@ -57,6 +57,7 @@ func (c *Client) login() error {
 	})
 
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -66,6 +67,7 @@ func (c *Client) login() error {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	defer resp.Body.Close()
@@ -75,9 +77,12 @@ func (c *Client) login() error {
 	var r response
 	err = json.Unmarshal(body, &r)
 	if err != nil {
-		return nil
+		log.Println(err)
+		return err
 	}
+
 	c.token = r.Token
+
 	return nil
 }
 
@@ -91,6 +96,7 @@ func GetConfigApi() *ConfigApi {
 	}
 	if err != nil {
 		log.Println(err)
+		return nil
 	} else {
 		log.Println("Loaded secret in", configFile)
 	}
@@ -111,7 +117,7 @@ func NewClient(config *ConfigApi) *Client {
 	return c
 }
 
-func (c *Client) doRequest(req *http.Request, refresh bool) ([]byte, error) {
+func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.token)
@@ -135,7 +141,7 @@ func (c *Client) doRequest(req *http.Request, refresh bool) ([]byte, error) {
 				if err != nil {
 					err = c.login()
 					if err == nil {
-						return c.doRequest(req, true)
+						return c.DoRequest(req, true)
 					}
 				}
 			}
@@ -156,7 +162,7 @@ func (c *Client) SendSupply(s *Supply) error {
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 
-	_, err = c.doRequest(req, true)
+	_, err = c.DoRequest(req, true)
 	if err != nil {
 		return err
 	}

@@ -45,33 +45,6 @@ func NewKrakenScraper(key string, secret string) *KrakenScraper {
 	return s
 }
 
-func CurrentBalance(name string, br *krakenapi.BalanceResponse) (float64, error) {
-
-	switch name {
-	case "BCH":
-		return br.BCH, nil
-	case "BTC":
-		return br.XXBT, nil
-	case "DSH":
-		return br.DASH, nil
-	case "ETH":
-		return br.XETH, nil
-	case "EOS":
-		return br.EOS, nil
-	case "LTC":
-		return br.XLTC, nil
-	case "XMR":
-		return br.XXMR, nil
-	case "XRP":
-		return br.XXRP, nil
-	case "XLM":
-		return br.XXLM, nil
-	default:
-		errorMsg := fmt.Sprintf("kraken scrapper unknown element %v for balance", name)
-		return 0.0, errors.New(errorMsg)
-	}
-}
-
 func Round(x, unit float64) float64 {
 	return math.Round(x/unit) * unit
 }
@@ -211,7 +184,7 @@ func (s *KrakenScraper) Update() {
 		r, err := s.api.Trades(ps.pair.ForeignName, ps.lastRecord)
 
 		if err != nil {
-			log.Printf("err on fetch trades %v", err)
+			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
 		} else {
 			if r != nil {
 				ps.lastRecord = r.Last

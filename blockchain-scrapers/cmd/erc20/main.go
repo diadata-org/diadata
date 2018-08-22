@@ -3,14 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/diadata-org/api-golang/dia"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"math"
 	"math/big"
 	"time"
-
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 //Be sure to run : abigen --abi erc20.abi --pkg main --type Token --out erc20.go
@@ -52,7 +51,14 @@ func main() {
 	}
 	//
 	config := dia.GetConfigApi()
+	if config == nil {
+		panic("Couldnt load config")
+	}
 	client := dia.NewClient(config)
+	if client == nil {
+		panic("Couldnt load client")
+	}
+	prevResult := 0.0
 	for {
 		//Infinite loop, sends tokenSupply every 10 seconds
 		supply, err := token.TotalSupply(nil)
@@ -60,17 +66,27 @@ func main() {
 			//Perhaps these should not be a fatal error?
 			log.Fatalf("Failed to retrieve token supply: %v", err)
 		}
+
+		ownerSupply, err := token.BalanceOf(nil, common.HexToAddress("0x00c5e04176d95a286fcce0e68c683ca0bfec8454"))
+		if err != nil {
+			log.Fatalf("Failed to retrieve token ownerSupply: %v", err)
+		}
+
+		resultSupply := supply.Sub(supply, ownerSupply)
+
 		decimals, err := token.Decimals(nil)
 		if err != nil {
 			log.Fatalf("Failed to retrieve token decimal: %v", err)
 		}
-		if *dev {
-			fmt.Printf("Symbol: %s ; totalSupply: %f\n", *symbol, toFloat(supply, decimals))
-		} else {
+
+		result := toFloat(resultSupply, decimals)
+		fmt.Printf("Symbol: %s ; totalSupply: %f\n", *symbol, result)
+		if prevResult != result {
 			client.SendSupply(&dia.Supply{
 				Symbol:            *symbol,
-				CirculatingSupply: toFloat(supply, decimals),
+				CirculatingSupply: result,
 			})
+			prevResult = result
 		}
 		time.Sleep(time.Second * 10)
 	}
