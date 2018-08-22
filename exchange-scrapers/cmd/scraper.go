@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"sync"
+
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
 	"github.com/tkanos/gonfig"
-	"log"
-	"sync"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
@@ -66,6 +67,8 @@ func main() {
 					s[configPair.Exchange] = scrapers.NewCoinBaseScraper()
 				case dia.KrakenExchange:
 					s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
+				case dia.HitBTCExchange:
+					s[configPair.Exchange] = scrapers.NewHitBTCScraper()
 				default:
 					fmt.Printf("Unknown exchange %s.", e)
 					return
