@@ -38,7 +38,7 @@ type HitBTCScraper struct {
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper(apiKey string, secretKey string) *HitBTCScraper {
+func NewHitBTCScraper() *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),

@@ -68,7 +68,7 @@ func main() {
 				case dia.KrakenExchange:
 					s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
 				case dia.HitBTCExchange:
-					s[configPair.Exchange] = scrapers.NewHitBTCScraper(configApi.ApiKey, configApi.SecretKey)
+					s[configPair.Exchange] = scrapers.NewHitBTCScraper()
 				default:
 					fmt.Printf("Unknown exchange %s.", e)
 					return
