@@ -1,10 +1,10 @@
 package blockchainscrapers
 
 import (
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/go-bitcoind"
 	"log"
 	"time"
+
+	"github.com/diadata-org/api-golang/dia"
 )
 
 const (
@@ -35,6 +35,8 @@ func (s *BlockchainScraper) numberOfCoinsFor(blockNumber float64) float64 {
 	switch s.symbol {
 	case "LTC":
 		return numberOfCoinsFor(blockNumber, 50.0, 50.0, 840000)
+	case "XLM":
+		return numberOfCoinsFor(blockNumber, 50.0, 50.0, 104224393646)
 	default:
 		return numberOfCoinsFor(blockNumber, 50.0, 50.0, 210000)
 	}

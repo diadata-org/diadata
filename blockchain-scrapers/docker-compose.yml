@@ -41,6 +41,28 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  stellar:
+    image:
+      stellar/stellar-core
+    ports:
+      - "11625"
+      - "11626"      
+    volumes:
+      - /home/srv/stellard:/var/lib/stellard
+    command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
+
+    environment:
+      - STELLAR_DATA=/var/lib/stellard
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s        
   geth:
     image:
       ethereum/client-go:alpine
@@ -98,6 +120,18 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+  stellar:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-stellar
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_stellar
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata   
 volumes:
   bitcoin:
 
