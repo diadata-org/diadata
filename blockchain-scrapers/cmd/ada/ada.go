@@ -15,7 +15,7 @@ type Supply struct {
 	Value float64 `json:"Right"`
 }
 
-const endpoint = "https://cardano:8100/api/supply/ada"
+const endpoint = "http://cardano:8100/api/supply/ada"
 const symbol = "ADA"
 
 func main() {
