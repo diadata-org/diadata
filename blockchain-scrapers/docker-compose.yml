@@ -61,6 +61,23 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  cardano:
+    image:
+      eristoddle/cardano-explorer
+    ports:
+      - "8100"
+    volumes:
+      - /home/srv/cardano:/home/cardano/cardano-sl/state-explorer-mainnet
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
   btc:
     build:
       context: ../../../..
@@ -91,6 +108,18 @@ services:
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-erc20
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_erc20
     command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+  ada:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-ada
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ada
     networks:
       - scrapers-network
     logging:
