@@ -49,7 +49,7 @@ func main() {
 		} else {
 			log.Println("Err communicating with node:", err)
 		}
+		time.Sleep(time.Second * 10)
 	}
-	time.Sleep(time.Second * 10)
 
 }
