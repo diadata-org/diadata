@@ -1,2 +1,2 @@
 # api-golang
-Go API for the DIAdata.org platform
+Go API for the [DIAdata.org](https://diadata.org/) platform

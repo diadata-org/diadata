@@ -11,7 +11,7 @@ const (
 	USER        = "mysecretrpcdiauser"
 	PASSWD      = "mysecretrpcdiapassword"
 	SYMBOL      = "BTC"
-	TIP_TIME    = 60 * 20
+	TIP_TIME    = 60 * 60 * 2
 )
 
 func main() {

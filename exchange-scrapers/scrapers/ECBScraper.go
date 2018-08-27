@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	refreshDelay = time.Second * 60 * 10
+	refreshDelay = time.Second * 60 * 1
 )
 
 type ECBScraper struct {
@@ -70,7 +70,7 @@ func (s *ECBScraper) mainLoop() {
 	for {
 		select {
 		case <-s.ticker.C:
-			s.update()
+			s.Update()
 		case <-s.shutdown: // user requested shutdown
 			log.Println("ECBScraper shutting down")
 			s.cleanup(nil)
@@ -165,7 +165,8 @@ func (ps *ECBPairScraper) Pair() dia.Pair {
 }
 
 // retrieve performs a HTTP Get request for the rss feed and decodes the results.
-func (s *ECBScraper) update() error {
+func (s *ECBScraper) Update() error {
+	log.Printf("ECBScraper update")
 
 	// Retrieve the rss feed document from the web.
 	resp, err := http.Get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
