@@ -217,6 +217,7 @@ func main() {
 	//Init dia
 	var config *dia.ConfigApi
 	var client *dia.Client
+	prev := big.NewInt(0)
 	if !*dev {
 		config = dia.GetConfigApi()
 		if config == nil {
@@ -251,11 +252,16 @@ func main() {
 		} else {
 			eth := weitoeth(supply)
 			log.Printf("Total supply is: %f ETH; took %v", eth, time.Since(start))
-			if !*dev {
-				client.SendSupply(&dia.Supply{
-					Symbol:            "ETH",
-					CirculatingSupply: eth,
-				})
+			if prev.Cmp(supply) == 0 {
+				log.Println("Skipping because its same as before")
+			} else {
+				prev.Set(supply)
+				if !*dev {
+					client.SendSupply(&dia.Supply{
+						Symbol:            "ETH",
+						CirculatingSupply: eth,
+					})
+				}
 			}
 		}
 
