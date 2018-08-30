@@ -63,7 +63,7 @@ services:
         window: 20s
   cardano:
     image:
-      eristoddle/cardano-explorer
+      diadata/cardano-explorer-docker
     ports:
       - "8100"
     volumes:

@@ -9,6 +9,15 @@ const (
 	UnknownExchange  = "Unknown"
 )
 
+func Exchanges() []string {
+	return []string{
+		KrakenExchange,
+		BitfinexExchange,
+		BinanceExchange,
+		CoinBaseExchange,
+		HitBTCExchange}
+}
+
 type ConfigApi struct {
 	ApiKey    string
 	SecretKey string

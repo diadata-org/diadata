@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/user"
 )
 
 type Client struct {
@@ -91,7 +92,9 @@ func GetConfigApi() *ConfigApi {
 	configFile := "/run/secrets/api_diadata"
 	err := gonfig.GetConf(configFile, &c)
 	if err != nil {
-		configFile = "../../config/secrets/api_diadata.json"
+		usr, _ := user.Current()
+		dir := usr.HomeDir
+		configFile = dir + "/config/secrets/api_diadata.json"
 		err = gonfig.GetConf(configFile, &c)
 	}
 	if err != nil {
@@ -133,6 +136,8 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("StatusCode", resp.StatusCode)
+
 	if 200 != resp.StatusCode {
 
 		if refresh {
@@ -164,7 +169,9 @@ func (c *Client) SendSupply(s *Supply) error {
 
 	_, err = c.DoRequest(req, true)
 	if err != nil {
+		log.Println("Error: SendSupply", err)
 		return err
 	}
+
 	return nil
 }
