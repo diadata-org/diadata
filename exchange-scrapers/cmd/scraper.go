@@ -69,6 +69,8 @@ func main() {
 					s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
 				case dia.HitBTCExchange:
 					s[configPair.Exchange] = scrapers.NewHitBTCScraper()
+				case dia.SimexExchange:
+					s[configPair.Exchange] = scrapers.NewSimexScraper()
 				default:
 					fmt.Printf("Unknown exchange %s.", e)
 					return
