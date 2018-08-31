@@ -1,5 +1,11 @@
 package dia
 
+import (
+	"github.com/tkanos/gonfig"
+	"os/user"
+	"strings"
+)
+
 const (
 	KrakenExchange   = "Kraken"
 	BitfinexExchange = "Bitfinex"
@@ -33,4 +39,13 @@ type ConfigPair struct {
 
 type ConfigConnector struct {
 	Coins []ConfigPair
+}
+
+func GetConfig(exchange string) (*ConfigApi, error) {
+	var configApi ConfigApi
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
+	err := gonfig.GetConf(configFileApi, &configApi)
+	return &configApi, err
 }

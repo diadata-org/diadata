@@ -8,7 +8,6 @@ import (
 	"github.com/tkanos/gonfig"
 	"log"
 	"os/user"
-	"strings"
 	"sync"
 )
 
@@ -32,14 +31,6 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup) {
 		log.Printf("Trade: %v\n", t)
 	}
 }
-func getConfig(exchange string) (*dia.ConfigApi, error) {
-	var configApi dia.ConfigApi
-	usr, _ := user.Current()
-	dir := usr.HomeDir
-	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
-	err := gonfig.GetConf(configFileApi, &configApi)
-	return &configApi, err
-}
 
 var (
 	exchange = flag.String("exchange", "", "which exchange")
@@ -61,11 +52,12 @@ func main() {
 
 	var configConnector dia.ConfigConnector
 
-	configFile := "../config/exchange-scrapers.json"
+	usr, _ := user.Current()
+	configFile := usr.HomeDir + "/go/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
 	err := gonfig.GetConf(configFile, &configConnector)
 
 	if err != nil {
-		fmt.Printf("error loading configFile")
+		fmt.Println("error loading configFile", configFile)
 	}
 	wg := sync.WaitGroup{}
 
@@ -78,37 +70,15 @@ func main() {
 			_, ok := s[configPair.Exchange]
 			if ok == false {
 
-				switch e := configPair.Exchange; e {
-				case dia.BinanceExchange:
-					configApi, err := getConfig(e)
-					if err != nil {
-						fmt.Println(err)
-					} else {
-						s[configPair.Exchange] = scrapers.NewBinanceScraper(configApi.ApiKey, configApi.SecretKey)
-					}
-				case dia.BitfinexExchange:
-					configApi, err := getConfig(e)
-					if err != nil {
-						fmt.Println(err)
-					} else {
-						s[configPair.Exchange] = scrapers.NewBitfinexScraper(configApi.ApiKey, configApi.SecretKey)
-					}
-				case dia.CoinBaseExchange:
-					s[configPair.Exchange] = scrapers.NewCoinBaseScraper()
-				case dia.KrakenExchange:
-					configApi, err := getConfig(e)
-					if err != nil {
-						fmt.Println(err)
-					} else {
-						s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
-					}
-				case dia.HitBTCExchange:
-					s[configPair.Exchange] = scrapers.NewHitBTCScraper()
-				case dia.SimexExchange:
-					s[configPair.Exchange] = scrapers.NewSimexScraper()
-				default:
-					fmt.Printf("Unknown exchange %s.", e)
-					return
+				configExchangeApi, err := dia.GetConfig(configPair.Exchange)
+				if err != nil {
+					fmt.Println(err)
+				}
+				aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, configExchangeApi.ApiKey, configExchangeApi.SecretKey)
+				if s != nil {
+					s[configPair.Exchange] = aPIScraper
+				} else {
+					fmt.Println("Couldnt create APIScraper for ", configPair.Exchange)
 				}
 			}
 			es := s[configPair.Exchange]
