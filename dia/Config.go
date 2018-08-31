@@ -16,7 +16,8 @@ func Exchanges() []string {
 		BitfinexExchange,
 		BinanceExchange,
 		CoinBaseExchange,
-		HitBTCExchange}
+		HitBTCExchange,
+		SimexExchange}
 }
 
 type ConfigApi struct {

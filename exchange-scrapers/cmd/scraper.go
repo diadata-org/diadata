@@ -1,13 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"log"
-	"sync"
-
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
 	"github.com/tkanos/gonfig"
+	"log"
+	"os/user"
+	"strings"
+	"sync"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
@@ -30,6 +32,27 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup) {
 		log.Printf("Trade: %v\n", t)
 	}
 }
+func getConfig(exchange string) (*dia.ConfigApi, error) {
+	var configApi dia.ConfigApi
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
+	err := gonfig.GetConf(configFileApi, &configApi)
+	return &configApi, err
+}
+
+var (
+	exchange = flag.String("exchange", "", "which exchange")
+)
+
+func init() {
+	flag.Parse()
+	if *exchange == "" {
+		flag.Usage()
+		log.Println(dia.Exchanges())
+		log.Fatal("exchange is required")
+	}
+}
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
@@ -48,25 +71,37 @@ func main() {
 
 	for _, configPair := range configConnector.Coins {
 
-		fmt.Println("Adding pair:", configPair.Symbol, " on exchange ", configPair.Exchange)
+		if *exchange == configPair.Exchange {
 
-		_, ok := s[configPair.Exchange]
-		if ok == false {
-			var configApi dia.ConfigApi
-			configFileApi := "../config/secrets/" + configPair.Exchange + ".json"
-			err = gonfig.GetConf(configFileApi, &configApi)
-			if err != nil {
-				fmt.Println(err)
-			} else {
+			fmt.Println("Adding pair:", configPair.Symbol, " on exchange ", configPair.Exchange)
+
+			_, ok := s[configPair.Exchange]
+			if ok == false {
+
 				switch e := configPair.Exchange; e {
 				case dia.BinanceExchange:
-					s[configPair.Exchange] = scrapers.NewBinanceScraper(configApi.ApiKey, configApi.SecretKey)
+					configApi, err := getConfig(e)
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						s[configPair.Exchange] = scrapers.NewBinanceScraper(configApi.ApiKey, configApi.SecretKey)
+					}
 				case dia.BitfinexExchange:
-					s[configPair.Exchange] = scrapers.NewBitfinexScraper(configApi.ApiKey, configApi.SecretKey)
+					configApi, err := getConfig(e)
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						s[configPair.Exchange] = scrapers.NewBitfinexScraper(configApi.ApiKey, configApi.SecretKey)
+					}
 				case dia.CoinBaseExchange:
 					s[configPair.Exchange] = scrapers.NewCoinBaseScraper()
 				case dia.KrakenExchange:
-					s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
+					configApi, err := getConfig(e)
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						s[configPair.Exchange] = scrapers.NewKrakenScraper(configApi.ApiKey, configApi.SecretKey)
+					}
 				case dia.HitBTCExchange:
 					s[configPair.Exchange] = scrapers.NewHitBTCScraper()
 				case dia.SimexExchange:
@@ -76,17 +111,17 @@ func main() {
 					return
 				}
 			}
-		}
-		es := s[configPair.Exchange]
-		if es != nil {
-			ps, err := es.ScrapePair(dia.Pair{
-				Symbol:      configPair.Symbol,
-				ForeignName: configPair.ForeignName})
-			if err != nil {
-				log.Println(err)
-			} else {
-				go handleTrades(ps, &wg)
-				wg.Add(1)
+			es := s[configPair.Exchange]
+			if es != nil {
+				ps, err := es.ScrapePair(dia.Pair{
+					Symbol:      configPair.Symbol,
+					ForeignName: configPair.ForeignName})
+				if err != nil {
+					log.Println(err)
+				} else {
+					go handleTrades(ps, &wg)
+					wg.Add(1)
+				}
 			}
 		}
 		defer wg.Wait()
