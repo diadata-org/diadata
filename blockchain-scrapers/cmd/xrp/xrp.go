@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eristoddle/api-golang/dia"
+	"github.com/diadata-org/api-golang/dia"
 )
 
 type Response struct {
