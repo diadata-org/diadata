@@ -85,7 +85,7 @@ func main() {
 
 					client.SendSupply(&dia.Supply{
 						Symbol:            "NEO",
-						CirculatingSupply: circulatingSupply,
+						CirculatingSupply: float64(circulatingSupply),
 					})
 
 					lastCirculatedSupply = circulatingSupply
