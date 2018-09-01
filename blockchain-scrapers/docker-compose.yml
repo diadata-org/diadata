@@ -78,6 +78,21 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  neo:
+    image:
+      petertakhar/ubuntu-neo-cli
+    ports:
+      - "10332"
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
   btc:
     build:
       context: ../../../..
@@ -156,6 +171,18 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xrp
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xrp
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata    
+  neo:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-neo
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
     networks:
       - scrapers-network
     logging:
