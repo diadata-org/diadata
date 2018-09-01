@@ -44,20 +44,20 @@ func main() {
 			responseData, err := ioutil.ReadAll(response.Body)
 			if err != nil {
 				log.Println("Failed to retrieve ada supply: ", err)
-			}
-			var supplyObject Supply
-			json.Unmarshal(responseData, &supplyObject)
-			result, cerr := strconv.ParseFloat(supplyObject.Distributed, 64)
-			if cerr != nil {
-				fmt.Println("There was an integer conversion error:", err)
-			}
-			fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
-			if prevResult != result {
-				client.SendSupply(&dia.Supply{
-					Symbol:            symbol,
-					CirculatingSupply: result,
-				})
-				prevResult = result
+			} else {
+				var supplyObject Supply
+				json.Unmarshal(responseData, &supplyObject)
+				result, cerr := strconv.ParseFloat(supplyObject.Available, 64)
+				if cerr == nil {
+					fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
+					if prevResult != result {
+						client.SendSupply(&dia.Supply{
+							Symbol:            symbol,
+							CirculatingSupply: result,
+						})
+						prevResult = result
+					}
+				}
 			}
 		} else {
 			log.Println("Err communicating with node:", err)
