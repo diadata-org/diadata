@@ -139,6 +139,18 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+  xlm:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xlm
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xlm
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata  
   xrp:
     build:
       context: ../../../..
