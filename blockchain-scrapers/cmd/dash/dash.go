@@ -88,6 +88,9 @@ func Call(address string) (*GetTxOutResponse, error) {
 	client := &http.Client{}
 
 	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 
 	b := GetTxOutResponse{}
