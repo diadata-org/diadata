@@ -197,7 +197,7 @@ services:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-trx
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ada
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_trx
     networks:
       - scrapers-network
     logging:
