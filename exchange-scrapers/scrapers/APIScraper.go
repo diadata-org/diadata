@@ -32,3 +32,22 @@ type PairScraper interface {
 	// Pair returns the pair this scraper is subscribed to
 	Pair() dia.Pair
 }
+
+func NewAPIScraper(exchange string, key string, secret string) APIScraper {
+	switch exchange {
+	case dia.BinanceExchange:
+		return NewBinanceScraper(key, secret)
+	case dia.BitfinexExchange:
+		return NewBitfinexScraper(key, secret)
+	case dia.CoinBaseExchange:
+		return NewCoinBaseScraper()
+	case dia.KrakenExchange:
+		return NewKrakenScraper(key, secret)
+	case dia.HitBTCExchange:
+		return NewHitBTCScraper()
+	case dia.SimexExchange:
+		return NewSimexScraper()
+	default:
+		return nil
+	}
+}
