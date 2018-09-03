@@ -9,7 +9,8 @@ import (
 	"math"
 	"net/http"
 	"time"
-	// "github.com/diadata-org/api-golang/dia"
+
+	"github.com/diadata-org/api-golang/dia"
 )
 
 // BalanceInfo : Tron foundation api json
@@ -84,46 +85,46 @@ func GetTrxBlockHeight() (int, error) {
 }
 
 func main() {
-	// config := dia.GetConfigApi()
-	// if config == nil {
-	// 	panic("Couldnt load config")
-	// }
-	// client := dia.NewClient(config)
-	// if client == nil {
-	// 	panic("Couldnt load client")
-	// }
-	// prevResult := 0.0
+	config := dia.GetConfigApi()
+	if config == nil {
+		panic("Couldnt load config")
+	}
+	client := dia.NewClient(config)
+	if client == nil {
+		panic("Couldnt load client")
+	}
+	prevResult := 0.0
 	for {
 		tronFoundationTotal, err := GetFoundationBalance()
 		if err != nil {
 			log.Println("Err in GetFoundationBalance:", err)
 		}
-		fmt.Printf("tronFoundationTotal: %f\n", tronFoundationTotal)
+		// fmt.Printf("tronFoundationTotal: %f\n", tronFoundationTotal)
 		blackholeBalance, err := GetWalletTrxBalance(blackholeAddress)
 		if err != nil {
 			log.Println("Err in GetWalletTrxBalance:", err)
 		}
 		feeBurnedNum := math.Abs(startFeeBurnedNum) - math.Abs(float64(blackholeBalance/oneTrx))
-		fmt.Printf("feeBurnedNum: %f\n", feeBurnedNum)
+		// fmt.Printf("feeBurnedNum: %f\n", feeBurnedNum)
 		blockHeight, err := GetTrxBlockHeight()
 		if err != nil {
 			log.Println("Err in GetTrxBlockHeight:", err)
 		}
 		nodeRewardsNum := blockHeight * 16
-		fmt.Printf("nodeRewardsNum: %d\n", nodeRewardsNum)
+		// fmt.Printf("nodeRewardsNum: %d\n", nodeRewardsNum)
 		blockProduceRewardsNum := blockHeight * 32
-		fmt.Printf("blockProduceRewardsNum: %d\n", blockProduceRewardsNum)
+		// fmt.Printf("blockProduceRewardsNum: %d\n", blockProduceRewardsNum)
 		currentTotalSupply := genesisSupply + float64(blockProduceRewardsNum) + float64(nodeRewardsNum) - float64(independenceDayBurned) - feeBurnedNum
-		fmt.Printf("currentTotalSupply: %f\n", currentTotalSupply)
+		// fmt.Printf("currentTotalSupply: %f\n", currentTotalSupply)
 		result := currentTotalSupply - tronFoundationTotal
 		fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
-		// if prevResult != result {
-		// 	client.SendSupply(&dia.Supply{
-		// 		Symbol:            symbol,
-		// 		CirculatingSupply: result,
-		// 	})
-		// 	prevResult = result
-		// }
+		if prevResult != result {
+			client.SendSupply(&dia.Supply{
+				Symbol:            symbol,
+				CirculatingSupply: result,
+			})
+			prevResult = result
+		}
 		time.Sleep(time.Second * 10)
 	}
 }
