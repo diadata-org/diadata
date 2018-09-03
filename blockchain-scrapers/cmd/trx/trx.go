@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"time"
 	// "github.com/diadata-org/api-golang/dia"
@@ -97,18 +98,23 @@ func main() {
 		if err != nil {
 			log.Println("Err in GetFoundationBalance:", err)
 		}
+		fmt.Printf("tronFoundationTotal: %f\n", tronFoundationTotal)
 		blackholeBalance, err := GetWalletTrxBalance(blackholeAddress)
 		if err != nil {
 			log.Println("Err in GetWalletTrxBalance:", err)
 		}
-		feeBurnedNum := startFeeBurnedNum - float64(blackholeBalance/oneTrx)
+		feeBurnedNum := math.Abs(startFeeBurnedNum) - math.Abs(float64(blackholeBalance/oneTrx))
+		fmt.Printf("feeBurnedNum: %f\n", feeBurnedNum)
 		blockHeight, err := GetTrxBlockHeight()
 		if err != nil {
 			log.Println("Err in GetTrxBlockHeight:", err)
 		}
 		nodeRewardsNum := blockHeight * 16
+		fmt.Printf("nodeRewardsNum: %d\n", nodeRewardsNum)
 		blockProduceRewardsNum := blockHeight * 32
+		fmt.Printf("blockProduceRewardsNum: %d\n", blockProduceRewardsNum)
 		currentTotalSupply := genesisSupply + float64(blockProduceRewardsNum) + float64(nodeRewardsNum) - float64(independenceDayBurned) - feeBurnedNum
+		fmt.Printf("currentTotalSupply: %f\n", currentTotalSupply)
 		result := currentTotalSupply - tronFoundationTotal
 		fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
 		// if prevResult != result {
