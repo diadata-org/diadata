@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	HOST     = "localhost"
+	HOST     = "dashd"
 	PORT     = 9998
 	SYMBOL   = "DASH"
 	USERNAME = "dashrpc"

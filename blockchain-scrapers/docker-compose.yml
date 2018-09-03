@@ -96,6 +96,24 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  dashd:
+    image:
+      dashpay/dashd
+    ports:
+      - "9998"
+      - "9999"
+    volumes:
+      - /home/srv/dashd-data:/home/dash/dash
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
   btc:
     build:
       context: ../../../..
