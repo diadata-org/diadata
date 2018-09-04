@@ -16,7 +16,7 @@ const (
 	PORT     = 9998
 	SYMBOL   = "DASH"
 	USERNAME = "dashrpc"
-	PASSWORD = "DXzS3ZFM1WbLj/Kj7w+J87sBq2FXCXsNkkQLatB/9stL"
+	PASSWORD = "dash_rpc_521d43b"
 	PROTOCOL = "http"
 )
 
@@ -46,14 +46,14 @@ func main() {
 	}
 
 	for {
-		rinfo, err := Call("gettxoutsetinfo")
+		info, err := Call("gettxoutsetinfo")
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		err = client.SendSupply(&dia.Supply{
 			Symbol:            SYMBOL,
-			CirculatingSupply: rinfo.Result.TotalAmount,
+			CirculatingSupply: info.Result.TotalAmount,
 		})
 		if err != nil {
 			log.Println("Err communicating with api:", err)

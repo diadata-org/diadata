@@ -101,9 +101,9 @@ services:
       dashpay/dashd
     ports:
       - "9998"
-      - "9999"
     volumes:
-      - /home/srv/dashd-data:/home/dash/dash
+      - /home/srv/dashd:/dash
+    command: dash_oneshot -printtoconsole -server -rpcuser=dashrpc -rpcpassword=dash_rpc_521d43b -rpcallowip=::/0
     logging:
       options:
         max-size: "50m"
