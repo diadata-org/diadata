@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/api-golang/dia"
 	"io"
+
+	"github.com/diadata-org/api-golang/dia"
 )
 
 // empty type used for signaling
@@ -47,6 +48,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewHitBTCScraper()
 	case dia.SimexExchange:
 		return NewSimexScraper()
+	case dia.OKExExchange:
+		return NewOKExScraper()
 	default:
 		return nil
 	}
