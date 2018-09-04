@@ -12,11 +12,10 @@ const (
 )
 
 type BlockchainScraper struct {
-	bitcoind              *bitcoind.Bitcoind
-	client                *dia.Client
-	symbol                string
-	elapsedTime           time.Duration
-	lastCirculatingSupply float64
+	bitcoind    *bitcoind.Bitcoind
+	client      *dia.Client
+	symbol      string
+	elapsedTime time.Duration
 }
 
 func numberOfCoinsFor(blockNumber float64, subsidy float64, totalCoins float64, rewardModulo int64) float64 {
@@ -63,16 +62,14 @@ func (s *BlockchainScraper) Run() {
 			m := time.Unix(rinfo.Mediantime, 0)
 			l := time.Now().Sub(m)
 			circulatingSupply := s.numberOfCoinsFor(rinfo.Blocks)
-			log.Println("ElapsedTime block:", l, circulatingSupply, s.lastCirculatingSupply)
-			if l < s.elapsedTime && s.lastCirculatingSupply != circulatingSupply {
+			log.Println("ElapsedTime block:", l, circulatingSupply)
+			if l < s.elapsedTime {
 				err = s.client.SendSupply(&dia.Supply{
 					Symbol:            s.symbol,
 					CirculatingSupply: circulatingSupply,
 				})
 				if err != nil {
 					log.Println("Err communicating with api:", err)
-				} else {
-					s.lastCirculatingSupply = circulatingSupply
 				}
 			}
 		} else {

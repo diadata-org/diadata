@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"	
 	"bytes"
-	"strconv"	
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/api-golang/dia"
@@ -22,40 +22,39 @@ type RequestBody struct {
 }
 
 type ResponseBody struct {
-	ID      int          `json:"id"`
-	JSONRPC string       `json:"jsonrpc"`
-	Result  Account 	 `json:"result"`
+	ID      int     `json:"id"`
+	JSONRPC string  `json:"jsonrpc"`
+	Result  Account `json:"result"`
 }
 
 type CountResponseBody struct {
-	ID      int          `json:"id"`
-	JSONRPC string       `json:"jsonrpc"`
-	Result  int 	 	 `json:"result"`
+	ID      int    `json:"id"`
+	JSONRPC string `json:"jsonrpc"`
+	Result  int    `json:"result"`
 }
 
 type Account struct {
-	Balances []Balance  `json:"balances"`
+	Balances []Balance `json:"balances"`
 }
 
 type Balance struct {
-	Asset	string `json:"asset"`
-	Value	string `json:"value"`
+	Asset string `json:"asset"`
+	Value string `json:"value"`
 }
 
 const (
 	apiVersion = "2.0"
-	symbol = "NEO"
+	symbol     = "NEO"
 	// URI of neoclient running in docker (port: 10332 is for JSON-RPC via HTTP)
-	NodeURI = "http://neonode:10332"
-	TotalSupply = 100000000
+	NodeURI       = "http://neonode:10332"
+	TotalSupply   = 100000000
 	TargetAddress = "AQVh2pG732YvtNaxEGkQUei3YA4cvo7d2i"
 	// AssetId referes to NEO (not GAS or other Coins)
 	TargetAssetId = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b"
 
 	scrapInterval = time.Second * 10
-	syncInterval = time.Second * 30
+	syncInterval  = time.Second * 30
 )
-
 
 func main() {
 	config := dia.GetConfigApi()
@@ -67,12 +66,11 @@ func main() {
 		panic("Couldnt load client")
 	}
 
-	lastCirculatedSupply := 0
 	for {
 		ok := Ping(NodeURI)
 		if ok {
 
-			Sync(NodeURI) 
+			Sync(NodeURI)
 
 			neo, err := GetNEO(TargetAddress, NodeURI)
 
@@ -81,43 +79,37 @@ func main() {
 			} else {
 				circulatingSupply := TotalSupply - neo
 
-				if circulatingSupply != lastCirculatedSupply {
-
-					client.SendSupply(&dia.Supply{
-						Symbol:            "NEO",
-						CirculatingSupply: float64(circulatingSupply),
-					})
-
-					lastCirculatedSupply = circulatingSupply
-					fmt.Println("New CirculatingSupply of NEO : ", circulatingSupply)												
-				}
+				client.SendSupply(&dia.Supply{
+					Symbol:            "NEO",
+					CirculatingSupply: float64(circulatingSupply),
+				})
+				fmt.Println("New CirculatingSupply of NEO : ", circulatingSupply)
 			}
-			
+
 		} else {
-			fmt.Println("Error connecting to NEO node, Check if the docker service is running")		
+			fmt.Println("Error connecting to NEO node, Check if the docker service is running")
 		}
 
 		time.Sleep(scrapInterval)
 	}
 }
 
-
 func Sync(Node string) bool {
 	for {
 		globalBlockCount, err := GetGlobalBlockCount()
 
 		if err != nil {
-			fmt.Println("Error Fetching Global Block Count ", err)										
-		} else {		
+			fmt.Println("Error Fetching Global Block Count ", err)
+		} else {
 			localBlockCount, err := GetBlockCount(Node)
-			
+
 			if err != nil {
 				fmt.Println("Error Fetching Block Count", err)
 			} else {
 				if localBlockCount >= globalBlockCount {
 					return true
 				} else {
-					fmt.Println("Syncing - Local Block Count: ", localBlockCount, " Global Block Count:",  globalBlockCount)
+					fmt.Println("Syncing - Local Block Count: ", localBlockCount, " Global Block Count:", globalBlockCount)
 				}
 			}
 		}
@@ -127,9 +119,8 @@ func Sync(Node string) bool {
 	return true
 }
 
-
 func GetGlobalBlockCount() (int, error) {
-	seedNodes := [16]string {
+	seedNodes := [16]string{
 		"http://seed1.aphelion-neo.com:10332",
 		"http://seed2.aphelion-neo.com:10332",
 		"http://seed3.aphelion-neo.com:10332",
@@ -158,31 +149,29 @@ func GetGlobalBlockCount() (int, error) {
 	return 0, fmt.Errorf("Seed Nodes are not Responding")
 }
 
-
 // Return NEO at address
 func GetNEO(Address string, Node string) (int, error) {
 	account, err := GetAccountState(TargetAddress, Node)
 
 	if err != nil {
 		return 0, err
-	} else {				
+	} else {
 		value := 0
-		
+
 		for _, balance := range account.Balances {
 			if balance.Asset == TargetAssetId {
 				value, err = strconv.Atoi(balance.Value)
-				
-				if err != nil {					
+
+				if err != nil {
 					return 0, err
 				} else {
 					return value, nil
-				}						
+				}
 			}
 		}
 		return 0, nil
 	}
 }
-
 
 // Returns Account State at the address
 func GetAccountState(Address string, Node string) (*Account, error) {
@@ -199,7 +188,6 @@ func GetAccountState(Address string, Node string) (*Account, error) {
 	return &response.Result, nil
 }
 
-
 // Returns Block count at node
 func GetBlockCount(Node string) (int, error) {
 	var response CountResponseBody
@@ -209,9 +197,8 @@ func GetBlockCount(Node string) (int, error) {
 		return 0, err
 	}
 
-	return  response.Result, nil
+	return response.Result, nil
 }
-
 
 // Ping checks if the node is online.
 func Ping(node string) bool {
@@ -229,7 +216,6 @@ func Ping(node string) bool {
 
 	return true
 }
-
 
 // Makes a POST request to the node with given method, parameters
 func executeRequest(method string, bodyParameters []interface{}, nodeURI string, model interface{}) error {
@@ -272,7 +258,7 @@ func executeRequest(method string, bodyParameters []interface{}, nodeURI string,
 	if err != nil {
 		return err
 	}
-	
+
 	err = json.Unmarshal(bytes, &model)
 	if err != nil {
 		return err

@@ -9,11 +9,14 @@ import (
 	"log"
 	"net/http"
 	"os/user"
+	"time"
 )
 
 type Client struct {
-	config *ConfigApi
-	token  string
+	config                *ConfigApi
+	token                 string
+	lastSupplyUpdateTime  time.Time
+	lastSupplyUpdateValue float64
 }
 
 const baseURL string = "https://api.diadata.org/"
@@ -157,6 +160,18 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 }
 
 func (c *Client) SendSupply(s *Supply) error {
+	lastUpdate := time.Since(c.lastSupplyUpdateTime)
+	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply {
+		c.lastSupplyUpdateTime = time.Now()
+		c.lastSupplyUpdateValue = s.CirculatingSupply
+		return c.sendSupply(s)
+	} else {
+		log.Println("Skipping sending to API", s, "last update:", lastUpdate)
+		return nil
+	}
+}
+
+func (c *Client) sendSupply(s *Supply) error {
 
 	jsonStr, err := json.Marshal(s)
 	if err != nil {

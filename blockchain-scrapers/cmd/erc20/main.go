@@ -40,6 +40,7 @@ func toFloat(in *big.Int, decimals uint8) float64 {
 }
 
 func main() {
+
 	conn, err := ethclient.Dial(*rpcEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
@@ -58,7 +59,6 @@ func main() {
 	if client == nil {
 		panic("Couldnt load client")
 	}
-	prevResult := 0.0
 	for {
 		//Infinite loop, sends tokenSupply every 10 seconds
 		supply, err := token.TotalSupply(nil)
@@ -80,14 +80,14 @@ func main() {
 		}
 
 		result := toFloat(resultSupply, decimals)
+
 		fmt.Printf("Symbol: %s ; totalSupply: %f\n", *symbol, result)
-		if prevResult != result {
-			client.SendSupply(&dia.Supply{
-				Symbol:            *symbol,
-				CirculatingSupply: result,
-			})
-			prevResult = result
-		}
+
+		client.SendSupply(&dia.Supply{
+			Symbol:            *symbol,
+			CirculatingSupply: result,
+		})
+
 		time.Sleep(time.Second * 10)
 	}
 }
