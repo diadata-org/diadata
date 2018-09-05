@@ -1,9 +1,10 @@
 package dia
 
 import (
-	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
+
+	"github.com/tkanos/gonfig"
 )
 
 const (
@@ -13,6 +14,7 @@ const (
 	CoinBaseExchange = "CoinBase"
 	HitBTCExchange   = "HitBTC"
 	SimexExchange    = "Simex"
+	OKExExchange     = "OKEx"
 	UnknownExchange  = "Unknown"
 )
 
@@ -23,7 +25,8 @@ func Exchanges() []string {
 		BinanceExchange,
 		CoinBaseExchange,
 		HitBTCExchange,
-		SimexExchange}
+		SimexExchange,
+		OKExExchange}
 }
 
 type ConfigApi struct {
