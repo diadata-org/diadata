@@ -193,26 +193,18 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
-# TODO: build docker image from https://github.com/monero-project/monero/blob/master/Dockerfile
-#  monero:
-#    image:
-#      diadata/monero-docker
-#    ports:
-#    - "8545"
-#    - "18081"
-#    volumes:
-#    - /home/srv/monero:/root/.bitmonero
-#    command: --p2p-bind-ip=0.0.0.0 --p2p-bind-port=18080 --rpc-bind-ip=0.0.0.0 --rpc-bind-port=18081 --non-interactive --confirm-external-bind
-#    logging:
-#      options:
-#        max-size: "50m"
-#    networks:
-#    - scrapers-network
-#    deploy:
-#      mode: global
-#      restart_policy:
-#        delay: 2s
-#        window: 20s
+  xmr:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xmr
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xmr
+    networks:
+    - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+    - api_diadata
 volumes:
   bitcoin:
 
