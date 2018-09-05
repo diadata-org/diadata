@@ -97,6 +97,8 @@ services:
         delay: 2s
         window: 20s
   monero:
+    image:
+      ${DOCKER_HUB_LOGIN}/monero
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-monero-node
