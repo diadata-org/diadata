@@ -96,24 +96,24 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
-    monero:
-      image:
-        joshpurvis/monero
-      ports:
-      - "18080"
-      - "18081"
-      volumes:
-      - /home/srv/monero:/root/.bitmonero
-      logging:
-        options:
-          max-size: "50m"
-      networks:
-      - scrapers-network
-      deploy:
-        mode: global
-        restart_policy:
-          delay: 2s
-          window: 20s
+  monero:
+    image:
+      joshpurvis/monero
+    ports:
+    - "18080"
+    - "18081"
+    volumes:
+    - /home/srv/monero:/root/.bitmonero
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+    - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
   btc:
     build:
       context: ../../../..
