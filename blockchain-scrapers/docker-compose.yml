@@ -97,8 +97,9 @@ services:
         delay: 2s
         window: 20s
   monero:
-    image:
-      joshpurvis/monero
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-monero-node
     ports:
     - "18080"
     - "18081"
