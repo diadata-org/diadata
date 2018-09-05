@@ -168,7 +168,7 @@ services:
       options:
         max-size: "50m"
     secrets:
-      - api_diadata  
+      - api_diadata
   xrp:
     build:
       context: ../../../..
@@ -186,6 +186,18 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-neo
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+  usdt:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-usdt
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_usdt
     networks:
       - scrapers-network
     logging:
