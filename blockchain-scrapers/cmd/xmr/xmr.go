@@ -177,7 +177,8 @@ func main() {
 				log.Println("Error communicating with node:", err)
 			}
 
-			time.Sleep(time.Second * 10)
 		}
+
+		time.Sleep(time.Second * 10)
 	}
 }
