@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	//"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/dia"
 )
 
 type HeightResponse struct {
@@ -41,16 +41,19 @@ type Result struct {
 }
 
 // Constants
-const symbol = "XMR"
-const endpointGetHeight = "http://localhost:18081/getheight"
-const endpointJsonRpc = "http://localhost:18081/json_rpc"
-const atomicConversion = 0.000000000001
+const (
+	symbol            = "XMR"
+	endpointGetHeight = "http://monero:18081/getheight"
+	endpointJsonRpc   = "http://monero:18081/json_rpc"
+	atomicConversion  = 0.000000000001
 
-// This snapshot was taken on 2018-09-04
-// These values can be updated as performance degrades:
-const snapshotHeight int64 = 1654077
-const snapshotEmission string = "16377801401737323881"
-// Can be calculated from command line easily:
+	// This snapshot was taken on 2018-09-04
+	// These values can be updated as performance degrades:
+	snapshotHeight   int64  = 1654077
+	snapshotEmission string = "16377801401737323881"
+)
+
+// snapshot can be calculated from command line easily using curl:
 // curl -X POST http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_coinbase_tx_sum","params":{"height":0,"count":1654077}}' -H 'Content-Type: application/json'
 
 func getCurrentHeight() (int64, error) {
@@ -130,14 +133,14 @@ func atomicToXmr(x *big.Rat) *big.Rat {
 
 func main() {
 
-	//config := dia.GetConfigApi()
-	//if config == nil {
-	//	panic("Couldn't load config")
-	//}
-	//client := dia.NewClient(config)
-	//if client == nil {
-	//	panic("Couldn't load client")
-	//}
+	config := dia.GetConfigApi()
+	if config == nil {
+		panic("Couldn't load config")
+	}
+	client := dia.NewClient(config)
+	if client == nil {
+		panic("Couldn't load client")
+	}
 
 	// initialize snapshot values
 	var previousHeight = snapshotHeight
@@ -166,10 +169,10 @@ func main() {
 				xmrSupplyFloat, _ := xmrSupply.Float64()
 				fmt.Printf("Total circulating supply: %f\n", xmrSupplyFloat)
 
-				//client.SendSupply(&dia.Supply{
-				//	Symbol:            symbol,
-				//	CirculatingSupply: xmrSupplyFloat,
-				//})
+				client.SendSupply(&dia.Supply{
+					Symbol:            symbol,
+					CirculatingSupply: xmrSupplyFloat,
+				})
 			} else {
 				log.Println("Error communicating with node:", err)
 			}
