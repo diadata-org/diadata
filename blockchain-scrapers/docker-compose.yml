@@ -98,7 +98,7 @@ services:
         window: 20s
   tron:
     image:
-      patches12345/tron
+      ${DOCKER_HUB_LOGIN}/tron
     ports:
       - "50051"
       - "18888"
@@ -215,7 +215,7 @@ services:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-trx
-    image: patches12345/blockchain-scrapers_trx
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_trx
     depends_on:
       - tron
     networks:
