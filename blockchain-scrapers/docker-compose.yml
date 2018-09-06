@@ -98,7 +98,7 @@ services:
         window: 20s
   tron:
     image:
-      ${DOCKER_HUB_LOGIN}/tron
+      ${DOCKER_HUB_LOGIN}/blockchain-scrapers_tron
     ports:
       - "50051"
       - "18888"
