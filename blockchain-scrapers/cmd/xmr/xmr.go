@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -120,7 +119,7 @@ func getEmission(currentHeight int64, previousHeight int64) (*big.Rat, error) {
 	return emissionFloat, err
 }
 
-func atomicToXmr(x *big.Rat) *big.Rat {
+func atomicToXmr(x *big.Rat) float64 {
 	// convert from atomic units to XMR value
 
 	conversion := new(big.Rat)
@@ -128,7 +127,20 @@ func atomicToXmr(x *big.Rat) *big.Rat {
 	atomic.SetFloat64(atomicConversion)
 	conversion.Mul(x, atomic)
 
-	return conversion
+	// convert XMR from big.Rat to float64
+	xmrSupplyFloat, _ := conversion.Float64()
+
+	return xmrSupplyFloat
+}
+
+func publishCirculatingSupply(client *dia.Client, height int64, supply *big.Rat) {
+	xmrSupply := atomicToXmr(supply)
+	log.Printf("Updating circulating supply as of block %v: %f\n", height, xmrSupply)
+
+	client.SendSupply(&dia.Supply{
+		Symbol:            symbol,
+		CirculatingSupply: xmrSupply,
+	})
 }
 
 func main() {
@@ -155,7 +167,7 @@ func main() {
 		}
 
 		if currentHeight > previousHeight {
-			fmt.Printf("New height; %v\n", currentHeight)
+			log.Printf("New height: %v\n", currentHeight)
 			newEmission, err := getEmission(currentHeight, previousHeight)
 
 			if err == nil {
@@ -163,20 +175,20 @@ func main() {
 				totalEmission.Add(totalEmission, newEmission)
 				previousHeight = currentHeight
 
-				xmrSupply := atomicToXmr(totalEmission)
+				publishCirculatingSupply(client, currentHeight, totalEmission)
 
-				// convert XMR from big.Rat to float64
-				xmrSupplyFloat, _ := xmrSupply.Float64()
-				fmt.Printf("Total circulating supply: %f\n", xmrSupplyFloat)
-
-				client.SendSupply(&dia.Supply{
-					Symbol:            symbol,
-					CirculatingSupply: xmrSupplyFloat,
-				})
 			} else {
 				log.Println("Error communicating with node:", err)
 			}
 
+		} else if currentHeight == previousHeight {
+			// no change, publish last known height/emission
+			publishCirculatingSupply(client, previousHeight, totalEmission)
+		} else {
+			// currentHeight is less than previousHeight, so we'll use latest available snapshot:
+			log.Printf("Using snapshot values which are as of height %v", snapshotHeight)
+			publishCirculatingSupply(client, snapshotHeight, totalEmission)
+			log.Println("Waiting for blockchain to sync...")
 		}
 
 		time.Sleep(time.Second * 10)
