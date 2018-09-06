@@ -14,6 +14,8 @@ COPY . .
 
 WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/cmd/usdt
 
+RUN go get ./...
+
 RUN go install
 
 CMD ["usdt"]
