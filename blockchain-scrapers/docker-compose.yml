@@ -97,6 +97,9 @@ services:
         delay: 2s
         window: 20s
   tron:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-tron
     image:
       ${DOCKER_HUB_LOGIN}/blockchain-scrapers_tron
     ports:

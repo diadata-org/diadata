@@ -1,13 +1,12 @@
 FROM golang:latest as build
 
 RUN go get github.com/PaddyMc/go-tron/calculations
-RUN go get github.com/diadata-org/api-golang/dia
 
 WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/cmd/trx
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/cmd/trx
 
 RUN go install
 
