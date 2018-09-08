@@ -12,10 +12,6 @@ import (
 	"github.com/diadata-org/api-golang/dia"
 )
 
-type HeightResponse struct {
-	Value int64 `json:"height"`
-}
-
 type PostData struct {
 	Id      string `json:"id"`
 	JsonRpc string `json:"jsonrpc"`
@@ -28,66 +24,47 @@ type Params struct {
 	Count  int64 `json:"count"`
 }
 
-type EmissionResult struct {
-	Value *big.Int `json:"emission_amount"`
+type Result struct {
+	EmissionAmount *big.Int    `json:"emission_amount"`
+	BlockCount     int64       `json:"count"`
+	BlockHeader    BlockHeader `json:"block_header"`
 }
 
-type Result struct {
-	Id      string         `json:"id"`
-	JsonRpc string         `json:"jsonrpc"`
-	Method  string         `json:"method"`
-	Result  EmissionResult `json:"result"`
+type Response struct {
+	Id      string `json:"id"`
+	JsonRpc string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Result  Result `json:"result"`
+}
+
+type BlockHeader struct {
+	Timestamp int64 `json:"timestamp"`
+	Height    int64 `json:"height"`
 }
 
 // Constants
 const (
-	symbol            = "XMR"
-	endpointGetHeight = "http://monero:18081/getheight"
-	endpointJsonRpc   = "http://monero:18081/json_rpc"
-	atomicConversion  = 0.000000000001
+	symbol           = "XMR"
+	endpointJsonRpc  = "http://monero:18081/json_rpc"
+	atomicConversion = 0.000000000001
 
 	// This snapshot was taken on 2018-09-04
 	// These values can be updated as performance degrades:
 	snapshotHeight   int64  = 1654077
 	snapshotEmission string = "16377801401737323881"
+	// snapshot can be calculated from command line easily using curl:
+	// curl -X POST http://127.0.0.1:18081/json_rpc -d \
+	// '{"jsonrpc":"2.0","id":"0","method":"get_coinbase_tx_sum","params":{"height":0,"count":1654077}}' \
+	// -H 'Content-Type: application/json'
 )
 
-// snapshot can be calculated from command line easily using curl:
-// curl -X POST http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_coinbase_tx_sum","params":{"height":0,"count":1654077}}' -H 'Content-Type: application/json'
-
-func getCurrentHeight() (int64, error) {
-	// retrieve json from /getheight endpoint
-	response, err := http.Post(endpointGetHeight, "application/json", nil)
-	if err != nil {
-		return 0, err
-	}
-
-	// read body
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return 0, err
-	}
-
-	// unmarshal json and return height
-	var latestHeight HeightResponse
-	json.Unmarshal(responseData, &latestHeight)
-	result := latestHeight.Value
-
-	return result, err
-}
-
-func getEmission(currentHeight int64, previousHeight int64) (*big.Rat, error) {
-	// returns the emission amount between current height and previous height
-
+func getJsonRpcResponse(method string, params *Params) (*Response, error) {
 	// marshall the post body json
 	data := PostData{
 		Id:      "0",
 		JsonRpc: "2.0",
-		Method:  "get_coinbase_tx_sum",
-		Params: Params{
-			Height: previousHeight,
-			Count:  currentHeight - previousHeight,
-		},
+		Method:  method,
+		Params:  *params,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -107,15 +84,45 @@ func getEmission(currentHeight int64, previousHeight int64) (*big.Rat, error) {
 	}
 
 	// extract emission value from json
-	var emissionResult Result
-	err = json.Unmarshal(resultData, &emissionResult)
+	var response Response
+	err = json.Unmarshal(resultData, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func getLastBlock() (int64, int64, error) {
+	params := &Params{}
+	response, err := getJsonRpcResponse("get_last_block_header", params)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	height := response.Result.BlockHeader.Height
+	timestamp := response.Result.BlockHeader.Timestamp
+
+	return height, timestamp, err
+}
+
+func getEmission(currentHeight int64, previousHeight int64) (*big.Rat, error) {
+	// returns the emission amount between current height and previous height
+
+	params := &Params{
+		Height: previousHeight,
+		Count:  currentHeight - previousHeight,
+	}
+
+	response, err := getJsonRpcResponse("get_coinbase_tx_sum", params)
+
 	if err != nil {
 		return nil, err
 	}
 
 	// convert json number to big.Rat
 	emissionFloat := new(big.Rat)
-	emissionFloat.SetInt(emissionResult.Result.Value)
+	emissionFloat.SetInt(response.Result.EmissionAmount)
 	return emissionFloat, err
 }
 
@@ -160,35 +167,38 @@ func main() {
 	totalEmission.SetString(snapshotEmission)
 
 	for {
-		currentHeight, err := getCurrentHeight()
+		currentHeight, currentBlockTimestamp, err := getLastBlock()
 		if err != nil {
 			log.Println("Failed to retrieve current height from node")
 			continue
 		}
 
-		if currentHeight > previousHeight {
-			log.Printf("New height: %v\n", currentHeight)
-			newEmission, err := getEmission(currentHeight, previousHeight)
+		now := time.Now()
+		blockTime := time.Unix(currentBlockTimestamp, 0)
+		twoMinutes := time.Duration(60*2) * time.Second
 
-			if err == nil {
-				// add new emission to previous emission, set previousHeight
-				totalEmission.Add(totalEmission, newEmission)
-				previousHeight = currentHeight
-
-				publishCirculatingSupply(client, currentHeight, totalEmission)
-
-			} else {
-				log.Println("Error communicating with node:", err)
-			}
-
-		} else if currentHeight == previousHeight {
-			// no change, publish last known height/emission
-			publishCirculatingSupply(client, previousHeight, totalEmission)
+		if now.Sub(blockTime) > twoMinutes {
+			log.Println("Waiting for new block")
 		} else {
-			// currentHeight is less than previousHeight, so we'll use latest available snapshot:
-			log.Printf("Using snapshot values which are as of height %v", snapshotHeight)
-			publishCirculatingSupply(client, snapshotHeight, totalEmission)
-			log.Println("Waiting for blockchain to sync...")
+			if currentHeight > previousHeight {
+				log.Printf("New height: %v\n", currentHeight)
+				newEmission, err := getEmission(currentHeight, previousHeight)
+
+				if err == nil {
+					// add new emission to previous emission, set previousHeight
+					totalEmission.Add(totalEmission, newEmission)
+					previousHeight = currentHeight
+
+					publishCirculatingSupply(client, currentHeight, totalEmission)
+
+				} else {
+					log.Println("Error communicating with node:", err)
+				}
+
+			} else if currentHeight == previousHeight {
+				// no change, publish last known height/emission
+				publishCirculatingSupply(client, previousHeight, totalEmission)
+			}
 		}
 
 		time.Sleep(time.Second * 10)
