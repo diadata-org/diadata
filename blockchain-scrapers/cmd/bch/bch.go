@@ -7,11 +7,11 @@ import (
 
 const (
 	SERVER_HOST = "bitcoin-cash"
-	SERVER_PORT = 9332
+	SERVER_PORT = 8332
 	USER        = "mysecretrpcdiauser"
 	PASSWD      = "njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E="
 	SYMBOL      = "BCH"
-	TIP_TIME    = 60 * 60 * 2
+	TIP_TIME    = 60 * 10
 )
 
 func main() {
