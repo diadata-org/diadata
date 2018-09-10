@@ -147,8 +147,7 @@ services:
       options:
         max-size: "50m"
     networks:
-    - scrapers-network
-    - scrapers-network
+      - scrapers-network
     deploy:
       mode: global
       restart_policy:
