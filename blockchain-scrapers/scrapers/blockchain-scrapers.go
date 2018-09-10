@@ -1,10 +1,11 @@
 package blockchainscrapers
 
 import (
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/go-bitcoind"
 	"log"
 	"time"
+
+	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/go-bitcoind"
 )
 
 const (

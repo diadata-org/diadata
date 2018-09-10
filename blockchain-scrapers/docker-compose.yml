@@ -96,6 +96,27 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+  bitcoin-cash:
+    image:
+      uphold/bitcoin-abc
+    ports:
+      - "8332"
+    volumes:
+      - /home/srv/bitcoin-cash:/var/lib/bitcoin-cash
+    command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
+
+    environment:
+      - BITCOIN_ABC_DATA=/var/lib/bitcoin-cash
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
   tron:
     build:
       context: ../../../..
@@ -214,7 +235,7 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
-      
+
   usdt:
     build:
       context: ../../../..
@@ -235,6 +256,20 @@ services:
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_trx
     depends_on:
       - tron
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+  bch:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-bch
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_bch
+    depends_on:
+      - bitcoin-cash
     networks:
       - scrapers-network
     logging:
