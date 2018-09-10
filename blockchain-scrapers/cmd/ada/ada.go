@@ -27,7 +27,6 @@ func main() {
 	if client == nil {
 		panic("Couldnt load client")
 	}
-	prevResult := 0.0
 	for {
 		response, err := http.Get(endpoint)
 		if err == nil {
@@ -39,17 +38,13 @@ func main() {
 			json.Unmarshal(responseData, &supplyObject)
 			result := supplyObject.Value
 			fmt.Printf("Symbol: %s ; totalSupply: %f\n", symbol, result)
-			if prevResult != result {
-				client.SendSupply(&dia.Supply{
-					Symbol:            symbol,
-					CirculatingSupply: result,
-				})
-				prevResult = result
-			}
+			client.SendSupply(&dia.Supply{
+				Symbol:            symbol,
+				CirculatingSupply: result,
+			})
 		} else {
 			log.Println("Err communicating with node:", err)
 		}
 		time.Sleep(time.Second * 10)
 	}
-
 }

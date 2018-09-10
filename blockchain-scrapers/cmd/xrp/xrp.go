@@ -39,7 +39,6 @@ func main() {
 	if client == nil {
 		panic("Couldnt load client")
 	}
-	prevResult := 0.0
 	for {
 		response, err := http.Get(endpoint)
 		if err == nil {
@@ -58,18 +57,13 @@ func main() {
 				fmt.Println("There was an integer conversion error:", err)
 			}
 			fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
-			if prevResult != result {
-				client.SendSupply(&dia.Supply{
-					Symbol:            symbol,
-					CirculatingSupply: result,
-				})
-				prevResult = result
-			}
+			client.SendSupply(&dia.Supply{
+				Symbol:            symbol,
+				CirculatingSupply: result,
+			})
 		} else {
 			log.Println("Err communicating with node:", err)
 		}
 		time.Sleep(time.Second * 10)
-		// time.Sleep(time.Hour * 1)
 	}
-
 }
