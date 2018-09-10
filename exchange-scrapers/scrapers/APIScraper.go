@@ -52,6 +52,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewOKExScraper()
 	case dia.HuobiExchange:
 		return NewHuobiScraper()
+	case dia.LBankExchange:
+		return NewLBankScraper()
 	default:
 		return nil
 	}
