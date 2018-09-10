@@ -96,6 +96,21 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+        
+  monero:
+    image:
+      ${DOCKER_HUB_LOGIN}/blockchain-scrapers_monero
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-monero-node
+    ports:
+      - "18080"
+      - "18081"
+    volumes:
+      - /home/srv/monero:/root/.bitmonero
+    networks:
+      - scrapers-network
+      
   bitcoin-cash:
     image:
       uphold/bitcoin-abc
@@ -104,7 +119,6 @@ services:
     volumes:
       - /home/srv/bitcoin-cash:/var/lib/bitcoin-cash
     command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
-
     environment:
       - BITCOIN_ABC_DATA=/var/lib/bitcoin-cash
     logging:
@@ -117,6 +131,7 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+        
   tron:
     build:
       context: ../../../..
@@ -138,6 +153,7 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
+        
   btc:
     build:
       context: ../../../..
@@ -150,6 +166,7 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+      
   ltc:
     build:
       context: ../../../..
@@ -235,7 +252,20 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
-
+      
+  xmr:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xmr
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xmr
+    networks:
+    - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+      
   usdt:
     build:
       context: ../../../..
@@ -263,6 +293,7 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+      
   bch:
     build:
       context: ../../../..
@@ -277,6 +308,7 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+
 volumes:
   bitcoin:
 
