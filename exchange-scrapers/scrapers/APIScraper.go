@@ -50,6 +50,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewSimexScraper()
 	case dia.OKExExchange:
 		return NewOKExScraper()
+	case dia.HuobiExchange:
+		return NewHuobiScraper()
 	default:
 		return nil
 	}

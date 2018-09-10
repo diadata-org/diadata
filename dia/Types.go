@@ -8,6 +8,13 @@ const (
 	Diadata = "diadata.org"
 )
 
+type Quotation struct {
+	Symbol string
+	Name   string
+	Price  float64
+	Time   time.Time
+}
+
 type Supply struct {
 	Symbol            string
 	CirculatingSupply float64
