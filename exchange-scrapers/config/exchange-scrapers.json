@@ -554,6 +554,106 @@
       "Symbol": "OMG",
       "ForeignName": "OMGUSDT",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCC_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEO_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZEC_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEO_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASH_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZEC_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCC_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOS_ETH",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZEC_ETH",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCC_ETH",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRX_ETH",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_ETH",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_BTC",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_USDT",
+      "Exchange": "LBank"
+    },
+    {
+      "Symbol": "VET",
+      "ForeignName": "VET_USDT",
+      "Exchange": "LBank"
     }
   ]
 }
