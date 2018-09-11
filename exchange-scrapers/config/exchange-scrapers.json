@@ -451,7 +451,7 @@
       "Exchange": "Huobi"
     },
     {
-      "Symbol": "IOTA",
+      "Symbol": "MIOTA",
       "ForeignName": "IOTABTC",
       "Exchange": "Huobi"
     },
@@ -471,7 +471,7 @@
       "Exchange": "Huobi"
     },
     {
-      "Symbol": "IOTA",
+      "Symbol": "MIOTA",
       "ForeignName": "IOTAETH",
       "Exchange": "Huobi"
     },
@@ -541,7 +541,7 @@
       "Exchange": "Huobi"
     },
     {
-      "Symbol": "IOTA",
+      "Symbol": "MIOTA",
       "ForeignName": "IOTAUSDT",
       "Exchange": "Huobi"
     },
