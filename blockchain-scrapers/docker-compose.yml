@@ -309,6 +309,19 @@ services:
     secrets:
       - api_diadata
 
+  btc:
+   build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-eos
+   image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eos
+   networks:
+      - scrapers-network
+   logging:
+      options:
+         max-size: "50m"
+   secrets:
+      - api_diadata
+
 volumes:
   bitcoin:
 

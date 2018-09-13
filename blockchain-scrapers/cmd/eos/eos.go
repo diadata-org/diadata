@@ -12,7 +12,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/diadata-org/api-golang/dia"
 	cli "github.com/urfave/cli"
 )
 
@@ -61,19 +63,35 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
+		config := dia.GetConfigApi()
+		if config == nil {
+			log.Fatal("Couldnt load config")
+		}
+
+		client := dia.NewClient(config)
+		if client == nil {
+			log.Fatal("Couldnt load client")
+		}
+
 		fmt.Println("")
 		fmt.Println("Querying RPC Endpoint:", c.String("rpc"))
 		fmt.Println("Querying with action:", c.String("action"))
 
 		if c.String("action") == "info" {
 			chainInfo(c.String("rpc"))
-			currencyInfo(c.String("rpc"))
+			CurrentSupply := currencyInfo(c.String("rpc"))
+
+			client.SendSupply(&dia.Supply{
+				Symbol:            "EOS",
+				CirculatingSupply: CurrentSupply,
+			})
 		} else {
 			log.Fatal("Invalid action specified")
 		}
 
 		fmt.Println("Successfully queried RPC Endpoint", c.String("rpc"))
 		fmt.Println("")
+
 		return nil
 	}
 
@@ -113,7 +131,7 @@ func chainInfo(rpc string) {
 	fmt.Println("")
 }
 
-func currencyInfo(rpc string) {
+func currencyInfo(rpc string) float64 {
 	uri := rpc + "/v1/chain/get_currency_stats"
 	jsonBody := []byte(`{"symbol":"EOS","code":"eosio.token"}`)
 
@@ -139,4 +157,12 @@ func currencyInfo(rpc string) {
 	fmt.Println("Current Supply:", payload.Info.Supply)
 	fmt.Println("Max Supply:", payload.Info.MaxSupply)
 	fmt.Println("")
+
+	strLen := len(payload.Info.Supply)
+	formattedSupply, err := strconv.ParseFloat(payload.Info.Supply[:strLen-4], 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return formattedSupply
 }
