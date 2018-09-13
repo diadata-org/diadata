@@ -309,7 +309,7 @@ services:
     secrets:
       - api_diadata
 
-  btc:
+  eos:
    build:
       context: ../../../..
       dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-eos
