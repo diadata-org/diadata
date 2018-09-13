@@ -11,7 +11,7 @@ services:
       - "18080"
       - "18081"
     volumes:
-      - /home/srv/monero:/root/.bitmonero
+      - $HOME/srv/monero:/root/.bitmonero
     networks:
       - scrapers-network
 

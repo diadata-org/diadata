@@ -1,14 +1,17 @@
 version: '3.2'
 
 services:
-  neonode:
+  litecoin:
     image:
-      bountyjs/neocli-mainnet
+      uphold/litecoin-core
     ports:
-      - "10332:10332"
+      - "9332"
     volumes:
-      - /home/srv/neo:/app/Chain_00746E41
-    tty: true
+      - $HOME/srv/litecoin:/var/lib/litecoin
+    command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
+
+    environment:
+      - LITECOIN_DATA=/var/lib/litecoin
     logging:
       options:
         max-size: "50m"
@@ -19,12 +22,12 @@ services:
       restart_policy:
         delay: 2s
         window: 20s
-
-  neo:
+        
+  ltc:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/neo/node/Dockerfile-neo
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/litecoin/node/Dockerfile-ltc
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
     networks:
       - scrapers-network
     logging:
@@ -32,6 +35,7 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+
 
 secrets:
   api_diadata:
