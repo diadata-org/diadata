@@ -16,7 +16,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/api_diadata.json.example
+    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   bitcoin:
