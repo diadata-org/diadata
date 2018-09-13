@@ -9,4 +9,3 @@ main
 */config/secrets/*
 go.*
 *-workspace
-*.sh
