@@ -52,7 +52,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "rpc",
-			Value: "https://rpc.eosys.io",
+			Value: "http://0.0.0.0:8888",
 			Usage: "Which RPC Endpoint do you want to query?",
 		},
 		cli.StringFlag{
