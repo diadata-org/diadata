@@ -54,6 +54,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewHuobiScraper()
 	case dia.LBankExchange:
 		return NewLBankScraper()
+	case dia.GateIOExchange:
+		return NewGateIOScraper()
 	default:
 		return nil
 	}

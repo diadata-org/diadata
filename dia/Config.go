@@ -17,6 +17,7 @@ const (
 	OKExExchange     = "OKEx"
 	HuobiExchange    = "Huobi"
 	LBankExchange    = "LBank"
+	GateIOExchange   = "GateIO"
 	UnknownExchange  = "Unknown"
 )
 
@@ -30,6 +31,7 @@ func Exchanges() []string {
 		SimexExchange,
 		HuobiExchange,
 		LBankExchange,
+		GateIOExchange,
 		OKExExchange}
 }
 
