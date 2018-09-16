@@ -75,8 +75,10 @@ fi
 # create necessary volumes 
 blockchain_dir=$GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains
 
-sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin $HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo 
-sudo chmod -R 777 $HOME/srv
+if [ ! -e $HOME/srv ]; then
+	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin $HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo 
+	sudo chmod -R 777 $HOME/srv
+fi
 
 exec 3>&1 4>&2
 
