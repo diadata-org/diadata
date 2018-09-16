@@ -3,7 +3,7 @@
 
 function usage {
     echo "Usage: ./push.sh [-bdr] <service|all>"
-    echo "  Each flag corresponds to an operation and takes a single argument. More than one operation can be run in the same command. The supported flags/operations are:"
+    echo "  Each flag corresponds to an operation and takes a single argument. Multiple operations can be specified in the same command and will be run in that order. The supported flags/operations are:"
     echo ""
     echo "  -b      builds an image for a service (builds everything when run with 'all'"
     echo "  -d      deploys a service in a stack with its name (deploys every service in a stack named 'all' when run with 'all'"
@@ -18,7 +18,7 @@ function error {
 	echo -e "${RED}Error: ${NC}$1" 1>&3
 }
 
-function deploy_stack {
+function deploy {
 	echo "Deploying stack '$1'..." 1>&3
 
 	case $1 in
@@ -31,12 +31,12 @@ function deploy_stack {
 		# deploy a service in a stack with its name
 		*)
 			(docker stack deploy -c $(find $blockchain_dir -name docker-compose-$1.yml) $1 &&
-				echo "Finished deployment" 1>&3) || error "Unknown service '$1'"
+				echo "Finished deployment" 1>&3) || error "Can't deploy '$1' (might not exist) "
 			;;
 	esac
 }
 
-function build_service {
+function build {
 	echo "Building service '$1'..." 1>&3
 
 	case $1 in
@@ -49,14 +49,14 @@ function build_service {
 		# build a particular service
 		*) 
 			(docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t $DOCKER_HUB_LOGIN/blockchain-scrapers_$1 $GOPATH && 
-				echo "Finished build" 1>&3) || error "Unknown service '$1'"
+				echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
 			;;
 	esac
 }
 
-function remove_stack {
+function remove {
 	echo "Removing stack '$1'..." 1>&3
-	
+
 	# remove a stack
 	if [[ ! -z $(docker stack ls | grep "$1") ]]; then
 		docker stack rm $1
@@ -74,46 +74,32 @@ fi
 
 # create necessary volumes 
 blockchain_dir=$GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains
+
 sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin $HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo 
 sudo chmod -R 777 $HOME/srv
 
-unset deploy
-unset build
-unset remove
-
-# parse input
-while getopts "d:b:r:" opt; do
-	case $opt in
-		d)
-			deploy=$OPTARG
-			;;
-
-		b)
-			build=$OPTARG
-			;;
-
-		r)
-			remove=$OPTARG
-			;;
-
-		*)
-			error "Unknown operation '$opt'"
-	esac
-done
-
-# silence the output of every command
 exec 3>&1 4>&2
+
+# parse input (silencing the output)
 {
-	if [[ ! -z ${build} ]]; then
-		build_service $build
-	fi
 
-	if [[ ! -z ${deploy} ]]; then
-		deploy_stack $deploy
-	fi
+	while getopts "d:b:r:" opt; do
+		case $opt in
+			d)
+				deploy $OPTARG
+				;;
 
-	if [[ ! -z ${remove} ]]; then
-		remove_stack $remove
-	fi
+			b)
 
+				build $OPTARG
+				;;
+
+			r)
+				remove $OPTARG
+				;;
+
+			*)
+				error "Unknown operation '$opt'"
+		esac
+	done
 } &> /dev/null
