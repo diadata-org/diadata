@@ -16,12 +16,12 @@ function deploy {
 		all) 		
 			find $blockchain_dir -name docker-compose-*.yml -exec docker stack deploy -c {} $1 \;
 			;;
-		# deploy a service in it's individual stack
-		btc|bch|ada|ltc|xmr|eth|erc20|xrp|usdt|trx|xlm|neo) 
-			find $blockchain_dir -name docker-compose-$1.yml -exec docker stack deploy -c {} $1 \;
-			;;
+
+		# deploy a service in a stack with its name
 		*)
-			echo "Error: unknown service '"$1"'"
+			docker stack deploy -c $(find $blockchain_dir -name docker-compose-$1.yml) $1 || 
+			echo "Error: Unknown service" $1
+			;;
 	esac
 }
 
@@ -31,27 +31,26 @@ function build {
 		all) 
 			find $blockchain_dir -name Dockerfile* -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/blockchain-scrapers_$(sed -n -e 's/^.*-//p' {}) $GOPATH" \;
 			;;
-		# build a single service
-		btc|bch|ada|ltc|xmr|eth|erc20|xrp|usdt|trx|xlm|neo) 
-			find $blockchain_dir -name Dockerfile-$1 -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/blockchain-scrapers_$1 $GOPATH" \;
+
+		# build a particular service
+		*) 
+			docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t $DOCKER_HUB_LOGIN/blockchain-scrapers_$1 $GOPATH ||
+			echo "Error: Unknown service '"$1"'"
 			;;
-		*)
-			echo "Error: unknown service '"$1"'"
 	esac
 }
 
 function remove {
 	case $1 in
-		# build every service
+		# remove a stack containing all services
 		all) 
 			find $blockchain_dir -name Dockerfile* -exec docker service rm $(docker service ls -q)
 			;;
-		# build a single service
-		btc|bch|ada|ltc|xmr|eth|erc20|xrp|usdt|trx|xlm|neo) 
+		
+		# remove a particular stack
+		*) 
 			docker stack rm $1
-			;;
-		*)
-			echo "Error: unknown service '"$1"'"
+			;;			
 	esac
 }
 
