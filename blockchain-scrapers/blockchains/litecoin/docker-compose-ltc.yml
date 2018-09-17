@@ -27,7 +27,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/litecoin/node/Dockerfile-ltc
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc:latest
     networks:
       - scrapers-network
     logging:

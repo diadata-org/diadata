@@ -23,7 +23,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchain/cardano/node/Dockerfile
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ada
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ada:latest
     networks:
       - scrapers-network
     logging:
