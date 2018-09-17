@@ -56,6 +56,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewLBankScraper()
 	case dia.GateIOExchange:
 		return NewGateIOScraper()
+	case dia.ZBExchange:
+		return NewZBScraper()
 	default:
 		return nil
 	}

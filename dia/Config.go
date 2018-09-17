@@ -18,6 +18,7 @@ const (
 	HuobiExchange    = "Huobi"
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
+	ZBExchange       = "ZB"
 	UnknownExchange  = "Unknown"
 )
 
@@ -32,7 +33,9 @@ func Exchanges() []string {
 		HuobiExchange,
 		LBankExchange,
 		GateIOExchange,
-		OKExExchange}
+		OKExExchange,
+		ZBExchange,
+	}
 }
 
 type ConfigApi struct {
