@@ -1,0 +1,44 @@
+version: '3.2'
+
+services:
+  neonode:
+    image:
+      bountyjs/neocli-mainnet
+    ports:
+      - "10332:10332"
+    volumes:
+      - $HOME/srv/neo:/app/Chain_00746E41
+    tty: true
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  neo:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/neo/node/Dockerfile-neo
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:

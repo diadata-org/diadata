@@ -7,6 +7,5 @@ main
 *.out
 .glide/
 config/secrets/*
-*.sh
 go.*
 blockchain-scrapers

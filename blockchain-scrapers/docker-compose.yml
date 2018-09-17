@@ -8,7 +8,7 @@ services:
     ports:
       - "8332"
     volumes:
-      - /home/srv/bitcoind:/bitcoin
+      - $HOME/srv/bitcoin:/bitcoin
     command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
@@ -26,11 +26,11 @@ services:
     ports:
       - "9332"
     volumes:
-      - /home/srv/litecoind:/var/lib/litecoind
+      - /home/srv/litecoin:/var/lib/litecoin
     command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
 
     environment:
-      - LITECOIN_DATA=/var/lib/litecoind
+      - LITECOIN_DATA=/var/lib/litecoin
     logging:
       options:
         max-size: "50m"
@@ -101,8 +101,8 @@ services:
     image:
       ${DOCKER_HUB_LOGIN}/blockchain-scrapers_monero
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-monero-node
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/monero/node/Dockerfile-monero
     ports:
       - "18080"
       - "18081"
@@ -134,8 +134,8 @@ services:
         
   tron:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-tron
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blochains/tron/node/Dockerfile-tron
     image:
       ${DOCKER_HUB_LOGIN}/blockchain-scrapers_tron
     ports:
@@ -156,8 +156,8 @@ services:
         
   btc:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-btc
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile-btc
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc
     networks:
       - scrapers-network
@@ -169,8 +169,8 @@ services:
       
   ltc:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-ltc
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/litecoin/node/Dockerfile-ltc
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
     networks:
       - scrapers-network
@@ -179,10 +179,11 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+
   erc20:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-erc20
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-erc20
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_erc20
     command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
     networks:
@@ -194,8 +195,8 @@ services:
       - api_diadata
   eth:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-eth
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-eth
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eth
     networks:
       - scrapers-network
@@ -206,8 +207,8 @@ services:
       - api_diadata
   ada:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-ada
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/cardano/node/Dockerfile-ada
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ada
     networks:
       - scrapers-network
@@ -218,8 +219,8 @@ services:
       - api_diadata
   xlm:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xlm
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/stellar/node/Dockerfile-xlm
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xlm
     networks:
       - scrapers-network
@@ -230,8 +231,8 @@ services:
       - api_diadata
   xrp:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xrp
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ripple/node/Dockerfile-xrp
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xrp
     networks:
       - scrapers-network
@@ -242,8 +243,8 @@ services:
       - api_diadata
   neo:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-neo
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/node/Dockerfile-neo
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
     networks:
       - scrapers-network
@@ -255,8 +256,8 @@ services:
       
   xmr:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-xmr
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/monero/node/Dockerfile-xmr
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xmr
     networks:
     - scrapers-network
@@ -268,8 +269,8 @@ services:
       
   usdt:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-usdt
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tether/node/Dockerfile-usdt
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_usdt
     networks:
       - scrapers-network
@@ -281,8 +282,8 @@ services:
 
   trx:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-trx
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tron/node/Dockerfile-trx
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_trx
     depends_on:
       - tron
@@ -296,8 +297,8 @@ services:
       
   bch:
     build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-bch
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin-cash/node/Dockerfile-bch
     image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_bch
     depends_on:
       - bitcoin-cash
@@ -317,4 +318,4 @@ networks:
 
 secrets:
   api_diadata:
-    file: config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
