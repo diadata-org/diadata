@@ -12,11 +12,13 @@ type Quotation struct {
 	Symbol string
 	Name   string
 	Price  float64
+	Source string
 	Time   time.Time
 }
 
 type Supply struct {
 	Symbol            string
+	Name              string
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
