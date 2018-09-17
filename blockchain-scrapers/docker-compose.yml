@@ -310,6 +310,53 @@ services:
     secrets:
       - api_diadata
 
+  eos-node:
+
+    image: eosio/eos
+
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-eos-full-node
+    
+    volumes:
+      - eosio:/opt/eosio
+
+    ports:
+      - "8888"
+    
+    logging:
+      options:
+        max-size: "50m"
+
+    networks:
+      - scrapers-network
+
+  eos:
+
+    image: eosio/eos
+
+    depends_on:
+      - eos-node
+
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/blockchain-scrapers/Dockerfile-eos
+   
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eos
+
+    ports:
+      - "8888"
+
+    networks:
+      - scrapers-network
+
+    logging:
+      options:
+        max-size: "50m"
+    
+    secrets:
+      - api_diadata
+
 volumes:
   bitcoin:
 
