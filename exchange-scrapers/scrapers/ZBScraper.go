@@ -94,14 +94,14 @@ func (s *ZBScraper) mainLoop() {
 				continue
 			}
 
-			if trade.Type == "sell" {
-				f64Price = -f64Price
-			}
-
 			f64Volume, err := strconv.ParseFloat(trade.Amount, 64)
 			if err != nil {
 				log.Printf("error parsing volume: %s", trade.Price)
 				continue
+			}
+
+			if trade.Type == "sell" {
+				f64Volume = -f64Volume
 			}
 
 			t := &dia.Trade{
