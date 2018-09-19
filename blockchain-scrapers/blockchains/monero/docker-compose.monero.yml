@@ -19,7 +19,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/monero/node/Dockerfile-xmr
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xmr
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xmr
     networks:
       - scrapers-network
     logging:

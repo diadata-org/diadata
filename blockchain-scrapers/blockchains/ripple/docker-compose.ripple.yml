@@ -5,7 +5,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ripple/node/Dockerfile-xrp
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xrp
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xrp
     networks:
       - scrapers-network
     logging:

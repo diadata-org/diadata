@@ -74,6 +74,7 @@ fi
 
 # create necessary volumes 
 blockchain_dir=$GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains
+export STACKNAME=blockchain-scrapers
 
 if [ ! -e $HOME/srv ]; then
 	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin  \
