@@ -5,7 +5,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/stellar/node/Dockerfile-xlm
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xlm:latest
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xlm
     networks:
       - scrapers-network
     logging:

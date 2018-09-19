@@ -76,14 +76,14 @@ fi
 blockchain_dir=$GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains
 
 if [ ! -e $HOME/srv ]; then
-	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin $HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo 
+	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin  \
+		$HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo $HOME/srv/dash
 	sudo chmod -R 777 $HOME/srv
 fi
 
 exec 3>&1 4>&2
-
-# parse input (silencing the output)
-{
+# parse input (uncomment these to silence non-script output)
+#{
 
 	while getopts "d:b:r:" opt; do
 		case $opt in
@@ -104,4 +104,4 @@ exec 3>&1 4>&2
 				error "Unknown operation '$opt'"
 		esac
 	done
-} &> /dev/null
+#} &> /dev/null

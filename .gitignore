@@ -10,3 +10,4 @@ main
 go.*
 *-workspace
 push.sh
+.idea

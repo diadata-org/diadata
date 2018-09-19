@@ -26,7 +26,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin-cash/node/Dockerfile-bch
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_bch:latest
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_bch
     depends_on:
       - bitcoin-cash
     networks:

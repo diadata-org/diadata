@@ -23,8 +23,8 @@ services:
   btc:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc:latest
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile-btc
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc
     networks:
       - scrapers-network
     logging:
