@@ -7,7 +7,7 @@ import (
 	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
 	"github.com/tkanos/gonfig"
 	"log"
-	"os/user"
+	"os"
 	"sync"
 )
 
@@ -52,8 +52,7 @@ func main() {
 
 	var configConnector dia.ConfigConnector
 
-	usr, _ := user.Current()
-	configFile := usr.HomeDir + "/go/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
+	configFile := os.Getenv("GOPATH") + "/go/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
 	err := gonfig.GetConf(configFile, &configConnector)
 
 	if err != nil {
