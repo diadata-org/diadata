@@ -24,7 +24,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/dash/node/Dockerfile-dash
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_dash:latest
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_dash
     networks:
       - scrapers-network
     logging:
