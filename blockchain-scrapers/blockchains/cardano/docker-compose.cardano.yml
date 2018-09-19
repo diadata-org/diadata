@@ -1,14 +1,13 @@
 version: '3.2'
 
 services:
-  bitcoin:
+  cardano:
     image:
-      kylemanna/bitcoind
+      diadata/cardano-explorer-docker
     ports:
-      - "8332"
+      - "8100"
     volumes:
-      - $HOME/srv/bitcoin:/bitcoin
-    command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
+      - $HOME/srv/cardano:/home/cardano/cardano-sl/state-explorer-mainnet
     logging:
       options:
         max-size: "50m"
@@ -20,11 +19,11 @@ services:
         delay: 2s
         window: 20s
 
-  btc:
+  ada:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_btc
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchain/cardano/node/Dockerfile
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ada
     networks:
       - scrapers-network
     logging:
@@ -38,7 +37,7 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
-  bitcoin:
+  cardano:
 
 networks: 
   scrapers-network:

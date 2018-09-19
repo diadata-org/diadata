@@ -1,11 +1,11 @@
 version: '3.2'
 
 services:
-  xlm:
+  xrp:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/stellar/node/Dockerfile-xlm
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xlm
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ripple/node/Dockerfile-xrp
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xrp
     networks:
       - scrapers-network
     logging:

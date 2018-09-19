@@ -1,11 +1,11 @@
 version: '3.2'
 
 services:
-  xrp:
+  usdt:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ripple/node/Dockerfile-xrp
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_xrp
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tether/node/Dockerfile-usdt
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_usdt
     networks:
       - scrapers-network
     logging:

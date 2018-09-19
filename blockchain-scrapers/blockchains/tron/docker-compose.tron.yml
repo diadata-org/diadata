@@ -1,16 +1,17 @@
 version: '3.2'
 
 services:
-  geth: 
+  tron:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tron/node/Dockerfile-tron
     image:
-      ethereum/client-go:alpine
+      ${DOCKER_HUB_LOGIN}/${STACKNAME}_tron
     ports:
-      - "8545"
-      - "30303"
-    volumes:
-      - $HOME/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --syncmode "light" --cache 1024 --rpc
-
+      - "50051"
+      - "18888"
+    working_dir: /java-tron/build/libs
+    command: bash -c "java -jar java-tron.jar --witness"
     logging:
       options:
         max-size: "50m"
@@ -22,15 +23,15 @@ services:
         delay: 2s
         window: 20s
 
-  eth:
+  trx:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-eth
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eth
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tron/node/Dockerfile-trx
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_trx
+    depends_on:
+      - tron
     networks:
       - scrapers-network
-    depends_on: 
-      - geth
     logging:
       options:
         max-size: "50m"

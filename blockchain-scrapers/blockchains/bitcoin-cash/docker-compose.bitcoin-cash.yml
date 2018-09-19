@@ -1,17 +1,16 @@
 version: '3.2'
 
 services:
-  litecoin:
+  bitcoin-cash:
     image:
-      uphold/litecoin-core
+      uphold/bitcoin-abc
     ports:
-      - "9332"
+      - "8332"
     volumes:
-      - $HOME/srv/litecoin:/var/lib/litecoin
+      - $HOME/srv/bitcoin-cash:/var/lib/bitcoin-cash
     command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
-
     environment:
-      - LITECOIN_DATA=/var/lib/litecoin
+      - BITCOIN_ABC_DATA=/var/lib/bitcoin-cash
     logging:
       options:
         max-size: "50m"
@@ -23,11 +22,13 @@ services:
         delay: 2s
         window: 20s
         
-  ltc:
+  bch:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/litecoin/node/Dockerfile-ltc
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_ltc
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin-cash/node/Dockerfile-bch
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bch
+    depends_on:
+      - bitcoin-cash
     networks:
       - scrapers-network
     logging:

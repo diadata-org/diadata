@@ -25,11 +25,26 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-erc20
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_erc20
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_erc20
     command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
     networks:
       - scrapers-network
     depends_on:
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+  eth:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-eth
+    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eth
+    networks:
+      - scrapers-network
+    depends_on: 
       - geth
     logging:
       options:

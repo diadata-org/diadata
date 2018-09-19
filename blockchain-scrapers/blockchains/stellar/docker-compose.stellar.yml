@@ -1,11 +1,11 @@
 version: '3.2'
 
 services:
-  usdt:
+  xlm:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tether/node/Dockerfile-usdt
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_usdt
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/stellar/node/Dockerfile-xlm
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xlm
     networks:
       - scrapers-network
     logging:

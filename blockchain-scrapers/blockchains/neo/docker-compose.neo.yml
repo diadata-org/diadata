@@ -1,17 +1,14 @@
 version: '3.2'
 
 services:
-  tron:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tron/node/Dockerfile-tron
+  neonode:
     image:
-      ${DOCKER_HUB_LOGIN}/blockchain-scrapers_tron
+      bountyjs/neocli-mainnet
     ports:
-      - "50051"
-      - "18888"
-    working_dir: /java-tron/build/libs
-    command: bash -c "java -jar java-tron.jar --witness"
+      - "10332:10332"
+    volumes:
+      - $HOME/srv/neo:/app/Chain_00746E41
+    tty: true
     logging:
       options:
         max-size: "50m"
@@ -23,13 +20,11 @@ services:
         delay: 2s
         window: 20s
 
-  trx:
+  neo:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tron/node/Dockerfile-trx
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_trx
-    depends_on:
-      - tron
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/neo/node/Dockerfile-neo
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_neo
     networks:
       - scrapers-network
     logging:

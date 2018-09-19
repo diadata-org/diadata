@@ -9,3 +9,5 @@ main
 */config/secrets/*
 go.*
 *-workspace
+push.sh
+.idea

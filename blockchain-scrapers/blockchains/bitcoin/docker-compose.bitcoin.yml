@@ -1,14 +1,14 @@
 version: '3.2'
 
 services:
-  neonode:
+  bitcoin:
     image:
-      bountyjs/neocli-mainnet
+      kylemanna/bitcoind
     ports:
-      - "10332:10332"
+      - "8332"
     volumes:
-      - $HOME/srv/neo:/app/Chain_00746E41
-    tty: true
+      - $HOME/srv/bitcoin:/bitcoin
+    command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
         max-size: "50m"
@@ -20,11 +20,11 @@ services:
         delay: 2s
         window: 20s
 
-  neo:
+  btc:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/neo/node/Dockerfile-neo
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_neo
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile-btc
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_btc
     networks:
       - scrapers-network
     logging:
