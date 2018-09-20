@@ -2,8 +2,8 @@
 #set -x
 
 function usage {
-    echo "Usage: ./push.sh [-bdr] <service|all>"
-    echo "  Each flag corresponds to an operation and takes a single argument. Multiple operations can blockchain-scrapers specified in the same command and will be run in that order. The supported flags/operations are:"
+    echo "Usage: ./createStack.sh [-bdr] <service|all>"
+    echo "  Each flag corresponds to an operation and takes a single argument. Multiple operations can be specified in the same command and will be run in that order. The supported flags/operations are:"
     echo ""
     echo "  -b      builds an image for a service (builds everything when run with 'all')"
     echo "  -d      deploys a service in a stack with its name (deploys every service in a stack named 'all' when run with 'all')"
