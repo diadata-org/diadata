@@ -49,7 +49,7 @@ function build {
 		# build a particular service
 		*) 
 			(docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t "$DOCKER_HUB_LOGIN/${STACKNAME}_$1:latest" $GOPATH && 
-				echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
+				docker push $DOCKER_HUB_LOGIN/${STACKNAME}_$1 && echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
 			;;
 	esac
 }
