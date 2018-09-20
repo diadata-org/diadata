@@ -1,0 +1,46 @@
+version: '3.2'
+
+services:
+  dashd:
+    image:
+      dashpay/dashd
+    ports:
+      - "9998"
+    volumes:
+      - $HOME/srv/dash:/dash
+    command: dash_oneshot -printtoconsole -server -rpcuser=dashrpc -rpcpassword=dash_rpc_521d43b -rpcallowip=::/0
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  dash:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/dash/node/Dockerfile-dash
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_dash
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+    depends_on:
+      - dashd
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:

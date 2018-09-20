@@ -3,7 +3,7 @@
 
 function usage {
     echo "Usage: ./push.sh [-bdr] <service|all>"
-    echo "  Each flag corresponds to an operation and takes a single argument. Multiple operations can be specified in the same command and will be run in that order. The supported flags/operations are:"
+    echo "  Each flag corresponds to an operation and takes a single argument. Multiple operations can blockchain-scrapers specified in the same command and will be run in that order. The supported flags/operations are:"
     echo ""
     echo "  -b      builds an image for a service (builds everything when run with 'all')"
     echo "  -d      deploys a service in a stack with its name (deploys every service in a stack named 'all' when run with 'all')"
@@ -42,13 +42,13 @@ function build {
 	case $1 in
 		# build every service
 		all) 
-			find $blockchain_dir -name Dockerfile* -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/blockchain-scrapers_$(sed -n -e 's/^.*-//p' {}):latest $GOPATH" \;
+			find $blockchain_dir -name Dockerfile* -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/${STACKNAME}_$(sed -n -e 's/^.*-//p' {}):latest $GOPATH" \;
 			echo "Finished build" 1>&3			
 			;;
 
 		# build a particular service
 		*) 
-			(docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t "$DOCKER_HUB_LOGIN/blockchain-scrapers_$1:latest" $GOPATH && 
+			(docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t "$DOCKER_HUB_LOGIN/${STACKNAME}_$1:latest" $GOPATH && 
 				echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
 			;;
 	esac
@@ -78,7 +78,7 @@ export STACKNAME=blockchain-scrapers
 
 if [ ! -e $HOME/srv ]; then
 	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin  \
-		$HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo $HOME/srv/dash
+		$HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo $HOME/srv/dash $HOME/srv/dogecoin
 	sudo chmod -R 777 $HOME/srv
 fi
 
