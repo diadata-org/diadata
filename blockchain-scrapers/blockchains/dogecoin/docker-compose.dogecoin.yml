@@ -1,0 +1,44 @@
+version: '3.2'
+
+services:
+  dogecoin:
+    image:
+      joschua011/dogecoind-docker
+    ports:
+      - "22555"
+    volumes:
+      - $HOME/srv/dogecoin:/dogecoin
+    command: dogecoind -rpcuser=dogediauser -rpcpassword=dogediapassword -printtoconsole -server -rpcssl=0 -rpcport=22555 -rpcallowip=::/0
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  doge:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/dogecoin/node/Dockerfile-doge
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_doge
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:

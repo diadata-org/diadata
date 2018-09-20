@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	HOST = "bitcoin-cash"
-	PORT = 8332
-	USER        = "mysecretrpcdiauser"
-	PASSWD      = "njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E="
-	SYMBOL      = "BCH"
+	HOST 		= "dogecoin"
+	PORT 		= 22555
+	USER        = "dogediauser"
+	PASSWD      = "dogediapassword"
+	SYMBOL      = "DOGE"
 )
 
 func main() {
