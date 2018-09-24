@@ -33,6 +33,14 @@ All these data points can be used in Ethereum Smart Contracts.
 We provide oracles to use this information in any smart contract.
 The correctness of oracle data can always be verified by monitoring our off-chain realtime API and the data published in the oracle.
 
+## Methodology Documentation
+Currently, DIA collects several classes of data.
+Because of the very different nature of these classes, separate documentation exists for each of these different use cases.
+
+* [Exchange Scrapers](methodology/ExchangePrices.md) are the components that get trade data from various exchanges and use these trades to contruct average prices.
+* [Supply Scrapers](methodology/SupplyNumbers.md) are used to determine circulating supply numbers for cryptocurrency assets.
+This information varies for each currency and is highly specific.
+
 ## API access
 To access the API, visit TODO.
 
