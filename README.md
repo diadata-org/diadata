@@ -42,7 +42,12 @@ Because of the very different nature of these classes, separate documentation ex
 This information varies for each currency and is highly specific.
 
 ## API access
-To access the API, visit TODO.
+Our API is live at <https://api.diadata.org/v1/>.
+Several endpoints exist that show the different kind of data we collect:
+
+When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
+* Quotations for prices (SMA120) can be found at endpoint <https://api.diadata.org/v1/quotation/{TLA}>.
+* Supply data for crypto assets is located at <https://api.diadata.org/v1/supply/{TLA}>.
 
 ## How to contribute
 DIA is open for anyone to contribute and we always welcome pull requests.
