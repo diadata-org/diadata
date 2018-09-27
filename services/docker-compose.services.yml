@@ -1,0 +1,34 @@
+version: '3.2'
+services:
+
+  tradesblockservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/services/Dockerfile-tradesBlockService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_tradesblockservice:latest
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+  
+  filtersblockservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/services/Dockerfile-filtersBlockService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_filtersblockservice:latest
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network

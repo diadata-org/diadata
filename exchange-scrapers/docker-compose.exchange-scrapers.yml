@@ -1,0 +1,154 @@
+version: '3.2'
+services:
+
+  ecb:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-ecb
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ecb:latest
+    networks:
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+  hitbtccollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_hitbtccollector:latest
+    command: /bin/collector -exchange=HitBTC
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  gateiocollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_gateiocollector:latest
+    command: /bin/collector -exchange=GateIO
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  simexcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_simexcollector:latest
+    command: /bin/collector -exchange=Simex
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  lbankcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
+    command: /bin/collector -exchange=LBank
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  okexcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_okexcollector:latest
+    command: /bin/collector -exchange=OKEx
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  huobicollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_huobicollector:latest
+    command: /bin/collector -exchange=Huobi
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  coinbasecollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_coinbasecollector:latest
+    command: /bin/collector -exchange=CoinBase
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+
+  binancecollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binancecollector:latest
+    command: /bin/collector -exchange=Binance
+    networks:
+      - kafka-network
+    secrets:
+      - api_binance
+    logging:
+      options:
+        max-size: "50m"
+
+  bitfinexcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bitfinexcollector:latest
+    command: /bin/collector -exchange=Bitfinex
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_bitfinex
+
+  krakencollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_krakencollector:latest
+    command: /bin/collector -exchange=Kraken
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+secrets:
+  api_binance:
+    file: ../secrets/api_binance.json
+  api_bitfinex:
+    file: ../secrets/api_bitfinex.json
+  api_kraken:
+    file: ../secrets/api_kraken.json
+      
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network

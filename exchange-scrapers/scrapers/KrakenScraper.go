@@ -58,7 +58,7 @@ func neededBalanceAdjustement(current float64, minChange float64, desired float6
 
 func FloatToString(input_num float64) string {
 	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', 6, 64)
+	return strconv.FormatFloat(input_num, 'f', -1, 64)
 }
 
 // mainLoop runs in a goroutine until channel s is closed.

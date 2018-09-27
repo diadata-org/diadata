@@ -1,0 +1,20 @@
+# docker exec -it `docker ps | grep redis-server | cut -f1 -d\ ` redis-cli
+
+version: '3.2'
+services:
+
+  redis:
+    image: redis
+    volumes:
+      - /home/srv/redis:/data
+    networks:
+      - redis-network
+    entrypoint: redis-server --appendonly yes 
+    logging:
+      options:
+        max-size: "50m" 
+
+networks:
+  redis-network:
+    driver: overlay
+    attachable: true
