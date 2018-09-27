@@ -7,7 +7,7 @@ services:
     ports:
       - "8332"
     volumes:
-      - $HOME/srv/bitcoin:/bitcoin
+      - /home/srv/bitcoin:/bitcoin
     command: btc_oneshot -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
     logging:
       options:
@@ -22,9 +22,11 @@ services:
 
   btc:
     build:
+      context: ../../../..
+    build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin/node/Dockerfile-btc
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_btc
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_btc:latest
     networks:
       - scrapers-network
     logging:
@@ -35,7 +37,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: ../../../secrets/api_diadata.json
 
 volumes: 
   bitcoin:

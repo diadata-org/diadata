@@ -19,7 +19,7 @@ type Client struct {
 	lastSupplyUpdateValue float64
 }
 
-const baseURL string = "https://api.diadata.org/"
+const BaseUrl string = "https://api.diadata.org/"
 
 type response struct {
 	Token string
@@ -27,7 +27,7 @@ type response struct {
 
 func (c *Client) refresh() error {
 
-	url := baseURL + "auth/refresh_token"
+	url := BaseUrl + "auth/refresh_token"
 
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -53,7 +53,7 @@ func (c *Client) login() error {
 		Username string
 		Password string
 	}
-	url := baseURL + "login"
+	url := BaseUrl + "login"
 
 	jsonStr, err := json.Marshal(&login{
 		Username: c.config.ApiKey,
@@ -97,7 +97,7 @@ func GetConfigApi() *ConfigApi {
 	if err != nil {
 		usr, _ := user.Current()
 		dir := usr.HomeDir
-		configFile = dir + "/config/secrets/api_diadata.json"
+		configFile = dir + "/secrets/api_diadata.json"
 		err = gonfig.GetConf(configFile, &c)
 	}
 	if err != nil {
@@ -178,7 +178,7 @@ func (c *Client) sendSupply(s *Supply) error {
 		return err
 	}
 
-	url := baseURL + "v1/supply"
+	url := BaseUrl + "v1/supply"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 

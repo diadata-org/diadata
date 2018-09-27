@@ -1,0 +1,64 @@
+version: '3.2'
+services:
+
+  restserver:
+    ports:
+      - "8080:8080"
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/http/Dockerfile-restServer
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_restserver:latest
+    networks:
+      - kafka-network
+      - redis-network
+    secrets:
+      - api_diadata
+    logging:
+      options:
+        max-size: "50m"
+    volumes:
+      - /home/srv/restServer/charts:/charts
+
+  nginx:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/http/Dockerfile-nginx
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_nginx:latest
+    networks:
+      - kafka-network
+    ports:
+      - "443:443"
+      - "80:80"
+    secrets:
+      - api_diadata_ssl_certificate
+      - api_diadata_ssl_certificate_key
+      - d2_diadata_ssl_certificate
+      - d2_diadata_ssl_certificate_key
+      - htpassword
+    logging:
+      options:
+        max-size: "50m"
+    depends_on:
+      - restserver
+
+secrets:
+  api_diadata_ssl_certificate:
+    file: ../secrets/live/api.diadata.org/fullchain.pem
+  api_diadata_ssl_certificate_key:
+    file: ../secrets/live/api.diadata.org/privkey.pem
+  d2_diadata_ssl_certificate:
+    file: ../secrets/live/d2.diadata.org/fullchain.pem
+  d2_diadata_ssl_certificate_key:
+    file: ../secrets/live/d2.diadata.org/privkey.pem
+  api_diadata:
+    file: ../secrets/api_diadata.json
+  htpassword:
+    file: ../secrets/htpassword.nginx
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
