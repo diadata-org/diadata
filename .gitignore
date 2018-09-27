@@ -10,5 +10,4 @@ main
 secrets
 go.*
 *-workspace
-push.sh
 .idea
