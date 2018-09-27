@@ -1,0 +1,361 @@
+basePath: /
+definitions:
+  dia.FilterPoint:
+    properties:
+      name:
+        type: string
+      symbol:
+        type: string
+      time:
+        type: string
+      value:
+        type: number
+    type: object
+  dia.FiltersBlock:
+    properties:
+      blockHash:
+        type: string
+      filtersBlockData:
+        $ref: '#/definitions/dia.FiltersBlockData'
+        type: object
+    type: object
+  dia.FiltersBlockData:
+    properties:
+      beginTime:
+        type: string
+      endTime:
+        type: string
+      filterPoints:
+        items:
+          $ref: '#/definitions/dia.FilterPoint'
+        type: array
+      filtersBlockNumber:
+        type: integer
+      filtersNumber:
+        type: integer
+      tradesBlockHash:
+        type: string
+    type: object
+  dia.Supply:
+    properties:
+      circulatingSupply:
+        type: number
+      name:
+        type: string
+      source:
+        type: string
+      symbol:
+        type: string
+      time:
+        type: string
+    type: object
+  dia.Trade:
+    properties:
+      estimatedUSDPrice:
+        type: number
+      foreignTradeID:
+        type: string
+      pair:
+        type: string
+      price:
+        type: number
+      source:
+        type: string
+      symbol:
+        type: string
+      time:
+        type: string
+      volume:
+        type: number
+    type: object
+  dia.TradesBlock:
+    properties:
+      blockHash:
+        type: string
+      tradesBlockData:
+        $ref: '#/definitions/dia.TradesBlockData'
+        type: object
+    type: object
+  dia.TradesBlockData:
+    properties:
+      beginTime:
+        type: string
+      endTime:
+        type: string
+      trades:
+        items:
+          $ref: '#/definitions/dia.Trade'
+        type: array
+      tradesNumber:
+        type: integer
+    type: object
+  diaApi.Coin:
+    properties:
+      circulatingSupply:
+        type: number
+      name:
+        type: string
+      price:
+        type: number
+      priceYesterday:
+        type: number
+      symbol:
+        type: string
+      time:
+        type: string
+      volumeYesterdayUSD:
+        type: number
+    type: object
+  diaApi.Coins:
+    properties:
+      coins:
+        items:
+          $ref: '#/definitions/diaApi.Coin'
+        type: array
+    type: object
+  models.Quotation:
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      priceYesterday:
+        type: number
+      source:
+        type: string
+      symbol:
+        type: string
+      time:
+        type: string
+      volumeYesterdayUSD:
+        type: number
+    type: object
+  restApi.APIError:
+    properties:
+      errorcode:
+        type: integer
+      errormessage:
+        type: string
+    type: object
+host: api.diadata.org
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: GetTrades
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: diadata.org API
+  version: "1.0"
+paths:
+  /kafka/filtersBlock:
+    get:
+      consumes:
+      - application/json
+      description: GetFiltersBlock
+      parameters:
+      - description: offset, default is last
+        in: query
+        name: offset
+        type: integer
+      - description: number of elements
+        in: query
+        name: elements
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.FiltersBlock'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: GetFiltersBlock get messages in topic
+      tags:
+      - kafka
+  /kafka/trades:
+    get:
+      consumes:
+      - application/json
+      description: GetTrades
+      parameters:
+      - description: offset, default is last
+        in: query
+        name: offset
+        type: integer
+      - description: number of elements
+        in: query
+        name: elements
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.TradesBlock'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: GetTrades get messages in topic
+      tags:
+      - kafka
+  /kafka/tradesBlock:
+    get:
+      consumes:
+      - application/json
+      description: GetTradesBlock
+      parameters:
+      - description: offset, default is last
+        in: query
+        name: offset
+        type: integer
+      - description: number of elements
+        in: query
+        name: elements
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.TradesBlock'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: GetTradesBlock get messages in topic
+      tags:
+      - kafka
+  /v1/coins:
+    get:
+      consumes:
+      - application/json
+      description: GetCoins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/diaApi.Coins'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get coins
+      tags:
+      - dia
+  /v1/quotation/:
+    get:
+      consumes:
+      - application/json
+      description: GetQuotation
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/models.Quotation'
+            type: object
+        "404":
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get quotation
+      tags:
+      - dia
+  /v1/supply:
+    post:
+      consumes:
+      - application/json
+      description: Post the circulating supply
+      parameters:
+      - description: Coin symbol
+        in: query
+        name: Symbol
+        required: true
+        type: string
+      - description: number of coins in circulating supply
+        in: query
+        name: CirculatingSupply
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.Supply'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Post the circulating supply
+      tags:
+      - dia
+  /v1/supply/:
+    get:
+      consumes:
+      - application/json
+      description: GetSupply
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.Supply'
+            type: object
+        "404":
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get supply
+      tags:
+      - dia
+swagger: "2.0"

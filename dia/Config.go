@@ -3,7 +3,6 @@ package dia
 import (
 	"os/user"
 	"strings"
-
 	"github.com/tkanos/gonfig"
 )
 
@@ -19,6 +18,7 @@ const (
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
 	UnknownExchange  = "Unknown"
+	BlockSizeSeconds = 120
 )
 
 func Exchanges() []string {

@@ -197,7 +197,7 @@
     },
     {
       "Symbol": "EOS",
-      "ForeignName" : "EOSDAI",
+      "ForeignName" : "EOSUSD",
       "Exchange" : "HitBTC"
     },
     {
@@ -711,7 +711,7 @@
       "Exchange": "GateIO"
     },
     {
-      "Symbol": "IOTA",
+      "Symbol": "MIOTA",
       "ForeignName": "IOTA_USDT",
       "Exchange": "GateIO"
     },
