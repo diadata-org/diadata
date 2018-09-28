@@ -92,7 +92,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 			_, ok := newFiltersMap[filter.Name+filter.Symbol]
 			if !ok {
 				result = append(result, filter)
-				log.Printf("Adding", filter.Name+filter.Symbol)
+				log.Println("Adding", filter.Name+filter.Symbol)
 				missingPoints++
 			}
 		}
@@ -100,7 +100,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	if missingPoints != 0 {
 		log.Printf("Added %v missing point from previous block", missingPoints)
 	}
-	log.Info("result:", result)
+	log.Debug("result:", result)
 	return result
 }
 
@@ -163,14 +163,13 @@ func (s *Filters) processTradesBlock(tb *dia.TradesBlock) {
 		},
 	}
 
-	log.Printf("Generating Filters block %v (size:%v)", fb.FiltersBlockData.FiltersBlockNumber, fb.FiltersBlockData.FiltersNumber)
-
 	hash, err := structhash.Hash(fb.FiltersBlockData, 1)
 	if err != nil {
 		log.Printf("error on hash")
 		hash = "hashError"
 	}
 	fb.BlockHash = hash
+	log.Printf("Generating Filters block %v (size:%v)", hash, fb.FiltersBlockData.FiltersNumber)
 
 	//maForDia := "MA120"
 

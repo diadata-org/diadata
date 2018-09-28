@@ -96,7 +96,6 @@ services:
       options:
         max-size: "50m"
 
-
   binancecollector:
     build:
       context: ../../../..
@@ -131,6 +130,18 @@ services:
       dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_krakencollector:latest
     command: /bin/collector -exchange=Kraken
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
+
+  zbcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/api-golang/exchange-scrapers/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_zbcollector:latest
+    command: /bin/collector -exchange=ZB
     networks:
       - kafka-network
     logging:

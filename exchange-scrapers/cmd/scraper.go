@@ -64,7 +64,7 @@ func main() {
 
 		if *exchange == configPair.Exchange {
 
-			fmt.Println("Adding pair:", configPair.Symbol, " on exchange ", configPair.Exchange)
+			fmt.Println("Adding pair:", configPair.Symbol, "(", configPair.ForeignName, ") on exchange", configPair.Exchange)
 
 			_, ok := s[configPair.Exchange]
 			if ok == false {

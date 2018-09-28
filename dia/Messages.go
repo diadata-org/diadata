@@ -51,12 +51,11 @@ type FiltersBlock struct {
 }
 
 type FiltersBlockData struct {
-	FiltersBlockNumber int64
-	TradesBlockHash    string
-	BeginTime          time.Time
-	EndTime            time.Time
-	FilterPoints       []FilterPoint
-	FiltersNumber      int
+	TradesBlockHash string
+	BeginTime       time.Time
+	EndTime         time.Time
+	FilterPoints    []FilterPoint
+	FiltersNumber   int
 }
 
 type FilterPoint struct {

@@ -146,6 +146,14 @@ docker volume rm $(docker volume ls -qf dangling=true) 2> /dev/null
 docker system prune -f
 }
 
+showHelp() {
+	  echo "-s <stack>" >&2
+      echo "-c to use cache" >&2
+      echo "-d to deploy stack" >&2
+      echo "-r <machine> for remote" >&2
+      echo "-n <number> to build service <number> from stack" >&2
+}
+
 main() {
 
 while getopts "n:hr:dcws:" opt; do
@@ -174,10 +182,7 @@ while getopts "n:hr:dcws:" opt; do
       LINENUMBER=$OPTARG
       ;;
     h)
-      echo "-c to use cache" >&2
-      echo "-d to deploy stack" >&2
-      echo "-r for remote" >&2
-      echo "-n <x> for do x" >&2
+	  showHelp
       exit
       ;;
     r)
@@ -202,7 +207,8 @@ done
 
 if [ "$STACKNAME" == "" ]
 then
-	echo give -s option to choose stack
+	echo missing -s option to choose stack
+	showHelp
 	exit
 fi
 

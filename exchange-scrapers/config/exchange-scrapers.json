@@ -787,27 +787,12 @@
     },
     {
       "Symbol": "1ST",
-      "ForeignName": "1stqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "1ST",
       "ForeignName": "1stusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "AAA",
-      "ForeignName": "aaaqc",
       "Exchange": "ZB"
     },
     {
       "Symbol": "ADA",
       "ForeignName": "adabtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ADA",
-      "ForeignName": "adaqc",
       "Exchange": "ZB"
     },
     {
@@ -822,22 +807,12 @@
     },
     {
       "Symbol": "AE",
-      "ForeignName": "aeqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "AE",
       "ForeignName": "aeusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "BAT",
       "ForeignName": "batbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BAT",
-      "ForeignName": "batqc",
       "Exchange": "ZB"
     },
     {
@@ -852,27 +827,12 @@
     },
     {
       "Symbol": "BCC",
-      "ForeignName": "bccqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BCC",
       "ForeignName": "bccusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BCC",
-      "ForeignName": "bcczb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "BCD",
       "ForeignName": "bcdbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BCD",
-      "ForeignName": "bcdqc",
       "Exchange": "ZB"
     },
     {
@@ -887,22 +847,12 @@
     },
     {
       "Symbol": "BCW",
-      "ForeignName": "bcwqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BCW",
       "ForeignName": "bcwusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "BCX",
       "ForeignName": "bcxbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BCX",
-      "ForeignName": "bcxqc",
       "Exchange": "ZB"
     },
     {
@@ -916,23 +866,8 @@
       "Exchange": "ZB"
     },
     {
-      "Symbol": "BDS",
-      "ForeignName": "bdsqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BITCNY",
-      "ForeignName": "bitcnyqc",
-      "Exchange": "ZB"
-    },
-    {
       "Symbol": "BITE",
       "ForeignName": "bitebtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "btcqc",
       "Exchange": "ZB"
     },
     {
@@ -947,22 +882,12 @@
     },
     {
       "Symbol": "BTH",
-      "ForeignName": "bthqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTH",
       "ForeignName": "bthusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "BTM",
       "ForeignName": "btmbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTM",
-      "ForeignName": "btmqc",
       "Exchange": "ZB"
     },
     {
@@ -977,22 +902,12 @@
     },
     {
       "Symbol": "BTN",
-      "ForeignName": "btnqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTN",
       "ForeignName": "btnusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "BTP",
       "ForeignName": "btpbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTP",
-      "ForeignName": "btpqc",
       "Exchange": "ZB"
     },
     {
@@ -1007,27 +922,12 @@
     },
     {
       "Symbol": "BTS",
-      "ForeignName": "btsqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTS",
       "ForeignName": "btsusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "BTS",
-      "ForeignName": "btszb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "CDC",
       "ForeignName": "cdcbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "CDC",
-      "ForeignName": "cdcqc",
       "Exchange": "ZB"
     },
     {
@@ -1042,11 +942,6 @@
     },
     {
       "Symbol": "CHAT",
-      "ForeignName": "chatqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "CHAT",
       "ForeignName": "chatusdt",
       "Exchange": "ZB"
     },
@@ -1057,27 +952,12 @@
     },
     {
       "Symbol": "DASH",
-      "ForeignName": "dashqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "DASH",
       "ForeignName": "dashusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "dashzb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "DDM",
       "ForeignName": "ddmbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "DDM",
-      "ForeignName": "ddmqc",
       "Exchange": "ZB"
     },
     {
@@ -1092,22 +972,12 @@
     },
     {
       "Symbol": "DOGE",
-      "ForeignName": "dogeqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "DOGE",
       "ForeignName": "dogeusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "EDO",
       "ForeignName": "edobtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "EDO",
-      "ForeignName": "edoqc",
       "Exchange": "ZB"
     },
     {
@@ -1122,11 +992,6 @@
     },
     {
       "Symbol": "ENT",
-      "ForeignName": "entqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ENT",
       "ForeignName": "entusdt",
       "Exchange": "ZB"
     },
@@ -1137,27 +1002,12 @@
     },
     {
       "Symbol": "EOS",
-      "ForeignName": "eosqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "EOS",
       "ForeignName": "eosusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "eoszb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "EOSDAC",
       "ForeignName": "eosdacbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "EOSDAC",
-      "ForeignName": "eosdacqc",
       "Exchange": "ZB"
     },
     {
@@ -1171,28 +1021,13 @@
       "Exchange": "ZB"
     },
     {
-      "Symbol": "EPC",
-      "ForeignName": "epcqc",
-      "Exchange": "ZB"
-    },
-    {
       "Symbol": "ETC",
       "ForeignName": "etcbtc",
       "Exchange": "ZB"
     },
     {
       "Symbol": "ETC",
-      "ForeignName": "etcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ETC",
       "ForeignName": "etcusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "etczb",
       "Exchange": "ZB"
     },
     {
@@ -1202,27 +1037,12 @@
     },
     {
       "Symbol": "ETH",
-      "ForeignName": "ethqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ETH",
       "ForeignName": "ethusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ethzb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "FUN",
       "ForeignName": "funbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "FUN",
-      "ForeignName": "funqc",
       "Exchange": "ZB"
     },
     {
@@ -1237,22 +1057,12 @@
     },
     {
       "Symbol": "GNT",
-      "ForeignName": "gntqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "GNT",
       "ForeignName": "gntusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "GRAM",
       "ForeignName": "grambtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "GRAM",
-      "ForeignName": "gramqc",
       "Exchange": "ZB"
     },
     {
@@ -1267,22 +1077,12 @@
     },
     {
       "Symbol": "HLC",
-      "ForeignName": "hlcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "HLC",
       "ForeignName": "hlcusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "HOTC",
       "ForeignName": "hotcbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "HOTC",
-      "ForeignName": "hotcqc",
       "Exchange": "ZB"
     },
     {
@@ -1297,11 +1097,6 @@
     },
     {
       "Symbol": "HPY",
-      "ForeignName": "hpyqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "HPY",
       "ForeignName": "hpyusdt",
       "Exchange": "ZB"
     },
@@ -1312,27 +1107,12 @@
     },
     {
       "Symbol": "HSR",
-      "ForeignName": "hsrqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "HSR",
       "ForeignName": "hsrusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "HSR",
-      "ForeignName": "hsrzb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "ICX",
       "ForeignName": "icxbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ICX",
-      "ForeignName": "icxqc",
       "Exchange": "ZB"
     },
     {
@@ -1347,22 +1127,12 @@
     },
     {
       "Symbol": "INK",
-      "ForeignName": "inkqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "INK",
       "ForeignName": "inkusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "KAN",
       "ForeignName": "kanbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "KAN",
-      "ForeignName": "kanqc",
       "Exchange": "ZB"
     },
     {
@@ -1377,22 +1147,12 @@
     },
     {
       "Symbol": "KNC",
-      "ForeignName": "kncqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "KNC",
       "ForeignName": "kncusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "LBTC",
       "ForeignName": "lbtcbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "LBTC",
-      "ForeignName": "lbtcqc",
       "Exchange": "ZB"
     },
     {
@@ -1407,27 +1167,12 @@
     },
     {
       "Symbol": "LTC",
-      "ForeignName": "ltcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "LTC",
       "ForeignName": "ltcusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "ltczb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "MANA",
       "ForeignName": "manabtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "MANA",
-      "ForeignName": "manaqc",
       "Exchange": "ZB"
     },
     {
@@ -1442,22 +1187,12 @@
     },
     {
       "Symbol": "MCO",
-      "ForeignName": "mcoqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "MCO",
       "ForeignName": "mcousdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "MITH",
       "ForeignName": "mithbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "MITH",
-      "ForeignName": "mithqc",
       "Exchange": "ZB"
     },
     {
@@ -1472,22 +1207,12 @@
     },
     {
       "Symbol": "MTL",
-      "ForeignName": "mtlqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "MTL",
       "ForeignName": "mtlusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "NEO",
       "ForeignName": "neobtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "neoqc",
       "Exchange": "ZB"
     },
     {
@@ -1502,17 +1227,7 @@
     },
     {
       "Symbol": "OMG",
-      "ForeignName": "omgqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "OMG",
       "ForeignName": "omgusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "PDX",
-      "ForeignName": "pdxqc",
       "Exchange": "ZB"
     },
     {
@@ -1522,27 +1237,12 @@
     },
     {
       "Symbol": "QTUM",
-      "ForeignName": "qtumqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "QTUM",
       "ForeignName": "qtumusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "qtumzb",
       "Exchange": "ZB"
     },
     {
       "Symbol": "QUN",
       "ForeignName": "qunbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "QUN",
-      "ForeignName": "qunqc",
       "Exchange": "ZB"
     },
     {
@@ -1557,22 +1257,12 @@
     },
     {
       "Symbol": "RCN",
-      "ForeignName": "rcnqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "RCN",
       "ForeignName": "rcnusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "SAFE",
       "ForeignName": "safebtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "SAFE",
-      "ForeignName": "safeqc",
       "Exchange": "ZB"
     },
     {
@@ -1587,22 +1277,12 @@
     },
     {
       "Symbol": "SBTC",
-      "ForeignName": "sbtcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "SBTC",
       "ForeignName": "sbtcusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "SLT",
       "ForeignName": "sltbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "SLT",
-      "ForeignName": "sltqc",
       "Exchange": "ZB"
     },
     {
@@ -1617,22 +1297,12 @@
     },
     {
       "Symbol": "SNT",
-      "ForeignName": "sntqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "SNT",
       "ForeignName": "sntusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "SUB",
       "ForeignName": "subbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "SUB",
-      "ForeignName": "subqc",
       "Exchange": "ZB"
     },
     {
@@ -1647,22 +1317,12 @@
     },
     {
       "Symbol": "TOPC",
-      "ForeignName": "topcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "TOPC",
       "ForeignName": "topcusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "TRUE",
       "ForeignName": "truebtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "TRUE",
-      "ForeignName": "trueqc",
       "Exchange": "ZB"
     },
     {
@@ -1677,11 +1337,6 @@
     },
     {
       "Symbol": "TV",
-      "ForeignName": "tvqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "TV",
       "ForeignName": "tvusdt",
       "Exchange": "ZB"
     },
@@ -1692,27 +1347,12 @@
     },
     {
       "Symbol": "UBTC",
-      "ForeignName": "ubtcqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "UBTC",
       "ForeignName": "ubtcusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "USDT",
-      "ForeignName": "usdtqc",
       "Exchange": "ZB"
     },
     {
       "Symbol": "XEM",
       "ForeignName": "xembtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "XEM",
-      "ForeignName": "xemqc",
       "Exchange": "ZB"
     },
     {
@@ -1727,11 +1367,6 @@
     },
     {
       "Symbol": "XLM",
-      "ForeignName": "xlmqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "XLM",
       "ForeignName": "xlmusdt",
       "Exchange": "ZB"
     },
@@ -1742,17 +1377,7 @@
     },
     {
       "Symbol": "XRP",
-      "ForeignName": "xrpqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "XRP",
       "ForeignName": "xrpusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "xrpzb",
       "Exchange": "ZB"
     },
     {
@@ -1761,18 +1386,8 @@
       "Exchange": "ZB"
     },
     {
-      "Symbol": "XUC",
-      "ForeignName": "xucqc",
-      "Exchange": "ZB"
-    },
-    {
       "Symbol": "XWC",
       "ForeignName": "xwcbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "XWC",
-      "ForeignName": "xwcqc",
       "Exchange": "ZB"
     },
     {
@@ -1787,22 +1402,12 @@
     },
     {
       "Symbol": "ZB",
-      "ForeignName": "zbqc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ZB",
       "ForeignName": "zbusdt",
       "Exchange": "ZB"
     },
     {
       "Symbol": "ZRX",
       "ForeignName": "zrxbtc",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "zrxqc",
       "Exchange": "ZB"
     },
     {
