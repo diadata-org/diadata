@@ -7,14 +7,17 @@ import (
 	"github.com/diadata-org/api-golang/dia/helpers/configCollectors"
 	"github.com/diadata-org/api-golang/services/model"
 	log "github.com/sirupsen/logrus"
-	"math"
 	"sync"
 	"time"
 )
 
+const (
+	filtersParam = dia.BlockSizeSeconds
+)
+
 type nothing struct{}
 
-type Filters struct {
+type FiltersBlockService struct {
 	shutdown             chan nothing
 	shutdownDone         chan nothing
 	chanTradesBlock      chan *dia.TradesBlock
@@ -24,22 +27,22 @@ type Filters struct {
 	closed               bool
 	started              bool
 	currentTime          time.Time
-	filters              map[string]*Filter
+	filters              map[string]Filter
 	lastLog              time.Time
 	calculationValues    []int
 	previousBlockFilters []dia.FilterPoint
 	datastore            models.Datastore
 }
 
-func NewFilters(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *Filters {
-	s := &Filters{
+func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *FiltersBlockService {
+	s := &FiltersBlockService{
 		shutdown:             make(chan nothing),
 		shutdownDone:         make(chan nothing),
 		chanTradesBlock:      make(chan *dia.TradesBlock),
 		chanFiltersBlock:     chanFiltersBlock,
 		error:                nil,
 		started:              false,
-		filters:              make(map[string]*Filter),
+		filters:              make(map[string]Filter),
 		lastLog:              time.Now(),
 		calculationValues:    make([]int, 0),
 		previousBlockFilters: previousBlockFilters,
@@ -50,11 +53,11 @@ func NewFilters(previousBlockFilters []dia.FilterPoint, datastore models.Datasto
 	return s
 }
 
-func (s *Filters) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
+func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
 	s.chanTradesBlock <- tradesBlock
 }
 
-func (s *Filters) Close() error {
+func (s *FiltersBlockService) Close() error {
 	if s.closed {
 		return errors.New("Filters: Already closed")
 	}
@@ -64,7 +67,7 @@ func (s *Filters) Close() error {
 }
 
 // must only be called from mainLoop
-func (s *Filters) cleanup(err error) {
+func (s *FiltersBlockService) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 
@@ -104,48 +107,23 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	return result
 }
 
-func (s *Filters) processTradesBlockForVolumes(tb *dia.TradesBlock) {
-	var volumes = make(map[string]float64)
-	log.Info("processTradesBlock")
-	for _, trade := range tb.TradesBlockData.Trades {
-		f, ok := volumes[trade.Symbol]
-		if !ok {
-			volumes[trade.Symbol] = 0.0
-		}
-		volumes[trade.Symbol] = f + trade.EstimatedUSDPrice*math.Abs(trade.Volume)
-	}
-
-	for symbol, value := range volumes {
-		err := s.datastore.SetVolume(symbol, value)
-		if err != nil {
-			log.Printf("Error: %v\n", err)
-		}
-	}
-
-}
-
-func (s *Filters) processTradesBlock(tb *dia.TradesBlock) {
+func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	for _, trade := range tb.TradesBlockData.Trades {
 		f, ok := s.filters[trade.Symbol]
 		if !ok {
-			f = NewFilter(s.calculationValues, trade.Symbol, tb.TradesBlockData.BeginTime, trade.EstimatedUSDPrice)
-			log.Info("create filter ", trade.Symbol)
+			f = NewFilterMA(trade.Symbol, tb.TradesBlockData.BeginTime, filtersParam)
 			s.filters[trade.Symbol] = f
+			f2 := NewFilterVolume(trade.Symbol, tb.TradesBlockData.BeginTime, filtersParam)
+			s.filters[trade.Symbol] = f2
 		}
-
-		f.ProcessTrade(&trade)
+		f.compute(&trade)
 	}
+
 	resultFilters := []dia.FilterPoint{}
 	for _, filter := range s.filters {
-		filter.calculateMAs(tb.TradesBlockData.EndTime)
-		for key, result := range filter.Results {
-			resultFilters = append(resultFilters, dia.FilterPoint{
-				Symbol: filter.Symbol,
-				Value:  result,
-				Name:   key,
-				Time:   tb.TradesBlockData.EndTime,
-			})
+		if filter.copyToFilterBlock() {
+			resultFilters = append(resultFilters, filter.filterPoint(tb.TradesBlockData.EndTime))
 		}
 	}
 
@@ -171,28 +149,16 @@ func (s *Filters) processTradesBlock(tb *dia.TradesBlock) {
 	fb.BlockHash = hash
 	log.Printf("Generating Filters block %v (size:%v)", hash, fb.FiltersBlockData.FiltersNumber)
 
-	//maForDia := "MA120"
-
 	if len(resultFilters) != 0 {
 		s.chanFiltersBlock <- fb
-		for _, f := range fb.FiltersBlockData.FilterPoints {
-			//if f.Name == maForDia {
-			err := s.datastore.SetPriceUSD(f.Symbol, f.Value)
-			if err != nil {
-				log.Error("Error: %v\n", err)
-			}
-
-			err = s.datastore.SetPriceZSET(f.Symbol, f.Value)
-			if err != nil {
-				log.Error("Error: %v\n", err)
-			}
-			//	}
+		for _, filter := range s.filters {
+			filter.save(s.datastore)
 		}
 	}
 }
 
 // runs in a goroutine until s is closed
-func (s *Filters) mainLoop() {
+func (s *FiltersBlockService) mainLoop() {
 	for {
 		select {
 		case <-s.shutdown:
@@ -201,7 +167,6 @@ func (s *Filters) mainLoop() {
 			return
 		case tb, _ := <-s.chanTradesBlock:
 			s.processTradesBlock(tb)
-			s.processTradesBlockForVolumes(tb)
 		}
 	}
 }
