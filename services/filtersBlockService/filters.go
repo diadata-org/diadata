@@ -50,7 +50,7 @@ func main() {
 		log.Error(err)
 	}
 
-	f := filters.NewFilters(loadFilterPointsFromPreviousBlock(), s, channel)
+	f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
 	go handler(channel, &wg, w)
 	for {

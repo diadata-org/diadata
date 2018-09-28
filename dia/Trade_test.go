@@ -20,4 +20,10 @@ func TestTrade(t *testing.T) {
 	if trade3.SecondPair() != "USDT" {
 		t.Errorf("error secondpair %v", trade.SecondPair())
 	}
+
+	trade4 := &Trade{Symbol: "ZB", Pair: "zbusdt"}
+	if trade4.SecondPair() != "USDT" {
+		t.Errorf("error secondpair %v", trade.SecondPair())
+	}
+
 }

@@ -6,34 +6,36 @@ import (
 
 func (t *Trade) SecondPair() string {
 
-	if len(t.Pair) == 6 {
-		return t.Pair[len(t.Pair)-3:]
-	}
+	pair := strings.ToUpper(t.Pair)
 
-	if t.Pair[len(t.Pair)-4:] == "USDT" {
+	if pair[len(pair)-4:] == "USDT" {
 		return "USDT"
 	}
 
-	if t.Pair[len(t.Pair)-3:] == "EUR" {
+	if pair[len(pair)-3:] == "EUR" {
 		return "EUR"
 	}
 
-	if t.Pair[len(t.Pair)-3:] == "USD" {
+	if pair[len(pair)-3:] == "USD" {
 		return "USD"
 	}
 
-	if t.Pair[len(t.Pair)-3:] == "ETH" {
+	if pair[len(pair)-3:] == "ETH" {
 		return "ETH"
 	}
 
-	if t.Pair[len(t.Pair)-3:] == "BTC" {
+	if pair[len(pair)-3:] == "BTC" {
 		return "BTC"
 	}
 
-	second := strings.TrimPrefix(t.Pair, t.Symbol+"_")
-	if second != t.Pair {
+	if len(pair) == 6 {
+		return pair[len(pair)-3:]
+	}
+
+	second := strings.TrimPrefix(pair, t.Symbol+"_")
+	if second != pair {
 		return second
 	}
 
-	return strings.TrimPrefix(t.Pair, t.Symbol)
+	return strings.TrimPrefix(pair, t.Symbol)
 }

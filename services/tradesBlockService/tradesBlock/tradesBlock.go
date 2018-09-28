@@ -4,43 +4,41 @@ import (
 	"errors"
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/services/model"
 	log "github.com/sirupsen/logrus"
 	"sort"
 	"sync"
 	"time"
-	"github.com/diadata-org/api-golang/services/model"
-
 )
 
 type nothing struct{}
 
 type TradesBlockService struct {
-	pair                string
-	shutdown            chan nothing
-	shutdownDone        chan nothing
-	chanTrades          chan *dia.Trade
-	chanTradesBlock     chan *dia.TradesBlock
-	errorLock           sync.RWMutex
-	error               error
-	closed              bool
-	started             bool
-	BlockDuration       int64
-	currentBlock        *dia.TradesBlock
-    datastore           models.Datastore
+	pair            string
+	shutdown        chan nothing
+	shutdownDone    chan nothing
+	chanTrades      chan *dia.Trade
+	chanTradesBlock chan *dia.TradesBlock
+	errorLock       sync.RWMutex
+	error           error
+	closed          bool
+	started         bool
+	BlockDuration   int64
+	currentBlock    *dia.TradesBlock
+	datastore       models.Datastore
 }
 
 func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *TradesBlockService {
 	s := &TradesBlockService{
-		shutdown:            make(chan nothing),
-		shutdownDone:        make(chan nothing),
-		chanTrades:          make(chan *dia.Trade),
-		chanTradesBlock:     make(chan *dia.TradesBlock),
-		error:               nil,
-		started:             false,
-		currentBlock:        nil,
-		BlockDuration:       blockDuration,
-		datastore:           datastore,
-
+		shutdown:        make(chan nothing),
+		shutdownDone:    make(chan nothing),
+		chanTrades:      make(chan *dia.Trade),
+		chanTradesBlock: make(chan *dia.TradesBlock),
+		error:           nil,
+		started:         false,
+		currentBlock:    nil,
+		BlockDuration:   blockDuration,
+		datastore:       datastore,
 	}
 	go s.mainLoop()
 	return s
@@ -75,7 +73,6 @@ func (ps *TradesBlockService) Channel() chan *dia.TradesBlock {
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
-	log.Printf("finaliseCurrentBlock")
 
 	sort.Slice(s.currentBlock.TradesBlockData.Trades, func(i, j int) bool {
 		return s.currentBlock.TradesBlockData.Trades[i].Time.Before(s.currentBlock.TradesBlockData.Trades[j].Time)
@@ -98,7 +95,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	if secondPair != "USD" {
 		val, err := s.datastore.GetPriceUSD(secondPair)
 		if err != nil {
-			log.Printf("redisClient error %v", err)
+			log.Error("redisClient error ", err, " ignoring ", t)
 			ignoreTrade = true
 		} else {
 			t.EstimatedUSDPrice = t.Price * val
@@ -109,7 +106,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	if s.currentBlock != nil &&
 		s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
-		log.Printf("ignore trade should be in previous block %v", t)
+		log.Debug("ignore trade should be in previous block %v", t)
 		ignoreTrade = true
 	}
 
@@ -122,9 +119,9 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 			b := &dia.TradesBlock{
 				TradesBlockData: dia.TradesBlockData{
-					Trades:            []dia.Trade{},
-					EndTime:           time.Unix((t.Time.Unix()/s.BlockDuration)*s.BlockDuration+s.BlockDuration, 0),
-					BeginTime:         time.Unix((t.Time.Unix()/s.BlockDuration)*s.BlockDuration, 0),
+					Trades:    []dia.Trade{},
+					EndTime:   time.Unix((t.Time.Unix()/s.BlockDuration)*s.BlockDuration+s.BlockDuration, 0),
+					BeginTime: time.Unix((t.Time.Unix()/s.BlockDuration)*s.BlockDuration, 0),
 				},
 			}
 
@@ -134,7 +131,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {
-		log.Printf("ignore trade  %v", t)
+		log.Debug("ignore trade  %v", t)
 	}
 }
 
