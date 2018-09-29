@@ -42,7 +42,7 @@ Because of the very different nature of these classes, separate documentation ex
 This information varies for each currency and is highly specific.
 
 ## API access
-Our API is live at <https://api.diadata.org/swagger/index.html>.
+Our API is live at https://api.diadata.org/v1 [swagger](https://api.diadata.org/swagger/index.html).
 Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
