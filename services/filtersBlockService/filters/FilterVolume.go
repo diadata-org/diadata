@@ -11,15 +11,17 @@ import (
 
 type FilterVolume struct {
 	symbol      string
+	key         string
 	currentTime time.Time
 	volumeUSD   float64
 	param       int
 	lastTrade   *dia.Trade
 }
 
-func NewFilterVolume(symbol string, currentTime time.Time, param int) *FilterVolume {
+func NewFilterVolume(symbol string, key string, currentTime time.Time, param int) *FilterVolume {
 	s := &FilterVolume{
 		symbol:      symbol,
+		key:         "VOL" + strconv.Itoa(param) + "_" + key,
 		param:       param, // TOFIX currently hardcoded on blocksize
 		volumeUSD:   0.0,
 		currentTime: currentTime,
@@ -42,7 +44,8 @@ func (s *FilterVolume) compute(trade *dia.Trade) {
 }
 
 func (s *FilterVolume) save(ds models.Datastore) error {
-	err := ds.SetVolume(s.symbol, s.volumeUSD)
+
+	err := ds.SetVolume(s.key, s.volumeUSD)
 	if err != nil {
 		log.Error("Error: %v\n", err)
 	}
