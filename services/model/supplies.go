@@ -1,9 +1,9 @@
 package models
 
 import (
-	"strings"
-	log "github.com/sirupsen/logrus"
 	"github.com/diadata-org/api-golang/dia"
+	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 func getKeySupply(value string) string {
@@ -13,7 +13,7 @@ func getKeySupply(value string) string {
 func (db *DB) SymbolsWithASupply() ([]string, error) {
 	var result []string
 	var cursor uint64
-	key := getKeySupply("") 
+	key := getKeySupply("")
 	for {
 		var keys []string
 		var err error

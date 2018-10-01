@@ -12,7 +12,7 @@ func TestFilterMa(t *testing.T) {
 	firstPrice := 50.0
 
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMA("test", d, filterParam)
+	f := NewFilterMA("test", "hello", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0
@@ -48,7 +48,7 @@ func TestFilterMa2(t *testing.T) {
 	firstPrice := 50.0
 
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMA("test", d, filterParam)
+	f := NewFilterMA("test", "hello", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0

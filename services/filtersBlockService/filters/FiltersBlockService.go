@@ -27,7 +27,7 @@ type FiltersBlockService struct {
 	closed               bool
 	started              bool
 	currentTime          time.Time
-	filters              map[string]Filter
+	filters              map[string][]Filter
 	lastLog              time.Time
 	calculationValues    []int
 	previousBlockFilters []dia.FilterPoint
@@ -42,13 +42,14 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 		chanFiltersBlock:     chanFiltersBlock,
 		error:                nil,
 		started:              false,
-		filters:              make(map[string]Filter),
+		filters:              make(map[string][]Filter),
 		lastLog:              time.Now(),
 		calculationValues:    make([]int, 0),
 		previousBlockFilters: previousBlockFilters,
 		datastore:            datastore,
 	}
 	s.calculationValues = append(s.calculationValues, dia.BlockSizeSeconds)
+
 	go s.mainLoop()
 	return s
 }
@@ -107,23 +108,35 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	return result
 }
 
+func (s *FiltersBlockService) createFilters(symbol string, key string, BeginTime time.Time) {
+	_, ok := s.filters[key]
+	if !ok {
+		s.filters[key] = []Filter{NewFilterMA(symbol, key, BeginTime, filtersParam),
+			NewFilterVolume(symbol, key, BeginTime, filtersParam)}
+	}
+}
+
+func (s *FiltersBlockService) computeFilters(t *dia.Trade, key string) {
+	for _, f := range s.filters[key] {
+		f.compute(t)
+	}
+}
+
 func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	for _, trade := range tb.TradesBlockData.Trades {
-		f, ok := s.filters[trade.Symbol]
-		if !ok {
-			f = NewFilterMA(trade.Symbol, tb.TradesBlockData.BeginTime, filtersParam)
-			s.filters[trade.Symbol] = f
-			f2 := NewFilterVolume(trade.Symbol, tb.TradesBlockData.BeginTime, filtersParam)
-			s.filters[trade.Symbol] = f2
-		}
-		f.compute(&trade)
+		s.createFilters(trade.Symbol, trade.Symbol, tb.TradesBlockData.BeginTime)
+		s.createFilters(trade.Symbol, trade.Symbol+"_"+trade.Source, tb.TradesBlockData.BeginTime)
+		s.computeFilters(&trade, trade.Symbol)
+		s.computeFilters(&trade, trade.Symbol+"_"+trade.Source)
 	}
 
 	resultFilters := []dia.FilterPoint{}
-	for _, filter := range s.filters {
-		if filter.copyToFilterBlock() {
-			resultFilters = append(resultFilters, filter.filterPoint(tb.TradesBlockData.EndTime))
+	for _, filters := range s.filters {
+		for _, f := range filters {
+			if f.copyToFilterBlock() {
+				resultFilters = append(resultFilters, f.filterPoint(tb.TradesBlockData.EndTime))
+			}
 		}
 	}
 
@@ -151,8 +164,10 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	if len(resultFilters) != 0 {
 		s.chanFiltersBlock <- fb
-		for _, filter := range s.filters {
-			filter.save(s.datastore)
+		for _, filters := range s.filters {
+			for _, f := range filters {
+				f.save(s.datastore)
+			}
 		}
 	}
 }
