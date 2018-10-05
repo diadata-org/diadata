@@ -53,8 +53,8 @@ func NewDataStore() (*DB, error) {
 	return &DB{db}, nil
 }
 
-func getKey(symbol string, exchange string) string {
-	key := volumeKey + "_" + symbol
+func getKey(filter string, symbol string, exchange string) string {
+	key := filter + "_" + symbol
 	if exchange != "" {
 		key = key + "_" + exchange
 	}

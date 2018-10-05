@@ -15,7 +15,7 @@ var (
 )
 
 func (db *DB) SetVolume(symbol string, exchange string, volume float64) error {
-	err := db.setZSETValue(getKeyFilterZSET(getKey(symbol, exchange)), volume, time.Now().Unix(), WindowVolume)
+	err := db.setZSETValue(getKeyFilterZSET(getKey(volumeKey, symbol, exchange)), volume, time.Now().Unix(), WindowVolume)
 	return err
 }
 

@@ -5,7 +5,7 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/dia/helpers/configCollectors"
-	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"

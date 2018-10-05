@@ -2,7 +2,7 @@ package filters
 
 import (
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -43,7 +43,6 @@ func (s *FilterMA) finalComputeEndOfBlock(t time.Time) {
 	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
 		div = len(s.previousPrices)
 	}
-	log.Info(s.previousPrices)
 	s.value = total / float64(div)
 }
 
@@ -71,7 +70,6 @@ func (s *FilterMA) fill(t time.Time, price float64) {
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]
-				//s.previousPrices = s.previousPrices[0:s.param]
 			}
 		}
 		s.previousPrices = append([]float64{price}, s.previousPrices...)
@@ -96,6 +94,7 @@ func (s *FilterMA) compute(trade dia.Trade) {
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {
+
 	err := ds.SetPriceZSET(s.symbol, s.exchange, s.value)
 	if err != nil {
 		log.Errorln("FilterMA: Error:", err)

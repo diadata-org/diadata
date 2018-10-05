@@ -7,7 +7,7 @@ import (
 	_ "github.com/diadata-org/api-golang/docs"
 	"github.com/diadata-org/api-golang/http/restServer/diaApi"
 	"github.com/diadata-org/api-golang/http/restServer/kafkaApi"
-	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/model"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
