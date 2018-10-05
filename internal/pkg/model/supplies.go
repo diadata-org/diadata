@@ -2,8 +2,10 @@ package models
 
 import (
 	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"strings"
+	"time"
 )
 
 func getKeySupply(value string) string {
@@ -11,7 +13,7 @@ func getKeySupply(value string) string {
 }
 
 func (db *DB) SymbolsWithASupply() ([]string, error) {
-	var result []string
+	result := []string{"MIOTA"}
 	var cursor uint64
 	key := getKeySupply("")
 	for {
@@ -33,14 +35,25 @@ func (db *DB) SymbolsWithASupply() ([]string, error) {
 }
 
 func (a *DB) GetSupply(symbol string) (*dia.Supply, error) {
-	key := getKeySupply(symbol)
-	value := &dia.Supply{}
-	err := a.redisClient.Get(key).Scan(value)
-	if err != nil {
-		log.Printf("Error: %v on GetSupply %v\n", err, symbol)
-		return nil, err
+	switch symbol {
+	case "MIOTA":
+		return &dia.Supply{
+			Symbol:            "MIOTA",
+			CirculatingSupply: 2779530283.0,
+			Name:              helpers.NameForSymbol("MIOTA"),
+			Time:              time.Now(),
+			Source:            dia.Diadata,
+		}, nil
+	default:
+		key := getKeySupply(symbol)
+		value := &dia.Supply{}
+		err := a.redisClient.Get(key).Scan(value)
+		if err != nil {
+			log.Printf("Error: %v on GetSupply %v\n", err, symbol)
+			return nil, err
+		}
+		return value, err
 	}
-	return value, err
 }
 
 func (a *DB) SetSupply(supply *dia.Supply) error {

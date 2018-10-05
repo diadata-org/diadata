@@ -52,7 +52,7 @@ func main() {
 
 	var configConnector dia.ConfigConnector
 
-	configFile := os.Getenv("GOPATH") + "/go/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
+	configFile := os.Getenv("GOPATH") + "/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
 	err := gonfig.GetConf(configFile, &configConnector)
 
 	if err != nil {
