@@ -184,6 +184,37 @@
                 }
             }
         },
+        "/v1/pairs/": {
+            "get": {
+                "description": "et pairs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get pairs",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/diaApi.Pairs"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/quotation/": {
             "get": {
                 "description": "GetQuotation",
@@ -324,6 +355,53 @@
                     }
                 }
             }
+        },
+        "/v1/symbol/": {
+            "get": {
+                "description": "Get Symbol Details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get Symbol Details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Some symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/diaApi.SymbolDetails"
+                        }
+                    },
+                    "404": {
+                        "description": "Symbol not found",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -371,13 +449,24 @@
                         "$ref": "#/definitions/dia.FilterPoint"
                     }
                 },
-                "filtersBlockNumber": {
-                    "type": "integer"
-                },
                 "filtersNumber": {
                     "type": "integer"
                 },
                 "tradesBlockHash": {
+                    "type": "string"
+                }
+            }
+        },
+        "dia.Pair": {
+            "type": "object",
+            "properties": {
+                "exchange": {
+                    "type": "string"
+                },
+                "foreignName": {
+                    "type": "string"
+                },
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -497,6 +586,29 @@
                     "items": {
                         "$ref": "#/definitions/diaApi.Coin"
                     }
+                }
+            }
+        },
+        "diaApi.Pairs": {
+            "type": "object",
+            "properties": {
+                "pairs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dia.Pair"
+                    }
+                }
+            }
+        },
+        "diaApi.SymbolDetails": {
+            "type": "object",
+            "properties": {
+                "coin": {
+                    "type": "object",
+                    "$ref": "#/definitions/diaApi.Coin"
+                },
+                "exchanges": {
+                    "type": "object"
                 }
             }
         },

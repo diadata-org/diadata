@@ -6,7 +6,7 @@ import (
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/dia/helpers"
 	"github.com/diadata-org/api-golang/http/restApi"
-	"github.com/diadata-org/api-golang/services/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -115,6 +115,79 @@ func (env *Env) GetSupply(c *gin.Context) {
 	}
 }
 
+// GetPairs godoc
+// @Summary Get pairs
+// @Description et pairs
+// @Tags dia
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} diaApi.Pairs "success"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/pairs/ [get]
+func (env *Env) GetPairs(c *gin.Context) {
+	p, err := env.DataStore.GetPairs("")
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, &Pairs{Pairs: p})
+	}
+}
+
+// GetSymbol godoc
+// @Summary Get Symbol Details
+// @Description Get Symbol Details
+// @Tags dia
+// @Accept  json
+// @Produce  json
+// @Param   symbol     path    string     true        "Some symbol"
+// @Success 200 {object} diaApi.SymbolDetails "success"
+// @Failure 404 {object} restApi.APIError "Symbol not found"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/symbol/:symbol: [get]
+func (env *Env) GetSymbolDetails(c *gin.Context) {
+	symbol := c.Param("symbol")
+
+	q, err := env.DataStore.GetQuotation(symbol)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+
+		r := &SymbolDetails{
+			Coin: Coin{
+				Symbol:             q.Symbol,
+				Name:               q.Name,
+				Price:              q.Price,
+				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
+				Time:               q.Time,
+				PriceYesterday:     q.PriceYesterday,
+			},
+			Exchanges: make(map[string]models.SymbolExchangeDetails),
+		}
+
+		s, err := env.DataStore.GetSupply(symbol)
+		if err == nil {
+			r.Coin.CirculatingSupply = &s.CirculatingSupply
+		}
+
+		exs, err := env.DataStore.GetExchangesForSymbol(symbol)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		} else {
+			for _, e := range exs {
+				s, err2 := env.DataStore.GetSymbolExchangeDetails(symbol, e)
+				if err2 == nil {
+					r.Exchanges[e] = *s
+				}
+			}
+			c.JSON(http.StatusOK, r)
+		}
+	}
+}
+
 func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 	t = t.Round(roundOn)
 	if time.Since(t) >= 0 {
@@ -143,13 +216,12 @@ func (env *Env) GetCoins(c *gin.Context) {
 		coins.Coins = []Coin{}
 
 		for _, symbol := range symbols {
-
 			var c1 Coin
-
 			log.Println("Adding symbol", symbol)
 			supply, _ := env.DataStore.GetSupply(symbol)
 			price, _ := env.DataStore.GetQuotation(symbol)
 			volume, _ := env.DataStore.GetVolume(symbol)
+
 			if price != nil {
 				c1.Price = price.Price
 				c1.Name = price.Name
@@ -159,12 +231,11 @@ func (env *Env) GetCoins(c *gin.Context) {
 				}
 				c1.Time = price.Time
 				c1.VolumeYesterdayUSD = volume
+				if supply != nil {
+					c1.CirculatingSupply = &supply.CirculatingSupply
+					coins.Coins = append(coins.Coins, c1)
+				}
 			}
-			if supply != nil {
-				c1.CirculatingSupply = supply.CirculatingSupply
-			}
-			c1.VolumeYesterdayUSD, _ = env.DataStore.GetVolume(symbol)
-			coins.Coins = append(coins.Coins, c1)
 		}
 		c.JSON(http.StatusOK, coins)
 	}

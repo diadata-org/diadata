@@ -152,11 +152,13 @@ showHelp() {
       echo "-d to deploy stack" >&2
       echo "-r <machine> for remote" >&2
       echo "-n <number> to build service <number> from stack" >&2
+      echo "-a to build all services" >&2
+
 }
 
 main() {
 
-while getopts "n:hr:dcws:" opt; do
+while getopts "n:hr:dcaws:" opt; do
   case $opt in
   	s)
      	export STACKNAME=$OPTARG
@@ -177,6 +179,9 @@ while getopts "n:hr:dcws:" opt; do
   	d)
 	  DEPLOY="y"
 	  ;;
+	a)
+	  LINENUMBER="a"
+      ;;
     n)
       echo "-n was triggered, Parameter: $OPTARG" >&2
       LINENUMBER=$OPTARG

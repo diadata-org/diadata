@@ -13,12 +13,12 @@ func (c *ConfigCollectors) Exchanges() []string {
 }
 
 type ConfigCollectors struct {
-	Coins []dia.ConfigPair
+	Coins []dia.Pair
 }
 
-func (c *ConfigCollectors) AllConfigPairsForExchange(exchange string) []dia.ConfigPair {
+func (c *ConfigCollectors) AllPairsForExchange(exchange string) []dia.Pair {
 	founds := map[string]bool{}
-	result := []dia.ConfigPair{}
+	result := []dia.Pair{}
 	for _, configPair := range c.Coins {
 		if configPair.Exchange == exchange {
 			if _, ok := founds[configPair.ForeignName]; !ok {

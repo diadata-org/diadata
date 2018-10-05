@@ -1,9 +1,9 @@
 package dia
 
 import (
+	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
-	"github.com/tkanos/gonfig"
 )
 
 const (
@@ -20,6 +20,7 @@ const (
 	ZBExchange       = "ZB"
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
+	FilterKing       = "MA120"
 )
 
 func Exchanges() []string {
@@ -43,14 +44,8 @@ type ConfigApi struct {
 	SecretKey string
 }
 
-type ConfigPair struct {
-	Symbol      string
-	ForeignName string
-	Exchange    string
-}
-
 type ConfigConnector struct {
-	Coins []ConfigPair
+	Coins []Pair
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {

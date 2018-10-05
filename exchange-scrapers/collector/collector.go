@@ -74,7 +74,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	for _, configPair := range cc.AllConfigPairsForExchange(*exchange) {
+	for _, configPair := range cc.AllPairsForExchange(*exchange) {
 
 		log.Println("Adding pair:", configPair.Symbol, " on exchange ", *exchange)
 

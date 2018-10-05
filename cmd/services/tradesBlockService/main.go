@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/api-golang/services/tradesBlockService/tradesBlock"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/internal/pkg/tradesBlockService"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"sync"
-	"github.com/diadata-org/api-golang/services/model"
 )
 
 func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.WaitGroup, w *kafka.Writer) {
@@ -40,7 +40,6 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	go handleBlocks(tradesBlockService, &wg, w)
-
 
 	log.Printf("starting...")
 

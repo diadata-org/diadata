@@ -8,20 +8,21 @@ import (
 
 func TestFilterMa(t *testing.T) {
 
-	filterParam := 10
+	filterParam := 4
 	firstPrice := 50.0
 
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMA("test", "hello", d, filterParam)
+	f := NewFilterMA("XRP", "", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0
 	for i <= steps {
-		f.compute(&dia.Trade{EstimatedUSDPrice: p, Time: d})
+		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 		d = d.Add(time.Second)
 		i += 1
 	}
-	v := f.filterPoint(d)
+	f.finalComputeEndOfBlock(d)
+	v := f.filterPointForBlock()
 	if v.Value != p {
 		t.Errorf("error should be stable %v", v)
 	}
@@ -29,17 +30,16 @@ func TestFilterMa(t *testing.T) {
 	priceIncrements := 1.0
 	i = 0
 	for i <= steps {
-		f.compute(&dia.Trade{EstimatedUSDPrice: p, Time: d})
+		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 		p = p + priceIncrements
 		d = d.Add(time.Second)
 		i += 1
 	}
-	v = f.filterPoint(d)
-
-	if v.Value != firstPrice+(priceIncrements*float64((steps-1))/2) {
-		t.Errorf("error shouldnt be %v", v)
+	f.finalComputeEndOfBlock(d)
+	v = f.filterPointForBlock()
+	if v.Value != 53.25 { //TODO formulas
+		t.Errorf("error should be, %v", v)
 	}
-
 }
 
 func TestFilterMa2(t *testing.T) {
@@ -48,17 +48,18 @@ func TestFilterMa2(t *testing.T) {
 	firstPrice := 50.0
 
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMA("test", "hello", d, filterParam)
+	f := NewFilterMA("XRP", "", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0
 	for i <= steps {
-		f.compute(&dia.Trade{EstimatedUSDPrice: p, Time: d})
+		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 		d = d.Add(time.Second)
 		d = d.Add(time.Second)
 		i += 1
 	}
-	v := f.filterPoint(d)
+	f.finalComputeEndOfBlock(d)
+	v := f.filterPointForBlock()
 	if v.Value != p {
 		t.Errorf("error should be stable %v", v)
 	}
@@ -66,15 +67,15 @@ func TestFilterMa2(t *testing.T) {
 	priceIncrements := 1.0
 	i = 0
 	for i <= steps {
-		f.compute(&dia.Trade{EstimatedUSDPrice: p, Time: d})
+		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 		p = p + priceIncrements
 		d = d.Add(time.Second)
 		d = d.Add(time.Second)
 		i += 1
 	}
-	v = f.filterPoint(d)
-
-	if v.Value != 57.0 { //TODO formulas
+	f.finalComputeEndOfBlock(d)
+	v = f.filterPointForBlock()
+	if v.Value != 56.4 { //TODO formulas
 		t.Errorf("error shouldnt be 57.0 %v", v)
 	}
 

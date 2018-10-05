@@ -20,6 +20,7 @@ type Supply struct {
 type Pair struct {
 	Symbol      string
 	ForeignName string
+	Exchange    string
 }
 
 type Trade struct {

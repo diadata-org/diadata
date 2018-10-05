@@ -14,15 +14,15 @@ var (
 	volumeKey = "VOL" + strconv.Itoa(dia.BlockSizeSeconds)
 )
 
-func (db *DB) SetVolume(key string, volume float64) error {
-	err := db.setZSETValue(getKeyFilterZSET(key), volume, time.Now().Unix(), WindowVolume)
+func (db *DB) SetVolume(symbol string, exchange string, volume float64) error {
+	err := db.setZSETValue(getKeyFilterZSET(getKey(symbol, exchange)), volume, time.Now().Unix(), WindowVolume)
 	return err
 }
 
-func (db *DB) GetVolume(symbol string) (float64, error) {
+func (db *DB) GetVolume(symbol string) (*float64, error) {
 	return db.getZSETSum(getKeyFilterZSET(volumeKey + "_" + symbol))
 }
 
-func (db *DB) GetVolumeExchange(symbol string, exchange string) (float64, error) {
+func (db *DB) GetVolumeExchange(symbol string, exchange string) (*float64, error) {
 	return db.getZSETSum(getKeyFilterZSET(volumeKey + "_" + symbol + "_" + exchange))
 }
