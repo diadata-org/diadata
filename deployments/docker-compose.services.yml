@@ -4,7 +4,7 @@ services:
   tradesblockservice:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/services/Dockerfile-tradesBlockService
+      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-tradesBlockService
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_tradesblockservice:latest
     networks:
       - kafka-network
@@ -16,7 +16,7 @@ services:
   filtersblockservice:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/services/Dockerfile-filtersBlockService
+      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-filtersBlockService
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_filtersblockservice:latest
     networks:
       - kafka-network

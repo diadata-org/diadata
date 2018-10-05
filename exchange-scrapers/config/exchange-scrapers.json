@@ -46,6 +46,11 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "USDT",
+      "ForeignName": "USDTUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
       "Symbol": "TRX",
       "ForeignName": "TRXUSD",
       "Exchange": "Bitfinex"

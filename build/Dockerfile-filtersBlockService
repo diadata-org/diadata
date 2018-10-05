@@ -4,7 +4,7 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/services/filtersBlockService
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/cmd/services/filtersBlockService
 
 RUN go install
 

@@ -17,16 +17,6 @@ const (
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
 )
 
-type Quotation struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     *float64
-	VolumeYesterdayUSD *float64
-	Source             string
-	Time               time.Time
-}
-
 // MarshalBinary -
 func (e *Quotation) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
@@ -85,24 +75,18 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
-		log.Printf("Error: %v on GetQuotation %v\n", err, symbol)
+		log.Error("Error: %v on GetQuotation %v\n", err, key)
 		return nil, err
 	}
 	// TOFIX
-	v, err := db.getZSETValue(getKeyFilterZSET("MA"+strconv.Itoa(dia.BlockSizeSeconds)+"_"+symbol), time.Now().Unix()-WindowYesterday)
-	if err == nil {
+	v, err2 := db.getZSETValue(getKeyFilterZSET("MA"+strconv.Itoa(dia.BlockSizeSeconds)+"_"+symbol), time.Now().Unix()-WindowYesterday)
+	if err2 == nil {
 		value.PriceYesterday = &v
 	}
 
-	v, err2 := db.GetVolume(symbol)
-	if err2 == nil {
-		value.VolumeYesterdayUSD = &v
-	}
+	v2, err2 := db.GetVolume(symbol)
+	value.VolumeYesterdayUSD = v2
 	return value, err
-}
-
-func (db *DB) SetPriceZSET(key string, price float64) error {
-	return db.setZSETValue(getKeyFilterZSET(key), price, time.Now().Unix(), BiggestWindow)
 }
 
 func (db *DB) SetQuotation(quotation *Quotation) error {

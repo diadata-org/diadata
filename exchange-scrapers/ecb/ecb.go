@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/services/model"
 	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sync"
 )
@@ -49,7 +49,6 @@ var usdFor1Euro = -1.0
 
 // handleTrades delegates trade information to Kafka
 func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datastore) {
-	
 
 	for {
 		t, ok := <-ps.Channel()
@@ -94,22 +93,21 @@ func main() {
 		log.Error(err)
 	} else {
 
-
-	for _, pair := range pairs {
-		ps, err := sECB.ScrapePair(dia.Pair{
-			Symbol:      pair,
-			ForeignName: pair,
-		})
-		if err != nil {
-			log.Fatal(err)
+		for _, pair := range pairs {
+			ps, err := sECB.ScrapePair(dia.Pair{
+				Symbol:      pair,
+				ForeignName: pair,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			go handleTrades(ps, &wg, ds)
+			wg.Add(1)
 		}
-		go handleTrades(ps, &wg, ds)
-		wg.Add(1)
+
+		sECB.Update()
+
+		defer wg.Wait()
 	}
-
-	sECB.Update()
-
-	defer wg.Wait()
-		}
 
 }

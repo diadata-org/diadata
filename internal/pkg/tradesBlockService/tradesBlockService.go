@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/services/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sort"
 	"sync"

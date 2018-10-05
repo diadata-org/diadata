@@ -7,7 +7,7 @@ import (
 	_ "github.com/diadata-org/api-golang/docs"
 	"github.com/diadata-org/api-golang/http/restServer/diaApi"
 	"github.com/diadata-org/api-golang/http/restServer/kafkaApi"
-	"github.com/diadata-org/api-golang/services/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -208,7 +208,9 @@ func main() {
 	{
 		dia.GET("/quotation/:symbol", diaApiEnv.GetQuotation)
 		dia.GET("/supply/:symbol", diaApiEnv.GetSupply)
+		dia.GET("/symbol/:symbol", diaApiEnv.GetSymbolDetails)
 		dia.GET("/coins", diaApiEnv.GetCoins)
+		dia.GET("/pairs", diaApiEnv.GetPairs)
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

@@ -29,11 +29,18 @@ definitions:
         items:
           $ref: '#/definitions/dia.FilterPoint'
         type: array
-      filtersBlockNumber:
-        type: integer
       filtersNumber:
         type: integer
       tradesBlockHash:
+        type: string
+    type: object
+  dia.Pair:
+    properties:
+      exchange:
+        type: string
+      foreignName:
+        type: string
+      symbol:
         type: string
     type: object
   dia.Supply:
@@ -112,6 +119,21 @@ definitions:
         items:
           $ref: '#/definitions/diaApi.Coin'
         type: array
+    type: object
+  diaApi.Pairs:
+    properties:
+      pairs:
+        items:
+          $ref: '#/definitions/dia.Pair'
+        type: array
+    type: object
+  diaApi.SymbolDetails:
+    properties:
+      coin:
+        $ref: '#/definitions/diaApi.Coin'
+        type: object
+      exchanges:
+        type: object
     type: object
   models.Quotation:
     properties:
@@ -262,6 +284,27 @@ paths:
       summary: Get coins
       tags:
       - dia
+  /v1/pairs/:
+    get:
+      consumes:
+      - application/json
+      description: et pairs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/diaApi.Pairs'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get pairs
+      tags:
+      - dia
   /v1/quotation/:
     get:
       consumes:
@@ -356,6 +399,38 @@ paths:
             $ref: '#/definitions/restApi.APIError'
             type: object
       summary: Get supply
+      tags:
+      - dia
+  /v1/symbol/:
+    get:
+      consumes:
+      - application/json
+      description: Get Symbol Details
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/diaApi.SymbolDetails'
+            type: object
+        "404":
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get Symbol Details
       tags:
       - dia
 swagger: "2.0"
