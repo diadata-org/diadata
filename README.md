@@ -46,8 +46,8 @@ Our API is live at https://api.diadata.org/v1 [swagger](https://api.diadata.org/
 Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
-* Quotations for prices (SMA120) can be found at endpoint <https://api.diadata.org/v1/quotation/{TLA}>.
-* Supply data for crypto assets is located at <https://api.diadata.org/v1/supply/{TLA}>.
+* Quotations for prices (SMA120) can be found at endpoint <https://api.diadata.org/v1/symbol/{TLA}>(https://api.diadata.org/v1/symbol/BTC).
+* Supply data for crypto assets is located at <https://api.diadata.org/v1/supply/{TLA}>(https://api.diadata.org/v1/supply/BTC)
 
 ## How to contribute
 DIA is open for anyone to contribute and we always welcome pull requests.
