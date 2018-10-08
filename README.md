@@ -39,6 +39,7 @@ Because of the very different nature of these classes, separate documentation ex
 
 * [Exchange Scrapers](methodology/ExchangePrices.md) are the components that get trade data from various exchanges and use these trades to contruct average prices.
 * [Supply Scrapers](methodology/SupplyNumbers.md) are used to determine circulating supply numbers for cryptocurrency assets.
+* [Oracles](methodology/Oracles.md) show how our oracles can be accessed.
 This information varies for each currency and is highly specific.
 
 ## API access
