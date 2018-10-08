@@ -23,6 +23,27 @@ const (
 	FilterKing       = "MA120"
 )
 
+func SymbolsFrontPage() []string {
+	return []string{
+		"BCH",
+		"BTC",
+		"ADA",
+		"DASH",
+		"DOGE",
+		"EOS",
+		"ETH",
+		"BNB",
+		"LTC",
+		"XMR",
+		"NEO",
+		"MIOTA",
+		"XRP",
+		"XLM",
+		"TRX",
+		"USDT",
+	}
+}
+
 func Exchanges() []string {
 	return []string{
 		KrakenExchange,

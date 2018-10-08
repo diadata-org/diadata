@@ -61,8 +61,6 @@ func main() {
 
 	cc := configCollectors.NewConfigCollectors()
 
-	//configConnector := configWidget.NewConfigConnector()
-
 	configApi, err := dia.GetConfig(*exchange)
 	if err != nil {
 		log.Warning("error loading configApi\n")

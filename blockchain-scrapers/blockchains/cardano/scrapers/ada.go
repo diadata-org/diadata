@@ -3,12 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/diadata-org/api-golang/dia"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/diadata-org/api-golang/dia"
 )
 
 type Supply struct {
