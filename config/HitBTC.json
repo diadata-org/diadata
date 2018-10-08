@@ -1,0 +1,154 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName" : "BTCUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName" : "ETHBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName" : "BCHBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName" : "XRPBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName" : "ETHUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName" : "BCHUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName" : "XMRBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName" : "LTCUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName" : "DASHBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName" : "ZRXETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName" : "ZECBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "DICE",
+      "ForeignName" : "DICEETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ADX",
+      "ForeignName" : "ADXETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName" : "LTCBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName" : "EOSUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "VERI",
+      "ForeignName" : "VERIETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "PPC",
+      "ForeignName" : "PPCUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "SPF",
+      "ForeignName" : "SPFETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "PPC",
+      "ForeignName" : "PPCBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName" : "QTUMETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "VERI",
+      "ForeignName" : "VERIUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "STRAT",
+      "ForeignName" : "STRATBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BCD",
+      "ForeignName" : "BCDBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName" : "SNTETH",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "EMGO",
+      "ForeignName" : "EMGOBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "HTML",
+      "ForeignName" : "HTMLUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "CND",
+      "ForeignName" : "CNDBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "ZPT",
+      "ForeignName" : "ZPTUSD",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XMC",
+      "ForeignName" : "XMCUSDT",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XMC",
+      "ForeignName" : "XMCETH",
+      "Exchange" : "HitBTC"
+    }
+  ]
+}

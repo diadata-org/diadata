@@ -5,19 +5,29 @@ import (
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/dia/helpers/configCollectors"
 	"github.com/diadata-org/api-golang/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
+	"github.com/diadata-org/api-golang/pkg/exchange-scrapers"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
 	"sync"
+	"time"
 )
+
+const (
+	watchdogDelay = 60.0 * 5
+)
+
+type doggyBag struct {
+	lastTradeTime time.Time
+	mutex         *sync.Mutex
+}
 
 // pairs contains all pairs currently supported by the DIA scrapers
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, w *kafka.Writer) {
+func handleTrades(d *doggyBag, ps scrapers.PairScraper, wg *sync.WaitGroup, w *kafka.Writer) {
 	for {
 		t, ok := <-ps.Channel()
 
@@ -31,6 +41,9 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, w *kafka.Writer) 
 			wg.Done()
 			return
 		}
+		d.mutex.Lock()
+		d.lastTradeTime = time.Now()
+		d.mutex.Unlock()
 		kafkaHelper.WriteMessage(w, t)
 	}
 }
@@ -56,10 +69,34 @@ func init() {
 	}
 }
 
+func watchDog(d *doggyBag) {
+
+	t := time.NewTicker(watchdogDelay * time.Second)
+
+	for {
+		select {
+		case <-t.C:
+			d.mutex.Lock()
+			duration := time.Since(d.lastTradeTime)
+			d.mutex.Unlock()
+			time.Now()
+			if duration.Seconds() > watchdogDelay {
+				log.Error(duration)
+				panic("frozen? ")
+			}
+		}
+	}
+}
+
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	cc := configCollectors.NewConfigCollectors()
+	d := &doggyBag{
+		lastTradeTime: time.Now(),
+		mutex:         &sync.Mutex{},
+	}
+
+	cc := configCollectors.NewConfigCollectors(*exchange)
 
 	configApi, err := dia.GetConfig(*exchange)
 	if err != nil {
@@ -72,9 +109,9 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	for _, configPair := range cc.AllPairsForExchange(*exchange) {
+	for _, configPair := range cc.AllPairs() {
 
-		log.Println("Adding pair:", configPair.Symbol, " on exchange ", *exchange)
+		log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 
 		ps, err := es.ScrapePair(dia.Pair{
 			Symbol:      configPair.Symbol,
@@ -82,9 +119,10 @@ func main() {
 		if err != nil {
 			log.Println(err)
 		} else {
-			go handleTrades(ps, &wg, w)
+			go handleTrades(d, ps, &wg, w)
 			wg.Add(1)
 		}
 		defer wg.Wait()
 	}
+	go watchDog(d)
 }

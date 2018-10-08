@@ -5,7 +5,6 @@ import (
 	"github.com/diadata-org/api-golang/dia"
 	"github.com/diadata-org/api-golang/dia/helpers"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 	"time"
 )
 
@@ -78,8 +77,8 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 		log.Error("Error: %v on GetQuotation %v\n", err, key)
 		return nil, err
 	}
-	// TOFIX
-	v, err2 := db.getZSETValue(getKeyFilterZSET("MA"+strconv.Itoa(dia.BlockSizeSeconds)+"_"+symbol), time.Now().Unix()-WindowYesterday)
+
+	v, err2 := db.GetPriceYesterday(symbol, "")
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}

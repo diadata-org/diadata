@@ -1,0 +1,74 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName" : "BTCUSD",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName" : "ETHUSD",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName" : "ETHBTC",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName" : "LTCUSD",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName" : "LTCBTC",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName" : "LTCETH",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName" : "DASHUSD",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName" : "DASHBTC",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName" : "DASHETH",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName" : "EOSBTC",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName" : "EOSUSD",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName" : "EOSETH",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName" : "OMGETH",
+      "Exchange" : "Simex"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName" : "OMGUSD",
+      "Exchange" : "Simex"
+    }
+  ]
+}

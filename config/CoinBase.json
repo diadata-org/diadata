@@ -1,0 +1,19 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "CoinBase"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC-USD",
+      "Exchange": "CoinBase"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH-USD",
+      "Exchange": "CoinBase"
+    }
+  ]
+}

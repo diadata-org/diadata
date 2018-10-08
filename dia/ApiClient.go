@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os/user"
 	"time"
@@ -95,6 +95,7 @@ func GetConfigApi() *ConfigApi {
 	configFile := "/run/secrets/api_diadata"
 	err := gonfig.GetConf(configFile, &c)
 	if err != nil {
+		log.Error(err)
 		usr, _ := user.Current()
 		dir := usr.HomeDir
 		configFile = dir + "/secrets/api_diadata.json"

@@ -1,0 +1,19 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGUSDT",
+      "Exchange": "Binance"
+    }
+  ]
+}

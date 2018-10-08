@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (db *DB) GetSymbols() ([]string, error) {
+func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
 	var cursor uint64
 	key := "dia_" + dia.FilterKing + "_"
@@ -21,8 +21,14 @@ func (db *DB) GetSymbols() ([]string, error) {
 		for _, value := range keys {
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
-			if len(s) == 1 {
-				result = append(result, s[0])
+			if exchange == "" {
+				if len(s) == 1 {
+					result = append(result, s[0])
+				}
+			} else {
+				if s[1] == exchange {
+					result = append(result, s[0])
+				}
 			}
 		}
 		if cursor == 0 {
@@ -36,12 +42,14 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 	result := &SymbolExchangeDetails{
 		Name: exchange,
 	}
-
-	//TODO move ?
-	key := getKeyFilterSymbolAndExchangeZSET(dia.FilterKing, symbol, exchange)
-	v, _, err := db.getZSETLastValue(key)
+	v, err := db.GetPrice(symbol, exchange)
 	if err == nil {
 		result.Price = v
+	}
+
+	py, err2 := db.GetPriceYesterday(symbol, exchange)
+	if err2 == nil {
+		result.PriceYesterday = &py
 	}
 
 	v2, _ := db.GetVolumeExchange(symbol, exchange)
