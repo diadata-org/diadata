@@ -1,0 +1,129 @@
+{
+  "Coins": [
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGE_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOS_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZEC_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEO_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMR_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "MIOTA",
+      "ForeignName": "IOTA_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGE_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOS_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASH_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMG_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADA_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOS_ETH",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BAT",
+      "ForeignName": "BAT_ETH",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_ETH",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMG_ETH",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "VET",
+      "ForeignName": "VET_ETH",
+      "Exchange": "GateIO"
+    }
+  ]
+}

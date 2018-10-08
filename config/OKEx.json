@@ -1,0 +1,64 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCH_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_ETH",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEO_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEO_USDT",
+      "Exchange": "OKEx"
+    }
+  ]
+}

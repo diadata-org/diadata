@@ -1,0 +1,24 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName": "XXBTZEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "XETHZEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "USDT",
+      "ForeignName": "USDTZUSD",
+      "Exchange": "Kraken"
+    }
+  ]
+}

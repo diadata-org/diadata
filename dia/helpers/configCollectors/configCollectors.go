@@ -16,15 +16,13 @@ type ConfigCollectors struct {
 	Coins []dia.Pair
 }
 
-func (c *ConfigCollectors) AllPairsForExchange(exchange string) []dia.Pair {
+func (c *ConfigCollectors) AllPairs() []dia.Pair {
 	founds := map[string]bool{}
 	result := []dia.Pair{}
 	for _, configPair := range c.Coins {
-		if configPair.Exchange == exchange {
-			if _, ok := founds[configPair.ForeignName]; !ok {
-				founds[configPair.ForeignName] = true
-				result = append(result, configPair)
-			}
+		if _, ok := founds[configPair.ForeignName]; !ok {
+			founds[configPair.ForeignName] = true
+			result = append(result, configPair)
 		}
 	}
 	return result
@@ -52,30 +50,44 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	return false
 }
 
-func ConfigFileConnectors() string {
+func configFileConnectors(exchange string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	if dir == "/home" {
-		return "/config/exchange-scrapers.json" //hack for docker...
+		return "/config/" + exchange + ".json" //hack for docker...
 	}
 	if dir == "/home/travis" {
-		return "../exchange-scrapers/config/exchange-scrapers.json" //hack for travis
+		return "../config/" + exchange + ".json" //hack for travis
 	}
-	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/api-golang/exchange-scrapers/config/exchange-scrapers.json"
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/api-golang/config/" + exchange + ".json"
 }
 
-func NewConfigCollectors() *ConfigCollectors {
-
-	file := ConfigFileConnectors()
-
-	var connectorConfig = ConfigCollectors{}
-
-	err := gonfig.GetConf(file, &connectorConfig)
-	if err != nil {
-		log.Fatal("error loading <", file, "> ", err)
-		return nil
-	} else {
-		log.Printf("loaded  <%v>", file)
+func NewConfigCollectors(exchange string) *ConfigCollectors {
+	var connectorConfig = ConfigCollectors{
+		Coins: []dia.Pair{},
 	}
+	if exchange == "" {
+		for _, e := range dia.Exchanges() {
+			var c = ConfigCollectors{}
+			file := configFileConnectors(e)
+			err := gonfig.GetConf(file, &c)
+			if err != nil {
+				log.Error("error loading <", file, "> ", err)
+			} else {
+				log.Printf("loaded  <%v>", file)
+				connectorConfig.Coins = append(connectorConfig.Coins, c.Coins...)
+			}
+		}
+	} else {
+		file := configFileConnectors(exchange)
+		err := gonfig.GetConf(file, &connectorConfig)
+		if err != nil {
+			log.Fatal("error loading <", file, "> ", err)
+			return nil
+		} else {
+			log.Printf("loaded  <%v>", file)
+		}
+	}
+
 	return &connectorConfig
 }

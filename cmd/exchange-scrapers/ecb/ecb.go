@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/exchange-scrapers/scrapers"
+	"github.com/diadata-org/api-golang/pkg/exchange-scrapers"
 	"github.com/diadata-org/api-golang/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sync"

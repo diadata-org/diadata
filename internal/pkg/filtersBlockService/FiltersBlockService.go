@@ -81,7 +81,7 @@ func (s *FiltersBlockService) cleanup(err error) {
 func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
 	log.Info("previousBlockFilters", previousBlockFilters)
 	log.Info("newFilters:", newFilters)
-	c := configCollectors.NewConfigCollectors()
+	c := configCollectors.NewConfigCollectors("")
 	missingPoints := 0
 	result := newFilters
 	newFiltersMap := make(map[string]*dia.FilterPoint)

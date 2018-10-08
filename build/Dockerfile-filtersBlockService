@@ -11,6 +11,6 @@ RUN go install
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/filtersBlockService /bin/filtersBlockService
-COPY --from=build /go/src/github.com/diadata-org/api-golang/exchange-scrapers/config /config/
+COPY --from=build /go/src/github.com/diadata-org/api-golang/config /config/
 
 CMD ["filtersBlockService"]

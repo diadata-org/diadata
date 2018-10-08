@@ -6,12 +6,12 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/exchange-scrapers/collector
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/cmd/exchange-scrapers/collector
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/collector /bin/collector
-COPY --from=build /go/src/github.com/diadata-org/api-golang/exchange-scrapers/config /config/
+COPY --from=build /go/src/github.com/diadata-org/api-golang/config /config/
 
 CMD ["collector"]

@@ -1,0 +1,154 @@
+{
+  "Coins": [
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADABTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "MIOTA",
+      "ForeignName": "IOTABTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "MIOTA",
+      "ForeignName": "IOTAETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "STEEM",
+      "ForeignName": "STEEMETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "STEEM",
+      "ForeignName": "STEEMBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "MIOTA",
+      "ForeignName": "IOTAUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGUSDT",
+      "Exchange": "Huobi"
+    }
+  ]
+}

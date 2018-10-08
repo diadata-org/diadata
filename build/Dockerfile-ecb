@@ -4,7 +4,7 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/exchange-scrapers/ecb
+WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/cmd/exchange-scrapers/ecb
 
 RUN go install
 

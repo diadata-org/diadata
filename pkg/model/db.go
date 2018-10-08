@@ -25,7 +25,7 @@ type Datastore interface {
 	SetPriceZSET(symbol string, exchange string, price float64) error
 	GetChartPoints(symbol string) ([]Point, error)
 	GetPairs(exchange string) ([]dia.Pair, error)
-	GetSymbols() ([]string, error)
+	GetSymbols(exchange string) ([]string, error)
 	GetExchangesForSymbol(symbol string) ([]string, error)
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
@@ -66,7 +66,11 @@ func getKeyFilterZSET(key string) string {
 }
 
 func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange string) string {
-	return "dia_" + filter + "_" + symbol + "_" + exchange + "_ZSET"
+	if exchange == "" {
+		return "dia_" + filter + "_" + symbol + "_ZSET"
+	} else {
+		return "dia_" + filter + "_" + symbol + "_" + exchange + "_ZSET"
+	}
 }
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
