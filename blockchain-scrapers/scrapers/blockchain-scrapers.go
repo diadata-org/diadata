@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/diadata-org/go-bitcoind"
 )
 

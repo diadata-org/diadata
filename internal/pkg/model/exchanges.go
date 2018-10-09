@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"

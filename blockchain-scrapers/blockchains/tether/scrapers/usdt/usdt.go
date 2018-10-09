@@ -10,7 +10,7 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/runner"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 )
 
 const symbol = "USDT"

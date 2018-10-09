@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/diadata-org/api-golang/blockchain-scrapers/scrapers"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 )
 
 const (

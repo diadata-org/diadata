@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	log "github.com/sirupsen/logrus"
 )
 

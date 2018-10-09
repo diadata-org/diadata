@@ -1,12 +1,14 @@
 package models
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
 
 func (db *DB) SetPriceZSET(symbol string, exchange string, price float64) error {
+
+	db.NewPointInflux(dia.FilterKing, symbol, exchange, price)
 
 	key := getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange))
 	log.Println("SetPriceZSET ", key)

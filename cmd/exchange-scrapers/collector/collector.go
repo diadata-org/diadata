@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/dia/helpers/configCollectors"
-	"github.com/diadata-org/api-golang/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/api-golang/pkg/exchange-scrapers"
+	"github.com/diadata-org/api-golang/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/api-golang/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/api-golang/pkg/dia/helpers/kafkaHelper"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	watchdogDelay = 60.0 * 5
+	watchdogDelay = 60.0 * 2
 )
 
 type doggyBag struct {

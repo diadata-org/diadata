@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"io"

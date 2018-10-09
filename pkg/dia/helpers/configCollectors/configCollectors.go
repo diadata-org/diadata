@@ -1,7 +1,7 @@
 package configCollectors
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"os"

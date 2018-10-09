@@ -1,0 +1,21 @@
+#alias influxcli="docker exec -it `docker ps | grep influx | cut -f1 -d\ ` influx"
+
+version: '3.2'
+services:
+
+  influxdb:
+#    ports:
+#      - "8086:8086"
+    image: influxdb
+    volumes:
+      - /home/srv/influxdb:/var/lib/influxdb
+    networks:
+      - influxdb-network
+    logging:
+      options:
+        max-size: "50m" 
+
+networks:
+  influxdb-network:
+    driver: overlay
+    attachable: true

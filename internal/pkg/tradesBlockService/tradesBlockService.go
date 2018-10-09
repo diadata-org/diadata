@@ -3,8 +3,8 @@ package tradesBlockService
 import (
 	"errors"
 	"github.com/cnf/structhash"
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"sort"
 	"sync"

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	ws "github.com/gorilla/websocket"
 )
 

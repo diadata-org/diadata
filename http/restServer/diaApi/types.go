@@ -1,8 +1,8 @@
 package diaApi
 
 import (
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"time"
 )
 

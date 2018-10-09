@@ -3,10 +3,10 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/dia/helpers"
 	"github.com/diadata-org/api-golang/http/restApi"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/api-golang/pkg/dia/helpers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"

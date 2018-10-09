@@ -1,7 +1,7 @@
 package kafkaApi
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 )
 
 type APIError struct {

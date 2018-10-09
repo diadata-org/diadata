@@ -3,8 +3,9 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/go-redis/redis"
+	"github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -30,27 +31,80 @@ type Datastore interface {
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
+	Flush() error
 }
 
 type DB struct {
-	redisClient *redis.Client
+	redisClient       *redis.Client
+	influxClient      client.Client
+	influxBatchPoints client.BatchPoints
+}
+
+const (
+	influxDbName = "dia"
+)
+
+// queryDB convenience function to query the database
+func queryDB(clnt client.Client, cmd string) (res []client.Result, err error) {
+	q := client.Query{
+		Command:  cmd,
+		Database: influxDbName,
+	}
+	if response, err := clnt.Query(q); err == nil {
+		if response.Error() != nil {
+			return res, response.Error()
+		}
+		res = response.Results
+	} else {
+		return res, err
+	}
+	return res, nil
 }
 
 func NewDataStore() (*DB, error) {
 
-	db := redis.NewClient(&redis.Options{
+	r := redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	pong2, err := db.Ping().Result()
+	pong2, err := r.Ping().Result()
 	if err != nil {
-		log.Error("NewDataStore", err)
+		log.Error("NewDataStore redis", err)
 	}
 	log.Debug("NewDB", pong2)
 
-	return &DB{db}, nil
+	i, err := client.NewHTTPClient(client.HTTPConfig{
+		Addr:     "http://influxdb:8086",
+		Username: "",
+		Password: "",
+	})
+	if err != nil {
+		log.Error("NewDataStore influxdb", err)
+	}
+
+	_, err = queryDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+	if err != nil {
+		log.Error(err)
+	}
+
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  influxDbName,
+		Precision: "s",
+	})
+	if err != nil {
+		log.Errorln("NewBatchPoints", err)
+	}
+	return &DB{r, i, bp}, nil
+}
+
+func (db *DB) Flush() error {
+	var err error
+	if db.influxBatchPoints != nil {
+		err = db.WriteBashInflux()
+	}
+	return err
 }
 
 func getKey(filter string, symbol string, exchange string) string {
@@ -71,6 +125,31 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange st
 	} else {
 		return "dia_" + filter + "_" + symbol + "_" + exchange + "_ZSET"
 	}
+}
+
+func (db *DB) WriteBashInflux() error {
+	err := db.influxClient.Write(db.influxBatchPoints)
+	if err != nil {
+		log.Error(err)
+	}
+	return err
+}
+
+func (db *DB) NewPointInflux(filter string, symbol string, exchange string, value float64) error {
+
+	// Create a point and add to batch
+	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
+	fields := map[string]interface{}{
+		"value": value,
+	}
+
+	pt, err := client.NewPoint("filters", tags, fields, time.Now())
+	if err != nil {
+		log.Errorln("newPoint:", err)
+	} else {
+		db.influxBatchPoints.AddPoint(pt)
+	}
+	return err
 }
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {

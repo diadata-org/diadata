@@ -1,7 +1,7 @@
 package blockchainscrapers
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/diadata-org/go-bitcoind"
 	"log"
 	"time"
@@ -33,7 +33,7 @@ func RunScraper(host string, port int, user, password, symbol string) {
 	for {
 		txOutSetInfo, err := bitcoinLib.GetTxOutsetInfo()
 		if err != nil {
-			panic("Error communicating with the "+ symbol +" node: "+ err.Error())
+			panic("Error communicating with the " + symbol + " node: " + err.Error())
 		}
 
 		// new supply value
@@ -41,7 +41,7 @@ func RunScraper(host string, port int, user, password, symbol string) {
 			lastSupply = txOutSetInfo.TotalAmount
 
 			err = client.SendSupply(&dia.Supply{
-				Symbol: symbol,
+				Symbol:            symbol,
 				CirculatingSupply: lastSupply,
 			})
 			if err != nil {
@@ -51,7 +51,7 @@ func RunScraper(host string, port int, user, password, symbol string) {
 			}
 		} else {
 			log.Println("No new values. Sleeping for", SLEEP_SECONDS, "seconds")
-			time.Sleep(SLEEP_SECONDS *time.Second)
+			time.Sleep(SLEEP_SECONDS * time.Second)
 		}
 	}
 }

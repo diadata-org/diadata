@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/beldur/kraken-go-api-client"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"log"
 	"math"
 	"strconv"

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/adshao/go-binance"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"log"
 	"strconv"
 	"sync"
