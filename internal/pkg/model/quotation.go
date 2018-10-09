@@ -2,8 +2,8 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/dia/helpers"
+	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/api-golang/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

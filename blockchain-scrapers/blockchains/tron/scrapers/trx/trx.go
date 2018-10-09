@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/diadata-org/api-golang/dia"
 	"github.com/PaddyMc/go-tron/calculations"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	"time"
 	//"fmt"
 )
@@ -24,12 +24,12 @@ func main() {
 		panic("Couldnt load client")
 	}
 
-	calculationsClient := calculations.NewClaculationClient(SERVER_HOST+ ":" +SERVER_PORT)
+	calculationsClient := calculations.NewClaculationClient(SERVER_HOST + ":" + SERVER_PORT)
 	var prevResult int64 = 0
-	for{
+	for {
 		totalCirculatingSupply, err := calculationsClient.CalculateCirculatingSupply()
-		
-		if err == nil{
+
+		if err == nil {
 			if prevResult != totalCirculatingSupply {
 				//fmt.Printf("Total Circulating Supply: %v\t\n", totalCirculatingSupply)
 				client.SendSupply(&dia.Supply{

@@ -14,7 +14,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	cli "github.com/urfave/cli"
 )
 

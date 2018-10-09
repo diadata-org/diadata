@@ -3,9 +3,9 @@ package filters
 import (
 	"errors"
 	"github.com/cnf/structhash"
-	"github.com/diadata-org/api-golang/dia"
-	"github.com/diadata-org/api-golang/dia/helpers/configCollectors"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/api-golang/internal/pkg/model"
+	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/api-golang/pkg/dia/helpers/configCollectors"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -174,6 +174,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 			f.save(s.datastore)
 		}
 	}
+	s.datastore.Flush()
 }
 
 // runs in a goroutine until s is closed

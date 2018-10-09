@@ -2,7 +2,7 @@ package scrapers
 
 import (
 	"errors"
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 	ws "github.com/gorilla/websocket"
 	"github.com/preichenberger/go-gdax"
 	"log"

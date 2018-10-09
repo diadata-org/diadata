@@ -3,7 +3,7 @@ package scrapers
 import (
 	"io"
 
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/api-golang/pkg/dia"
 )
 
 // empty type used for signaling
