@@ -15,7 +15,7 @@ var (
 )
 
 func (db *DB) SetVolume(symbol string, exchange string, volume float64) error {
-	db.NewPointInflux(volumeKey, symbol, exchange, volume)
+	db.SaveFilterInflux(volumeKey, symbol, exchange, volume)
 	err := db.setZSETValue(getKeyFilterZSET(getKey(volumeKey, symbol, exchange)), volume, time.Now().Unix(), WindowVolume)
 	return err
 }

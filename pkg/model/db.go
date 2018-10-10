@@ -32,6 +32,8 @@ type Datastore interface {
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
+	SaveTradeInflux(t *dia.Trade) error
+	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
 	Flush() error
 }
 
@@ -136,8 +138,25 @@ func (db *DB) WriteBashInflux() error {
 	return err
 }
 
-func (db *DB) NewPointInflux(filter string, symbol string, exchange string, value float64) error {
+func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+	// Create a point and add to batch
+	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
+	fields := map[string]interface{}{
+		"price":             t.Price,
+		"volume":            t.Volume,
+		"estimatedUSDPrice": t.EstimatedUSDPrice,
+	}
 
+	pt, err := client.NewPoint("trades", tags, fields, t.Time)
+	if err != nil {
+		log.Errorln("NewTradeInflux:", err)
+	} else {
+		db.influxBatchPoints.AddPoint(pt)
+	}
+	return err
+}
+
+func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64) error {
 	// Create a point and add to batch
 	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
 	fields := map[string]interface{}{

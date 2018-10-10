@@ -168,7 +168,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	if len(resultFilters) != 0 {
 		s.chanFiltersBlock <- fb
 	}
-
 	for _, filters := range s.filters {
 		for _, f := range filters {
 			f.save(s.datastore)

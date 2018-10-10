@@ -8,7 +8,7 @@ import (
 
 func (db *DB) SetPriceZSET(symbol string, exchange string, price float64) error {
 
-	db.NewPointInflux(dia.FilterKing, symbol, exchange, price)
+	db.SaveFilterInflux(dia.FilterKing, symbol, exchange, price)
 
 	key := getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange))
 	log.Println("SetPriceZSET ", key)

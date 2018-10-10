@@ -104,6 +104,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		t.EstimatedUSDPrice = t.Price
 	}
 
+	if ignoreTrade == false {
+		s.datastore.SaveTradeInflux(&t)
+	}
+
 	if s.currentBlock != nil &&
 		s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debug("ignore trade should be in previous block %v", t)
@@ -128,6 +132,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			log.Printf("created new block beginTime: %v", b.TradesBlockData.BeginTime)
 
 			s.currentBlock = b
+			s.datastore.Flush()
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {

@@ -3,9 +3,9 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/api-golang/internal/pkg/http/restApi"
 	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/diadata-org/api-golang/pkg/dia/helpers"
+	"github.com/diadata-org/api-golang/pkg/http/restApi"
 	"github.com/diadata-org/api-golang/pkg/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
