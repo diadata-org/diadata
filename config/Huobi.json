@@ -149,6 +149,11 @@
       "Symbol": "OMG",
       "ForeignName": "OMGUSDT",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTUSDT",
+      "Exchange": "Huobi"
     }
   ]
 }

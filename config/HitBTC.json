@@ -149,6 +149,16 @@
       "Symbol": "XMC",
       "ForeignName" : "XMCETH",
       "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName" : "XMCUSDT",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName" : "XMCETH",
+      "Exchange" : "HitBTC"
     }
   ]
 }

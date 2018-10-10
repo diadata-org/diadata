@@ -124,6 +124,21 @@
       "Symbol": "VET",
       "ForeignName": "VET_ETH",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZ_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZ_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZ_ETH",
+      "Exchange": "GateIO"
     }
   ]
 }

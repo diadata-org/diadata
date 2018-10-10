@@ -59,6 +59,16 @@
       "Symbol": "NEO",
       "ForeignName": "NEO_USDT",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKR_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKR_ETH",
+      "Exchange": "OKEx"
     }
   ]
 }

@@ -84,6 +84,21 @@
       "Symbol": "ZEC",
       "ForeignName": "ZECUSD",
       "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZBTC",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGUSD",
+      "Exchange": "Bitfinex"
     }
   ]
 }

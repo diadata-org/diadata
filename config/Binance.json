@@ -14,6 +14,16 @@
       "Symbol": "OMG",
       "ForeignName": "OMGUSDT",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTUSDT",
+      "Exchange": "Binance"
     }
   ]
 }

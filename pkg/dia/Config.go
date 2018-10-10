@@ -41,6 +41,15 @@ func SymbolsFrontPage() []string {
 		"XLM",
 		"TRX",
 		"USDT",
+		"ETC",
+		"XEM",
+		"XTZ",
+		"VET",
+		"ZEC",
+		"OMG",
+		"MKR",
+		"BTG",
+		"ONT",
 	}
 }
 
