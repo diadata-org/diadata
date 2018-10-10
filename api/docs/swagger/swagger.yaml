@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   dia.FilterPoint:
     properties:
@@ -96,6 +95,13 @@ definitions:
       tradesNumber:
         type: integer
     type: object
+  diaApi.Change:
+    properties:
+      eurusd:
+        type: number
+      eurusdyesterday:
+        type: number
+    type: object
   diaApi.Coin:
     properties:
       circulatingSupply:
@@ -113,13 +119,6 @@ definitions:
       volumeYesterdayUSD:
         type: number
     type: object
-  diaApi.Coins:
-    properties:
-      coins:
-        items:
-          $ref: '#/definitions/diaApi.Coin'
-        type: array
-    type: object
   diaApi.Pairs:
     properties:
       pairs:
@@ -129,6 +128,9 @@ definitions:
     type: object
   diaApi.SymbolDetails:
     properties:
+      change:
+        $ref: '#/definitions/diaApi.Change'
+        type: object
       coin:
         $ref: '#/definitions/diaApi.Coin'
         type: object
@@ -159,19 +161,9 @@ definitions:
       errormessage:
         type: string
     type: object
-host: api.diadata.org
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: GetTrades
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: diadata.org API
-  version: "1.0"
+  contact: {}
+  license: {}
 paths:
   /kafka/filtersBlock:
     get:
@@ -263,27 +255,6 @@ paths:
       summary: GetTradesBlock get messages in topic
       tags:
       - kafka
-  /v1/coins:
-    get:
-      consumes:
-      - application/json
-      description: GetCoins
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            $ref: '#/definitions/diaApi.Coins'
-            type: object
-        "500":
-          description: error
-          schema:
-            $ref: '#/definitions/restApi.APIError'
-            type: object
-      summary: Get coins
-      tags:
-      - dia
   /v1/pairs/:
     get:
       consumes:
@@ -433,4 +404,3 @@ paths:
       summary: Get Symbol Details
       tags:
       - dia
-swagger: "2.0"

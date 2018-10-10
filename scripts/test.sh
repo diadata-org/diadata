@@ -1,3 +1,4 @@
+cd $GOPATH/src/github.com/diadata-org/api-golang
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color

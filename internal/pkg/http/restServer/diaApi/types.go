@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type Change struct {
+	EURUSD          *float64
+	EURUSDYesterday *float64
+}
+
 type Coin struct {
 	Symbol             string
 	Name               string
@@ -17,7 +22,8 @@ type Coin struct {
 }
 
 type Coins struct {
-	Coins []Coin
+	Change Change
+	Coins  []Coin
 }
 
 type Pairs struct {
@@ -25,6 +31,7 @@ type Pairs struct {
 }
 
 type SymbolDetails struct {
+	Change    Change
 	Coin      Coin
 	Exchanges map[string]models.SymbolExchangeDetails
 }

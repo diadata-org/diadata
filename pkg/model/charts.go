@@ -19,3 +19,30 @@ func (db *DB) GetChartPoints(symbol string) ([]Point, error) {
 	log.Println(symbol, "GetChartPoints:%v", result)
 	return result, err
 }
+
+func (db *DB) GetChartPoints7Days(symbol string) ([]float64, error) {
+	result := []float64{}
+	vals, err := db.redisClient.ZRange(getKeyFilterZSET(dia.FilterKing+"_"+symbol), 0, -1).Result()
+	if err == nil {
+		if len(vals) != 0 {
+			var lastUnixTime int64
+			var lastValue float64
+			var secondsInOnePoint int64 = 3600 * 24
+			var numberOfPoints int64 = 8
+			fmt.Sscanf(vals[len(vals)-1], "%f %d", &lastValue, &lastUnixTime)
+			lastTime := lastUnixTime - secondsInOnePoint*numberOfPoints
+			var value float64
+			var unixTime int64
+			for _, v := range vals {
+				fmt.Sscanf(v, "%f %d", &value, &unixTime)
+				if unixTime-lastTime > secondsInOnePoint {
+					lastTime = unixTime
+					result = append(result, value)
+				}
+			}
+			result[len(result)-1] = lastValue
+		}
+	}
+	log.Println(symbol, "GetChartPoints:%v", result)
+	return result, err
+}

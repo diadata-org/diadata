@@ -3,7 +3,7 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/api-golang/http/restApi"
+	"github.com/diadata-org/api-golang/internal/pkg/http/restApi"
 	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/diadata-org/api-golang/pkg/dia/helpers"
 	"github.com/diadata-org/api-golang/pkg/model"
@@ -155,7 +155,6 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-
 		r := &SymbolDetails{
 			Coin: Coin{
 				Symbol:             q.Symbol,
@@ -165,6 +164,7 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
 			},
+			Change:    env.getChange(),
 			Exchanges: make(map[string]models.SymbolExchangeDetails),
 		}
 
@@ -205,6 +205,17 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 // @Success 200 {object} diaApi.Coins "success"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/coins [get]
+
+func (env *Env) getChange() Change {
+	var r Change
+	val, err := env.DataStore.GetPriceUSD("EUR")
+	if err == nil {
+		r.EURUSD = &val
+		r.EURUSDYesterday = &val
+	}
+	return r
+}
+
 func (env *Env) GetCoins(c *gin.Context) {
 
 	symbols, err := env.DataStore.SymbolsWithASupply()
@@ -214,6 +225,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 
 		var coins Coins
 		coins.Coins = []Coin{}
+		coins.Change = env.getChange()
 
 		for _, symbol := range symbols {
 			var c1 Coin

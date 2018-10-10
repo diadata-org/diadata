@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/appleboy/gin-jwt"
-	_ "github.com/diadata-org/api-golang/docs"
-	"github.com/diadata-org/api-golang/http/restServer/diaApi"
-	"github.com/diadata-org/api-golang/http/restServer/kafkaApi"
+	_ "github.com/diadata-org/api-golang/api/docs"
+	"github.com/diadata-org/api-golang/internal/pkg/http/restServer/diaApi"
+	"github.com/diadata-org/api-golang/internal/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/api-golang/pkg/dia"
 	"github.com/diadata-org/api-golang/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/api-golang/pkg/model"

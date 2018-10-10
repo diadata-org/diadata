@@ -6,7 +6,7 @@ services:
       - "8080:8080"
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/http/Dockerfile-restServer
+      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-restServer
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_restserver:latest
     networks:
       - kafka-network
@@ -22,7 +22,7 @@ services:
   nginx:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/http/Dockerfile-nginx
+      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-nginx
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_nginx:latest
     networks:
       - kafka-network

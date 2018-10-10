@@ -25,6 +25,7 @@ type Datastore interface {
 	SetSupply(supply *dia.Supply) error
 	SetPriceZSET(symbol string, exchange string, price float64) error
 	GetChartPoints(symbol string) ([]Point, error)
+	GetChartPoints7Days(symbol string) ([]float64, error)
 	GetPairs(exchange string) ([]dia.Pair, error)
 	GetSymbols(exchange string) ([]string, error)
 	GetExchangesForSymbol(symbol string) ([]string, error)

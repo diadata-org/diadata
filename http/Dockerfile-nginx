@@ -1,5 +1,0 @@
-
-FROM nginx
- COPY github.com/diadata-org/api-golang/http/nginx/content /usr/share/nginx/html
- COPY github.com/diadata-org/api-golang/http/nginx/conf.d /etc/nginx/conf.d
-
