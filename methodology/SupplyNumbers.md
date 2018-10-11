@@ -69,6 +69,10 @@ Cardano is capped at [45 billion ADA](https://cardanodocs.com/cardano/monetary-p
 To determine the circulating supply, we run our own instance of the [Cardano Explorer](https://github.com/diadata-org/cardano-explorer-docker) and trace every minting event.
 All coins created in these events are added up to determine the circulating supply.
 
+### Binance Coin
+Binance Coin is an ERC20 token.
+We run an Ethereum full node and monitor all circulating tokens of the BNB smart contract.
+
 ### Monero
 Monero is mined over inifinite time.
 To determine the circulating supply, we run an instance of a Monero node and query this node periodically.
@@ -88,5 +92,12 @@ The circulating supply of Tron is determined by running a Tron node and monitori
 However, funds that have been sent to address `TLsV52sRDL79HXGGm9yzwKibb6BeruhUzy` are considered burned (or [blackholed](https://github.com/tronprotocol/wiki/blob/master/docs/Technical_Overview_of_TRON.rst)).
 
 ### NEO
+The circulating supply of NEO is determined by running a NEO node and monitoring the blockchain.
+Initially, there were 100,000,000 NEOs created.
+The NEO team has distributed 50,000,000 to its investors.
+The distribution of the remaining NEOs will happen over time.
+In order to determine how many are still locked by the developers, we watch their address [`AQVh2pG732YvtNaxEGkQUei3YA4cvo7d2i`](https://neotracker.io/address/AQVh2pG732YvtNaxEGkQUei3YA4cvo7d2i)
+and subtract the amount this address holds from the initial volume.
 
 ### Ethereum Classic
+The circulating supply of Ethereum is calculated exactly like in case of Ethereum.
