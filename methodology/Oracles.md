@@ -5,7 +5,7 @@ By generating verifiable oracle data, any user can use financial data in smart c
 The first oracle in DIA is the oracle for the biggest cryptocurrencies from Coinhub.
 
 ## Coinhub Oracles
-The Coinhub oracles are located in a [sinngle smart contract](https://etherscan.io/address/0x284a9d8cf1913e70142efb5b3ebd1de71f9a5f76).
+The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0x284a9d8cf1913e70142efb5b3ebd1de71f9a5f76).
 This smart contract holds mappings from an index to an asset's name, its price, and supply data.
 By using `getParameters(asset_index)` it is possible to retrieve this data.
 Along with the actual data there is a metadata field for the timestamp of the last update.

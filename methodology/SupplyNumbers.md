@@ -101,3 +101,11 @@ and subtract the amount this address holds from the initial volume.
 
 ### Ethereum Classic
 The circulating supply of Ethereum is calculated exactly like in case of Ethereum.
+
+### NEM
+NEM has a fixed circulating supply of 8,999,999,999 coins, that were created in the genesis event.
+
+### Tezos
+Tezos uses a delegation scheme to earn transaction fees.
+Total supply is fixed at 763,306,930 Tezos, but with the staking scheme a varying amount gets transferred to the fixed address [tz1RCFbB9GpALpsZtu6J58sb74dm8qe6XBzv](https://tzscan.io/tz1RCFbB9GpALpsZtu6J58sb74dm8qe6XBzv).
+Our scrapers monitor this address and subtract the value currently held at this address from the initial supply to determine the amount of Tezos in circulation.
