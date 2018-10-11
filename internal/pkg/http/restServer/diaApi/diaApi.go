@@ -250,6 +250,8 @@ func (env *Env) GetCoins(c *gin.Context) {
 					c1.CirculatingSupply = &supply.CirculatingSupply
 					coins.Coins = append(coins.Coins, c1)
 				}
+			} else {
+				log.Warning("no price for ", symbol)
 			}
 		}
 		c.JSON(http.StatusOK, coins)

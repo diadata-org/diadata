@@ -359,7 +359,7 @@ func NameForSymbol(symbol string) string {
 	case "SYS":
 		return "Syscoin"
 	case "BTM":
-		return "Bitmark"
+		return "Bytom"
 	case "HAL":
 		return "Halcyon"
 	case "SJCX":
