@@ -17,7 +17,7 @@ func (db *DB) GetChartPoints(symbol string) ([]Point, error) {
 			result = append(result, p)
 		}
 	}
-	log.Println(symbol, "GetChartPoints:%v", result)
+	//log.Println(symbol, "GetChartPoints:%v", result)
 	return result, err
 }
 
