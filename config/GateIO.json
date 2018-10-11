@@ -154,6 +154,16 @@
       "Symbol": "ZRX",
       "ForeignName": "ZRX_ETH",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSK_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSK_BTC",
+      "Exchange": "GateIO"
     }
   ]
 }

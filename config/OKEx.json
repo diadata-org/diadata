@@ -79,7 +79,21 @@
       "Symbol": "ZRX",
       "ForeignName": "ZRX_BTC",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSK_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSK_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSK_ETH",
+      "Exchange": "OKEx"
     }
-
   ]
 }

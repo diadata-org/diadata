@@ -34,7 +34,21 @@
       "Symbol": "ZRX",
       "ForeignName": "ZRXETH",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKBNB",
+      "Exchange": "Binance"
     }
-
   ]
 }

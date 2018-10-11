@@ -50,6 +50,11 @@
       "ForeignName" : "ZRXETH",
       "Exchange" : "HitBTC"
     },
+		{
+      "Symbol": "ZRX",
+      "ForeignName" : "ZRXUSDT",
+      "Exchange" : "HitBTC"
+    },
     {
       "Symbol": "ZEC",
       "ForeignName" : "ZECBTC",
@@ -152,12 +157,27 @@
     },
     {
       "Symbol": "XTZ",
-      "ForeignName" : "XMCUSDT",
+      "ForeignName" : "XTZUSDT",
       "Exchange" : "HitBTC"
     },
     {
       "Symbol": "XTZ",
-      "ForeignName" : "XMCETH",
+      "ForeignName" : "XTZETH",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "LSK",
+      "ForeignName" : "LSKETH",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "LSK",
+      "ForeignName" : "LSKBTC",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "LSK",
+      "ForeignName" : "LSKUSDT",
       "Exchange" : "HitBTC"
     }
   ]

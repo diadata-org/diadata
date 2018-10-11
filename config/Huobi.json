@@ -159,7 +159,16 @@
       "Symbol": "ZRX",
       "ForeignName": "ZRXBTC",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKETH",
+      "Exchange": "Huobi"
     }
-
   ]
 }
