@@ -34,7 +34,7 @@ func main() {
 				continue
 			}
 
-			log.Println("Producing chart for", symbol, "with", len(points), "datapoints")
+			log.Println("Producing chart for", symbol, "with", len(points), "source datapoints")
 			timePoints := make([]int64, len(points))
 			pricePoints := make([]float64, len(points))
 
@@ -55,11 +55,9 @@ func main() {
 			err = os.Rename(GRAPH_PATH+symbol+".png", GRAPH_PATH+symbol)
 			if err != nil {
 				log.Println(err)
-			} else {
-				log.Println("Created graph for", symbol)
 			}
-		}
 
-		time.Sleep(time.Minute * 2)
+			time.Sleep(time.Minute * 2)
+		}
 	}
 }
