@@ -7,7 +7,13 @@
     </p>
     </section>
     <section v-else class="coin-details">
-	    <div v-if="loading">Loading...</div>
+	    <div v-if="loading" class="loading-data">
+	     <atom-spinner
+          :animation-duration="1000"
+          :size="200"
+          :color="'#564dfc'"
+     	  />
+	    </div>
 	    <div v-else>
 			<b-container fluid>
 			    <b-row>

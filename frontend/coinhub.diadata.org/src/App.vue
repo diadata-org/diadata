@@ -8,7 +8,9 @@
 
 body {
   background-color: #FFFFFF;
-  width: 100%
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 body, html {
@@ -24,6 +26,7 @@ table td {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+   flex: 1 0 auto;
 }
 
 </style>

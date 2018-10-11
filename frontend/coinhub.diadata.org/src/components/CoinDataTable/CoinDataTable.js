@@ -1,6 +1,11 @@
-import shared from '@/shared/shared';
+import shared from  '@/shared/shared';
+import { AtomSpinner } from 'epic-spinners';
+
 
 export default {
+  components: {
+      AtomSpinner
+  },
   name: 'CoinDataTable',
   props: {},
   data() {
@@ -21,11 +26,12 @@ export default {
     };
   },
   async mounted() {
-    const coins = await shared.fetchCoins();
-    this.loading = false;
-    this.coindata = shared.formatCoinData(coins);
+   const coins = await shared.fetchCoins();
+   this.coindata = shared.formatCoinData(coins);
+   this.$nextTick( () => this.loading = false);
   },
   methods: {
 
   },
+
 };

@@ -1,5 +1,20 @@
+div.loading-data {
+	width: 100%;
+	min-height: 70vh;
+	height: 70vh;
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+
+    align-items: center;
+    justify-content: center;
+}
 .coin-details {
-  min-height:75vh
+	min-height: 70vh;
 }
 
 .coin-details div .container-fluid {

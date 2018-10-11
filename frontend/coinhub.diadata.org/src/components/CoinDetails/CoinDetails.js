@@ -2,9 +2,13 @@ import axios from 'axios';
 import numeral from 'numeral';
 import router from '@/router';
 import shared from  '@/shared/shared';
+import { AtomSpinner } from 'epic-spinners';
 
 
 export default {
+  components: {
+    AtomSpinner
+  },
   name: 'CoinDetails',
   props: {},
   data() {

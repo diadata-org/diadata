@@ -5,6 +5,7 @@
 	padding: 0;
 	margin: 0;
 	padding-bottom: 1px;
+	flex-shrink: 0;
 }
 
 .coin-data-footer div div.row {
