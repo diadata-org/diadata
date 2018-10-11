@@ -139,6 +139,121 @@
                 }
             }
         },
+        "/v1/chartPoints/": {
+            "get": {
+                "description": "Get Symbol Details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get chart points for",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Some symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Some exchange",
+                        "name": "exchange",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Some filter",
+                        "name": "filter",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/influxdataResult"
+                        }
+                    },
+                    "404": {
+                        "description": "Symbol not found",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/chartPointsAllExchanges/": {
+            "get": {
+                "description": "Get Symbol Details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get Symbol Details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Some symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Some filter",
+                        "name": "filter",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/influxdataResult"
+                        }
+                    },
+                    "404": {
+                        "description": "Symbol not found",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/coins": {
             "get": {
                 "description": "GetCoins",

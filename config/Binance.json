@@ -154,6 +154,66 @@
       "Symbol": "PAX",
       "ForeignName": "PAXUSDT",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "AE",
+      "ForeignName": "AEBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BTS",
+      "ForeignName": "BTSBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCD",
+      "ForeignName": "BCDBTC",
+      "Exchange": "Binance"
+    },  
+    {
+      "Symbol": "ZIL",
+      "ForeignName": "ZILBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "NANO",
+      "ForeignName": "NANOBTC",
+      "Exchange": "Binance"
+    }, 
+    {
+      "Symbol": "ICX",
+      "ForeignName": "ICXUSDT",
+      "Exchange": "Binance"
+    }, 
+    {
+      "Symbol": "SC",
+      "ForeignName": "SCBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "STEEM",
+      "ForeignName": "STEEMBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XVG",
+      "ForeignName": "XVGBTC",
+      "Exchange": "Binance"
+    }, 
+    {
+      "Symbol": "NPXS",
+      "ForeignName": "NPXSBTC",
+      "Exchange": "Binance"
+    }, 
+    {
+      "Symbol": "WAVES",
+      "ForeignName": "WAVESBTC",
+      "Exchange": "Binance"
+    }, 
+    {
+      "Symbol": "WAVES",
+      "ForeignName": "WAVESBTC",
+      "Exchange": "Binance"
     }
   ]
 }
