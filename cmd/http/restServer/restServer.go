@@ -211,6 +211,9 @@ func main() {
 		dia.GET("/symbol/:symbol", diaApiEnv.GetSymbolDetails)
 		dia.GET("/coins", diaApiEnv.GetCoins)
 		dia.GET("/pairs", diaApiEnv.GetPairs)
+		dia.GET("/chartPoints/:filter/:exchange/:symbol", diaApiEnv.GetChartPoints)
+		dia.GET("/chartPointsAllExchanges/:filter/:symbol", diaApiEnv.GetChartPointsAllExchanges)
+
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

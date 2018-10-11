@@ -119,6 +119,16 @@ definitions:
       volumeYesterdayUSD:
         type: number
     type: object
+  diaApi.Coins:
+    properties:
+      change:
+        $ref: '#/definitions/diaApi.Change'
+        type: object
+      coins:
+        items:
+          $ref: '#/definitions/diaApi.Coin'
+        type: array
+    type: object
   diaApi.Pairs:
     properties:
       pairs:
@@ -135,7 +145,9 @@ definitions:
         $ref: '#/definitions/diaApi.Coin'
         type: object
       exchanges:
-        type: object
+        items:
+          $ref: '#/definitions/models.SymbolExchangeDetails'
+        type: array
     type: object
   models.Quotation:
     properties:
@@ -149,6 +161,23 @@ definitions:
         type: string
       symbol:
         type: string
+      time:
+        type: string
+      volumeYesterdayUSD:
+        type: number
+    type: object
+  models.SymbolExchangeDetails:
+    properties:
+      lastTrades:
+        items:
+          $ref: '#/definitions/dia.Trade'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      priceYesterday:
+        type: number
       time:
         type: string
       volumeYesterdayUSD:
@@ -255,6 +284,27 @@ paths:
       summary: GetTradesBlock get messages in topic
       tags:
       - kafka
+  /v1/coins:
+    get:
+      consumes:
+      - application/json
+      description: GetCoins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/diaApi.Coins'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get coins
+      tags:
+      - dia
   /v1/pairs/:
     get:
       consumes:
