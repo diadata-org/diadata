@@ -3,9 +3,9 @@ package filters
 import (
 	"errors"
 	"github.com/cnf/structhash"
-	"github.com/diadata-org/api-golang/pkg/dia"
-	"github.com/diadata-org/api-golang/pkg/dia/helpers/configCollectors"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"

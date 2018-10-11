@@ -4,7 +4,7 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/eos/scrapers
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/eos/scrapers
 
 RUN go install
 

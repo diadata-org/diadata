@@ -23,7 +23,7 @@ services:
   dash:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/dash/node/Dockerfile-dash
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/dash/node/Dockerfile-dash
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_dash
     networks:
       - scrapers-network
@@ -37,7 +37,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   bitcoin:

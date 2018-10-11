@@ -4,7 +4,7 @@ services:
   usdt:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/tether/node/Dockerfile-usdt
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/tether/node/Dockerfile-usdt
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_usdt
     networks:
       - scrapers-network
@@ -16,7 +16,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   bitcoin:

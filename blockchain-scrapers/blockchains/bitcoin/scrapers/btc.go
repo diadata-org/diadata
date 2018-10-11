@@ -1,6 +1,6 @@
 package main
 
-import "github.com/diadata-org/api-golang/blockchain-scrapers/scrapers"
+import "github.com/diadata-org/diadata/blockchain-scrapers/scrapers"
 
 const (
 	SERVER_HOST = "bitcoin"

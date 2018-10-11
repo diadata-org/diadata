@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/diadata-org/api-golang/internal/pkg/exchange-scrapers"
-	"github.com/diadata-org/api-golang/pkg/dia"
-	"github.com/diadata-org/api-golang/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"log"
 	"sync"
 )

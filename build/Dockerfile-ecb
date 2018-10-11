@@ -4,13 +4,13 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/cmd/exchange-scrapers/ecb
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/exchange-scrapers/ecb
 
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/ecb /bin/ecb
-COPY --from=build /go/src/github.com/diadata-org/api-golang/config/ /config/
+COPY --from=build /go/src/github.com/diadata-org/diadata/config/ /config/
 
 CMD ["ecb"]

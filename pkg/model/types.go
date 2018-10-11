@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/diadata-org/diadata/pkg/dia"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type SymbolExchangeDetails struct {
 	PriceYesterday     *float64
 	VolumeYesterdayUSD *float64
 	Time               *time.Time
+	LastTrades         []dia.Trade
 }
 
 type Quotation struct {

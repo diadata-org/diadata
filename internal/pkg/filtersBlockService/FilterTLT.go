@@ -3,8 +3,8 @@
 package filters
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

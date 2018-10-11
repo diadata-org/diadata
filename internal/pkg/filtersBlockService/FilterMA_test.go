@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"testing"
 	"time"
 )
