@@ -1,0 +1,47 @@
+.coin-data-header nav.bg-info {
+  background-color: rgb(86, 77, 251) !important;
+}
+
+.coin-data-header .navbar {
+    position: relative;
+    justify-content: unset;
+}
+
+.coin-data-header .sub-header {
+	margin-top: 5px;
+	color: #FFF;
+}
+
+@media (min-width: 769px) {	
+	.coin-data-header nav.bg-info a.navbar-brand {
+		margin-left: 100px;
+	}
+
+	.coin-data-header .sub-header {
+		margin-top: 5px;
+		margin-left: 100px;
+	}
+
+	.ml-auto.logo {
+		margin-right: 80px;
+		margin-top: 10px;
+	}
+}
+
+@media (max-width: 767px) {	
+	.ml-auto.logo {
+		width: 60px;
+	}
+}
+
+
+@media (max-width: 768px) {	
+
+	.coin-data-header nav.bg-info a.navbar-brand {
+		margin-left: 5px;
+	}
+
+	.coin-data-header .sub-header {
+		margin-left: 5px;
+	}
+}

@@ -1,0 +1,4 @@
+[build]
+	base = "frontend/coinhub.diadata.org"
+	command = "npm run build"
+	publish = "frontend/coinhub.diadata.org/dist"
