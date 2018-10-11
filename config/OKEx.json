@@ -109,6 +109,21 @@
       "Symbol": "DCR",
       "ForeignName": "DCR_ETH",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUM_ETH",
+      "Exchange": "OKEx"
     }
   ]
 }

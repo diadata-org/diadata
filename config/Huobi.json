@@ -179,6 +179,21 @@
       "Symbol": "DCR",
       "ForeignName": "DCRETH",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMETH",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMUSDT",
+      "Exchange": "Huobi"
     }
   ]
 }

@@ -19,6 +19,27 @@
       "Symbol": "USDT",
       "ForeignName": "USDTZUSD",
       "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMUSD",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMEUR",
+      "Exchange": "Kraken"
+    }
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMETH",
+      "Exchange": "Kraken"
     }
   ]
 }

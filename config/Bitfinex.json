@@ -99,6 +99,21 @@
       "Symbol": "BTG",
       "ForeignName": "BTGUSD",
       "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMBTC",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMETH",
+      "Exchange": "Bitfinex"
     }
   ]
 }

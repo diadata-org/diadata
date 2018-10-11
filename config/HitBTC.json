@@ -179,6 +179,21 @@
       "Symbol": "LSK",
       "ForeignName" : "LSKUSDT",
       "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "QTUM",
+      "ForeignName" : "QTUMETH",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "QTUM",
+      "ForeignName" : "QTUMBTC",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "QTUM",
+      "ForeignName" : "QTUMUSDT",
+      "Exchange" : "HitBTC"
     }
   ]
 }

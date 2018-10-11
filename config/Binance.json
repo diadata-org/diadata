@@ -49,6 +49,26 @@
       "Symbol": "LSK",
       "ForeignName": "LSKBNB",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMUSDT",
+      "Exchange": "Binance"
+    },
+		{
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMBNB",
+      "Exchange": "Binance"
     }
   ]
 }
