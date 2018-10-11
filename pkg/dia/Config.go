@@ -50,6 +50,11 @@ func SymbolsFrontPage() []string {
 		"MKR",
 		"BTG",
 		"ONT",
+		"ZRX",
+		"LSK",
+		"DCR",
+		"QTUM",
+		"BCN",
 	}
 }
 
