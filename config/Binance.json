@@ -84,6 +84,76 @@
       "Symbol": "BCN",
       "ForeignName": "BCNBNB",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCC",
+      "ForeignName": "BCCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "IOTA",
+      "ForeignName": "IOTAUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ICX",
+      "ForeignName": "ICXUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "NULS",
+      "ForeignName": "NULSUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "VET",
+      "ForeignName": "VETUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "PAX",
+      "ForeignName": "PAXUSDT",
+      "Exchange": "Binance"
     }
   ]
 }
