@@ -1,0 +1,44 @@
+.coin-details {
+  min-height:75vh
+}
+
+.coin-details div .container-fluid {
+	padding-left: 115px;
+}
+
+.data-sources-banner {
+	margin-top: 20px;
+	background-color: #dd8244;
+	color: #fff;
+	text-align: center;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-success {
+    color: #00cc00 !important;
+}
+
+.text-normal {
+    color: #000000 !important;
+}
+
+.text-methodology h6 {
+	margin-right: 80px;
+}
+
+@media (max-width: 768px) {	
+	.coin-details div .container-fluid  {
+		padding-left: 10px;
+	}
+}
+
+@media (max-width: 576px) {	
+
+	.text-methodology h6 {
+		text-align: left;
+		margin-right: 0;
+	}
+}

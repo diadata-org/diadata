@@ -1,0 +1,87 @@
+section div.coin-data {
+  min-height:75vh
+
+}
+
+span.coin-name {
+	margin-left: 20px;
+}
+
+section div .table-responsive{
+	padding-left: 100px;
+	padding-right: 100px;
+	padding-top: 50px;
+}
+
+/deep/ table td {
+	text-align: right;
+}
+
+/deep/ table td:last-child{
+	text-align: center;
+}
+
+/deep/ table thead th:nth-child(2),
+/deep/ table td:nth-child(2){
+	text-align: left;
+	padding-left: 30px;
+}
+
+/deep/ table thead th,
+/deep/ table tbody tr td:first-child{
+	text-align: center;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-success {
+    color: #00cc00 !important;
+}
+
+.text-normal {
+    color: #000000 !important;
+}
+
+@media (max-width: 768px) {	
+	section div .table-responsive{
+		padding-left: 20px;
+		padding-right: 0;
+		padding-top: 0;
+	}
+}
+
+
+@media (max-width: 576px) {	
+	/deep/ table th,
+	/deep/ table td {
+		font-size: 12px;
+	}
+	/deep/ table td:nth-child(2){
+		text-align: left;
+		padding-left: 2px;
+	}
+
+	/deep/ table{
+		width: 350%;
+	}
+}
+
+@media (min-width: 768px)  and (max-width: 1024px){	
+	/deep/ table{
+		width: 160%;
+	}
+	/deep/ table td:nth-child(2){
+		text-align: left;
+		padding-left: 2px;
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1366px)  {	
+	/deep/ table{
+		width: 150%;
+	}
+
+	
+}
