@@ -69,6 +69,17 @@
       "Symbol": "MKR",
       "ForeignName": "MKR_ETH",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRX_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRX_BTC",
+      "Exchange": "OKEx"
     }
+
   ]
 }

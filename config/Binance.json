@@ -24,6 +24,17 @@
       "Symbol": "ONT",
       "ForeignName": "ONTUSDT",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXETH",
+      "Exchange": "Binance"
     }
+
   ]
 }

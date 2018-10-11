@@ -154,6 +154,12 @@
       "Symbol": "ONT",
       "ForeignName": "ONTUSDT",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXBTC",
+      "Exchange": "Huobi"
     }
+
   ]
 }

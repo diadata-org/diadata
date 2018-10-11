@@ -139,6 +139,21 @@
       "Symbol": "XTZ",
       "ForeignName": "XTZ_ETH",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRX_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRX_BTC",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRX_ETH",
+      "Exchange": "GateIO"
     }
   ]
 }
