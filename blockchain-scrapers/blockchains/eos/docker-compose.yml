@@ -5,7 +5,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/eos:mainnet
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/eos/node/Dockerfile-node
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/eos/node/Dockerfile-node
     ports:
       - 8888:8888
       - 9876:9876
@@ -28,7 +28,7 @@ services:
       - eos-node
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/eos/node/Dockerfile
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/eos/node/Dockerfile
     networks:
       - scrapers-network
     logging:
@@ -41,7 +41,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   eosio:

@@ -1,7 +1,7 @@
 package configCollectors
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"os"
@@ -59,7 +59,7 @@ func configFileConnectors(exchange string) string {
 	if dir == "/home/travis" {
 		return "../config/" + exchange + ".json" //hack for travis
 	}
-	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/api-golang/config/" + exchange + ".json"
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + ".json"
 }
 
 func NewConfigCollectors(exchange string) *ConfigCollectors {

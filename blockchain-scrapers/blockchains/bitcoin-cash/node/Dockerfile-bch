@@ -4,7 +4,7 @@ WORKDIR $GOPATH
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin-cash/scrapers/bch
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/bitcoin-cash/scrapers/bch
 
 RUN go install
 

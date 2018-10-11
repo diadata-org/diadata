@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/PaddyMc/go-tron/calculations"
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"time"
 	//"fmt"
 )

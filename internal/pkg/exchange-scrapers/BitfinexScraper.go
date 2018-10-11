@@ -6,7 +6,7 @@ import (
 	bitfinex "github.com/bitfinexcom/bitfinex-api-go/v2"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"log"
 	"strconv"
 	"sync"

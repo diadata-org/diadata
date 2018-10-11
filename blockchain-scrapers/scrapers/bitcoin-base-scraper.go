@@ -1,7 +1,7 @@
 package blockchainscrapers
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/go-bitcoind"
 	"log"
 	"time"

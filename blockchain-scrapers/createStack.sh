@@ -73,7 +73,7 @@ if [[ $@ == *"-h"* ]]; then
 fi
 
 # create necessary volumes 
-blockchain_dir=$GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains
+blockchain_dir=$GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains
 export STACKNAME=blockchain-scrapers
 
 if [ ! -e $HOME/srv ]; then

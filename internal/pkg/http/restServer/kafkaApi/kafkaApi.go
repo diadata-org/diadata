@@ -1,7 +1,7 @@
 package kafkaApi
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia/helpers/kafkaHelper"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/gin-gonic/gin"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"

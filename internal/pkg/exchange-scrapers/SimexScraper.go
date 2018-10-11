@@ -11,7 +11,7 @@ import (
 
 	"strconv"
 
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 type PairIdMap struct {

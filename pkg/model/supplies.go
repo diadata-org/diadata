@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
-	"github.com/diadata-org/api-golang/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"

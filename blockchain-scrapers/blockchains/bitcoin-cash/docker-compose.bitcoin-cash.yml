@@ -25,7 +25,7 @@ services:
   bch:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/bitcoin-cash/node/Dockerfile-bch
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/bitcoin-cash/node/Dockerfile-bch
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bch
     depends_on:
       - bitcoin-cash
@@ -40,7 +40,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   bitcoin:

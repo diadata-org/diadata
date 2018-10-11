@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	"github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
@@ -34,6 +34,7 @@ type Datastore interface {
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
+	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	Flush() error
 }
 
@@ -44,11 +45,12 @@ type DB struct {
 }
 
 const (
-	influxDbName = "dia"
+	influxDbName        = "dia"
+	influxDbTradesTable = "trades"
 )
 
-// queryDB convenience function to query the database
-func queryDB(clnt client.Client, cmd string) (res []client.Result, err error) {
+// queryInfluxDB convenience function to query the database
+func queryInfluxDB(clnt client.Client, cmd string) (res []client.Result, err error) {
 	q := client.Query{
 		Command:  cmd,
 		Database: influxDbName,
@@ -87,7 +89,7 @@ func NewDataStore() (*DB, error) {
 		log.Error("NewDataStore influxdb", err)
 	}
 
-	_, err = queryDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 	if err != nil {
 		log.Error(err)
 	}
@@ -145,9 +147,10 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		"price":             t.Price,
 		"volume":            t.Volume,
 		"estimatedUSDPrice": t.EstimatedUSDPrice,
+		"foreignTradeID":    t.ForeignTradeID,
 	}
 
-	pt, err := client.NewPoint("trades", tags, fields, t.Time)
+	pt, err := client.NewPoint(influxDbTradesTable, tags, fields, t.Time)
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {

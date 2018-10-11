@@ -4,7 +4,7 @@ services:
   ecb:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-ecb
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-ecb
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ecb:latest
     networks:
       - redis-network
@@ -15,7 +15,7 @@ services:
   hitbtccollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_hitbtccollector:latest
     command: /bin/collector -exchange=HitBTC
     networks:
@@ -27,7 +27,7 @@ services:
   gateiocollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_gateiocollector:latest
     command: /bin/collector -exchange=GateIO
     networks:
@@ -39,7 +39,7 @@ services:
   simexcollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_simexcollector:latest
     command: /bin/collector -exchange=Simex
     networks:
@@ -51,7 +51,7 @@ services:
   lbankcollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
     command: /bin/collector -exchange=LBank
     networks:
@@ -63,7 +63,7 @@ services:
   okexcollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_okexcollector:latest
     command: /bin/collector -exchange=OKEx
     networks:
@@ -75,7 +75,7 @@ services:
   huobicollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_huobicollector:latest
     command: /bin/collector -exchange=Huobi
     networks:
@@ -87,7 +87,7 @@ services:
   coinbasecollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_coinbasecollector:latest
     command: /bin/collector -exchange=CoinBase
     networks:
@@ -99,7 +99,7 @@ services:
   binancecollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binancecollector:latest
     command: /bin/collector -exchange=Binance
     networks:
@@ -113,7 +113,7 @@ services:
   bitfinexcollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bitfinexcollector:latest
     command: /bin/collector -exchange=Bitfinex
     networks:
@@ -127,7 +127,7 @@ services:
   krakencollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_krakencollector:latest
     command: /bin/collector -exchange=Kraken
     networks:
@@ -139,7 +139,7 @@ services:
   zbcollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-genericCollector
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_zbcollector:latest
     command: /bin/collector -exchange=ZB
     networks:

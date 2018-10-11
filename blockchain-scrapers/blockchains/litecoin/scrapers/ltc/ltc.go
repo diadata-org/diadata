@@ -3,8 +3,8 @@ package main
 //docker run -p 9332:9332 --rm uphold/litecoin-core   -printtoconsole   -rpcallowip=::/0  -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
 
 import (
-	"github.com/diadata-org/api-golang/blockchain-scrapers/scrapers"
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/blockchain-scrapers/scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 const (

@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/diadata-org/api-golang/blockchain-scrapers/scrapers"
+	"github.com/diadata-org/diadata/blockchain-scrapers/scrapers"
 )
 
 const (
-	HOST 		= "dashd"
-	PORT 		= 9998
-	USER        = "dashrpc"
-	PASSWD 		= "dash_rpc_521d43b"
-	SYMBOL      = "DASH"
+	HOST   = "dashd"
+	PORT   = 9998
+	USER   = "dashrpc"
+	PASSWD = "dash_rpc_521d43b"
+	SYMBOL = "DASH"
 )
 
 func main() {

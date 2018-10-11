@@ -22,7 +22,7 @@ services:
   ada:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchain/cardano/node/Dockerfile
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchain/cardano/node/Dockerfile
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ada
     networks:
       - scrapers-network
@@ -34,7 +34,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/config/secrets/api_diadata.json
 
 volumes: 
   cardano:

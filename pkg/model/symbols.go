@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/diadata-org/api-golang/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -57,6 +57,9 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 
 	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
 	result.Time = d
+
+	t, _ := db.GetLastTrades(symbol, exchange, 10)
+	result.LastTrades = t
 
 	return result, err
 }

@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"github.com/diadata-org/api-golang/internal/pkg/filtersBlockService"
-	"github.com/diadata-org/api-golang/pkg/dia"
-	"github.com/diadata-org/api-golang/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/api-golang/pkg/model"
+	"github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"sync"

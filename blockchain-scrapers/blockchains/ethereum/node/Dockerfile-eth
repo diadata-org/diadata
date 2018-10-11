@@ -4,7 +4,7 @@ WORKDIR $GOPATH
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/ethereum/scrapers/eth
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/ethereum/scrapers/eth
 
 RUN go install
 

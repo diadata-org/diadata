@@ -4,7 +4,7 @@ WORKDIR $GOPATH
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/blockchain-scrapers/blockchains/dogecoin/scrapers/doge
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/dogecoin/scrapers/doge
 
 RUN go install
 

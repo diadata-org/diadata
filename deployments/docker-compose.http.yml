@@ -6,11 +6,12 @@ services:
       - "8080:8080"
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-restServer
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-restServer
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_restserver:latest
     networks:
       - kafka-network
       - redis-network
+      - influxdb-network
     secrets:
       - api_diadata
     logging:
@@ -22,7 +23,7 @@ services:
   nginx:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/api-golang/build/Dockerfile-nginx
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-nginx
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_nginx:latest
     networks:
       - kafka-network
@@ -62,3 +63,6 @@ networks:
   redis-network:
     external:
         name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
