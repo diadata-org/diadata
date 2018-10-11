@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
+	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -45,4 +46,20 @@ func (db *DB) GetChartPoints7Days(symbol string) ([]float64, error) {
 	}
 	log.Println(symbol, "GetChartPoints:%v", result)
 	return result, err
+}
+
+func (db *DB) GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error) {
+	log.Info("GetFilterPoints")
+	//  LIMIT %d
+	exchangeQuery := "and exchange='" + exchange + "' "
+	if exchange == "" {
+		exchangeQuery = ""
+	}
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", influxDbFiltersTable, filter, exchangeQuery, symbol)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("GetFilterPoints", err)
+	}
+	return res, err
 }

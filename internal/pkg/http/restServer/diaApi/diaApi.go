@@ -9,6 +9,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	_ "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -165,7 +166,7 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 				PriceYesterday:     q.PriceYesterday,
 			},
 			Change:    env.getChange(),
-			Exchanges: make(map[string]models.SymbolExchangeDetails),
+			Exchanges: []models.SymbolExchangeDetails{},
 		}
 
 		s, err := env.DataStore.GetSupply(symbol)
@@ -180,7 +181,7 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 			for _, e := range exs {
 				s, err2 := env.DataStore.GetSymbolExchangeDetails(symbol, e)
 				if err2 == nil {
-					r.Exchanges[e] = *s
+					r.Exchanges = append(r.Exchanges, *s)
 				}
 			}
 			c.JSON(http.StatusOK, r)
@@ -196,16 +197,6 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 	return t
 }
 
-// GetCoins godoc
-// @Summary Get coins
-// @Description GetCoins
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} diaApi.Coins "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/coins [get]
-
 func (env *Env) getChange() Change {
 	var r Change
 	val, err := env.DataStore.GetPriceUSD("EUR")
@@ -216,6 +207,15 @@ func (env *Env) getChange() Change {
 	return r
 }
 
+// GetCoins godoc
+// @Summary Get coins
+// @Description GetCoins
+// @Tags dia
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} diaApi.Coins "success"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/coins [get]
 func (env *Env) GetCoins(c *gin.Context) {
 
 	symbols, err := env.DataStore.SymbolsWithASupply()
@@ -250,5 +250,58 @@ func (env *Env) GetCoins(c *gin.Context) {
 			}
 		}
 		c.JSON(http.StatusOK, coins)
+	}
+}
+
+// GetChartPoints godoc
+// @Summary Get chart points for
+// @Description Get Symbol Details
+// @Tags dia
+// @Accept  json
+// @Produce  json
+// @Param   symbol     path    string     true        "Some symbol"
+// @Param   exchange     path    string     true        "Some exchange"
+// @Param   filter     path    string     true        "Some filter"
+// @Success 200 {object} []client.Result "success"
+// @Failure 404 {object} restApi.APIError "Symbol not found"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
+
+func (env *Env) GetChartPoints(c *gin.Context) {
+	filter := c.Param("filter")
+	exchange := c.Param("exchange")
+	symbol := c.Param("symbol")
+
+	// 		dia.GET("/chartPoints/:exchange/:symbol", diaApiEnv.GetChartPoints)
+
+	points, err := env.DataStore.GetFilterPoints(filter, exchange, symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, points)
+	}
+}
+
+// GetChartPointsAllExchange godoc
+// @Summary Get Symbol Details
+// @Description Get Symbol Details
+// @Tags dia
+// @Accept  json
+// @Produce  json
+// @Param   symbol     path    string     true        "Some symbol"
+// @Param   filter     path    string     true        "Some filter"
+// @Success 200 {object} []client.Result "success"
+// @Failure 404 {object} restApi.APIError "Symbol not found"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/chartPointsAllExchanges/:exchange:/:symbol: [get]
+
+func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
+	filter := c.Param("filter")
+	symbol := c.Param("symbol")
+	points, err := env.DataStore.GetFilterPoints(filter, "", symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, points)
 	}
 }

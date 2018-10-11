@@ -139,6 +139,37 @@
                 }
             }
         },
+        "/v1/coins": {
+            "get": {
+                "description": "GetCoins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get coins",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/diaApi.Coins"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/pairs/": {
             "get": {
                 "description": "et pairs",
@@ -544,6 +575,21 @@
                 }
             }
         },
+        "diaApi.Coins": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "object",
+                    "$ref": "#/definitions/diaApi.Change"
+                },
+                "coins": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/diaApi.Coin"
+                    }
+                }
+            }
+        },
         "diaApi.Pairs": {
             "type": "object",
             "properties": {
@@ -567,7 +613,10 @@
                     "$ref": "#/definitions/diaApi.Coin"
                 },
                 "exchanges": {
-                    "type": "object"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SymbolExchangeDetails"
+                    }
                 }
             }
         },
@@ -588,6 +637,32 @@
                 },
                 "symbol": {
                     "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "volumeYesterdayUSD": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.SymbolExchangeDetails": {
+            "type": "object",
+            "properties": {
+                "lastTrades": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dia.Trade"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "priceYesterday": {
+                    "type": "number"
                 },
                 "time": {
                     "type": "string"
