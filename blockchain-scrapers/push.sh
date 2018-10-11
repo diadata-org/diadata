@@ -1,1 +1,0 @@
-/home/mute/secrets/push.sh
