@@ -85,5 +85,35 @@
       "ForeignName": "BCNBNB",
       "Exchange": "Binance"
     }
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCC",
+      "ForeignName": "BCCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSDT",
+      "Exchange": "Binance"
+    }
   ]
 }
