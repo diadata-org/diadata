@@ -284,6 +284,85 @@ paths:
       summary: GetTradesBlock get messages in topic
       tags:
       - kafka
+  /v1/chartPoints/:
+    get:
+      consumes:
+      - application/json
+      description: Get Symbol Details
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Some exchange
+        in: path
+        name: exchange
+        required: true
+        type: string
+      - description: Some filter
+        in: path
+        name: filter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/influxdataResult'
+            type: object
+        "404":
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get chart points for
+      tags:
+      - dia
+  /v1/chartPointsAllExchanges/:
+    get:
+      consumes:
+      - application/json
+      description: Get Symbol Details
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Some filter
+        in: path
+        name: filter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/influxdataResult'
+            type: object
+        "404":
+          description: Symbol not found
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get Symbol Details
+      tags:
+      - dia
   /v1/coins:
     get:
       consumes:

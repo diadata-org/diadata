@@ -199,6 +199,11 @@
       "Symbol": "BCN",
       "ForeignName": "BCN_BTC",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BTM",
+      "ForeignName": "BTM_USDT",
+      "Exchange": "GateIO"
     }
   ]
 }
