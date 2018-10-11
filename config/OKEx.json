@@ -94,6 +94,21 @@
       "Symbol": "LSK",
       "ForeignName": "LSK_ETH",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCR_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCR_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCR_ETH",
+      "Exchange": "OKEx"
     }
   ]
 }

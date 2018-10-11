@@ -164,6 +164,16 @@
       "Symbol": "LSK",
       "ForeignName": "LSK_BTC",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCR_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCR_BTC",
+      "Exchange": "GateIO"
     }
   ]
 }

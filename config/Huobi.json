@@ -169,6 +169,16 @@
       "Symbol": "LSK",
       "ForeignName": "LSKETH",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCRBTC",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCRETH",
+      "Exchange": "Huobi"
     }
   ]
 }
