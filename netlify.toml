@@ -1,4 +1,4 @@
 [build]
 	base = "frontend/coinhub.diadata.org"
-	command = "npm run build"
+	command = " rm -rf .node_modules && npm install && npm run build"
 	publish = "dist"
