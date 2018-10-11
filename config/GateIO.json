@@ -189,6 +189,16 @@
       "Symbol": "QTUM",
       "ForeignName": "QTUM_ETH",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCN_USDT",
+      "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCN_BTC",
+      "Exchange": "GateIO"
     }
   ]
 }

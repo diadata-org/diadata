@@ -194,6 +194,21 @@
       "Symbol": "QTUM",
       "ForeignName" : "QTUMUSDT",
       "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "BCN",
+      "ForeignName" : "BCNETH",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "BCN",
+      "ForeignName" : "BCNBTC",
+      "Exchange" : "HitBTC"
+    },
+		{
+      "Symbol": "BCN",
+      "ForeignName" : "BCNUSDT",
+      "Exchange" : "HitBTC"
     }
   ]
 }

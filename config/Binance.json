@@ -69,6 +69,21 @@
       "Symbol": "QTUM",
       "ForeignName": "QTUMBNB",
       "Exchange": "Binance"
+    },
+		{
+      "Symbol": "BCN",
+      "ForeignName": "BCNBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNBNB",
+      "Exchange": "Binance"
     }
   ]
 }

@@ -124,6 +124,16 @@
       "Symbol": "QTUM",
       "ForeignName": "QTUM_ETH",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCN_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCN_BTC",
+      "Exchange": "OKEx"
     }
   ]
 }
