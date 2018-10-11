@@ -10,8 +10,9 @@ const (
 	USER   = "dashrpc"
 	PASSWD = "dash_rpc_521d43b"
 	SYMBOL = "DASH"
+	TIP_TIME = 60 * 3
 )
 
 func main() {
-	blockchainscrapers.RunScraper(HOST, PORT, USER, PASSWD, SYMBOL)
+	blockchainscrapers.RunScraper(HOST, PORT, USER, PASSWD, SYMBOL, TIP_TIME)
 }

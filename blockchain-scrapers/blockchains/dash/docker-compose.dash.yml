@@ -7,7 +7,7 @@ services:
     ports:
       - "9998"
     volumes:
-      - $HOME/srv/dash:/dash
+      - /home/srv/dash:/dash
     command: dash_oneshot -printtoconsole -server -rpcuser=dashrpc -rpcpassword=dash_rpc_521d43b -rpcallowip=::/0
     logging:
       options:

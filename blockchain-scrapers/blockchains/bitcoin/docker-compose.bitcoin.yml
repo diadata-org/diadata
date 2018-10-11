@@ -4,6 +4,7 @@ services:
   bitcoin:
     image:
       kylemanna/bitcoind
+    user: "1000"
     ports:
       - "8332"
     volumes:

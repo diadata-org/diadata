@@ -7,7 +7,7 @@ services:
     ports:
       - "8100"
     volumes:
-      - $HOME/srv/cardano:/home/cardano/cardano-sl/state-explorer-mainnet
+      - /home/srv/cardano:/home/cardano/cardano-sl/state-explorer-mainnet
     logging:
       options:
         max-size: "50m"

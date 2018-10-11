@@ -7,8 +7,7 @@ services:
     ports:
       - "10332:10332"
     volumes:
-      - $HOME/srv/neo:/app/Chain_00746E41
-    tty: true
+      - /home/srv/neo:/app/Chain_00746E41
     logging:
       options:
         max-size: "50m"

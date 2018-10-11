@@ -7,7 +7,7 @@ services:
     ports:
       - "22555"
     volumes:
-      - $HOME/srv/dogecoin:/dogecoin
+      - /home/srv/dogecoin:/dogecoin
     command: dogecoind -rpcuser=dogediauser -rpcpassword=dogediapassword -printtoconsole -server -rpcssl=0 -rpcport=22555 -rpcallowip=::/0
     logging:
       options:

@@ -8,8 +8,8 @@ services:
       - "8545"
       - "30303"
     volumes:
-      - $HOME/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --syncmode "light" --cache 1024 --rpc
+      - /home/srv-local/geth:/root/.ethereum
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "light"
     logging:
       options:
         max-size: "50m"
@@ -56,7 +56,7 @@ services:
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-eth
-    image: ${DOCKER_HUB_LOGIN}/blockchain-scrapers_eth
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eth
     networks:
       - scrapers-network
     depends_on: 

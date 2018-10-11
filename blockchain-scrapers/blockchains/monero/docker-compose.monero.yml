@@ -3,7 +3,7 @@ version: '3.2'
 services:
   monero:
     image:
-      ${DOCKER_HUB_LOGIN}/blockchain-scrapers_monero
+      ${DOCKER_HUB_LOGIN}/${STACKNAME}_monero
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/monero/node/Dockerfile-monero
@@ -11,7 +11,7 @@ services:
       - "18080"
       - "18081"
     volumes:
-      - $HOME/srv/monero:/root/.bitmonero
+      - /home/srv/monero:/root/.bitmonero
     networks:
       - scrapers-network
 

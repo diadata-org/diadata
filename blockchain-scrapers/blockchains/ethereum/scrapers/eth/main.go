@@ -42,8 +42,8 @@ func init() {
 	premine.SetString("72009990499480000000000000", 10)
 	//Checkpoints - Hardcoded - Starting point, even if DB/persistant layer is unavailable
 	//Might be good idea to update these while performing mantainence on this code.
-	checkpointBlock = big.NewInt(6228502)
-	checkpointSupply.SetString("29595286937500000000000000", 10)
+	checkpointBlock = big.NewInt(6407102 )
+	checkpointSupply.SetString("30202142593750000000000000", 10)
 	// Override the above from some database
 	blockStorage, blockSupply, err := fetchSupplyFromStorage()
 	if err != nil {
@@ -202,7 +202,7 @@ func getSupply(ctx context.Context) (*big.Int, error) {
 		current = current.Add(current, one)
 	}
 	close(ch)
-	log.Println(supply)
+	log.Println("Supply:", supply)
 	log.Println(current)
 	log.Println(supply.Add(supply, premine))
 	return supply, nil

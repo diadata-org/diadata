@@ -24,13 +24,13 @@ function deploy {
 	case $1 in
 		# deploy every service in a stack called 'all'
 		all)
-			find $blockchain_dir -name docker-compose.*.yml -exec docker stack deploy -c {} $1 \;
+			find . -name docker-compose.*.yml -exec docker stack deploy -c {} $1 \;
 			echo "Finished deployment" 1>&3
 			;;
 
 		# deploy a service in a stack with its name
 		*)
-			(docker stack deploy -c $(find $blockchain_dir -name docker-compose.$1.yml) $1 &&
+			(docker stack deploy -c $(find . -name docker-compose.$1.yml) $1 &&
 				echo "Finished deployment" 1>&3) || error "Can't deploy '$1' (might not exist) "
 			;;
 	esac
@@ -42,14 +42,15 @@ function build {
 	case $1 in
 		# build every service
 		all) 
-			find $blockchain_dir -name Dockerfile* -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/${STACKNAME}_$(sed -n -e 's/^.*-//p' {}):latest $GOPATH" \;
+			find . -name Dockerfile* -exec sh -c "docker build -f {} -t $DOCKER_HUB_LOGIN/${STACKNAME}_$(sed -n -e 's/^.*-//p' {}) $GOPATH" \;
 			echo "Finished build" 1>&3			
 			;;
 
 		# build a particular service
 		*) 
-			(docker build -f $(find $blockchain_dir -name Dockerfile-$1) -t "$DOCKER_HUB_LOGIN/${STACKNAME}_$1:latest" $GOPATH && 
-				docker push $DOCKER_HUB_LOGIN/${STACKNAME}_$1 && echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
+			(docker build -f $(find . -name Dockerfile-$1) -t "$DOCKER_HUB_LOGIN/${STACKNAME}_$1" $GOPATH && 
+				docker push $DOCKER_HUB_LOGIN/${STACKNAME}_$1 &&
+				echo "Finished build" 1>&3) || error "Can't build '$1' (might not exist)"
 			;;
 	esac
 }
@@ -76,10 +77,10 @@ fi
 blockchain_dir=$GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains
 export STACKNAME=blockchain-scrapers
 
-if [ ! -e $HOME/srv ]; then
-	sudo mkdir -p $HOME/srv/bitcoin $HOME/srv/geth $HOME/srv/monero $HOME/srv/litecoin  \
-		$HOME/srv/cardano $HOME/srv/bitcoin-cash $HOME/srv/neo $HOME/srv/dash $HOME/srv/dogecoin
-	sudo chmod -R 777 $HOME/srv
+if [ ! -e /home/srv ]; then
+	sudo mkdir -p /home/srv/bitcoin /home/srv/geth /home/srv/monero /home/srv/litecoin  \
+		/home/srv/cardano /home/srv/bitcoin-cash /home/srv/neo /home/srv/dash /home/srv/dogecoin /home/srv/eosio/bin
+	sudo chmod -R 777 /home/srv
 fi
 
 exec 3>&1 4>&2
