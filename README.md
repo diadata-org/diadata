@@ -7,6 +7,23 @@ DIA is an ecosystem for open financial data in the decentralized smart contract 
 The target of DIA is to bring together data analysts, data providers and data users.
 In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build financial products on top of that data.
 
+Currently, DIA collects data from several crypto exchanges.
+To get an overview, the latest information about these exchanges can be found in this table:
+
+Name | Number of Pairs | API link
+--- | --- | ---
+Binance | 31 | [Binance API Documentation](https://github.com/binance-exchange/binance-official-api-docs)
+Bitfinex | 23 | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general)
+Coinbase | 3 | [Coinbase v2 API](https://developers.coinbase.com/api/v2)
+GateIO | 40 | [Gate.io API Documentation](https://www.gate.io/api2)
+HitBTC | 42 | [HitBTC API Browser](https://api.hitbtc.com/api/2/explore/)
+Huobi | 39 | [Huobi API Documentation](https://github.com/huobiapi/API_Docs_en/wiki/Huobi.pro-API)
+Kraken | 8 | [Kraken Public API Documentation](https://www.kraken.com/help/api#public-market-data)
+LBank | 20 | [LBank API Documentation (Chinese)](https://github.com/LBank-exchange/lbank-official-api-docs)
+OKEx | 27 | [OKEx API Documentation (Chinese)](https://github.com/okcoin-okex/API-docs-OKEx.com)
+Simex | 14 | [Simex API Documentation](https://simex.global/en/docs/introduction)
+ZB.com | 127 | [Zb.com API Documentation (Chinese)](https://www.zb.com/i/developer)
+
 Here you can find the introduction to the structure of the system and first steps to contribute.
 
 ## DIA technical structure
