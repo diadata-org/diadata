@@ -64,7 +64,14 @@
 			     <b-row>
 			     	<b-col>
 			        	<div class="data-sources-banner font-weight-bold">Data Sources</div>
-			        	<b-table responsive striped :items="exchanges" :fields="fields" ></b-table>
+			        	<b-table responsive striped :items="exchanges" :fields="fields" >
+			        		<template slot="show_trades" slot-scope="row">
+							      <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2">
+							       Show Last 10 Trades
+							      </b-button>
+							</template>
+			        	</b-table>
 			        </b-col>
 			    </b-row>
 			</b-container>

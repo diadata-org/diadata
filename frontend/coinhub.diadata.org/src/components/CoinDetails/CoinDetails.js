@@ -14,10 +14,11 @@ export default {
   data() {
     return {
       fields: [
-        { key: 'Name', label: 'Name', sortable: true },
+        { key: 'Name', label: 'Exchange', sortable: true },
         { key: 'Price', label: 'Price', sortable: true },
-        { key: 'VolumeYesterdayUSD', label: 'Volume', sortable: true },
-        { key: 'Time', label: 'Time', sortable: true },
+        { key: 'VolumeYesterdayUSD', label: 'Volume USD (24h)', sortable: true },
+        { key: 'Time', label: 'Last Updated', sortable: true },
+        { key: 'show_trades', label: 'Trades', sortable: false },
       ],
       exchanges: [],
       loading: true,
