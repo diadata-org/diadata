@@ -4,7 +4,7 @@ WORKDIR $GOPATH
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/api-golang/cmd/services/graphService
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/services/graphService
 
 RUN go install
 
