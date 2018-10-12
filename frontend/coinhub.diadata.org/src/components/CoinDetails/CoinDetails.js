@@ -50,7 +50,7 @@ export default {
       this.coinDetails = { 
           coinName: Coin.Name,
           coinSymbol: Coin.Symbol,
-          coinPriceFormatted: Coin.Price < 1 ? '$'.concat(numeral(cCoin.Price).format('0.0[0000]')) : '$'.concat(numeral(Coin.Price).format('0,0.00')),
+          coinPriceFormatted: Coin.Price < 1 ? '$'.concat(numeral(Coin.Price).format('0.0[0000]')) : '$'.concat(numeral(Coin.Price).format('0,0.00')),
           change24: change24,
           change24Formatted: change24 !== Number.POSITIVE_INFINITY ? numeral(change24).format('0,0.00').concat('%') : 'N/A',
           rank: this.$route.params.coinRank,
