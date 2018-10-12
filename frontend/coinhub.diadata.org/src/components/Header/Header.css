@@ -14,12 +14,12 @@
 
 @media (min-width: 769px) {	
 	.coin-data-header nav.bg-info a.navbar-brand {
-		margin-left: 100px;
+		margin-left: 80px;
 	}
 
 	.coin-data-header .sub-header {
 		margin-top: 5px;
-		margin-left: 100px;
+		margin-left: 80px;
 	}
 
 	.ml-auto.logo {
