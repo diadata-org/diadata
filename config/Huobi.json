@@ -194,6 +194,11 @@
       "Symbol": "QTUM",
       "ForeignName": "QTUMUSDT",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "DGB",
+      "ForeignName": "DGBBTC",
+      "Exchange": "Huobi"
     }
   ]
 }

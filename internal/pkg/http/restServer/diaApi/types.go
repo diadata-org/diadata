@@ -33,5 +33,5 @@ type Pairs struct {
 type SymbolDetails struct {
 	Change    Change
 	Coin      Coin
-	Exchanges map[string]models.SymbolExchangeDetails
+	Exchanges []models.SymbolExchangeDetails
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
-	"github.com/influxdata/influxdb/client/v2"
+	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -36,22 +36,24 @@ type Datastore interface {
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	Flush() error
+	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
 }
 
 type DB struct {
 	redisClient       *redis.Client
-	influxClient      client.Client
-	influxBatchPoints client.BatchPoints
+	influxClient      clientInfluxdb.Client
+	influxBatchPoints clientInfluxdb.BatchPoints
 }
 
 const (
-	influxDbName        = "dia"
-	influxDbTradesTable = "trades"
+	influxDbName         = "dia"
+	influxDbTradesTable  = "trades"
+	influxDbFiltersTable = "filters"
 )
 
 // queryInfluxDB convenience function to query the database
-func queryInfluxDB(clnt client.Client, cmd string) (res []client.Result, err error) {
-	q := client.Query{
+func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb.Result, err error) {
+	q := clientInfluxdb.Query{
 		Command:  cmd,
 		Database: influxDbName,
 	}
@@ -80,7 +82,7 @@ func NewDataStore() (*DB, error) {
 	}
 	log.Debug("NewDB", pong2)
 
-	i, err := client.NewHTTPClient(client.HTTPConfig{
+	i, err := clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
 		Addr:     "http://influxdb:8086",
 		Username: "",
 		Password: "",
@@ -94,7 +96,7 @@ func NewDataStore() (*DB, error) {
 		log.Error(err)
 	}
 
-	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
 		Precision: "s",
 	})
@@ -150,7 +152,7 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		"foreignTradeID":    t.ForeignTradeID,
 	}
 
-	pt, err := client.NewPoint(influxDbTradesTable, tags, fields, t.Time)
+	pt, err := clientInfluxdb.NewPoint(influxDbTradesTable, tags, fields, t.Time)
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {
@@ -166,7 +168,7 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 		"value": value,
 	}
 
-	pt, err := client.NewPoint("filters", tags, fields, time.Now())
+	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, time.Now())
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {

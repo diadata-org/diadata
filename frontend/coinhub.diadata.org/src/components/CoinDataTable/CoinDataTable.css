@@ -1,3 +1,8 @@
+.row {
+	margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
 div.loading-data {
 	min-height: 70vh;
 	display: -ms-flexbox;
@@ -15,7 +20,6 @@ div.loading-data {
 span.coin-name {
 	margin-left: 20px;
 }
-
 
 section div .table-responsive{
 	padding-left: 100px;

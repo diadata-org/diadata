@@ -86,12 +86,12 @@ func ReadOffset(topic int) (int64, error) {
 	for _, ip := range KafkaConfig.KafkaUrl {
 		conn, err := kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
 		if err != nil {
-			log.Println("ReadOffset conn error: <", err, "> ", ip)
+			log.Errorln("ReadOffset conn error: <", err, "> ", ip)
 		} else {
 			defer conn.Close()
 			offset, err := conn.ReadLastOffset()
 			if err != nil {
-				log.Println("ReadOffset ReadLastOffset error: <", err, "> ")
+				log.Errorln("ReadOffset ReadLastOffset error: <", err, "> ")
 			} else {
 				return offset, nil
 			}
@@ -106,13 +106,13 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 			for _, ip := range KafkaConfig.KafkaUrl {
 				conn, err := kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
 				if err != nil {
-					log.Println("ReadOffsetWithRetryOnError conn error: <", err, "> ", ip, " topic:", topic)
+					log.Errorln("ReadOffsetWithRetryOnError conn error: <", err, "> ", ip, " topic:", topic)
 					time.Sleep(retryDelay)
 				} else {
 					defer conn.Close()
 					offset, err = conn.ReadLastOffset()
 					if err != nil {
-						log.Println("ReadOffsetWithRetryOnError ReadLastOffset error: <", err, "> ", ip, " topic:", topic)
+						log.Errorln("ReadOffsetWithRetryOnError ReadLastOffset error: <", err, "> ", ip, " topic:", topic)
 						time.Sleep(retryDelay)
 					} else {
 						return offset
@@ -245,14 +245,14 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 	conn, err := kafka.DialLeader(context.Background(), "tcp", KafkaConfig.KafkaUrl[0], getTopic(topic), 0)
 
 	if err != nil {
-		log.Printf("kafka error:%v", err)
+		log.Errorln("kafka error:", err)
 		return nil, err
 	} else {
 
 		newSeek, err := conn.Seek(int64(offset), kafka.SeekAbsolute) //kafka.SeekStart)
 
 		if err != nil {
-			log.Printf("kafka error on seek:%v", err)
+			log.Errorln("kafka error on seek:", err)
 			return nil, err
 		}
 

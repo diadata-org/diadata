@@ -209,6 +209,11 @@
       "Symbol": "BCN",
       "ForeignName" : "BCNUSDT",
       "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "CNX",
+      "ForeignName" : "CNXBTC",
+      "Exchange" : "HitBTC"
     }
   ]
 }

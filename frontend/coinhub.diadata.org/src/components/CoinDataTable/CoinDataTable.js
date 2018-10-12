@@ -40,7 +40,6 @@ export default {
       console.log(error);
       this.errored = true;
     }
-  
   },
   methods: {
       switchCurrencies : function(currency){

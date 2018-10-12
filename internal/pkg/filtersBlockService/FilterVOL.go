@@ -42,7 +42,7 @@ func (s *FilterVOL) compute(trade dia.Trade) {
 func (s *FilterVOL) save(ds models.Datastore) error {
 	err := ds.SetVolume(s.symbol, s.exchange, s.value)
 	if err != nil {
-		log.Errorln("Error:", err)
+		log.Errorln("FilterVOL Error:", err)
 	}
 	return err
 }

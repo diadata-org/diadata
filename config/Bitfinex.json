@@ -114,6 +114,16 @@
       "Symbol": "QTUM",
       "ForeignName": "QTUMETH",
       "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "ETP",
+      "ForeignName": "ETPUSD",
+      "Exchange": "Bitfinex"
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPBTC",
+      "Exchange": "Bitfinex"
     }
   ]
 }
