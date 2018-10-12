@@ -77,12 +77,11 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 		log.Error("Error: %v on GetQuotation %v\n", err, key)
 		return nil, err
 	}
-
+	value.Name = helpers.NameForSymbol(symbol) // in case we updated the helper functions ;)
 	v, err2 := db.GetPriceYesterday(symbol, "")
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}
-
 	v2, err2 := db.GetVolume(symbol)
 	value.VolumeYesterdayUSD = v2
 	return value, err

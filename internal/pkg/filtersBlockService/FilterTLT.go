@@ -34,7 +34,7 @@ func (s *FilterTLT) compute(trade dia.Trade) {
 func (s *FilterTLT) save(ds models.Datastore) error {
 	err := ds.SetLastTradeTimeForExchange(s.symbol, s.exchange, s.lastTradeTime)
 	if err != nil {
-		log.Errorln("Error:", err)
+		log.Errorln("FilterTLT Error:", err)
 	}
 	return err
 }
