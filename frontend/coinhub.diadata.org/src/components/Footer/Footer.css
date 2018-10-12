@@ -30,18 +30,7 @@
 	padding-top: 20px;
 	margin-bottom: 20px;
 }
-@media(max-width: 1024px) {
-  .coin-data-footer div div.row {
-	padding-left: 5%;
-	padding-right: 5%;
-  }
-}
 
-@media(max-width: 768px) {
-  .coin-data-footer div div.row {
-	padding-left: 5px;
-  }
-}
 
 @media(max-width: 414px) {
 	.coin-data-footer div div.row div.coin-data-footer-row-spacer {
@@ -50,16 +39,39 @@
     .coin-data-footer div div.row div a {
       font-size: 10px;
     }
+
+    .coin-data-footer div div.row {
+		padding-left: 10px;
+	}
+
+	#market-cap {
+  	 text-align: center;
+  	}
 }
 
-@media(min-width: 1024px) and (max-width: 1200px)  {
+@media(min-width: 568px) {
+	
+}
+
+@media(min-width: 768px) and (max-width: 1023px) {
   .coin-data-footer div div.row {
-	margin-left: 50px;
+	padding-left: 20px;
+  }
+
+  #market-cap {
+  	
+  	text-align: left;
   }
 }
 
-@media(min-width: 1201px) {
+@media(min-width: 1024px) {
   .coin-data-footer div div.row {
-	margin-left: 100px;
+	margin-left: 80px;
   }
+
+  #market-cap {
+  	width: 200%;
+  	 text-align: left;
+  }
+
 }

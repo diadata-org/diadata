@@ -1,6 +1,7 @@
 import shared from  '@/shared/shared';
 import { AtomSpinner } from 'epic-spinners';
 
+let coinData = {};
 
 export default {
   components: {
@@ -23,15 +24,37 @@ export default {
       coindata: [],
       loading: true,
       errored: false,
+      selectedCurrency: ''
     };
   },
   async mounted() {
-   const coins = await shared.fetchCoins();
-   this.coindata = shared.formatCoinData(coins);
-   this.$nextTick( () => this.loading = false);
+    try {
+       const { Coins, Change } = await shared.fetchCoins();
+       coinData = shared.formatCoinData(Coins, Change);
+       const { coinDataUSD, coinDataEUR } = coinData;
+       this.coindata = coinDataUSD;
+       this.selectedCurrency = "USD";
+       this.$nextTick( () => this.loading = false);
+    }
+    catch (error) {
+      console.log(error);
+      this.errored = true;
+    }
   },
   methods: {
+      switchCurrencies : function(currency){
+        const { coinDataUSD, coinDataEUR } = coinData;
+        if(currency === 'EUR'){
+          this.coindata = coinDataEUR;
+        }
 
+        if(currency === 'USD'){
+          this.coindata = coinDataUSD;
+        }
+
+        this.selectedCurrency = currency;
+
+      }
   },
 
 };

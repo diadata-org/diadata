@@ -12,12 +12,12 @@ To get an overview, the latest information about these exchanges can be found in
 
 Name | Number of Pairs | API link
 --- | --- | ---
-Binance | [31](config/Binance.json) | [Binance API Documentation](https://github.com/binance-exchange/binance-official-api-docs)
-Bitfinex | [23](config/Bitfinex.json) | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general)
+Binance | [47](config/Binance.json) | [Binance API Documentation](https://github.com/binance-exchange/binance-official-api-docs)
+Bitfinex | [25](config/Bitfinex.json) | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general)
 Coinbase | [3](config/CoinBase.json) | [Coinbase v2 API](https://developers.coinbase.com/api/v2)
-GateIO | [40](config/GateIO.json) | [Gate.io API Documentation](https://www.gate.io/api2)
-HitBTC | [42](config/HitBTC.json) | [HitBTC API Browser](https://api.hitbtc.com/api/2/explore/)
-Huobi | [39](config/Huobi.json) | [Huobi API Documentation](https://github.com/huobiapi/API_Docs_en/wiki/Huobi.pro-API)
+GateIO | [42](config/GateIO.json) | [Gate.io API Documentation](https://www.gate.io/api2)
+HitBTC | [43](config/HitBTC.json) | [HitBTC API Browser](https://api.hitbtc.com/api/2/explore/)
+Huobi | [40](config/Huobi.json) | [Huobi API Documentation](https://github.com/huobiapi/API_Docs_en/wiki/Huobi.pro-API)
 Kraken | [8](config/Kraken.json) | [Kraken Public API Documentation](https://www.kraken.com/help/api#public-market-data)
 LBank | [20](config/LBank.json) | [LBank API Documentation (Chinese)](https://github.com/LBank-exchange/lbank-official-api-docs)
 OKEx | [27](config/OKEx.json) | [OKEx API Documentation (Chinese)](https://github.com/okcoin-okex/API-docs-OKEx.com)

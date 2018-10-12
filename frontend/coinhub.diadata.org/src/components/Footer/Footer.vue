@@ -23,9 +23,19 @@
 	        </b-col>
 	    </b-row>
 	    <b-row>
-	        <div id="market-cap" class="text-center text-white">
-				CoinHub by DIA
-	        </div>
+	    	<b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	    	<b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	    	<b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	    	<b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	    	<b-col>
+		        <div id="market-cap" class="text-white">
+					CoinHub by DIA
+		        </div>
+	        </b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
 	    </b-row>
 	</b-container>
   </footer>
