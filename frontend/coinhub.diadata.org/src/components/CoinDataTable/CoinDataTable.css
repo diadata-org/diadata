@@ -1,5 +1,9 @@
+.row {
+	margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
 div.loading-data {
-	width: 100%;
 	min-height: 70vh;
 	display: -ms-flexbox;
     display: -webkit-flex;
@@ -17,23 +21,51 @@ span.coin-name {
 	margin-left: 20px;
 }
 
-.exchange-buttons {
-	float: right;
+div.exchange-buttons {
+	width: 100%;
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -ms-flex-align: flex-end;
+    -webkit-align-items: flex-end;
+    -webkit-box-align: flex-end;
+
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+div.exchange-buttons a {
+	font-weight: 500;
+	padding: 5px;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+div.exchange-buttons a.selected {
+	background-color: #FFD0D0;
+	color: #000000;
+	text-decoration: none;
+
+}
+
+div.exchange-buttons a.not-selected {
+	background-color: #FFFFFF;
+	color: #000000;
+	text-decoration: none;
 }
 
 section div .table-responsive{
 	padding-left: 100px;
 	padding-right: 100px;
-	padding-top: 50px;
+	padding-top: 10px;
 }
 
-/deep/ table td {
+/deep/ table thead tr th,
+/deep/ table tbody tr td {
 	text-align: right;
 }
 
-/deep/ table td:last-child{
-	text-align: center;
-}
 
 /deep/ table thead th:nth-child(2),
 /deep/ table td:nth-child(2){
@@ -41,8 +73,12 @@ section div .table-responsive{
 	padding-left: 30px;
 }
 
-/deep/ table thead th,
-/deep/ table tbody tr td:first-child{
+/deep/ table thead tr th:first-child,
+/deep/ table thead tr th:nth-child(5),
+/deep/ table thead tr th:nth-child(9),
+/deep/ table tbody tr td:first-child,
+/deep/ table tbody tr td:nth-child(5),
+/deep/ table tbody tr td:nth-child(9) {
 	text-align: center;
 }
 
@@ -57,6 +93,8 @@ section div .table-responsive{
 .text-normal {
     color: #000000 !important;
 }
+
+
 
 @media (max-width: 768px) {	
 	section div .table-responsive{
@@ -80,6 +118,14 @@ section div .table-responsive{
 	/deep/ table{
 		width: 350%;
 	}
+
+	div.exchange-buttons #btn-eur{
+		margin-right: 1.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 1rem;
+	}
 }
 
 @media (min-width: 768px)  and (max-width: 1024px){	
@@ -90,6 +136,14 @@ section div .table-responsive{
 		text-align: left;
 		padding-left: 2px;
 	}
+
+	div.exchange-buttons #btn-eur{
+		margin-right: 5.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 1rem;
+	}
 }
 
 @media (min-width: 1024px) and (max-width: 1366px)  {	
@@ -97,5 +151,22 @@ section div .table-responsive{
 		width: 150%;
 	}
 
+	div.exchange-buttons #btn-eur{
+		margin-right: 5.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 6rem;
+	}
 	
+}
+
+@media (min-width: 1367px)  {
+     div.exchange-buttons #btn-eur{
+		margin-right: 6.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 5rem;
+	}
 }

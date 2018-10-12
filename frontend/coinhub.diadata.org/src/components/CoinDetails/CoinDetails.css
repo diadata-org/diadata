@@ -1,7 +1,6 @@
 div.loading-data {
 	width: 100%;
 	min-height: 70vh;
-	height: 70vh;
 	display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -18,7 +17,7 @@ div.loading-data {
 }
 
 .coin-details div .container-fluid {
-	padding-left: 115px;
+	padding-left: 95px;
 }
 
 .data-sources-banner {

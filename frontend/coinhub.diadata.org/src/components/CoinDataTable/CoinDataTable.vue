@@ -13,9 +13,17 @@
 	    </div>
 	    <div class="coin-data" v-else>
 	    	<b-row>
-	    		<div class="d-inline-flex p-2 exchange-buttons">
-					    <b-button>EUR</b-button>
-					    <b-button>USD</b-button>
+	    		<div class="exchange-buttons">
+					    <b-link @click="switchCurrencies('EUR')" 
+					            v-bind:class = "{ 'selected': selectedCurrency ==='EUR', 'not-selected' : selectedCurrency !=='EUR'}"
+					            id="btn-eur">
+					    	EUR
+					    </b-link>
+					    <b-link @click="switchCurrencies('USD')" 
+					   			v-bind:class = "{ 'selected': selectedCurrency ==='USD', 'not-selected' : selectedCurrency !=='USD'}"
+					    		id="btn-usd">
+							USD
+						</b-link>
 	    		</div>
 	    	</b-row>
 	    	<b-row>
