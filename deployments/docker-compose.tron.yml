@@ -1,0 +1,46 @@
+version: '3.2'
+
+services:
+  tron:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-tron
+    image:
+      ${DOCKER_HUB_LOGIN}/${STACKNAME}_tron
+    working_dir: /java-tron/build/libs
+    command: bash -c "java -jar java-tron.jar --witness"
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  trx:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-trx
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_trx
+    depends_on:
+      - tron
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:

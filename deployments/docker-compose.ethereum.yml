@@ -1,0 +1,75 @@
+version: '3.2'
+
+services:
+  geth: 
+    image:
+      ethereum/client-go:alpine
+    volumes:
+      - /home/srv-local/geth:/root/.ethereum
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "light"
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  #erc20:
+  #  build:
+  #    context: $GOPATH
+  #    dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-erc20
+  #  image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_erc20
+  #  command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+  #  networks:
+  #    - scrapers-network
+  #  depends_on:
+  #    - geth
+  #  logging:
+  #    options:
+  #      max-size: "50m"
+  #  secrets:
+  #    - api_diadata
+
+  binance-token:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-binance-token
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binance-token
+    networks:
+      - scrapers-network
+    depends_on:
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+  eth:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eth
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eth
+    networks:
+      - scrapers-network
+    depends_on: 
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:
