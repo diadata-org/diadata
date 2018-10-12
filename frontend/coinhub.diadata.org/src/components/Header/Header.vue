@@ -1,5 +1,5 @@
 <template>
-  <header class="coin-data-header">
+  <header>
     <b-navbar type="dark" variant="info">
       <b-navbar-brand href="/">CoinHub by DIA</b-navbar-brand>
 	    <b-navbar-nav class="ml-auto logo">
@@ -11,7 +11,20 @@
         Decentrally sourced and maintained crypto-financial-data
       </div>
     </b-navbar>
-   
+    <b-row>
+      <div class="exchange-buttons">
+          <b-link @click="switchCurrencies('EUR')" 
+                  v-bind:class = "{ 'selected': selectedCurrency ==='EUR', 'not-selected' : selectedCurrency !=='EUR'}"
+                  id="btn-eur">
+            EUR
+          </b-link>
+          <b-link @click="switchCurrencies('USD')" 
+              v-bind:class = "{ 'selected': selectedCurrency ==='USD', 'not-selected' : selectedCurrency !=='USD'}"
+              id="btn-usd">
+          USD
+        </b-link>
+      </div>
+    </b-row>
   </header>
 </template>
 <script src="./Header.js"></script>

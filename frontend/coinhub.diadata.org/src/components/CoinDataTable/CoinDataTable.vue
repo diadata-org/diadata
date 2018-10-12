@@ -13,24 +13,10 @@
 	    </div>
 	    <div class="coin-data" v-else>
 	    	<b-row>
-	    		<div class="exchange-buttons">
-					    <b-link @click="switchCurrencies('EUR')" 
-					            v-bind:class = "{ 'selected': selectedCurrency ==='EUR', 'not-selected' : selectedCurrency !=='EUR'}"
-					            id="btn-eur">
-					    	EUR
-					    </b-link>
-					    <b-link @click="switchCurrencies('USD')" 
-					   			v-bind:class = "{ 'selected': selectedCurrency ==='USD', 'not-selected' : selectedCurrency !=='USD'}"
-					    		id="btn-usd">
-							USD
-						</b-link>
-	    		</div>
-	    	</b-row>
-	    	<b-row>
 				<b-table responsive striped :items="coindata" :fields="fields" id="coindata">
 				    <template slot="coinName" slot-scope="data">
 				      <b-img :src="data.item.coinImage" fluid alt=" " />
-				      <router-link :to="{ name: 'coin-details', params: { coinDetails: data.item, coinSymbol: data.item.coinSymbol }}">
+				      <router-link :to="{ name: 'coin-details', params: { coinRank:data.item.rank, coinSymbol: data.item.coinSymbol }}">
 				      	{{data.item.coinSymbol}} 
 				      </router-link>
 				      <br>

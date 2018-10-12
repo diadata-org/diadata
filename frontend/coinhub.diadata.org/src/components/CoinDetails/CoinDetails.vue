@@ -64,7 +64,7 @@
 			     <b-row>
 			     	<b-col>
 			        	<div class="data-sources-banner font-weight-bold">Data Sources</div>
-			        	<b-table responsive striped :items="pairs"></b-table>
+			        	<b-table responsive striped :items="exchanges" :fields="fields" ></b-table>
 			        </b-col>
 			    </b-row>
 			</b-container>

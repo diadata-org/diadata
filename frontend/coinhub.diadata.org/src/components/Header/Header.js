@@ -3,7 +3,8 @@ export default {
   props: {},
   data() {
   	return {
-  	  logo:''
+  	  logo:'',
+      selectedCurrency: ''
   	};
   },
   mounted() {

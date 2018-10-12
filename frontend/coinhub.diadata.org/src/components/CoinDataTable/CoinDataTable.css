@@ -21,40 +21,6 @@ span.coin-name {
 	margin-left: 20px;
 }
 
-div.exchange-buttons {
-	width: 100%;
-	display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -ms-flex-align: flex-end;
-    -webkit-align-items: flex-end;
-    -webkit-box-align: flex-end;
-
-    justify-content: flex-end;
-    margin-top: 5px;
-}
-
-div.exchange-buttons a {
-	font-weight: 500;
-	padding: 5px;
-	padding-left: 12px;
-	padding-right: 12px;
-}
-
-div.exchange-buttons a.selected {
-	background-color: #FFD0D0;
-	color: #000000;
-	text-decoration: none;
-
-}
-
-div.exchange-buttons a.not-selected {
-	background-color: #FFFFFF;
-	color: #000000;
-	text-decoration: none;
-}
-
 section div .table-responsive{
 	padding-left: 100px;
 	padding-right: 100px;

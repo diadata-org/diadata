@@ -28,12 +28,18 @@ export default {
     };
   },
   async mounted() {
-   const { Coins, Change } = await shared.fetchCoins();
-   coinData = shared.formatCoinData(Coins, Change);
-   const { coinDataUSD, coinDataEUR } = coinData;
-   this.coindata = coinDataEUR;
-   this.selectedCurrency = "EUR";
-   this.$nextTick( () => this.loading = false);
+    try {
+       const { Coins, Change } = await shared.fetchCoins();
+       coinData = shared.formatCoinData(Coins, Change);
+       const { coinDataUSD, coinDataEUR } = coinData;
+       this.coindata = coinDataUSD;
+       this.selectedCurrency = "USD";
+       this.$nextTick( () => this.loading = false);
+    }
+    catch (error) {
+      console.log(error);
+      this.errored = true;
+    }
   },
   methods: {
       switchCurrencies : function(currency){

@@ -1,23 +1,63 @@
-.coin-data-header nav.bg-info {
+.row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+nav.bg-info {
   background-color: rgb(86, 77, 251) !important;
 }
 
-.coin-data-header .navbar {
+.navbar {
     position: relative;
     justify-content: unset;
 }
 
-.coin-data-header .sub-header {
+.sub-header {
 	margin-top: 5px;
 	color: #FFF;
 }
 
+div.exchange-buttons {
+	width: 100%;
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -ms-flex-align: flex-end;
+    -webkit-align-items: flex-end;
+    -webkit-box-align: flex-end;
+
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+div.exchange-buttons a {
+	font-weight: 500;
+	padding: 5px;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+div.exchange-buttons a.selected {
+	background-color: #FFD0D0;
+	color: #000000;
+	text-decoration: none;
+
+}
+
+div.exchange-buttons a.not-selected {
+	background-color: #FFFFFF;
+	color: #000000;
+	text-decoration: none;
+}
+
 @media (min-width: 769px) {	
-	.coin-data-header nav.bg-info a.navbar-brand {
+	nav.bg-info a.navbar-brand {
+
 		margin-left: 80px;
 	}
 
-	.coin-data-header .sub-header {
+	.sub-header {
 		margin-top: 5px;
 		margin-left: 80px;
 	}
@@ -34,14 +74,58 @@
 	}
 }
 
-
 @media (max-width: 768px) {	
 
-	.coin-data-header nav.bg-info a.navbar-brand {
+	nav.bg-info a.navbar-brand {
 		margin-left: 5px;
 	}
 
-	.coin-data-header .sub-header {
+	.sub-header {
 		margin-left: 5px;
+	}
+}
+
+@media (max-width: 576px) {	
+
+	div.exchange-buttons #btn-eur{
+		margin-right: 1.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 1rem;
+	}
+}
+
+@media (min-width: 768px)  and (max-width: 1024px){	
+	
+	div.exchange-buttons #btn-eur{
+		margin-right: 5.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 1rem;
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1366px)  {	
+
+
+	div.exchange-buttons #btn-eur{
+		margin-right: 5.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 6rem;
+	}
+	
+}
+
+@media (min-width: 1367px)  {
+     div.exchange-buttons #btn-eur{
+		margin-right: 6.5rem;
+	}
+
+	div.exchange-buttons #btn-usd{
+		margin-right: 5rem;
 	}
 }
