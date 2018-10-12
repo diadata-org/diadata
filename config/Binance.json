@@ -214,6 +214,26 @@
       "Symbol": "WAVES",
       "ForeignName": "WAVESBTC",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "AION",
+      "ForeignName": "AIONBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "WTC",
+      "ForeignName": "WTCBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ARDR",
+      "ForeignName": "ARDRBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "WAN",
+      "ForeignName": "WANBTC",
+      "Exchange": "Binance"
     }
   ]
 }

@@ -204,6 +204,11 @@
       "Symbol": "BTM",
       "ForeignName": "BTM_USDT",
       "Exchange": "GateIO"
+    },
+    {
+      "Symbol": "NAS",
+      "ForeignName": "NAS_USDT",
+      "Exchange": "GateIO"
     }
   ]
 }

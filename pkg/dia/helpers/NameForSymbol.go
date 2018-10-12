@@ -35,7 +35,7 @@ func NameForSymbol(symbol string) string {
 	case "FST":
 		return "Fastcoin"
 	case "BTG":
-		return "Bitgem"
+		return "Bitcoin Gold"
 	case "PXC":
 		return "Phoenixcoin"
 	case "MEC":
@@ -3182,6 +3182,8 @@ func NameForSymbol(symbol string) string {
 		return "OneLedger"
 	case "ATMI":
 		return "Atonomi"
+	case "VET":
+		return "Vechain"
 	default:
 		return symbol
 	}
