@@ -72,6 +72,8 @@ All coins created in these events are added up to determine the circulating supp
 ### Binance Coin
 Binance Coin is an ERC20 token.
 We run an Ethereum full node and monitor all circulating tokens of the BNB smart contract.
+The [token contract has an additional freezing functionality](https://info.binance.com/en/currencies/binance-coin), that is used to freeze the funds in the developers' possession.
+The number of frozen tokens is retrieved by us by querying `freezeOf()` using the owner's address.
 
 ### Monero
 Monero is mined over inifinite time.
