@@ -27,6 +27,22 @@ div.loading-data {
 	text-align: center;
 }
 
+/deep/ table thead tr th,
+/deep/ table tbody tr td {
+	text-align: right;
+}
+
+/deep/ table thead tr th:first-child,
+/deep/ table tbody tr td:first-child {
+	text-align: left;
+}
+
+deep/ table thead tr th:nth-child(5),
+/deep/ table tbody tr td:nth-child(5){
+	text-align: center;
+}
+
+
 .text-danger {
     color: #dc3545 !important;
 }
