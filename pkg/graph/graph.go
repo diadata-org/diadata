@@ -79,10 +79,9 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	err = graph.Save(IMAGE_WIDTH*vg.Centimeter, IMAGE_HEIGHT*vg.Centimeter, path)
 	if err != nil {
 		return err
-	} else {
-		log.Println("Created", path, "with", index+1, "points")
 	}
 
+	log.Println("Created", path, "with", index+1, "points")
 	return nil
 }
 
