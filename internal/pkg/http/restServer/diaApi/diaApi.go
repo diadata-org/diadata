@@ -201,11 +201,17 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 }
 
 func (env *Env) getChange() Change {
-	var r Change
-	val, err := env.DataStore.GetPriceUSD("EUR")
-	if err == nil {
-		r.EURUSD = &val
-		r.EURUSDYesterday = &val
+	r := Change{
+		USD:          make(map[string]float64),
+		USDYesterday: make(map[string]float64),
+	}
+
+	for _, c := range []string{"EUR", "NOK"} {
+		val, err := env.DataStore.GetPriceUSD(c)
+		if err == nil {
+			r.USD[c] = val
+			r.USDYesterday[c] = (val * 90.0) / 100.0
+		}
 	}
 	return r
 }

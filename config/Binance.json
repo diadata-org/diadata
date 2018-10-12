@@ -234,6 +234,11 @@
       "Symbol": "WAN",
       "ForeignName": "WANBTC",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "HOT",
+      "ForeignName": "HOTBTC",
+      "Exchange": "Binance"
     }
   ]
 }

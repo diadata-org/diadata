@@ -7,8 +7,8 @@ import (
 )
 
 type Change struct {
-	EURUSD          *float64
-	EURUSDYesterday *float64
+	USD          map[string]float64
+	USDYesterday map[string]float64
 }
 
 type Coin struct {
