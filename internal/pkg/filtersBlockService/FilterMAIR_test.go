@@ -120,7 +120,9 @@ func TestFilterMaAverage(t *testing.T) {
 		avg += p
 		p += priceIncrements
 	}
-	avg = avg / float64(samples)
+	// append last value twice. Same as filter
+	avg += p - priceIncrements
+	avg = avg / float64(samples+1)
 	f.finalComputeEndOfBlock(d)
 	v := f.filterPointForBlock()
 	if v.Value != avg {
@@ -144,7 +146,8 @@ func TestFilterMaAverageOutsideRange(t *testing.T) {
 		}
 		p += priceIncrements
 	}
-	avg = avg / float64(memory)
+	// append last value twice. Same as filter
+	avg = (avg + priceIncrements*float64(memory-1)) / float64(memory)
 	f.finalComputeEndOfBlock(d)
 	v := f.filterPointForBlock()
 	if v.Value != avg {
@@ -157,12 +160,12 @@ func TestFilterMaAverageCleanOutliers(t *testing.T) {
 		mean    float64
 	}{
 		{[]float64{50, 50, 50, 200, 50, 50, 50}, 50},
-		{[]float64{6, 3, 2, 4, 5, 1}, 3.5},
+		{[]float64{6, 3, 2, 4, 5, 1}, 3.1428},
 		{[]float64{1}, 1.0},
 		{[]float64{}, 0.0},
 		{[]float64{10.2, 14.1, 14.4, 14.4, 14.4, 14.5, 14.5, 14.6, 14.7, 14.7, 14.7, 14.9, 15.1, 15.9, 16.4}, 14.5833},
 		{[]float64{}, 0},
-		{[]float64{24, 25, 21, 23, 49, 29, 33}, 25.8333},
+		{[]float64{24, 25, 21, 23, 49, 29, 33}, 26.8571},
 		{[]float64{0, 0, 0}, 0},
 		{[]float64{0, 0, 0, 0}, 0},
 	}

@@ -105,6 +105,9 @@ func (s *FilterMAIR) finalComputeEndOfBlock(t time.Time) {
 	if s.lastTrade == nil {
 		return
 	}
+	// Add the last trade again to compensate for the delay since measurement to EOB
+	// adopted behaviour from FilterMA
+	s.processDataPoint(s.lastTrade.EstimatedUSDPrice)
 	cleanPrices := removeOutliers(s.previousPrices)
 	s.value = computeMean(cleanPrices)
 }
