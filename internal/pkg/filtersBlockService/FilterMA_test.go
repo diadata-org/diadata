@@ -80,3 +80,25 @@ func TestFilterMa2(t *testing.T) {
 	}
 
 }
+
+func TestFilterMaIgnore(t *testing.T) {
+
+	filterParam := 10
+	firstPrice := 50.0
+
+	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
+	f := NewFilterMA("XRP", "", d, filterParam)
+	steps := filterParam
+	p := firstPrice
+	priceIncrements := 1.0
+	for i := 0; i <= steps; i++ {
+		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
+		d = d.Add(-time.Second)
+		p += priceIncrements
+	}
+	f.finalComputeEndOfBlock(d)
+	v := f.filterPointForBlock()
+	if v.Value != firstPrice {
+		t.Errorf("error should be initial value:%f got:%f", firstPrice, v.Value)
+	}
+}
