@@ -85,6 +85,7 @@ func (s *FilterMA) compute(trade dia.Trade) {
 	if s.lastTrade != nil {
 		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
+			return
 		} else {
 			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
 		}
