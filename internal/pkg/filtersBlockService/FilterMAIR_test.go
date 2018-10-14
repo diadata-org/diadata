@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"github.com/diadata-org/api-golang/dia"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"math"
 	"testing"
 	"time"
@@ -86,7 +86,7 @@ func TestFilterMAIRInternalRemoveOutliers(t *testing.T) {
 		}
 	}
 }
-func TestFilterMaIgnore(t *testing.T) {
+func TestFilterMAIRIgnore(t *testing.T) {
 	filterParam := 10
 	firstPrice := 50.0
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
@@ -105,7 +105,7 @@ func TestFilterMaIgnore(t *testing.T) {
 		t.Errorf("error should be initial value:%f got:%f", firstPrice, v.Value)
 	}
 }
-func TestFilterMaAverage(t *testing.T) {
+func TestFilterMAIRAverage(t *testing.T) {
 	filterParam := 30
 	firstPrice := 50.0
 	avg := 0.
@@ -129,7 +129,7 @@ func TestFilterMaAverage(t *testing.T) {
 		t.Errorf("error should be average value:%f got:%f", avg, v.Value)
 	}
 }
-func TestFilterMaAverageOutsideRange(t *testing.T) {
+func TestFilterMAIRAverageOutsideRange(t *testing.T) {
 	memory := 5
 	firstPrice := 50.0
 	avg := 0.
@@ -154,7 +154,7 @@ func TestFilterMaAverageOutsideRange(t *testing.T) {
 		t.Errorf("error should be average value:%f got:%f", avg, v.Value)
 	}
 }
-func TestFilterMaAverageCleanOutliers(t *testing.T) {
+func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 	cases := []struct {
 		samples []float64
 		mean    float64
