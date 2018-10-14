@@ -2,9 +2,12 @@ import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+<<<<<<< HEAD
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+=======
+>>>>>>> more changes
 import App from './App.vue';
 import router from './router';
 import './registerServiceWorker';
