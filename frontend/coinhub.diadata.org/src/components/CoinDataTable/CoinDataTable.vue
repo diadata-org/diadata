@@ -11,7 +11,7 @@
           :color="'#564dfc'"
      	  />
 	    </div>
-	    <div class="coin-data" v-else>
+	    <div v-else class="coin-data">
 	    	<b-row>
 				<b-table responsive striped :items="coindata" :fields="fields" id="coindata">
 				    <template slot="coinName" slot-scope="data">

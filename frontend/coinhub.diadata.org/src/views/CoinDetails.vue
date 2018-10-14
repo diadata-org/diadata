@@ -1,5 +1,5 @@
 <template>
-  <div class="coin-details">
+  <div>
     <Header/>
     <CoinDetails/>
     <Footer/>
@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Header from '@/components/Header/Header.vue';
 import CoinDetails from '@/components/CoinDetails/CoinDetails.vue';
 import Footer from '@/components/Footer/Footer.vue';
