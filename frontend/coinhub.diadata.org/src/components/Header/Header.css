@@ -1,6 +1,6 @@
 .row {
-  margin-right: 4rem !important;
-  margin-left: 4rem !important;
+  margin-right: 70px !important;
+  margin-left: 70px !important;
   width: 100%;
 }
 
@@ -21,9 +21,21 @@ nav.bg-info {
 	color: #FFF;
 }
 
+.input-group {
+	width: 100%;
+}
 
 .search-input {
-	width: 100%;
+	width: 90%;
+}
+
+.search-coins {
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-right-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
 }
 
 .header-components {
@@ -53,7 +65,7 @@ nav.bg-info {
 
 	header.sm-screens .row .col-12 {
 		padding-left: 0;
-		padding-right: 2px;
+		padding-right: 10px;
 	}
 
 	.row {
@@ -77,6 +89,16 @@ nav.bg-info {
 
 	.search-input {
 		width: 10rem;
+	}
+
+	.hide-search {
+		background-color: #fff;
+		border: 1px solid #ced4da;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+		border-top-right-radius: 0.25rem;
+		border-bottom-right-radius: 0.25rem;
+
 	}
 }
 
