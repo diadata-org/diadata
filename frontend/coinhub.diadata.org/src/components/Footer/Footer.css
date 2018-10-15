@@ -49,9 +49,6 @@
   	}
 }
 
-@media(min-width: 568px) {
-	
-}
 
 @media(min-width: 768px) and (max-width: 1023px) {
   .coin-data-footer div div.row {
@@ -59,19 +56,18 @@
   }
 
   #market-cap {
-  	
   	text-align: left;
   }
 }
 
 @media(min-width: 1024px) {
   .coin-data-footer div div.row {
-	margin-left: 80px;
+	margin-left: 4.5rem;
   }
 
   #market-cap {
   	width: 200%;
-  	 text-align: left;
+  	text-align: left;
   }
 
 }

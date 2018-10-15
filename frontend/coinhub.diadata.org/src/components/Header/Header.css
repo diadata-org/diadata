@@ -1,6 +1,6 @@
 .row {
-  margin-right: 70px !important;
-  margin-left: 70px !important;
+  margin-right: 4rem !important;
+  margin-left: 4rem !important;
   width: 100%;
 }
 
@@ -20,6 +20,7 @@ nav.bg-info {
 .sub-header {
 	color: #FFF;
 }
+
 
 .search-input {
 	width: 100%;
@@ -50,6 +51,11 @@ nav.bg-info {
 		display: block;
 	}
 
+	header.sm-screens .row .col-12 {
+		padding-left: 0;
+		padding-right: 2px;
+	}
+
 	.row {
   		margin-right: 0!important;
   		margin-left: 0!important;
@@ -57,6 +63,20 @@ nav.bg-info {
 
 	#dd-currency {
 		float: left;
+	}
+
+	.btn-search {
+		margin-top: 2px;
+	}
+
+	.btn-search a{
+		color: #fff;
+		text-decoration: none;
+		font-size: 18px;
+	}
+
+	.search-input {
+		width: 10rem;
 	}
 }
 
