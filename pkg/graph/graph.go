@@ -39,7 +39,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 			dataPoints[index].X = float64(sumTimes / int64(factor))
 			dataPoints[index].Y = sumPrices / float64(factor)
 
-			log.Println("X: ", dataPoints[index].X, "; Y:", dataPoints[index].Y)
+			//log.Println("X: ", dataPoints[index].X, "; Y:", dataPoints[index].Y)
 			if dataPoints[index].Y < min {
 				min = dataPoints[index].Y
 			}
