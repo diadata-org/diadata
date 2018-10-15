@@ -18,7 +18,23 @@ Separate documentation exists for each of these different use cases.
 * [Oracles](methodology/Oracles.md) show how our oracles can be accessed.
 This information varies for each currency and is highly specific.
 
-## API access
+## Coinhub Oracles
+
+The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0x284a9d8cf1913e70142efb5b3ebd1de71f9a5f76).
+This smart contract holds mappings from an index to an asset's name, its price, and supply data.
+By using `getParameters(asset_index)` it is possible to retrieve this data.
+Along with the actual data there is a metadata field for the timestamp of the last update.
+
+Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract.
+In the event view, the latest updates can be seen.
+The event fields show the values in the following locations:
+
+* Price in Cent is in the second field (display as `number`)
+* Supply is in the third field (display as `number`)
+* UNIX Timestamp of last update is displayed in the fourth field (display as `number`)
+* Name is displayed in the sixth and last field (display as `text`).
+
+## API Access
 You can find our live API at https://api.diadata.org/v1 [swagger](https://api.diadata.org/swagger/index.html).
 Several endpoints exist that show the different kind of data we collect:
 
@@ -45,7 +61,7 @@ ZB.com | [127](config/ZB.json) | [Zb.com API Documentation (Chinese)](https://ww
 
 Here you can find the introduction to the structure of the system and first steps to contribute.
 
-## DIA technical structure
+## DIA Technical Structure
 DIA is setup as a hybrid system with off-chain components for storing and proceccing large amounts of data and on-chain components providing data sources for financial smart contracts.
 Currently, Ethereum is used as smart contract plaform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
 
