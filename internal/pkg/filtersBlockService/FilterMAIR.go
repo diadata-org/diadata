@@ -42,15 +42,16 @@ func (s *FilterMAIR) processDataPoint(price float64) {
 	}
 	s.previousPrices = append([]float64{price}, s.previousPrices...)
 }
-func (s *FilterMAIR) finalCompute(t time.Time) {
+func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
-		return
+		return 0.0
 	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
 	s.processDataPoint(s.lastTrade.EstimatedUSDPrice)
 	cleanPrices := removeOutliers(s.previousPrices)
 	s.value = computeMean(cleanPrices)
+	return s.value
 }
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {

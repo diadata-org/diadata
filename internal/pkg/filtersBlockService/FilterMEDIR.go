@@ -42,13 +42,14 @@ func (s *FilterMEDIR) processDataPoint(price float64) {
 	}
 	s.previousPrices = append([]float64{price}, s.previousPrices...)
 }
-func (s *FilterMEDIR) finalCompute(t time.Time) {
+func (s *FilterMEDIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
-		return
+		return 0.0
 	}
 	cleanPrices := removeOutliers(s.previousPrices)
 	s.value = computeMedian(cleanPrices)
 	s.previousPrices = []float64{}
+	return s.value
 }
 func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {

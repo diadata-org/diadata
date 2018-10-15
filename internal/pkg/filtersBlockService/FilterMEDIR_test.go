@@ -54,10 +54,9 @@ func TestFilterMEDIRMedianCleanOutliers(t *testing.T) {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)
 		}
-		f.finalCompute(d)
-		v := f.filterPointForBlock()
-		if math.Abs(float64(v.Value-c.mean)) > 1e-4 {
-			t.Errorf("Median was incorrect, got: %f, expected: %f for set:%d", v.Value, c.mean, i)
+		v := f.finalCompute(d)
+		if math.Abs(float64(v-c.mean)) > 1e-4 {
+			t.Errorf("Median was incorrect, got: %f, expected: %f for set:%d", v, c.mean, i)
 		}
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 type Filter interface {
 	compute(trade dia.Trade)
-	finalCompute(t time.Time)
+	finalCompute(t time.Time) float64
 	filterPointForBlock() *dia.FilterPoint
 	save(ds models.Datastore) error
 }
