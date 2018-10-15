@@ -11,11 +11,11 @@
           :color="'#564dfc'"
      	  />
 	    </div>
-	    <div class="coin-data" v-else>
+	    <div v-else class="coin-data">
 	    	<b-row>
 				<b-table responsive striped :items="coindata" :fields="fields" id="coindata">
 				    <template slot="coinName" slot-scope="data">
-				      <b-img :src="data.item.coinImage" fluid alt=" " />
+				      <b-img :src="data.item.coinImage" alt=" " />
 				      <router-link :to="{ name: 'coin-details', params: { coinRank:data.item.rank, coinSymbol: data.item.coinSymbol }}">
 				      	{{data.item.coinSymbol}} 
 				      </router-link>
@@ -31,7 +31,9 @@
 				       </div>
 				    </template>
 					<template slot="priceGraph" slot-scope="data">
-				      <b-img :src="data.value" fluid alt="" />
+						<router-link :to="{ name: 'coin-details', params: { coinRank:data.item.rank, coinSymbol: data.item.coinSymbol }}">
+							<b-img :src="data.value" alt="" />
+						</router-link>
 				    </template>
 				    <template slot="volume24" slot-scope="data">
 				      {{ data.item.volume24Formatted }}

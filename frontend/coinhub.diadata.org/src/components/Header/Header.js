@@ -4,10 +4,16 @@ export default {
   data() {
   	return {
   	  logo:'',
-      selectedCurrency: ''
+      selectedCurrency: '',
+      showSearch: false,
   	};
   },
   mounted() {
-  	this.logo = require('@/assets/dia-logo.png');
+  	this.logo = require('@/assets/logo.svg');
+  },
+  methods: {
+    showHideSearch : function() {
+      this.showSearch = !this.showSearch;
+    }
   }
 };

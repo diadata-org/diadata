@@ -1,6 +1,6 @@
 .row {
 	margin-right: 0 !important;
-  margin-left: 0 !important;
+	margin-left: 0 !important;
 }
 
 div.loading-data {
@@ -22,8 +22,8 @@ span.coin-name {
 }
 
 section div .table-responsive{
-	padding-left: 100px;
-	padding-right: 100px;
+	padding-left: 6rem;
+	padding-right: 6rem;
 	padding-top: 10px;
 }
 
@@ -32,6 +32,10 @@ section div .table-responsive{
 	text-align: right;
 }
 
+/deep/ table tbody tr td {
+	padding: 0;
+	vertical-align: middle;
+}
 
 /deep/ table thead th:nth-child(2),
 /deep/ table td:nth-child(2){
@@ -60,16 +64,13 @@ section div .table-responsive{
     color: #000000 !important;
 }
 
-
-
-@media (max-width: 768px) {	
+@media (min-width: 320px) and (max-width: 1023px) {	
 	section div .table-responsive{
-		padding-left: 20px;
+		padding-left: 1px;
 		padding-right: 0;
 		padding-top: 0;
 	}
 }
-
 
 @media (max-width: 576px) {	
 	/deep/ table th,
@@ -84,14 +85,6 @@ section div .table-responsive{
 	/deep/ table{
 		width: 350%;
 	}
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 1.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
 }
 
 @media (min-width: 768px)  and (max-width: 1024px){	
@@ -103,36 +96,12 @@ section div .table-responsive{
 		padding-left: 2px;
 	}
 
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
+	
 }
 
 @media (min-width: 1024px) and (max-width: 1366px)  {	
 	/deep/ table{
 		width: 150%;
 	}
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 6rem;
-	}
 	
-}
-
-@media (min-width: 1367px)  {
-     div.exchange-buttons #btn-eur{
-		margin-right: 6.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 5rem;
-	}
 }

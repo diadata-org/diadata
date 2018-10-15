@@ -1,6 +1,7 @@
 .row {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
+  margin-right: 4rem !important;
+  margin-left: 4rem !important;
+  width: 100%;
 }
 
 nav.bg-info {
@@ -12,119 +13,103 @@ nav.bg-info {
     justify-content: unset;
 }
 
+.navbar-brand {
+	margin-right: 0;
+}
+
 .sub-header {
-	margin-top: 5px;
 	color: #FFF;
 }
 
-div.exchange-buttons {
+
+.search-input {
 	width: 100%;
-	display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -ms-flex-align: flex-end;
-    -webkit-align-items: flex-end;
-    -webkit-box-align: flex-end;
-
-    justify-content: flex-end;
-    margin-top: 5px;
 }
 
-div.exchange-buttons a {
-	font-weight: 500;
-	padding: 5px;
-	padding-left: 12px;
-	padding-right: 12px;
+.header-components {
+	margin-top: 20px;
 }
 
-div.exchange-buttons a.selected {
-	background-color: #FFD0D0;
-	color: #000000;
-	text-decoration: none;
-
+#dd-currency {
+	float:right;
 }
 
-div.exchange-buttons a.not-selected {
-	background-color: #FFFFFF;
-	color: #000000;
-	text-decoration: none;
+/deep/ #dd-currency button.btn-secondary:hover,
+/deep/ #dd-currency button.btn-secondary {
+	color: #fff;
+    background-color: #FF7096;
+    border-color: #FF7096;
+    font-weight: 600;
 }
 
-@media (min-width: 769px) {	
-	nav.bg-info a.navbar-brand {
-		margin-left: 80px;
+@media (min-width: 320px) and  (max-width: 767px){
+	header.lg-screens {
+		display: none;
 	}
 
-	.sub-header {
-		margin-top: 5px;
-		margin-left: 80px;
+	header.sm-screens {
+		display: block;
 	}
 
-	.ml-auto.logo {
-		margin-right: 80px;
+	header.sm-screens .row .col-12 {
+		padding-left: 0;
+		padding-right: 2px;
+	}
+
+	.row {
+  		margin-right: 0!important;
+  		margin-left: 0!important;
+	}
+
+	#dd-currency {
+		float: left;
+	}
+
+	.btn-search {
+		margin-top: 2px;
+	}
+
+	.btn-search a{
+		color: #fff;
+		text-decoration: none;
+		font-size: 18px;
+	}
+
+	.search-input {
+		width: 10rem;
+	}
+}
+
+@media (min-width: 768px) {
+	header.sm-screens {
+		display: none;
+	}
+}
+
+@media (min-width: 768px) and  (max-width: 1023px){
+	
+	.row {
+	  margin-right: 0!important;
+	  margin-left: 0 !important;
+	}	
+
+	#dd-currency {
 		margin-top: 10px;
-	}
-}
-
-@media (max-width: 767px) {	
-	.ml-auto.logo {
-		width: 60px;
-	}
-}
-
-@media (max-width: 768px) {	
-
-	nav.bg-info a.navbar-brand {
-		margin-left: 5px;
-	}
-
-	.sub-header {
-		margin-left: 5px;
-	}
-}
-
-@media (max-width: 576px) {	
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 1.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
-}
-
-@media (min-width: 768px)  and (max-width: 1024px){	
-	
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
-}
-
-@media (min-width: 1024px) and (max-width: 1366px)  {	
-
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 6rem;
+		float: left;
 	}
 	
 }
 
-@media (min-width: 1367px)  {
-     div.exchange-buttons #btn-eur{
-		margin-right: 6.5rem;
-	}
+@media (min-width: 1024px) and (max-width: 1200px) {
 
-	div.exchange-buttons #btn-usd{
-		margin-right: 5rem;
-	}
+	.row {
+	  margin-right: 0 !important;
+	  margin-left: 80px !important;
+	}	
+	
 }
+
+
+
+
+
