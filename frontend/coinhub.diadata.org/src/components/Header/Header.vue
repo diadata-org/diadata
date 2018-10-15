@@ -21,12 +21,19 @@
           </b-col>
         </b-row>
         <b-row class="header-components">
-            <b-col md="12" lg="5" xl="4" >
-              <b-navbar-nav class="search-form">
-                <b-nav-form>
-                  <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"/>
+            <b-col md="12" lg="5" xl="4" class="d-inline-block" >
+      
+               <b-nav-form class="search-form">
+                  <b-input-group>
+                    <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
+                    <b-input-group-append>
+                      <button class="search-coins" @click.stop="">
+                        <font-awesome-icon icon="search" />
+                      </button>
+                    </b-input-group-append>
+                  </b-input-group>
                 </b-nav-form>
-              </b-navbar-nav>
+             
             </b-col>
             <b-col md="12" lg="1" offset-lg="6" xl="1" offset-xl="7">
               <b-dropdown id="dd-currency" text="EUR">
@@ -53,7 +60,7 @@
                   <b-input-group>
                     <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
                     <b-input-group-append>
-                      <button @click.stop="showHideSearch">
+                      <button class="hide-search" @click.stop="showHideSearch">
                         <font-awesome-icon icon="times-circle" />
                       </button>
                     </b-input-group-append>
