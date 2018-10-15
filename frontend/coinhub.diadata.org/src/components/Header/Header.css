@@ -13,7 +13,7 @@ nav.bg-info {
 }
 
 .sub-header {
-	margin-top: 5px;
+	margin-top: 10px;
 	color: #FFF;
 }
 
@@ -22,7 +22,7 @@ nav.bg-info {
 }
 
 .search-input {
-	
+	width: 100%;
 }
 
 div.exchange-buttons {
@@ -65,7 +65,6 @@ div.exchange-buttons a.not-selected {
 	}
 
 	.sub-header {
-		margin-top: 5px;
 		margin-left: 75px;
 	}
 
