@@ -1,6 +1,7 @@
 .row {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
+  margin-right: 70px !important;
+  margin-left: 70px !important;
+  width: 100%;
 }
 
 nav.bg-info {
@@ -12,82 +13,83 @@ nav.bg-info {
     justify-content: unset;
 }
 
-.sub-header {
-	margin-top: 10px;
-	color: #FFF;
+.navbar-brand {
+	margin-right: 0;
 }
 
-.search-form {
-	
+.sub-header {
+	color: #FFF;
 }
 
 .search-input {
 	width: 100%;
 }
 
-div.exchange-buttons {
-	width: 100%;
-	display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -ms-flex-align: flex-end;
-    -webkit-align-items: flex-end;
-    -webkit-box-align: flex-end;
-
-    justify-content: flex-end;
-    margin-top: 5px;
+.header-components {
+	margin-top: 20px;
 }
 
-div.exchange-buttons a {
-	font-weight: 500;
-	padding: 5px;
-	padding-left: 12px;
-	padding-right: 12px;
+#dd-currency {
+	float:right;
 }
 
-div.exchange-buttons a.selected {
-	background-color: #FFD0D0;
-	color: #000000;
-	text-decoration: none;
-
+/deep/ #dd-currency button.btn-secondary:hover,
+/deep/ #dd-currency button.btn-secondary {
+	color: #fff;
+    background-color: #FF7096;
+    border-color: #FF7096;
+    font-weight: 600;
 }
 
-div.exchange-buttons a.not-selected {
-	background-color: #FFFFFF;
-	color: #000000;
-	text-decoration: none;
-}
-
-@media (min-width: 769px) {	
-	nav.bg-info a.navbar-brand {
-		margin-left: 90px;
+@media (min-width: 320px) and  (max-width: 767px){
+	header.lg-screens {
+		display: none;
 	}
 
-	.sub-header {
-		margin-left: 75px;
+	header.sm-screens {
+		display: block;
 	}
 
-	.ml-auto.logo {
-		margin-right: 80px;
+	.row {
+  		margin-right: 0!important;
+  		margin-left: 0!important;
+	}
+
+	#dd-currency {
+		float: left;
+	}
+}
+
+@media (min-width: 768px) {
+	header.sm-screens {
+		display: none;
+	}
+}
+
+@media (min-width: 768px) and  (max-width: 1023px){
+	
+	.row {
+	  margin-right: 0!important;
+	  margin-left: 0 !important;
+	}	
+
+	#dd-currency {
 		margin-top: 10px;
+		float: left;
 	}
+	
 }
 
-@media (max-width: 767px) {	
-	.ml-auto.logo {
-		width: 60px;
-	}
+@media (min-width: 1024px) and (max-width: 1200px) {
+
+	.row {
+	  margin-right: 0 !important;
+	  margin-left: 80px !important;
+	}	
+	
 }
 
-@media (max-width: 768px) {	
 
-	nav.bg-info a.navbar-brand {
-		margin-left: 5px;
-	}
 
-	.sub-header {
-		margin-left: 5px;
-	}
-}
+
 
