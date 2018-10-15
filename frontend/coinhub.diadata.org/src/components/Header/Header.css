@@ -22,7 +22,7 @@ nav.bg-info {
 }
 
 .search-input {
-	width: 100%;
+	
 }
 
 div.exchange-buttons {
@@ -61,12 +61,12 @@ div.exchange-buttons a.not-selected {
 
 @media (min-width: 769px) {	
 	nav.bg-info a.navbar-brand {
-		margin-left: 80px;
+		margin-left: 90px;
 	}
 
 	.sub-header {
 		margin-top: 5px;
-		margin-left: 80px;
+		margin-left: 75px;
 	}
 
 	.ml-auto.logo {
@@ -92,47 +92,3 @@ div.exchange-buttons a.not-selected {
 	}
 }
 
-@media (max-width: 576px) {	
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 1.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
-}
-
-@media (min-width: 768px)  and (max-width: 1024px){	
-	
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 1rem;
-	}
-}
-
-@media (min-width: 1024px) and (max-width: 1366px)  {	
-
-
-	div.exchange-buttons #btn-eur{
-		margin-right: 5.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 6rem;
-	}
-	
-}
-
-@media (min-width: 1367px)  {
-     div.exchange-buttons #btn-eur{
-		margin-right: 6.5rem;
-	}
-
-	div.exchange-buttons #btn-usd{
-		margin-right: 5rem;
-	}
-}
