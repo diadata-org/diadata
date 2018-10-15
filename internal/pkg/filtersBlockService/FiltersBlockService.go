@@ -113,6 +113,8 @@ func (s *FiltersBlockService) createFilters(symbol string, exchange string, Begi
 			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterTLT(symbol, exchange),
 			NewFilterVOL(symbol, exchange),
+			NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
 	}
 }
@@ -135,7 +137,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	resultFilters := []dia.FilterPoint{}
 	for _, filters := range s.filters {
 		for _, f := range filters {
-			f.finalComputeEndOfBlock(tb.TradesBlockData.EndTime)
+			f.finalCompute(tb.TradesBlockData.EndTime)
 			fp := f.filterPointForBlock()
 			if fp != nil {
 				resultFilters = append(resultFilters, *fp)

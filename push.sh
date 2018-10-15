@@ -93,7 +93,7 @@ then
 
 	IMAGE=${DOCKER_HUB_LOGIN}/${STACKNAME}_$1
 
-	echo pushing $IMAGE
+	echo "$0 pushing $IMAGE"
 
 	docker push $IMAGE
 	if [ $? -ne 0 ]
@@ -110,7 +110,13 @@ then
 			docker pull $IMAGE
 		fi
 		selectMaster
+		echo "$0 pulling image"
 		docker pull $IMAGE
+		if [ $? -ne 0 ]
+		then
+			echo error pulling image
+			exit 0
+		fi
 	fi
 
     SERVICE=${STACKNAME}_$1
@@ -122,7 +128,7 @@ then
 		RESTARTED=$?
 		if [ $RESTARTED -ne 0 ]
 		then
-			echo "failed on update service ${SERVICE} trying again in 10 secs"
+			echo "$0 failed on update service ${SERVICE} trying again in 10 secs"
 			echo "run this to get logs:"
 			echo "docker service logs -f ${SERVICE}"
 			sleep 10

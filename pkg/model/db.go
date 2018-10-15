@@ -37,6 +37,7 @@ type Datastore interface {
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
+	SetFilter(filterName string, symbol string, exchange string, value float64) error
 }
 
 type DB struct {
