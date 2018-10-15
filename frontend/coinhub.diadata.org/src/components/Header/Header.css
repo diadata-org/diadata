@@ -17,6 +17,14 @@ nav.bg-info {
 	color: #FFF;
 }
 
+.search-form {
+	
+}
+
+.search-input {
+	width: 100%;
+}
+
 div.exchange-buttons {
 	width: 100%;
 	display: -ms-flexbox;

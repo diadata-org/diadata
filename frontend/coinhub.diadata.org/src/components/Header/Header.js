@@ -8,6 +8,6 @@ export default {
   	};
   },
   mounted() {
-  	this.logo = require('@/assets/dia-logo.png');
+  	this.logo = require('@/assets/logo.svg');
   }
 };
