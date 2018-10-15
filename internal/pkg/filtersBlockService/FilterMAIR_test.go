@@ -99,7 +99,7 @@ func TestFilterMAIRIgnore(t *testing.T) {
 		d = d.Add(-time.Second)
 		p += priceIncrements
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != firstPrice {
 		t.Errorf("error should be initial value:%f got:%f", firstPrice, v.Value)
@@ -123,7 +123,7 @@ func TestFilterMAIRAverage(t *testing.T) {
 	// append last value twice. Same as filter
 	avg += p - priceIncrements
 	avg = avg / float64(samples+1)
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != avg {
 		t.Errorf("error should be average value:%f got:%f", avg, v.Value)
@@ -148,7 +148,7 @@ func TestFilterMAIRAverageOutsideRange(t *testing.T) {
 	}
 	// append last value twice. Same as filter
 	avg = (avg + priceIncrements*float64(memory-1)) / float64(memory)
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != avg {
 		t.Errorf("error should be average value:%f got:%f", avg, v.Value)
@@ -177,7 +177,7 @@ func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)
 		}
-		f.finalComputeEndOfBlock(d)
+		f.finalCompute(d)
 		v := f.filterPointForBlock()
 		if math.Abs(float64(v.Value-c.mean)) > 1e-4 {
 			t.Errorf("Mean was incorrect, got: %f, expected: %f for set:%d", v.Value, c.mean, i)

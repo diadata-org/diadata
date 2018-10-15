@@ -26,7 +26,7 @@ func NewFilterVOL(symbol string, exchange string) *FilterVOL {
 	return s
 }
 
-func (s *FilterVOL) finalComputeEndOfBlock(time time.Time) {
+func (s *FilterVOL) finalCompute(time time.Time) {
 	s.value = s.volumeUSD
 	s.volumeUSD = 0.0
 }

@@ -39,6 +39,6 @@ func (s *FilterTLT) save(ds models.Datastore) error {
 	return err
 }
 
-func (s *FilterTLT) finalComputeEndOfBlock(time time.Time) {
+func (s *FilterTLT) finalCompute(time time.Time) {
 
 }

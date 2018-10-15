@@ -28,7 +28,7 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 	}
 	return s
 }
-func (s *FilterMA) finalComputeEndOfBlock(t time.Time) {
+func (s *FilterMA) finalCompute(t time.Time) {
 	if s.lastTrade == nil {
 		return
 	} else {

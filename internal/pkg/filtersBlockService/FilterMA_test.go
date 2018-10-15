@@ -21,7 +21,7 @@ func TestFilterMa(t *testing.T) {
 		d = d.Add(time.Second)
 		i += 1
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != p {
 		t.Errorf("error should be stable %v", v)
@@ -35,7 +35,7 @@ func TestFilterMa(t *testing.T) {
 		d = d.Add(time.Second)
 		i += 1
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v = f.filterPointForBlock()
 	if v.Value != 53.25 { //TODO formulas
 		t.Errorf("error should be, %v", v)
@@ -58,7 +58,7 @@ func TestFilterMa2(t *testing.T) {
 		d = d.Add(time.Second)
 		i += 1
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != p {
 		t.Errorf("error should be stable %v", v)
@@ -73,7 +73,7 @@ func TestFilterMa2(t *testing.T) {
 		d = d.Add(time.Second)
 		i += 1
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v = f.filterPointForBlock()
 	if v.Value != 56.4 { //TODO formulas
 		t.Errorf("error shouldnt be 57.0 %v", v)
@@ -96,7 +96,7 @@ func TestFilterMaIgnore(t *testing.T) {
 		d = d.Add(-time.Second)
 		p += priceIncrements
 	}
-	f.finalComputeEndOfBlock(d)
+	f.finalCompute(d)
 	v := f.filterPointForBlock()
 	if v.Value != firstPrice {
 		t.Errorf("error should be initial value:%f got:%f", firstPrice, v.Value)
