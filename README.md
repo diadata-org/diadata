@@ -1,17 +1,17 @@
-# Technical Introduction into DIA
+# DIA: Technical Introduction 
 Welcome to the [DIAdata.org](https://diadata.org/) platform.
-DIA is an ecosystem for open financial data in the decentralized smart contract ecosystem.
+DIA is an ecosystem for open financial data in a financial smart contract ecosystem.
 The target of DIA is to bring together data analysts, data providers and data users.
-In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build financial products on top of that data.
+In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps.
 
 ### Decentralized Financial Data
-All these data points can be used in Ethereum Smart Contracts.
-We provide oracles to use this information in any smart contract.
+All DIA data points can be used in Ethereum Smart Contracts.
+We provide oracle solutions to use this financial information in any smart contract.
 The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
 ## Methodology Documentation
 Currently, DIA collects several classes of data.
-Because of the very different nature of these classes, separate documentation exists for each of these different use cases.
+Separate documentation exists for each of these different use cases.
 
 * [Exchange Scrapers](methodology/ExchangePrices.md) are the components that get trade data from various exchanges and use these trades to construct average prices.
 * [Supply Scrapers](methodology/SupplyNumbers.md) are used to determine circulating supply numbers for cryptocurrency assets.
@@ -19,7 +19,7 @@ Because of the very different nature of these classes, separate documentation ex
 This information varies for each currency and is highly specific.
 
 ## API access
-Our API is live at https://api.diadata.org/v1 [swagger](https://api.diadata.org/swagger/index.html).
+You can find our live API at https://api.diadata.org/v1 [swagger](https://api.diadata.org/swagger/index.html).
 Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
@@ -68,5 +68,3 @@ The first quotations in our database are daily exchange rates from the European 
 DIA is open for anyone to contribute and we always welcome pull requests.
 We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
 
-## More information
-Visit [docs.DIAdata.org](https://docs.diadata.org/) to get detailed technical information on how to run and develop DIA software yourself.
