@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/diadata-org/diadata/blockchain-scrapers/scrapers"
+	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/scrapers"
 )
 
 const (
