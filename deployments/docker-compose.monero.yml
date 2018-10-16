@@ -1,0 +1,36 @@
+version: '3.2'
+
+services:
+  monero:
+    image:
+      ${DOCKER_HUB_LOGIN}/${STACKNAME}_monero
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-monero
+    volumes:
+      - /home/srv/monero:/root/.bitmonero
+    networks:
+      - scrapers-network
+
+  xmr:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xmr
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xmr
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+
+volumes: 
+  bitcoin:
+
+networks: 
+  scrapers-network:

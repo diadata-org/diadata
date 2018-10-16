@@ -21,12 +21,12 @@
           </b-col>
         </b-row>
         <b-row class="header-components">
-            <b-col md="12" lg="5" xl="4" >
-              <b-navbar-nav class="search-form">
-                <b-nav-form>
-                  <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"/>
+            <b-col md="12" lg="5" xl="4" class="d-inline-block" >
+      
+               <b-nav-form class="search-form" v-on:submit.prevent>
+                    <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
                 </b-nav-form>
-              </b-navbar-nav>
+             
             </b-col>
             <b-col md="12" lg="1" offset-lg="6" xl="1" offset-xl="7">
               <b-dropdown id="dd-currency" text="EUR">
@@ -49,11 +49,11 @@
           </b-col>
           <b-col cols="12" v-bind:class = "{ 'd-none' : showSearch === false, 'd-inline-block' : showSearch === true }">
             <b-navbar-nav class="search-form">
-                <b-nav-form>
+                <b-nav-form  v-on:submit.prevent>
                   <b-input-group>
                     <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
                     <b-input-group-append>
-                      <button @click.stop="showHideSearch">
+                      <button class="hide-search" @click.stop="showHideSearch">
                         <font-awesome-icon icon="times-circle" />
                       </button>
                     </b-input-group-append>

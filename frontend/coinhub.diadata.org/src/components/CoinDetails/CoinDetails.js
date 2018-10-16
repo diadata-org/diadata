@@ -3,6 +3,7 @@ import numeral from 'numeral';
 import moment from 'moment';
 import router from '@/router';
 import { AtomSpinner } from 'epic-spinners';
+import sortBy from 'lodash/sortBy';
 
 
 export default {
@@ -16,7 +17,7 @@ export default {
       fields: [
         { key: 'Name', label: 'Exchange', sortable: true },
         { key: 'Price', label: 'Price', sortable: true },
-        { key: 'VolumeYesterdayUSD', label: 'Volume USD (24h)', sortable: true },
+        { key: 'Volume24', label: 'Volume (24h)', sortable: true },
         { key: 'Time', label: 'Last Updated', sortable: true },
         { key: 'show_trades', label: 'Trades', sortable: false },
       ],
@@ -44,7 +45,7 @@ export default {
   methods: {
   	formatPairData(data) {
 
-      const {Coin, Change, Exchanges } = data;
+      let {Coin, Change, Exchanges } = data;
       const change24 = (Coin.Price  - Coin.PriceYesterday) / Coin.PriceYesterday * 100;
 
       this.coinDetails = { 
@@ -61,10 +62,12 @@ export default {
       // format the exchanges
       Exchanges.forEach((exchange)=>{
         exchange.Price = '$'.concat(numeral(exchange.Price).format('0,0.00')),
-        exchange.VolumeYesterdayUSD = numeral(exchange.VolumeYesterdayUSD).format('0,0'),
+        exchange.Volume24 = '$'.concat(numeral(exchange.VolumeYesterdayUSD).format('0,0')),
         exchange.Time = moment(exchange.Time).format("dddd, MMMM Do YYYY, h:mm:ss a");
 
       });
+
+      Exchanges = sortBy(Exchanges, 'VolumeYesterdayUSD').reverse();
 
       this.exchanges = Exchanges;
       this.loading = false;

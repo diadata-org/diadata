@@ -1,0 +1,46 @@
+version: '3.2'
+
+services:
+  eos-node:
+    image: ${DOCKER_HUB_LOGIN}/eos:mainnet
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-node-eos
+    volumes:
+      - eosio:/opt/eosio
+    logging:
+      options:
+        max-size: "50m"
+    cap_add:
+      - IPC_LOCK
+    stop_grace_period: 10m
+    networks:
+      - scrapers-network
+
+  eos:
+    image: ${DOCKER_HUB_LOGIN}/eos:scraper
+    depends_on:
+      - eos-node
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eos
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+
+volumes: 
+  eosio:
+    external: true
+
+networks: 
+  scrapers-network:

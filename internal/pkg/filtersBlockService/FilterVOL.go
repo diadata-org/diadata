@@ -26,9 +26,10 @@ func NewFilterVOL(symbol string, exchange string) *FilterVOL {
 	return s
 }
 
-func (s *FilterVOL) finalComputeEndOfBlock(time time.Time) {
+func (s *FilterVOL) finalCompute(time time.Time) float64 {
 	s.value = s.volumeUSD
 	s.volumeUSD = 0.0
+	return s.value
 }
 
 func (s *FilterVOL) filterPointForBlock() *dia.FilterPoint {

@@ -28,9 +28,9 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 	}
 	return s
 }
-func (s *FilterMA) finalComputeEndOfBlock(t time.Time) {
+func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
-		return
+		return 0.0
 	} else {
 		s.fill(t, s.lastTrade.EstimatedUSDPrice)
 	}
@@ -44,6 +44,7 @@ func (s *FilterMA) finalComputeEndOfBlock(t time.Time) {
 		div = len(s.previousPrices)
 	}
 	s.value = total / float64(div)
+	return s.value
 }
 
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {

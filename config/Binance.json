@@ -239,6 +239,11 @@
       "Symbol": "HOT",
       "ForeignName": "HOTBTC",
       "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName" : "XEMBTC",
+      "Exchange" : "Binance"
     }
   ]
 }

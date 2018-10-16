@@ -214,6 +214,11 @@
       "Symbol": "CNX",
       "ForeignName" : "CNXBTC",
       "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName" : "XEMBTC",
+      "Exchange" : "HitBTC"
     }
   ]
 }
