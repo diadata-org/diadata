@@ -1,7 +1,5 @@
-import shared from  '@/shared/shared';
 import { AtomSpinner } from 'epic-spinners';
-
-let coinData = {};
+import { EventBus } from '@/main';
 
 export default {
   components: {
@@ -24,36 +22,24 @@ export default {
       coindata: [],
       loading: true,
       errored: false,
-      selectedCurrency: ''
     };
   },
-  async mounted() {
-    try {
-       const { Coins, Change } = await shared.fetchCoins();
-       coinData = shared.formatCoinData(Coins, Change);
-       const { coinDataUSD, coinDataEUR } = coinData;
-       this.coindata = coinDataUSD;
-       this.selectedCurrency = "USD";
-       this.$nextTick( () => this.loading = false);
-    }
-    catch (error) {
-      console.log(error);
-      this.errored = true;
-    }
+  created: function () {
+    EventBus.$on('coinData', this.setCoinData);
+    EventBus.$on('coinDataError', this.handleCoinDataError);
+  },
+  beforeDestroy: function () {
+    EventBus.$off('coinData', this.setCoinData);
+    EventBus.$off('coinDataError', this.handleCoinDataError);
   },
   methods: {
-      switchCurrencies : function(currency){
-        const { coinDataUSD, coinDataEUR } = coinData;
-        if(currency === 'EUR'){
-          this.coindata = coinDataEUR;
-        }
-
-        if(currency === 'USD'){
-          this.coindata = coinDataUSD;
-        }
-
-        this.selectedCurrency = currency;
-
+      setCoinData : function (coinData){
+         this.coindata = coinData;
+         this.loading = false;
+      },
+      handleCoinDataError : function (error) {
+        this.errored = true;
+        this.loading = false;
       }
   },
 

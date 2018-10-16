@@ -4,6 +4,7 @@ import moment from 'moment';
 import router from '@/router';
 import { AtomSpinner } from 'epic-spinners';
 import sortBy from 'lodash/sortBy';
+import { EventBus } from '@/main';
 
 
 export default {
@@ -30,8 +31,9 @@ export default {
   },
   created() {
     this.coinSymbol = this.$route.params.coinSymbol;
+    EventBus.$emit('hideSearchInput', true);
   },
-  async mounted() {
+  mounted() {
     axios
     .get(`https://api.diadata.org/v1/symbol/${this.coinSymbol.toUpperCase()}`)
     .then((response) => {

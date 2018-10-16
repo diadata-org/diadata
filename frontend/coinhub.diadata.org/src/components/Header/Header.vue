@@ -22,17 +22,25 @@
         </b-row>
         <b-row class="header-components">
             <b-col md="12" lg="5" xl="4" class="d-inline-block" >
-      
-               <b-nav-form class="search-form" v-on:submit.prevent>
-                    <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
-                </b-nav-form>
+                <model-list-select 
+                              :list="options"
+                              option-value="value"
+                              option-text="text"
+                              v-model="selectedCoin"
+                              placeholder="Search for Digital Asset"
+                              @searchchange="initSearch"
+                              v-bind:class = "{ 'd-none' : hideSearchInput === true, 'd-inline-block' : hideSearchInput === false }">
+                </model-list-select>
              
             </b-col>
             <b-col md="12" lg="1" offset-lg="6" xl="1" offset-xl="7">
-              <b-dropdown id="dd-currency" text="EUR">
-                <b-dropdown-item>EUR</b-dropdown-item>
-                <b-dropdown-item>USD</b-dropdown-item>
-                <b-dropdown-item>NOK</b-dropdown-item>
+              <b-dropdown id="dd-currency" 
+                          v-bind:text="selectedCurrency" 
+                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">
+                <b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">
+                  {{ currency }}
+                </b-dropdown-item>
+                
               </b-dropdown>
             </b-col>    
         </b-row>
@@ -49,16 +57,16 @@
           </b-col>
           <b-col cols="12" v-bind:class = "{ 'd-none' : showSearch === false, 'd-inline-block' : showSearch === true }">
             <b-navbar-nav class="search-form">
-                <b-nav-form  v-on:submit.prevent>
-                  <b-input-group>
-                    <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
-                    <b-input-group-append>
-                      <button class="hide-search" @click.stop="showHideSearch">
+                    <model-list-select :list="options"
+                               option-value="value"
+                               option-text="text"
+                              v-model="selectedCoin"
+                              placeholder="Search for Digital Asset"
+                              @searchchange="initSearch">
+                    </model-list-select>
+                    <button class="hide-search" @click.stop="showHideSearch">
                         <font-awesome-icon icon="times-circle" />
-                      </button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-nav-form>
+                    </button>
             </b-navbar-nav>
           </b-col>
           <b-col class="btn-search text-right" v-bind:class = "{ 'd-none' : showSearch === true, 'd-inline-block' : showSearch === false }">
@@ -68,10 +76,10 @@
           </b-col>
         </b-row>
         <b-row class="header-components">
-          <b-dropdown id="dd-currency" text="EUR">
-            <b-dropdown-item>EUR</b-dropdown-item>
-            <b-dropdown-item>USD</b-dropdown-item>
-            <b-dropdown-item>NOK</b-dropdown-item>
+          <b-dropdown id="dd-currency" v-bind:text="selectedCurrency">
+            <b-dropdown-item v-for="currency in currencies">
+                  {{ currency }}
+            </b-dropdown-item>
           </b-dropdown>
         </b-row>
       </b-navbar>

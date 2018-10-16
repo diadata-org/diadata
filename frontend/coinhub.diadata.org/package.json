@@ -27,6 +27,7 @@
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
     "chai": "^4.1.2",
+    "currency-symbol-map": "^4.0.4",
     "epic-spinners": "^1.0.3",
     "express": "^4.16.3",
     "i": "^0.3.6",
