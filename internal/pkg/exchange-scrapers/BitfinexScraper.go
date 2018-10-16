@@ -7,8 +7,11 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -205,6 +208,28 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		s.pairSubscriptions.Store(pair.ForeignName, id)
 	}
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	response, err := http.Get("https://api.bitfinex.com/v1/symbols")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+	pairs = make([]dia.Pair, len(ls))
+	for i, p := range ls {
+		pairs[i] = dia.Pair{
+			Symbol:      p[0:3],
+			ForeignName: p,
+			Exchange:    dia.BitfinexExchange,
+		}
+	}
+
+	return
 }
 
 // BitfinexPairScraper implements PairScraper for Bitfinex
