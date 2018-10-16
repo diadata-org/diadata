@@ -15,7 +15,7 @@ export default {
   props: {},
   data() {
     return {
-      fields: [
+      exchange_fields: [
         { key: 'Name', label: 'Exchange', sortable: true },
         { key: 'Price', label: 'Price', sortable: true },
         { key: 'Volume24', label: 'Volume (24h)', sortable: true },
@@ -23,6 +23,16 @@ export default {
         { key: 'show_trades', label: 'Trades', sortable: false },
       ],
       exchanges: [],
+      last_trade_fields: [
+        { key: 'Symbol', label: 'Symbol', sortable: true },
+        { key: 'Pair', label: 'Pair', sortable: true },
+        { key: 'Price', label: 'Price', sortable: true },
+        { key: 'Volume', label: 'Volume', sortable: true },
+        { key: 'Time', label: 'Last Updated', sortable: true },
+        { key: 'ForeignTradeID', label: 'ForeignTradeID', sortable: true },
+        { key: 'EstimatedUSDPrice', label: 'EstimatedUSDPrice', sortable: true },
+      ],
+      last_trades: [],
       loading: true,
       errored: false,
       coinDetails:{},
