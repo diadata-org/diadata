@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -204,6 +204,29 @@ func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	response, err := http.Get("https://data.gate.io/api2/1/pairs")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+	pairs = make([]dia.Pair, len(ls))
+	for i, p := range ls {
+		s := strings.Split(p, "_")
+		pairs[i] = dia.Pair{
+			Symbol:      s[0],
+			ForeignName: p,
+			Exchange:    dia.GateIOExchange,
+		}
+	}
+
+	return
+}
+
 // GateIOPairScraper implements PairScraper for GateIO
 type GateIOPairScraper struct {
 	parent     *GateIOScraper
@@ -234,17 +257,4 @@ func (ps *GateIOPairScraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *GateIOPairScraper) Pair() dia.Pair {
 	return ps.pair
-}
-
-func (ps *GateIOScraper) FetchAvailablePairs() []string {
-	response, err := http.Get("https://data.gate.io/api2/1/pairs")
-	if err != nil {
-		errors.New("The HTTP request failed")
-	} else {
-		defer response.Body.Close()
-		data, _ := ioutil.ReadAll(response.Body)
-		ls := strings.Replace(string(data)[1:len(data)-1], "\"", "", -1)
-		return strings.Split(ls, ",")
-	}
-	return []string{}
 }
