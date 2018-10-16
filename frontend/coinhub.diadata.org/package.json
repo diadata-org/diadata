@@ -39,6 +39,7 @@
     "serve-static": "^1.13.2",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
+    "vue-search-select": "^2.6.3",
     "vue-template-compiler": "^2.5.17"
   },
   "gitHooks": {
