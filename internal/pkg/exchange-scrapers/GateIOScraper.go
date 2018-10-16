@@ -3,13 +3,15 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"log"
-	"strconv"
-	"sync"
-	"time"
-
 	"github.com/diadata-org/diadata/pkg/dia"
 	ws "github.com/gorilla/websocket"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
 )
 
 var _GateIOsocketurl string = "wss://ws.gate.io/v3"
@@ -232,4 +234,17 @@ func (ps *GateIOPairScraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *GateIOPairScraper) Pair() dia.Pair {
 	return ps.pair
+}
+
+func (ps *GateIOScraper) FetchAvailablePairs() []string {
+	response, err := http.Get("https://data.gate.io/api2/1/pairs")
+	if err != nil {
+		errors.New("The HTTP request failed")
+	} else {
+		defer response.Body.Close()
+		data, _ := ioutil.ReadAll(response.Body)
+		ls := strings.Replace(string(data)[1:len(data)-1], "\"", "", -1)
+		return strings.Split(ls, ",")
+	}
+	return []string{}
 }

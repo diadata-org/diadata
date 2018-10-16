@@ -17,6 +17,9 @@ type APIScraper interface {
 	// ScrapePair returns a PairScraper that continuously scrapes trades for a
 	// single pair from this APIScraper
 	ScrapePair(pair dia.Pair) (PairScraper, error)
+	// Return a list with all available trade pairs should return the pair in the
+	// internal redis format
+	FetchAvailablePairs() []string
 }
 
 // PairScraper receives trades for a single pc.Pair from a single exchange.
