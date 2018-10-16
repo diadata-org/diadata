@@ -25,11 +25,12 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 
 	// downsample data
 	factor, index, sumPrices, sumTimes := len(times)/NUM_DATAPOINTS, 0, float64(0), int64(0)
+	min, max := math.Inf(1), math.Inf(-1)
+	dataPoints := make(plotter.XYs, NUM_DATAPOINTS)
+
 	if factor < 1 {
 		factor = 1
 	}
-	min, max := math.Inf(1), math.Inf(-1)
-	dataPoints := make(plotter.XYs, NUM_DATAPOINTS)
 
 	for i := 1; i < len(times) && index < NUM_DATAPOINTS; i++ {
 		sumPrices += prices[i]
@@ -39,7 +40,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 			dataPoints[index].X = float64(sumTimes / int64(factor))
 			dataPoints[index].Y = sumPrices / float64(factor)
 
-			//log.Println("X: ", dataPoints[index].X, "; Y:", dataPoints[index].Y)
+			//log.Println("i: ", i, "X: ", dataPoints[index].X, "; Y:", dataPoints[index].Y)
 			if dataPoints[index].Y < min {
 				min = dataPoints[index].Y
 			}
@@ -52,6 +53,17 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 			sumTimes = 0
 			index++
 		}
+	}
+
+	// resize datapoint array if necessary
+	if index < len(dataPoints) {
+		newDatapoints := make(plotter.XYs, index)
+
+		for i, _ := range newDatapoints {
+			newDatapoints[i].X = dataPoints[i].X
+			newDatapoints[i].Y = dataPoints[i].Y
+		}
+		dataPoints = newDatapoints
 	}
 
 	// insert data in line
@@ -68,6 +80,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	line.ShadeColor = new(color.Color)
 	*line.ShadeColor = color.RGBA{R: 204, G: 223, B: 248, A: 255}
 
+	// add a small margin at the bottom
 	graph.Y.Min = min - (max-min)*0.1
 	graph.X.Padding = 0
 	graph.Y.Padding = 0
@@ -81,7 +94,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 		return err
 	}
 
-	log.Println("Created", path, "with", index+1, "points")
+	log.Println("Created", path, "with", index, "points")
 	return nil
 }
 
