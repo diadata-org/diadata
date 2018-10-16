@@ -23,15 +23,8 @@
         <b-row class="header-components">
             <b-col md="12" lg="5" xl="4" class="d-inline-block" >
       
-               <b-nav-form class="search-form" v-on:submit.prevent="onSubmit">
-                  <b-input-group>
+               <b-nav-form class="search-form" v-on:submit.prevent>
                     <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
-                    <b-input-group-append>
-                      <button class="search-coins" @click.stop="">
-                        <font-awesome-icon icon="search" />
-                      </button>
-                    </b-input-group-append>
-                  </b-input-group>
                 </b-nav-form>
              
             </b-col>
@@ -56,7 +49,7 @@
           </b-col>
           <b-col cols="12" v-bind:class = "{ 'd-none' : showSearch === false, 'd-inline-block' : showSearch === true }">
             <b-navbar-nav class="search-form">
-                <b-nav-form  v-on:submit.prevent="onSubmit">
+                <b-nav-form  v-on:submit.prevent>
                   <b-input-group>
                     <b-form-input size="md" class="search-input" type="text" placeholder="Search for Digital Asset"></b-form-input>
                     <b-input-group-append>

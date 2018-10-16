@@ -1,6 +1,6 @@
 import axios from 'axios';
 import numeral from 'numeral';
-const sortBy = require('lodash/sortBy');
+import sortBy from 'lodash/sortBy';
 
 export default {
 	fetchCoins: async function(){ 
