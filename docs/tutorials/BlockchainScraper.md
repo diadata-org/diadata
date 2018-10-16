@@ -10,7 +10,7 @@ The working directory for blockchain scrapers is `diadata/blockchain-scrapers/`.
 You must provide a Dockerfile for your blockchain client and for the Go wrapper that connects to our database.
 An example dockerfile is provided for the Go bindings with a bitcoind client scraping the Bitcoin blockchain
 
-```Docker
+```Dockerfile
 FROM golang:latest as build
 WORKDIR $GOPATH/src/
 COPY . .
@@ -32,26 +32,26 @@ Ideally, all blockchain clients are run from there directly
 
 ```
 bitcoind:
-	image:
-		 kylemanna/bitcoind
-	ports:
-		 - "8332"
-	volumes:
-		 - /home/srv/bitcoind:/bitcoin
-	command: btc_oneshot -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
-	logging:
-		 options:
-				max-size: "50m"
-	networks:
-		 - scrapers-network
-	deploy:
-		 mode: global
-		 placement:
-				constraints:
-					 - node.labels.bitcoind==true
-		 restart_policy:
-				delay: 2s
-				window: 20s
+  image:
+    kylemanna/bitcoind
+  ports:
+    - "8332"
+  volumes:
+    - /home/srv/bitcoind:/bitcoin
+  command: btc_oneshot -prune=550 -rpcallowip=::/0 -disablewallet -rpcpassword=mysecretrpcdiapassword -rpcuser=mysecretrpcdiauser
+  logging:
+    options:
+      max-size: "50m"
+  networks:
+    - scrapers-network
+  deploy:
+    mode: global
+    placement:
+      constraints:
+        - node.labels.bitcoind==true
+    restart_policy:
+      delay: 2s
+      window: 20s
 ```
 
 Make sure to enable pruning so that only the latest mined blocks are stored in the container.
@@ -64,17 +64,17 @@ An example entry should look something like this
 
 ```
 btc: 
-	build:
-		 context: ../../../..
-		 dockerfile: github.com/diadata-org/diadata/blockchain-scrapers/Dockerfile-btc
-	image: blockchain-scrapers_btc 
-	networks:
-		 - scrapers-network
-	logging:
-		 options:
-				max-size: "50m"
-	secrets:
-		 - api_diadata
+  build:
+    context: ../../../..
+    dockerfile: github.com/diadata-org/diadata/blockchain-scrapers/Dockerfile-btc
+  image: blockchain-scrapers_btc 
+  networks:
+    - scrapers-network
+  logging:
+    options:
+      max-size: "50m"
+  secrets:
+    - api_diadata
 ```
 
 Be sure to add your container to the `scrapers-network` virtual network.
@@ -92,13 +92,13 @@ var c dia.ConfigApi
 configFile := "/run/secrets/api_diadata"
 err := gonfig.GetConf(configFile, &c)
 if err != nil {
-	configFile = "../config/secrets/api_diadata.json"
-	err = gonfig.GetConf(configFile, &c)
+  configFile = "../config/secrets/api_diadata.json"
+  err = gonfig.GetConf(configFile, &c)
 }
 if err != nil {
-	log.Println(err)
+  log.Println(err)
 } else {
-	log.Println("Loaded secret in", configFile)
+  log.Println("Loaded secret in", configFile)
 }
 api = dia.NewClient(&c)
 ```
