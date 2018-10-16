@@ -1,14 +1,18 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
 	"time"
+
+	"io/ioutil"
+	"net/http"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
@@ -148,6 +152,36 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	_, _, err := binance.WsAggTradeServe(pair.ForeignName, wsAggTradeHandler, errHandler)
 
 	return ps, err
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+
+	response, err := http.Get("https://api.binance.com//api/v1/exchangeInfo")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar binance.ExchangeInfo
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		pairs = make([]dia.Pair, len(ar.Symbols))
+		log.Print("Retrieved at:", len(ar.Symbols))
+		for i, p := range ar.Symbols {
+			if p.Status == "TRADING" {
+				pairs[i] = dia.Pair{
+					Symbol:      p.BaseAsset,
+					ForeignName: p.Symbol,
+					Exchange:    dia.BinanceExchange,
+				}
+			} else {
+				log.Error("Symbol:" + p.Symbol + " base symbol:" + p.BaseAsset + " status:" + p.Status)
+			}
+		}
+	}
+	return
 }
 
 // BinancePairScraper implements PairScraper for Binance
