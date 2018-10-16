@@ -194,7 +194,7 @@ func main() {
 
 	store, err := models.NewDataStore()
 	if err != nil {
-		log.Error(err)
+		log.Errorln("NewDataStore", err)
 	}
 	diaApiEnv := &diaApi.Env{store}
 

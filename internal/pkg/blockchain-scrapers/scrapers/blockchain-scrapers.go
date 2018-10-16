@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/blockstatecom/go-bitcoind"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/go-bitcoind"
 )
 
 const (

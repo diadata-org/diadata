@@ -95,7 +95,7 @@ func GetConfigApi() *ConfigApi {
 	configFile := "/run/secrets/api_diadata"
 	err := gonfig.GetConf(configFile, &c)
 	if err != nil {
-		log.Error(err)
+		log.Errorln("GetConfigApi", err)
 		usr, _ := user.Current()
 		dir := usr.HomeDir
 		configFile = dir + "/secrets/api_diadata.json"

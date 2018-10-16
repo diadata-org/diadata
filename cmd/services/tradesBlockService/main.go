@@ -33,7 +33,7 @@ func main() {
 
 	s, err := models.NewDataStore()
 	if err != nil {
-		log.Error(err)
+		log.Errorln("NewDataStore", err)
 	}
 
 	tradesBlockService := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds)

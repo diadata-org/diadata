@@ -46,7 +46,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, errors.New("Unmarshal"))
 		} else {
 			if t.Symbol == "" || t.CirculatingSupply == 0.0 {
-				log.Error("received supply:", t)
+				log.Errorln("received supply:", t)
 				restApi.SendError(c, http.StatusInternalServerError, errors.New("Missing Symbol or CirculatingSupply value"))
 			} else {
 

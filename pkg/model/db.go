@@ -94,7 +94,7 @@ func NewDataStore() (*DB, error) {
 
 	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 	if err != nil {
-		log.Error(err)
+		log.Errorln("queryInfluxDB CREATE DATABASE", err)
 	}
 
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
@@ -138,7 +138,7 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange st
 func (db *DB) WriteBashInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
-		log.Error(err)
+		log.Errorln("WriteBashInflux", err)
 	}
 	return err
 }
