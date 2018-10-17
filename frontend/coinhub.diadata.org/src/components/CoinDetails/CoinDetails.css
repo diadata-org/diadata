@@ -84,6 +84,16 @@ deep/ table thead tr th:nth-child(5),
 	.coin-details div .container-fluid  {
 		padding-left: 10px;
 	}
+	/deep/ div .table-responsive.main,
+	.data-sources-banner {
+		margin-right: 10px;
+	}
+
+	.coindata-charts {
+		margin-left: 5px;
+		margin-right: 1px;
+	}
+
 }
 
 @media (max-width: 576px) {	
