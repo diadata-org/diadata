@@ -35,7 +35,6 @@ services:
     volumes:
       - /home/srv/restServer/charts:/charts
     networks:
-      - kafka-network
       - redis-network
     logging:
       options:

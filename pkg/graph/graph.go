@@ -5,7 +5,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
 	"image/color"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"math/rand"
 	"time"
@@ -40,7 +40,6 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 			dataPoints[index].X = float64(sumTimes / int64(factor))
 			dataPoints[index].Y = sumPrices / float64(factor)
 
-			//log.Println("i: ", i, "X: ", dataPoints[index].X, "; Y:", dataPoints[index].Y)
 			if dataPoints[index].Y < min {
 				min = dataPoints[index].Y
 			}
@@ -103,7 +102,6 @@ func main() {
 	prices := make([]float64, numPoints)
 	times := make([]int64, numPoints)
 
-	//rand.Seed(35131515351)
 	rand.Seed(time.Now().Unix())
 	var x = 0.0
 	for i := 0; i < len(prices); i++ {
@@ -118,6 +116,6 @@ func main() {
 
 	err := PriceGraph(prices, times, "example.png")
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 }
