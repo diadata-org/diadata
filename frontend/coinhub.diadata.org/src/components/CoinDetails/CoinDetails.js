@@ -24,10 +24,10 @@ export default {
       exchanges: [],
       last_trade_fields: [
         { key: 'Pair', label: 'Pair', sortable: true },
-        { key: 'PriceFormatted', label: 'Price', sortable: true },
+        { key: 'EstimatedPrice', label: 'Price', sortable: true },
+        { key: 'Order', label: 'Order', sortable: true },
         { key: 'Volume', label: 'Volume', sortable: true },
-        { key: 'TimeFormatted', label: 'Last Updated', sortable: true },
-        { key: 'EstimatedPrice', label: 'Estimated Price', sortable: true },
+        { key: 'TimeFormatted', label: 'Time', sortable: true },
       ],
       loading: true,
       errored: false,
@@ -50,8 +50,9 @@ export default {
     if(this.$route.params.coinRank) {
       localStorage.rank = this.$route.params.coinRank;
     }
-
+    // fetch the coin details
     this.fetchCoinDetails();
+
   
   },
   methods: {
@@ -92,9 +93,8 @@ export default {
 
         // format the last trades too
         exchange.LastTrades.forEach((lastTrade) => {
-            lastTrade.PriceFormatted = shared.formatCurrency(shared.calculateCurrencyFromRate(lastTrade.Price,Change.USD,this.selectedCurrency,"today"),this.selectedCurrency);
             lastTrade.EstimatedPrice = shared.formatCurrency(shared.calculateCurrencyFromRate(lastTrade.EstimatedUSDPrice,Change.USD,this.selectedCurrency,"today"),this.selectedCurrency);
-            lastTrade.TimeFormatted = shared.formatDateTime(lastTrade.Time,"dddd, MMMM Do YYYY, h:mm:ss a");
+            lastTrade.TimeFormatted = shared.formatDateTime(lastTrade.Time,"h:mm:ss a");
         });
       });
 
@@ -119,7 +119,5 @@ export default {
     async fetchCoinChartDetails() {
 
     }
-
-
   },
 };

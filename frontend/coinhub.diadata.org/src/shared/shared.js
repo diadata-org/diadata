@@ -160,7 +160,7 @@ export default {
       return {coinsArray, currencyArray, searchArray};
   },
   calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
-    return currencyValue / this.getRate(rateArray, currencySwiftCode, rateOption);
+    return currencyValue * this.getRate(rateArray, currencySwiftCode, rateOption);
   },
   formatCurrency : function(currency,currencySwiftCode) {
     const symbol = this.getCurrencySymbol(currencySwiftCode);

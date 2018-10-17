@@ -33,7 +33,9 @@ div.loading-data {
 	padding-right: 70px;
 }
 
-
+/deep/ div .table-responsive.details{
+	width: 40%;
+}
 
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
