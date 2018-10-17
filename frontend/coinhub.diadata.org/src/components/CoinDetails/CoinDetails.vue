@@ -41,7 +41,7 @@
 			        	<br>
 			        	<div class="text-methodology w-100 text-right">
 				        	<h6 class="font-weight-bold"> Methodology to the price collection can be found
-				        		<b-link target="_blank" href="https://github.com/diadata-org/api-golang/blob/master/methodology/ExchangePrices.md">
+				        		<b-link target="_blank" href="https://github.com/diadata-org/api-golang/blob/master/docs/methodology/ExchangePrices.md">
 				        			here
 				        		</b-link>
 				        	</h6>
