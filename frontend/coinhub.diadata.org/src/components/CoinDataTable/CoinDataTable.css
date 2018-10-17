@@ -2,7 +2,7 @@
 	margin-right: 0 !important;
 	margin-left: 0 !important;
 }
-
+.loading-error,
 div.loading-data {
 	min-height: 73vh;
 	display: -ms-flexbox;
@@ -16,6 +16,7 @@ div.loading-data {
     align-items: center;
     justify-content: center;
 }
+
 
 span.coin-name {
 	margin-left: 20px;
