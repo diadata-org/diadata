@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/diadata-org/diadata/internal/pkg/graphService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/graph"
 	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"os"
