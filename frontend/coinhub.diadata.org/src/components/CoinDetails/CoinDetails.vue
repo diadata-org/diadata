@@ -67,13 +67,18 @@
 			        	<b-table responsive striped :items="exchanges" :fields="exchange_fields"  class="main">
 			        		<template slot="show_trades" slot-scope="row">
 							      <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2">
+							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2" >
 							       {{ row.detailsShowing ? 'Hide' : 'Show'}}  Last 10 Trades
 							      </b-button>
 							</template>
 							<template slot="row-details" slot-scope="row">
-     							<b-table responsive striped :items="row.item.LastTrades" :fields="last_trade_fields" >
-     								</b-table>
+     							<b-table responsive striped :items="row.item.LastTrades" :fields="last_trade_fields" class="details" >
+     								<template slot="Order" slot-scope="data">
+								       <div v-bind:class = "{ 'text-success': data.item.Volume >= 0, 'text-danger': data.item.Volume < 0 }">
+								       	{{ data.item.Volume >= 0 ? 'BUY' : 'SELL' }}
+								       </div>
+								    </template>
+     							</b-table>
     						</template>
 			        	</b-table>
 			        </b-col>
