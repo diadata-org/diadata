@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -63,7 +64,9 @@ func (db *DB) GetPriceUSD(symbol string) (float64, error) {
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
-		log.Printf("Error: %v on GetPriceUSD %v\n", err, symbol)
+		if err != redis.Nil {
+			log.Error("Error: %v on GetPriceUSD %v\n", err, symbol)
+		}
 		return 0.0, err
 	}
 	return value.Price, nil
@@ -74,7 +77,9 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
-		log.Error("Error: %v on GetQuotation %v\n", err, key)
+		if err != redis.Nil {
+			log.Error("Error: %v on GetQuotation %v\n", err, key)
+		}
 		return nil, err
 	}
 	value.Name = helpers.NameForSymbol(symbol) // in case we updated the helper functions ;)

@@ -240,7 +240,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 func (db *DB) getZSETSum(key string) (*float64, error) {
 
-	log.Printf("getZSETSum: %v \n", key)
+	log.Debug("getZSETSum: %v \n", key)
 
 	vals, err := db.redisClient.ZRange(key, 0, -1).Result()
 	if err != nil {
@@ -261,7 +261,7 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	value := 0.0
 	var unixTime int64
 	vals, err := db.redisClient.ZRange(key, -1, -1).Result()
-	log.Println(key, "on getZSETLastValue:", vals)
+	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
 			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)

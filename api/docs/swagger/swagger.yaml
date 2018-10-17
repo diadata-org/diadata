@@ -95,13 +95,6 @@ definitions:
       tradesNumber:
         type: integer
     type: object
-  diaApi.Change:
-    properties:
-      eurusd:
-        type: number
-      eurusdyesterday:
-        type: number
-    type: object
   diaApi.Coin:
     properties:
       circulatingSupply:
@@ -122,7 +115,7 @@ definitions:
   diaApi.Coins:
     properties:
       change:
-        $ref: '#/definitions/diaApi.Change'
+        $ref: '#/definitions/models.Change'
         type: object
       coins:
         items:
@@ -139,7 +132,7 @@ definitions:
   diaApi.SymbolDetails:
     properties:
       change:
-        $ref: '#/definitions/diaApi.Change'
+        $ref: '#/definitions/models.Change'
         type: object
       coin:
         $ref: '#/definitions/diaApi.Coin'
@@ -148,6 +141,22 @@ definitions:
         items:
           $ref: '#/definitions/models.SymbolExchangeDetails'
         type: array
+    type: object
+  models.Change:
+    properties:
+      usd:
+        items:
+          $ref: '#/definitions/models.CurrencyChange'
+        type: array
+    type: object
+  models.CurrencyChange:
+    properties:
+      rate:
+        type: number
+      rateYesterday:
+        type: number
+      symbol:
+        type: string
     type: object
   models.Quotation:
     properties:
