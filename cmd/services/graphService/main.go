@@ -4,21 +4,20 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/graph"
 	"github.com/diadata-org/diadata/pkg/model"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
 
 const (
 	GRAPH_PATH = "/charts/"
+	FORMAT	   = ".png"
 )
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-
 	dataStore, err := models.NewDataStore()
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
@@ -26,7 +25,8 @@ func main() {
 		for _, symbol := range dia.SymbolsFrontPage() {
 			points, err := dataStore.GetChartPoints(symbol)
 			if err != nil {
-				log.Println(err)
+				log.Error(err)
+				continue
 			}
 
 			if len(points) <= 0 {
@@ -45,19 +45,22 @@ func main() {
 
 			if _, err := os.Stat(GRAPH_PATH); os.IsNotExist(err) {
 				err = os.MkdirAll(GRAPH_PATH, os.ModeDir|os.ModePerm)
-				log.Println(err)
+				log.Error(err)
+				continue
 			}
 
-			err = graph.PriceGraph(pricePoints, timePoints, GRAPH_PATH+symbol+".png")
+			err = graph.PriceGraph(pricePoints, timePoints, GRAPH_PATH+symbol+FORMAT)
 			if err != nil {
-				log.Println(err)
+				log.Error(err)
+				continue
 			}
-			err = os.Rename(GRAPH_PATH+symbol+".png", GRAPH_PATH+symbol)
+			err = os.Rename(GRAPH_PATH+symbol+FORMAT, GRAPH_PATH+symbol)
 			if err != nil {
-				log.Println(err)
+				log.Error(err)
+				continue
 			}
-
-			time.Sleep(time.Minute * 2)
 		}
+
+		time.Sleep(time.Minute * 2)
 	}
 }
