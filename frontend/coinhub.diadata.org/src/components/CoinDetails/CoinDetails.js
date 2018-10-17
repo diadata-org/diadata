@@ -42,7 +42,8 @@ export default {
       selectedCurrency:'',
       chartAllOptions: {},
       chartSimexOptions: {},
-      rateArray: []
+      rateArray: [],
+      error:''
     };
   },
   created() {
@@ -57,16 +58,12 @@ export default {
     if(this.$route.params.coinRank) {
       localStorage.rank = this.$route.params.coinRank;
     }
-   
     // fetch the coin details
     this.fetchCoinDetails();
-
-
-  
   },
   methods: {
   	formatPairData() {
-      this.loading = true;
+      this.loading === false ? this.loading = true : null;
       if(localStorage.selectedCurrency) {
        this.selectedCurrency = localStorage.selectedCurrency;
       }
@@ -77,12 +74,12 @@ export default {
       let {Coin, Change, Exchanges } = this.coindata;
       this.rateArray = Change.USD;
       // format the coin details
-      const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,Change.USD,this.selectedCurrency,"today");
+      const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
       const coinPriceFormatted = shared.formatCurrency(coinPrice,this.selectedCurrency);
-      const coinPriceYesterday = shared.calculateCurrencyFromRate(Coin.PriceYesterday,Change.USD,this.selectedCurrency,"yesterday");
+      const coinPriceYesterday = shared.calculateCurrencyFromRate(Coin.PriceYesterday,this.rateArray,this.selectedCurrency,"yesterday");
       const change24 = (coinPrice  - coinPriceYesterday) / coinPriceYesterday * 100;
       const change24Formatted = shared.formatChange24(change24);
-      const volume24Formatted = shared.formatMarketCapAndVolume24(shared.calculateCurrencyFromRate(Coin.VolumeYesterdayUSD,Change.USD,this.selectedCurrency,"yesterday"),this.selectedCurrency);
+      const volume24Formatted = shared.formatMarketCapAndVolume24(shared.calculateCurrencyFromRate(Coin.VolumeYesterdayUSD,this.rateArray,this.selectedCurrency,"yesterday"),this.selectedCurrency);
       const circulatingSupplyFormattedWithoutSymbol = shared.formatCirculatingSupply(Coin.CirculatingSupply, undefined);
       this.coinDetails = { 
           coinName: Coin.Name,
@@ -97,13 +94,13 @@ export default {
 
       // format the exchanges
       Exchanges.forEach((exchange)=>{
-        exchange.PriceFormatted = shared.formatCurrency(shared.calculateCurrencyFromRate(exchange.Price,Change.USD,this.selectedCurrency,"today"),this.selectedCurrency),
-        exchange.Volume24 = shared.formatMarketCapAndVolume24(shared.calculateCurrencyFromRate(exchange.VolumeYesterdayUSD,Change.USD,this.selectedCurrency,"yesterday"),this.selectedCurrency),
+        exchange.PriceFormatted = shared.formatCurrency(shared.calculateCurrencyFromRate(exchange.Price,this.rateArray,this.selectedCurrency,"today"),this.selectedCurrency),
+        exchange.Volume24 = shared.formatMarketCapAndVolume24(shared.calculateCurrencyFromRate(exchange.VolumeYesterdayUSD,this.rateArray,this.selectedCurrency,"yesterday"),this.selectedCurrency),
         exchange.TimeFormatted = shared.formatDateTime(exchange.Time,"dddd, MMMM Do YYYY, h:mm:ss a");
 
         // format the last trades too
         exchange.LastTrades.forEach((lastTrade) => {
-            lastTrade.EstimatedPrice = shared.formatCurrency(shared.calculateCurrencyFromRate(lastTrade.EstimatedUSDPrice,Change.USD,this.selectedCurrency,"today"),this.selectedCurrency);
+            lastTrade.EstimatedPrice = shared.formatCurrency(shared.calculateCurrencyFromRate(lastTrade.EstimatedUSDPrice,this.rateArray,this.selectedCurrency,"today"),this.selectedCurrency);
             lastTrade.TimeFormatted = shared.formatDateTime(lastTrade.Time,"h:mm:ss a");
         });
       });
@@ -162,7 +159,6 @@ export default {
               title: {
                   text: price
               },
-              min: 0
           },
           tooltip: {
               headerFormat: '<b>{series.name}</b><br>',
@@ -173,13 +169,11 @@ export default {
                 compare: 'percent',
                 showInNavigator: true
           },
-
-          colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
           series: [{
               name: "MA120",
               data: MA120AllArray
           }]};
-           this.loading = false;
+    
       
          // simex
         this.chartSimexOptions = {
@@ -234,22 +228,23 @@ export default {
       catch(error) {
         console.log(error);
         this.loading = false;
+        this.errored = true;
       }
 
     },
     formatChartValues(chartValues) {
 
-    let formattedValues = [];
+      let formattedValues = [];
 
-    chartValues.forEach((chartValue) => {
-       const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
-       const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
-       
-       formattedValues.push([UTCDate,price]);
-    });
+      chartValues.forEach((chartValue) => {
+         const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
+         const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
+         
+         formattedValues.push([UTCDate,price]);
+      });
 
-    return formattedValues;
-  }
+      return formattedValues;
+    }
   },
 
   

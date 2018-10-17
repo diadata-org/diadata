@@ -1,7 +1,7 @@
 <style src="./CoinDataTable.css" scoped></style>
 <template>
-  	<section v-if="errored">
-      <p>We're sorry, we're not able to retrieve this information at the moment, please try back later</p>
+  	<section v-if="errored" class="loading-error">
+      	<b-alert variant="danger" show>We're sorry, we're not able to retrieve this information at the moment, please try back later</b-alert>
     </section>
     <section v-else>
 	    <div v-if="loading" class="loading-data">
