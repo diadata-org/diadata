@@ -217,8 +217,36 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
-	return []dia.Pair{}, nil
+	type NameT struct {
+		Name string `json:"name"`
+	}
+	type DataT struct {
+		Base  NameT `json:"base"`
+		Quote NameT `json:"quote"`
+	}
+	type APIResponse struct {
+		Data []DataT `json:"data"`
+	}
+	response, err := http.Get("https://simex.global/api/pairs")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		pairs = make([]dia.Pair, len(ar.Data))
+		for i, p := range ar.Data {
+			pairs[i] = dia.Pair{
+				Symbol:      p.Base.Name,
+				ForeignName: p.Base.Name + p.Quote.Name,
+				Exchange:    s.exchangeName,
+			}
+		}
+	}
+	return
 }
 
 // SimexPairScraper implements PairScraper for Simex
