@@ -45,12 +45,18 @@ export default {
       vm.searcharray = coinData.searchArray;
 
       if(vm.currencies.length > 0) {
-        if(vm.currencies.includes("EUR")){
-          vm.selectedCurrency = "EUR";
+        if(localStorage.selectedCurrency) {
+           vm.selectedCurrency = localStorage.selectedCurrency;
         }
-        else{
-          vm.selectedCurrency = this.currencies[0];
+        else {
+          if(vm.currencies.includes("EUR")){
+            vm.selectedCurrency = "EUR";
+          }
+          else{
+            vm.selectedCurrency = this.currencies[0];
+          }
         }
+        
       }
       // load the currencies
       vm.switchCurrencies(vm.selectedCurrency);
@@ -69,6 +75,7 @@ export default {
       vm.coindata.forEach(function(coin,index){
           if(coin[selectedCurrency]) {
             vm.selectedCurrency = selectedCurrency;
+            localStorage.selectedCurrency = selectedCurrency;
             EventBus.$emit('coinData', coin[selectedCurrency]);
           }
       });
