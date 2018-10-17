@@ -41,15 +41,17 @@ type GateIOScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*GateIOPairScraper
+	exchangeName string
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
-func NewGateIOScraper() *GateIOScraper {
+func NewGateIOScraper(exchangeName string) *GateIOScraper {
 
 	s := &GateIOScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*GateIOPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -135,7 +137,7 @@ func (s *GateIOScraper) mainLoop() {
 									Volume:         f64Volume,
 									Time:           timestamp,
 									ForeignTradeID: strconv.FormatInt(int64(md_inner["id"].(float64)), 16),
-									Source:         dia.GateIOExchange,
+									Source:         s.exchangeName,
 								}
 								ps.chanTrades <- t
 							} else {
@@ -216,11 +218,11 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	pairs = make([]dia.Pair, len(ls))
 	for i, p := range ls {
-		s := strings.Split(p, "_")
+		str := strings.Split(p, "_")
 		pairs[i] = dia.Pair{
-			Symbol:      s[0],
+			Symbol:      str[0],
 			ForeignName: p,
-			Exchange:    dia.GateIOExchange,
+			Exchange:    s.exchangeName,
 		}
 	}
 

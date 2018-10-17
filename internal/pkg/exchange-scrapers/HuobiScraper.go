@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"
@@ -46,15 +46,17 @@ type HuobiScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HuobiPairScraper
+	exchangeName string
 }
 
 // NewHuobiScraper returns a new HuobiScraper for the given pair
-func NewHuobiScraper() *HuobiScraper {
+func NewHuobiScraper(exchangeName string) *HuobiScraper {
 
 	s := &HuobiScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*HuobiPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -131,7 +133,7 @@ func (s *HuobiScraper) mainLoop() {
 								Volume:         f64Volume,
 								Time:           timeStamp,
 								ForeignTradeID: strconv.FormatFloat(md_element["id"].(float64), 'E', -1, 64),
-								Source:         dia.HuobiExchange,
+								Source:         s.exchangeName,
 							}
 							ps.chanTrades <- t
 						}
@@ -204,6 +206,12 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
+	return []dia.Pair{}, nil
 }
 
 // HuobiPairScraper implements PairScraper for Huobi exchange

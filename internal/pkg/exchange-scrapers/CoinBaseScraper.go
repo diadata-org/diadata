@@ -24,6 +24,7 @@ type CoinBaseScraper struct {
 	closed       bool
 	pairScrapers map[string]*CoinBasePairScraper // pc.Pair -> pairScraperSet
 	wsConn       *ws.Conn
+	exchangeName string
 }
 
 const (
@@ -37,11 +38,12 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper() *CoinBaseScraper {
+func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*CoinBasePairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -90,7 +92,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								Volume:         f64Volume,
 								Time:           message.Time.Time(),
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeId), 16),
-								Source:         dia.CoinBaseExchange,
+								Source:         s.exchangeName,
 							}
 
 							ps.chanTrades <- t
@@ -155,7 +157,7 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			pairs[i] = dia.Pair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
-				Exchange:    dia.CoinBaseExchange,
+				Exchange:    s.exchangeName,
 			}
 		}
 	}

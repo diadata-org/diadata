@@ -37,15 +37,17 @@ type HitBTCScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HitBTCPairScraper
+	exchangeName string
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper() *HitBTCScraper {
+func NewHitBTCScraper(exchangeName string) *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*HitBTCPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -107,7 +109,7 @@ func (s *HitBTCScraper) mainLoop() {
 									Volume:         f64Volume,
 									Time:           timeStamp,
 									ForeignTradeID: strconv.FormatInt(int64(md_element["id"].(float64)), 16),
-									Source:         dia.HitBTCExchange,
+									Source:         s.exchangeName,
 								}
 								ps.chanTrades <- t
 							}
@@ -218,7 +220,7 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			pairs[i] = dia.Pair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
-				Exchange:    dia.HitBTCExchange,
+				Exchange:    s.exchangeName,
 			}
 		}
 	}

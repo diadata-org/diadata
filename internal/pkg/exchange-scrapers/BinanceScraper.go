@@ -34,16 +34,18 @@ type BinanceScraper struct {
 	pairScrapers      sync.Map // dia.Pair -> binancePairScraperSet
 	pairSubscriptions sync.Map // dia.Pair -> string (subscription ID)
 	pairLocks         sync.Map // dia.Pair -> sync.Mutex
+	exchangeName      string
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -138,7 +140,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				Volume:         volume,
 				Time:           time.Unix(event.TradeTime/1000, (event.TradeTime%1000)*int64(time.Millisecond)),
 				ForeignTradeID: strconv.FormatInt(event.AggTradeID, 16),
-				Source:         dia.BinanceExchange,
+				Source:         s.exchangeName,
 			}
 			ps.chanTrades <- t
 		} else {
@@ -174,7 +176,7 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 				pairs[i] = dia.Pair{
 					Symbol:      p.BaseAsset,
 					ForeignName: p.Symbol,
-					Exchange:    dia.BinanceExchange,
+					Exchange:    s.exchangeName,
 				}
 			} else {
 				log.Error("Symbol:" + p.Symbol + " base symbol:" + p.BaseAsset + " status:" + p.Status)

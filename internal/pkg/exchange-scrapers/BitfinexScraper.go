@@ -38,10 +38,11 @@ type BitfinexScraper struct {
 	pairSubscriptions sync.Map          // dia.Pair -> string (subscription ID)
 	pairLocks         sync.Map          // dia.Pair -> sync.Mutex
 	symbols           map[string]string // pair to symbol mapping
+	exchangeName      string
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchangeName string) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -57,6 +58,7 @@ func NewBitfinexScraper(key string, secret string) *BitfinexScraper {
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		symbols:      make(map[string]string),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -95,7 +97,7 @@ func (s *BitfinexScraper) mainLoop() {
 						Volume:         volume,
 						Time:           time.Unix(m.MTS/1000, (m.MTS%1000)*int64(time.Millisecond)),
 						ForeignTradeID: strconv.FormatInt(m.ID, 16),
-						Source:         dia.BitfinexExchange,
+						Source:         s.exchangeName,
 					}
 					// get lock for pair
 					pairLock, ok := s.pairLocks.Load(m.Pair)
@@ -225,7 +227,7 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		pairs[i] = dia.Pair{
 			Symbol:      p[0:3],
 			ForeignName: p,
-			Exchange:    dia.BitfinexExchange,
+			Exchange:    s.exchangeName,
 		}
 	}
 

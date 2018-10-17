@@ -3,14 +3,13 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _OKExSocketurl string = "wss://real.okex.com:10441/websocket"
@@ -41,15 +40,17 @@ type OKExScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*OKExPairScraper
+	exchangeName string
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper() *OKExScraper {
+func NewOKExScraper(exchangeName string) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*OKExPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -136,7 +137,7 @@ func (s *OKExScraper) mainLoop() {
 							Volume:         f64Volume,
 							Time:           timeStamp,
 							ForeignTradeID: message[0].Data[0][0],
-							Source:         dia.OKExExchange,
+							Source:         s.exchangeName,
 						}
 						ps.chanTrades <- t
 
@@ -212,6 +213,12 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
+	return []dia.Pair{}, nil
 }
 
 // OKExPairScraper implements PairScraper for OKEx exchange

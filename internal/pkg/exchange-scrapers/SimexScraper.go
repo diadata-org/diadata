@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
-
-	"strconv"
-
-	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 type PairIdMap struct {
@@ -38,14 +37,16 @@ type SimexScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*SimexPairScraper
 	pairIdTrade  map[string]*PairIdMap
+	exchangeName string
 }
 
-func NewSimexScraper() *SimexScraper {
+func NewSimexScraper(exchangeName string) *SimexScraper {
 
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*SimexPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 	pairMap := map[string]*PairIdMap{}
@@ -126,7 +127,7 @@ func (s *SimexScraper) mainLoop() {
 							Volume:         f64Volume,
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["id"].(float64)), 16),
-							Source:         dia.SimexExchange,
+							Source:         s.exchangeName,
 						}
 						el.chanTrades <- t
 					}
@@ -212,6 +213,12 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	s.pairScrapers[pair.ForeignName] = ps
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
+	return []dia.Pair{}, nil
 }
 
 // SimexPairScraper implements PairScraper for Simex

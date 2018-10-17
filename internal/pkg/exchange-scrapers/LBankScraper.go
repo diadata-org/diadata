@@ -3,14 +3,14 @@ package scrapers
 import (
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"hash/fnv"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
@@ -42,15 +42,17 @@ type LBankScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*LBankPairScraper
+	exchangeName string
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper() *LBankScraper {
+func NewLBankScraper(exchangeName string) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*LBankPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -114,7 +116,7 @@ func (s *LBankScraper) mainLoop() {
 				Volume:         f64Volume,
 				Time:           timeStamp,
 				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
-				Source:         dia.LBankExchange,
+				Source:         s.exchangeName,
 			}
 			ps.chanTrades <- t
 		}
@@ -188,6 +190,12 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
+	return []dia.Pair{}, nil
 }
 
 // LBankPairScraper implements PairScraper for LBank exchange
