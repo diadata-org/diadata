@@ -55,7 +55,7 @@ func NameForSymbol(symbol string) string {
 	case "GLC":
 		return "GlobalCoin"
 	case "XRP":
-		return "XRP"
+		return "Ripple"
 	case "QRK":
 		return "Quark"
 	case "ZET":
