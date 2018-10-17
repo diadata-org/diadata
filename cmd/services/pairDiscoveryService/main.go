@@ -29,6 +29,16 @@ func getConfig(exchange string) (*dia.ConfigApi, error) {
 	return &configApi, err
 }
 
+func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
+	type Pairs struct {
+		Coins []dia.Pair
+	}
+	configFileAPI := "config/" + exchange + ".json"
+	var coins Pairs
+	err := gonfig.GetConf(configFileAPI, &coins)
+	return coins.Coins, err
+}
+
 type Task struct {
 	closed chan struct{}
 	wg     sync.WaitGroup
@@ -85,6 +95,24 @@ func updateExchangePairs() {
 	log.Println("Update complete.")
 }
 
+func getInitialExchangePairs() {
+	log.Println("Loading pairs from config...")
+	for _, e := range dia.Exchanges() {
+		p, err := getPairsFromConfig(e)
+		if err == nil {
+			err := db.SetAvailablePairsForExchange(e, p)
+			if err == nil {
+				log.Println("Exchange :" + e + " set")
+			} else {
+				log.Error("Error setting pairs for exchange:"+e+" error:", err.Error())
+			}
+		} else {
+			log.Error("Error processing config for exchange:"+e+" error:", err.Error())
+		}
+	}
+	log.Println("Update complete.")
+}
+
 func main() {
 	task := &Task{
 		closed: make(chan struct{}),
@@ -95,6 +123,7 @@ func main() {
 	if e != nil {
 		panic("Can not initialize db error:" + e.Error())
 	}
+	getInitialExchangePairs()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
