@@ -220,7 +220,6 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 				ForeignName: p.Id,
 				Exchange:    dia.HitBTCExchange,
 			}
-			log.Println("pair:" + p.Id + "\tbase:" + p.BaseCurrency)
 		}
 	}
 	return
