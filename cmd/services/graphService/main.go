@@ -11,7 +11,7 @@ import (
 
 const (
 	GRAPH_PATH = "/charts/"
-	FORMAT	   = ".png"
+	FORMAT     = ".png"
 )
 
 func main() {

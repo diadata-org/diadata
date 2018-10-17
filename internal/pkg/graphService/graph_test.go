@@ -2,10 +2,12 @@ package graph
 
 import (
 	"bytes"
+	"image"
 	"io/ioutil"
 	"math"
 	"math/rand"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -53,7 +55,17 @@ func TestPriceGraph(t *testing.T) {
 	}
 
 	// compare images
-	if bytes.Compare(createdGraph, expectedGraph) != 0 {
+	expImage, _, err := image.Decode(bytes.NewReader(expectedGraph))
+	if err != nil {
+		t.Fatal("Failed to decode golden graph:", err)
+	}
+
+	createdImage, _, err := image.Decode(bytes.NewReader(createdGraph))
+	if err != nil {
+		t.Fatal("Failed to decode created graph:", err)
+	}
+
+	if !reflect.DeepEqual(expImage, createdImage) {
 		t.Fatal("Created image differs from golden image (expected)")
 	}
 }

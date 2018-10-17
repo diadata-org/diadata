@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	HOST   = "dashd"
-	PORT   = 9998
-	USER   = "dashrpc"
-	PASSWD = "dash_rpc_521d43b"
-	SYMBOL = "DASH"
+	HOST     = "dashd"
+	PORT     = 9998
+	USER     = "dashrpc"
+	PASSWD   = "dash_rpc_521d43b"
+	SYMBOL   = "DASH"
 	TIP_TIME = 60 * 3
 )
 

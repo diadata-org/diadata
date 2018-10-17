@@ -70,7 +70,7 @@ func (s *GateIOScraper) mainLoop() {
 	time.Sleep(4 * time.Second)
 	allPairs := make([]string, len(s.pairScrapers))
 	var index = 0
-	for key, _ := range s.pairScrapers {
+	for key := range s.pairScrapers {
 		allPairs[index] = key
 		index += 1
 	}
