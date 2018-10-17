@@ -7,6 +7,8 @@ import (
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"hash/fnv"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -194,8 +196,24 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
-	return []dia.Pair{}, nil
+	response, err := http.Get("https://api.lbkex.com/v1/currencyPairs.do")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+	pairs = make([]dia.Pair, len(ls))
+	for i, p := range ls {
+		str := strings.Split(p, "_")
+		pairs[i] = dia.Pair{
+			Symbol:      str[0],
+			ForeignName: p,
+			Exchange:    s.exchangeName,
+		}
+	}
+	return
 }
 
 // LBankPairScraper implements PairScraper for LBank exchange
