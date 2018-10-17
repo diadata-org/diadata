@@ -11,14 +11,15 @@ import (
 )
 
 const (
-	RAND_SEED = 543785798
-	TEST_DIR  = "./testData/"
-	CREATED   = "test.png"
-	EXPECTED  = "test_golden.png"
+	RAND_SEED      = 543785798
+	WEEK_NUMPOINTS = 30 * 24 * 7
+	TEST_DIR       = "./testData/"
+	CREATED        = "test.png"
+	EXPECTED       = "test_golden.png"
 )
 
 func TestPriceGraph(t *testing.T) {
-	numPoints := 30 * 24 * 7
+	numPoints := WEEK_NUMPOINTS
 	prices := make([]float64, numPoints)
 	times := make([]int64, numPoints)
 
