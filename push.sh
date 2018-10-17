@@ -98,8 +98,8 @@ then
 	docker push $IMAGE
 	if [ $? -ne 0 ]
 	then
-		echo error pushing image
-		exit 0
+		echo error pushing image, push any key to continue
+		read
 	fi
 	if [ "$REMOTE" != "n" ]
 	then
@@ -119,7 +119,7 @@ then
 		fi
 	fi
 
-    SERVICE=${STACKNAME}_$1
+  SERVICE=${STACKNAME}_$1
 	echo service update on $DOCKER_HOST for $SERVICE
 	RESTARTED=1
 	while [ $RESTARTED -ne 0 ]

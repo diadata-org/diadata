@@ -18,22 +18,6 @@ services:
         delay: 2s
         window: 20s
 
-  #erc20:
-  #  build:
-  #    context: $GOPATH
-  #    dockerfile: $GOPATH/src/github.com/diadata-org/diadata/blockchain-scrapers/blockchains/ethereum/node/Dockerfile-erc20
-  #  image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_erc20
-  #  command: -symbol BNB -address "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
-  #  networks:
-  #    - scrapers-network
-  #  depends_on:
-  #    - geth
-  #  logging:
-  #    options:
-  #      max-size: "50m"
-  #  secrets:
-  #    - api_diadata
-
   binance-token:
     build:
       context: $GOPATH
@@ -48,6 +32,21 @@ services:
         max-size: "50m"
     secrets:
       - api_diadata
+
+  oracleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice
+    networks:
+      - scrapers-network
+    depends_on:
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys.txt
 
   eth:
     build:
@@ -66,7 +65,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
 
 volumes: 
   bitcoin:

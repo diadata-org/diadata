@@ -1,0 +1,15 @@
+FROM golang:latest as build
+
+WORKDIR $GOPATH
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/oracleService
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/oracleService /bin/oracleService
+
+ENTRYPOINT ["oracleService"]
