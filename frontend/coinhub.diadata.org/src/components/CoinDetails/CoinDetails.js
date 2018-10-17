@@ -173,8 +173,6 @@ export default {
                 compare: 'percent',
                 showInNavigator: true
           },
-
-          colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
           series: [{
               name: "MA120",
               data: MA120AllArray
