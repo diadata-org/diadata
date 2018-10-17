@@ -1,11 +1,14 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -217,8 +220,30 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
-	return []dia.Pair{}, nil
+	type APIResponse struct {
+		Id           string `json:"instrument_id"`
+		BaseCurrency string `json:"base_currency"`
+	}
+	response, err := http.Get("https://www.okex.com/api/spot/v3/products")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar []APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		pairs = make([]dia.Pair, len(ar))
+		for i, p := range ar {
+			pairs[i] = dia.Pair{
+				Symbol:      p.BaseCurrency,
+				ForeignName: p.Id,
+				Exchange:    s.exchangeName,
+			}
+		}
+	}
+	return
 }
 
 // OKExPairScraper implements PairScraper for OKEx exchange

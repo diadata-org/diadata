@@ -194,7 +194,7 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	type ApiResponse struct {
+	type APIResponse struct {
 		Id                   string  `json:"id"`
 		BaseCurrency         string  `json:"baseCurrency"`
 		QuoteCurrency        string  `json:"quoteCurrency"`
@@ -211,11 +211,10 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	defer response.Body.Close()
 	data, _ := ioutil.ReadAll(response.Body)
-	var ar []ApiResponse
+	var ar []APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		pairs = make([]dia.Pair, len(ar))
-		log.Print("Retrieved:", len(ar))
 		for i, p := range ar {
 			pairs[i] = dia.Pair{
 				Symbol:      p.BaseCurrency,
