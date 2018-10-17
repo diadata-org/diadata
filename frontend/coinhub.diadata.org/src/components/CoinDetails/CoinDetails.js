@@ -67,7 +67,7 @@ export default {
        this.selectedCurrency = localStorage.selectedCurrency;
       }
       else{
-        this.selectedCurrency = "EUR";
+        this.selectedCurrency = "USD";
       }
       
       let {Coin, Change, Exchanges } = this.coindata;

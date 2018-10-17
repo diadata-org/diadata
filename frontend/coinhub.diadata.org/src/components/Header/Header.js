@@ -53,7 +53,7 @@ export default {
             vm.selectedCurrency = "EUR";
           }
           else{
-            vm.selectedCurrency = this.currencies[0];
+            vm.selectedCurrency = "USD";
           }
         }
         
