@@ -61,10 +61,14 @@
 				        </div>
 			        </b-col>
 			    </b-row>
+			    <b-row>
+			    	<highcharts class="coindata-charts" :constructor-type="'stockChart'" :options="chartAllOptions"></highcharts>
+			    	<!-- <highcharts class="coindata-charts" :options="chartSimexOptions"></highcharts> -->
+			    </b-row>
 			     <b-row>
 			     	<b-col>
 			        	<div class="data-sources-banner font-weight-bold">Data Sources</div>
-			        	<b-table responsive striped :items="exchanges" :fields="exchange_fields"  class="main">
+			        	<b-table responsive striped :items="exchanges" :fields="exchange_fields" class="main">
 			        		<template slot="show_trades" slot-scope="row">
 							      <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
 							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2" >
@@ -85,7 +89,6 @@
 			    </b-row>
 			</b-container>
 	    </div>
-
     </section>
 </template>
 <script src="./CoinDetails.js"></script>

@@ -4,7 +4,12 @@ import { AtomSpinner } from 'epic-spinners';
 import sortBy from 'lodash/sortBy';
 import { EventBus } from '@/main';
 import shared from  '@/shared/shared';
+import moment from 'moment';
+import getSymbolFromCurrency from 'currency-symbol-map';
+import Highcharts from 'highcharts';
+import stockInit from 'highcharts/modules/stock';
 
+stockInit(Highcharts)
 
 export default {
   components: {
@@ -35,11 +40,13 @@ export default {
       coinSymbol: '',
       coindata:null,
       selectedCurrency:'',
+      chartAllOptions: {},
+      chartSimexOptions: {},
+      rateArray: []
     };
   },
   created() {
     this.coinSymbol = this.$route.params.coinSymbol;
-
     EventBus.$emit('hideSearchInput', true);
     EventBus.$on('currencyChange', this.formatPairData);
   },
@@ -50,8 +57,10 @@ export default {
     if(this.$route.params.coinRank) {
       localStorage.rank = this.$route.params.coinRank;
     }
+   
     // fetch the coin details
     this.fetchCoinDetails();
+
 
   
   },
@@ -59,13 +68,14 @@ export default {
   	formatPairData() {
       this.loading = true;
       if(localStorage.selectedCurrency) {
-         this.selectedCurrency = localStorage.selectedCurrency;
+       this.selectedCurrency = localStorage.selectedCurrency;
       }
       else{
-        this.selectedCurrency = "EUR";
+        this.selectedCurrency = "USD";
       }
-
+      
       let {Coin, Change, Exchanges } = this.coindata;
+      this.rateArray = Change.USD;
       // format the coin details
       const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,Change.USD,this.selectedCurrency,"today");
       const coinPriceFormatted = shared.formatCurrency(coinPrice,this.selectedCurrency);
@@ -99,9 +109,10 @@ export default {
       });
 
       Exchanges = sortBy(Exchanges, 'VolumeYesterdayUSD').reverse();
-
       this.exchanges = Exchanges;
-      this.loading = false;
+      // finally fetch the chart details
+      this.fetchCoinChartDetails();
+     
   	},
 
     async fetchCoinDetails() {
@@ -118,6 +129,128 @@ export default {
 
     async fetchCoinChartDetails() {
 
-    }
+      try {
+        let response = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/VOL120/${this.coinSymbol.toUpperCase()}`);
+        let response2 = await axios.get(`https://api.diadata.org/v1/chartPoints/MA120/Simex//${this.coinSymbol.toUpperCase()}`);
+        let response3 = await axios.get(`https://api.diadata.org/v1/chartPoints/VOL120/Simex//${this.coinSymbol.toUpperCase()}`);
+        const price = 'Price (' + this.selectedCurrency + ')';
+        const currencySymbol = getSymbolFromCurrency(this.selectedCurrency);
+    
+        
+        const MA120AllArray = this.formatChartValues(response.data[0].Series[0].values);
+        const VOL120AllArray = this.formatChartValues(response1.data[0].Series[0].values);
+        const MA120SimexArray = this.formatChartValues(response2.data[0].Series[0].values);
+        const VOL120SimexArray = this.formatChartValues(response3.data[0].Series[0].values);
+        
+        // all exchanges
+        this.chartAllOptions = {
+          rangeSelector: {
+            selected: 1
+          },
+
+          title: {
+              text: 'All Exchanges'
+          },
+          xAxis: {
+              type: 'datetime',
+              title: {
+                  text: 'Time'
+              }
+          },
+          yAxis: {
+              title: {
+                  text: price
+              },
+              min: 0
+          },
+          tooltip: {
+              headerFormat: '<b>{series.name}</b><br>',
+              pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+          },
+
+          series: {
+                compare: 'percent',
+                showInNavigator: true
+          },
+
+          colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
+          series: [{
+              name: "MA120",
+              data: MA120AllArray
+          }]};
+           this.loading = false;
+      
+         // simex
+        this.chartSimexOptions = {
+          chart: {
+              type: 'spline'
+          },
+          title: {
+              text: 'Simex'
+          },
+          subtitle: {
+              text: ''
+          },
+          xAxis: {
+              type: 'datetime',
+              dateTimeLabelFormats: { // don't display the dummy year
+                  month: '%e. %b',
+                  year: '%b'
+              },
+              title: {
+                  text: 'Time'
+              }
+          },
+          yAxis: {
+              title: {
+                  text: price
+              },
+              min: 0
+          },
+          tooltip: {
+              headerFormat: '<b>{series.name}</b><br>',
+              pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+          },
+
+          plotOptions: {
+              spline: {
+                  marker: {
+                      enabled: true
+                  }
+              }
+          },
+
+          colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
+          series: [{
+              name: "MA120",
+              data: MA120SimexArray
+          },{
+              name: "2 Min. MA",
+              data: []
+          }]};
+           this.loading = false;
+      }
+      catch(error) {
+        console.log(error);
+        this.loading = false;
+      }
+
+    },
+    formatChartValues(chartValues) {
+
+    let formattedValues = [];
+
+    chartValues.forEach((chartValue) => {
+       const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
+       const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
+       
+       formattedValues.push([UTCDate,price]);
+    });
+
+    return formattedValues;
+  }
   },
+
+  
 };

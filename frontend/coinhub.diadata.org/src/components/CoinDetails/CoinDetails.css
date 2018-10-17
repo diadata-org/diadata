@@ -20,6 +20,11 @@ div.loading-data {
 	padding-left: 6rem;
 }
 
+.coindata-charts {
+	width: 100%;
+	margin-right: 70px;
+}
+
 .data-sources-banner {
 	margin-top: 20px;
 	background-color: #FF7096;
@@ -29,11 +34,11 @@ div.loading-data {
 	line-height: 56px;
 }
 
-/deep/ div table.table-responsive.main{
+/deep/ div .table-responsive.main{
 	padding-right: 70px;
 }
 
-/deep/ div table.table-responsive.details{
+/deep/ div .table-responsive.details{
 	width: 40%;
 	margin-left: 30%;
 }
@@ -79,6 +84,16 @@ deep/ table thead tr th:nth-child(5),
 	.coin-details div .container-fluid  {
 		padding-left: 10px;
 	}
+	/deep/ div .table-responsive.main,
+	.data-sources-banner {
+		margin-right: 10px;
+	}
+
+	.coindata-charts {
+		margin-left: 5px;
+		margin-right: 1px;
+	}
+
 }
 
 @media (max-width: 576px) {	
