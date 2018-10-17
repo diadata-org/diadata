@@ -168,9 +168,9 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
 			},
-			Change:    env.getChange(),
 			Exchanges: []models.SymbolExchangeDetails{},
 		}
+		r.Change, _ = env.DataStore.GetCurrencyChange()
 
 		s, err := env.DataStore.GetSupply(symbol)
 		if err == nil {
@@ -200,20 +200,6 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 	return t
 }
 
-func (env *Env) getChange() Change {
-	r := Change{
-		USD: []ChangeCurrency{},
-	}
-
-	for _, c := range []string{"EUR", "NOK", "AUD"} {
-		val, err := env.DataStore.GetPriceUSD(c)
-		if err == nil {
-			r.USD = append(r.USD, ChangeCurrency{Symbol: c, Rate: val, RateYesterday: (val * 90.0) / 100.0}) //TOFIX
-		}
-	}
-	return r
-}
-
 // GetCoins godoc
 // @Summary Get coins
 // @Description GetCoins
@@ -232,7 +218,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 
 		var coins Coins
 		coins.Coins = []Coin{}
-		coins.Change = env.getChange()
+		coins.Change, _ = env.DataStore.GetCurrencyChange()
 
 		for _, symbol := range symbols {
 			var c1 Coin
