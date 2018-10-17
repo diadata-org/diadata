@@ -6,9 +6,14 @@ import (
 	"time"
 )
 
+type ChangeCurrency struct {
+	Symbol        string
+	Rate          float64
+	RateYesterday float64
+}
+
 type Change struct {
-	USD          map[string]float64
-	USDYesterday map[string]float64
+	USD []ChangeCurrency
 }
 
 type Coin struct {
