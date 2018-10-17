@@ -13,9 +13,9 @@ The correctness of oracle data can always be verified by monitoring our off-chai
 Currently, DIA collects several classes of data.
 Separate documentation exists for each of these different use cases.
 
-* [Exchange Scrapers](docs/methodology/ExchangePrices.md) are the components that get trade data from various exchanges and use these trades to construct average prices.
-* [Supply Scrapers](docs/methodology/SupplyNumbers.md) are used to determine circulating supply numbers for cryptocurrency assets.
-* [Oracles](docs/methodology/Oracles.md) show how our oracles can be accessed.
+* [Exchange Scrapers](api/docs/methodology/ExchangePrices.md) are the components that get trade data from various exchanges and use these trades to construct average prices.
+* [Supply Scrapers](api/docs/methodology/SupplyNumbers.md) are used to determine circulating supply numbers for cryptocurrency assets.
+* [Oracles](api/docs/methodology/Oracles.md) show how our oracles can be accessed.
 This information varies for each currency and is highly specific.
 
 ## Coinhub Oracles
