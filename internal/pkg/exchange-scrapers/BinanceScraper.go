@@ -170,7 +170,6 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		pairs = make([]dia.Pair, len(ar.Symbols))
-		log.Print("Retrieved at:", len(ar.Symbols))
 		for i, p := range ar.Symbols {
 			if p.Status == "TRADING" {
 				pairs[i] = dia.Pair{

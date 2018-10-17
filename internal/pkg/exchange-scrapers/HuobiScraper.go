@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _HuobiSocketurl string = "wss://api.huobi.pro/ws"
@@ -210,8 +211,33 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
-	return []dia.Pair{}, nil
+	type DataT struct {
+		Id           string `json:"symbol"`
+		BaseCurrency string `json:"base-currency"`
+	}
+	type APIResponse struct {
+		Data []DataT `json:"data"`
+	}
+	response, err := http.Get("http://api.huobi.pro/v1/common/symbols")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		pairs = make([]dia.Pair, len(ar.Data))
+		for i, p := range ar.Data {
+			pairs[i] = dia.Pair{
+				Symbol:      p.BaseCurrency,
+				ForeignName: p.Id,
+				Exchange:    s.exchangeName,
+			}
+		}
+	}
+	return
 }
 
 // HuobiPairScraper implements PairScraper for Huobi exchange

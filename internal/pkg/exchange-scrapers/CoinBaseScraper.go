@@ -152,7 +152,6 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		pairs = make([]dia.Pair, len(ar))
-		log.Print("Retrieved:", len(ar))
 		for i, p := range ar {
 			pairs[i] = dia.Pair{
 				Symbol:      p.BaseCurrency,
