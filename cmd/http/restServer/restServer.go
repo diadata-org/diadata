@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/appleboy/gin-jwt"
 	_ "github.com/diadata-org/diadata/api/docs"
-	"github.com/diadata-org/diadata/internal/pkg/http/restServer/diaApi"
-	"github.com/diadata-org/diadata/internal/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
+	"github.com/diadata-org/diadata/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"

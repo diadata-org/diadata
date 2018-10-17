@@ -55,7 +55,7 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datasto
 
 		if !ok {
 			if ps.Error() != nil {
-				log.Printf("Error: %s\n", ps.Error())
+				log.Errorln("handleTrades Error:", ps.Error())
 			} else {
 				log.Printf("PairScraper for %s was shut down by user", ps.Pair())
 			}
@@ -84,14 +84,12 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datasto
 func main() {
 
 	wg := sync.WaitGroup{}
-
-	sECB := scrapers.NewECBScraper()
-	defer sECB.Close()
-
 	ds, err := models.NewDataStore()
 	if err != nil {
-		log.Error(err)
+		log.Errorln("NewDataStore:", err)
 	} else {
+		sECB := scrapers.NewECBScraper(ds)
+		defer sECB.Close()
 
 		for _, pair := range pairs {
 			ps, err := sECB.ScrapePair(dia.Pair{
@@ -104,9 +102,7 @@ func main() {
 			go handleTrades(ps, &wg, ds)
 			wg.Add(1)
 		}
-
 		sECB.Update()
-
 		defer wg.Wait()
 	}
 

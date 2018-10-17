@@ -38,6 +38,8 @@ type Datastore interface {
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64) error
+	SetCurrencyChange(cc *Change) error
+	GetCurrencyChange() (*Change, error)
 }
 
 const (
