@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import HighchartsVue from 'highcharts-vue'
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -15,6 +16,7 @@ library.add(faSearch, faTimesCircle);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
+Vue.use(HighchartsVue);
 
 export const EventBus = new Vue();
 

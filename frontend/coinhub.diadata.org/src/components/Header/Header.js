@@ -38,11 +38,11 @@ export default {
     try {
       vm.logo = require('@/assets/logo.svg');
       const { Coins, Change } = await shared.fetchCoins();
-      const coinData = shared.formatCoinData(Coins, Change);
+      const { currencyArray, coinsArray, searchArray} = shared.formatCoinData(Coins, Change);
       
-      vm.currencies = coinData.currencyArray;
-      vm.coindata = coinData.coinsArray;
-      vm.searcharray = coinData.searchArray;
+      vm.currencies = currencyArray;
+      vm.coindata = coinsArray;
+      vm.searcharray = searchArray;
 
       if(vm.currencies.length > 0) {
         if(localStorage.selectedCurrency) {
@@ -77,6 +77,7 @@ export default {
             vm.selectedCurrency = selectedCurrency;
             localStorage.selectedCurrency = selectedCurrency;
             EventBus.$emit('coinData', coin[selectedCurrency]);
+            EventBus.$emit('currencyChange');
           }
       });
     },

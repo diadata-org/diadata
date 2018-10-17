@@ -1,5 +1,6 @@
 import axios from 'axios';
 import numeral from 'numeral';
+import moment from 'moment';
 import sortBy from 'lodash/sortBy';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
@@ -55,8 +56,8 @@ export default {
         const coinPriceYesterdayUSD = coin.PriceYesterday;
         // circulating supply
         const circulatingSupply = coin.CirculatingSupply;
-        const circulatingSupplyFormattedWithoutSymbol = numeral(circulatingSupply).format('0,0');
-        const circulatingSupplyFormatted = numeral(circulatingSupply).format('0,0').concat(` (${coin.Symbol})`);
+        const circulatingSupplyFormattedWithoutSymbol = this.formatCirculatingSupply(circulatingSupply, undefined);
+        const circulatingSupplyFormatted = this.formatCirculatingSupply(circulatingSupply, coinSymbol);
         // change 24
         // USD
         let change24USD = (coinPriceUSD  - coinPriceYesterdayUSD ) / coinPriceYesterdayUSD * 100;
@@ -158,8 +159,9 @@ export default {
       
       return {coinsArray, currencyArray, searchArray};
   },
-
-  
+  calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
+    return currencyValue / this.getRate(rateArray, currencySwiftCode, rateOption);
+  },
   formatCurrency : function(currency,currencySwiftCode) {
     const symbol = this.getCurrencySymbol(currencySwiftCode);
     return currency < 1 ? symbol.concat(numeral(currency).format('0.0[0000]')) : symbol.concat(numeral(currency).format('0,0.00'));
@@ -174,6 +176,15 @@ export default {
     return symbol.concat(numeral(param).format('0,0'));
   },
 
+  formatCirculatingSupply: function(circulatingSupply,coinSymbol) {
+    const cs = coinSymbol !== undefined ? numeral(circulatingSupply).format('0,0').concat(` (${coinSymbol})`) : numeral(circulatingSupply).format('0,0');
+    return cs;
+  },
+
+  formatDateTime : (dateTime,dateTimeFormat) => {
+      return moment(dateTime).format(dateTimeFormat);
+  },
+
   getCurrencySymbol: (currencySwiftCode) => {
     let symbol = getSymbolFromCurrency(currencySwiftCode);
     if(symbol == undefined){
@@ -182,12 +193,15 @@ export default {
     return symbol;
   },
   getRate : (rateArray, currencySwiftCode, rateOption) => {
+    let rate = 1;
     const rateObj = rateArray.filter((obj) => obj.Symbol === currencySwiftCode)[0];
-    const rate = rateOption === "today" ? rateObj.Rate : rateObj.RateYesterday;
+
+    if(rateObj != undefined){
+      rate = rateOption === "today" ? rateObj.Rate : rateObj.RateYesterday;
+    }
+    
     return rate;
   },
-  calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
-    return currencyValue / this.getRate(rateArray, currencySwiftCode, rateOption);
-  }
+
 
 }
