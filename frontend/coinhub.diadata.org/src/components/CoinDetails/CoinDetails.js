@@ -6,6 +6,10 @@ import { EventBus } from '@/main';
 import shared from  '@/shared/shared';
 import moment from 'moment';
 import getSymbolFromCurrency from 'currency-symbol-map';
+import Highcharts from 'highcharts';
+import stockInit from 'highcharts/modules/stock';
+
+stockInit(Highcharts)
 
 export default {
   components: {
@@ -141,21 +145,15 @@ export default {
         
         // all exchanges
         this.chartAllOptions = {
-          chart: {
-              type: 'spline'
+          rangeSelector: {
+            selected: 1
           },
+
           title: {
               text: 'All Exchanges'
           },
-          subtitle: {
-              text: ''
-          },
           xAxis: {
               type: 'datetime',
-              dateTimeLabelFormats: { // don't display the dummy year
-                  month: '%e. %b',
-                  year: '%b'
-              },
               title: {
                   text: 'Time'
               }
@@ -171,21 +169,15 @@ export default {
               pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
           },
 
-          plotOptions: {
-              spline: {
-                  marker: {
-                      enabled: true
-                  }
-              }
+          series: {
+                compare: 'percent',
+                showInNavigator: true
           },
 
           colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
           series: [{
               name: "MA120",
               data: MA120AllArray
-          },{
-              name: "VOL120",
-              data: VOL120AllArray
           }]};
            this.loading = false;
       
@@ -234,8 +226,8 @@ export default {
               name: "MA120",
               data: MA120SimexArray
           },{
-              name: "VOL120",
-              data: VOL120SimexArray
+              name: "2 Min. MA",
+              data: []
           }]};
            this.loading = false;
       }

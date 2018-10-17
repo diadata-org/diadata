@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import HighchartsVue from 'highcharts-vue'
+import HighchartsVue from 'highcharts-vue';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';

@@ -62,8 +62,8 @@
 			        </b-col>
 			    </b-row>
 			    <b-row>
-			    	<highcharts class="coindata-charts" :options="chartAllOptions"></highcharts>
-			    	<highcharts class="coindata-charts" :options="chartSimexOptions"></highcharts>
+			    	<highcharts class="coindata-charts" :constructor-type="'stockChart'" :options="chartAllOptions"></highcharts>
+			    	<!-- <highcharts class="coindata-charts" :options="chartSimexOptions"></highcharts> -->
 			    </b-row>
 			     <b-row>
 			     	<b-col>
