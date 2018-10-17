@@ -70,7 +70,8 @@ func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) {
 	}
 }
 
-func (db *DB) AddAvailablePairsExchange(exchange string, pairs []dia.Pair) error {
+// SetAvailablePairsForExchange stores a json containing all pairs available in the exchange in the internal redis db
+func (db *DB) SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
 	return db.redisClient.Set(key, &p, 0).Err()

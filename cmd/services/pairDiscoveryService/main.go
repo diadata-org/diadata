@@ -69,7 +69,7 @@ func updateExchangePairs() {
 		if s != nil {
 			p, err := s.FetchAvailablePairs()
 			if err == nil {
-				err := db.AddAvailablePairsExchange(e, p)
+				err := db.SetAvailablePairsForExchange(e, p)
 				if err == nil {
 					log.Println("Exchange :" + e + " updated")
 				} else {
