@@ -1,5 +1,6 @@
 import axios from 'axios';
 import numeral from 'numeral';
+import moment from 'moment';
 import sortBy from 'lodash/sortBy';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
@@ -51,25 +52,26 @@ export default {
         // coin price
         // USD
         const coinPriceUSD = coin.Price;
-        const coinPriceUSDFormatted = coinPriceUSD < 1 ? '$'.concat(numeral(coinPriceUSD).format('0.0[0000]')) : '$'.concat(numeral(coinPriceUSD).format('0,0.00'));
+        const coinPriceUSDFormatted =  this.formatCurrency(coinPriceUSD, "USD");
         const coinPriceYesterdayUSD = coin.PriceYesterday;
         // circulating supply
         const circulatingSupply = coin.CirculatingSupply;
-        const circulatingSupplyFormattedWithoutSymbol = numeral(circulatingSupply).format('0,0');
-        const circulatingSupplyFormatted = numeral(circulatingSupply).format('0,0').concat(` (${coin.Symbol})`);
+        const circulatingSupplyFormattedWithoutSymbol = this.formatCirculatingSupply(circulatingSupply, undefined);
+        const circulatingSupplyFormatted = this.formatCirculatingSupply(circulatingSupply, coinSymbol);
         // change 24
         // USD
         let change24USD = (coinPriceUSD  - coinPriceYesterdayUSD ) / coinPriceYesterdayUSD * 100;
-        const change24USDFormatted = change24USD !== Number.POSITIVE_INFINITY ? numeral(change24USD).format('0,0.00').concat('%') : 'N/A';
+        const change24USDFormatted = this.formatChange24(change24USD);
         change24USD = change24USD !== Number.POSITIVE_INFINITY ? change24USD : Number.NEGATIVE_INFINITY ;
          // volume24
         // USD
         const volume24USD = coin.VolumeYesterdayUSD;
-        const volume24USDFormatted = '$'.concat(numeral(volume24USD).format('0,0'));
+        const volume24USDFormatted = this.formatMarketCapAndVolume24(volume24USD , "USD");
          // market cap
         // USD
-        const marketCapUSDFormatted = '$'.concat(numeral(coinPriceUSD * circulatingSupply ).format('0,0'));
+     
         const marketCapUSD = coinPriceUSD * circulatingSupply;
+        const marketCapUSDFormatted = this.formatMarketCapAndVolume24(marketCapUSD , "USD");
         
         const oracle = require('@/assets/icons/oracle_icon.png');
         
@@ -93,27 +95,24 @@ export default {
         // calculate the values for the other currencies as well
         for( let j = 0; j < change.USD.length; j++){
           // populate the currency array
-          currencyArray[j] = change.USD[j].Symbol.toUpperCase();
-          // get the currency symbol
-          let symbol = getSymbolFromCurrency(change.USD[j].Symbol.toUpperCase());
-          if(symbol == undefined){
-            symbol = change.USD[j].Symbol.toUpperCase();
-          }
-         
+          const currencySwiftCode = change.USD[j].Symbol.toUpperCase();
+          currencyArray[j] = currencySwiftCode;
+                  
           // coin price
-          const coinPriceOtherCurrency = coin.Price / change.USD[j].Rate;
-          const coinPriceOtherCurrencyFormatted = coinPriceOtherCurrency < 1 ? symbol.concat(numeral(coinPriceOtherCurrency).format('0.0[0000]')) : symbol.concat(numeral(coinPriceOtherCurrency).format('0,0.00'));
-          const coinPriceOtherCurrencyYesterDay = coin.PriceYesterday / change.USD[j].RateYesterday;
+          const coinPriceOtherCurrency = this.calculateCurrencyFromRate(coin.Price,change.USD,currencySwiftCode,"today");
+          const coinPriceOtherCurrencyFormatted = this.formatCurrency(coinPriceOtherCurrency, currencySwiftCode);
+          const coinPriceOtherCurrencyYesterDay = this.calculateCurrencyFromRate(coin.PriceYesterday,change.USD,currencySwiftCode,"yesterday");
           // change 24
           let change24OtherCurrency = (coinPriceOtherCurrency  - coinPriceOtherCurrencyYesterDay ) / coinPriceOtherCurrencyYesterDay * 100;
-          const change24OtherCurrencyFormatted = change24OtherCurrency !== Number.POSITIVE_INFINITY ? numeral(change24OtherCurrency).format('0,0.00').concat('%') : 'N/A';
+          const change24OtherCurrencyFormatted = this.formatChange24(change24OtherCurrency);
           change24OtherCurrency = change24OtherCurrency !== Number.POSITIVE_INFINITY ? change24OtherCurrency : Number.NEGATIVE_INFINITY ;
            //  volume 24
-          const volume24OtherCurrency  = coin.VolumeYesterdayUSD / change.USD[j].RateYesterday;
-          const volume24OtherCurrencyFormatted = symbol.concat(numeral(volume24OtherCurrency).format('0,0'));
+          const volume24OtherCurrency  = this.calculateCurrencyFromRate(coin.VolumeYesterdayUSD,change.USD,currencySwiftCode,"yesterday");
+          const volume24OtherCurrencyFormatted = this.formatMarketCapAndVolume24(volume24OtherCurrency, currencySwiftCode);
           //  marketCap
-          const marketCapOtherCurrencyFormatted = symbol.concat(numeral(coinPriceOtherCurrency * circulatingSupply).format('0,0'));
           const marketCapOtherCurrency = coinPriceOtherCurrency * circulatingSupply;
+          const marketCapOtherCurrencyFormatted = this.formatMarketCapAndVolume24(marketCapOtherCurrency, currencySwiftCode);
+          
 
           //  add the currency to the coins array 
           coinsArray[j].push({coinImage, 
@@ -132,14 +131,9 @@ export default {
                  circulatingSupplyFormatted,
                  circulatingSupplyFormattedWithoutSymbol, 
                  oracle});
-
         }
-
-      
        
       }
-
-
       // reorder the arrays by market cap and add the rank field
       coinsArray.forEach((el,i) => {
         // re-order by market cap
@@ -165,9 +159,49 @@ export default {
       
       return {coinsArray, currencyArray, searchArray};
   },
+  calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
+    return currencyValue / this.getRate(rateArray, currencySwiftCode, rateOption);
+  },
+  formatCurrency : function(currency,currencySwiftCode) {
+    const symbol = this.getCurrencySymbol(currencySwiftCode);
+    return currency < 1 ? symbol.concat(numeral(currency).format('0.0[0000]')) : symbol.concat(numeral(currency).format('0,0.00'));
+  },
 
-  formatCurrent : (currency,currencySymbol) => {
+  formatChange24 : (change24) => {
+    return change24 !== Number.POSITIVE_INFINITY ? numeral(change24).format('0,0.00').concat('%') : 'N/A';
+  },
 
-  }
+  formatMarketCapAndVolume24: function(param,currencySwiftCode) {
+    const symbol = this.getCurrencySymbol(currencySwiftCode);
+    return symbol.concat(numeral(param).format('0,0'));
+  },
+
+  formatCirculatingSupply: function(circulatingSupply,coinSymbol) {
+    const cs = coinSymbol !== undefined ? numeral(circulatingSupply).format('0,0').concat(` (${coinSymbol})`) : numeral(circulatingSupply).format('0,0');
+    return cs;
+  },
+
+  formatDateTime : (dateTime,dateTimeFormat) => {
+      return moment(dateTime).format(dateTimeFormat);
+  },
+
+  getCurrencySymbol: (currencySwiftCode) => {
+    let symbol = getSymbolFromCurrency(currencySwiftCode);
+    if(symbol == undefined){
+      symbol = currencySwiftCode;
+    }
+    return symbol;
+  },
+  getRate : (rateArray, currencySwiftCode, rateOption) => {
+    let rate = 1;
+    const rateObj = rateArray.filter((obj) => obj.Symbol === currencySwiftCode)[0];
+
+    if(rateObj != undefined){
+      rate = rateOption === "today" ? rateObj.Rate : rateObj.RateYesterday;
+    }
+    
+    return rate;
+  },
+
 
 }
