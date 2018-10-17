@@ -38,6 +38,7 @@ type Datastore interface {
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64) error
+	AddAvailablePairsExchange(exchange string, pairs []dia.Pair) error
 }
 
 type DB struct {

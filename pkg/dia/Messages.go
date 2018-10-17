@@ -23,6 +23,8 @@ type Pair struct {
 	Exchange    string
 }
 
+type Pairs []Pair
+
 type Trade struct {
 	Symbol            string
 	Pair              string
@@ -116,4 +118,9 @@ func (e *Supply) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+// MarshalBinary -
+func (e *Pairs) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
 }

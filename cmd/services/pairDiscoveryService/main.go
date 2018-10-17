@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/go-redis/redis"
+	"github.com/diadata-org/diadata/pkg/model"
+	// "github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"os"
@@ -16,7 +17,7 @@ import (
 )
 
 var (
-	db *redis.Client
+	db models.Datastore
 )
 
 func getConfig(exchange string) (*dia.ConfigApi, error) {
@@ -51,7 +52,6 @@ func (t *Task) stop() {
 	t.wg.Wait()
 	log.Println("Thread stopped, cleaning...")
 	// Clean if required
-	stopDb()
 	log.Println("Done")
 }
 
@@ -69,7 +69,7 @@ func updateExchangePairs() {
 		if s != nil {
 			p, err := s.FetchAvailablePairs()
 			if err == nil {
-				err := addPairsToDb(e, p)
+				err := db.AddAvailablePairsExchange(e, p)
 				if err == nil {
 					log.Println("Exchange :" + e + " updated")
 				} else {
@@ -85,39 +85,15 @@ func updateExchangePairs() {
 	log.Println("Update complete.")
 }
 
-func addPairsToDb(exchange string, pairs []dia.Pair) error {
-	jsonInfo, _ := json.Marshal(pairs)
-	return db.Set(exchange, jsonInfo, 0).Err()
-}
-
-func initDb() (err error) {
-	db = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	pong2, err := db.Ping().Result()
-	if err != nil {
-		log.Error("initDB error:", err)
-		return
-	}
-	log.Debug("NewDB", pong2)
-	return nil
-}
-
-func stopDb() {
-	db.Close()
-}
-
 func main() {
 	task := &Task{
 		closed: make(chan struct{}),
 		ticker: time.NewTicker(time.Second * 5),
 	}
-	err := initDb()
-	if err != nil {
-		panic("Can not initialize db error:" + err.Error())
+	var e error
+	db, e = models.NewDataStore()
+	if e != nil {
+		panic("Can not initialize db error:" + e.Error())
 	}
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
