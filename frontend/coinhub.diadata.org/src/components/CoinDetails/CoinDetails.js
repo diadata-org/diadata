@@ -251,7 +251,7 @@ export default {
 
     chartValues.forEach((chartValue) => {
        const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
-       const price = parseFloat(chartValue[4].toFixed(2));
+       const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
        
        formattedValues.push([UTCDate,price]);
     });
