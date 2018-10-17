@@ -182,8 +182,7 @@ func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	log.Error("FetchAvailablePairs() not implemented for" + s.exchangeName)
-	return []dia.Pair{}, nil
+	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // ZBPairScraper implements PairScraper for ZB
