@@ -1,15 +1,17 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _socketurl string = "wss://api.hitbtc.com/api/2/ws"
@@ -186,6 +188,42 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	type ApiResponse struct {
+		Id                   string  `json:"id"`
+		BaseCurrency         string  `json:"baseCurrency"`
+		QuoteCurrency        string  `json:"quoteCurrency"`
+		QuantityIncrement    float64 `json:"quantityIncrement,string"`
+		TickSize             float64 `json:"tickSize,string"`
+		TakeLiquidityRate    float64 `json:"takeLiquidityRate,string"`
+		ProvideLiquidityRate float64 `json:"provideLiquidityRate,string"`
+		FeeCurrency          string  `json:"feeCurrency"`
+	}
+	response, err := http.Get("https://api.hitbtc.com/api/2/public/symbol")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar []ApiResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		pairs = make([]dia.Pair, len(ar))
+		log.Print("Retrieved:", len(ar))
+		for i, p := range ar {
+			pairs[i] = dia.Pair{
+				Symbol:      p.BaseCurrency,
+				ForeignName: p.Id,
+				Exchange:    dia.HitBTCExchange,
+			}
+			log.Println("pair:" + p.Id + "\tbase:" + p.BaseCurrency)
+		}
+	}
+	return
 }
 
 // HitBTCPairScraper implements PairScraper for HitBTC
