@@ -1,14 +1,12 @@
 package graph
 
 import (
+	log "github.com/sirupsen/logrus"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
 	"image/color"
-	log "github.com/sirupsen/logrus"
 	"math"
-	"math/rand"
-	"time"
 )
 
 const (
@@ -58,7 +56,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	if index < len(dataPoints) {
 		newDatapoints := make(plotter.XYs, index)
 
-		for i, _ := range newDatapoints {
+		for i := range newDatapoints {
 			newDatapoints[i].X = dataPoints[i].X
 			newDatapoints[i].Y = dataPoints[i].Y
 		}
@@ -95,27 +93,4 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 
 	log.Println("Created", path, "with", index, "points")
 	return nil
-}
-
-func main() {
-	numPoints := 30 * 24 * 7
-	prices := make([]float64, numPoints)
-	times := make([]int64, numPoints)
-
-	rand.Seed(time.Now().Unix())
-	var x = 0.0
-	for i := 0; i < len(prices); i++ {
-		prices[i] = math.Sin(float64(rand.Float64()))
-		x += 0.1
-	}
-
-	weekAgo := time.Now().Add(-time.Hour * 7 * 24)
-	for i := range times {
-		times[i] = weekAgo.Add(time.Minute * time.Duration(2*i)).Unix()
-	}
-
-	err := PriceGraph(prices, times, "example.png")
-	if err != nil {
-		log.Error(err)
-	}
 }
