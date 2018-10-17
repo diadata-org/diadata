@@ -19,13 +19,16 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 			wg.Done()
 			return
 		}
-		kafkaHelper.WriteMessage(w, t)
+		err := kafkaHelper.WriteMessage(w, t)
+		if err != nil {
+			log.Errorln("handleBlocks", err)
+		}
 	}
 }
 
 func main() {
 
-	w := kafkaHelper.NewWriter(kafkaHelper.TopicTradesBlock)
+	w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
 	defer w.Close()
 
 	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)

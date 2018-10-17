@@ -40,10 +40,15 @@ type Datastore interface {
 	SetFilter(filterName string, symbol string, exchange string, value float64) error
 }
 
+const (
+	influxMaxPointsInBatch = 4000
+)
+
 type DB struct {
-	redisClient       *redis.Client
-	influxClient      clientInfluxdb.Client
-	influxBatchPoints clientInfluxdb.BatchPoints
+	redisClient         *redis.Client
+	influxClient        clientInfluxdb.Client
+	influxBatchPoints   clientInfluxdb.BatchPoints
+	influxPointsInBatch int
 }
 
 const (
@@ -104,7 +109,7 @@ func NewDataStore() (*DB, error) {
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return &DB{r, i, bp}, nil
+	return &DB{r, i, bp, 0}, nil
 }
 
 func (db *DB) Flush() error {
@@ -139,8 +144,20 @@ func (db *DB) WriteBashInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBashInflux", err)
+	} else {
+		db.influxPointsInBatch = 0
 	}
 	return err
+}
+
+func (db *DB) addPoint(pt *clientInfluxdb.Point) {
+	db.influxBatchPoints.AddPoint(pt)
+	db.influxPointsInBatch++
+	if db.influxPointsInBatch >= influxMaxPointsInBatch {
+		log.Info("AddPoint forcing write Bash")
+		db.WriteBashInflux()
+		db.influxPointsInBatch = 0
+	}
 }
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
@@ -157,7 +174,7 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {
-		db.influxBatchPoints.AddPoint(pt)
+		db.addPoint(pt)
 	}
 	return err
 }
@@ -173,7 +190,7 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
-		db.influxBatchPoints.AddPoint(pt)
+		db.addPoint(pt)
 	}
 	return err
 }

@@ -157,10 +157,10 @@ func NewReader(topic int) *kafka.Reader {
 	return r
 }
 
-func WriteMessage(w *kafka.Writer, m KafkaMessage) {
+func WriteMessage(w *kafka.Writer, m KafkaMessage) error {
 	key := []byte("helloKafka")
 	value, err := m.MarshalBinary()
-	if err == nil && key != nil && value != nil {
+	if err == nil && value != nil {
 		err := w.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   key,
@@ -168,12 +168,12 @@ func WriteMessage(w *kafka.Writer, m KafkaMessage) {
 			},
 		)
 		if err != nil {
-			log.Errorln("WriteMessage", err.Error())
+			log.Errorln("WriteMessage error:", err, "sizeMessage:", float64(len(value))/(1024.0*1024.0), "MB")
 		}
-		log.Info("WriteMessage size:", len(value))
 	} else {
 		log.Errorln("Skipping write of message ", err, m)
 	}
+	return err
 }
 
 func NewReaderXElementsBeforeLastMessage(topic int, x int64) *kafka.Reader {
