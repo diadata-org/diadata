@@ -653,17 +653,6 @@
                 }
             }
         },
-        "diaApi.Change": {
-            "type": "object",
-            "properties": {
-                "eurusd": {
-                    "type": "number"
-                },
-                "eurusdyesterday": {
-                    "type": "number"
-                }
-            }
-        },
         "diaApi.Coin": {
             "type": "object",
             "properties": {
@@ -695,7 +684,7 @@
             "properties": {
                 "change": {
                     "type": "object",
-                    "$ref": "#/definitions/diaApi.Change"
+                    "$ref": "#/definitions/models.Change"
                 },
                 "coins": {
                     "type": "array",
@@ -721,7 +710,7 @@
             "properties": {
                 "change": {
                     "type": "object",
-                    "$ref": "#/definitions/diaApi.Change"
+                    "$ref": "#/definitions/models.Change"
                 },
                 "coin": {
                     "type": "object",
@@ -732,6 +721,31 @@
                     "items": {
                         "$ref": "#/definitions/models.SymbolExchangeDetails"
                     }
+                }
+            }
+        },
+        "models.Change": {
+            "type": "object",
+            "properties": {
+                "usd": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CurrencyChange"
+                    }
+                }
+            }
+        },
+        "models.CurrencyChange": {
+            "type": "object",
+            "properties": {
+                "rate": {
+                    "type": "number"
+                },
+                "rateYesterday": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
                 }
             }
         },

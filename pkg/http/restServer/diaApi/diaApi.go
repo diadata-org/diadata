@@ -287,7 +287,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Success 200 {object} influxdataResult "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPointsAllExchanges/:exchange:/:symbol: [get]
+// @Router /v1/chartPointsAllExchanges/:symbol:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")

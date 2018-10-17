@@ -49,14 +49,14 @@ func (db *DB) GetChartPoints7Days(symbol string) ([]float64, error) {
 }
 
 func (db *DB) GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error) {
-	log.Info("GetFilterPoints")
-	//  LIMIT %d
 	exchangeQuery := "and exchange='" + exchange + "' "
-	if exchange == "" {
-		exchangeQuery = ""
-	}
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", influxDbFiltersTable, filter, exchangeQuery, symbol)
+	//select * from filters WHERE filter='MM120'  ORDER BY DESC, LIMIT 5
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC LIMIT 56", influxDbFiltersTable, filter, exchangeQuery, symbol)
+
+	log.Info("GetFilterPoints query:", q)
+
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorln("GetFilterPoints", err)

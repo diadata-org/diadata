@@ -27,13 +27,21 @@ export default {
       let coinsArray = [];
       let searchArray = [];
       let currencyArray = [];
-      // init the other indexes with empty arrays for storing other currencies
-      change.USD.forEach((el,index) => {
-         coinsArray[index] = [];
-      });
-      // last index is for storing usd
-      coinsArray[change.USD.length] = [];
-      currencyArray[change.USD.length] = "USD";
+
+      if(change.USD != undefined && change.USD != null) {
+          // init the other indexes with empty arrays for storing other currencies
+        change.USD.forEach((el,index) => {
+           coinsArray[index] = [];
+        });
+        // last index is for storing usd
+        coinsArray[change.USD.length] = [];
+        currencyArray[change.USD.length] = "USD";
+      }
+      else {
+        coinsArray[0] = [];
+        currencyArray[0] = "USD";
+      }
+    
 
       for (let i = 0; i < coins.length; i++) {
 
@@ -92,45 +100,47 @@ export default {
                        circulatingSupplyFormattedWithoutSymbol, 
                        oracle});
 
-        // calculate the values for the other currencies as well
-        for( let j = 0; j < change.USD.length; j++){
-          // populate the currency array
-          const currencySwiftCode = change.USD[j].Symbol.toUpperCase();
-          currencyArray[j] = currencySwiftCode;
-                  
-          // coin price
-          const coinPriceOtherCurrency = this.calculateCurrencyFromRate(coin.Price,change.USD,currencySwiftCode,"today");
-          const coinPriceOtherCurrencyFormatted = this.formatCurrency(coinPriceOtherCurrency, currencySwiftCode);
-          const coinPriceOtherCurrencyYesterDay = this.calculateCurrencyFromRate(coin.PriceYesterday,change.USD,currencySwiftCode,"yesterday");
-          // change 24
-          let change24OtherCurrency = (coinPriceOtherCurrency  - coinPriceOtherCurrencyYesterDay ) / coinPriceOtherCurrencyYesterDay * 100;
-          const change24OtherCurrencyFormatted = this.formatChange24(change24OtherCurrency);
-          change24OtherCurrency = change24OtherCurrency !== Number.POSITIVE_INFINITY ? change24OtherCurrency : Number.NEGATIVE_INFINITY ;
-           //  volume 24
-          const volume24OtherCurrency  = this.calculateCurrencyFromRate(coin.VolumeYesterdayUSD,change.USD,currencySwiftCode,"yesterday");
-          const volume24OtherCurrencyFormatted = this.formatMarketCapAndVolume24(volume24OtherCurrency, currencySwiftCode);
-          //  marketCap
-          const marketCapOtherCurrency = coinPriceOtherCurrency * circulatingSupply;
-          const marketCapOtherCurrencyFormatted = this.formatMarketCapAndVolume24(marketCapOtherCurrency, currencySwiftCode);
-          
+        if(change.USD != undefined && change.USD != null) {
+            // calculate the values for the other currencies as well
+            for( let j = 0; j < change.USD.length; j++){
+              // populate the currency array
+              const currencySwiftCode = change.USD[j].Symbol.toUpperCase();
+              currencyArray[j] = currencySwiftCode;
+                      
+              // coin price
+              const coinPriceOtherCurrency = this.calculateCurrencyFromRate(coin.Price,change.USD,currencySwiftCode,"today");
+              const coinPriceOtherCurrencyFormatted = this.formatCurrency(coinPriceOtherCurrency, currencySwiftCode);
+              const coinPriceOtherCurrencyYesterDay = this.calculateCurrencyFromRate(coin.PriceYesterday,change.USD,currencySwiftCode,"yesterday");
+              // change 24
+              let change24OtherCurrency = (coinPriceOtherCurrency  - coinPriceOtherCurrencyYesterDay ) / coinPriceOtherCurrencyYesterDay * 100;
+              const change24OtherCurrencyFormatted = this.formatChange24(change24OtherCurrency);
+              change24OtherCurrency = change24OtherCurrency !== Number.POSITIVE_INFINITY ? change24OtherCurrency : Number.NEGATIVE_INFINITY ;
+               //  volume 24
+              const volume24OtherCurrency  = this.calculateCurrencyFromRate(coin.VolumeYesterdayUSD,change.USD,currencySwiftCode,"yesterday");
+              const volume24OtherCurrencyFormatted = this.formatMarketCapAndVolume24(volume24OtherCurrency, currencySwiftCode);
+              //  marketCap
+              const marketCapOtherCurrency = coinPriceOtherCurrency * circulatingSupply;
+              const marketCapOtherCurrencyFormatted = this.formatMarketCapAndVolume24(marketCapOtherCurrency, currencySwiftCode);
+              
 
-          //  add the currency to the coins array 
-          coinsArray[j].push({coinImage, 
-                 coinSymbol, 
-                 coinName,
-                 coinPrice:coinPriceOtherCurrency, 
-                 coinPriceFormatted:coinPriceOtherCurrencyFormatted,
-                 change24:change24OtherCurrency, 
-                 change24Formatted:change24OtherCurrencyFormatted,
-                 priceGraph, 
-                 volume24:volume24OtherCurrency, 
-                 volume24Formatted:volume24OtherCurrencyFormatted,
-                 marketCap:marketCapOtherCurrency, 
-                 marketCapFormatted:marketCapOtherCurrencyFormatted, 
-                 circulatingSupply, 
-                 circulatingSupplyFormatted,
-                 circulatingSupplyFormattedWithoutSymbol, 
-                 oracle});
+              //  add the currency to the coins array 
+              coinsArray[j].push({coinImage, 
+                     coinSymbol, 
+                     coinName,
+                     coinPrice:coinPriceOtherCurrency, 
+                     coinPriceFormatted:coinPriceOtherCurrencyFormatted,
+                     change24:change24OtherCurrency, 
+                     change24Formatted:change24OtherCurrencyFormatted,
+                     priceGraph, 
+                     volume24:volume24OtherCurrency, 
+                     volume24Formatted:volume24OtherCurrencyFormatted,
+                     marketCap:marketCapOtherCurrency, 
+                     marketCapFormatted:marketCapOtherCurrencyFormatted, 
+                     circulatingSupply, 
+                     circulatingSupplyFormatted,
+                     circulatingSupplyFormattedWithoutSymbol, 
+                     oracle});
+            }
         }
        
       }
@@ -160,7 +170,7 @@ export default {
       return {coinsArray, currencyArray, searchArray};
   },
   calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
-    return currencyValue / this.getRate(rateArray, currencySwiftCode, rateOption);
+    return currencyValue * this.getRate(rateArray, currencySwiftCode, rateOption);
   },
   formatCurrency : function(currency,currencySwiftCode) {
     const symbol = this.getCurrencySymbol(currencySwiftCode);
@@ -194,7 +204,11 @@ export default {
   },
   getRate : (rateArray, currencySwiftCode, rateOption) => {
     let rate = 1;
-    const rateObj = rateArray.filter((obj) => obj.Symbol === currencySwiftCode)[0];
+    let rateObj = undefined;
+ 
+    if(rateArray != undefined && rateArray != null) {
+        rateObj = rateArray.filter((obj) => obj.Symbol === currencySwiftCode)[0];
+    }
 
     if(rateObj != undefined){
       rate = rateOption === "today" ? rateObj.Rate : rateObj.RateYesterday;
