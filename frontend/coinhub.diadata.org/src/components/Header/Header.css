@@ -91,10 +91,19 @@ nav.bg-info {
 		font-size: 18px;
 	}
 
-	.search-input {
-		width: 10rem;
+	.search-form {
+		width: 100%;
 	}
 
+	.ui.fluid.dropdown {
+		width: 86%;
+	}
+
+	/deep/ .ui.selection.dropdown {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	
 	.hide-search {
 		background-color: #fff;
 		border: 1px solid #ced4da;
@@ -102,6 +111,10 @@ nav.bg-info {
 		border-bottom-left-radius: 0;
 		border-top-right-radius: 0.25rem;
 		border-bottom-right-radius: 0.25rem;
+		min-height: 43px;
+		padding: 0;
+		padding-left: 10px;
+		padding-right: 10px;
 
 	}
 }

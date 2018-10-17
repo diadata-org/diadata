@@ -164,6 +164,10 @@ export default {
 
       
       return {coinsArray, currencyArray, searchArray};
-  	},
+  },
+
+  formatCurrent : (currency,currencySymbol) => {
+
+  }
 
 }

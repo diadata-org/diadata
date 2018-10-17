@@ -16,8 +16,7 @@
               <div class="sub-header">
                   Decentrally sourced and maintained crypto-financial-data
               </div>
-            </div>
-            
+            </div>   
           </b-col>
         </b-row>
         <b-row class="header-components">
@@ -56,30 +55,36 @@
             </b-link>
           </b-col>
           <b-col cols="12" v-bind:class = "{ 'd-none' : showSearch === false, 'd-inline-block' : showSearch === true }">
-            <b-navbar-nav class="search-form">
-                    <model-list-select :list="options"
-                               option-value="value"
-                               option-text="text"
-                              v-model="selectedCoin"
-                              placeholder="Search for Digital Asset"
-                              @searchchange="initSearch">
-                    </model-list-select>
-                    <button class="hide-search" @click.stop="showHideSearch">
-                        <font-awesome-icon icon="times-circle" />
-                    </button>
+            <b-navbar-nav class="search-form d-inline-block">
+                <model-list-select 
+                        :list="options"
+                        option-value="value"
+                        option-text="text"
+                        v-model="selectedCoin"
+                        placeholder="Search for Digital Asset"
+                        @searchchange="initSearch"
+                        class = "d-inline-block">
+                </model-list-select>
+                <button class="hide-search" @click.stop="showHideSearch">
+                    <font-awesome-icon icon="times-circle" />
+                </button>
             </b-navbar-nav>
           </b-col>
           <b-col class="btn-search text-right" v-bind:class = "{ 'd-none' : showSearch === true, 'd-inline-block' : showSearch === false }">
-            <b-link @click.stop="showHideSearch">
+            <b-link @click.stop="showHideSearch"
+                    v-bind:class = "{ 'd-none' : hideSearchInput === true, 'd-inline-block' : hideSearchInput === false }">
               <font-awesome-icon icon="search" />
             </b-link>
+            <div v-bind:class = "{ 'd-none' : hideSearchInput === true, 'd-inline-block' : hideSearchInput === false }">&nbsp;</div>
           </b-col>
         </b-row>
         <b-row class="header-components">
-          <b-dropdown id="dd-currency" v-bind:text="selectedCurrency">
-            <b-dropdown-item v-for="currency in currencies">
+          <b-dropdown id="dd-currency" 
+                      v-bind:text="selectedCurrency" 
+                      v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">
+                <b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">
                   {{ currency }}
-            </b-dropdown-item>
+                </b-dropdown-item>
           </b-dropdown>
         </b-row>
       </b-navbar>
