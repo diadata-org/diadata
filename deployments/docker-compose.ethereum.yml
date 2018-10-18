@@ -46,7 +46,7 @@ services:
       options:
         max-size: "50m"
     secrets:
-      - oracle_keys.txt
+      - oracle_keys
 
   eth:
     build:
@@ -66,6 +66,8 @@ services:
 secrets:
   api_diadata:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
+  oracle_keys:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
 
 volumes: 
   bitcoin:
