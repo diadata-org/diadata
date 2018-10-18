@@ -138,13 +138,11 @@ export default {
 
         if(  response1.data !== undefined
           && response2.data !== undefined) {
-          // all
+
           const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
           const MEDIR120AllArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
 
-          console.log(MEDIR120AllArray);
-             console.log(MA120AllArray);
-
+     
           this.chartAllOptions = {
             chart: {
                   zoomType: 'x'
