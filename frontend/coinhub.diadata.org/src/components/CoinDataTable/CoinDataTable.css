@@ -48,7 +48,7 @@ div.loading-data {
 	margin-right: 80px;
 }
 
-.ui.selection.dropdown {
+.ui.search.selection.dropdown {
 	border-radius: 0;
 	line-height: 1.1;
 }
@@ -135,12 +135,15 @@ span.coin-name {
 
 @media (min-width: 320px) and (max-width: 767px) {	
 	.link-row a {
-		font-size: 10px;
+		font-size: 11px;
 	}
 
-	.link-row a#first,
+	.link-row a#first {
+		margin-left: 15px;
+	}
+
 	.link-row a#second {
-		margin-left: 20px;
+		margin-left: 5px;
 	}
 }
 

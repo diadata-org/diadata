@@ -151,10 +151,10 @@ export default {
           
           // all exchanges
           this.chartAllOptions = {
-              chart: {
+            chart: {
                   zoomType: 'x'
-              },
-              rangeSelector: {
+            },
+            rangeSelector: {
 
                 buttons: [ {
                     type: 'ytd',
@@ -194,13 +194,10 @@ export default {
                 pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
             },
 
-            series: {
-                  compare: 'percent',
-                  showInNavigator: true
-            },
             series: [{
                 name: "MA120",
-                data: MA120AllArray
+                data: MA120AllArray,
+                showInNavigator: true
             }]};
       
         
@@ -209,7 +206,27 @@ export default {
 
           this.chartSimexOptions = {
             chart: {
-                type: 'spline'
+                  zoomType: 'x'
+            },
+            rangeSelector: {
+
+                buttons: [ {
+                    type: 'ytd',
+                    text: 'YTD'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1M'
+                },{
+                    type: 'day',
+                    count: 7,
+                    text: '7D'
+                },{
+                    type: 'day',
+                    count: 1,
+                    text: '1D'
+                }],
+                selected: 3
             },
             title: {
                 text: 'Simex'
@@ -237,16 +254,6 @@ export default {
                 headerFormat: '<b>{series.name}</b><br>',
                 pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
             },
-
-            plotOptions: {
-                spline: {
-                    marker: {
-                        enabled: true
-                    }
-                }
-            },
-
-            colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
             series: [{
                 name: "MA120",
                 data: []
