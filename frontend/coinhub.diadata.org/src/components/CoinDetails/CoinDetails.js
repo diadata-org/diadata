@@ -176,7 +176,6 @@ export default {
                 title: {
                     text: 'Time'
                 },
-                minRange: 3600 * 1000 // one hour
             },
             yAxis: {
                 title: {
