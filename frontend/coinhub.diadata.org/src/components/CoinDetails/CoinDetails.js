@@ -183,17 +183,7 @@ export default {
                     color: 'silver'
                 }]
             },
-            plotOptions: {
-                  series: {
-                      showInNavigator: true
-                  }
-            },
-            plotOptions: {
-                  series: {
-                      compare: 'percent',
-                      showInNavigator: true
-                  }
-            },
+  
             tooltip: {
                   pointFormat: `<span style="color:{series.color}">{series.name}</span>: <b>${currencySymbol }{point.y}</b> <br/>`,
                   valueDecimals: 2
