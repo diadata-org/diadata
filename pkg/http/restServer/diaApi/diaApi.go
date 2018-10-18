@@ -10,17 +10,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	_ "github.com/influxdata/influxdb/client/v2"
+	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"time"
+)
+
+const (
+	coinsPerPage = 50
 )
 
 type Env struct {
 	DataStore models.Datastore
 }
 
-type influxdataResult struct {
+type points struct {
+	DataPoints []clientInfluxdb.Result
 }
 
 // PostSupply godoc
@@ -218,16 +225,17 @@ func (env *Env) GetCoins(c *gin.Context) {
 
 		var coins Coins
 		coins.Coins = []Coin{}
+		coins.CompleteCoinList = []CoinSymbolAndName{}
 		coins.Change, _ = env.DataStore.GetCurrencyChange()
 
 		for _, symbol := range symbols {
 			var c1 Coin
-			log.Println("Adding symbol", symbol)
+			log.Debug("Adding symbol", symbol)
 			supply, _ := env.DataStore.GetSupply(symbol)
 			price, _ := env.DataStore.GetQuotation(symbol)
 			volume, _ := env.DataStore.GetVolume(symbol)
 
-			if price != nil {
+			if price != nil && supply != nil && volume != nil {
 				c1.Price = price.Price
 				c1.Name = price.Name
 				c1.Symbol = price.Symbol
@@ -241,8 +249,18 @@ func (env *Env) GetCoins(c *gin.Context) {
 					coins.Coins = append(coins.Coins, c1)
 				}
 			} else {
-				log.Warning("no price for ", symbol)
+				log.Warningln("no price, supply, or volume for ", symbol, price, supply, volume)
 			}
+		}
+
+		sort.Slice(coins.Coins, func(i, j int) bool {
+			return (*coins.Coins[i].CirculatingSupply * coins.Coins[i].Price) > (*coins.Coins[j].CirculatingSupply * coins.Coins[j].Price)
+		})
+		for _, coin := range coins.Coins {
+			coins.CompleteCoinList = append(coins.CompleteCoinList, CoinSymbolAndName{coin.Symbol, coin.Name})
+		}
+		if len(coins.Coins) > coinsPerPage {
+			coins.Coins = coins.Coins[:coinsPerPage]
 		}
 		c.JSON(http.StatusOK, coins)
 	}
@@ -257,7 +275,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   exchange     path    string     true        "Some exchange"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} influxdataResult "success"
+// @Success 200 {object} points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
@@ -265,14 +283,11 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
-
-	// 		dia.GET("/chartPoints/:exchange/:symbol", diaApiEnv.GetChartPoints)
-
-	points, err := env.DataStore.GetFilterPoints(filter, exchange, symbol)
+	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, points)
+		c.JSON(http.StatusOK, points{DataPoints: p})
 	}
 }
 
@@ -284,17 +299,17 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Produce  json
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} influxdataResult "success"
+// @Success 200 {object} points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPointsAllExchanges/:symbol:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
-	points, err := env.DataStore.GetFilterPoints(filter, "", symbol)
+	p, err := env.DataStore.GetFilterPoints(filter, "", symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, points)
+		c.JSON(http.StatusOK, points{DataPoints: p})
 	}
 }

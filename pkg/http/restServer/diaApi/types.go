@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type CoinSymbolAndName struct {
+	Symbol string
+	Name   string
+}
+
 type Coin struct {
 	Symbol             string
 	Name               string
@@ -17,8 +22,9 @@ type Coin struct {
 }
 
 type Coins struct {
-	Change *models.Change
-	Coins  []Coin
+	CompleteCoinList []CoinSymbolAndName
+	Change           *models.Change
+	Coins            []Coin
 }
 
 type Pairs struct {

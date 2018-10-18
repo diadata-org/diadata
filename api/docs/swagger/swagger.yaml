@@ -112,6 +112,13 @@ definitions:
       volumeYesterdayUSD:
         type: number
     type: object
+  diaApi.CoinSymbolAndName:
+    properties:
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
   diaApi.Coins:
     properties:
       change:
@@ -120,6 +127,10 @@ definitions:
       coins:
         items:
           $ref: '#/definitions/diaApi.Coin'
+        type: array
+      completeCoinList:
+        items:
+          $ref: '#/definitions/diaApi.CoinSymbolAndName'
         type: array
     type: object
   diaApi.Pairs:
@@ -320,7 +331,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/influxdataResult'
+            $ref: '#/definitions/points'
             type: object
         "404":
           description: Symbol not found
@@ -357,7 +368,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/influxdataResult'
+            $ref: '#/definitions/points'
             type: object
         "404":
           description: Symbol not found

@@ -180,7 +180,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/influxdataResult"
+                            "$ref": "#/definitions/points"
                         }
                     },
                     "404": {
@@ -234,7 +234,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/influxdataResult"
+                            "$ref": "#/definitions/points"
                         }
                     },
                     "404": {
@@ -679,6 +679,17 @@
                 }
             }
         },
+        "diaApi.CoinSymbolAndName": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "diaApi.Coins": {
             "type": "object",
             "properties": {
@@ -690,6 +701,12 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/diaApi.Coin"
+                    }
+                },
+                "completeCoinList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/diaApi.CoinSymbolAndName"
                     }
                 }
             }
