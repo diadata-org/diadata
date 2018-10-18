@@ -142,10 +142,10 @@ export default {
           && response2.data !== undefined
           && response3.data !== undefined) {
           // all
-          const MA120AllArray = require('@/assets/time.json');
+          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
           const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
-
-          console.log(MA120AllArray);
+ 
+    
 
           //simex
           //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
@@ -279,9 +279,10 @@ export default {
     formatChartValues(chartValues) {
 
       let formattedValues = [];
+      chartValues = chartValues.reverse();
 
       chartValues.forEach((chartValue) => {
-         const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
+         const UTCDate = new Date(chartValue[0]).valueOf();
          const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
          
          formattedValues.push([UTCDate,price]);
