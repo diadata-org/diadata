@@ -21,6 +21,10 @@ nav.bg-info {
 	color: #FFF;
 }
 
+.subheading {
+	text-align: right;
+}
+
 @media (min-width: 320px) and  (max-width: 576px){
 	.row {
 	  margin-right: 0px !important;
@@ -31,6 +35,11 @@ nav.bg-info {
 		float: left;
 		margin-top: 11px;
 	}
+
+	.subheading {
+		text-align: left;
+	}
+
 }
 
 @media (min-width: 768px) and  (max-width: 1023px){
