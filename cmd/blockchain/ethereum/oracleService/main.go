@@ -35,7 +35,7 @@ func main() {
 	 * Read secrets for unlocking the ETH account
 	 */
 	var lines []string
-	file, err := os.Open("/run/secrets/oracle_keys.txt") // Read in key information
+	file, err := os.Open("/run/secrets/oracle_keys") // Read in key information
 	if err != nil {
 		log.Fatal(err)
 	}
