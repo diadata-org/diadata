@@ -161,7 +161,7 @@ export default {
                     count: 1,
                     text: '1D'
                 }],
-                selected: 1
+                selected: 2
             },
 
             title: {
