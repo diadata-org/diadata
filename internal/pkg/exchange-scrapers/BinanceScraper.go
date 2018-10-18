@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
@@ -155,6 +156,38 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, err
 }
+func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
+	symbol = params[0]
+	status := params[1]
+	if status == "TRADING" {
+		if helpers.NameForSymbol(symbol) == symbol {
+			if !helpers.SymbolIsName(symbol) {
+				if symbol == "IOTA" {
+					return "MIOTA", nil
+				}
+				if symbol == "YOYO" {
+					return "YOYOW", nil
+				}
+				/// ethos
+				if symbol == "BQX" {
+					return "ETHOS", nil
+				}
+				/// Bitcoin Cash
+				if symbol == "BCC" {
+					return "BCH", nil
+				}
+				return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+			}
+		}
+		if helpers.SymbolIsBlackListed(symbol) {
+			return symbol, errors.New("Symbol is black listed:" + symbol)
+		}
+	} else {
+		return symbol, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
+
+	}
+	return symbol, nil
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -169,16 +202,16 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	var ar binance.ExchangeInfo
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
-		pairs = make([]dia.Pair, len(ar.Symbols))
-		for i, p := range ar.Symbols {
-			if p.Status == "TRADING" {
-				pairs[i] = dia.Pair{
-					Symbol:      p.BaseAsset,
+		for _, p := range ar.Symbols {
+			symbol, serr := s.normalizeSymbol(p.Symbol, p.BaseAsset, p.Status)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
 					ForeignName: p.Symbol,
 					Exchange:    s.exchangeName,
-				}
+				})
 			} else {
-				log.Error("Symbol:" + p.Symbol + " base symbol:" + p.BaseAsset + " status:" + p.Status)
+				log.Error(serr)
 			}
 		}
 	}
