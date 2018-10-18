@@ -13,9 +13,57 @@
 	    </div>
 	    <div v-else class="coin-data">
 	    	<b-row>
+	    		<div class="subtext1 w-100">
+	    			<ul>
+		    			<li>
+		    				CoinHub provides you with crowd-curated open-source financial data about cryptocurrencies – verified, cleaned for outliers, transparent and free of charge accessible via API or Oracle.
+		    			</li>
+		    			<li>
+		    				CoinHub is a dApp by <a href="https://diadata.org/">DIA</a>. DIA provides a decentralized creation, contribution and crowd-validation approach to financial data for a wide variety of use cases in the financial space.
+		    			</li>
+		    		</ul>
+	    		</div>
+	    		<div class="subtext2 w-100">
+	    			Start building your own:
+	    		</div>
+	    	</b-row>
+	    	<b-row class="link-row">
+		    	<b-col>
+		          <a id="first" href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</a>
+		        </b-col>
+		        <b-col>
+		          <a id="second" href="http://swagger.diadata.org/api/swagger/index.html" target="_blank">API Documentation</a>
+		        </b-col>
+		    </b-row>
+	    	<b-row >
+	    		<div class="line-separator w-100"></div>
+	    	</b-row>
+	    	<b-row class="search-currency-row">
+	            <b-col cols="9" md="4">
+	                <model-list-select 
+	                              :list="options"
+	                              option-value="value"
+	                              option-text="text"
+	                              v-model="selectedCoin"
+	                              placeholder="Search for Digital Asset"
+	                              @searchchange="initSearch">
+	                </model-list-select>
+	             
+	            </b-col>
+	            <b-col cols="2" md="2" offset-md="6" offset="1">
+	                <b-dropdown id="dd-currency" 
+	                          v-bind:text="selectedCurrency" 
+	                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">
+		                <b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">
+		                  {{ currency }}
+		                </b-dropdown-item>
+	              	</b-dropdown>
+	            </b-col>    
+        	</b-row>
+	    	<b-row>
 				<b-table responsive striped :items="coindata" :fields="fields" id="coindata">
 				    <template slot="coinName" slot-scope="data">
-				      <b-img :src="data.item.coinImage" alt=" " />
+				      <b-img :src="data.item.coinImage" alt=" " width="16" height="16" />
 				      <router-link :to="{ name: 'coin-details', params: { coinRank:data.item.rank, coinSymbol: data.item.coinSymbol }}">
 				      	{{data.item.coinSymbol}} 
 				      </router-link>

@@ -23,7 +23,11 @@ export default {
 		return coins;
 	  
 	},
-	formatCoinData: function(coins, change) {
+	formatCoinData: function(coindata) {
+      let change = coindata.Change !== undefined && coindata.Change !== null ? coindata.Change : null;
+      let coins = coindata.Coins !== undefined && coindata.Coins !== null ? coindata.Coins : [];
+      let coinsList = coindata.CompleteCoinList !== undefined && coindata.CompleteCoinList !== null ? coindata.CompleteCoinList : null;
+
       let coinsArray = [];
       let searchArray = [];
       let currencyArray = [];
@@ -44,17 +48,16 @@ export default {
    
       coinsArray[USDindex] = [];
       currencyArray[USDindex] = "USD";
-      
-    
 
       for (let i = 0; i < coins.length; i++) {
 
         const coin = coins[i];
         let coinImage = '';
         try {
-    		  coinImage = require(`@/assets/icons/${coin.Symbol.toLowerCase()}.png`);
+    		  coinImage = require(`cryptocurrency-icons/32/color/${coin.Symbol.toLowerCase()}.png`);
     		}
     		catch (e) {
+          console.log(e);
     		  coinImage = require('@/assets/icons/crypto.png');
     		}
         const coinSymbol = coin.Symbol;
@@ -79,9 +82,8 @@ export default {
         // USD
         const volume24USD = coin.VolumeYesterdayUSD;
         const volume24USDFormatted = this.formatMarketCapAndVolume24(volume24USD , "USD");
-         // market cap
+        // market cap
         // USD
-     
         const marketCapUSD = coinPriceUSD * circulatingSupply;
         const marketCapUSDFormatted = this.formatMarketCapAndVolume24(marketCapUSD , "USD");
         
@@ -90,6 +92,7 @@ export default {
         coinsArray[USDindex].push({coinImage, 
                        coinSymbol, 
                        coinName,
+                       coinNameLowerCase:coinName.toLowerCase(),
                        coinPrice:coinPriceUSD, 
                        coinPriceFormatted:coinPriceUSDFormatted,
                        change24:change24USD, 
@@ -103,6 +106,8 @@ export default {
                        circulatingSupplyFormatted,
                        circulatingSupplyFormattedWithoutSymbol, 
                        oracle});
+
+
         if(change != undefined && change != null) {
           if(change.USD != undefined && change.USD != null) {
               // calculate the values for the other currencies as well
@@ -157,12 +162,7 @@ export default {
         coinsArray[i].forEach((coin,j) => {
           const rank = (j + 1);
           coin.rank = rank;
-          if(i === 0){
-            //populate the search array
-            searchArray.push( { value: coin.coinSymbol, text: coin.coinSymbol + ' : ' + coin.coinName, });
-          }    
         });
-
         let coinsObj = {};
         const key = currencyArray[i];
         const value  = coinsArray[i];
@@ -171,9 +171,11 @@ export default {
         coinsArray[i] = coinsObj;
       });
 
-      currencyArray = sortBy(currencyArray);
+      coinsList.forEach((coin) =>{
+          searchArray.push({ value: coin.Symbol, text: coin.Symbol + ' : ' + coin.Name, });
+      });
 
-      
+      currencyArray = sortBy(currencyArray);
       return {coinsArray, currencyArray, searchArray};
   },
   calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {

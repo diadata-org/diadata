@@ -2,9 +2,10 @@
 	margin-right: 0 !important;
 	margin-left: 0 !important;
 }
+
 .loading-error,
 div.loading-data {
-	min-height: 73vh;
+	min-height: 83vh;
 	display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -17,16 +18,79 @@ div.loading-data {
     justify-content: center;
 }
 
+.link-row {
+	margin-top:  20px;
+	margin-bottom: 20px;
+}
+
+.link-row a {
+	background-color: #00CCB7;
+	color: #fff;
+	padding: 10px;
+}
+
+.link-row a#first {
+	margin-left: 500px;
+}
+
+.link-row a#second {
+	margin-left: 100px;
+}
+
+.line-separator {
+	border-bottom: 2px solid #564dfc;
+	margin-bottom: 24px;
+	margin-left: 80px;
+	margin-right: 80px;
+}
+
+.ui.selection.dropdown {
+	border-radius: 0;
+	line-height: 1.1;
+}
+
+/deep/ .ui.fluid.dropdown > .dropdown.icon {
+	display: none;
+}
+
+#dd-currency {
+	float:right;
+	padding: 0;
+}
+
+/deep/ #dd-currency .btn {
+	line-height: 1.9;
+	border-radius: 0;
+}
+
+.subtext1,
+section div .table-responsive{
+	padding-left: 80px;
+	padding-right: 80px;
+}
+
+.search-currency-row {
+	padding-left: 65px;
+	padding-right: 80px;
+}
+
+.subtext2 {
+	padding-left: 120px;
+}
+
+
+/deep/ #dd-currency button.btn-secondary:hover,
+/deep/ #dd-currency button.btn-secondary {
+	color: #fff;
+    background-color: #FF7096;
+    border-color: #FF7096;
+    font-weight: 600;
+}
 
 span.coin-name {
 	margin-left: 20px;
 }
 
-section div .table-responsive{
-	padding-left: 6rem;
-	padding-right: 6rem;
-	padding-top: 10px;
-}
 
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
@@ -65,12 +129,92 @@ section div .table-responsive{
     color: #000000 !important;
 }
 
-@media (min-width: 320px) and (max-width: 1023px) {	
+@media (min-width: 320px) and (max-width: 767px) {	
+	.link-row a {
+		font-size: 10px;
+	}
+
+	.link-row a#first,
+	.link-row a#second {
+		margin-left: 20px;
+	}
+}
+
+@media (min-width: 375px) and (max-width: 767px) {	
+	.link-row a {
+		font-size: 14px;
+	}
+
+	.link-row a#first,
+	.link-row a#second {
+		margin-left: 10px;
+	}
+
+	.link-row a#first {
+		margin-left: 20px;
+	
+	}
+}
+
+
+@media (min-width: 320px) and (max-width: 767px) {	
+
+	.search-currency-row,
+	.subtext1,
 	section div .table-responsive{
 		padding-left: 1px;
 		padding-right: 0;
 		padding-top: 0;
 	}
+	.subtext2 {
+		padding-left: 40px;
+	}
+	.search-currency-row {
+		padding-left: 0;
+	}
+
+	.line-separator {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	
+}
+
+@media (min-width: 768px)  and (max-width: 1023px){	
+	/deep/ table{
+		width: 160%;
+	}
+	/deep/ table td:nth-child(2){
+		text-align: left;
+		padding-left: 2px;
+	}
+
+	.search-currency-row,
+	.subtext1,
+	section div .table-responsive{
+		padding-left: 1px;
+		padding-right: 0;
+		padding-top: 0;
+	}
+	.subtext2 {
+		padding-left: 40px;
+	}
+	.search-currency-row {
+		padding-left: 0;
+	}
+
+	.line-separator {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.link-row a#first,
+	.link-row a#second {
+		margin-left: 120px;
+	}
+
+	
 }
 
 @media (max-width: 576px) {	
@@ -88,21 +232,37 @@ section div .table-responsive{
 	}
 }
 
-@media (min-width: 768px)  and (max-width: 1024px){	
-	/deep/ table{
-		width: 160%;
-	}
-	/deep/ table td:nth-child(2){
-		text-align: left;
-		padding-left: 2px;
-	}
 
-	
-}
 
 @media (min-width: 1024px) and (max-width: 1366px)  {	
 	/deep/ table{
 		width: 150%;
+	}
+
+	.search-currency-row,
+	.subtext1,
+	section div .table-responsive{
+		padding-left: 1px;
+		padding-right: 0;
+		padding-top: 0;
+	}
+	.subtext2 {
+		padding-left: 40px;
+	}
+	.search-currency-row {
+		padding-left: 0;
+	}
+
+	.line-separator {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.link-row a#first {
+		margin-left: 250px;
+	}
+	.link-row a#second {
+		margin-left: 100px;
 	}
 	
 }
