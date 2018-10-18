@@ -2,7 +2,7 @@ package helpers
 
 //SymbolIsBlackListed return true if the symbol is blacklisted
 // Symbols are blacklisted when they are duplicated and there is no
-// solution to resolve the conflict
+// approach to resolve the conflict
 func SymbolIsBlackListed(symbol string) bool {
 	switch symbol {
 	case "ACC":

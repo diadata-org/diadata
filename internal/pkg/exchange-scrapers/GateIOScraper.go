@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -205,6 +207,22 @@ func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
+func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+	str := strings.Split(foreignName, "_")
+	symbol = strings.ToUpper(str[0])
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOTA" {
+				return "MIOTA", nil
+			}
+			return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -216,14 +234,19 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	defer response.Body.Close()
 	data, _ := ioutil.ReadAll(response.Body)
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
-	pairs = make([]dia.Pair, len(ls))
-	for i, p := range ls {
-		str := strings.Split(p, "_")
-		pairs[i] = dia.Pair{
-			Symbol:      str[0],
-			ForeignName: p,
-			Exchange:    s.exchangeName,
+	for _, p := range ls {
+		symbol, serr := s.normalizeSymbol(p)
+		if serr == nil {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbol,
+				ForeignName: p,
+				Exchange:    s.exchangeName,
+			})
+		} else {
+			log.Error(serr)
+
 		}
+
 	}
 
 	return

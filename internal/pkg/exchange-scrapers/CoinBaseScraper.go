@@ -144,7 +144,7 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string, params ...interfac
 	str := strings.Split(foreignName, "-")
 	symbol = str[0]
 	if helpers.NameForSymbol(symbol) == symbol {
-		return symbol, errors.New("Symbol is unknown and can not be normalized:" + symbol)
+		return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
 		return symbol, errors.New("Symbol is black listed:" + symbol)

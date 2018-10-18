@@ -199,8 +199,8 @@ func (s *LBankScraper) normalizeSymbol(foreignName string, params ...interface{}
 	str := strings.Split(foreignName, "_")
 	symbol = strings.ToUpper(str[0])
 	if helpers.NameForSymbol(symbol) == symbol {
-		if symbol != "NEO" && symbol != "EOS" {
-			return symbol, errors.New("Symbol is unknown and can not be normalized:" + symbol)
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
