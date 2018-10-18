@@ -10,7 +10,7 @@ import (
 
 const (
 	GRAPH_PATH = "/charts/"
-	FORMAT     = ".png"
+	EXTENSION  = ".png"
 )
 
 func main() {
@@ -54,12 +54,12 @@ func main() {
 				continue
 			}
 
-			err = graph.PriceGraph(pricePoints, timePoints, GRAPH_PATH+symbol+FORMAT)
+			err = graph.PriceGraph(pricePoints, timePoints, GRAPH_PATH+symbol+EXTENSION)
 			if err != nil {
 				log.Error(err)
 				continue
 			}
-			err = os.Rename(GRAPH_PATH+symbol+FORMAT, GRAPH_PATH+symbol)
+			err = os.Rename(GRAPH_PATH+symbol+EXTENSION, GRAPH_PATH+symbol)
 			if err != nil {
 				log.Error(err)
 				continue
