@@ -130,19 +130,18 @@ export default {
     async fetchCoinChartDetails() {
 
       try {
-        let response = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
-        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/VOL120/${this.coinSymbol.toUpperCase()}`);
-        
+        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+        let response2 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/${this.coinSymbol.toUpperCase()}`);
+
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-        if( response.data !== undefined 
-          && response1.data !== undefined
-          && response2.data !== undefined
-          && response3.data !== undefined) {
+        if(  response1.data !== undefined
+          && response2.data !== undefined) {
           // all
-          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
-          const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+          const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+          const MEDIR120AllArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
+       
 
           this.chartAllOptions = {
             chart: {
@@ -192,6 +191,11 @@ export default {
             series: [{
                 name: "MA120",
                 data: MA120AllArray,
+                showInNavigator: true
+            },
+            {
+                name: "MEDIR120",
+                data: MEDIR120AllArray,
                 showInNavigator: true
             }]};
       
