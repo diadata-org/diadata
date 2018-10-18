@@ -109,6 +109,7 @@ func SymbolsFrontPage() []string {
 		"AOA",
 		"RHOC",
 		"ARK",
+		"NULS",
 	}
 }
 
