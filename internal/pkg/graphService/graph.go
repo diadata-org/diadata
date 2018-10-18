@@ -70,12 +70,15 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	}
 
 	// change presentation
+	blue := color.RGBA{R: 40, G: 54, B: 142, A: 255}
+	lightBlue := color.RGBA{R: 204, G: 223, B: 248, A: 255}
+
 	graph.HideAxes()
-	graph.BackgroundColor = color.RGBA{R: 0, G: 0, B: 0, A: 0}
-	line.LineStyle.Color = color.RGBA{R: 40, G: 54, B: 142, A: 255}
+	graph.BackgroundColor = color.Transparent
+	line.LineStyle.Color = blue
 
 	line.ShadeColor = new(color.Color)
-	*line.ShadeColor = color.RGBA{R: 204, G: 223, B: 248, A: 255}
+	*line.ShadeColor = lightBlue
 
 	// add a small margin at the bottom
 	graph.Y.Min = min - (max-min)*0.1
