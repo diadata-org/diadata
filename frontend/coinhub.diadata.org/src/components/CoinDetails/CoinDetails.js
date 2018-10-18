@@ -131,18 +131,14 @@ export default {
 
       try {
         let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
-        let response2 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/${this.coinSymbol.toUpperCase()}`);
-
+     
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-        if(  response1.data !== undefined
-          && response2.data !== undefined) {
+        if(response1.data !== undefined) {
 
           const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
-          const MEDIR120AllArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
-
-     
+         
           this.chartAllOptions = {
             chart: {
                   zoomType: 'x'
@@ -204,13 +200,8 @@ export default {
                   
             },
             series: [{
-                name: "MA120",
+                name: "2 Minute MA",
                 data: MA120AllArray,
-            },
-            {
-                name: "MEDIR120",
-                data: MEDIR120AllArray,
-
             }]};
       
         
