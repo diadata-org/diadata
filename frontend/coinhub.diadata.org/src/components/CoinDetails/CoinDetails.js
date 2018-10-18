@@ -132,8 +132,7 @@ export default {
       try {
         let response = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
         let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/VOL120/${this.coinSymbol.toUpperCase()}`);
-        let response2 = await axios.get(`https://api.diadata.org/v1/chartPoints/MA120/Simex//${this.coinSymbol.toUpperCase()}`);
-        let response3 = await axios.get(`https://api.diadata.org/v1/chartPoints/VOL120/Simex//${this.coinSymbol.toUpperCase()}`);
+        
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
