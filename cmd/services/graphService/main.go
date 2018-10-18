@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/diadata-org/diadata/internal/pkg/graphService"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -22,7 +21,13 @@ func main() {
 	}
 
 	for {
-		for _, symbol := range dia.SymbolsFrontPage() {
+		symbols, err := dataStore.SymbolsWithASupply()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		for _, symbol := range symbols {
 			points, err := dataStore.GetChartPoints(symbol)
 			if err != nil {
 				log.Error(err)
@@ -59,8 +64,8 @@ func main() {
 				log.Error(err)
 				continue
 			}
-		}
 
-		time.Sleep(time.Minute * 2)
+			time.Sleep(time.Second)
+		}
 	}
 }
