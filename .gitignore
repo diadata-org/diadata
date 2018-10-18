@@ -11,3 +11,4 @@ secrets
 go.*
 *-workspace
 .idea
+.DS_Store

@@ -147,8 +147,28 @@ export default {
           
           // all exchanges
           this.chartAllOptions = {
-            rangeSelector: {
-              selected: 1
+              chart: {
+                  zoomType: 'x'
+              },
+              rangeSelector: {
+
+                buttons: [ {
+                    type: 'ytd',
+                    text: 'YTD'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1M'
+                },{
+                    type: 'day',
+                    count: 7,
+                    text: '7D'
+                },{
+                    type: 'day',
+                    count: 1,
+                    text: '1D'
+                }],
+                selected: 3
             },
 
             title: {
