@@ -1,11 +1,9 @@
 package main
 
 import (
-	// "encoding/json"
 	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/model"
-	// "github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 	"os"

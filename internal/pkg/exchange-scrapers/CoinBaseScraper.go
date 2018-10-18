@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	ws "github.com/gorilla/websocket"
 	"github.com/preichenberger/go-gdax"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -138,6 +140,17 @@ func (s *CoinBaseScraper) Close() error {
 	defer s.errorLock.RUnlock()
 	return s.error
 }
+func (s *CoinBaseScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+	str := strings.Split(foreignName, "-")
+	symbol = str[0]
+	if helpers.NameForSymbol(symbol) == symbol {
+		return symbol, errors.New("Symbol is unknown and can not be normalized:" + symbol)
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -151,12 +164,14 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	var ar []gdax.Product
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
-		pairs = make([]dia.Pair, len(ar))
-		for i, p := range ar {
-			pairs[i] = dia.Pair{
-				Symbol:      p.BaseCurrency,
-				ForeignName: p.Id,
-				Exchange:    s.exchangeName,
+		for _, p := range ar {
+			symbol, serr := s.normalizeSymbol(p.Id)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Id,
+					Exchange:    s.exchangeName,
+				})
 			}
 		}
 	}
