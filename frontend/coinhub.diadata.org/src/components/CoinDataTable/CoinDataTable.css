@@ -18,6 +18,10 @@ div.loading-data {
     justify-content: center;
 }
 
+.coin-data {
+	margin-top:  20px;
+}
+
 .link-row {
 	margin-top:  20px;
 	margin-bottom: 20px;

@@ -6,12 +6,16 @@
 	          <a href="https://github.com/diadata-org" target="_blank">Connect With Us</a>
 	        </b-col>
 	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
 	        <b-col>
 	          <a href="https://diadata.org/imprint/#privacy" target="_blank">Privacy Policy</a>
 	        </b-col>
 	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
-	        <b-col>
-	          <a href="https://diadata.org/imprint" target="_blank">Imprint</a>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col class="coin-data-footer-row-spacer">&nbsp;</b-col>
+	        <b-col >
+	          <a class="text-right" href="https://diadata.org/imprint" target="_blank">Imprint</a>
 	        </b-col>
 	    </b-row>
 	</b-container>
