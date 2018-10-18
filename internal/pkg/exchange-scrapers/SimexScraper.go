@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -215,10 +217,24 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
+func (s *SimexScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign name can not be normalized:" + name + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	type NameT struct {
-		Name string `json:"name"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
 	type DataT struct {
 		Base  NameT `json:"base"`
@@ -237,12 +253,16 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	var ar APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
-		pairs = make([]dia.Pair, len(ar.Data))
-		for i, p := range ar.Data {
-			pairs[i] = dia.Pair{
-				Symbol:      p.Base.Name,
-				ForeignName: p.Base.Name + p.Quote.Name,
-				Exchange:    s.exchangeName,
+		for _, p := range ar.Data {
+			symbol, serr := s.normalizeSymbol(p.Base.Name, p.Base.Description)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: symbol + p.Quote.Name,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
 			}
 		}
 	}
