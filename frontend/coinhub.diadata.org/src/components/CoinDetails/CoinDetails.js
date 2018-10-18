@@ -142,10 +142,12 @@ export default {
           && response2.data !== undefined
           && response3.data !== undefined) {
           // all
-          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
+          const MA120AllArray = require('@/assets/time.json');
           const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
  
     
+
+          console.log(MA120AllArray);
 
           //simex
           //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
