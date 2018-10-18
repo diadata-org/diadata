@@ -144,6 +144,8 @@ export default {
           // all
           const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
           const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+ 
+    
 
           //simex
           //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
@@ -151,10 +153,65 @@ export default {
           
           // all exchanges
           this.chartAllOptions = {
-              chart: {
+            chart: {
                   zoomType: 'x'
-              },
-              rangeSelector: {
+            },
+            rangeSelector: {
+
+                buttons: [ {
+                    type: 'ytd',
+                    text: 'YTD'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1M'
+                },{
+                    type: 'day',
+                    count: 7,
+                    text: '7D'
+                },{
+                    type: 'day',
+                    count: 1,
+                    text: '1D'
+                }],
+                selected: 1
+            },
+
+            title: {
+                text: 'All Exchanges'
+            },
+            xAxis: {
+                type: 'datetime',
+                title: {
+                    text: 'Time'
+                },
+                minRange: 3600 * 1000 // one hour
+            },
+            yAxis: {
+                title: {
+                    text: price
+                },
+            },
+            tooltip: {
+                headerFormat: '<b>{series.name}</b><br>',
+                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+            },
+
+            series: [{
+                name: "MA120",
+                data: MA120AllArray,
+                showInNavigator: true
+            }]};
+      
+        
+           // simex
+          this.showAllCharts = true;
+
+          this.chartSimexOptions = {
+            chart: {
+                  zoomType: 'x'
+            },
+            rangeSelector: {
 
                 buttons: [ {
                     type: 'ytd',
@@ -173,43 +230,6 @@ export default {
                     text: '1D'
                 }],
                 selected: 3
-            },
-
-            title: {
-                text: 'All Exchanges'
-            },
-            xAxis: {
-                type: 'datetime',
-                title: {
-                    text: 'Time'
-                }
-            },
-            yAxis: {
-                title: {
-                    text: price
-                },
-            },
-            tooltip: {
-                headerFormat: '<b>{series.name}</b><br>',
-                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
-            },
-
-            series: {
-                  compare: 'percent',
-                  showInNavigator: true
-            },
-            series: [{
-                name: "MA120",
-                data: MA120AllArray
-            }]};
-      
-        
-           // simex
-          this.showAllCharts = true;
-
-          this.chartSimexOptions = {
-            chart: {
-                type: 'spline'
             },
             title: {
                 text: 'Simex'
@@ -237,16 +257,6 @@ export default {
                 headerFormat: '<b>{series.name}</b><br>',
                 pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
             },
-
-            plotOptions: {
-                spline: {
-                    marker: {
-                        enabled: true
-                    }
-                }
-            },
-
-            colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
             series: [{
                 name: "MA120",
                 data: []
@@ -269,9 +279,10 @@ export default {
     formatChartValues(chartValues) {
 
       let formattedValues = [];
+      chartValues = chartValues.reverse();
 
       chartValues.forEach((chartValue) => {
-         const UTCDate = new Date(moment(chartValue[0]).utc().format()).valueOf();
+         const UTCDate = new Date(chartValue[0]).valueOf();
          const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
          
          formattedValues.push([UTCDate,price]);

@@ -18,6 +18,10 @@ div.loading-data {
     justify-content: center;
 }
 
+.coin-data {
+	margin-top:  20px;
+}
+
 .link-row {
 	margin-top:  20px;
 	margin-bottom: 20px;
@@ -44,7 +48,7 @@ div.loading-data {
 	margin-right: 80px;
 }
 
-.ui.selection.dropdown {
+.ui.search.selection.dropdown {
 	border-radius: 0;
 	line-height: 1.1;
 }
@@ -61,6 +65,10 @@ div.loading-data {
 /deep/ #dd-currency .btn {
 	line-height: 1.9;
 	border-radius: 0;
+}
+
+/deep/ #dd-currency .dropdown-menu {
+	font-size: 12px;
 }
 
 .subtext1,
@@ -131,12 +139,15 @@ span.coin-name {
 
 @media (min-width: 320px) and (max-width: 767px) {	
 	.link-row a {
-		font-size: 10px;
+		font-size: 11px;
 	}
 
-	.link-row a#first,
+	.link-row a#first {
+		margin-left: 15px;
+	}
+
 	.link-row a#second {
-		margin-left: 20px;
+		margin-left: 5px;
 	}
 }
 

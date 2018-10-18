@@ -3,13 +3,13 @@
   <header>
     <b-navbar type="dark" variant="info">
       <b-row>
-        <b-col>
-          <b-link href="/">
-            <b-img :src="logo" fluid alt="logo" width="150" />
+        <b-col cols="12" md="6">
+          <b-link href="/" class="logo">
+            <b-img :src="logo"  fluid alt="logo" width="150" />
           </b-link>
         </b-col>
-        <b-col>
-          <div class="w-100 text-right">
+        <b-col cols="12" md="6">
+          <div class="w-100 subheading">
             <b-navbar-brand href="/">CoinHub by DIA</b-navbar-brand>
             <br>
             <div class="sub-header">

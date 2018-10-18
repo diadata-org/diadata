@@ -39,11 +39,9 @@ export default {
   },
   async mounted() {
     try {
-      const CoinData = await shared.fetchCoins();
-      const { currencyArray, coinsArray, searchArray} = shared.formatCoinData(CoinData);
-      
-      vm.currencies = currencyArray;
+      const { currencyArray, coinsArray, searchArray } = shared.formatCoinData(await shared.fetchCoins());
       allCoinData = coinsArray;
+      vm.currencies = currencyArray;
       vm.searcharray = searchArray;
 
       if(vm.currencies.length > 0) {

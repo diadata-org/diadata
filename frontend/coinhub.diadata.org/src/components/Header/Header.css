@@ -21,11 +21,25 @@ nav.bg-info {
 	color: #FFF;
 }
 
+.subheading {
+	text-align: right;
+}
+
 @media (min-width: 320px) and  (max-width: 576px){
 	.row {
-	  margin-right: 2px !important;
-
+	  margin-right: 0px !important;
+	  margin-left: 0px !important;
 	}	
+
+	/deep/ .logo {
+		float: left;
+		margin-top: 11px;
+	}
+
+	.subheading {
+		text-align: left;
+	}
+
 }
 
 @media (min-width: 768px) and  (max-width: 1023px){
@@ -34,6 +48,11 @@ nav.bg-info {
 	  margin-right: 0!important;
 	  margin-left: 0 !important;
 	}	
+
+	/deep/ .logo {
+		float: left;
+		margin-top: 9px;
+	}
 }
 
 @media (min-width: 1024px) and (max-width: 1200px) {
@@ -42,6 +61,11 @@ nav.bg-info {
 	  margin-right: 0 !important;
 	  margin-left: 80px !important;
 	}	
+
+	/deep/ .logo {
+		float: left;
+		margin-top: 5px;
+	}
 	
 }
 
