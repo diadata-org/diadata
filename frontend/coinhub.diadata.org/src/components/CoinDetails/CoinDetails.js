@@ -130,28 +130,21 @@ export default {
     async fetchCoinChartDetails() {
 
       try {
-        let response = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
-        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/VOL120/${this.coinSymbol.toUpperCase()}`);
-        let response2 = await axios.get(`https://api.diadata.org/v1/chartPoints/MA120/Simex//${this.coinSymbol.toUpperCase()}`);
-        let response3 = await axios.get(`https://api.diadata.org/v1/chartPoints/VOL120/Simex//${this.coinSymbol.toUpperCase()}`);
+        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+        let response2 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/${this.coinSymbol.toUpperCase()}`);
+
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-        if( response.data !== undefined 
-          && response1.data !== undefined
-          && response2.data !== undefined
-          && response3.data !== undefined) {
+        if(  response1.data !== undefined
+          && response2.data !== undefined) {
           // all
-          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
-          const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
- 
-    
+          const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+          const MEDIR120AllArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
 
-          //simex
-          //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
-        //  const VOL120SimexArray = this.formatChartValues(response3.data.DataPoints[0].Series[0].values);
-          
-          // all exchanges
+          console.log(MEDIR120AllArray);
+             console.log(MA120AllArray);
+
           this.chartAllOptions = {
             chart: {
                   zoomType: 'x'
@@ -185,22 +178,35 @@ export default {
                 title: {
                     text: 'Time'
                 },
-                minRange: 3600 * 1000 // one hour
             },
             yAxis: {
                 title: {
                     text: price
                 },
+                plotLines: [{
+                    value: 0,
+                    width: 2,
+                    color: 'silver'
+                }]
+            },
+            plotOptions: {
+                  series: {
+                      showInNavigator: true
+                  }
             },
             tooltip: {
-                headerFormat: '<b>{series.name}</b><br>',
-                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+                  pointFormat: `<span style="color:{series.color}">{series.name}</span>: <b>${currencySymbol }{point.y}</b> <br/>`,
+                  valueDecimals: 2
+                  
             },
-
             series: [{
                 name: "MA120",
                 data: MA120AllArray,
-                showInNavigator: true
+            },
+            {
+                name: "MEDIR120",
+                data: MEDIR120AllArray,
+
             }]};
       
         
