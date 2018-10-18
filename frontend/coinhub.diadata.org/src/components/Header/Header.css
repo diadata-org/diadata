@@ -21,108 +21,11 @@ nav.bg-info {
 	color: #FFF;
 }
 
-.input-group {
-	width: 100%;
-}
-
-.search-input {
-	width: 90%;
-}
-
-/deep/ .ui.fluid.dropdown > .dropdown.icon {
-	display: none;
-}
-
-.search-coins {
-	background-color: #fff;
-	border: 1px solid #ced4da;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-top-right-radius: 0.25rem;
-	border-bottom-right-radius: 0.25rem;
-}
-
-.header-components {
-	margin-top: 20px;
-}
-
-#dd-currency {
-	float:right;
-}
-
-/deep/ #dd-currency button.btn-secondary:hover,
-/deep/ #dd-currency button.btn-secondary {
-	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
-    font-weight: 600;
-}
-
-@media (min-width: 320px) and  (max-width: 767px){
-	header.lg-screens {
-		display: none;
-	}
-
-	header.sm-screens {
-		display: block;
-	}
-
-	header.sm-screens .row .col-12 {
-		padding-left: 0;
-		padding-right: 10px;
-	}
-
+@media (min-width: 320px) and  (max-width: 576px){
 	.row {
-  		margin-right: 0!important;
-  		margin-left: 0!important;
-	}
+	  margin-right: 2px !important;
 
-	#dd-currency {
-		float: left;
-	}
-
-	.btn-search {
-		margin-top: 2px;
-	}
-
-	.btn-search a{
-		color: #fff;
-		text-decoration: none;
-		font-size: 18px;
-	}
-
-	.search-form {
-		width: 100%;
-	}
-
-	.ui.fluid.dropdown {
-		width: 86%;
-	}
-
-	/deep/ .ui.selection.dropdown {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-	}
-	
-	.hide-search {
-		background-color: #fff;
-		border: 1px solid #ced4da;
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-		border-top-right-radius: 0.25rem;
-		border-bottom-right-radius: 0.25rem;
-		min-height: 43px;
-		padding: 0;
-		padding-left: 10px;
-		padding-right: 10px;
-
-	}
-}
-
-@media (min-width: 768px) {
-	header.sm-screens {
-		display: none;
-	}
+	}	
 }
 
 @media (min-width: 768px) and  (max-width: 1023px){
@@ -131,12 +34,6 @@ nav.bg-info {
 	  margin-right: 0!important;
 	  margin-left: 0 !important;
 	}	
-
-	#dd-currency {
-		margin-top: 10px;
-		float: left;
-	}
-	
 }
 
 @media (min-width: 1024px) and (max-width: 1200px) {

@@ -60,7 +60,9 @@
 			        </b-col>
 			    </b-row>
 			    <b-row>
-			    	<highcharts class="coindata-charts" :constructor-type="'stockChart'" :options="chartAllOptions"></highcharts>
+			    	<highcharts  v-bind:class = "{ 'd-none' : showAllCharts === false, 'd-inline-block' : showAllCharts === true }"
+			    				 class="coindata-charts" :constructor-type="'stockChart'" :options="chartAllOptions">
+			    	</highcharts>
 			    	<!-- <highcharts class="coindata-charts" :options="chartSimexOptions"></highcharts> -->
 			    </b-row>
 			     <b-row>

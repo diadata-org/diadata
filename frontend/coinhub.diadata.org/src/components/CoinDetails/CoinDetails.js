@@ -43,12 +43,12 @@ export default {
       chartAllOptions: {},
       chartSimexOptions: {},
       rateArray: [],
-      error:''
+      error:'',
+      showAllCharts: false
     };
   },
   created() {
     this.coinSymbol = this.$route.params.coinSymbol;
-    EventBus.$emit('hideSearchInput', true);
     EventBus.$on('currencyChange', this.formatPairData);
   },
   beforeDestroy: function () {
@@ -132,98 +132,108 @@ export default {
         let response2 = await axios.get(`https://api.diadata.org/v1/chartPoints/MA120/Simex//${this.coinSymbol.toUpperCase()}`);
         let response3 = await axios.get(`https://api.diadata.org/v1/chartPoints/VOL120/Simex//${this.coinSymbol.toUpperCase()}`);
         const price = 'Price (' + this.selectedCurrency + ')';
-        const currencySymbol = getSymbolFromCurrency(this.selectedCurrency);
-    
-        
-        const MA120AllArray = this.formatChartValues(response.data[0].Series[0].values);
-        const VOL120AllArray = this.formatChartValues(response1.data[0].Series[0].values);
-        const MA120SimexArray = this.formatChartValues(response2.data[0].Series[0].values);
-        const VOL120SimexArray = this.formatChartValues(response3.data[0].Series[0].values);
-        
-        // all exchanges
-        this.chartAllOptions = {
-          rangeSelector: {
-            selected: 1
-          },
+        const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-          title: {
-              text: 'All Exchanges'
-          },
-          xAxis: {
-              type: 'datetime',
-              title: {
-                  text: 'Time'
-              }
-          },
-          yAxis: {
-              title: {
-                  text: price
-              },
-          },
-          tooltip: {
-              headerFormat: '<b>{series.name}</b><br>',
-              pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
-          },
+        console.log(response.data);
 
-          series: {
-                compare: 'percent',
-                showInNavigator: true
-          },
-          series: [{
-              name: "MA120",
-              data: MA120AllArray
-          }]};
-    
+        if( response.data !== undefined 
+          && response1.data !== undefined
+          && response2.data !== undefined
+          && response3.data !== undefined) {
+          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
+          const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+          const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
+          const VOL120SimexArray = this.formatChartValues(response3.data.DataPoints[0].Series[0].values);
+          
+          // all exchanges
+          this.chartAllOptions = {
+            rangeSelector: {
+              selected: 1
+            },
+
+            title: {
+                text: 'All Exchanges'
+            },
+            xAxis: {
+                type: 'datetime',
+                title: {
+                    text: 'Time'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: price
+                },
+            },
+            tooltip: {
+                headerFormat: '<b>{series.name}</b><br>',
+                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+            },
+
+            series: {
+                  compare: 'percent',
+                  showInNavigator: true
+            },
+            series: [{
+                name: "MA120",
+                data: MA120AllArray
+            }]};
       
-         // simex
-        this.chartSimexOptions = {
-          chart: {
-              type: 'spline'
-          },
-          title: {
-              text: 'Simex'
-          },
-          subtitle: {
-              text: ''
-          },
-          xAxis: {
-              type: 'datetime',
-              dateTimeLabelFormats: { // don't display the dummy year
-                  month: '%e. %b',
-                  year: '%b'
-              },
-              title: {
-                  text: 'Time'
-              }
-          },
-          yAxis: {
-              title: {
-                  text: price
-              },
-              min: 0
-          },
-          tooltip: {
-              headerFormat: '<b>{series.name}</b><br>',
-              pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
-          },
+        
+           // simex
+          this.showAllCharts = true;
 
-          plotOptions: {
-              spline: {
-                  marker: {
-                      enabled: true
-                  }
-              }
-          },
+          this.chartSimexOptions = {
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'Simex'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                type: 'datetime',
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                },
+                title: {
+                    text: 'Time'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: price
+                },
+                min: 0
+            },
+            tooltip: {
+                headerFormat: '<b>{series.name}</b><br>',
+                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+            },
 
-          colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
-          series: [{
-              name: "MA120",
-              data: MA120SimexArray
-          },{
-              name: "2 Min. MA",
-              data: []
-          }]};
-           this.loading = false;
+            plotOptions: {
+                spline: {
+                    marker: {
+                        enabled: true
+                    }
+                }
+            },
+
+            colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
+            series: [{
+                name: "MA120",
+                data: MA120SimexArray
+            },{
+                name: "2 Min. MA",
+                data: []
+            }]};
+
+        }
+
+        this.loading = false;
       }
       catch(error) {
         console.log(error);
