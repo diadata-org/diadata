@@ -140,11 +140,11 @@ func (s *CoinBaseScraper) Close() error {
 	defer s.errorLock.RUnlock()
 	return s.error
 }
-func (s *CoinBaseScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
 	str := strings.Split(foreignName, "-")
 	symbol = str[0]
 	if helpers.NameForSymbol(symbol) == symbol {
-		return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
+		return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
 		return symbol, errors.New("Symbol is black listed:" + symbol)
@@ -172,6 +172,8 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 					ForeignName: p.Id,
 					Exchange:    s.exchangeName,
 				})
+			} else {
+				log.Error(serr)
 			}
 		}
 	}

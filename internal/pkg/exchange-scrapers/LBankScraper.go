@@ -195,12 +195,12 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *LBankScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+func (s *LBankScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
 	str := strings.Split(foreignName, "_")
 	symbol = strings.ToUpper(str[0])
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
@@ -229,9 +229,7 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			})
 		} else {
 			log.Error(serr)
-
 		}
-
 	}
 	return
 }

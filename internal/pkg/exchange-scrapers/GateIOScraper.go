@@ -215,7 +215,7 @@ func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{
 			if symbol == "IOTA" {
 				return "MIOTA", nil
 			}
-			return symbol, errors.New("Foreign namecan not be normalized:" + foreignName)
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {

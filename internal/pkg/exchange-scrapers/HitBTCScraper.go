@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -193,7 +194,8 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
-	if helpers.NameForSymbol(baseCurrency) == symbol {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 		}
