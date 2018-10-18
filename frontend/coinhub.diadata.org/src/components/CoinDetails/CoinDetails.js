@@ -183,20 +183,25 @@ export default {
                     text: price
                 },
             },
-            tooltip: {
-                headerFormat: '<b>{series.name}</b><br>',
-                pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
+            plotOptions: {
+                  series: {
+                      compare: 'percent',
+                      showInNavigator: true
+                  }
             },
-
+            tooltip: {
+                  pointFormat: `<span style="color:{series.color}">{series.name}</span>: <b>${currencySymbol }{point.y}</b> <br/>`,
+                  valueDecimals: 2
+                  
+            },
             series: [{
                 name: "MA120",
                 data: MA120AllArray,
-                showInNavigator: true
             },
             {
                 name: "MEDIR120",
                 data: MEDIR120AllArray,
-                showInNavigator: true
+
             }]};
       
         
