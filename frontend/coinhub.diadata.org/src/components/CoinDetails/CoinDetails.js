@@ -142,8 +142,10 @@ export default {
           && response2.data !== undefined
           && response3.data !== undefined) {
           // all
-          const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
+          const MA120AllArray = require('@/assets/time.json');
           const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+
+          console.log(MA120AllArray);
 
           //simex
           //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
@@ -172,7 +174,7 @@ export default {
                     count: 1,
                     text: '1D'
                 }],
-                selected: 3
+                selected: 1
             },
 
             title: {
@@ -182,7 +184,8 @@ export default {
                 type: 'datetime',
                 title: {
                     text: 'Time'
-                }
+                },
+                minRange: 3600 * 1000 // one hour
             },
             yAxis: {
                 title: {
