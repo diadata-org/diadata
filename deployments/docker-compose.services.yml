@@ -27,6 +27,19 @@ services:
       options:
         max-size: "50m"
 
+  graphservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-graphService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_graphservice:latest
+    volumes:
+      - /home/srv/restServer/charts:/charts
+    networks:
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
 networks:
   kafka-network:
     external:
