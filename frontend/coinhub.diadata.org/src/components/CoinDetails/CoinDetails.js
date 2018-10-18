@@ -58,6 +58,9 @@ export default {
     if(this.$route.params.coinRank) {
       localStorage.rank = this.$route.params.coinRank;
     }
+    else{
+      localStorage.rank = 'N/A';
+    }
     // fetch the coin details
     this.fetchCoinDetails();
   },
@@ -134,16 +137,17 @@ export default {
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-        console.log(response.data);
-
         if( response.data !== undefined 
           && response1.data !== undefined
           && response2.data !== undefined
           && response3.data !== undefined) {
+          // all
           const MA120AllArray = this.formatChartValues(response.data.DataPoints[0].Series[0].values);
           const VOL120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
-          const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
-          const VOL120SimexArray = this.formatChartValues(response3.data.DataPoints[0].Series[0].values);
+
+          //simex
+          //const MA120SimexArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
+        //  const VOL120SimexArray = this.formatChartValues(response3.data.DataPoints[0].Series[0].values);
           
           // all exchanges
           this.chartAllOptions = {
@@ -245,7 +249,7 @@ export default {
             colors: ['#6CF', '#39F', '#06C', '#036', '#000'],
             series: [{
                 name: "MA120",
-                data: MA120SimexArray
+                data: []
             },{
                 name: "2 Min. MA",
                 data: []

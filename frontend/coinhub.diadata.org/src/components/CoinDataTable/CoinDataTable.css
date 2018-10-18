@@ -130,6 +130,34 @@ span.coin-name {
 }
 
 @media (min-width: 320px) and (max-width: 767px) {	
+	.link-row a {
+		font-size: 10px;
+	}
+
+	.link-row a#first,
+	.link-row a#second {
+		margin-left: 20px;
+	}
+}
+
+@media (min-width: 375px) and (max-width: 767px) {	
+	.link-row a {
+		font-size: 14px;
+	}
+
+	.link-row a#first,
+	.link-row a#second {
+		margin-left: 10px;
+	}
+
+	.link-row a#first {
+		margin-left: 20px;
+	
+	}
+}
+
+
+@media (min-width: 320px) and (max-width: 767px) {	
 
 	.search-currency-row,
 	.subtext1,
@@ -150,10 +178,7 @@ span.coin-name {
 		margin-right: 0;
 	}
 
-	.link-row a#first,
-	.link-row a#second {
-		margin-left: 0;
-	}
+	
 }
 
 @media (min-width: 768px)  and (max-width: 1023px){	
