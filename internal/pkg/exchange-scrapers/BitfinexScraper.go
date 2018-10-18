@@ -7,6 +7,7 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -211,6 +212,30 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 	return ps, nil
 }
+func (s *BitfinexScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
+	symbol = strings.ToUpper(foreignName[0:3])
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOT" {
+				return "MIOTA", nil
+			}
+			if symbol == "IOS" {
+				return "IOST", nil
+			}
+			if symbol == "QTM" {
+				return "QTUM", nil
+			}
+			if symbol == "QSH" {
+				return "QASH", nil
+			}
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -222,15 +247,18 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	defer response.Body.Close()
 	data, _ := ioutil.ReadAll(response.Body)
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
-	pairs = make([]dia.Pair, len(ls))
-	for i, p := range ls {
-		pairs[i] = dia.Pair{
-			Symbol:      p[0:3],
-			ForeignName: p,
-			Exchange:    s.exchangeName,
+	for _, p := range ls {
+		symbol, serr := s.normalizeSymbol(p)
+		if serr == nil {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbol,
+				ForeignName: p,
+				Exchange:    s.exchangeName,
+			})
+		} else {
+			log.Error(serr)
 		}
 	}
-
 	return
 }
 
