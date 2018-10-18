@@ -167,13 +167,13 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	subscribe := gdax.Message{
 		Type: "subscribe",
 		Channels: []gdax.MessageChannel{
-			{
+			gdax.MessageChannel{
 				Name: ChannelHeartbeat,
 				ProductIds: []string{
 					pair.ForeignName,
 				},
 			},
-			{
+			gdax.MessageChannel{
 				Name: ChannelTicker,
 				ProductIds: []string{
 					pair.ForeignName,

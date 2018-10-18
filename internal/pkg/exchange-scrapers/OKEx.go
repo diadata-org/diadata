@@ -80,7 +80,7 @@ func (s *OKExScraper) reconnectToWS() {
 // Subscribe again to all channels
 func (s *OKExScraper) subscribeToALL() {
 
-	for key := range s.pairScrapers {
+	for key, _ := range s.pairScrapers {
 		a := &Subscribe{
 			Event:   "addChannel",
 			Channel: "ok_sub_spot_" + strings.ToLower(key) + "_deals",
