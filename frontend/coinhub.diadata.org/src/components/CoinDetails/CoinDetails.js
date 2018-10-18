@@ -141,7 +141,9 @@ export default {
           // all
           const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
           const MEDIR120AllArray = this.formatChartValues(response2.data.DataPoints[0].Series[0].values);
-       
+
+          console.log(MEDIR120AllArray);
+             console.log(MA120AllArray);
 
           this.chartAllOptions = {
             chart: {
@@ -181,10 +183,14 @@ export default {
                 title: {
                     text: price
                 },
+                plotLines: [{
+                    value: 0,
+                    width: 2,
+                    color: 'silver'
+                }]
             },
             plotOptions: {
                   series: {
-                      compare: 'percent',
                       showInNavigator: true
                   }
             },
