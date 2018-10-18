@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -208,6 +209,24 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
+func (s *HuobiScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOTA" {
+				return "MIOTA", nil
+			}
+			if symbol == "PROPY" {
+				return "PRO", nil
+			}
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -228,12 +247,16 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	var ar APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
-		pairs = make([]dia.Pair, len(ar.Data))
-		for i, p := range ar.Data {
-			pairs[i] = dia.Pair{
-				Symbol:      p.BaseCurrency,
-				ForeignName: p.Id,
-				Exchange:    s.exchangeName,
+		for _, p := range ar.Data {
+			symbol, serr := s.normalizeSymbol(p.Id, p.BaseCurrency)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Id,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
 			}
 		}
 	}
