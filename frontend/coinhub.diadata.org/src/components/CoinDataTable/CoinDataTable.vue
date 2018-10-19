@@ -16,10 +16,13 @@
 	    		<div class="subtext1 w-100">
 	    			<ul>
 		    			<li>
-		    				CoinHub provides you with crowd-curated open-source financial data about cryptocurrencies – verified, cleaned for outliers, transparent and free of charge accessible via API or Oracle.
+		    				CoinHub is a <span class="font-weight-bold">dApp</span> powered by <a href="https://diadata.org/">DIA</a>. CoinHub provides you with crowd-curated, open-source financial data about cryptocurrencies – verified, cleaned of outliers, transparent and accessible free of charge via Oracles and an API.
 		    			</li>
 		    			<li>
-		    				CoinHub is a dApp by <a href="https://diadata.org/">DIA</a>. DIA provides a decentralized creation, contribution and crowd-validation approach to financial data for a wide variety of use cases in the financial space.
+		    				<br>
+		    				<h2>About DIA</h2>
+							DIA is a Swiss non-profit association that provides open-source access to crowd-verified financial data with the aim of enabling a fair and symmetric market for financial data and information.
+									    			
 		    			</li>
 		    		</ul>
 	    		</div>

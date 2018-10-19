@@ -71,6 +71,18 @@ div.loading-data {
 	font-size: 12px;
 }
 
+/deep/ #dd-currency button.btn-secondary:hover,
+/deep/ #dd-currency button.btn-secondary {
+	color: #fff;
+    background-color: #FF7096;
+    border-color: #FF7096;
+    font-weight: 600;
+}
+
+.subtext1 ul {
+	list-style-type: none;
+}
+
 .subtext1,
 section div .table-responsive{
 	padding-left: 80px;
@@ -84,15 +96,6 @@ section div .table-responsive{
 
 .subtext2 {
 	padding-left: 120px;
-}
-
-
-/deep/ #dd-currency button.btn-secondary:hover,
-/deep/ #dd-currency button.btn-secondary {
-	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
-    font-weight: 600;
 }
 
 span.coin-name {

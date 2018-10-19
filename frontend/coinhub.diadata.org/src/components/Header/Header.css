@@ -55,11 +55,11 @@ nav.bg-info {
 	}
 }
 
-@media (min-width: 1024px) and (max-width: 1200px) {
+@media (min-width: 1024px) and (max-width: 1366px) {
 
 	.row {
 	  margin-right: 0 !important;
-	  margin-left: 80px !important;
+	  margin-left: 1px !important;
 	}	
 
 	/deep/ .logo {

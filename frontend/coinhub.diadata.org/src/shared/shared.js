@@ -5,6 +5,7 @@ import sortBy from 'lodash/sortBy';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
 const lang = navigator.language;
+let currencyArray = [];
 //numeral.locale(lang);
 
 export default {
@@ -30,7 +31,7 @@ export default {
 
       let coinsArray = [];
       let searchArray = [];
-      let currencyArray = [];
+      currencyArray = [];
       let USDindex = 0;
 
       if(change != undefined && change != null) {
@@ -200,7 +201,7 @@ export default {
     return cs;
   },
 
-  formatDateTime : (dateTime,dateTimeFormat) => {
+  formatDateTime: (dateTime,dateTimeFormat) => {
       return moment(dateTime).format(dateTimeFormat);
   },
 
@@ -211,7 +212,7 @@ export default {
     }
     return symbol;
   },
-  getRate : (rateArray, currencySwiftCode, rateOption) => {
+  getRate: (rateArray, currencySwiftCode, rateOption) => {
     let rate = 1;
     let rateObj = undefined;
  
@@ -225,6 +226,15 @@ export default {
     
     return rate;
   },
+
+  getCurrencies: (rateArray) => {
+    currencyArray = [];
+    rateArray.forEach((rate,index)=>{
+      currencyArray[index] = rate.Symbol.toUpperCase();
+    });
+    currencyArray.push("USD");
+    return sortBy(currencyArray);
+  }
 
 
 }
