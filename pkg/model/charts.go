@@ -48,18 +48,29 @@ func (db *DB) GetChartPoints7Days(symbol string) ([]float64, error) {
 	return result, err
 }
 
-func (db *DB) GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error) {
+func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error) {
 	exchangeQuery := "and exchange='" + exchange + "' "
+	table := ""
+	//	5m 30m 1h 4h 1d 1w
+	if scale != "" {
+		if filter == "VOL120" {
+			table = "a_year.filters_sum_"
+		} else {
+			table = "a_year.filters_mean_"
+		}
+		table = table + scale
+	} else {
+		table = influxDbFiltersTable
+	}
 
-	//select * from filters WHERE filter='MM120'  ORDER BY DESC, LIMIT 5
-
-	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC LIMIT 56", influxDbFiltersTable, filter, exchangeQuery, symbol)
-
-	log.Info("GetFilterPoints query:", q)
+	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", table, filter, exchangeQuery, symbol)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorln("GetFilterPoints", err)
 	}
+
+	log.Info("GetFilterPoints query:", q, "returned ", len(res))
+
 	return res, err
 }
