@@ -64,7 +64,7 @@ div.loading-data {
 }
 
 /deep/ div .table-responsive.details{
-	width: 40%;
+	width: 600px;
 	margin-left: 30%;
 }
 

@@ -93,6 +93,9 @@
 								       	{{ data.item.Volume >= 0 ? 'BUY' : 'SELL' }}
 								       </div>
 								    </template>
+								    <template slot="Volume" slot-scope="data">
+								      {{ data.value < 0 ?  data.value * -1 : data.value}}
+								    </template>
      							</b-table>
     						</template>
 			        	</b-table>
