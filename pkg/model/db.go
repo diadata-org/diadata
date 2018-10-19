@@ -43,7 +43,7 @@ type Datastore interface {
 }
 
 const (
-	influxMaxPointsInBatch = 4000
+	influxMaxPointsInBatch = 2000
 )
 
 type DB struct {
