@@ -1,8 +1,22 @@
 {
+    "swagger": "2.0",
     "info": {
-        "contact": {},
-        "license": {}
+        "description": "GetTrades",
+        "title": "diadata.org API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
+    "host": "api.diadata.org",
+    "basePath": "/",
     "paths": {
         "/kafka/filtersBlock": {
             "get": {
@@ -173,6 +187,12 @@
                         "name": "filter",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -180,7 +200,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/points"
+                            "$ref": "#/definitions/diaApi.points"
                         }
                     },
                     "404": {
@@ -227,6 +247,12 @@
                         "name": "filter",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -234,7 +260,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/points"
+                            "$ref": "#/definitions/diaApi.points"
                         }
                     },
                     "404": {
@@ -738,6 +764,14 @@
                     "items": {
                         "$ref": "#/definitions/models.SymbolExchangeDetails"
                     }
+                }
+            }
+        },
+        "diaApi.points": {
+            "type": "object",
+            "properties": {
+                "dataPoints": {
+                    "type": "string"
                 }
             }
         },

@@ -36,7 +36,7 @@ type Datastore interface {
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	Flush() error
-	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64) error
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)

@@ -275,7 +275,8 @@ func (env *Env) GetCoins(c *gin.Context) {
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   exchange     path    string     true        "Some exchange"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} points "success"
+// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// @Success 200 {object} diaApi.points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
@@ -283,7 +284,9 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
-	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol)
+	scale := c.Query("scale")
+
+	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol, scale)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -299,14 +302,17 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Produce  json
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} points "success"
+// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// @Success 200 {object} diaApi.points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPointsAllExchanges/:symbol:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
-	p, err := env.DataStore.GetFilterPoints(filter, "", symbol)
+	scale := c.Query("scale")
+
+	p, err := env.DataStore.GetFilterPoints(filter, "", symbol, scale)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {

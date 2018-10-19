@@ -18,20 +18,6 @@ func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]di
 		return r, err
 	}
 
-	//	http_restserver.1.wvd8ndffl6ft@d2.diadata.org    | time="2018-10-11T11:27:51Z" level=info msg="[2018-10-10T13:45:47Z 6516.237007925503 OKEx BTC_USDT 6608.4357 BTC 0.01] 2018-10-10 13:45:47 +0000 UTC 1"
-	/*
-	   type Trade struct {
-	   	Symbol            string
-	   	Pair              string
-	   	Price             float64
-	   	Volume            float64 // negative if result of Market order Sell
-	   	Time              time.Time
-	   	ForeignTradeID    string
-	   	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
-	   	Source            string
-	   }
-	*/
-
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
 
