@@ -1,8 +1,22 @@
 {
+    "swagger": "2.0",
     "info": {
-        "contact": {},
-        "license": {}
+        "description": "GetTrades",
+        "title": "diadata.org API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
+    "host": "api.diadata.org",
+    "basePath": "/",
     "paths": {
         "/kafka/filtersBlock": {
             "get": {
@@ -173,6 +187,12 @@
                         "name": "filter",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -180,7 +200,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/influxdataResult"
+                            "$ref": "#/definitions/diaApi.points"
                         }
                     },
                     "404": {
@@ -227,6 +247,12 @@
                         "name": "filter",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -234,7 +260,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/influxdataResult"
+                            "$ref": "#/definitions/diaApi.points"
                         }
                     },
                     "404": {
@@ -653,17 +679,6 @@
                 }
             }
         },
-        "diaApi.Change": {
-            "type": "object",
-            "properties": {
-                "eurusd": {
-                    "type": "number"
-                },
-                "eurusdyesterday": {
-                    "type": "number"
-                }
-            }
-        },
         "diaApi.Coin": {
             "type": "object",
             "properties": {
@@ -690,17 +705,34 @@
                 }
             }
         },
+        "diaApi.CoinSymbolAndName": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "diaApi.Coins": {
             "type": "object",
             "properties": {
                 "change": {
                     "type": "object",
-                    "$ref": "#/definitions/diaApi.Change"
+                    "$ref": "#/definitions/models.Change"
                 },
                 "coins": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/diaApi.Coin"
+                    }
+                },
+                "completeCoinList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/diaApi.CoinSymbolAndName"
                     }
                 }
             }
@@ -721,7 +753,7 @@
             "properties": {
                 "change": {
                     "type": "object",
-                    "$ref": "#/definitions/diaApi.Change"
+                    "$ref": "#/definitions/models.Change"
                 },
                 "coin": {
                     "type": "object",
@@ -732,6 +764,39 @@
                     "items": {
                         "$ref": "#/definitions/models.SymbolExchangeDetails"
                     }
+                }
+            }
+        },
+        "diaApi.points": {
+            "type": "object",
+            "properties": {
+                "dataPoints": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Change": {
+            "type": "object",
+            "properties": {
+                "usd": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CurrencyChange"
+                    }
+                }
+            }
+        },
+        "models.CurrencyChange": {
+            "type": "object",
+            "properties": {
+                "rate": {
+                    "type": "number"
+                },
+                "rateYesterday": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
                 }
             }
         },

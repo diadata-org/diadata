@@ -1,19 +1,16 @@
+let vm = null;
 export default {
   name: 'Header',
   props: {},
   data() {
   	return {
   	  logo:'',
-      selectedCurrency: '',
-      showSearch: false,
   	};
   },
-  mounted() {
-  	this.logo = require('@/assets/logo.svg');
+  created: function () {
+    vm = this;
   },
-  methods: {
-    showHideSearch : function() {
-      this.showSearch = !this.showSearch;
-    }
+  mounted() {
+    vm.logo = require('@/assets/logo.svg');
   }
 };

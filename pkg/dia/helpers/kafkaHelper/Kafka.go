@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+const (
+	messageSizeMax = 1e8
+)
+
 type KafkaMessage interface {
 	MarshalBinary() ([]byte, error)
 }
@@ -153,19 +157,23 @@ func NewReader(topic int) *kafka.Reader {
 	return r
 }
 
-func WriteMessage(w *kafka.Writer, m KafkaMessage) {
+func WriteMessage(w *kafka.Writer, m KafkaMessage) error {
 	key := []byte("helloKafka")
 	value, err := m.MarshalBinary()
-	if err == nil && key != nil && value != nil {
-		w.WriteMessages(context.Background(),
+	if err == nil && value != nil {
+		err := w.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   key,
 				Value: value,
 			},
 		)
+		if err != nil {
+			log.Errorln("WriteMessage error:", err, "sizeMessage:", float64(len(value))/(1024.0*1024.0), "MB")
+		}
 	} else {
-		log.Error("skipping write of message "+err.Error(), m)
+		log.Errorln("Skipping write of message ", err, m)
 	}
+	return err
 }
 
 func NewReaderXElementsBeforeLastMessage(topic int, x int64) *kafka.Reader {
@@ -249,7 +257,7 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 		return nil, err
 	} else {
 
-		newSeek, err := conn.Seek(int64(offset), kafka.SeekAbsolute) //kafka.SeekStart)
+		newSeek, err := conn.Seek(int64(offset), kafka.SeekAbsolute)
 
 		if err != nil {
 			log.Errorln("kafka error on seek:", err)
@@ -264,9 +272,9 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 		}
 		log.Printf("kafka ReadOffsets:%v, %v", first, last)
 
-		batch := conn.ReadBatch(0, 1e6)
+		batch := conn.ReadBatch(0, messageSizeMax*nbElements)
 
-		b := make([]byte, 100000e3) // 100000KB max per message
+		b := make([]byte, messageSizeMax)
 		for c := offset; c <= maxOffset; c++ {
 			z, err := batch.Read(b)
 			if err != nil {

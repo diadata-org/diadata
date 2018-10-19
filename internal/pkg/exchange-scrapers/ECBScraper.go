@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	"github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 	"sync"
@@ -27,6 +28,7 @@ type ECBScraper struct {
 	closed       bool
 	pairScrapers map[string]*ECBPairScraper // dia.Pair -> pairScraperSet
 	ticker       *time.Ticker
+	datastore    models.Datastore
 }
 
 type (
@@ -52,13 +54,14 @@ type (
 
 // NewECBScraper returns a new ECBScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewECBScraper() *ECBScraper {
+func NewECBScraper(datastore models.Datastore) *ECBScraper {
 	s := &ECBScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*ECBPairScraper),
 		error:        nil,
 		ticker:       time.NewTicker(refreshDelay),
+		datastore:    datastore,
 	}
 
 	go s.mainLoop()
@@ -193,6 +196,19 @@ func (s *ECBScraper) Update() error {
 	}
 
 	for _, valueCubeTime := range document.CubeTime {
+		change := &models.Change{
+			[]models.CurrencyChange{},
+		}
+
+		euroDollar := 1.0
+		for _, valueCube := range valueCubeTime.Cube {
+			if valueCube.Currency == "USD" {
+				euroDollar, err = strconv.ParseFloat(valueCube.Rate, 64)
+				if err != nil {
+					return fmt.Errorf("error parsing rate %v %v", valueCube.Rate, err)
+				}
+			}
+		}
 
 		for _, valueCube := range valueCubeTime.Cube {
 			pair := string("EUR" + valueCube.Currency)
@@ -223,8 +239,26 @@ func (s *ECBScraper) Update() error {
 					log.Printf("ignore because same time %#v\n", pair)
 				}
 
+				if valueCube.Currency == "USD" {
+					change.USD = append(change.USD, models.CurrencyChange{
+						Symbol:        "EUR",
+						Rate:          1.0 / euroDollar,
+						RateYesterday: 1.0 / euroDollar, // TOFIX
+					})
+				} else {
+					change.USD = append(change.USD, models.CurrencyChange{
+						Symbol:        valueCube.Currency,
+						Rate:          rate / euroDollar,
+						RateYesterday: rate, // TOFIX
+					})
+				}
+
 			}
+
 		}
+		//
+		s.datastore.SetCurrencyChange(change)
+		//
 	}
 
 	return err

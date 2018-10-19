@@ -1,11 +1,14 @@
-import shared from  '@/shared/shared';
 import { AtomSpinner } from 'epic-spinners';
+import { EventBus } from '@/main';
+import { ModelListSelect} from 'vue-search-select';
+import shared from  '@/shared/shared';
 
-let coinData = {};
-
+let vm = null;
+let allCoinData = [];
 export default {
   components: {
-      AtomSpinner
+      AtomSpinner,
+      ModelListSelect
   },
   name: 'CoinDataTable',
   props: {},
@@ -24,36 +27,68 @@ export default {
       coindata: [],
       loading: true,
       errored: false,
-      selectedCurrency: ''
+      selectedCurrency: '',
+      selectedCoin:undefined,
+      options: [],
+      currencies: [],
+      searcharray: [],
     };
+  },
+  created: function () {
+    vm = this
   },
   async mounted() {
     try {
-       const { Coins, Change } = await shared.fetchCoins();
-       coinData = shared.formatCoinData(Coins, Change);
-       const { coinDataUSD, coinDataEUR } = coinData;
-       this.coindata = coinDataUSD;
-       this.selectedCurrency = "USD";
-       this.$nextTick( () => this.loading = false);
+      const { currencyArray, coinsArray, searchArray } = shared.formatCoinData(await shared.fetchCoins());
+      allCoinData = coinsArray;
+      vm.currencies = currencyArray;
+      vm.searcharray = searchArray;
+
+      if(vm.currencies.length > 0) {
+        if(localStorage.selectedCurrency) {
+           vm.selectedCurrency = localStorage.selectedCurrency;
+        }
+        else {
+          if(vm.currencies.includes("EUR")){
+            vm.selectedCurrency = "EUR";
+          }
+          else{
+            vm.selectedCurrency = "USD";
+          }
+        }
+        
+      }
+      // load the currencies
+      vm.switchCurrencies(vm.selectedCurrency);
+       
     }
     catch (error) {
       console.log(error);
-      this.errored = true;
+      vm.errored = true;
+      vm.loading = false;
     }
+
   },
   methods: {
-      switchCurrencies : function(currency){
-        const { coinDataUSD, coinDataEUR } = coinData;
-        if(currency === 'EUR'){
-          this.coindata = coinDataEUR;
+      switchCurrencies : function(selectedCurrency){
+        allCoinData .forEach(function(coin,index){
+            if(coin[selectedCurrency]) {
+              vm.selectedCurrency = selectedCurrency;
+              localStorage.selectedCurrency = selectedCurrency;
+              vm.coindata = coin[selectedCurrency];
+              vm.loading = false;
+            }
+        });
+      },
+      initSearch : () => {
+        if(vm.options.length <=0){
+          vm.options = vm.searcharray;
         }
 
-        if(currency === 'USD'){
-          this.coindata = coinDataUSD;
+        if(vm.selectedCoin){
+          vm.$router.push({ name: 'coin-details', params: { coinSymbol: vm.selectedCoin}});
+          vm.selectedCoin = undefined;
         }
-
-        this.selectedCurrency = currency;
-
       }
   },
 

@@ -24,14 +24,6 @@
 	float: left;
 }
 
-#market-cap {
-	width: 100%;
-	font-size: 14px;
-	padding-top: 20px;
-	margin-bottom: 20px;
-}
-
-
 @media(max-width: 414px) {
 	.coin-data-footer div div.row div.coin-data-footer-row-spacer {
 		display: none !important;
@@ -44,30 +36,18 @@
 		padding-left: 10px;
 	}
 
-	#market-cap {
-  	 text-align: center;
-  	}
 }
-
 
 @media(min-width: 768px) and (max-width: 1023px) {
   .coin-data-footer div div.row {
 	padding-left: 20px;
   }
 
-  #market-cap {
-  	text-align: left;
-  }
+  
 }
 
 @media(min-width: 1024px) {
   .coin-data-footer div div.row {
-	margin-left: 4.5rem;
+	margin-left: 70px;
   }
-
-  #market-cap {
-  	width: 200%;
-  	text-align: left;
-  }
-
 }

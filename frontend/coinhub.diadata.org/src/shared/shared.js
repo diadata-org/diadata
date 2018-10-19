@@ -1,6 +1,12 @@
 import axios from 'axios';
 import numeral from 'numeral';
-const sortBy = require('lodash/sortBy');
+import moment from 'moment';
+import sortBy from 'lodash/sortBy';
+import getSymbolFromCurrency from 'currency-symbol-map';
+
+const lang = navigator.language;
+let currencyArray = [];
+//numeral.locale(lang);
 
 export default {
 	fetchCoins: async function(){ 
@@ -18,71 +24,76 @@ export default {
 		return coins;
 	  
 	},
-	formatCoinData: function(coins, change) {
-      let coinDataUSD = [];
-      let coinDataEUR = [];
+	formatCoinData: function(coindata) {
+      let change = coindata.Change !== undefined && coindata.Change !== null ? coindata.Change : null;
+      let coins = coindata.Coins !== undefined && coindata.Coins !== null ? coindata.Coins : [];
+      let coinsList = coindata.CompleteCoinList !== undefined && coindata.CompleteCoinList !== null ? coindata.CompleteCoinList : null;
+
+      let coinsArray = [];
+      let searchArray = [];
+      currencyArray = [];
+      let USDindex = 0;
+
+      if(change != undefined && change != null) {
+
+        if(change.USD != undefined && change.USD != null) {
+            // init the other indexes with empty arrays for storing other currencies
+          change.USD.forEach((el,index) => {
+             coinsArray[index] = [];
+          });
+          // last index is for storing usd
+          USDindex = change.USD.length;
+          
+        }
+      }
+   
+      coinsArray[USDindex] = [];
+      currencyArray[USDindex] = "USD";
 
       for (let i = 0; i < coins.length; i++) {
+
         const coin = coins[i];
         let coinImage = '';
         try {
-    		  coinImage = require(`@/assets/icons/${coin.Symbol.toLowerCase()}.png`);
+    		  coinImage = require(`cryptocurrency-icons/32/color/${coin.Symbol.toLowerCase()}.png`);
     		}
     		catch (e) {
+          console.log(e);
     		  coinImage = require('@/assets/icons/crypto.png');
     		}
         const coinSymbol = coin.Symbol;
         const coinName = coin.Name;
-
+        // Price graph
+        const priceGraph = `https://api.diadata.org/v1/chart/${coin.Symbol}`;
         // coin price
         // USD
         const coinPriceUSD = coin.Price;
-        const coinPriceUSDFormatted = coinPriceUSD < 1 ? '$'.concat(numeral(coinPriceUSD).format('0.0[0000]')) : '$'.concat(numeral(coinPriceUSD).format('0,0.00'));
+        const coinPriceUSDFormatted =  this.formatCurrency(coinPriceUSD, "USD");
         const coinPriceYesterdayUSD = coin.PriceYesterday;
-        // EUR
-        const coinPriceEUR = coin.Price / change.EURUSD;
-        const coinPriceEURFormatted = coinPriceEUR < 1 ? '€'.concat(numeral(coinPriceEUR).format('0.0[0000]')) : '€'.concat(numeral(coinPriceEUR).format('0,0.00'));
-        const coinPriceYesterdayEUR = coin.PriceYesterday / change.EURUSDYesterday;
-
+        // circulating supply
+        const circulatingSupply = coin.CirculatingSupply;
+        const circulatingSupplyFormattedWithoutSymbol = this.formatCirculatingSupply(circulatingSupply, undefined);
+        const circulatingSupplyFormatted = this.formatCirculatingSupply(circulatingSupply, coinSymbol);
         // change 24
         // USD
         let change24USD = (coinPriceUSD  - coinPriceYesterdayUSD ) / coinPriceYesterdayUSD * 100;
-        const change24USDFormatted = change24USD !== Number.POSITIVE_INFINITY ? numeral(change24USD).format('0,0.00').concat('%') : 'N/A';
+        const change24USDFormatted = this.formatChange24(change24USD);
         change24USD = change24USD !== Number.POSITIVE_INFINITY ? change24USD : Number.NEGATIVE_INFINITY ;
-        //EUR
-        let change24EUR = (coinPriceEUR  - coinPriceYesterdayEUR ) / coinPriceYesterdayEUR * 100;
-        const change24EURFormatted = change24EUR !== Number.POSITIVE_INFINITY ? numeral(change24EUR).format('0,0.00').concat('%') : 'N/A';
-        change24EUR = change24EUR !== Number.POSITIVE_INFINITY ? change24EUR : Number.NEGATIVE_INFINITY ;
-
-        // Price graph
-        const priceGraph = `https://api.diadata.org/v1/chart/${coin.Symbol}`;
-
-        // volume24
+         // volume24
         // USD
         const volume24USD = coin.VolumeYesterdayUSD;
-        const volume24USDFormatted = '$'.concat(numeral(volume24USD).format('0,0'));
-        // EUR
-        const volume24EUR = coin.VolumeYesterdayUSD / change.EURUSDYesterday;
-        const volume24EURFormatted = '€'.concat(numeral(volume24EUR).format('0,0'));
-
-        // circulating supply
-        const circulatingSupply = coin.CirculatingSupply;
-        const circulatingSupplyFormattedWithoutSymbol = numeral(circulatingSupply).format('0,0');
-        const circulatingSupplyFormatted = numeral(circulatingSupply).format('0,0').concat(` (${coin.Symbol})`);
-
+        const volume24USDFormatted = this.formatMarketCapAndVolume24(volume24USD , "USD");
         // market cap
         // USD
-        const marketCapUSDFormatted = '$'.concat(numeral(coinPriceUSD * circulatingSupply ).format('0,0'));
         const marketCapUSD = coinPriceUSD * circulatingSupply;
-        // EUR
-        const marketCapEURFormatted = '€'.concat(numeral(coinPriceEUR * circulatingSupply ).format('0,0'));
-        const marketCapEUR = coinPriceEUR * circulatingSupply;
-      
+        const marketCapUSDFormatted = this.formatMarketCapAndVolume24(marketCapUSD , "USD");
+        
         const oracle = require('@/assets/icons/oracle_icon.png');
-
-        coinDataUSD.push({coinImage, 
+        
+        coinsArray[USDindex].push({coinImage, 
                        coinSymbol, 
                        coinName,
+                       coinNameLowerCase:coinName.toLowerCase(),
                        coinPrice:coinPriceUSD, 
                        coinPriceFormatted:coinPriceUSDFormatted,
                        change24:change24USD, 
@@ -97,37 +108,133 @@ export default {
                        circulatingSupplyFormattedWithoutSymbol, 
                        oracle});
 
-        coinDataEUR.push({coinImage, 
+
+        if(change != undefined && change != null) {
+          if(change.USD != undefined && change.USD != null) {
+              // calculate the values for the other currencies as well
+              for( let j = 0; j < change.USD.length; j++){
+                // populate the currency array
+                const currencySwiftCode = change.USD[j].Symbol.toUpperCase();
+                currencyArray[j] = currencySwiftCode;
+                        
+                // coin price
+                const coinPriceOtherCurrency = this.calculateCurrencyFromRate(coin.Price,change.USD,currencySwiftCode,"today");
+                const coinPriceOtherCurrencyFormatted = this.formatCurrency(coinPriceOtherCurrency, currencySwiftCode);
+                const coinPriceOtherCurrencyYesterDay = this.calculateCurrencyFromRate(coin.PriceYesterday,change.USD,currencySwiftCode,"yesterday");
+                // change 24
+                let change24OtherCurrency = (coinPriceOtherCurrency  - coinPriceOtherCurrencyYesterDay ) / coinPriceOtherCurrencyYesterDay * 100;
+                const change24OtherCurrencyFormatted = this.formatChange24(change24OtherCurrency);
+                change24OtherCurrency = change24OtherCurrency !== Number.POSITIVE_INFINITY ? change24OtherCurrency : Number.NEGATIVE_INFINITY ;
+                 //  volume 24
+                const volume24OtherCurrency  = this.calculateCurrencyFromRate(coin.VolumeYesterdayUSD,change.USD,currencySwiftCode,"yesterday");
+                const volume24OtherCurrencyFormatted = this.formatMarketCapAndVolume24(volume24OtherCurrency, currencySwiftCode);
+                //  marketCap
+                const marketCapOtherCurrency = coinPriceOtherCurrency * circulatingSupply;
+                const marketCapOtherCurrencyFormatted = this.formatMarketCapAndVolume24(marketCapOtherCurrency, currencySwiftCode);
+                
+
+                //  add the currency to the coins array 
+                coinsArray[j].push({coinImage, 
                        coinSymbol, 
                        coinName,
-                       coinPrice:coinPriceEUR, 
-                       coinPriceFormatted:coinPriceEURFormatted,
-                       change24:change24EUR, 
-                       change24Formatted:change24EURFormatted,
+                       coinPrice:coinPriceOtherCurrency, 
+                       coinPriceFormatted:coinPriceOtherCurrencyFormatted,
+                       change24:change24OtherCurrency, 
+                       change24Formatted:change24OtherCurrencyFormatted,
                        priceGraph, 
-                       volume24:volume24EUR, 
-                       volume24Formatted:volume24EURFormatted,
-                       marketCap:marketCapEUR, 
-                       marketCapFormatted:marketCapEURFormatted, 
+                       volume24:volume24OtherCurrency, 
+                       volume24Formatted:volume24OtherCurrencyFormatted,
+                       marketCap:marketCapOtherCurrency, 
+                       marketCapFormatted:marketCapOtherCurrencyFormatted, 
                        circulatingSupply, 
                        circulatingSupplyFormatted,
                        circulatingSupplyFormattedWithoutSymbol, 
                        oracle});
+              }
+          }
+        }
+       
       }
-
-      coinDataUSD = sortBy(coinDataUSD, 'marketCap').reverse();
-      coinDataEUR = sortBy(coinDataEUR, 'marketCap').reverse();
-
-      coinDataUSD.forEach((coin,index) => {
-        const rank = (index + 1);
-        coin.rank = rank;
+      // reorder the arrays by market cap and add the rank field
+      coinsArray.forEach((el,i) => {
+        // re-order by market cap
+        coinsArray[i] = sortBy(coinsArray[i], 'marketCap').reverse();
+        // add rank
+        coinsArray[i].forEach((coin,j) => {
+          const rank = (j + 1);
+          coin.rank = rank;
+        });
+        let coinsObj = {};
+        const key = currencyArray[i];
+        const value  = coinsArray[i];
+        coinsObj[key] = value;
+        // add currency key
+        coinsArray[i] = coinsObj;
       });
 
-      coinDataEUR.forEach((coin,index) => {
-        const rank = (index + 1);
-        coin.rank = rank;
+      coinsList.forEach((coin) =>{
+          searchArray.push({ value: coin.Symbol, text: coin.Symbol + ' : ' + coin.Name, });
       });
-      return {coinDataUSD,coinDataEUR};
-  	},
+
+      currencyArray = sortBy(currencyArray);
+      return {coinsArray, currencyArray, searchArray};
+  },
+  calculateCurrencyFromRate : function(currencyValue, rateArray, currencySwiftCode, rateOption) {
+    return currencyValue * this.getRate(rateArray, currencySwiftCode, rateOption);
+  },
+  formatCurrency : function(currency,currencySwiftCode) {
+    const symbol = this.getCurrencySymbol(currencySwiftCode);
+    return currency < 1 ? symbol.concat(numeral(currency).format('0.0[0000]')) : symbol.concat(numeral(currency).format('0,0.00'));
+  },
+
+  formatChange24 : (change24) => {
+    return change24 !== Number.POSITIVE_INFINITY ? numeral(change24).format('0,0.00').concat('%') : 'N/A';
+  },
+
+  formatMarketCapAndVolume24: function(param,currencySwiftCode) {
+    const symbol = this.getCurrencySymbol(currencySwiftCode);
+    return symbol.concat(numeral(param).format('0,0'));
+  },
+
+  formatCirculatingSupply: function(circulatingSupply,coinSymbol) {
+    const cs = coinSymbol !== undefined ? numeral(circulatingSupply).format('0,0').concat(` (${coinSymbol})`) : numeral(circulatingSupply).format('0,0');
+    return cs;
+  },
+
+  formatDateTime: (dateTime,dateTimeFormat) => {
+      return moment(dateTime).format(dateTimeFormat);
+  },
+
+  getCurrencySymbol: (currencySwiftCode) => {
+    let symbol = getSymbolFromCurrency(currencySwiftCode);
+    if(symbol == undefined){
+      symbol = currencySwiftCode;
+    }
+    return symbol;
+  },
+  getRate: (rateArray, currencySwiftCode, rateOption) => {
+    let rate = 1;
+    let rateObj = undefined;
+ 
+    if(rateArray != undefined && rateArray != null) {
+        rateObj = rateArray.filter((obj) => obj.Symbol === currencySwiftCode)[0];
+    }
+
+    if(rateObj != undefined){
+      rate = rateOption === "today" ? rateObj.Rate : rateObj.RateYesterday;
+    }
+    
+    return rate;
+  },
+
+  getCurrencies: (rateArray) => {
+    currencyArray = [];
+    rateArray.forEach((rate,index)=>{
+      currencyArray[index] = rate.Symbol.toUpperCase();
+    });
+    currencyArray.push("USD");
+    return sortBy(currencyArray);
+  }
+
 
 }

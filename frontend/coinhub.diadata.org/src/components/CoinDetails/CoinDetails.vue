@@ -1,10 +1,8 @@
 <style src="./CoinDetails.css" scoped></style>
 <template>
 
-    <section v-if="errored">
-    <p>
-      We're sorry, we're not able to retrieve this information at the moment, please try back later
-    </p>
+    <section v-if="errored" class="loading-error">
+		<b-alert variant="danger" show>We're sorry, we're not able to retrieve this information at the moment, please try back later</b-alert>
     </section>
     <section v-else class="coin-details">
 	    <div v-if="loading" class="loading-data">
@@ -41,7 +39,7 @@
 			        	<br>
 			        	<div class="text-methodology w-100 text-right">
 				        	<h6 class="font-weight-bold"> Methodology to the price collection can be found
-				        		<b-link target="_blank" href="https://github.com/diadata-org/api-golang/blob/master/methodology/ExchangePrices.md">
+				        		<b-link target="_blank" href="https://github.com/diadata-org/diadata/blob/master/documentation/methodology/ExchangePrices.md">
 				        			here
 				        		</b-link>
 				        	</h6>
@@ -49,34 +47,59 @@
 			    	</b-col>
 			    </b-row>
 			    <b-row>
-			        <b-col>
+			        <b-col cols="9" md="4">
 			        	<br>
 			        	<br>
 			        	<div class="w-100 text-left">
 				        	<h3> Supply:
-				        		<b-link target="_blank" href="https://github.com/diadata-org/api-golang/blob/master/methodology/SupplyNumbers.md">
+				        		<b-link target="_blank" href="https://github.com/diadata-org/diadata/blob/master/documentation/methodology/SupplyNumbers.md">
 				        			{{ coinDetails.circulatingSupplyFormattedWithoutSymbol }}
 				        	    </b-link>
 				        	</h3>
 				        </div>
 			        </b-col>
+			        <b-col cols="2" md="2" offset-md="6" offset="1">
+			        	<br>
+			        	<br>
+		                <b-dropdown id="dd-currency" 
+		                          v-bind:text="selectedCurrency" 
+		                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">
+			                <b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">
+			                  {{ currency }}
+			                </b-dropdown-item>
+		              	</b-dropdown>
+		            </b-col>    
+			    </b-row>
+			    <b-row>
+			    	<highcharts  v-bind:class = "{ 'd-none' : showAllCharts === false, 'd-inline-block' : showAllCharts === true }"
+			    				 class="coindata-charts" :constructor-type="'stockChart'" :options="chartAllOptions">
+			    	</highcharts>
+			    	<!-- <highcharts class="coindata-charts" :options="chartSimexOptions"></highcharts> -->
 			    </b-row>
 			     <b-row>
 			     	<b-col>
-			        	<div class="data-sources-banner font-weight-bold">Data Sources</div>
-			        	<b-table responsive striped :items="exchanges" :fields="fields" >
+			        	<div class="data-sources-banner">Data Sources</div>
+			        	<b-table responsive striped :items="exchanges" :fields="exchange_fields" class="main">
 			        		<template slot="show_trades" slot-scope="row">
 							      <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2">
-							       Show Last 10 Trades
+							      <b-button size="sm" @click.stop="row.toggleDetails" class="mr-2" >
+							       {{ row.detailsShowing ? 'Hide' : 'Show'}}  Last 10 Trades
 							      </b-button>
 							</template>
+							<template slot="row-details" slot-scope="row">
+     							<b-table responsive striped :items="row.item.LastTrades" :fields="last_trade_fields" class="details" >
+     								<template slot="Order" slot-scope="data">
+								       <div v-bind:class = "{ 'text-success': data.item.Volume >= 0, 'text-danger': data.item.Volume < 0 }">
+								       	{{ data.item.Volume >= 0 ? 'BUY' : 'SELL' }}
+								       </div>
+								    </template>
+     							</b-table>
+    						</template>
 			        	</b-table>
 			        </b-col>
 			    </b-row>
 			</b-container>
 	    </div>
-
     </section>
 </template>
 <script src="./CoinDetails.js"></script>

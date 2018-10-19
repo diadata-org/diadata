@@ -36,15 +36,22 @@ type Datastore interface {
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	Flush() error
-	GetFilterPoints(filter string, exchange string, symbol string) ([]clientInfluxdb.Result, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
+	SetCurrencyChange(cc *Change) error
+	GetCurrencyChange() (*Change, error)
 }
 
+const (
+	influxMaxPointsInBatch = 200
+)
+
 type DB struct {
-	redisClient       *redis.Client
-	influxClient      clientInfluxdb.Client
-	influxBatchPoints clientInfluxdb.BatchPoints
+	redisClient         *redis.Client
+	influxClient        clientInfluxdb.Client
+	influxBatchPoints   clientInfluxdb.BatchPoints
+	influxPointsInBatch int
 }
 
 const (
@@ -93,11 +100,17 @@ func NewDataStore() (*DB, error) {
 		log.Error("NewDataStore influxdb", err)
 	}
 
+	bp, _ := createBatchInflux()
+
 	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 	if err != nil {
-		log.Error(err)
+		log.Errorln("queryInfluxDB CREATE DATABASE", err)
 	}
 
+	return &DB{r, i, bp, 0}, nil
+}
+
+func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
 		Precision: "s",
@@ -105,7 +118,7 @@ func NewDataStore() (*DB, error) {
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return &DB{r, i, bp}, nil
+	return bp, err
 }
 
 func (db *DB) Flush() error {
@@ -139,9 +152,21 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange st
 func (db *DB) WriteBashInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
-		log.Error(err)
+		log.Errorln("WriteBashInflux", err)
+		db.influxBatchPoints, _ = createBatchInflux()
+	} else {
+		db.influxPointsInBatch = 0
 	}
 	return err
+}
+
+func (db *DB) addPoint(pt *clientInfluxdb.Point) {
+	db.influxBatchPoints.AddPoint(pt)
+	db.influxPointsInBatch++
+	if db.influxPointsInBatch >= influxMaxPointsInBatch {
+		log.Info("AddPoint forcing write Bash")
+		db.WriteBashInflux()
+	}
 }
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
@@ -158,7 +183,7 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {
-		db.influxBatchPoints.AddPoint(pt)
+		db.addPoint(pt)
 	}
 	return err
 }
@@ -174,7 +199,7 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
-		db.influxBatchPoints.AddPoint(pt)
+		db.addPoint(pt)
 	}
 	return err
 }
@@ -222,7 +247,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 func (db *DB) getZSETSum(key string) (*float64, error) {
 
-	log.Printf("getZSETSum: %v \n", key)
+	log.Debug("getZSETSum: %v \n", key)
 
 	vals, err := db.redisClient.ZRange(key, 0, -1).Result()
 	if err != nil {
@@ -243,7 +268,7 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	value := 0.0
 	var unixTime int64
 	vals, err := db.redisClient.ZRange(key, -1, -1).Result()
-	log.Println(key, "on getZSETLastValue:", vals)
+	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
 			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)

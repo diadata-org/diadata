@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/appleboy/gin-jwt"
 	_ "github.com/diadata-org/diadata/api/docs"
-	"github.com/diadata-org/diadata/internal/pkg/http/restServer/diaApi"
-	"github.com/diadata-org/diadata/internal/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
+	"github.com/diadata-org/diadata/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,23 @@ import (
 
 // @title diadata.org API
 // @version 1.0
-// @description description?!?
+// @description | 
+// #@description  The world's crowd-driven financial data community has a professional API made for you.
+// #@description # Decentral and transparent by design
+// W@description ith our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.
+//
+// ## Find the right data for your needs
+// Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.
+// For Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).
+//
+// ## Backtest your strategies
+// Use the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.
+//
+// ## Run Experiments
+// Build your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.
+//
+// ## Request your data
+// Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -194,7 +210,7 @@ func main() {
 
 	store, err := models.NewDataStore()
 	if err != nil {
-		log.Error(err)
+		log.Errorln("NewDataStore", err)
 	}
 	diaApiEnv := &diaApi.Env{store}
 

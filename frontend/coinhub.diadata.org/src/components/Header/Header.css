@@ -21,91 +21,25 @@ nav.bg-info {
 	color: #FFF;
 }
 
-.input-group {
-	width: 100%;
+.subheading {
+	text-align: right;
 }
 
-.search-input {
-	width: 90%;
-}
-
-.search-coins {
-	background-color: #fff;
-	border: 1px solid #ced4da;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-top-right-radius: 0.25rem;
-	border-bottom-right-radius: 0.25rem;
-}
-
-.header-components {
-	margin-top: 20px;
-}
-
-#dd-currency {
-	float:right;
-}
-
-/deep/ #dd-currency button.btn-secondary:hover,
-/deep/ #dd-currency button.btn-secondary {
-	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
-    font-weight: 600;
-}
-
-@media (min-width: 320px) and  (max-width: 767px){
-	header.lg-screens {
-		display: none;
-	}
-
-	header.sm-screens {
-		display: block;
-	}
-
-	header.sm-screens .row .col-12 {
-		padding-left: 0;
-		padding-right: 10px;
-	}
-
+@media (min-width: 320px) and  (max-width: 576px){
 	.row {
-  		margin-right: 0!important;
-  		margin-left: 0!important;
-	}
+	  margin-right: 0px !important;
+	  margin-left: 0px !important;
+	}	
 
-	#dd-currency {
+	/deep/ .logo {
 		float: left;
+		margin-top: 11px;
 	}
 
-	.btn-search {
-		margin-top: 2px;
+	.subheading {
+		text-align: left;
 	}
 
-	.btn-search a{
-		color: #fff;
-		text-decoration: none;
-		font-size: 18px;
-	}
-
-	.search-input {
-		width: 10rem;
-	}
-
-	.hide-search {
-		background-color: #fff;
-		border: 1px solid #ced4da;
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-		border-top-right-radius: 0.25rem;
-		border-bottom-right-radius: 0.25rem;
-
-	}
-}
-
-@media (min-width: 768px) {
-	header.sm-screens {
-		display: none;
-	}
 }
 
 @media (min-width: 768px) and  (max-width: 1023px){
@@ -115,19 +49,23 @@ nav.bg-info {
 	  margin-left: 0 !important;
 	}	
 
-	#dd-currency {
-		margin-top: 10px;
+	/deep/ .logo {
 		float: left;
+		margin-top: 9px;
 	}
-	
 }
 
-@media (min-width: 1024px) and (max-width: 1200px) {
+@media (min-width: 1024px) and (max-width: 1366px) {
 
 	.row {
 	  margin-right: 0 !important;
-	  margin-left: 80px !important;
+	  margin-left: 1px !important;
 	}	
+
+	/deep/ .logo {
+		float: left;
+		margin-top: 5px;
+	}
 	
 }
 
