@@ -11,18 +11,8 @@ import (
 var doc = `{
     "swagger": "2.0",
     "info": {
-        "description": "GetTrades",
+        "description": "The world's crowd-driven financial data community has a professional API made for you.\n# Decentral and transparent by design\nWith our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.\n\n## Find the right data for your needs\nShow your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.\nFor Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).\n\n## Backtest your strategies\nUse the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.\n\n## Run Experiments\nBuild your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.\n\n## Request your data\nSet a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).",
         "title": "diadata.org API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "1.0"
     },
     "host": "api.diadata.org",
