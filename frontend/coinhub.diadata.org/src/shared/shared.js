@@ -64,7 +64,7 @@ export default {
         const coinSymbol = coin.Symbol;
         const coinName = coin.Name;
         // Price graph
-        const priceGraph = `https://api.diadata.org/v1/chart/${coin.Symbol}`;
+        const priceGraph = `https://api.diadata.org/v1/chart/${coin.Symbol.toUpperCase()}`;
         // coin price
         // USD
         const coinPriceUSD = coin.Price;
