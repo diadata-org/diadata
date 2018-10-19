@@ -74,7 +74,7 @@ export default {
       }
       
       let {Coin, Change, Exchanges } = this.coindata;
-      
+
       this.rateArray = Change.USD;
       this.currencies = shared.getCurrencies(this.rateArray);
       
