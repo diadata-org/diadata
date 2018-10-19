@@ -2,7 +2,6 @@ import axios from 'axios';
 import router from '@/router';
 import { AtomSpinner } from 'epic-spinners';
 import sortBy from 'lodash/sortBy';
-import { EventBus } from '@/main';
 import shared from  '@/shared/shared';
 import moment from 'moment';
 import getSymbolFromCurrency from 'currency-symbol-map';
@@ -44,29 +43,30 @@ export default {
       chartSimexOptions: {},
       rateArray: [],
       error:'',
-      showAllCharts: false
+      showAllCharts: false,
+      currencies: []
     };
   },
   created() {
     this.coinSymbol = this.$route.params.coinSymbol;
-    EventBus.$on('currencyChange', this.formatPairData);
-  },
-  beforeDestroy: function () {
-    EventBus.$off('currencyChange', this.formatPairData);
   },
   mounted() {
     if(this.$route.params.coinRank) {
       localStorage.rank = this.$route.params.coinRank;
     }
-    else{
+    else {
       localStorage.rank = 'N/A';
     }
+
+    
     // fetch the coin details
     this.fetchCoinDetails();
   },
   methods: {
   	formatPairData() {
-      this.loading === false ? this.loading = true : null;
+     
+      this.currencies = shared.getCurrencies();
+
       if(localStorage.selectedCurrency) {
        this.selectedCurrency = localStorage.selectedCurrency;
       }
@@ -119,7 +119,7 @@ export default {
       try {
         const response = await axios.get(`https://api.diadata.org/v1/symbol/${this.coinSymbol.toUpperCase()}`);
         this.coindata = response.data;
-        EventBus.$emit('currencyChange');
+        this.formatPairData();
       }
       catch (error) {
         console.log(error);
@@ -273,15 +273,19 @@ export default {
       chartValues = chartValues.reverse();
 
       chartValues.forEach((chartValue) => {
-         const UTCDate = new Date(chartValue[0]).valueOf();
-         const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
-         
-         formattedValues.push([UTCDate,price]);
+          const UTCDate = new Date(chartValue[0]).valueOf();
+          const price = parseFloat(shared.calculateCurrencyFromRate(chartValue[4],this.rateArray,this.selectedCurrency,"today").toFixed(2));
+           
+          formattedValues.push([UTCDate,price]);
       });
 
       return formattedValues;
-    }
-  },
+    },
+    switchCurrencies : function(selectedCurrency){
+        this.selectedCurrency = selectedCurrency;
+        localStorage.selectedCurrency = selectedCurrency;
+        this.formatPairData();
+    },
 
-  
+  },
 };

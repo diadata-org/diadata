@@ -21,6 +21,28 @@ div.loading-data {
 	padding-left: 6rem;
 }
 
+#dd-currency {
+	float:right;
+	padding: 0;
+}
+
+/deep/ #dd-currency .btn {
+	line-height: 1.9;
+	border-radius: 0;
+}
+
+/deep/ #dd-currency .dropdown-menu {
+	font-size: 12px;
+}
+
+/deep/ #dd-currency button.btn-secondary:hover,
+/deep/ #dd-currency button.btn-secondary {
+	color: #fff;
+    background-color: #FF7096;
+    border-color: #FF7096;
+    font-weight: 600;
+}
+
 .coindata-charts {
 	width: 100%;
 	margin-right: 70px;
@@ -29,12 +51,13 @@ div.loading-data {
 .data-sources-banner {
 	margin-top: 20px;
 	background-color: #FF7096;
-	color: #000;
+	color: #fff;
 	text-align: center;
 	margin-right: 70px;
 	line-height: 56px;
 }
 
+#dd-currency,
 /deep/ div .table-responsive.main{
 	padding-right: 70px;
 }
@@ -85,6 +108,8 @@ deep/ table thead tr th:nth-child(5),
 	.coin-details div .container-fluid  {
 		padding-left: 10px;
 	}
+
+	#dd-currency,
 	/deep/ div .table-responsive.main,
 	.data-sources-banner {
 		margin-right: 10px;
