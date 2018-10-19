@@ -65,7 +65,6 @@ export default {
   methods: {
   	formatPairData() {
      
-      this.currencies = shared.getCurrencies();
 
       if(localStorage.selectedCurrency) {
        this.selectedCurrency = localStorage.selectedCurrency;
@@ -75,7 +74,10 @@ export default {
       }
       
       let {Coin, Change, Exchanges } = this.coindata;
+      
       this.rateArray = Change.USD;
+      this.currencies = shared.getCurrencies(this.rateArray);
+      
       // format the coin details
       const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
       const coinPriceFormatted = shared.formatCurrency(coinPrice,this.selectedCurrency);

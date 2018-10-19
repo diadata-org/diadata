@@ -227,8 +227,13 @@ export default {
     return rate;
   },
 
-  getCurrencies:() => {
-    return currencyArray;
+  getCurrencies: (rateArray) => {
+    currencyArray = [];
+    rateArray.forEach((rate,index)=>{
+      currencyArray[index] = rate.Symbol.toUpperCase();
+    });
+    currencyArray.push("USD");
+    return sortBy(currencyArray);
   }
 
 

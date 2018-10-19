@@ -78,7 +78,7 @@
 			    </b-row>
 			     <b-row>
 			     	<b-col>
-			        	<div class="data-sources-banner font-weight-bold">Data Sources</div>
+			        	<div class="data-sources-banner">Data Sources</div>
 			        	<b-table responsive striped :items="exchanges" :fields="exchange_fields" class="main">
 			        		<template slot="show_trades" slot-scope="row">
 							      <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->

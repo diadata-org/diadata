@@ -55,6 +55,7 @@ div.loading-data {
 	text-align: center;
 	margin-right: 70px;
 	line-height: 56px;
+	font-size: 1.25rem;
 }
 
 #dd-currency,
@@ -82,11 +83,17 @@ div.loading-data {
 	text-align: left;
 }
 
-deep/ table thead tr th:nth-child(5),
-/deep/ table tbody tr td:nth-child(5){
-	text-align: center;
+/deep/ table tbody tr td:nth-child(5) {
+	float: right;
 }
 
+/deep/ table tbody tr td:nth-child(5) .btn {
+	border-radius: 0;
+}
+
+/deep/ table thead tr th:nth-child(5) {
+	padding-right: 22px;
+}
 
 .text-danger {
     color: #dc3545 !important;
