@@ -20,7 +20,7 @@
 		    			</li>
 		    			<li>
 		    				<br>
-		    				<h1>About DIA</h1>
+		    				<h2>About DIA</h2>
 							DIA is a Swiss non-profit association that provides open-source access to crowd-verified financial data with the aim of enabling a fair and symmetric market for financial data and information.
 									    			
 		    			</li>
