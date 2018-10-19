@@ -9,7 +9,15 @@ All DIA data points can be used in Ethereum Smart Contracts.
 We provide oracle solutions to use this financial information in any smart contract.
 The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
-## Methodology Documentation
+## Outliers and Market Manipulation
+Detecting and excluding outliers and market manipulation is an important data processing task, especially in small and (somewhat) intransparent markets.
+
+We calculate our cryptocurrency-spot-prices using 120-second moving average (SMA).
+In order to create reliable pricing, we also exclude data points & sets that lie outside of an [acceptable range](https://en.wikipedia.org/wiki/Interquartile_range#Outliers) relative to the [interquartile range](https://en.wikipedia.org/wiki/Interquartile_range) of all data points.
+
+This will be constantly improved over time with crowd-driven algorithmic improvements from the traditional financial space, taking into consideration that high volatility is aprt of the cryptocurrency space.
+
+## Data Classes 
 Currently, DIA collects several classes of data.
 Separate documentation exists for each of these different use cases.
 
