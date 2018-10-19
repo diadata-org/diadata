@@ -114,7 +114,8 @@ func getInitialExchangePairs() {
 func main() {
 	task := &Task{
 		closed: make(chan struct{}),
-		ticker: time.NewTicker(time.Second * 5),
+		/// Retrieve every hour
+		ticker: time.NewTicker(time.Second * 60 * 60),
 	}
 	var e error
 	db, e = models.NewDataStore()

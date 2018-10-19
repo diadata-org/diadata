@@ -5,6 +5,8 @@ package helpers
 // approach to resolve the conflict
 func SymbolIsBlackListed(symbol string) bool {
 	switch symbol {
+	case "VET":
+		return true
 	case "ACC":
 		return true
 	case "ALT":

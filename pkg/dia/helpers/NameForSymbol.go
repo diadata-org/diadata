@@ -8,8 +8,6 @@ func SymbolIsName(symbol string) bool {
 		return true
 	case "MEX":
 		return true
-	case "XRP":
-		return true
 	case "MCO":
 		return true
 	case "DADI":
@@ -161,7 +159,7 @@ func NameForSymbol(symbol string) string {
 	case "EMD":
 		return "Emerald Crypto"
 	case "XRP":
-		return "XRP"
+		return "Ripple"
 	case "QRK":
 		return "Quark"
 	case "ZET":
@@ -457,7 +455,7 @@ func NameForSymbol(symbol string) string {
 	case "SYS":
 		return "Syscoin"
 	case "BTM":
-		return "Bitmark"
+		return "Bytom"
 	case "HAL":
 		return "Halcyon"
 	case "SJCX":
@@ -3479,7 +3477,7 @@ func NameForSymbol(symbol string) string {
 	case "EDS":
 		return "Endorsit"
 	case "VET":
-		return "VeChain"
+		return "Vechain"
 	case "KIND":
 		return "Kind Ads Token"
 	case "X8X":
