@@ -56,7 +56,7 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
-	conn, err := ethclient.Dial("https://ropsten.infura.io/v3/be1a3f5f45994142bb67759b9fef28c5")
+	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/ec6581408f09414b8e4446067cd3ba08")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
