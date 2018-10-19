@@ -79,7 +79,11 @@ div.loading-data {
     font-weight: 600;
 }
 
-.subtext1,
+.subtext1 ul {
+	padding-left: 120px;
+	list-style-type: none;
+}
+
 section div .table-responsive{
 	padding-left: 80px;
 	padding-right: 80px;
