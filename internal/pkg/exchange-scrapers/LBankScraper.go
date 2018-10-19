@@ -3,14 +3,17 @@ package scrapers
 import (
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"hash/fnv"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
@@ -42,15 +45,17 @@ type LBankScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*LBankPairScraper
+	exchangeName string
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper() *LBankScraper {
+func NewLBankScraper(exchangeName string) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*LBankPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -114,7 +119,7 @@ func (s *LBankScraper) mainLoop() {
 				Volume:         f64Volume,
 				Time:           timeStamp,
 				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
-				Source:         dia.LBankExchange,
+				Source:         s.exchangeName,
 			}
 			ps.chanTrades <- t
 		}
@@ -188,6 +193,45 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+func (s *LBankScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
+	str := strings.Split(foreignName, "_")
+	symbol = strings.ToUpper(str[0])
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	response, err := http.Get("https://api.lbkex.com/v1/currencyPairs.do")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+	for _, p := range ls {
+		symbol, serr := s.normalizeSymbol(p)
+		if serr == nil {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbol,
+				ForeignName: p,
+				Exchange:    s.exchangeName,
+			})
+		} else {
+			log.Error(serr)
+		}
+	}
+	return
 }
 
 // LBankPairScraper implements PairScraper for LBank exchange

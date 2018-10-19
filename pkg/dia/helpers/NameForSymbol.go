@@ -1,5 +1,113 @@
 package helpers
 
+func SymbolIsName(symbol string) bool {
+	switch symbol {
+	case "STK":
+		return true
+	case "VITE":
+		return true
+	case "MEX":
+		return true
+	case "MCO":
+		return true
+	case "DADI":
+		return true
+	case "OST":
+		return true
+	case "SALT":
+		return true
+	case "QASH":
+		return true
+	case "EOS":
+		return true
+	case "NEO":
+		return true
+	case "OAX":
+		return true
+	case "BTF":
+		return true
+	case "NKN":
+		return true
+	case "VIBE":
+		return true
+	case "PIVX":
+		return true
+	case "IOST":
+		return true
+	case "WAX":
+		return true
+	case "YEE":
+		return true
+	case "CIC":
+		return true
+	case "BEC":
+		return true
+	case "TRA":
+		return true
+	case "OKB":
+		return true
+	case "HSR":
+		return true
+	case "CAI":
+		return true
+	default:
+		return false
+	}
+}
+func NameForSymbolManuallyAdded(symbol string) string {
+	switch symbol {
+	//GateIO pairs. Maybe inactive
+	case "NKN":
+		return "NKN"
+	case "LLT":
+		return "LLToken"
+	case "BTF":
+		return "BTF"
+	case "PPS":
+		return "Prophet"
+	case "ADD":
+		return "EOSADD"
+	case "BXC":
+		return "BonusCloud"
+		// Bitfinex
+	case "RRT":
+		return "Recovery Right Token"
+		//OKEx
+	case "CIC":
+		return "CIC"
+	case "BEC":
+		return "BEC"
+	case "TRA":
+		return "TRA"
+	case "OKB":
+		return "OKB"
+	case "HSR":
+		return "HSR"
+	case "CAI":
+		return "CAI"
+		//Simex
+	case "WCO":
+		return "Winco"
+	case "NBTK":
+		return "Nebeus Crypto Bank"
+	case "GOLD":
+		return "Goldmint"
+	case "MAD":
+		return "MAD Network"
+	case "ULTC":
+		return "Ultimate Coin"
+	case "BZS":
+		return "Baista"
+	case "RBM":
+		return "Robomed"
+	case "VOCT":
+		return "VOCO"
+	case "MTRC":
+		return "ModulTrade"
+	default:
+		return symbol
+	}
+}
 func NameForSymbol(symbol string) string {
 	switch symbol {
 	case "BTC":
@@ -34,8 +142,6 @@ func NameForSymbol(symbol string) string {
 		return "Argentum"
 	case "FST":
 		return "Fastcoin"
-	case "BTG":
-		return "Bitcoin Gold"
 	case "PXC":
 		return "Phoenixcoin"
 	case "MEC":
@@ -52,8 +158,6 @@ func NameForSymbol(symbol string) string {
 		return "Bullion"
 	case "EMD":
 		return "Emerald Crypto"
-	case "GLC":
-		return "GlobalCoin"
 	case "XRP":
 		return "Ripple"
 	case "QRK":
@@ -69,7 +173,7 @@ func NameForSymbol(symbol string) string {
 	case "I0C":
 		return "I0Coin"
 	case "FLO":
-		return "FlorinCoin"
+		return "FLO"
 	case "NXT":
 		return "Nxt"
 	case "UNO":
@@ -148,12 +252,10 @@ func NameForSymbol(symbol string) string {
 		return "Counterparty"
 	case "CACH":
 		return "CacheCoin"
-	case "TOP":
-		return "TopCoin"
 	case "ICN":
 		return "iCoin"
 	case "MINT":
-		return "Mintcoin"
+		return "MintCoin"
 	case "ARI":
 		return "Aricoin"
 	case "DOPE":
@@ -168,8 +270,6 @@ func NameForSymbol(symbol string) string {
 		return "Marscoin"
 	case "CASH":
 		return "Cashcoin"
-	case "RIC":
-		return "Riecoin"
 	case "PND":
 		return "Pandacoin"
 	case "MAZA":
@@ -236,8 +336,6 @@ func NameForSymbol(symbol string) string {
 		return "Quebecoin"
 	case "CCN":
 		return "CannaCoin"
-	case "SLOTH":
-		return "Slothcoin"
 	case "BLU":
 		return "BlueCoin"
 	case "MAID":
@@ -330,8 +428,6 @@ func NameForSymbol(symbol string) string {
 		return "Quatloo"
 	case "BTS":
 		return "BitShares"
-	case "BTCD":
-		return "BitcoinDark"
 	case "TRK":
 		return "Truckcoin"
 	case "VIA":
@@ -402,8 +498,6 @@ func NameForSymbol(symbol string) string {
 		return "ExclusiveCoin"
 	case "TROLL":
 		return "Trollcoin"
-	case "UNITY":
-		return "SuperNET"
 	case "BSTY":
 		return "GlobalBoost-Y"
 	case "DP":
@@ -448,8 +542,6 @@ func NameForSymbol(symbol string) string {
 		return "OKCash"
 	case "XPY":
 		return "PayCoin"
-	case "VTR":
-		return "vTorrent"
 	case "BITGOLD":
 		return "bitGold"
 	case "UIS":
@@ -462,8 +554,6 @@ func NameForSymbol(symbol string) string {
 		return "Nexus"
 	case "SOON":
 		return "SoonCoin"
-	case "METAL":
-		return "MetalCoin"
 	case "NKA":
 		return "IncaKoin"
 	case "SMLY":
@@ -476,8 +566,6 @@ func NameForSymbol(symbol string) string {
 		return "Dotcoin"
 	case "KOBO":
 		return "Kobocoin"
-	case "CON":
-		return "PayCon"
 	case "BITB":
 		return "Bean Cash"
 	case "GEO":
@@ -488,8 +576,6 @@ func NameForSymbol(symbol string) string {
 		return "Wild Beast Block"
 	case "GRC":
 		return "GridCoin"
-	case "XVC":
-		return "Vcash"
 	case "XCO":
 		return "X-Coin"
 	case "SAK":
@@ -518,22 +604,16 @@ func NameForSymbol(symbol string) string {
 		return "Californium"
 	case "AIB":
 		return "Advanced Internet Blocks"
-	case "EGG":
-		return "EggCoin"
 	case "SPHR":
 		return "Sphere"
 	case "MEDIC":
 		return "MedicCoin"
 	case "BUB":
 		return "Bubble"
-	case "MUSE":
-		return "MUSE"
+	case "XSD":
+		return "SounDAC"
 	case "UNIT":
 		return "Universal Currency"
-	case "SHELL":
-		return "ShellCoin"
-	case "CTO":
-		return "Crypto"
 	case "PKB":
 		return "ParkByte"
 	case "ARB":
@@ -624,8 +704,6 @@ func NameForSymbol(symbol string) string {
 		return "Expanse"
 	case "SIB":
 		return "SIBCoin"
-	case "ISL":
-		return "IslaCoin"
 	case "SWING":
 		return "Swing"
 	case "FCT":
@@ -636,8 +714,6 @@ func NameForSymbol(symbol string) string {
 		return "Save and Gain"
 	case "PR":
 		return "Prototanium"
-	case "CUBE":
-		return "DigiCube"
 	case "REP":
 		return "Augur"
 	case "SHND":
@@ -694,8 +770,6 @@ func NameForSymbol(symbol string) string {
 		return "Rubies"
 	case "ADCN":
 		return "Asiadigicoin"
-	case "KLC":
-		return "KiloCoin"
 	case "TRUMP":
 		return "TrumpCoin"
 	case "MEME":
@@ -772,20 +846,18 @@ func NameForSymbol(symbol string) string {
 		return "Nullex"
 	case "RICHX":
 		return "RichCoin"
-	case "PRM":
-		return "PrismChain"
+	case "CTL":
+		return "Citadel"
 	case "WAVES":
 		return "Waves"
 	case "ICOO":
 		return "ICO OpenLedger"
 	case "PWR":
-		return "Powercoin"
+		return "PWR Coin"
 	case "ION":
 		return "ION"
 	case "HVCO":
 		return "High Voltage"
-	case "MNM":
-		return "Mineum"
 	case "XRE":
 		return "RevolverCoin"
 	case "GB":
@@ -812,8 +884,6 @@ func NameForSymbol(symbol string) string {
 		return "Cryptojacks"
 	case "HEAT":
 		return "HEAT"
-	case "LIR":
-		return "LetItRide"
 	case "SBD":
 		return "Steem Dollars"
 	case "ARDR":
@@ -826,8 +896,6 @@ func NameForSymbol(symbol string) string {
 		return "First Bitcoin"
 	case "ELE":
 		return "Elementrem"
-	case "GAIN":
-		return "UGAIN"
 	case "KRB":
 		return "Karbo"
 	case "VPRC":
@@ -878,8 +946,6 @@ func NameForSymbol(symbol string) string {
 		return "Dollarcoin"
 	case "MST":
 		return "MustangCoin"
-	case "XBTS":
-		return "Beatcoin"
 	case "PROUD":
 		return "PROUD Money"
 	case "SEQ":
@@ -932,8 +998,6 @@ func NameForSymbol(symbol string) string {
 		return "ZetaMicron"
 	case "BTCR":
 		return "Bitcurrency"
-	case "REGA":
-		return "Regacoin"
 	case "IOP":
 		return "Internet of People"
 	case "VRS":
@@ -942,10 +1006,6 @@ func NameForSymbol(symbol string) string {
 		return "Hush"
 	case "KURT":
 		return "Kurrent"
-	case "XCRE":
-		return "Creatio"
-	case "XRC":
-		return "Rawcoin"
 	case "PASC":
 		return "Pascal Coin"
 	case "ENT":
@@ -966,8 +1026,6 @@ func NameForSymbol(symbol string) string {
 		return "Vault Coin"
 	case "PCS":
 		return "Pabyosi Coin (Special)"
-	case "TCOIN":
-		return "T-coin"
 	case "GBYTE":
 		return "Byteball Bytes"
 	case "POSW":
@@ -988,16 +1046,12 @@ func NameForSymbol(symbol string) string {
 		return "Spectrecoin"
 	case "XSTC":
 		return "Safe Trade Coin"
-	case "LDCN":
-		return "LandCoin"
 	case "BENJI":
 		return "BenjiRolls"
 	case "CCRB":
 		return "CryptoCarbon"
 	case "VIDZ":
 		return "PureVidz"
-	case "BCC":
-		return "BitConnect"
 	case "ICOB":
 		return "ICOBID"
 	case "IBANK":
@@ -1016,16 +1070,12 @@ func NameForSymbol(symbol string) string {
 		return "Tattoocoin (Standard Edition)"
 	case "SFC":
 		return "Solarflarecoin"
-	case "ZBC":
-		return "Zilbercoin"
 	case "WCT":
 		return "Waves Community Token"
 	case "ICON":
 		return "Iconic"
 	case "KUSH":
 		return "KushCoin"
-	case "ACN":
-		return "Avoncoin"
 	case "BOAT":
 		return "BOAT"
 	case "ERY":
@@ -1052,8 +1102,6 @@ func NameForSymbol(symbol string) string {
 		return "Argus"
 	case "RNS":
 		return "Renos"
-	case "UR":
-		return "UR"
 	case "SWT":
 		return "Swarm City"
 	case "PIE":
@@ -1064,8 +1112,6 @@ func NameForSymbol(symbol string) string {
 		return "Visio"
 	case "NANO":
 		return "Nano"
-	case "LVPS":
-		return "LevoPlus"
 	case "GEERT":
 		return "GeertCoin"
 	case "PASL":
@@ -1076,8 +1122,6 @@ func NameForSymbol(symbol string) string {
 		return "Musicoin"
 	case "ZER":
 		return "Zero"
-	case "BIOB":
-		return "BioBar"
 	case "HONEY":
 		return "Honey"
 	case "NETKO":
@@ -1110,8 +1154,6 @@ func NameForSymbol(symbol string) string {
 		return "Solaris"
 	case "IMX":
 		return "Impact"
-	case "TSTR":
-		return "Tristar Coin"
 	case "XAS":
 		return "Asch"
 	case "DBIX":
@@ -1130,10 +1172,6 @@ func NameForSymbol(symbol string) string {
 		return "BlazerCoin"
 	case "ATMOS":
 		return "Atmos"
-	case "EMV":
-		return "Ethereum Movie Venture"
-	case "INPAY":
-		return "InPay"
 	case "HPC":
 		return "Happycoin"
 	case "ZENI":
@@ -1180,8 +1218,6 @@ func NameForSymbol(symbol string) string {
 		return "Gold Pressed Latinum"
 	case "HMQ":
 		return "Humaniq"
-	case "FUNC":
-		return "FUNCoin"
 	case "ITI":
 		return "iTicoin"
 	case "MNE":
@@ -1225,7 +1261,7 @@ func NameForSymbol(symbol string) string {
 	case "BAT":
 		return "Basic Attention Token"
 	case "ZEN":
-		return "ZenCash"
+		return "Horizen"
 	case "ETBS":
 		return "Ethbits"
 	case "AE":
@@ -1242,8 +1278,6 @@ func NameForSymbol(symbol string) string {
 		return "STEX"
 	case "PTOY":
 		return "Patientory"
-	case "QAU":
-		return "Quantum"
 	case "VERI":
 		return "Veritaseum"
 	case "ECA":
@@ -1282,8 +1316,6 @@ func NameForSymbol(symbol string) string {
 		return "GlobalToken"
 	case "NMR":
 		return "Numeraire"
-	case "OTX":
-		return "Octanox"
 	case "UNIFY":
 		return "Unify"
 	case "XEL":
@@ -1306,6 +1338,8 @@ func NameForSymbol(symbol string) string {
 		return "Bitcoin Planet"
 	case "GXS":
 		return "GXChain"
+	case "ATCC":
+		return "ATC Coin"
 	case "GOOD":
 		return "Goodomy"
 	case "ANTX":
@@ -1343,7 +1377,7 @@ func NameForSymbol(symbol string) string {
 	case "ADT":
 		return "adToken"
 	case "MCO":
-		return "MCO"
+		return "Crypto.com"
 	case "PING":
 		return "CryptoPing"
 	case "UET":
@@ -1370,8 +1404,6 @@ func NameForSymbol(symbol string) string {
 		return "Populous"
 	case "WOMEN":
 		return "WomenCoin"
-	case "VUC":
-		return "Virta Unique Coin"
 	case "BDL":
 		return "Bitdeal"
 	case "XID":
@@ -1380,8 +1412,6 @@ func NameForSymbol(symbol string) string {
 		return "DaxxCoin"
 	case "RUP":
 		return "Rupee"
-	case "GTC":
-		return "Global Tour Coin"
 	case "PCN":
 		return "PeepCoin"
 	case "HERO":
@@ -1392,7 +1422,7 @@ func NameForSymbol(symbol string) string {
 		return "OmiseGO"
 	case "TER":
 		return "TerraNova"
-	case "CVCOIN":
+	case "CVN":
 		return "CVCoin"
 	case "XRL":
 		return "Rialto"
@@ -1445,13 +1475,11 @@ func NameForSymbol(symbol string) string {
 	case "EMB":
 		return "EmberCoin"
 	case "IXT":
-		return "iXledger"
+		return "IXT"
 	case "GSR":
 		return "GeyserCoin"
 	case "MSP":
 		return "Mothership"
-	case "ASN":
-		return "Aseancoin"
 	case "BIRDS":
 		return "Birds"
 	case "CRM":
@@ -1519,19 +1547,13 @@ func NameForSymbol(symbol string) string {
 	case "GRWI":
 		return "Growers International"
 	case "MYB":
-		return "MyBit Token"
-	case "HSR":
-		return "Hshare"
-	case "VEN":
-		return "VeChain"
+		return "MyBit"
+	case "HC":
+		return "HyperCash"
 	case "TFL":
 		return "TrueFlip"
-	case "XTD":
-		return "XTD Coin"
 	case "NAS":
 		return "Nebulas"
-	case "ATMC":
-		return "ATMCoin"
 	case "DALC":
 		return "Dalecoin"
 	case "PRN":
@@ -1556,8 +1578,6 @@ func NameForSymbol(symbol string) string {
 		return "Waltonchain"
 	case "BRAT":
 		return "BROTHER"
-	case "ULA":
-		return "Ulatech"
 	case "PST":
 		return "Primas"
 	case "OPT":
@@ -1576,6 +1596,8 @@ func NameForSymbol(symbol string) string {
 		return "StarCredits"
 	case "KRONE":
 		return "Kronecoin"
+	case "MCC":
+		return "Moving Cloud Coin"
 	case "CYDER":
 		return "Cyder"
 	case "MTNC":
@@ -1587,7 +1609,7 @@ func NameForSymbol(symbol string) string {
 	case "DLT":
 		return "Agrello"
 	case "HVN":
-		return "Hive Project"
+		return "Hiveterminal Token"
 	case "VSX":
 		return "Vsync"
 	case "MAGN":
@@ -1629,7 +1651,7 @@ func NameForSymbol(symbol string) string {
 	case "PRO":
 		return "Propy"
 	case "LINK":
-		return "ChainLink"
+		return "Chainlink"
 	case "BMC":
 		return "Blackmoon"
 	case "WIC":
@@ -1786,6 +1808,8 @@ func NameForSymbol(symbol string) string {
 		return "Everus"
 	case "DUTCH":
 		return "Dutch Coin"
+	case "SWP":
+		return "Swapcoin"
 	case "OTN":
 		return "Open Trading Network"
 	case "DRT":
@@ -1810,6 +1834,8 @@ func NameForSymbol(symbol string) string {
 		return "Ambrosus"
 	case "ICOS":
 		return "ICOS"
+	case "BTG":
+		return "Bitcoin Gold"
 	case "KCS":
 		return "KuCoin Shares"
 	case "EXRN":
@@ -1848,10 +1874,10 @@ func NameForSymbol(symbol string) string {
 		return "LUXCoin"
 	case "NTWK":
 		return "Network Token"
-	case "DOVU":
+	case "DOV":
 		return "Dovu"
-	case "RPX":
-		return "Red Pulse"
+	case "PHX":
+		return "Red Pulse Phoenix"
 	case "BT2":
 		return "BT2 CST"
 	case "PLACO":
@@ -1866,8 +1892,6 @@ func NameForSymbol(symbol string) string {
 		return "Etherparty"
 	case "ELLA":
 		return "Ellaism"
-	case "VULC":
-		return "Vulcano"
 	case "QVT":
 		return "Qvolta"
 	case "RMC":
@@ -1880,6 +1904,8 @@ func NameForSymbol(symbol string) string {
 		return "Bitbase"
 	case "ENJ":
 		return "Enjin Coin"
+	case "IBTC":
+		return "iBTC"
 	case "POWR":
 		return "Power Ledger"
 	case "GRID":
@@ -1894,14 +1920,14 @@ func NameForSymbol(symbol string) string {
 		return "High Gain"
 	case "MNX":
 		return "MinexCoin"
+	case "SONO":
+		return "SONO"
 	case "FOR":
 		return "FORCE"
 	case "DATA":
 		return "Streamr DATAcoin"
 	case "XSH":
 		return "SHIELD"
-	case "PURE":
-		return "Pure"
 	case "ELTCOIN":
 		return "ELTCOIN"
 	case "DSR":
@@ -1920,8 +1946,6 @@ func NameForSymbol(symbol string) string {
 		return "StarCash Network"
 	case "PHR":
 		return "Phore"
-	case "FRD":
-		return "Farad"
 	case "INN":
 		return "Innova"
 	case "RDN":
@@ -1938,12 +1962,8 @@ func NameForSymbol(symbol string) string {
 		return "Blockpool"
 	case "GRIM":
 		return "Grimcoin"
-	case "OXY":
-		return "Oxycoin"
 	case "EPY":
 		return "Emphy"
-	case "HOLD":
-		return "Stellar Holdings"
 	case "NEOG":
 		return "NEO GOLD"
 	case "DBET":
@@ -1954,8 +1974,6 @@ func NameForSymbol(symbol string) string {
 		return "Sharechain"
 	case "UFR":
 		return "Upfiring"
-	case "HAT":
-		return "Hat.Exchange"
 	case "STU":
 		return "bitJob"
 	case "GVT":
@@ -1966,27 +1984,23 @@ func NameForSymbol(symbol string) string {
 		return "EA Coin"
 	case "PRIX":
 		return "Privatix"
-	case "ITNS":
-		return "IntenseCoin"
+	case "LTHN":
+		return "Lethean"
 	case "EBCH":
 		return "EBCH"
-	case "SISA":
-		return "SISA"
 	case "ASTRO":
 		return "Astro"
 	case "PAYX":
 		return "Paypex"
 	case "GRX":
 		return "GOLD Reward Token"
-	case "AERM":
-		return "Aerium"
 	case "BTE":
 		return "BitSerial"
 	case "SGR":
 		return "Sugar Exchange"
 	case "VIU":
 		return "Viuly"
-	case "ALQO":
+	case "XLQ":
 		return "ALQO"
 	case "GBX":
 		return "GoByte"
@@ -2031,7 +2045,7 @@ func NameForSymbol(symbol string) string {
 	case "PLX":
 		return "PlexCoin"
 	case "DIVX":
-		return "Divi"
+		return "Divi Exchange Token"
 	case "MONK":
 		return "Monkey Project"
 	case "FLIXX":
@@ -2047,7 +2061,7 @@ func NameForSymbol(symbol string) string {
 	case "LEND":
 		return "ETHLend"
 	case "ONG":
-		return "onG.social"
+		return "SoMee.Social"
 	case "CCO":
 		return "Ccore"
 	case "DRGN":
@@ -2067,7 +2081,7 @@ func NameForSymbol(symbol string) string {
 	case "ITC":
 		return "IoT Chain"
 	case "JIYO":
-		return "Jiyo"
+		return "Jiyo OLD"
 	case "SEND":
 		return "Social Send"
 	case "BON":
@@ -2075,9 +2089,7 @@ func NameForSymbol(symbol string) string {
 	case "NUKO":
 		return "Nekonium"
 	case "SNOV":
-		return "Snovio"
-	case "SBC":
-		return "StrikeBitClub"
+		return "Snovian.Space"
 	case "BWK":
 		return "Bulwark"
 	case "SAGA":
@@ -2126,8 +2138,6 @@ func NameForSymbol(symbol string) string {
 		return "Datum"
 	case "TRDT":
 		return "Trident Group"
-	case "BTCA":
-		return "Bitair"
 	case "AMM":
 		return "MicroMoney"
 	case "LOC":
@@ -2171,7 +2181,7 @@ func NameForSymbol(symbol string) string {
 	case "BNTY":
 		return "Bounty0x"
 	case "ACE":
-		return "Ace"
+		return "ACE (TokenStars)"
 	case "DIM":
 		return "DIMCOIN"
 	case "SRN":
@@ -2189,11 +2199,9 @@ func NameForSymbol(symbol string) string {
 	case "UTK":
 		return "UTRUST"
 	case "QLC":
-		return "QLINK"
+		return "QLC Chain"
 	case "PLAY":
 		return "HEROcoin"
-	case "BIG":
-		return "BigONE Token"
 	case "MTX":
 		return "Matryx"
 	case "MOT":
@@ -2206,10 +2214,10 @@ func NameForSymbol(symbol string) string {
 		return "STRAKS"
 	case "FDX":
 		return "FidentiaX"
+	case "GTC":
+		return "Game.com"
 	case "TAU":
 		return "Lamden"
-	case "ESC":
-		return "Escroco"
 	case "BLT":
 		return "Bloom"
 	case "SWFTC":
@@ -2224,8 +2232,6 @@ func NameForSymbol(symbol string) string {
 		return "High Performance Blockchain"
 	case "WICC":
 		return "WaykiChain"
-	case "NUMUS":
-		return "NumusCash"
 	case "MDT":
 		return "Measurable Data Token"
 	case "GCS":
@@ -2295,7 +2301,7 @@ func NameForSymbol(symbol string) string {
 	case "CLD":
 		return "Cloud"
 	case "UCOM":
-		return "United Crypto Community"
+		return "UCOM"
 	case "BCA":
 		return "Bitcoin Atom"
 	case "UGC":
@@ -2306,6 +2312,8 @@ func NameForSymbol(symbol string) string {
 		return "EchoLink"
 	case "BTO":
 		return "Bottos"
+	case "AT":
+		return "AWARE"
 	case "TEL":
 		return "Telcoin"
 	case "IC":
@@ -2340,8 +2348,6 @@ func NameForSymbol(symbol string) string {
 		return "SpaceChain"
 	case "ORE":
 		return "Galactrum"
-	case "HC":
-		return "Harvest Masternode Coin"
 	case "HORSE":
 		return "Ethorse"
 	case "RCT":
@@ -2355,7 +2361,7 @@ func NameForSymbol(symbol string) string {
 	case "NOX":
 		return "Nitro"
 	case "IPL":
-		return "InsurePal"
+		return "VouchForMe"
 	case "IDXM":
 		return "IDEX Membership"
 	case "AURA":
@@ -2417,7 +2423,7 @@ func NameForSymbol(symbol string) string {
 	case "OF":
 		return "OFCOIN"
 	case "TRUE":
-		return "True Chain"
+		return "TrueChain"
 	case "OCN":
 		return "Odyssey"
 	case "IDH":
@@ -2432,7 +2438,7 @@ func NameForSymbol(symbol string) string {
 		return "Devery"
 	case "BPT":
 		return "Blockport"
-	case "AXP":
+	case "AXPR":
 		return "aXpire"
 	case "TRAC":
 		return "OriginTrail"
@@ -2517,7 +2523,7 @@ func NameForSymbol(symbol string) string {
 	case "WPR":
 		return "WePower"
 	case "UCASH":
-		return "U.CASH"
+		return "UNIVERSAL CASH"
 	case "MNTP":
 		return "GoldMint"
 	case "JEW":
@@ -2730,6 +2736,8 @@ func NameForSymbol(symbol string) string {
 		return "Switcheo"
 	case "SEN":
 		return "Consensus"
+	case "XCLR":
+		return "ClearCoin"
 	case "SENC":
 		return "Sentinel Chain"
 	case "VIT":
@@ -2762,8 +2770,6 @@ func NameForSymbol(symbol string) string {
 		return "Cortex"
 	case "ATC":
 		return "Arbitracoin"
-	case "WIN":
-		return "WCOIN"
 	case "CPX":
 		return "Apex"
 	case "CVT":
@@ -2786,8 +2792,6 @@ func NameForSymbol(symbol string) string {
 		return "CommerceBlock"
 	case "GRMD":
 		return "GreenMed"
-	case "CVH":
-		return "Curriculum Vitae"
 	case "AUC":
 		return "Auctus"
 	case "BUBO":
@@ -2825,7 +2829,7 @@ func NameForSymbol(symbol string) string {
 	case "SRCOIN":
 		return "SRCOIN"
 	case "CHX":
-		return "Chainium"
+		return "Own"
 	case "MSR":
 		return "Masari"
 	case "DOCK":
@@ -2872,6 +2876,8 @@ func NameForSymbol(symbol string) string {
 		return "Hydro"
 	case "SS":
 		return "Sharder"
+	case "CEL":
+		return "Celsius"
 	case "TTT":
 		return "TrustNote"
 	case "BCI":
@@ -2900,10 +2906,12 @@ func NameForSymbol(symbol string) string {
 		return "Nexty"
 	case "CJT":
 		return "ConnectJob"
+	case "GES":
+		return "Galaxy eSolutions"
 	case "BOUTS":
 		return "BoutsPro"
 	case "PAL":
-		return "PolicyPal Network"
+		return "Pal Network"
 	case "CRE":
 		return "Cybereits"
 	case "GENE":
@@ -2922,10 +2930,10 @@ func NameForSymbol(symbol string) string {
 		return "DAOstack"
 	case "BZNT":
 		return "Bezant"
+	case "LIF":
+		return "Winding Tree"
 	case "TEAM":
-		return "TokenStars"
-	case "FRV":
-		return "Fitrova"
+		return "TEAM (TokenStars)"
 	case "OOT":
 		return "Utrum"
 	case "FREC":
@@ -2952,8 +2960,10 @@ func NameForSymbol(symbol string) string {
 		return "Bank Coin"
 	case "NPER":
 		return "NPER"
+	case "JOINT":
+		return "Joint Ventures"
 	case "DASC":
-		return "Dascoin"
+		return "DasCoin"
 	case "BMH":
 		return "BlockMesh"
 	case "LOKI":
@@ -2979,13 +2989,13 @@ func NameForSymbol(symbol string) string {
 	case "PAT":
 		return "Patron"
 	case "LBA":
-		return "Libra Credit"
+		return "Cred"
 	case "LWF":
 		return "Local World Forwarders"
 	case "OPEN":
 		return "Open Platform"
-	case "MORPH":
-		return "Morpheus Network"
+	case "MRPH":
+		return "Morpheus.Network"
 	case "SNTR":
 		return "Silent Notary"
 	case "XYO":
@@ -3021,7 +3031,7 @@ func NameForSymbol(symbol string) string {
 	case "NAVI":
 		return "Naviaddress"
 	case "ZIP":
-		return "ZIP"
+		return "Zipper"
 	case "SOUL":
 		return "Phantasma"
 	case "REPO":
@@ -3082,6 +3092,10 @@ func NameForSymbol(symbol string) string {
 		return "GoChain"
 	case "SSP":
 		return "Smartshare"
+	case "HOLD":
+		return "HOLD"
+	case "TRTT":
+		return "Trittium"
 	case "UPP":
 		return "Sentinel Protocol"
 	case "BWT":
@@ -3092,6 +3106,8 @@ func NameForSymbol(symbol string) string {
 		return "Merculet"
 	case "FGC":
 		return "FantasyGold"
+	case "UCT":
+		return "Ubique Chain Of Things"
 	case "ETK":
 		return "EnergiToken"
 	case "MET":
@@ -3152,6 +3168,8 @@ func NameForSymbol(symbol string) string {
 		return "POPCHAIN"
 	case "SEER":
 		return "SEER"
+	case "QURO":
+		return "Qurito"
 	case "ESS":
 		return "Essentia"
 	case "KBC":
@@ -3169,7 +3187,9 @@ func NameForSymbol(symbol string) string {
 	case "BKBT":
 		return "BeeKan"
 	case "MOC":
-		return "Mossland"
+		return "Moss Coin"
+	case "NIM":
+		return "Nimiq"
 	case "SFU":
 		return "Saifu"
 	case "BZ":
@@ -3182,9 +3202,973 @@ func NameForSymbol(symbol string) string {
 		return "OneLedger"
 	case "ATMI":
 		return "Atonomi"
+	case "XMCT":
+		return "XMCT"
+	case "FNKOS":
+		return "FNKOS"
+	case "RCD":
+		return "RECORD"
+	case "PSM":
+		return "PRASM"
+	case "NUSD":
+		return "nUSD"
+	case "PLY":
+		return "PlayCoin QRC20"
+	case "TGAME":
+		return "Truegame"
+	case "IQ":
+		return "Everipedia"
+	case "ENGT":
+		return "Engagement Token"
+	case "NOBS":
+		return "No BS Crypto"
+	case "BMX":
+		return "BitMart Token"
+	case "KAN":
+		return "BitKan"
+	case "CDM":
+		return "Condominium"
+	case "VITE":
+		return "VITE"
+	case "GARD":
+		return "Hashgard"
+	case "SCRL":
+		return "SCRL"
+	case "SPX":
+		return "Sp8de"
+	case "CET":
+		return "CoinEx Token"
+	case "AEG":
+		return "Aegeus"
+	case "RPL":
+		return "Rocket Pool"
+	case "ELY":
+		return "Elysian"
+	case "BOX":
+		return "ContentBox"
+	case "PTT":
+		return "Proton Token"
+	case "SOP":
+		return "SoPay"
+	case "JOT":
+		return "Jury.Online Token"
+	case "KRL":
+		return "Kryll"
+	case "LEMO":
+		return "LemoChain"
+	case "GBC":
+		return "Gold Bits Coin"
+	case "BWX":
+		return "Blue Whale Token"
+	case "WYS":
+		return "wys Token"
+	case "COSM":
+		return "Cosmo Coin"
+	case "NRVE":
+		return "Narrative"
+	case "OLE":
+		return "Olive"
+	case "TRTL":
+		return "Turtlecoin"
+	case "WT":
+		return "WeToken"
+	case "TOTO":
+		return "Tourist Token"
+	case "RLX":
+		return "Relex"
+	case "CHEX":
+		return "CHEX"
+	case "VIEW":
+		return "View"
+	case "VCT":
+		return "ValueCyberToken"
+	case "VIKKY":
+		return "VikkyToken"
+	case "FOXT":
+		return "Fox Trading"
+	case "RTB":
+		return "AB-Chain RTB"
+	case "TOLL":
+		return "Bridge Protocol"
+	case "GVE":
+		return "Globalvillage Ecosystem"
+	case "LCS":
+		return "LocalCoinSwap"
+	case "ZPR":
+		return "ZPER"
+	case "EMPR":
+		return "empowr coin"
+	case "LPC":
+		return "Lightpaycoin"
+	case "FUNDZ":
+		return "FundToken"
+	case "RYO":
+		return "Ryo Currency"
+	case "ACED":
+		return "AceD"
+	case "LFT":
+		return "Linfinity"
+	case "WAB":
+		return "WABnetwork"
+	case "CSM":
+		return "Consentium"
+	case "MVL":
+		return "Mass Vehicle Ledger"
+	case "XXX":
+		return "AdultChain"
+	case "NCP":
+		return "Newton Coin Project"
+	case "DACC":
+		return "DACC"
+	case "TOS":
+		return "ThingsOperatingSystem"
+	case "PGN":
+		return "Pigeoncoin"
+	case "EURS":
+		return "STASIS EURS"
+	case "EXMR":
+		return "Ethereum Monero"
+	case "NIX":
+		return "NIX"
+	case "APL":
+		return "Apollo Currency"
+	case "HORUS":
+		return "HorusPay"
+	case "BIFI":
+		return "Bitcoin File"
+	case "BWS":
+		return "Bitcoin W Spectrum"
+	case "DPN":
+		return "DIPNET"
+	case "VEX":
+		return "Vexanium"
+	case "HDAC":
+		return "Hdac"
+	case "NPW":
+		return "New Power Coin"
+	case "KWH":
+		return "KWHCoin"
+	case "MCT":
+		return "Master Contract Token"
+	case "WSD":
+		return "White Standard"
+	case "ACDC":
+		return "Volt"
+	case "NBR":
+		return "Niobio Cash"
+	case "HRC":
+		return "Haracoin"
+	case "VIVID":
+		return "Vivid Coin"
+	case "PUREX":
+		return "Pure"
+	case "CEN":
+		return "Coinsuper Ecosystem Network"
+	case "BITX":
+		return "BitScreener Token"
+	case "VTHO":
+		return "VeThor Token"
+	case "PRIV":
+		return "PRiVCY"
+	case "RMESH":
+		return "RightMesh"
+	case "BBK":
+		return "Brickblock"
+	case "NCC":
+		return "NeuroChain"
+	case "COIN":
+		return "Coinvest"
+	case "KLKS":
+		return "Kalkulus"
+	case "LSTR":
+		return "Luna Stars"
+	case "BHPC":
+		return "BHPCash"
+	case "INCX":
+		return "InternationalCryptoX"
+	case "ZMN":
+		return "ZMINE"
+	case "SEM":
+		return "Semux"
+	case "ARO":
+		return "Arionum"
+	case "ACRE":
+		return "ACRE"
+	case "IOV":
+		return "Carlive Chain"
+	case "WEB":
+		return "Webcoin"
+	case "FMF":
+		return "Formosa Financial"
+	case "ZEL":
+		return "ZelCash"
+	case "BNN":
+		return "BrokerNekoNetwork"
+	case "OBT":
+		return "Orbis Token"
+	case "CZR":
+		return "CanonChain"
+	case "FOOD":
+		return "FoodCoin"
+	case "IDOL":
+		return "IDOL COIN"
+	case "PTS":
+		return "PitisCoin"
+	case "OPCX":
+		return "OPCoinX"
+	case "BND":
+		return "Blocknode"
+	case "XUN":
+		return "UltraNote Coin"
+	case "BTK":
+		return "Bitcoin Token"
+	case "ARLIZE":
+		return "ARLIZE"
+	case "DTEM":
+		return "Dystem"
+	case "ELI":
+		return "Eligma Token"
+	case "YOU":
+		return "YOU COIN"
+	case "DACS":
+		return "DACSEE"
+	case "EBC":
+		return "EBCoin"
+	case "TCH":
+		return "Thore Cash"
+	case "ADN":
+		return "Adrenaline"
+	case "SDA":
+		return "Six Domain Chain"
+	case "ESCO":
+		return "EscrowCoin"
+	case "YCC":
+		return "Yuan Chain Coin"
+	case "PC":
+		return "Promotion Coin"
+	case "GMCN":
+		return "GambleCoin"
+	case "VITAE":
+		return "Vitae"
+	case "EPLUS":
+		return "EPLUS Coin"
+	case "ROCK2":
+		return "ICE ROCK MINING"
+	case "BCV":
+		return "BitCapitalVendor"
+	case "XTRD":
+		return "XTRD"
+	case "BTCN":
+		return "BitcoiNote"
+	case "NAM":
+		return "NAM COIN"
+	case "LXT":
+		return "Litex"
+	case "EUNO":
+		return "EUNO"
+	case "MGD":
+		return "MassGrid"
+	case "EST":
+		return "Esports Token"
+	case "EXT":
+		return "Experience Token"
+	case "BTI":
+		return "Bitcoin Instant"
+	case "EDS":
+		return "Endorsit"
 	case "VET":
 		return "Vechain"
+	case "KIND":
+		return "Kind Ads Token"
+	case "X8X":
+		return "X8X Token"
+	case "CMM":
+		return "Commercium"
+	case "ECOM":
+		return "Omnitude"
+	case "VIN":
+		return "VINchain"
+	case "LINA":
+		return "Lina"
+	case "BTT":
+		return "Blocktrade Token"
+	case "INO":
+		return "INO COIN"
+	case "KNT":
+		return "Kora Network Token"
+	case "CROAT":
+		return "CROAT"
+	case "BTCONE":
+		return "BitCoin One"
+	case "AVINOC":
+		return "AVINOC"
+	case "WIKI":
+		return "Wiki Token"
+	case "SPN":
+		return "Sapien"
+	case "NUG":
+		return "Nuggets"
+	case "BBS":
+		return "BBSCoin"
+	case "SCR":
+		return "Scorum Coins"
+	case "NBC":
+		return "Niobium Coin"
+	case "NPXSXEM":
+		return "Pundi X NEM"
+	case "XOV":
+		return "XOVBank"
+	case "XCEL":
+		return "XcelToken"
+	case "LYNX":
+		return "Lynx"
+	case "UST":
+		return "Ultra Salescloud"
+	case "OPTI":
+		return "OptiToken"
+	case "GIC":
+		return "Giant"
+	case "ABDT":
+		return "Atlantis Blue Digital Token"
+	case "PKG":
+		return "PKG Token"
+	case "BOC":
+		return "BingoCoin"
+	case "HIGHT":
+		return "HighCoin"
+	case "RDC":
+		return "Ordocoin"
+	case "NEWOS":
+		return "NewsToken"
+	case "PDX":
+		return "PayDay Coin"
+	case "XPAT":
+		return "Bitnation"
+	case "ICR":
+		return "InterCrone"
+	case "RGS":
+		return "RusGas"
+	case "MXM":
+		return "Maximine Coin"
+	case "INB":
+		return "Insight Chain"
+	case "GIO":
+		return "Graviocoin"
+	case "SDS":
+		return "Alchemint Standards"
+	case "OWN":
+		return "OWNDATA"
+	case "IG":
+		return "IGToken"
+	case "HTH":
+		return "Help The Homeless Coin"
+	case "GSE":
+		return "GSENetwork"
+	case "DGS":
+		return "Dragonglass"
+	case "XDNA":
+		return "XDNA"
+	case "XPX":
+		return "ProximaX"
+	case "NYEX":
+		return "Nyerium"
+	case "FORK":
+		return "Forkcoin"
+	case "TIC":
+		return "Thingschain"
+	case "EGEM":
+		return "EtherGem"
+	case "AREPA":
+		return "Arepacoin"
+	case "XET":
+		return "ETERNAL TOKEN"
+	case "CEDEX":
+		return "CEDEX Coin"
+	case "MEETONE":
+		return "MEET.ONE"
+	case "KARMA":
+		return "KARMA"
+	case "NOKU":
+		return "Noku"
+	case "DX":
+		return "DxChain Token"
+	case "UBEX":
+		return "Ubex"
+	case "PASS":
+		return "Blockpass"
+	case "BAAS":
+		return "BaaSid"
+	case "PCO":
+		return "Pecunio"
+	case "THR":
+		return "ThoreCoin"
+	case "FRRN":
+		return "Ferron"
+	case "CYFM":
+		return "CyberFM"
+	case "HYC":
+		return "HYCON"
+	case "METM":
+		return "MetaMorph"
+	case "C2C":
+		return "C2C System"
+	case "AKA":
+		return "Akroma"
+	case "OBTC":
+		return "Obitan Chain"
+	case "TKT":
+		return "Twinkle"
+	case "DAC":
+		return "Davinci Coin"
+	case "QNT":
+		return "Quant"
+	case "ABL":
+		return "Airbloc"
+	case "SAC":
+		return "Smart Application Chain"
+	case "ZCR":
+		return "ZCore"
+	case "XAP":
+		return "Apollon"
+	case "IFP":
+		return "Infinipay"
+	case "SVD":
+		return "savedroid"
+	case "YLC":
+		return "YoloCash"
+	case "MERO":
+		return "Mero"
+	case "PMA":
+		return "PumaPay"
+	case "ARION":
+		return "Arion"
+	case "XBI":
+		return "Bitcoin Incognito"
+	case "SGP":
+		return "SGPay"
+	case "FTT":
+		return "FarmaTrust"
+	case "HYB":
+		return "Hybrid Block"
+	case "TALAO":
+		return "Talao"
+	case "HB":
+		return "HeartBout"
+	case "LGS":
+		return "LogisCoin"
+	case "TDC":
+		return "Trendercoin"
+	case "FNTB":
+		return "Fintab"
+	case "ALTX":
+		return "Alttex"
+	case "SEAL":
+		return "Seal Network"
+	case "LKY":
+		return "Linkey"
+	case "ABX":
+		return "Arbidex"
+	case "COMP":
+		return "Compound Coin"
+	case "HAND":
+		return "ShowHand"
+	case "HIT":
+		return "HitChain"
+	case "SC2":
+		return "SecureCloudCoin"
+	case "GPKR":
+		return "Gold Poker"
+	case "TWIST":
+		return "TWIST"
+	case "ZP":
+		return "Zen Protocol"
+	case "MOZO":
+		return "Mozo Token"
+	case "ECT":
+		return "SuperEdge"
+	case "MFTU":
+		return "Mainstream For The Underground"
+	case "DFS":
+		return "Defense"
+	case "RTL":
+		return "Rentledger"
+	case "CATO":
+		return "CatoCoin"
+	case "RRC":
+		return "RRCoin"
+	case "RATING":
+		return "DPRating"
+	case "CTC":
+		return "Credit Tag Chain"
+	case "KNOW":
+		return "KNOW"
+	case "GRPH":
+		return "Graphcoin"
+	case "KXC":
+		return "KingXChain"
+	case "NSD":
+		return "Nasdacoin"
+	case "PRTX":
+		return "Printex"
+	case "LOBS":
+		return "Lobstex"
+	case "RBMC":
+		return "Rubex Money"
+	case "VDG":
+		return "VeriDocGlobal"
+	case "YUKI":
+		return "YUKI"
+	case "KWATT":
+		return "4NEW"
+	case "MIB":
+		return "MIB Coin"
+	case "COTN":
+		return "CottonCoin"
+	case "BITF":
+		return "BitF"
+	case "SONIQ":
+		return "Soniq"
+	case "GTM":
+		return "Gentarium"
+	case "DELTA":
+		return "DeltaChain"
+	case "NRG":
+		return "Energi"
+	case "FTXT":
+		return "FUTURAX"
+	case "DAV":
+		return "DAV Coin"
+	case "ABLX":
+		return "ABLE"
+	case "BNC0":
+		return "Bionic"
+	case "DOW":
+		return "DOWCOIN"
+	case "QBIT":
+		return "Qubitica"
+	case "BTN":
+		return "BitNewChain"
+	case "DNZ":
+		return "Adenz"
+	case "TAC":
+		return "Traceability Chain"
+	case "CST":
+		return "Cryptosolartech"
+	case "VULC":
+		return "VULCANO"
+	case "BQT":
+		return "Blockchain Quotations Index Token"
+	case "STR":
+		return "Staker"
+	case "UT":
+		return "Ulord"
+	case "FLM":
+		return "FolmCoin"
+	case "WIN":
+		return "WinToken"
+	case "TMC":
+		return "Timicoin"
+	case "ESN":
+		return "Ethersocial"
+	case "FKX":
+		return "Knoxstertoken"
+	case "BEET":
+		return "Beetle Coin"
+	case "IMT":
+		return "Moneytoken"
+	case "MIC":
+		return "Mindexcoin"
+	case "UBC":
+		return "Ubcoin Market"
+	case "TSC":
+		return "Thunderstake"
+	case "FLOT":
+		return "Fire Lotto"
+	case "ALI":
+		return "AiLink Token"
+	case "USE":
+		return "Usechain Token"
+	case "ZBA":
+		return "Zoomba"
+	case "SHE":
+		return "ShineChain"
+	case "BLACK":
+		return "eosBLACK"
+	case "MRI":
+		return "Mirai"
+	case "CYMT":
+		return "CyberMusic"
+	case "BTR":
+		return "Bitether"
+	case "GZE":
+		return "GazeCoin"
+	case "BUT":
+		return "BitUP Token"
+	case "UC":
+		return "YouLive Coin"
+	case "AMO":
+		return "AMO Coin"
+	case "CCL":
+		return "CYCLEAN"
+	case "DIN":
+		return "Dinero"
+	case "DIT":
+		return "Digital Insurance Token"
+	case "HAVY":
+		return "Havy"
+	case "CARE":
+		return "Carebit"
+	case "PRJ":
+		return "Project Coin"
+	case "DART":
+		return "DarexTravel"
+	case "CIF":
+		return "Crypto Improvement Fund"
+	case "IMP":
+		return "Ether Kingdoms Token"
+	case "C2P":
+		return "Coin2Play"
+	case "C8":
+		return "Carboneum C8 Token"
+	case "ZEST":
+		return "ZEST"
+	case "SNO":
+		return "SaveNode"
+	case "VSC":
+		return "vSportCoin"
+	case "PENG":
+		return "Penguin Coin"
+	case "RTH":
+		return "Rotharium"
+	case "RET":
+		return "RealTract"
+	case "QNTU":
+		return "Quanta Utility Token"
+	case "TV":
+		return "Ti-Value"
+	case "FOIN":
+		return "FOIN"
+	case "GNR":
+		return "Gainer"
+	case "BIR":
+		return "Birake"
+	case "MEX":
+		return "MEX"
+	case "AAA":
+		return "Abulaba"
+	case "DAXT":
+		return "Digital Asset Exchange Token"
+	case "BEN":
+		return "BitCoen"
+	case "ELLI":
+		return "Elliot Coin"
+	case "BTXC":
+		return "Bettex Coin"
+	case "CIT":
+		return "CariNet"
+	case "OLMP":
+		return "Olympic"
+	case "BTAD":
+		return "Bitcoin Adult"
+	case "BU":
+		return "BUMO"
+	case "URALS":
+		return "UralsCoin"
+	case "XRT":
+		return "XRT Token"
+	case "BFF":
+		return "BFFDoom"
+	case "IHF":
+		return "Invictus Hyperion Fund"
+	case "UCN":
+		return "UChain"
+	case "CRBT":
+		return "Cruisebit"
+	case "MOLK":
+		return "MobilinkToken"
+	case "EDN":
+		return "Eden"
+	case "GUSD":
+		return "Gemini Dollar"
+	case "SPND":
+		return "Spendcoin"
+	case "XCG":
+		return "Xchange"
+	case "CCC":
+		return "Concierge Coin"
+	case "ALC":
+		return "ALLCOIN"
+	case "CSTL":
+		return "Castle"
+	case "EVI":
+		return "Evimeria"
+	case "CFL":
+		return "CryptoFlow"
+	case "BOXX":
+		return "BOXX Token Blockparty"
+	case "IOG":
+		return "Playgroundz"
+	case "AOG":
+		return "smARTOFGIVING"
+	case "CTRT":
+		return "Cryptrust"
+	case "TCN":
+		return "TCOIN"
+	case "BUNNY":
+		return "BunnyToken"
+	case "PYN":
+		return "PAYCENT"
+	case "PLURA":
+		return "PluraCoin"
+	case "ROX":
+		return "Robotina"
+	case "CHE":
+		return "Crypto Harbor Exchange"
+	case "SIX":
+		return "SIX"
+	case "CMIT":
+		return "CMITCOIN"
+	case "PAX":
+		return "Paxos Standard Token"
+	case "GOSS":
+		return "Gossipcoin"
+	case "SOL":
+		return "Sola Token"
+	case "XCASH":
+		return "X-Cash"
+	case "SHARD":
+		return "Shard"
+	case "IQN":
+		return "IQeon"
+	case "PAXEX":
+		return "PAXEX"
+	case "PGT":
+		return "Puregold Token"
+	case "MLC":
+		return "Mallcoin"
+	case "PHON":
+		return "Phonecoin"
+	case "ACTP":
+		return "Archetypal Network"
+	case "ANON":
+		return "ANON"
+	case "ECOREAL":
+		return "Ecoreal Estate"
+	case "DAPS":
+		return "DAPS Token"
+	case "VSTR":
+		return "Vestoria"
+	case "CARAT":
+		return "CARAT"
+	case "MNP":
+		return "MNPCoin"
+	case "PYX":
+		return "PyrexCoin"
+	case "DACH":
+		return "DACH Coin"
+	case "ZB":
+		return "ZB"
+	case "MAS":
+		return "MidasProtocol"
+	case "WELL":
+		return "WELL"
+	case "TRXC":
+		return "TRONCLASSIC"
+	case "AZART":
+		return "Azart"
+	case "TMTG":
+		return "The Midas Touch Gold"
+	case "DAGT":
+		return "Digital Asset Guarantee Token"
+	case "HSN":
+		return "Helper Search Token"
+	case "WIT":
+		return "WITChain"
+	case "ERT":
+		return "Eristica"
+	case "AUX":
+		return "Auxilium"
+	case "WXC":
+		return "WXCOINS"
+	case "CPLO":
+		return "Cpollo"
+	case "SINS":
+		return "SafeInsure"
+	case "CRD":
+		return "CryptalDash"
+	case "NER":
+		return "Nerves"
+	case "MIR":
+		return "MIR COIN"
+	case "RPM":
+		return "Repme"
+	case "BETHER":
+		return "Bethereum"
+	case "RAGNA":
+		return "Ragnarok"
+	case "DEC":
+		return "Darico Ecosystem Coin"
+	case "XGS":
+		return "GenesisX"
+	case "LABH":
+		return "Labh Coin"
+	case "WBL":
+		return "WIZBL"
+	case "CIV":
+		return "Civitas"
+	case "BCARD":
+		return "CARDbuyers"
+	case "BENZ":
+		return "Benz"
+	case "XG":
+		return "GIGA"
+	case "ACM":
+		return "Actinium"
+	case "BLAST":
+		return "BLAST"
+	case "FREE":
+		return "FREE Coin"
+	case "TOL":
+		return "Tolar"
+	case "QUAN":
+		return "Quantis Network"
+	case "FOX":
+		return "SmartFox"
+	case "MASH":
+		return "MASTERNET"
+	case "OUR":
+		return "Ourcoin"
+	case "STEEP":
+		return "SteepCoin"
+	case "NRP":
+		return "Neural Protocol"
+	case "SCRIV":
+		return "SCRIV NETWORK"
+	case "WSP":
+		return "Wispr"
+	case "X12":
+		return "X12 Coin"
+	case "SHADE":
+		return "SHADE Token"
+	case "IFOOD":
+		return "Ifoods Chain"
+	case "EGX":
+		return "EagleX"
+	case "WIX":
+		return "Wixlar"
+	case "PNDM":
+		return "Pandemia"
+	case "BC":
+		return "Block-Chain.com"
+	case "RSTR":
+		return "Ondori"
+	case "USDC":
+		return "USD//Coin"
+	case "ETA":
+		return "Etheera"
+	case "BSX":
+		return "Bitspace"
+	case "WTL":
+		return "Welltrado"
+	case "SIM":
+		return "Simmitri"
+	case "NDX":
+		return "nDEX"
+	case "ZEUS":
+		return "ZeusCrowdfunding"
+	case "BCZERO":
+		return "Buggyra Coin Zero"
+	case "WAGE":
+		return "Digiwage"
+	case "F1C":
+		return "Future1coin"
+	case "META":
+		return "Metadium"
+	case "QAC":
+		return "Quasarcoin"
+	case "COBRA":
+		return "Cobrabytes"
+	case "PSC":
+		return "PrimeStone"
+	case "SHPING":
+		return "SHPING"
+	case "S":
+		return "Sharpay"
+	case "QNO":
+		return "QYNO"
+	case "AEC":
+		return "EmaratCoin"
+	case "INCO":
+		return "Incodium"
+	case "AGLT":
+		return "Agrolot"
+	case "JIYOX":
+		return "JIYO"
+	case "SURE":
+		return "SURETY"
+	case "ICNQ":
+		return "Iconiq Lab Token"
+	case "RPD":
+		return "Rapids"
+	case "ENTS":
+		return "EUNOMIA"
+	case "SOOM":
+		return "SOOM"
+	case "SNET":
+		return "Snetwork"
+	case "SMQ":
+		return "SIMDAQ"
+	case "ABBC":
+		return "Alibabacoin"
+	case "OXY":
+		return "Oxycoin"
+	case "DEAL":
+		return "iDealCash"
+	case "WIRE":
+		return "AirWire"
+	case "DIVI":
+		return "Divi"
+	case "XIND":
+		return "INDINODE"
+	case "HUZU":
+		return "HUZU"
+	case "KUN":
+		return "KUN"
+	case "ZNT":
+		return "Zenswap Network Token"
+	case "ATH":
+		return "Atheios"
+	case "CDC":
+		return "Commerce Data Connection"
+	case "MMO":
+		return "MMOCoin"
+	case "SZC":
+		return "ShopZcoin"
+	case "BLOC":
+		return "BLOC.MONEY"
+	case "ETHO":
+		return "Ether-1"
+	case "CJS":
+		return "CJs"
+	case "DATP":
+		return "Decentralized Asset Trading Platform"
+	case "DEEX":
+		return "DEEX"
+	case "PLUS1":
+		return "PlusOneCoin"
+	case "IRD":
+		return "Iridium"
+	case "ZT":
+		return "ZTCoin"
+	case "HELP":
+		return "GoHelpFund"
+	case "IXE":
+		return "IXTUS Edutainment"
+	case "RPI":
+		return "RPICoin"
+	case "CHEESE":
+		return "Cheesecoin"
 	default:
-		return symbol
+		return NameForSymbolManuallyAdded(symbol)
 	}
 }

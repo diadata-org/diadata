@@ -1,12 +1,15 @@
 package scrapers
 
 import (
+	// "encoding/json"
 	"errors"
 	"fmt"
 	"github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	log "github.com/sirupsen/logrus"
+	// "io/ioutil"
 	"math"
+	// "net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -28,18 +31,20 @@ type KrakenScraper struct {
 	pairScrapers map[string]*KrakenPairScraper // pc.Pair -> pairScraperSet
 	api          *krakenapi.KrakenApi
 	ticker       *time.Ticker
+	exchangeName string
 }
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewKrakenScraper(key string, secret string) *KrakenScraper {
+func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScraper {
 	s := &KrakenScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*KrakenPairScraper),
-		error:        nil,
 		api:          krakenapi.New(key, secret),
 		ticker:       time.NewTicker(krakenRefreshDelay),
+		exchangeName: exchangeName,
+		error:        nil,
 	}
 	go s.mainLoop()
 	return s
@@ -134,6 +139,11 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	s.pairScrapers[pair.Symbol] = ps
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information

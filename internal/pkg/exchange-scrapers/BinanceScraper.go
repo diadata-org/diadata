@@ -1,14 +1,19 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"sync"
 	"time"
+
+	"io/ioutil"
+	"net/http"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
@@ -30,16 +35,18 @@ type BinanceScraper struct {
 	pairScrapers      sync.Map // dia.Pair -> binancePairScraperSet
 	pairSubscriptions sync.Map // dia.Pair -> string (subscription ID)
 	pairLocks         sync.Map // dia.Pair -> sync.Mutex
+	exchangeName      string
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -134,7 +141,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				Volume:         volume,
 				Time:           time.Unix(event.TradeTime/1000, (event.TradeTime%1000)*int64(time.Millisecond)),
 				ForeignTradeID: strconv.FormatInt(event.AggTradeID, 16),
-				Source:         dia.BinanceExchange,
+				Source:         s.exchangeName,
 			}
 			ps.chanTrades <- t
 		} else {
@@ -148,6 +155,67 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	_, _, err := binance.WsAggTradeServe(pair.ForeignName, wsAggTradeHandler, errHandler)
 
 	return ps, err
+}
+func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
+	symbol = params[0]
+	status := params[1]
+	if status == "TRADING" {
+		if helpers.NameForSymbol(symbol) == symbol {
+			if !helpers.SymbolIsName(symbol) {
+				if symbol == "IOTA" {
+					return "MIOTA", nil
+				}
+				if symbol == "YOYO" {
+					return "YOYOW", nil
+				}
+				/// ethos
+				if symbol == "BQX" {
+					return "ETHOS", nil
+				}
+				/// Bitcoin Cash
+				if symbol == "BCC" {
+					return "BCH", nil
+				}
+				return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+			}
+		}
+		if helpers.SymbolIsBlackListed(symbol) {
+			return symbol, errors.New("Symbol is black listed:" + symbol)
+		}
+	} else {
+		return symbol, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
+
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+
+	response, err := http.Get("https://api.binance.com//api/v1/exchangeInfo")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar binance.ExchangeInfo
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar.Symbols {
+			symbol, serr := s.normalizeSymbol(p.Symbol, p.BaseAsset, p.Status)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Symbol,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // BinancePairScraper implements PairScraper for Binance

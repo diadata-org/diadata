@@ -1,15 +1,19 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _socketurl string = "wss://api.hitbtc.com/api/2/ws"
@@ -35,15 +39,17 @@ type HitBTCScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HitBTCPairScraper
+	exchangeName string
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper() *HitBTCScraper {
+func NewHitBTCScraper(exchangeName string) *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*HitBTCPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -105,7 +111,7 @@ func (s *HitBTCScraper) mainLoop() {
 									Volume:         f64Volume,
 									Time:           timeStamp,
 									ForeignTradeID: strconv.FormatInt(int64(md_element["id"].(float64)), 16),
-									Source:         dia.HitBTCExchange,
+									Source:         s.exchangeName,
 								}
 								ps.chanTrades <- t
 							}
@@ -186,6 +192,57 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	type APIResponse struct {
+		Id                   string  `json:"id"`
+		BaseCurrency         string  `json:"baseCurrency"`
+		QuoteCurrency        string  `json:"quoteCurrency"`
+		QuantityIncrement    float64 `json:"quantityIncrement,string"`
+		TickSize             float64 `json:"tickSize,string"`
+		TakeLiquidityRate    float64 `json:"takeLiquidityRate,string"`
+		ProvideLiquidityRate float64 `json:"provideLiquidityRate,string"`
+		FeeCurrency          string  `json:"feeCurrency"`
+	}
+	response, err := http.Get("https://api.hitbtc.com/api/2/public/symbol")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar []APIResponse
+	err = json.Unmarshal(data, &ar)
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar {
+			symbol, serr := s.normalizeSymbol(p.Id, p.BaseCurrency)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Id,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // HitBTCPairScraper implements PairScraper for HitBTC

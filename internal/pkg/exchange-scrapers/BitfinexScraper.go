@@ -7,8 +7,12 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -35,10 +39,11 @@ type BitfinexScraper struct {
 	pairSubscriptions sync.Map          // dia.Pair -> string (subscription ID)
 	pairLocks         sync.Map          // dia.Pair -> sync.Mutex
 	symbols           map[string]string // pair to symbol mapping
+	exchangeName      string
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchangeName string) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -54,6 +59,7 @@ func NewBitfinexScraper(key string, secret string) *BitfinexScraper {
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		symbols:      make(map[string]string),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -92,7 +98,7 @@ func (s *BitfinexScraper) mainLoop() {
 						Volume:         volume,
 						Time:           time.Unix(m.MTS/1000, (m.MTS%1000)*int64(time.Millisecond)),
 						ForeignTradeID: strconv.FormatInt(m.ID, 16),
-						Source:         dia.BitfinexExchange,
+						Source:         s.exchangeName,
 					}
 					// get lock for pair
 					pairLock, ok := s.pairLocks.Load(m.Pair)
@@ -205,6 +211,55 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		s.pairSubscriptions.Store(pair.ForeignName, id)
 	}
 	return ps, nil
+}
+func (s *BitfinexScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
+	symbol = strings.ToUpper(foreignName[0:3])
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOT" {
+				return "MIOTA", nil
+			}
+			if symbol == "IOS" {
+				return "IOST", nil
+			}
+			if symbol == "QTM" {
+				return "QTUM", nil
+			}
+			if symbol == "QSH" {
+				return "QASH", nil
+			}
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	response, err := http.Get("https://api.bitfinex.com/v1/symbols")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+	for _, p := range ls {
+		symbol, serr := s.normalizeSymbol(p)
+		if serr == nil {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbol,
+				ForeignName: p,
+				Exchange:    s.exchangeName,
+			})
+		} else {
+			log.Error(serr)
+		}
+	}
+	return
 }
 
 // BitfinexPairScraper implements PairScraper for Bitfinex

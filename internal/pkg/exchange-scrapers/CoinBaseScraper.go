@@ -1,12 +1,17 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	ws "github.com/gorilla/websocket"
 	"github.com/preichenberger/go-gdax"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -21,6 +26,7 @@ type CoinBaseScraper struct {
 	closed       bool
 	pairScrapers map[string]*CoinBasePairScraper // pc.Pair -> pairScraperSet
 	wsConn       *ws.Conn
+	exchangeName string
 }
 
 const (
@@ -34,11 +40,12 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper() *CoinBaseScraper {
+func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*CoinBasePairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -87,7 +94,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								Volume:         f64Volume,
 								Time:           message.Time.Time(),
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeId), 16),
-								Source:         dia.CoinBaseExchange,
+								Source:         s.exchangeName,
 							}
 
 							ps.chanTrades <- t
@@ -132,6 +139,45 @@ func (s *CoinBaseScraper) Close() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
+}
+func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
+	str := strings.Split(foreignName, "-")
+	symbol = str[0]
+	if helpers.NameForSymbol(symbol) == symbol {
+		return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	response, err := http.Get("https://api.pro.coinbase.com/products")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar []gdax.Product
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar {
+			symbol, serr := s.normalizeSymbol(p.Id)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Id,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // NewCoinBaseScraper implements PairScraper for GDax

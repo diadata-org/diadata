@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
-
-	"strconv"
-
-	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 type PairIdMap struct {
@@ -38,14 +39,16 @@ type SimexScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*SimexPairScraper
 	pairIdTrade  map[string]*PairIdMap
+	exchangeName string
 }
 
-func NewSimexScraper() *SimexScraper {
+func NewSimexScraper(exchangeName string) *SimexScraper {
 
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*SimexPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 	pairMap := map[string]*PairIdMap{}
@@ -126,7 +129,7 @@ func (s *SimexScraper) mainLoop() {
 							Volume:         f64Volume,
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["id"].(float64)), 16),
-							Source:         dia.SimexExchange,
+							Source:         s.exchangeName,
 						}
 						el.chanTrades <- t
 					}
@@ -212,6 +215,58 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	s.pairScrapers[pair.ForeignName] = ps
 
 	return ps, nil
+}
+
+func (s *SimexScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign name can not be normalized:" + name + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	type NameT struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+	type DataT struct {
+		Base  NameT `json:"base"`
+		Quote NameT `json:"quote"`
+	}
+	type APIResponse struct {
+		Data []DataT `json:"data"`
+	}
+	response, err := http.Get("https://simex.global/api/pairs")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar.Data {
+			symbol, serr := s.normalizeSymbol(p.Base.Name, p.Base.Description)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: symbol + p.Quote.Name,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // SimexPairScraper implements PairScraper for Simex

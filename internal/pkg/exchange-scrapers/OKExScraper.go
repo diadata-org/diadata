@@ -1,16 +1,19 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var _OKExSocketurl string = "wss://real.okex.com:10441/websocket"
@@ -41,15 +44,17 @@ type OKExScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*OKExPairScraper
+	exchangeName string
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper() *OKExScraper {
+func NewOKExScraper(exchangeName string) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*OKExPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -136,7 +141,7 @@ func (s *OKExScraper) mainLoop() {
 							Volume:         f64Volume,
 							Time:           timeStamp,
 							ForeignTradeID: message[0].Data[0][0],
-							Source:         dia.OKExExchange,
+							Source:         s.exchangeName,
 						}
 						ps.chanTrades <- t
 
@@ -212,6 +217,56 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
+	symbol = strings.ToUpper(baseCurrency)
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOTA" {
+				return "MIOTA", nil
+			}
+			if symbol == "YOYO" {
+				return "YOYOW", nil
+			}
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	type APIResponse struct {
+		Id           string `json:"instrument_id"`
+		BaseCurrency string `json:"base_currency"`
+	}
+	response, err := http.Get("https://www.okex.com/api/spot/v3/products")
+	if err != nil {
+		log.Error("The HTTP request failed:", err)
+		return
+	}
+	defer response.Body.Close()
+	data, _ := ioutil.ReadAll(response.Body)
+	var ar []APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar {
+			symbol, serr := s.normalizeSymbol(p.Id, p.BaseCurrency)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Id,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // OKExPairScraper implements PairScraper for OKEx exchange

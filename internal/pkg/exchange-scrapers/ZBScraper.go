@@ -3,14 +3,13 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"log"
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 )
 
 var ZBSocketURL string = "wss://api.zb.cn:9999/websocket"
@@ -46,15 +45,17 @@ type ZBScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*ZBPairScraper
+	exchangeName string
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper() *ZBScraper {
+func NewZBScraper(exchangeName string) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*ZBPairScraper),
+		exchangeName: exchangeName,
 		error:        nil,
 	}
 
@@ -111,7 +112,7 @@ func (s *ZBScraper) mainLoop() {
 				Volume:         f64Volume,
 				Time:           time.Unix(int64(trade.Date), 0),
 				ForeignTradeID: fmt.Sprint(trade.Tid),
-				Source:         dia.ZBExchange,
+				Source:         s.exchangeName,
 			}
 			ps.chanTrades <- t
 		}
@@ -177,6 +178,11 @@ func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	return ps, nil
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // ZBPairScraper implements PairScraper for ZB
