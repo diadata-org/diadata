@@ -35,7 +35,7 @@ The event fields show the values in the following locations:
 * Name is displayed in the sixth and last field (display as `text`).
 
 ## API Access
-You can find our live API at https://api.diadata.org/v1 [swagger](https://api.diadata.org/swagger/index.html).
+You can find documnentation for our [live API](https://api.diadata.org/v1) on our [swagger site](https://api.diadata.org/swagger/index.html).
 Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
