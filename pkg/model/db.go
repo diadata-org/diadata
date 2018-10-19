@@ -43,7 +43,7 @@ type Datastore interface {
 }
 
 const (
-	influxMaxPointsInBatch = 2000
+	influxMaxPointsInBatch = 200
 )
 
 type DB struct {
@@ -99,11 +99,17 @@ func NewDataStore() (*DB, error) {
 		log.Error("NewDataStore influxdb", err)
 	}
 
+	bp, _ := createBatchInflux()
+
 	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 	if err != nil {
 		log.Errorln("queryInfluxDB CREATE DATABASE", err)
 	}
 
+	return &DB{r, i, bp, 0}, nil
+}
+
+func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
 		Precision: "s",
@@ -111,7 +117,7 @@ func NewDataStore() (*DB, error) {
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return &DB{r, i, bp, 0}, nil
+	return bp, err
 }
 
 func (db *DB) Flush() error {
@@ -146,6 +152,7 @@ func (db *DB) WriteBashInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBashInflux", err)
+		db.influxBatchPoints, _ = createBatchInflux()
 	} else {
 		db.influxPointsInBatch = 0
 	}
@@ -158,7 +165,6 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Info("AddPoint forcing write Bash")
 		db.WriteBashInflux()
-		db.influxPointsInBatch = 0
 	}
 }
 
