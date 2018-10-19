@@ -52,14 +52,25 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string) ([]
 	exchangeQuery := "and exchange='" + exchange + "' "
 
 	//select * from filters WHERE filter='MM120'  ORDER BY DESC, LIMIT 5
+	table := ""
+	if filter == "VOL120" {
+		table = "a_year.filters_sum_30m"
+	} else {
+		table = "a_year.filters_mean_30m"
+	}
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC LIMIT 56", influxDbFiltersTable, filter, exchangeQuery, symbol)
+	table = influxDbFiltersTable
 
-	log.Info("GetFilterPoints query:", q)
+	//q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC LIMIT 200", table, filter, exchangeQuery, symbol)
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", table, filter, exchangeQuery, symbol)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorln("GetFilterPoints", err)
 	}
+
+	log.Info("GetFilterPoints query:", q, "returned ", len(res))
+
 	return res, err
 }

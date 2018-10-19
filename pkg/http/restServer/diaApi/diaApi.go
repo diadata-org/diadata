@@ -275,7 +275,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   exchange     path    string     true        "Some exchange"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} points "success"
+// @Success 200 {object} diaApi.points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
@@ -299,7 +299,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Produce  json
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   filter     path    string     true        "Some filter"
-// @Success 200 {object} points "success"
+// @Success 200 {object} diaApi.points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPointsAllExchanges/:symbol:/:symbol: [get]

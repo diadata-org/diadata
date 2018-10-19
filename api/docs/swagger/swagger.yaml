@@ -153,6 +153,11 @@ definitions:
           $ref: '#/definitions/models.SymbolExchangeDetails'
         type: array
     type: object
+  diaApi.points:
+    properties:
+      dataPoints:
+        type: string
+    type: object
   models.Change:
     properties:
       usd:
@@ -331,7 +336,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/points'
+            $ref: '#/definitions/diaApi.points'
             type: object
         "404":
           description: Symbol not found
@@ -368,7 +373,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/points'
+            $ref: '#/definitions/diaApi.points'
             type: object
         "404":
           description: Symbol not found
