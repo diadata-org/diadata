@@ -55,7 +55,7 @@ nav.bg-info {
 	}
 }
 
-@media (min-width: 1024px)  {
+@media (min-width: 1024px) and (max-width: 1366px) {
 
 	.row {
 	  margin-right: 0 !important;
