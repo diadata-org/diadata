@@ -123,6 +123,7 @@ func main() {
 		panic("Can not initialize db error:" + e.Error())
 	}
 	getInitialExchangePairs()
+	updateExchangePairs()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
