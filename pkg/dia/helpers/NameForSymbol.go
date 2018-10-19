@@ -2,6 +2,12 @@ package helpers
 
 func SymbolIsName(symbol string) bool {
 	switch symbol {
+	case "STK":
+		return true
+	case "VITE":
+		return true
+	case "MEX":
+		return true
 	case "XRP":
 		return true
 	case "MCO":
@@ -24,6 +30,28 @@ func SymbolIsName(symbol string) bool {
 		return true
 	case "NKN":
 		return true
+	case "VIBE":
+		return true
+	case "PIVX":
+		return true
+	case "IOST":
+		return true
+	case "WAX":
+		return true
+	case "YEE":
+		return true
+	case "CIC":
+		return true
+	case "BEC":
+		return true
+	case "TRA":
+		return true
+	case "OKB":
+		return true
+	case "HSR":
+		return true
+	case "CAI":
+		return true
 	default:
 		return false
 	}
@@ -43,6 +71,41 @@ func NameForSymbolManuallyAdded(symbol string) string {
 		return "EOSADD"
 	case "BXC":
 		return "BonusCloud"
+		// Bitfinex
+	case "RRT":
+		return "Recovery Right Token"
+		//OKEx
+	case "CIC":
+		return "CIC"
+	case "BEC":
+		return "BEC"
+	case "TRA":
+		return "TRA"
+	case "OKB":
+		return "OKB"
+	case "HSR":
+		return "HSR"
+	case "CAI":
+		return "CAI"
+		//Simex
+	case "WCO":
+		return "Winco"
+	case "NBTK":
+		return "Nebeus Crypto Bank"
+	case "GOLD":
+		return "Goldmint"
+	case "MAD":
+		return "MAD Network"
+	case "ULTC":
+		return "Ultimate Coin"
+	case "BZS":
+		return "Baista"
+	case "RBM":
+		return "Robomed"
+	case "VOCT":
+		return "VOCO"
+	case "MTRC":
+		return "ModulTrade"
 	default:
 		return symbol
 	}
