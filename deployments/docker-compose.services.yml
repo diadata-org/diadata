@@ -34,6 +34,15 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_graphservice:latest
     volumes:
       - /home/srv/restServer/charts:/charts
+    logging:
+      options:
+        max-size: "50m"
+
+  pairdiscoveryservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-pairDiscoveryService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_pairdiscoveryservice:latest
     networks:
       - redis-network
     logging:
