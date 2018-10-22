@@ -249,12 +249,10 @@ func (s *ECBScraper) Update() error {
 					change.USD = append(change.USD, models.CurrencyChange{
 						Symbol:        valueCube.Currency,
 						Rate:          rate / euroDollar,
-						RateYesterday: rate, // TOFIX
+						RateYesterday: rate / euroDollar, // TOFIX
 					})
 				}
-
 			}
-
 		}
 		//
 		s.datastore.SetCurrencyChange(change)

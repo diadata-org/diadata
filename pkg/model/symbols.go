@@ -32,7 +32,7 @@ func (db *DB) GetSymbols(exchange string) ([]string, error) {
 			}
 		}
 		if cursor == 0 {
-			log.Info("GetSymbols %v returns %v", key, result)
+			log.Debug("GetSymbols %v returns %v", key, result)
 			return result, nil
 		}
 	}

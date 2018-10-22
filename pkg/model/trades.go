@@ -10,7 +10,6 @@ import (
 
 func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
-	log.Info("GetLastTrades")
 	q := fmt.Sprintf("SELECT * FROM %s WHERE exchange='%s' and symbol='%s' ORDER BY DESC LIMIT %d", influxDbTradesTable, exchange, symbol, maxTrades)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {

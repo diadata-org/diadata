@@ -28,7 +28,7 @@ func (db *DB) SymbolsWithASupply() ([]string, error) {
 			result = append(result, strings.Replace(value, key, "", 1))
 		}
 		if cursor == 0 {
-			log.Info("SymbolsWithASupply %v returns %v", key, result)
+			log.Debug("SymbolsWithASupply %v returns %v", key, result)
 			return result, nil
 		}
 	}
