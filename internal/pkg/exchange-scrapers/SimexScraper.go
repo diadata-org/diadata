@@ -113,9 +113,18 @@ func (s *SimexScraper) mainLoop() {
 						}
 
 						f64Price_string := tradeReturn["price"].(string)
-						f64Price, _ := strconv.ParseFloat(f64Price_string, 64)
+						f64Price, err := strconv.ParseFloat(f64Price_string, 64)
+						if err != nil {
+							log.Errorln("ParseFloat:", err)
+							continue
+						}
+
 						f64Volume_string := tradeReturn["size"].(string)
-						f64Volume, _ := strconv.ParseFloat(f64Volume_string, 64)
+						f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
+						if err != nil {
+							log.Errorln("ParseFloat2:", err)
+							continue
+						}
 
 						if tradeReturn["side"] == "sell" {
 							f64Volume = -f64Volume
