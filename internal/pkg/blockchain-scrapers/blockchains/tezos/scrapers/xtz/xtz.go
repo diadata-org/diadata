@@ -32,10 +32,10 @@ func retrieveXTZSupply() {
 	balance := float64(v / decimals)
 	supply := totalSupply - balance
 	log.Println("Balance:" + strconv.FormatFloat(balance, 'f', 4, 64) + " Supply:" + strconv.FormatFloat(supply, 'f', 4, 64))
-	// client.SendSupply(&dia.Supply{
-	// 	Symbol:            tezosSymbol,
-	// 	CirculatingSupply: supply,
-	// })
+	client.SendSupply(&dia.Supply{
+		Symbol:            tezosSymbol,
+		CirculatingSupply: supply,
+	})
 }
 
 type Task struct {
@@ -67,18 +67,17 @@ func main() {
 	task := &Task{
 		closed: make(chan struct{}),
 		/// Retrieve every minute according to block frequency
-		//ticker: time.NewTicker(time.Second * 60 ),
-		ticker: time.NewTicker(time.Second * 2),
+		ticker: time.NewTicker(time.Second * 60),
 	}
 
-	// config := dia.GetConfigApi()
-	// if config == nil {
-	// 	panic("Could not load config")
-	// }
-	// client = dia.NewClient(config)
-	// if client == nil {
-	// 	panic("Could not load client")
-	// }
+	config := dia.GetConfigApi()
+	if config == nil {
+		panic("Could not load config")
+	}
+	client = dia.NewClient(config)
+	if client == nil {
+		panic("Could not load client")
+	}
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
