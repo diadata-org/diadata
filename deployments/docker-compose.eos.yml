@@ -36,7 +36,7 @@ services:
 
 secrets:
   api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/diadata/config/secrets/api_diadata.json
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
 
 volumes: 
   eosio:

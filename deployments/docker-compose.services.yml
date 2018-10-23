@@ -32,6 +32,8 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-graphService
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_graphservice:latest
+    networks:
+      - redis-network
     volumes:
       - /home/srv/restServer/charts:/charts
     logging:
