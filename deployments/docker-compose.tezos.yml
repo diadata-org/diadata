@@ -39,3 +39,7 @@ services:
 
 networks:
   scrapers-network:
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
