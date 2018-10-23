@@ -38,9 +38,9 @@ secrets:
   api_diadata:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
 
-volumes:
+volumes: 
   eosio:
     external: true
 
-networks:
+networks: 
   scrapers-network:
