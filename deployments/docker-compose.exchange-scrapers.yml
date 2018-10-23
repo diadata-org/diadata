@@ -147,6 +147,18 @@ services:
     logging:
       options:
         max-size: "50m"
+  
+  quoinecollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_quoinecollector:latest
+    command: /bin/collector -exchange=Quoine
+    networks:
+      - kafka-network
+    logging:
+      options:
+        max-size: "50m"
 
 secrets:
   api_binance:
