@@ -1,20 +1,17 @@
 package scrapers
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/jjjjpppp/quoinex-go-client/v2"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"io/ioutil"
 	"strconv"
 	"sync"
 	"time"
 )
 
 const (
-	PAIRS_JSON      = "../../../config/Quoine.json"
 	API_DELAY       = 1*time.Second + 500*time.Millisecond
 	EXECUTION_LIMIT = 200
 )
@@ -34,8 +31,6 @@ type QuoineScraper struct {
 
 	pairScrapers   map[string]*QuoinePairScraper
 	productPairIds map[string]int
-
-	ticker *time.Ticker
 }
 
 func NewQuoineScraper(exchangeName string) *QuoineScraper {
@@ -53,13 +48,12 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
 		pairScrapers:   make(map[string]*QuoinePairScraper),
-		ticker:         time.NewTicker(API_DELAY),
 	}
 
 	// generate JSON file with currency pairs
-	err = scraper.createJSONPairs()
+	err = scraper.readProductIds()
 	if err != nil {
-		log.Error("Couldn't obtain currency pairs:", err)
+		log.Error("Couldn't obtain Quoine product ids:", err)
 	}
 
 	go scraper.mainLoop()
@@ -68,10 +62,17 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 
 func (scraper *QuoineScraper) mainLoop() {
 	for {
-		for pair, id := range scraper.productPairIds {
+		for pair, pairScraper := range scraper.pairScrapers {
+			time.Sleep(API_DELAY)
+
+			productId, present := scraper.productPairIds[pair]
+			if !present {
+				log.Error("Unknown product id for pair", pair)
+			}
+
 			ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-			executions, err := scraper.client.GetExecutions(ctx, id, EXECUTION_LIMIT, 1)
+			executions, err := scraper.client.GetExecutions(ctx, productId, EXECUTION_LIMIT, 1)
 			if err != nil {
 				log.Error("Couldn't get executions:", err)
 				continue
@@ -93,31 +94,19 @@ func (scraper *QuoineScraper) mainLoop() {
 				continue
 			}
 
-			pairScraper := scraper.pairScrapers[pair]
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
 				Price:          price,
 				Volume:         volume,
 				Time:           time.Unix(int64(executions.Models[0].CreatedAt), 0),
-				ForeignTradeID: strconv.Itoa(id),
-				Source:         dia.QuoineExchange,
+				ForeignTradeID: strconv.Itoa(productId),
+				Source:         scraper.exchangeName,
 			}
 
-			scraper.pairScrapers[pair].chanTrades <- trade
-			time.Sleep(API_DELAY)
+			pairScraper.chanTrades <- trade
 		}
 	}
-}
-
-type CoinPairs struct {
-	Coins []Pair
-}
-
-type Pair struct {
-	Symbol      string
-	ForeignName string
-	Exchange    string
 }
 
 func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -133,13 +122,13 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	for i, prod := range products {
 		pairs[i].ForeignName = prod.CurrencyPairCode
 		pairs[i].Symbol = prod.BaseCurrency
-		pairs[i].Exchange = "Quoine"
+		pairs[i].Exchange = scraper.exchangeName
 	}
 
 	return
 }
 
-func (scraper *QuoineScraper) createJSONPairs() error {
+func (scraper *QuoineScraper) readProductIds() error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	products, err := scraper.client.GetProducts(ctx)
@@ -147,19 +136,7 @@ func (scraper *QuoineScraper) createJSONPairs() error {
 		return err
 	}
 
-	pairs := CoinPairs{
-		Coins: make([]Pair, len(products)),
-	}
-
-	for i, prod := range products {
-		pair := Pair{
-			Symbol:      prod.BaseCurrency,
-			ForeignName: prod.CurrencyPairCode,
-			Exchange:    "Quoine",
-		}
-
-		pairs.Coins[i] = pair
-
+	for _, prod := range products {
 		// create a pair -> id mapping
 		intId, err := strconv.Atoi(prod.ID)
 		if err != nil {
@@ -168,13 +145,6 @@ func (scraper *QuoineScraper) createJSONPairs() error {
 		scraper.productPairIds[prod.CurrencyPairCode] = intId
 	}
 
-	// create a JSON file with currency pairs
-	jsonCoins, err := json.MarshalIndent(pairs, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(PAIRS_JSON, jsonCoins, 0644)
 	return nil
 }
 
