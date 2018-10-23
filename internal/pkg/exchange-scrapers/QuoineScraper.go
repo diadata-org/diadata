@@ -94,6 +94,10 @@ func (scraper *QuoineScraper) mainLoop() {
 				continue
 			}
 
+			if executions.Models[0].TakerSide == "sell" {
+				volume = -volume
+			}
+
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
