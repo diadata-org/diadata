@@ -126,6 +126,7 @@ func Exchanges() []string {
 		GateIOExchange,
 		OKExExchange,
 		ZBExchange,
+		QuoineExchange,
 	}
 }
 
