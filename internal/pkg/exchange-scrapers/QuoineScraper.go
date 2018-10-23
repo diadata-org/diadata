@@ -50,7 +50,6 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 		pairScrapers:   make(map[string]*QuoinePairScraper),
 	}
 
-	// generate JSON file with currency pairs
 	err = scraper.readProductIds()
 	if err != nil {
 		log.Error("Couldn't obtain Quoine product ids:", err)
