@@ -28,7 +28,7 @@ CMD ["btc"]
 ```
 
 After cloning a container capable of executing Go, the files from the working directory are copied into the container.
-Next, the go program located in `iadata/internal/pkg/blockchain-scrapers/blockchains/bitcoin/scrapers/btc` is built and installed and the finished binary is placed into a mininal distroless container.
+Next, the go program located in `diadata/internal/pkg/blockchain-scrapers/blockchains/bitcoin/scrapers/btc` is built and installed and the finished binary is placed into a mininal distroless container.
 From there it is executed using the statement in the last line.
 
 ## Blockchain Client
