@@ -86,11 +86,16 @@ func updateExchangePairs() {
 			} else {
 				log.Error("Error fetching pairs for exchange:"+e+" error:", err.Error())
 			}
+			go func(s scrapers.APIScraper, e string) {
+				time.Sleep(5 * time.Second)
+				log.Error("Closing scrapper: " + e)
+
+			}(s, e)
 		} else {
 			log.Error("Error creating APIScraper forexchange:" + e)
 		}
 	}
-	log.Fatal("Update complete.")
+	log.Println("Update complete.")
 }
 
 func getInitialExchangePairs() {
