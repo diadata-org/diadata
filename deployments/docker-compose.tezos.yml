@@ -15,9 +15,8 @@ services:
     expose:
       - "8732"
     volumes:
-    volumes:
-      - node_data:/var/run/tezos/node
-      - client_data:/var/run/tezos/client
+      - node_data:/home/srv/tezos/node
+      - client_data:/home/srv/tezos/client
     restart: on-failure
     networks:
       - scrapers-network
@@ -25,7 +24,6 @@ services:
  xtz:
     build:
       context: ../../../..
-    build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xtz
     image: ${DOCKER_HUB_LOGIN}/xtz
