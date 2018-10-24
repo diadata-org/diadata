@@ -96,8 +96,7 @@ func (s *FilterMA) compute(trade dia.Trade) {
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {
-
-	err := ds.SetPriceZSET(s.symbol, s.exchange, s.value)
+	err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
 	if err != nil {
 		log.Errorln("FilterMA: Error:", err)
 	}

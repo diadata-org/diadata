@@ -12,7 +12,7 @@ import (
 )
 
 type Datastore interface {
-	SetVolume(symbol string, exchange string, volume float64) error
+	SetVolume(symbol string, exchange string, volume float64, t time.Time) error
 	GetVolume(symbol string) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
@@ -23,7 +23,7 @@ type Datastore interface {
 	SetQuotationEUR(quotation *Quotation) error
 	GetSupply(symbol string) (*dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
-	SetPriceZSET(symbol string, exchange string, price float64) error
+	SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error
 	GetChartPoints(symbol string) ([]Point, error)
 	GetChartPoints7Days(symbol string) ([]float64, error)
 	GetPairs(exchange string) ([]dia.Pair, error)
@@ -33,11 +33,14 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
-	SaveFilterInflux(filter string, symbol string, exchange string, value float64) error
+	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
+	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
+
 	Flush() error
+
 	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
-	SetFilter(filterName string, symbol string, exchange string, value float64) error
+	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
@@ -78,19 +81,24 @@ func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb
 }
 
 func NewDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(true)
+}
 
-	r := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+func NewDataStoreWithOptions(red bool) (*DB, error) {
+	var r *redis.Client
+	if red {
+		r = redis.NewClient(&redis.Options{
+			Addr:     "redis:6379",
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		})
 
-	pong2, err := r.Ping().Result()
-	if err != nil {
-		log.Error("NewDataStore redis", err)
+		pong2, err := r.Ping().Result()
+		if err != nil {
+			log.Error("NewDataStore redis", err)
+		}
+		log.Debug("NewDB", pong2)
 	}
-	log.Debug("NewDB", pong2)
-
 	i, err := clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
 		Addr:     "http://influxdb:8086",
 		Username: "",
@@ -188,14 +196,13 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	return err
 }
 
-func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64) error {
+func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
 	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
 	fields := map[string]interface{}{
 		"value": value,
 	}
-
-	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, time.Now())
+	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
@@ -205,7 +212,13 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 }
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
+
+	if db.redisClient == nil {
+		return nil
+	}
+
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
+
 	err := db.redisClient.ZAdd(key, redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
@@ -227,6 +240,7 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 }
 
 func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
+
 	result := 0.0
 	max := strconv.FormatInt(atUnixTime, 10)
 	vals, err := db.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{

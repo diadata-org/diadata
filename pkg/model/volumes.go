@@ -14,10 +14,8 @@ var (
 	volumeKey = "VOL" + strconv.Itoa(dia.BlockSizeSeconds)
 )
 
-func (db *DB) SetVolume(symbol string, exchange string, volume float64) error {
-	db.SaveFilterInflux(volumeKey, symbol, exchange, volume)
-	err := db.setZSETValue(getKeyFilterZSET(getKey(volumeKey, symbol, exchange)), volume, time.Now().Unix(), WindowVolume)
-	return err
+func (db *DB) SetVolume(symbol string, exchange string, volume float64, t time.Time) error {
+	return db.SetFilter(volumeKey, symbol, exchange, volume, t)
 }
 
 func (db *DB) GetVolume(symbol string) (*float64, error) {

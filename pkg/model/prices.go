@@ -6,10 +6,8 @@ import (
 	"time"
 )
 
-func (db *DB) SetPriceZSET(symbol string, exchange string, price float64) error {
-
-	db.SaveFilterInflux(dia.FilterKing, symbol, exchange, price)
-
+func (db *DB) SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error {
+	db.SaveFilterInflux(dia.FilterKing, symbol, exchange, price, t)
 	key := getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange))
 	log.Debug("SetPriceZSET ", key)
 	return db.setZSETValue(key, price, time.Now().Unix(), BiggestWindow)

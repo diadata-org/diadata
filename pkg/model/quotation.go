@@ -93,8 +93,11 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 }
 
 func (db *DB) SetQuotation(quotation *Quotation) error {
+	if db.redisClient == nil {
+		return nil
+	}
 	key := getKeyQuotation(quotation.Symbol)
-	log.Println("setting ", key, quotation)
+	log.Debug("setting ", key, quotation)
 	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
@@ -102,10 +105,13 @@ func (db *DB) SetQuotation(quotation *Quotation) error {
 	return err
 }
 
-func (a *DB) SetQuotationEUR(quotation *Quotation) error {
+func (db *DB) SetQuotationEUR(quotation *Quotation) error {
+	if db.redisClient == nil {
+		return nil
+	}
 	key := getKeyQuotationEUR(quotation.Symbol)
-	log.Println("setting ", key, quotation)
-	err := a.redisClient.Set(key, quotation, TimeOutRedis).Err()
+	log.Debug("setting ", key, quotation)
+	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}

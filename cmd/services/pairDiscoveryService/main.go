@@ -90,7 +90,7 @@ func updateExchangePairs() {
 			log.Error("Error creating APIScraper forexchange:" + e)
 		}
 	}
-	log.Println("Update complete.")
+	log.Fatal("Update complete.")
 }
 
 func getInitialExchangePairs() {
@@ -123,7 +123,6 @@ func main() {
 		panic("Can not initialize db error:" + e.Error())
 	}
 	getInitialExchangePairs()
-	updateExchangePairs()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)

@@ -49,7 +49,7 @@ func (a *DB) GetSupply(symbol string) (*dia.Supply, error) {
 		value := &dia.Supply{}
 		err := a.redisClient.Get(key).Scan(value)
 		if err != nil {
-			log.Printf("Error: %v on GetSupply %v\n", err, symbol)
+			log.Error("Error: %v on GetSupply %v\n", err, symbol)
 			return nil, err
 		}
 		return value, err
@@ -58,10 +58,10 @@ func (a *DB) GetSupply(symbol string) (*dia.Supply, error) {
 
 func (a *DB) SetSupply(supply *dia.Supply) error {
 	key := getKeySupply(supply.Symbol)
-	log.Println("setting ", key, supply)
+	log.Debug("setting ", key, supply)
 	err := a.redisClient.Set(key, supply, 0).Err()
 	if err != nil {
-		log.Printf("Error: %v on SetSupply %v\n", err, supply.Symbol)
+		log.Error("Error: %v on SetSupply %v\n", err, supply.Symbol)
 	}
 	return err
 }

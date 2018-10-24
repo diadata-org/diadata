@@ -3,6 +3,7 @@ package scrapers
 import (
 	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/jjjjpppp/quoinex-go-client/v2"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
@@ -112,6 +113,19 @@ func (scraper *QuoineScraper) mainLoop() {
 	}
 }
 
+func (s *QuoineScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
+	symbol = params[0]
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return symbol, errors.New("Symbol is black listed:" + symbol)
+	}
+	return symbol, nil
+}
+
 func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -122,12 +136,18 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 
 	pairs = make([]dia.Pair, len(products))
 
-	for i, prod := range products {
-		pairs[i].ForeignName = prod.CurrencyPairCode
-		pairs[i].Symbol = prod.BaseCurrency
-		pairs[i].Exchange = scraper.exchangeName
+	for _, prod := range products {
+		symbol, serr := scraper.normalizeSymbol(prod.CurrencyPairCode, prod.BaseCurrency)
+		if serr == nil {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbol,
+				ForeignName: prod.CurrencyPairCode,
+				Exchange:    scraper.exchangeName,
+			})
+		} else {
+			log.Error(serr)
+		}
 	}
-
 	return
 }
 

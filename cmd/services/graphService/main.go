@@ -28,6 +28,10 @@ func main() {
 		}
 
 		for _, symbol := range symbols {
+
+			log.Info("sleeping...")
+			time.Sleep(1 * time.Second)
+
 			points, err := dataStore.GetChartPoints(symbol)
 			if err != nil {
 				log.Error(err)
@@ -64,8 +68,6 @@ func main() {
 				log.Error(err)
 				continue
 			}
-
-			time.Sleep(time.Second)
 		}
 	}
 }

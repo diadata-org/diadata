@@ -35,8 +35,11 @@ func (db *DB) GetLastTradeTimeForExchange(symbol string, exchange string) (*time
 }
 
 func (db *DB) SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error {
+	if db.redisClient == nil {
+		return nil
+	}
 	key := getKeyLastTradeTimeForExchange(symbol, exchange)
-	log.Println("setting ", key, t)
+	log.Debug("setting ", key, t)
 	err := db.redisClient.Set(key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, symbol)

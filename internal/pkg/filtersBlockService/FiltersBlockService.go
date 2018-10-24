@@ -56,6 +56,7 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 
 func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
 	s.chanTradesBlock <- tradesBlock
+	log.Info("ProcessTradesBlock finito")
 }
 
 func (s *FiltersBlockService) Close() error {
@@ -79,8 +80,8 @@ func (s *FiltersBlockService) cleanup(err error) {
 }
 
 func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
-	log.Info("previousBlockFilters", previousBlockFilters)
-	log.Info("newFilters:", newFilters)
+	log.Debug("previousBlockFilters", previousBlockFilters)
+	log.Debug("newFilters:", newFilters)
 	c := configCollectors.NewConfigCollectors("")
 	missingPoints := 0
 	result := newFilters
@@ -94,7 +95,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 			_, ok := newFiltersMap[filter.Name+filter.Symbol]
 			if !ok {
 				result = append(result, filter)
-				log.Println("Adding", filter.Name+filter.Symbol)
+				log.Debug("Adding", filter.Name+filter.Symbol)
 				missingPoints++
 			}
 		}
@@ -112,7 +113,7 @@ func (s *FiltersBlockService) createFilters(symbol string, exchange string, Begi
 		s.filters[symbol+exchange] = []Filter{
 			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterTLT(symbol, exchange),
-			NewFilterVOL(symbol, exchange),
+			NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
 			NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
@@ -126,6 +127,8 @@ func (s *FiltersBlockService) computeFilters(t dia.Trade, key string) {
 }
 
 func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
+
+	log.Infoln("processTradesBlock starting")
 
 	for _, trade := range tb.TradesBlockData.Trades {
 		s.createFilters(trade.Symbol, "", tb.TradesBlockData.BeginTime)
@@ -167,7 +170,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	fb.BlockHash = hash
 	log.Printf("Generating Filters block %v (size:%v)", hash, fb.FiltersBlockData.FiltersNumber)
 
-	if len(resultFilters) != 0 {
+	if len(resultFilters) != 0 && s.chanFiltersBlock != nil {
 		s.chanFiltersBlock <- fb
 	}
 	for _, filters := range s.filters {
@@ -176,11 +179,17 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
+
+	//log.Infoln("processTradesBlock finito", tb)
+	//chanFiltersBlock
+	//> select * from filters limit 100
+
 }
 
 // runs in a goroutine until s is closed
 func (s *FiltersBlockService) mainLoop() {
 	for {
+		log.Info("x FiltersBlockService mainloop")
 		select {
 		case <-s.shutdown:
 			log.Println("Filters shutting down")

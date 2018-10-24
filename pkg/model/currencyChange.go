@@ -9,7 +9,7 @@ import (
 
 func (db *DB) SetCurrencyChange(cc *Change) error {
 	key := "dia_currencyChange"
-	log.Println("setting ", key, cc)
+	log.Debug("setting ", key, cc)
 	err := db.redisClient.Set(key, cc, 0).Err()
 	if err != nil {
 		log.Errorln("Error: on SetCurrencyChange", err)

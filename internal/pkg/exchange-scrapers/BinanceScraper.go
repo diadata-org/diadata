@@ -8,12 +8,11 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"sync"
 	"time"
-
-	"io/ioutil"
-	"net/http"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
