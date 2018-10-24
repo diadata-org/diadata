@@ -42,6 +42,7 @@ services:
       - scrapers-network
     depends_on:
       - geth
+    command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef
     logging:
       options:
         max-size: "50m"

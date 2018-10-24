@@ -72,6 +72,7 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
+	periodicOracleUpdateHelper(topCoins, auth, contract)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
@@ -117,6 +118,7 @@ func updateTopCoins(topCoins []diaApi.Coin, auth *bind.TransactOpts, contract *o
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
 		}
+		time.Sleep(10 * time.Minute)
 	}
 	return nil
 }
@@ -180,11 +182,15 @@ func updateOracle(
 	tx, err := contract.UpdateCoinInfo(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
+		GasLimit: 800725,
+	//	Nonce: big.NewInt(time.Now().Unix()),
 	}, name, symbol, big.NewInt(price), big.NewInt(supply), big.NewInt(time.Now().Unix()))
 	// prices are with 5 digits after the comma
 	if err != nil {
 		return err
 	}
+	fmt.Println(tx.GasPrice())
+	log.Printf("Symbol: %s\n", symbol)
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
