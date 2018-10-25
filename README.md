@@ -21,7 +21,7 @@ This information varies for each currency and is highly specific.
 
 ## Coinhub Oracles
 
-The Coinhub oracles are located in a [single smart contract](https://ropsten.etherscan.io/address/0x37caf6d76ff56d05a7f21a14e9e6eed86726e4de).
+The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef).
 This smart contract holds mappings from an index to an asset's name, its price, and supply data.
 By using `getParameters(asset_index)` it is possible to retrieve this data.
 Along with the actual data there is a metadata field for the timestamp of the last update.
