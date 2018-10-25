@@ -17,25 +17,31 @@ const totalSupply = 763306930.69
 const decimals = 1e8
 const tezosSymbol = "xtz"
 
+/// Retrieve every minute according to block frequency
+const blockFrequency = 60
+
 var client *dia.Client
 
 func retrieveXTZSupply() {
 	b, eg := goTezos.GetChainHead()
 	if eg != nil {
 		log.Error("Error getting block:" + eg.Error())
+	} else {
+		log.Println("Block hash:" + b.Hash)
+		v, e := goTezos.GetAccountBalanceAtBlock(xtzAddress, b.Hash)
+		if e != nil {
+			log.Error("Error retrieving balance for:" + xtzAddress + " error:" + e.Error())
+		} else {
+			balance := float64(v / decimals)
+			supply := totalSupply - balance
+			log.Println("Balance:" + strconv.FormatFloat(balance, 'f', 4, 64) + " Supply:" + strconv.FormatFloat(supply, 'f', 4, 64))
+			client.SendSupply(&dia.Supply{
+				Symbol:            tezosSymbol,
+				CirculatingSupply: supply,
+			})
+
+		}
 	}
-	log.Println("Block hash:" + b.Hash)
-	v, e := goTezos.GetAccountBalanceAtBlock(xtzAddress, b.Hash)
-	if e != nil {
-		log.Error("Error retrieving balance for:" + xtzAddress + " error:" + e.Error())
-	}
-	balance := float64(v / decimals)
-	supply := totalSupply - balance
-	log.Println("Balance:" + strconv.FormatFloat(balance, 'f', 4, 64) + " Supply:" + strconv.FormatFloat(supply, 'f', 4, 64))
-	client.SendSupply(&dia.Supply{
-		Symbol:            tezosSymbol,
-		CirculatingSupply: supply,
-	})
 }
 
 type Task struct {
@@ -66,8 +72,7 @@ func main() {
 	goTezos.SetRPCURL(rpcURL)
 	task := &Task{
 		closed: make(chan struct{}),
-		/// Retrieve every minute according to block frequency
-		ticker: time.NewTicker(time.Second * 60),
+		ticker: time.NewTicker(time.Second * blockFrequency),
 	}
 
 	config := dia.GetConfigApi()
