@@ -32,7 +32,7 @@ func main() {
 			log.Info("sleeping...")
 			time.Sleep(1 * time.Second)
 
-			points, err := dataStore.GetChartPoints(symbol)
+			points, err := dataStore.GetChartPoints7Days(symbol)
 			if err != nil {
 				log.Error(err)
 				continue

@@ -179,11 +179,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
-
-	//log.Infoln("processTradesBlock finito", tb)
-	//chanFiltersBlock
-	//> select * from filters limit 100
-
 }
 
 // runs in a goroutine until s is closed

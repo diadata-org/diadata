@@ -34,6 +34,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_graphservice:latest
     networks:
       - redis-network
+      - influxdb-network
     volumes:
       - /home/srv/restServer/charts:/charts
     logging:

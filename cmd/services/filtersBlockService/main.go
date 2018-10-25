@@ -54,6 +54,9 @@ func loadFilterPointsFromPreviousBlock() []dia.FilterPoint {
 func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockService) {
 	now := time.Now()
 	then := now.AddDate(0, -1, 0)
+	//then := time.Unix(1539883211, 0)
+	//"1405544146"
+
 	log.Info("createTradeBlockFromInflux")
 	var currentBlock int64
 	trades := []dia.Trade{}
