@@ -1,158 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "GetTrades",
+        "description": "The world's crowd-driven financial data community has a professional API made for you.\u003cbr\u003e\u003ch2\u003eDecentral and transparent by design\u003c/h2\u003e\u003cbr\u003eWith our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eFind the right data for your needs\u003c/h3\u003e\u003cbr\u003eShow your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.\u003cbr\u003eFor Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eBacktest your strategies\u003c/h3\u003e\u003cbr\u003eUse the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eRun Experiments\u003c/h3\u003e\u003cbr\u003eBuild your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eRequest your data\u003c/h3\u003e\u003cbr\u003eSet a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).",
         "title": "diadata.org API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
+        "contact": {},
         "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "name": "GNU GPLv3"
         },
         "version": "1.0"
     },
     "host": "api.diadata.org",
     "basePath": "/",
     "paths": {
-        "/kafka/filtersBlock": {
-            "get": {
-                "description": "GetFiltersBlock",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "kafka"
-                ],
-                "summary": "GetFiltersBlock get messages in topic",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "offset, default is last",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "number of elements",
-                        "name": "elements",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/dia.FiltersBlock"
-                        }
-                    },
-                    "500": {
-                        "description": "error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/restApi.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/kafka/trades": {
-            "get": {
-                "description": "GetTrades",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "kafka"
-                ],
-                "summary": "GetTrades get messages in topic",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "offset, default is last",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "number of elements",
-                        "name": "elements",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/dia.TradesBlock"
-                        }
-                    },
-                    "500": {
-                        "description": "error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/restApi.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/kafka/tradesBlock": {
-            "get": {
-                "description": "GetTradesBlock",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "kafka"
-                ],
-                "summary": "GetTradesBlock get messages in topic",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "offset, default is last",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "number of elements",
-                        "name": "elements",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/dia.TradesBlock"
-                        }
-                    },
-                    "500": {
-                        "description": "error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/restApi.APIError"
-                        }
-                    }
-                }
-            }
-        },
         "/v1/chartPoints/": {
             "get": {
                 "description": "Get Symbol Details",
@@ -313,7 +172,7 @@
         },
         "/v1/pairs/": {
             "get": {
-                "description": "et pairs",
+                "description": "Get pairs",
                 "consumes": [
                     "application/json"
                 ],
@@ -532,58 +391,6 @@
         }
     },
     "definitions": {
-        "dia.FilterPoint": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "number"
-                }
-            }
-        },
-        "dia.FiltersBlock": {
-            "type": "object",
-            "properties": {
-                "blockHash": {
-                    "type": "string"
-                },
-                "filtersBlockData": {
-                    "type": "object",
-                    "$ref": "#/definitions/dia.FiltersBlockData"
-                }
-            }
-        },
-        "dia.FiltersBlockData": {
-            "type": "object",
-            "properties": {
-                "beginTime": {
-                    "type": "string"
-                },
-                "endTime": {
-                    "type": "string"
-                },
-                "filterPoints": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dia.FilterPoint"
-                    }
-                },
-                "filtersNumber": {
-                    "type": "integer"
-                },
-                "tradesBlockHash": {
-                    "type": "string"
-                }
-            }
-        },
         "dia.Pair": {
             "type": "object",
             "properties": {
@@ -644,38 +451,6 @@
                 },
                 "volume": {
                     "type": "number"
-                }
-            }
-        },
-        "dia.TradesBlock": {
-            "type": "object",
-            "properties": {
-                "blockHash": {
-                    "type": "string"
-                },
-                "tradesBlockData": {
-                    "type": "object",
-                    "$ref": "#/definitions/dia.TradesBlockData"
-                }
-            }
-        },
-        "dia.TradesBlockData": {
-            "type": "object",
-            "properties": {
-                "beginTime": {
-                    "type": "string"
-                },
-                "endTime": {
-                    "type": "string"
-                },
-                "trades": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dia.Trade"
-                    }
-                },
-                "tradesNumber": {
-                    "type": "integer"
                 }
             }
         },
