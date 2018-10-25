@@ -10,6 +10,7 @@ let currencyArray = [];
 
  function getApi() {
      var host = window.location.hostname;
+     console.log("hello"+host)
      if (host === 'coinhub.diadata.org') {
            return 'https://api.diadata.org'
         } else {
