@@ -199,7 +199,8 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	// Create a point and add to batch
 	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
 	fields := map[string]interface{}{
-		"value": value,
+		"value":  value,
+		"ignore": false,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {

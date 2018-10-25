@@ -16,6 +16,7 @@ type FilterMA struct {
 	lastTrade      *dia.Trade
 	param          int
 	value          float64
+	modified       bool
 }
 
 func NewFilterMA(symbol string, exchange string, currentTime time.Time, param int) *FilterMA {
@@ -83,6 +84,7 @@ func (s *FilterMA) fill(t time.Time, price float64) {
 }
 
 func (s *FilterMA) compute(trade dia.Trade) {
+	s.modified = true
 	if s.lastTrade != nil {
 		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
@@ -96,15 +98,20 @@ func (s *FilterMA) compute(trade dia.Trade) {
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {
-	err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
-	if err != nil {
-		log.Errorln("FilterMA: Error:", err)
-	}
-	if s.exchange == "" {
-		err = ds.SetPriceUSD(s.symbol, s.value)
+	if s.modified {
+		s.modified = false
+		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}
+		if s.exchange == "" {
+			err = ds.SetPriceUSD(s.symbol, s.value)
+			if err != nil {
+				log.Errorln("FilterMA: Error:", err)
+			}
+		}
+		return err
+	} else {
+		return nil
 	}
-	return err
 }

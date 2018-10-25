@@ -3,34 +3,17 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	//"github.com/diadata-org/diadata/pkg/dia"
 	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
-
-/*
-func (db *DB) GetChartPoints(symbol string) ([]Point, error) {
-	result := []Point{}
-	vals, err := db.redisClient.ZRange(getKeyFilterZSET(dia.FilterKing+"_"+symbol), 0, -1).Result()
-	if err == nil {
-		var p Point
-		for _, v := range vals {
-			fmt.Sscanf(v, "%f %d", &p.Value, &p.UnixTime)
-			result = append(result, p)
-		}
-	}
-	log.Println(symbol, "GetChartPoints:%v", result)
-	return result, err
-}
-*/
 
 func (db *DB) GetChartPoints7Days(symbol string) (r []Point, err error) {
 	r = []Point{}
 	table := influxDbFiltersTable
 	filter := "MA120"
 
-	q := fmt.Sprintf("SELECT time, value FROM %s WHERE filter='%s' and exchange='' and symbol='%s' ORDER BY DESC", table, filter, symbol)
+	q := fmt.Sprintf("SELECT time, value FROM %s WHERE time > now() - 7d and filter='%s' and exchange='' and symbol='%s' ORDER BY DESC", table, filter, symbol)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -76,7 +59,7 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 		table = influxDbFiltersTable
 	}
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", table, filter, exchangeQuery, symbol)
+	q := fmt.Sprintf("SELECT time,exchange, filter, symbol, value FROM %s WHERE filter='%s' %sand symbol='%s' and ignore!=false ORDER BY DESC", table, filter, exchangeQuery, symbol)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {

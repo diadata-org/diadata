@@ -52,9 +52,9 @@ func loadFilterPointsFromPreviousBlock() []dia.FilterPoint {
 //  docker exec -it <cointainer> filtersBlockService -replayInflux
 
 func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockService) {
-	now := time.Now()
-	then := now.AddDate(0, -1, 0)
-	//then := time.Unix(1539883211, 0)
+	//now := time.Now()
+	//then := now.AddDate(0, -1, 0)
+	then := time.Unix(1539475200, 0)
 	//"1405544146"
 
 	log.Info("createTradeBlockFromInflux")
@@ -70,7 +70,7 @@ func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockServi
 		}
 		if len(r) == 0 {
 			log.Info("no new trades...")
-			continue
+			break
 		} else {
 			then = r[len(r)-1].Time
 			log.Infoln("x got", len(r), "trades", then)
