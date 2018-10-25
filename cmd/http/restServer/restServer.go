@@ -16,35 +16,26 @@ import (
 	"time"
 )
 
-// @title diadata.org API
-// @version 1.0
-// @description | 
-// #@description  The world's crowd-driven financial data community has a professional API made for you.
-// #@description # Decentral and transparent by design
-// W@description ith our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.
-//
-// ## Find the right data for your needs
-// Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.
-// For Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).
-//
-// ## Backtest your strategies
-// Use the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.
-//
-// ## Run Experiments
-// Build your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.
-//
-// ## Request your data
-// Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host api.diadata.org
+// @Title diadata.org API
+// @Version 1.0
+// @description The world's crowd-driven financial data community has a professional API made for you.
+// @description <h2>Decentral and transparent by design</h2>
+// @description With our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.
+// @description
+// @description <h3>Find the right data for your needs</h3>
+// @description Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.
+// @description For Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).
+// @description
+// @description <h3>Backtest your strategies</h3>
+// @description Use the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.
+// @description
+// @description <h3>Run Experiments</h3>
+// @description Build your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.
+// @description
+// @description <h3>Request your data</h3>
+// @description Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).
+// @license.name GNU GPLv3
+// @Host api.diadata.org
 // @BasePath /
 
 type login struct {
@@ -59,47 +50,14 @@ type User struct {
 	LastName  string
 }
 
-// GetTradesBlock godoc
-// @Summary GetTradesBlock get messages in topic
-// @Description GetTradesBlock
-// @Tags kafka
-// @Accept  json
-// @Produce  json
-// @Param offset query int false "offset, default is last"
-// @Param elements query int false "number of elements"
-// @Success 200 {object} dia.TradesBlock	"success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /kafka/tradesBlock [get]
 func GetTradesBlock(c *gin.Context) {
 	kafkaApi.Process(c, kafkaHelper.TopicTradesBlock)
 }
 
-// GetFiltersBlock godoc
-// @Summary GetFiltersBlock get messages in topic
-// @Description GetFiltersBlock
-// @Tags kafka
-// @Accept  json
-// @Produce  json
-// @Param offset query int false "offset, default is last"
-// @Param elements query int false "number of elements"
-// @Success 200 {object} dia.FiltersBlock	"success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /kafka/filtersBlock [get]
 func GetFiltersBlock(c *gin.Context) {
 	kafkaApi.Process(c, kafkaHelper.TopicFiltersBlock)
 }
 
-// GetTrades godoc
-// @Summary GetTrades get messages in topic
-// @Description GetTrades
-// @Tags kafka
-// @Accept  json
-// @Produce  json
-// @Param offset query int false "offset, default is last"
-// @Param elements query int false "number of elements"
-// @Success 200 {object} dia.TradesBlock	"success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /kafka/trades [get]
 func GetTrades(c *gin.Context) {
 	kafkaApi.Process(c, kafkaHelper.TopicTrades)
 }

@@ -128,7 +128,7 @@ func (env *Env) GetSupply(c *gin.Context) {
 
 // GetPairs godoc
 // @Summary Get pairs
-// @Description et pairs
+// @Description Get pairs
 // @Tags dia
 // @Accept  json
 // @Produce  json
