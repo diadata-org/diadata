@@ -8,13 +8,22 @@ const lang = navigator.language;
 let currencyArray = [];
 //numeral.locale(lang);
 
+ function getApi() {
+     var host = window.location.hostname;
+     if (host === 'coinhub.diadata.org') {
+           return 'https://api.diadata.org'
+        } else {
+          return 'http://api-dev.diadata.org'
+        }
+      }
+
 export default {
 	fetchCoins: async function(){ 
 		let res = null;
 		let coins = [];
 
 		try{
-		 res = await axios.get('https://api.diadata.org/v1/coins');
+		 res = await axios.get(getApi()+'/v1/coins');
 		 coins = res.data;
 		}
 		catch(error) {
@@ -64,7 +73,7 @@ export default {
         const coinSymbol = coin.Symbol;
         const coinName = coin.Name;
         // Price graph
-        const priceGraph = `https://api.diadata.org/v1/chart/${coin.Symbol.toUpperCase()}`;
+        const priceGraph = getApi()+`/v1/chart/${coin.Symbol.toUpperCase()}`;
         // coin price
         // USD
         const coinPriceUSD = coin.Price;
@@ -234,7 +243,6 @@ export default {
     });
     currencyArray.push("USD");
     return sortBy(currencyArray);
-  }
-
-
+  },
+  getApi: getApi
 }

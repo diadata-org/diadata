@@ -10,6 +10,8 @@ import stockInit from 'highcharts/modules/stock';
 
 stockInit(Highcharts)
 
+
+
 export default {
   components: {
     AtomSpinner
@@ -119,7 +121,7 @@ export default {
 
     async fetchCoinDetails() {
       try {
-        const response = await axios.get(`https://api.diadata.org/v1/symbol/${this.coinSymbol.toUpperCase()}`);
+        const response = await axios.get(shared.getApi()+`/v1/symbol/${this.coinSymbol.toUpperCase()}`);
         this.coindata = response.data;
         this.formatPairData();
       }
@@ -132,7 +134,7 @@ export default {
     async fetchCoinChartDetails() {
 
       try {
-        let response1 = await axios.get(`https://api.diadata.org/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+        let response1 = await axios.get(shared.getApi()+`/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
      
         const price = 'Price (' + this.selectedCurrency + ')';
         const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
