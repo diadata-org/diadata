@@ -89,7 +89,7 @@ func updateExchangePairs() {
 			go func(s scrapers.APIScraper, e string) {
 				time.Sleep(5 * time.Second)
 				log.Error("Closing scrapper: " + e)
-
+				s.Close()
 			}(s, e)
 		} else {
 			log.Error("Error creating APIScraper forexchange:" + e)
