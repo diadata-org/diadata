@@ -176,6 +176,7 @@ export default {
                 title: {
                     text: 'Time'
                 },
+              	ordinal: false,
             },
             yAxis: {
                 title: {
