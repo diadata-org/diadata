@@ -10,9 +10,7 @@ services:
     hostname: tezosnode
     command: tezos-node --net-addr :9732
     ports:
-      - "9732:9732"
-      - "8732:8732"
-    expose:
+      - "9732"
       - "8732"
     volumes:
       - node_data:/home/srv/tezos/node
@@ -24,9 +22,8 @@ services:
  xtz:
     build:
       context: ../../../..
-      context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xtz
-    image: ${DOCKER_HUB_LOGIN}/xtz
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xtz
     networks:
       - scrapers-network
     logging:
