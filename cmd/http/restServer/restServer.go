@@ -8,6 +8,8 @@ import (
 	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
 	"github.com/diadata-org/diadata/pkg/http/restServer/kafkaApi"
 	"github.com/diadata-org/diadata/pkg/model"
+	"github.com/gin-contrib/cache"
+	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -61,6 +63,11 @@ func GetFiltersBlock(c *gin.Context) {
 func GetTrades(c *gin.Context) {
 	kafkaApi.Process(c, kafkaHelper.TopicTrades)
 }
+
+const (
+	cachingTimeShort = time.Minute * 2
+	cachingTimeLong  = time.Minute * 100
+)
 
 var identityKey = "id"
 
@@ -166,6 +173,8 @@ func main() {
 		kafka.GET("/trades", GetTrades)
 	}
 
+	memoryStore := persistence.NewInMemoryStore(time.Second)
+
 	store, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore", err)
@@ -180,18 +189,17 @@ func main() {
 
 	dia := r.Group("/v1")
 	{
-		dia.GET("/quotation/:symbol", diaApiEnv.GetQuotation)
-		dia.GET("/supply/:symbol", diaApiEnv.GetSupply)
-		dia.GET("/symbol/:symbol", diaApiEnv.GetSymbolDetails)
-		dia.GET("/coins", diaApiEnv.GetCoins)
-		dia.GET("/pairs", diaApiEnv.GetPairs)
-		dia.GET("/chartPoints/:filter/:exchange/:symbol", diaApiEnv.GetChartPoints)
-		dia.GET("/chartPointsAllExchanges/:filter/:symbol", diaApiEnv.GetChartPointsAllExchanges)
-
+		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
+		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
+		dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
+		dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
+		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
+		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
+		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", cache.CachePage(memoryStore, cachingTimeLong, ginSwagger.WrapHandler(swaggerFiles.Handler)))
 
 	r.Run(":8080")
 }
