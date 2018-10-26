@@ -20,6 +20,7 @@ type FilterMAIR struct {
 	memory         int
 	value          float64
 	filterName     string
+	modified       bool
 }
 
 //NewFilterMAIR creates a FilterMAIR
@@ -83,6 +84,7 @@ func (s *FilterMAIR) fill(t time.Time, price float64) {
 	s.currentTime = t
 }
 func (s *FilterMAIR) compute(trade dia.Trade) {
+	s.modified = true
 	if s.lastTrade != nil {
 		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMAIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
@@ -94,9 +96,14 @@ func (s *FilterMAIR) compute(trade dia.Trade) {
 }
 
 func (s *FilterMAIR) save(ds models.Datastore) error {
-	err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
-	if err != nil {
-		log.Errorln("FilterMAIR: Error:", err)
+	if s.modified {
+		s.modified = false
+		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+		if err != nil {
+			log.Errorln("FilterMAIR: Error:", err)
+		}
+		return err
+	} else {
+		return nil
 	}
-	return err
 }

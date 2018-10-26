@@ -19,10 +19,9 @@ func (db *DB) SetVolume(symbol string, exchange string, volume float64, t time.T
 }
 
 func (db *DB) GetVolume(symbol string) (*float64, error) {
-	return db.getZSETSum(getKeyFilterZSET(volumeKey + "_" + symbol))
+	return db.Sum24HoursInflux(symbol, "", volumeKey)
 }
 
 func (db *DB) GetVolumeExchange(symbol string, exchange string) (*float64, error) {
-
-	return db.getZSETSum(getKeyFilterZSET(volumeKey + "_" + symbol + "_" + exchange))
+	return db.Sum24HoursInflux(symbol, exchange, volumeKey)
 }

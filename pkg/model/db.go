@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -176,6 +177,42 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	}
 }
 
+/*
+select sum(value) from filters where filter='VOL120' and time > now() - 10m
+select * from filters where  symbol='BTC' and filter='VOL120' and time > now() - 2m
+select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
+*/
+
+func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
+	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)
+	var errorString string
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("Sum24HoursInflux", err)
+		return nil, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+
+			var result float64
+			v, o := row[1].(json.Number)
+			if o {
+				result, _ = v.Float64()
+				return &result, nil
+			} else {
+				errorString = "error on parsing row 1"
+				log.Errorln(errorString)
+				return nil, errors.New(errorString)
+			}
+		}
+	} else {
+		errorString = "Empty res"
+		log.Errorln(errorString)
+		return nil, errors.New(errorString)
+	}
+	return nil, errors.New("couldnt sum in Sum24HoursInflux")
+}
+
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	// Create a point and add to batch
 	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
@@ -201,6 +238,7 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	fields := map[string]interface{}{
 		"value":  value,
 		"ignore": false,
+		"spot":   exchange == "" || exchange == "SPOT",
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {

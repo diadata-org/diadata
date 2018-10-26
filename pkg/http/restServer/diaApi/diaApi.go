@@ -232,24 +232,25 @@ func (env *Env) GetCoins(c *gin.Context) {
 			var c1 Coin
 			log.Debug("Adding symbol", symbol)
 			supply, _ := env.DataStore.GetSupply(symbol)
-			price, _ := env.DataStore.GetQuotation(symbol)
-			volume, _ := env.DataStore.GetVolume(symbol)
-
-			if price != nil && supply != nil && volume != nil {
-				c1.Price = price.Price
-				c1.Name = price.Name
-				c1.Symbol = price.Symbol
-				if price.PriceYesterday != nil {
-					c1.PriceYesterday = price.PriceYesterday
+			if supply != nil {
+				price, _ := env.DataStore.GetQuotation(symbol)
+				if price != nil {
+					volume, _ := env.DataStore.GetVolume(symbol)
+					if volume != nil {
+						c1.Price = price.Price
+						c1.Name = price.Name
+						c1.Symbol = price.Symbol
+						if price.PriceYesterday != nil {
+							c1.PriceYesterday = price.PriceYesterday
+						}
+						c1.Time = price.Time
+						c1.VolumeYesterdayUSD = volume
+						if supply != nil {
+							c1.CirculatingSupply = &supply.CirculatingSupply
+							coins.Coins = append(coins.Coins, c1)
+						}
+					}
 				}
-				c1.Time = price.Time
-				c1.VolumeYesterdayUSD = volume
-				if supply != nil {
-					c1.CirculatingSupply = &supply.CirculatingSupply
-					coins.Coins = append(coins.Coins, c1)
-				}
-			} else {
-				log.Warningln("no price, supply, or volume for ", symbol, price, supply, volume)
 			}
 		}
 
@@ -306,7 +307,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Success 200 {object} diaApi.points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPointsAllExchanges/:symbol:/:symbol: [get]
+// @Router /v1/chartPointsAllExchanges/:filter:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")

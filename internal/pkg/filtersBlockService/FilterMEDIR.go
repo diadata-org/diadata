@@ -20,6 +20,7 @@ type FilterMEDIR struct {
 	memory         int
 	value          float64
 	filterName     string
+	modified       bool
 }
 
 //NewFilterMEDIR creates a FilterMEDIR
@@ -64,6 +65,7 @@ func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
 }
 
 func (s *FilterMEDIR) compute(trade dia.Trade) {
+	s.modified = true
 	if s.lastTrade != nil {
 		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMEDIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
@@ -76,9 +78,14 @@ func (s *FilterMEDIR) compute(trade dia.Trade) {
 }
 
 func (s *FilterMEDIR) save(ds models.Datastore) error {
-	err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
-	if err != nil {
-		log.Errorln("FilterMAIR: Error:", err)
+	if s.modified {
+		s.modified = false
+		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+		if err != nil {
+			log.Errorln("FilterMAIR: Error:", err)
+		}
+		return err
+	} else {
+		return nil
 	}
-	return err
 }

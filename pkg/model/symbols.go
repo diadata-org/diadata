@@ -54,7 +54,6 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 
 	v2, _ := db.GetVolumeExchange(symbol, exchange)
 	result.VolumeYesterdayUSD = v2
-
 	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
 	result.Time = d
 

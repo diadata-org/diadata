@@ -59,7 +59,7 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 		table = influxDbFiltersTable
 	}
 
-	q := fmt.Sprintf("SELECT time,exchange, filter, symbol, value FROM %s WHERE filter='%s' %sand symbol='%s' and ignore!=false ORDER BY DESC", table, filter, exchangeQuery, symbol)
+	q := fmt.Sprintf("SELECT time,exchange, filter, symbol, value FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", table, filter, exchangeQuery, symbol)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
