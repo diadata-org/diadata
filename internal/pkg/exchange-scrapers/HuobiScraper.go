@@ -38,7 +38,7 @@ type ResponseType struct {
 type HuobiScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
+	//TODO: Channel not used. Consider removing or refactoring
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -76,18 +76,19 @@ func NewHuobiScraper(exchangeName string) *HuobiScraper {
 
 // runs in a goroutine until s is closed
 func (s *HuobiScraper) mainLoop() {
-
 	for true {
-
 		message := &ResponseType{}
-		_, test_read, err := s.wsClient.NextReader()
+		_, testRead, err := s.wsClient.NextReader()
 
 		if err != nil {
+			// Conn errors are non-recoverable.
+			// Terminate the routine if theres any error
 			fmt.Println(err.Error())
+			break
 		} else {
 
 			//It has to gzip response data
-			reader, _ := gzip.NewReader(test_read)
+			reader, _ := gzip.NewReader(testRead)
 			jsonBase := json.NewDecoder(reader)
 			jsonBase.Decode(message)
 
@@ -100,7 +101,10 @@ func (s *HuobiScraper) mainLoop() {
 				}
 
 				if err := s.wsClient.WriteJSON(a); err != nil {
+					// Conn errors are non-recoverable.
+					// Terminate the routine if theres any error
 					fmt.Println(err.Error())
+					break
 				}
 			} else {
 
@@ -146,6 +150,7 @@ func (s *HuobiScraper) mainLoop() {
 			}
 		}
 	}
+	s.cleanup(nil)
 }
 
 func (s *HuobiScraper) cleanup(err error) {
@@ -167,7 +172,7 @@ func (s *HuobiScraper) Close() error {
 	if s.closed {
 		return errors.New("HuobiScraper: Already closed")
 	}
-
+	s.wsClient.Close()
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
