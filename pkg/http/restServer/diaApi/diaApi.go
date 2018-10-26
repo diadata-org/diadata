@@ -56,12 +56,15 @@ func (env *Env) PostSupply(c *gin.Context) {
 				log.Errorln("received supply:", t)
 				restApi.SendError(c, http.StatusInternalServerError, errors.New("Missing Symbol or CirculatingSupply value"))
 			} else {
-
+				source := dia.Diadata
+				if t.Source != "" {
+					source = t.Source
+				}
 				s := &dia.Supply{
 					Time:              time.Now(),
 					Name:              helpers.NameForSymbol(t.Symbol),
 					Symbol:            t.Symbol,
-					Source:            dia.Diadata,
+					Source:            source,
 					CirculatingSupply: t.CirculatingSupply}
 
 				err := env.DataStore.SetSupply(s)

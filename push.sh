@@ -163,7 +163,6 @@ showHelp() {
 }
 
 main() {
-
 while getopts "n:hr:dcaws:" opt; do
   case $opt in
   	s)
