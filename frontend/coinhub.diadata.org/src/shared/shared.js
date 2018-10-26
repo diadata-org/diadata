@@ -14,7 +14,7 @@ let currencyArray = [];
      if (host === 'coinhub.diadata.org') {
            return 'https://api.diadata.org'
         } else {
-          return 'http://api-dev.diadata.org'
+          return 'http://api.diadata.org'
         }
       }
 
