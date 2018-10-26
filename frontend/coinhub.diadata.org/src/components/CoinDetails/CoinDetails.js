@@ -37,7 +37,7 @@ export default {
 			errored: false,
 			coinDetails:{},
 			coinSymbol: '',
-			coindata:null,
+			coindata: null,
 			selectedCurrency:'',
 			chartAllOptions: {},
 			chartSimexOptions: {},

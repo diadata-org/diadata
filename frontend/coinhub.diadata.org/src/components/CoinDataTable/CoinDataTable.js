@@ -58,9 +58,9 @@ export default {
         }
         
       }
+      vm.loading = false;
       // load the currencies
       vm.switchCurrencies(vm.selectedCurrency);
-       
     }
     catch (error) {
       console.log(error);
@@ -71,12 +71,11 @@ export default {
   },
   methods: {
       switchCurrencies : function(selectedCurrency){
-        allCoinData .forEach(function(coin,index){
+        allCoinData.forEach(function(coin,index){
             if(coin[selectedCurrency]) {
               vm.selectedCurrency = selectedCurrency;
               localStorage.selectedCurrency = selectedCurrency;
               vm.coindata = coin[selectedCurrency];
-              vm.loading = false;
             }
         });
       },
