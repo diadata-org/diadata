@@ -1,0 +1,15 @@
+FROM golang:latest as build
+
+WORKDIR $GOPATH/src
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/tezos/scrapers/xtz
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/xtz /bin/xtz
+
+CMD ["xtz"]

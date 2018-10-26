@@ -1,0 +1,40 @@
+version: "3.2"
+
+volumes:
+  node_data:
+  client_data:
+
+services:
+ tezosnode:
+    image: tezos/tezos:mainnet
+    hostname: tezosnode
+    command: tezos-node --net-addr :9732
+    ports:
+      - "9732"
+      - "8732"
+    volumes:
+      - node_data:/home/srv/tezos/node
+      - client_data:/home/srv/tezos/client
+    restart: on-failure
+    networks:
+      - scrapers-network
+
+ xtz:
+    build:
+      context: ../../../..
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xtz
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xtz
+    networks:
+      - scrapers-network
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+networks:
+  scrapers-network:
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
