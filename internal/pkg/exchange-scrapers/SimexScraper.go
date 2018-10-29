@@ -29,6 +29,7 @@ var _apiurl string = "https://simex.global/api"
 
 type SimexScraper struct {
 	// signaling channels for session initialization and finishing
+	run          bool
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -43,7 +44,6 @@ type SimexScraper struct {
 }
 
 func NewSimexScraper(exchangeName string) *SimexScraper {
-
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -52,30 +52,23 @@ func NewSimexScraper(exchangeName string) *SimexScraper {
 		error:        nil,
 	}
 	pairMap := map[string]*PairIdMap{}
-
 	//API call used for retrievi all pairs
 	//necessary to obtain the id used in next API calls
 	data_temp := getAPICall("/pairs")
-
 	//loop over each pair
 	for _, el := range data_temp {
-
 		md_element := el.(map[string]interface{})
-
 		base_map := md_element["base"].(map[string]interface{})
 		base := base_map["name"].(string)
 		quote_map := md_element["quote"].(map[string]interface{})
 		quote := quote_map["name"].(string)
-
 		pim := &PairIdMap{
 			Id:          md_element["id"].(float64),
 			LastIdTrade: 0,
 			Symbol:      base,
 		}
-
 		pairMap[base+quote] = pim
 	}
-
 	s.pairIdTrade = pairMap
 	go s.mainLoop()
 	return s
@@ -83,22 +76,21 @@ func NewSimexScraper(exchangeName string) *SimexScraper {
 
 // runs in a goroutine until s is closed
 func (s *SimexScraper) mainLoop() {
-
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
-
 	layout := "2006-01-02 15:04:05"
-
-	for true {
-
+	s.run = true
+	for s.run {
+		if len(s.pairScrapers) == 0 {
+			s.error = errors.New("SimexScraper: No pairs to scrap provided")
+			log.Error(s.error.Error())
+			break
+		}
 		for key, el := range s.pairScrapers {
-
 			// more or less 60 calls per minute, the limit is 300
 			time.Sleep(1 * time.Second)
 			pairTrade := getAPICall("/trades/?pair_id=" + strconv.Itoa(int(s.pairIdTrade[key].Id)))
-
 			if len(pairTrade) > 0 {
-
 				newId := 0
 				atLeastOneUpdate := false
 				for _, elTrade := range pairTrade {
@@ -149,39 +141,37 @@ func (s *SimexScraper) mainLoop() {
 			}
 		}
 	}
+	if s.error == nil {
+		s.error = errors.New("SimexScraper: terminated by Close()")
+	}
+	s.cleanup(s.error)
 }
 
 func getAPICall(params ...string) []interface{} {
-
 	req, err := http.Get(_apiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	body, readErr := ioutil.ReadAll(req.Body)
 	if readErr != nil {
 		fmt.Println(readErr)
 	}
-
-	confirm_temp := Confirm{}
-	jsonErr := json.Unmarshal(body, &confirm_temp)
+	confirmTemp := Confirm{}
+	jsonErr := json.Unmarshal(body, &confirmTemp)
 	if jsonErr != nil {
 		fmt.Println(jsonErr)
 	}
-	data_temp := confirm_temp.Data.([]interface{})
-	return data_temp
-
+	dataTemp := confirmTemp.Data.([]interface{})
+	return dataTemp
 }
 
 func (s *SimexScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
-
 	if err != nil {
 		s.error = err
 	}
 	s.closed = true
-
 	close(s.shutdownDone)
 }
 
@@ -192,7 +182,7 @@ func (s *SimexScraper) Close() error {
 	if s.closed {
 		return errors.New("SimexScraper: Already closed")
 	}
-
+	s.run = false
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
