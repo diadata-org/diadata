@@ -5,7 +5,7 @@ about: A request for (digital) asset data sourcing
 ---
 
 1. Define your data need specifications within this github issue template
-2. Fund the ticket on www.gitcoin.io
+2. Fund the ticket on https://www.gitcoin.co
 3. Approve or reject work submitted
 __________________
 
