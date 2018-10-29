@@ -156,9 +156,6 @@ export default {
 							}],
 							selected: 2
 						},
-						title: {
-							text: 'All Exchanges'
-						},
 						xAxis: {
 							type: 'datetime',
 							title: {

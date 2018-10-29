@@ -17,6 +17,11 @@ nav.bg-info {
 	margin-right: 0;
 }
 
+.subheading-wrap {
+	display: flex;
+	align-items: center;
+}
+
 .sub-header {
 	color: #FFF;
 }
