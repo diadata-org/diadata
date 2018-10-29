@@ -219,6 +219,11 @@
       "Symbol": "XEM",
       "ForeignName" : "XEMBTC",
       "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "NEU",
+      "ForeignName" : "NEUBTC",
+      "Exchange" : "HitBTC"
     }
   ]
 }

@@ -160,9 +160,9 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 	return body, nil
 }
 
-func (c *Client) SendSupply(s *Supply) error {
+func (c *Client) SendSupplyWithForceOption(s *Supply, force bool) error {
 	lastUpdate := time.Since(c.lastSupplyUpdateTime)
-	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply {
+	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply || force {
 		c.lastSupplyUpdateTime = time.Now()
 		c.lastSupplyUpdateValue = s.CirculatingSupply
 		return c.sendSupply(s)
@@ -170,6 +170,10 @@ func (c *Client) SendSupply(s *Supply) error {
 		log.Println("Skipping sending to API", s, "last update:", lastUpdate)
 		return nil
 	}
+}
+
+func (c *Client) SendSupply(s *Supply) error {
+	return c.SendSupplyWithForceOption(s, false)
 }
 
 func (c *Client) sendSupply(s *Supply) error {

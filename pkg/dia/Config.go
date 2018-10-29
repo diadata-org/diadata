@@ -18,7 +18,7 @@ const (
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
 	ZBExchange       = "ZB"
-	QuoineExchange	 = "Quoine"
+	QuoineExchange   = "Quoine"
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
@@ -26,6 +26,7 @@ const (
 
 func SymbolsFrontPage() []string {
 	return []string{
+		"NEU",
 		"BCH",
 		"BTC",
 		"ADA",

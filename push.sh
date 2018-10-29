@@ -15,6 +15,8 @@ WATCH="n"
 DIRECTORY=`pwd`
 MACHINE=""
 STACKNAME=""
+FILETMP=/tmp/$0.$$.tmp
+FILETMP2=/tmp/services.txt.$$
 
 selectLocalHost() {
 	echo DOCKER_HOST:$DOCKER_HOST
@@ -236,10 +238,9 @@ then
 fi
 
 NUMBER=0
-FILETMP=/tmp/ok
-rm -f $FILETMP
+rm -f $FILETMP 2>/dev/null
 
-docker-compose -f $DIRECTORY/$COMPOSE_FILE config --services | sort -u > /tmp/services.txt.$$
+docker-compose -f $DIRECTORY/$COMPOSE_FILE config --services | sort -u > $FILETMP2
 
 if [ $? -ne 0 ]
 then
@@ -247,9 +248,9 @@ then
 	exit
 fi
 
-cat /tmp/services.txt.$$ | grep -v visualizer | while read line; do echo "$NUMBER-$line" >> $FILETMP;NUMBER=`expr $NUMBER + 1`; done
+cat $FILETMP2 | grep -v visualizer | while read line; do echo "$NUMBER-$line" >> $FILETMP;NUMBER=`expr $NUMBER + 1`; done
 
-rm -f /tmp/services.txt.$$
+rm -f $FILETMP2
 
 cat $FILETMP
 echo "a-for all"
