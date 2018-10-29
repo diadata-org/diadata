@@ -16,28 +16,15 @@
 	    		<div class="subtext1 w-100">
 	    			<ul>
 		    			<li>
-		    				CoinHub is a <span class="font-weight-bold">dApp</span> powered by <a href="https://diadata.org/">DIA</a>. CoinHub provides you with crowd-curated, open-source financial data about cryptocurrencies – verified, cleaned of outliers, transparent and accessible free of charge via Oracles and an API.
+							<span class="font-weight-bold">CoinHub</span> is a dApp powered by <a href="https://diadata.org/">DIA</a>. CoinHub provides you with crowd-curated, open-source financial data about cryptocurrencies – verified, cleaned of outliers, transparent and accessible free of charge via Oracles and an API.
 		    			</li>
 		    			<li>
 		    				<br>
-		    				<h2>About DIA</h2>
-							DIA is a Swiss non-profit association that provides open-source access to crowd-verified financial data with the aim of enabling a fair and symmetric market for financial data and information.
-									    			
+							<span class="font-weight-bold">DIA</span> is a Swiss non-profit association that provides open-source access to crowd-verified financial data with the aim of enabling a fair and symmetric market for financial data and information.
 		    			</li>
 		    		</ul>
 	    		</div>
-	    		<div class="subtext2 w-100">
-	    			Start building your own:
-	    		</div>
 	    	</b-row>
-	    	<b-row class="link-row">
-		    	<b-col>
-		          <a id="first" href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</a>
-		        </b-col>
-		        <b-col>
-		          <a id="second" href="http://swagger.diadata.org/api/swagger/index.html" target="_blank">API Documentation</a>
-		        </b-col>
-		    </b-row>
 	    	<b-row >
 	    		<div class="line-separator w-100"></div>
 	    	</b-row>

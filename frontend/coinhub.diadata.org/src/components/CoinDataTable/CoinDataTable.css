@@ -43,7 +43,6 @@ div.loading-data {
 
 .line-separator {
 	border-bottom: 2px solid #564dfc;
-	margin-bottom: 24px;
 	margin-left: 80px;
 	margin-right: 80px;
 }
@@ -74,8 +73,8 @@ div.loading-data {
 /deep/ #dd-currency button.btn-secondary:hover,
 /deep/ #dd-currency button.btn-secondary {
 	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
+    background-color: #00CCB7;
+    border-color: #00CCB7;
     font-weight: 600;
 }
 
@@ -90,8 +89,7 @@ section div .table-responsive{
 }
 
 .search-currency-row {
-	padding-left: 65px;
-	padding-right: 80px;
+	padding: 24px 80px 24px 65px;
 }
 
 .subtext2 {

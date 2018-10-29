@@ -38,8 +38,8 @@ div.loading-data {
 /deep/ #dd-currency button.btn-secondary:hover,
 /deep/ #dd-currency button.btn-secondary {
 	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
+    background-color: #00CCB7;
+    border-color: #00CCB7;
     font-weight: 600;
 }
 
@@ -50,7 +50,7 @@ div.loading-data {
 
 .data-sources-banner {
 	margin-top: 20px;
-	background-color: #FF7096;
+	background-color: #00CCB7;
 	color: #fff;
 	text-align: center;
 	margin-right: 70px;
