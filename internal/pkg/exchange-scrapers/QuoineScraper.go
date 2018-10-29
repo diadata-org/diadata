@@ -22,6 +22,7 @@ type QuoineScraper struct {
 	exchangeName string
 
 	// channels to signal events
+	run          bool
 	initDone     chan nothing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -61,7 +62,13 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 }
 
 func (scraper *QuoineScraper) mainLoop() {
-	for {
+	scraper.run = true
+	for scraper.run {
+		if len(scraper.pairScrapers) == 0 {
+			scraper.error = errors.New("QuoineScraper: No pairs to scrap provided")
+			log.Error(scraper.error.Error())
+			break
+		}
 		for pair, pairScraper := range scraper.pairScrapers {
 			time.Sleep(API_DELAY)
 
@@ -111,9 +118,13 @@ func (scraper *QuoineScraper) mainLoop() {
 			pairScraper.chanTrades <- trade
 		}
 	}
+	if scraper.error == nil {
+		scraper.error = errors.New("Main loop terminated by Close()")
+	}
+	scraper.cleanup(nil)
 }
 
-func (s *QuoineScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
+func (scraper *QuoineScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
 	symbol = params[0]
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
@@ -161,11 +172,11 @@ func (scraper *QuoineScraper) readProductIds() error {
 
 	for _, prod := range products {
 		// create a pair -> id mapping
-		intId, err := strconv.Atoi(prod.ID)
+		intID, err := strconv.Atoi(prod.ID)
 		if err != nil {
 			continue
 		}
-		scraper.productPairIds[prod.CurrencyPairCode] = intId
+		scraper.productPairIds[prod.CurrencyPairCode] = intID
 	}
 
 	return nil
@@ -193,12 +204,19 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return pairScraper, nil
 }
+func (s *QuoineScraper) cleanup(err error) {
+	s.errorLock.Lock()
+	defer s.errorLock.Unlock()
+	if err != nil {
+		s.error = err
+	}
+	s.closed = true
+	close(s.shutdownDone)
+}
 
 func (scraper *QuoineScraper) Close() error {
-	scraper.errorLock.Lock()
-	defer scraper.errorLock.Unlock()
-
 	// close the pair scraper channels
+	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
 		close(pairScraper.chanTrades)
 		pairScraper.closed = true
@@ -206,7 +224,6 @@ func (scraper *QuoineScraper) Close() error {
 
 	close(scraper.shutdown)
 	<-scraper.shutdownDone
-	scraper.closed = true
 	return nil
 }
 
