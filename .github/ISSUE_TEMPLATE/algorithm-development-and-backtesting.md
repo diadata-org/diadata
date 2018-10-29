@@ -9,8 +9,8 @@ about: 'Algorithms for sorting, data cleaning, calculation etc. '
 3. Approve or reject work submitted
 ________________________________
 
-Develop an algorithm that [DESCRIBE FUNCTIONALITY, ADD FORMULA OR LINK TO INFORMATION]
+Develop an algorithm that <DESCRIBE FUNCTIONALITY, ADD FORMULA OR LINK TO INFORMATION>
 
-Integrate it with our filter service https://github.com/diadata-org/api-golang/tree/master/internal/pkg/filtersBlockService
+Integrate it with [our filter service](../../internal/pkg/filtersBlockService).
 
 Backtest the documentation, submit respective documentation as pull request
