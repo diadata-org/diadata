@@ -18,7 +18,7 @@ const (
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
 	ZBExchange       = "ZB"
-	QuoineExchange	 = "Quoine"
+	QuoineExchange   = "Quoine"
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
@@ -115,18 +115,18 @@ func SymbolsFrontPage() []string {
 
 func Exchanges() []string {
 	return []string{
-		KrakenExchange,
-		BitfinexExchange,
 		BinanceExchange,
+		BitfinexExchange,
 		CoinBaseExchange,
-		HitBTCExchange,
-		SimexExchange,
-		HuobiExchange,
-		LBankExchange,
 		GateIOExchange,
+		HitBTCExchange,
+		HuobiExchange,
+		KrakenExchange,
+		LBankExchange,
 		OKExExchange,
-		ZBExchange,
 		QuoineExchange,
+		SimexExchange,
+		ZBExchange,
 	}
 }
 
