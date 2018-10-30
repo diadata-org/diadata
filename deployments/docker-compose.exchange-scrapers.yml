@@ -20,6 +20,7 @@ services:
     command: /bin/collector -exchange=HitBTC
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -32,6 +33,7 @@ services:
     command: /bin/collector -exchange=GateIO
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -44,6 +46,7 @@ services:
     command: /bin/collector -exchange=Simex
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -55,7 +58,8 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
     command: /bin/collector -exchange=LBank
     networks:
-      - kafka-network
+      - kafka-network      
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -68,6 +72,7 @@ services:
     command: /bin/collector -exchange=OKEx
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -80,6 +85,7 @@ services:
     command: /bin/collector -exchange=Huobi
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -92,6 +98,7 @@ services:
     command: /bin/collector -exchange=CoinBase
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -104,6 +111,7 @@ services:
     command: /bin/collector -exchange=Binance
     networks:
       - kafka-network
+      - redis-network
     secrets:
       - api_binance
     logging:
@@ -118,6 +126,7 @@ services:
     command: /bin/collector -exchange=Bitfinex
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -132,6 +141,7 @@ services:
     command: /bin/collector -exchange=Kraken
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -144,6 +154,7 @@ services:
     command: /bin/collector -exchange=ZB
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"
@@ -156,6 +167,7 @@ services:
     command: /bin/collector -exchange=Quoine
     networks:
       - kafka-network
+      - redis-network
     logging:
       options:
         max-size: "50m"

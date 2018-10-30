@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	coinsPerPage = 50
+	coinsPerPage = 500
 )
 
 type Env struct {
@@ -222,53 +222,55 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 // @Router /v1/coins [get]
 func (env *Env) GetCoins(c *gin.Context) {
 
-	symbols, err := env.DataStore.SymbolsWithASupply()
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
+	symbols := env.DataStore.GetAllSymbols()
+	var coins Coins
+	coins.Coins = []Coin{}
+	coins.CompleteCoinList = []CoinSymbolAndName{}
+	coins.Change, _ = env.DataStore.GetCurrencyChange()
 
-		var coins Coins
-		coins.Coins = []Coin{}
-		coins.CompleteCoinList = []CoinSymbolAndName{}
-		coins.Change, _ = env.DataStore.GetCurrencyChange()
-
-		for _, symbol := range symbols {
-			var c1 Coin
-			log.Debug("Adding symbol", symbol)
-			supply, _ := env.DataStore.GetSupply(symbol)
-			if supply != nil {
-				price, _ := env.DataStore.GetQuotation(symbol)
-				if price != nil {
-					volume, _ := env.DataStore.GetVolume(symbol)
-					if volume != nil {
-						c1.Price = price.Price
-						c1.Name = price.Name
-						c1.Symbol = price.Symbol
-						if price.PriceYesterday != nil {
-							c1.PriceYesterday = price.PriceYesterday
-						}
-						c1.Time = price.Time
-						c1.VolumeYesterdayUSD = volume
-						if supply != nil {
-							c1.CirculatingSupply = &supply.CirculatingSupply
-							coins.Coins = append(coins.Coins, c1)
-						}
-					}
+	for _, symbol := range symbols {
+		var c1 Coin
+		log.Debug("Adding symbol", symbol)
+		supply, _ := env.DataStore.GetSupply(symbol)
+		//if supply != nil {
+		price, _ := env.DataStore.GetQuotation(symbol)
+		if price != nil {
+			volume, _ := env.DataStore.GetVolume(symbol)
+			if volume != nil {
+				c1.Price = price.Price
+				c1.Name = price.Name
+				c1.Symbol = price.Symbol
+				if price.PriceYesterday != nil {
+					c1.PriceYesterday = price.PriceYesterday
 				}
+				c1.Time = price.Time
+				c1.VolumeYesterdayUSD = volume
+				if supply != nil {
+					c1.CirculatingSupply = &supply.CirculatingSupply
+				}
+				coins.Coins = append(coins.Coins, c1)
 			}
 		}
-
-		sort.Slice(coins.Coins, func(i, j int) bool {
-			return (*coins.Coins[i].CirculatingSupply * coins.Coins[i].Price) > (*coins.Coins[j].CirculatingSupply * coins.Coins[j].Price)
-		})
-		for _, coin := range coins.Coins {
-			coins.CompleteCoinList = append(coins.CompleteCoinList, CoinSymbolAndName{coin.Symbol, coin.Name})
-		}
-		if len(coins.Coins) > coinsPerPage {
-			coins.Coins = coins.Coins[:coinsPerPage]
-		}
-		c.JSON(http.StatusOK, coins)
+		//}
 	}
+
+	sort.Slice(coins.Coins, func(i, j int) bool {
+
+		if coins.Coins[i].CirculatingSupply == nil {
+			return false
+		}
+		if coins.Coins[j].CirculatingSupply == nil {
+			return false
+		}
+		return (*coins.Coins[i].CirculatingSupply * coins.Coins[i].Price) > (*coins.Coins[j].CirculatingSupply * coins.Coins[j].Price)
+	})
+	for _, coin := range coins.Coins {
+		coins.CompleteCoinList = append(coins.CompleteCoinList, CoinSymbolAndName{coin.Symbol, coin.Name})
+	}
+	if len(coins.Coins) > coinsPerPage {
+		coins.Coins = coins.Coins[:coinsPerPage]
+	}
+	c.JSON(http.StatusOK, coins)
 }
 
 // GetChartPoints godoc
@@ -322,5 +324,25 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
 		c.JSON(http.StatusOK, points{DataPoints: p})
+	}
+}
+
+// GetAllSymbols godoc
+// @Summary Get all symbols list
+// @Description Get all symbols list
+// @Accept  json
+// @Produce  json
+// @Param   symbol     path    string     true        "Some symbol"
+// @Param   filter     path    string     true        "Some filter"
+// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// @Success 200 {object} dia.Symbols "success"
+// @Failure 500 {object} restApi.APIError "error"
+// @Router /v1/symbols [get]
+func (env *Env) GetAllSymbols(c *gin.Context) {
+	s := env.DataStore.GetAllSymbols()
+	if len(s) == 0 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+	} else {
+		c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
 	}
 }

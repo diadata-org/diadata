@@ -111,7 +111,7 @@ func (scraper *QuoineScraper) mainLoop() {
 				Price:          price,
 				Volume:         volume,
 				Time:           time.Unix(int64(executions.Models[0].CreatedAt), 0),
-				ForeignTradeID: strconv.Itoa(productId),
+				ForeignTradeID: strconv.Itoa(executions.Models[0].ID),
 				Source:         scraper.exchangeName,
 			}
 

@@ -19,6 +19,10 @@ type Client struct {
 	lastSupplyUpdateValue float64
 }
 
+type Symbols struct {
+	Symbols []string
+}
+
 const BaseUrl string = "https://api.diadata.org/"
 
 type response struct {
@@ -90,6 +94,33 @@ func (c *Client) login() error {
 	return nil
 }
 
+// TODO remove URL
+func GetSymbolsList(url string) ([]string, error) {
+	log.Println("getSymbolList")
+	response, err := http.Get(url + "/v1/symbols")
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error getSymbolList")
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug("%s\n", string(contents))
+		var b Symbols
+
+		err = json.Unmarshal(contents, &b)
+
+		if err == nil {
+			return b.Symbols, nil
+		}
+		return nil, err
+	}
+}
+
 func GetConfigApi() *ConfigApi {
 	var c ConfigApi
 	configFile := "/run/secrets/api_diadata"
@@ -140,7 +171,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Println("StatusCode", resp.StatusCode)
+	log.Debug("StatusCode", resp.StatusCode)
 
 	if 200 != resp.StatusCode {
 

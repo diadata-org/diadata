@@ -21,7 +21,7 @@ func main() {
 	}
 
 	for {
-		symbols, err := dataStore.SymbolsWithASupply()
+		symbols, err := dataStore.GetAllSymbols()
 		if err != nil {
 			log.Error(err)
 			return

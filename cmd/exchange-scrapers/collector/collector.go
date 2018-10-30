@@ -6,6 +6,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
@@ -96,7 +97,20 @@ func main() {
 		mutex:         &sync.Mutex{},
 	}
 
-	cc := configCollectors.NewConfigCollectors(*exchange)
+	//	cc := configCollectors.NewConfigCollectors(*exchange)
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore:", err)
+	} else {
+
+	}
+	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
+
+	if err != nil {
+		log.Error("error on GetAvailablePairsForExchange", err)
+		cc := configCollectors.NewConfigCollectors(*exchange)
+		pairsExchange = cc.AllPairs()
+	}
 
 	configApi, err := dia.GetConfig(*exchange)
 	if err != nil {
@@ -109,7 +123,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	for _, configPair := range cc.AllPairs() {
+	for _, configPair := range pairsExchange {
 
 		log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 
