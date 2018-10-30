@@ -94,6 +94,32 @@ func (c *Client) login() error {
 	return nil
 }
 
+func GetSupply(symbol string) (*Supply, error) {
+	url := BaseUrl + "/v1/supply/" + symbol
+	log.Println("Checking supply for", symbol, "on", url)
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("error on %v -> %v", url, response.StatusCode)
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug("%s\n", string(contents))
+		var b Supply
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			log.Debug("got", b)
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
 // TODO remove URL
 func GetSymbolsList(url string) ([]string, error) {
 	log.Println("getSymbolList")

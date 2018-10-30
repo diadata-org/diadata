@@ -17,7 +17,7 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_hitbtccollector:latest
-    command: /bin/collector -exchange=HitBTC
+    command: /bin/collector -exchange=HitBTC -onePairPerSymbol
     networks:
       - kafka-network
       - redis-network
@@ -56,7 +56,7 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
-    command: /bin/collector -exchange=LBank
+    command: /bin/collector -exchange=LBank -onePairPerSymbol
     networks:
       - kafka-network      
       - redis-network
@@ -69,7 +69,7 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_okexcollector:latest
-    command: /bin/collector -exchange=OKEx
+    command: /bin/collector -exchange=OKEx -onePairPerSymbol
     networks:
       - kafka-network
       - redis-network

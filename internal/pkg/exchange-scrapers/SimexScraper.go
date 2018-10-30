@@ -89,6 +89,11 @@ func (s *SimexScraper) mainLoop() {
 		for key, el := range s.pairScrapers {
 			// more or less 60 calls per minute, the limit is 300
 			time.Sleep(1 * time.Second)
+
+			if s.pairIdTrade[key] == nil {
+				log.Error(key, "s.pairIdTrade[key] == nil")
+				continue
+			}
 			pairTrade := getAPICall("/trades/?pair_id=" + strconv.Itoa(int(s.pairIdTrade[key].Id)))
 			if len(pairTrade) > 0 {
 				newId := 0

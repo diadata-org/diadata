@@ -58,7 +58,8 @@ func getConfig(exchange string) (*dia.ConfigApi, error) {
 }
 
 var (
-	exchange = flag.String("exchange", "", "which exchange")
+	exchange         = flag.String("exchange", "", "which exchange")
+	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
 )
 
 func init() {
@@ -123,18 +124,28 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
+	pairs := make(map[string]string)
+
 	for _, configPair := range pairsExchange {
-
-		log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-
-		ps, err := es.ScrapePair(dia.Pair{
-			Symbol:      configPair.Symbol,
-			ForeignName: configPair.ForeignName})
-		if err != nil {
-			log.Println(err)
+		dontAddPair := false
+		if *onePairPerSymbol {
+			_, dontAddPair = pairs[configPair.Symbol]
+			pairs[configPair.Symbol] = configPair.Symbol
+		}
+		if dontAddPair {
+			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 		} else {
-			go handleTrades(d, ps, &wg, w)
-			wg.Add(1)
+			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
+			ps, err := es.ScrapePair(dia.Pair{
+				Symbol:      configPair.Symbol,
+				ForeignName: configPair.ForeignName})
+			if err != nil {
+				log.Println(err)
+			} else {
+				go handleTrades(d, ps, &wg, w)
+				wg.Add(1)
+			}
+			time.Sleep(1 * time.Second)
 		}
 		defer wg.Wait()
 	}

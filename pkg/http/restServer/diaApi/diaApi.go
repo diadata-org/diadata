@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	coinsPerPage = 500
+	coinsPerPage = 50
 )
 
 type Env struct {
@@ -260,7 +260,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 			return false
 		}
 		if coins.Coins[j].CirculatingSupply == nil {
-			return false
+			return true
 		}
 		return (*coins.Coins[i].CirculatingSupply * coins.Coins[i].Price) > (*coins.Coins[j].CirculatingSupply * coins.Coins[j].Price)
 	})

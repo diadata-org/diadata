@@ -21,13 +21,7 @@ func main() {
 	}
 
 	for {
-		symbols, err := dataStore.GetAllSymbols()
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		for _, symbol := range symbols {
+		for _, symbol := range dataStore.GetAllSymbols() {
 
 			log.Info("sleeping...")
 			time.Sleep(1 * time.Second)
