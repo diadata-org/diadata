@@ -39,11 +39,13 @@ export default {
 			coinSymbol: '',
 			coindata: null,
 			selectedCurrency:'',
+			selectedAlgorithm: '',
 			chartAllOptions: {},
 			chartSimexOptions: {},
 			rateArray: [],
 			error:'',
 			showAllCharts: false,
+			algorithmArray: [],
 			currencies: []
 		};
 	},
@@ -70,10 +72,23 @@ export default {
 				this.selectedCurrency = "USD";
 			}
 
+            if(localStorage.selectedAlgorithm) {
+                this.selectedAlgorithm = localStorage.selectedAlgorithm;
+            }
+            else{
+                this.selectedAlgorithm = "MA120";
+            }
+
 			let {Coin, Change, Exchanges } = this.coindata;
 
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
+			this.algorithmArray = [
+				"MA120",
+				"MAIR120",
+				"MED120",
+				"MEDIR120",
+			];
 
 			// format the coin details
 			const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
@@ -125,7 +140,7 @@ export default {
 		},
 		async fetchCoinChartDetails() {
 			try {
-				let response1 = await axios.get(shared.getApi()+`/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+				let response1 = await axios.get(shared.getApi()+`/v1/chartPointsAllExchanges/${this.selectedAlgorithm}/${this.coinSymbol.toUpperCase()}`);
 
 				const price = 'Price (' + this.selectedCurrency + ')';
 				const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
@@ -273,6 +288,11 @@ export default {
 		switchCurrencies : function(selectedCurrency){
 			this.selectedCurrency = selectedCurrency;
 			localStorage.selectedCurrency = selectedCurrency;
+			this.formatPairData();
+		},
+		switchAlgorithm : function(selectedAlgorithm){
+			this.selectedAlgorithm = selectedAlgorithm;
+			localStorage.selectedAlgorithm = selectedAlgorithm;
 			this.formatPairData();
 		},
 	},

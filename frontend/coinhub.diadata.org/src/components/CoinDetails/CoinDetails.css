@@ -21,22 +21,25 @@ div.loading-data {
 	padding-left: 6rem;
 }
 
-#dd-currency {
+#dd-currency, #dd-algorithm {
 	float:right;
 	padding: 0;
 }
 
-/deep/ #dd-currency .btn {
+/deep/ #dd-currency .btn,
+/deep/ #dd-algorithm .btn {
 	line-height: 1.9;
 	border-radius: 0;
 }
 
-/deep/ #dd-currency .dropdown-menu {
+/deep/ #dd-currency .dropdown-menu, #dd-algorithm .dropdown-menu {
 	font-size: 12px;
 }
 
 /deep/ #dd-currency button.btn-secondary:hover,
-/deep/ #dd-currency button.btn-secondary {
+/deep/ #dd-currency button.btn-secondary,
+/deep/ #dd-algorithm button.btn-secondary:hover,
+/deep/ #dd-algorithm button.btn-secondary {
 	color: #fff;
     background-color: #00CCB7;
     border-color: #00CCB7;
@@ -59,6 +62,8 @@ div.loading-data {
 }
 
 #dd-currency,
+/deep/ div .table-responsive.main,
+#dd-algorithm,
 /deep/ div .table-responsive.main{
 	padding-right: 70px;
 }
@@ -118,7 +123,10 @@ div.loading-data {
 
 	#dd-currency,
 	/deep/ div .table-responsive.main,
-	.data-sources-banner {
+	.data-sources-banner,
+	#dd-algorithm,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner{
 		margin-right: 10px;
 	}
 

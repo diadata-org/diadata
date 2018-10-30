@@ -47,7 +47,7 @@
 			    	</b-col>
 			    </b-row>
 			    <b-row>
-			        <b-col cols="9" md="4">
+			        <b-col cols="9" md="6">
 			        	<br>
 			        	<br>
 			        	<div class="w-100 text-left">
@@ -58,17 +58,39 @@
 				        	</h3>
 				        </div>
 			        </b-col>
-			        <b-col cols="2" md="2" offset-md="6" offset="1">
+			        <b-col cols="9" md="3" md-offset="2" offset="1">
 			        	<br>
 			        	<br>
-		                <b-dropdown id="dd-currency" 
-		                          v-bind:text="selectedCurrency" 
+		                <b-dropdown id="dd-algorithm"
+		                          v-bind:text="selectedAlgorithm"
+		                          v-bind:class = "{ 'd-none' : algorithmArray.length <= 0, 'd-inline-block' : algorithmArray.length > 0 }">
+			                <b-dropdown-item v-for="algorithm in algorithmArray" @click="switchAlgorithm(algorithm)">
+			                  {{ algorithm }}
+			                </b-dropdown-item>
+		              	</b-dropdown>
+		            </b-col>
+			        <!--<b-col cols="9" md="1">-->
+			        	<!--<br>-->
+			        	<!--<br>-->
+		                <!--<b-dropdown id="dd-currency"-->
+		                          <!--v-bind:text="selectedCurrency"-->
+		                          <!--v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">-->
+			                <!--<b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">-->
+			                  <!--{{ currency }}-->
+			                <!--</b-dropdown-item>-->
+		              	<!--</b-dropdown>-->
+		            <!--</b-col>-->
+			        <b-col cols="9" md="1">
+			        	<br>
+			        	<br>
+		                <b-dropdown id="dd-currency"
+		                          v-bind:text="selectedCurrency"
 		                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">
 			                <b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">
 			                  {{ currency }}
 			                </b-dropdown-item>
 		              	</b-dropdown>
-		            </b-col>    
+		            </b-col>
 			    </b-row>
 			    <b-row>
 			    	<highcharts  v-bind:class = "{ 'd-none' : showAllCharts === false, 'd-inline-block' : showAllCharts === true }"
