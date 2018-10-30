@@ -171,7 +171,23 @@ definitions:
 host: api.diadata.org
 info:
   contact: {}
-  description: Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).
+  description: The world's crowd-driven financial data community has a professional
+    API made for you.<br><h2>Decentral and transparent by design</h2><br>With our
+    decentral approach to data verification, you can gain a deep insight into current
+    and past pricing, volume and exchange info so you can make the right decisions
+    to stay ahead of the game.<br><br><h3>Find the right data for your needs</h3><br>Show
+    your users the most transparent data on the market with our API. Whether you're
+    building a financial service, a portfolio management tool, a new media offering,
+    or more, we have the most advanced and updated data on the market for your product.<br>For
+    Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).<br><br><h3>Backtest
+    your strategies</h3><br>Use the most efficient and transparent crypto data to
+    run simulations and backtest your trading or investing strategies. With crowd-aggregated
+    hundreds of exchanges you can be sure that you're getting the right picture every
+    single time.<br><br><h3>Run Experiments</h3><br>Build your own models with our
+    data, to further your interest or just for fun. With our flexible and powerful
+    API, we provide you with a set of data that will help you draw insights and make
+    conclusions.<br><br><h3>Request your data</h3><br>Set a bounty on gitcoin.io or
+    drop us [line](mailto:API@diadata.org).
   license:
     name: GNU GPLv3
   title: diadata.org API
