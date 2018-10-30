@@ -34,7 +34,7 @@ type Subscribe struct {
 type OKExScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
+	run          bool
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -99,8 +99,8 @@ func (s *OKExScraper) subscribeToALL() {
 // runs in a goroutine until s is closed
 func (s *OKExScraper) mainLoop() {
 
-	//firstTime := true
-	for true {
+	s.run = true
+	for s.run {
 		var message Responses
 		if err := s.wsClient.ReadJSON(&message); err != nil {
 
@@ -155,6 +155,7 @@ func (s *OKExScraper) mainLoop() {
 			}
 		}
 	}
+	s.cleanup(errors.New("Main loop terminated by Close()"))
 }
 
 func (s *OKExScraper) cleanup(err error) {
@@ -178,6 +179,9 @@ func (s *OKExScraper) Close() error {
 	}
 
 	close(s.shutdown)
+	// Set false first to prevent reconnect
+	s.run = false
+	s.wsClient.Close()
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

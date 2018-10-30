@@ -116,18 +116,18 @@ func SymbolsFrontPage() []string {
 
 func Exchanges() []string {
 	return []string{
-		KrakenExchange,
-		BitfinexExchange,
 		BinanceExchange,
+		BitfinexExchange,
 		CoinBaseExchange,
-		HitBTCExchange,
-		SimexExchange,
-		HuobiExchange,
-		LBankExchange,
 		GateIOExchange,
+		HitBTCExchange,
+		HuobiExchange,
+		KrakenExchange,
+		LBankExchange,
 		OKExExchange,
-		ZBExchange,
 		QuoineExchange,
+		SimexExchange,
+		ZBExchange,
 	}
 }
 

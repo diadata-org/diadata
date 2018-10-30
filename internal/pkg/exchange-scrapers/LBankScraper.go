@@ -35,7 +35,6 @@ type SubscribeLBank struct {
 type LBankScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -73,44 +72,37 @@ func NewLBankScraper(exchangeName string) *LBankScraper {
 
 // runs in a goroutine until s is closed
 func (s *LBankScraper) mainLoop() {
+	var err error
 
 	for true {
-
 		message := &ResponseLBank{}
-		if err := s.wsClient.ReadJSON(&message); err != nil {
+		if err = s.wsClient.ReadJSON(&message); err != nil {
 			println(err.Error())
 			break
 		}
-
 		ps, ok := s.pairScrapers[strings.ToUpper(message.Pair)]
 
 		if ok {
-
 			var f64Price float64
 			var f64Volume float64
 
 			switch message.Trade.(type) {
-
 			case []interface{}:
-
 				md := message.Trade.([]interface{})
 				f64Price = md[1].(float64)
 				f64Volume = md[2].(float64)
-
 				if md[3] == "sell" {
 					f64Volume = -f64Volume
 				}
-
 			case map[string]interface{}:
-
 				md := message.Trade.(map[string]interface{})
 				f64Price = md["price"].(float64)
 				f64Volume = md["volume"].(float64)
-
 				if md["direction"] == "sell" {
 					f64Volume = -f64Volume
 				}
 			}
+
 			timeStamp := time.Now().UTC()
 			t := &dia.Trade{
 				Symbol:         ps.pair.Symbol,
@@ -124,6 +116,7 @@ func (s *LBankScraper) mainLoop() {
 			ps.chanTrades <- t
 		}
 	}
+	s.cleanup(err)
 }
 
 func hash(s string) uint32 {
@@ -151,7 +144,7 @@ func (s *LBankScraper) Close() error {
 	if s.closed {
 		return errors.New("LBankScraper: Already closed")
 	}
-
+	s.wsClient.Close()
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -162,36 +155,28 @@ func (s *LBankScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
-
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("LBankScraper: Call ScrapePair on closed scraper")
 	}
-
 	ps := &LBankPairScraper{
 		parent:     s,
 		pair:       pair,
 		chanTrades: make(chan *dia.Trade),
 	}
-
 	s.pairScrapers[pair.ForeignName] = ps
-
 	a := &SubscribeLBank{
 		Action:    "subscribe",
 		Subscribe: "trade",
 		Pair:      strings.ToLower(pair.ForeignName),
 	}
-
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		fmt.Println(err.Error())
 	}
-
 	return ps, nil
 }
 
