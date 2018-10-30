@@ -104,7 +104,6 @@ func (e *EthClient) getBlock(number int64) (EthBlock, error) {
 	// retrieve latest block
 	if number == -1 {
 		content.Params[0] = "latest"
-
 	} else {
 		content.Params[0] = "0x" + strconv.FormatInt(number, 16)
 	}
