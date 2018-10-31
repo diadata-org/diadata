@@ -80,6 +80,7 @@ div.loading-data {
 
 .subtext1 ul {
 	list-style-type: none;
+	padding: 0;
 }
 
 .subtext1,
@@ -257,6 +258,9 @@ span.coin-name {
 		padding-left: 1px;
 		padding-right: 0;
 		padding-top: 0;
+	}
+	.subtext1 ul {
+		padding: 0 0 0 16px;
 	}
 	.subtext2 {
 		padding-left: 40px;
