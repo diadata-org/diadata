@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"sync"
@@ -82,7 +81,6 @@ func (s *FiltersBlockService) cleanup(err error) {
 func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
 	log.Debug("previousBlockFilters", previousBlockFilters)
 	log.Debug("newFilters:", newFilters)
-	c := configCollectors.NewConfigCollectors("")
 	missingPoints := 0
 	result := newFilters
 	newFiltersMap := make(map[string]*dia.FilterPoint)
@@ -91,13 +89,19 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	}
 
 	for _, filter := range previousBlockFilters {
-		if c.IsSymbolInConfig(filter.Symbol) {
+
+		d := time.Now().Sub(filter.Time)
+		log.Info("filter:", filter, " age:", d)
+
+		if d > time.Hour*24 {
 			_, ok := newFiltersMap[filter.Name+filter.Symbol]
 			if !ok {
 				result = append(result, filter)
 				log.Debug("Adding", filter.Name+filter.Symbol)
 				missingPoints++
 			}
+		} else {
+			log.Info("ignoring old filter", filter.Symbol)
 		}
 	}
 	if missingPoints != 0 {
