@@ -63,7 +63,15 @@ func (e *EthClient) GetBlockReward(number int64) (float64, error) {
 	if b, err := e.getBlock(number); err == nil {
 		E := (number - 1) / eraBase
 		baseReward := 5 * math.Pow(0.8, float64(E))
-		return baseReward * (1. + uncleReward*float64(len(b.Uncles))), nil
+		var uR float64
+		for i := 0; i < len(b.Uncles); i++ {
+			if r, err := e.getUncleRewardByIDAndPosition(number, i); err != nil {
+				return 0, err
+			} else {
+				uR += r
+			}
+		}
+		return baseReward*(1.+uncleReward*float64(len(b.Uncles))) + uR, nil
 	} else {
 		return 0, err
 	}
@@ -115,4 +123,51 @@ func (e *EthClient) getBlock(number int64) (EthBlock, error) {
 		log.Error("Error retrieving block")
 		return r.Result, err
 	}
+}
+func (e *EthClient) getUncleRewardByIDAndPosition(number int64, postion int) (float64, error) {
+	if b, err := e.getUncleBlockByIDAndPosition(number, postion); err == nil {
+		E := (number - 1) / eraBase
+		baseReward := 5. * math.Pow(0.8, float64(E))
+		id, _ := strconv.ParseInt(b.ID, 0, 64)
+		return float64(int(id)+8-int(number)) * baseReward / 8., nil
+	} else {
+		return 0, err
+	}
+}
+func (e *EthClient) getUncleBlockByIDAndPosition(number int64, postion int) (EthBlock, error) {
+	// var block EthBlock
+	type msg struct {
+		Jsonrpc string
+		Method  string
+		Params  []interface{}
+		Id      int
+	}
+	type response struct {
+		Jsonrpc string
+		Id      int
+		Result  EthBlock
+	}
+	var r response
+
+	content := msg{
+		Jsonrpc: "2.0",
+		Method:  "eth_getUncleByBlockNumberAndIndex",
+		Params:  make([]interface{}, 2),
+		Id:      1,
+	}
+	// retrieve latest block
+	if number == -1 {
+		content.Params[0] = "latest"
+	} else {
+		content.Params[0] = "0x" + strconv.FormatInt(number, 16)
+	}
+	content.Params[1] = postion
+	if data, err := e.post(content); err == nil {
+		err = json.Unmarshal(data, &r)
+		return r.Result, err
+	} else {
+		log.Error("Error retrieving block")
+		return r.Result, err
+	}
+
 }
