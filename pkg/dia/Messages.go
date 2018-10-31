@@ -15,6 +15,7 @@ type Supply struct {
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
+	Block             int64
 }
 
 type Pair struct {
