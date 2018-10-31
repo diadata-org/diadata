@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"github.com/diadata-org/diadata/pkg/dia"
+	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	"time"
 )
 
@@ -51,4 +52,89 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+type CoinSymbolAndName struct {
+	Symbol string
+	Name   string
+}
+
+type Coin struct {
+	Symbol             string
+	Name               string
+	Price              float64
+	PriceYesterday     *float64
+	VolumeYesterdayUSD *float64
+	Time               time.Time
+	CirculatingSupply  *float64
+}
+
+type Coins struct {
+	CompleteCoinList []CoinSymbolAndName
+	Change           *Change
+	Coins            []Coin
+}
+
+type Pairs struct {
+	Pairs []dia.Pair
+}
+
+// MarshalBinary -
+func (e *Coins) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *Coins) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+type SymbolDetails struct {
+	Change    *Change
+	Coin      Coin
+	Exchanges []SymbolExchangeDetails
+}
+
+// MarshalBinary -
+func (e *SymbolDetails) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *SymbolDetails) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *Coin) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary -
+func (e *Coin) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+type Points struct {
+	DataPoints []clientInfluxdb.Result
+}
+
+func (e *Points) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary -
+func (e *Points) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
 }

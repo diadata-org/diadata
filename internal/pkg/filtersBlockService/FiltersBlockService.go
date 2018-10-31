@@ -183,6 +183,8 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
+	// refresh redis cache for coinhub:
+	s.datastore.GetCoins()
 }
 
 // runs in a goroutine until s is closed

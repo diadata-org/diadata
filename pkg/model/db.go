@@ -36,16 +36,16 @@ type Datastore interface {
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
-
 	Flush() error
-
-	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
+	GetCoins() (*Coins, error)
+	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 }
 
 const (

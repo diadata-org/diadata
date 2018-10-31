@@ -10,24 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	_ "github.com/influxdata/influxdb/client/v2"
-	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	"sort"
 	"time"
-)
-
-const (
-	coinsPerPage = 50
 )
 
 type Env struct {
 	DataStore models.Datastore
-}
-
-type points struct {
-	DataPoints []clientInfluxdb.Result
 }
 
 // PostSupply godoc
@@ -136,7 +126,7 @@ func (env *Env) GetSupply(c *gin.Context) {
 // @Tags dia
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} diaApi.Pairs "success"
+// @Success 200 {object} models.Pairs "success"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/pairs/ [get]
 func (env *Env) GetPairs(c *gin.Context) {
@@ -144,7 +134,7 @@ func (env *Env) GetPairs(c *gin.Context) {
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, &Pairs{Pairs: p})
+		c.JSON(http.StatusOK, &models.Pairs{Pairs: p})
 	}
 }
 
@@ -155,14 +145,14 @@ func (env *Env) GetPairs(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} diaApi.SymbolDetails "success"
+// @Success 200 {object} models.SymbolDetails "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/symbol/:symbol: [get]
 func (env *Env) GetSymbolDetails(c *gin.Context) {
 	symbol := c.Param("symbol")
 
-	q, err := env.DataStore.GetQuotation(symbol)
+	s, err := env.DataStore.GetSymbolDetails(symbol)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -170,37 +160,50 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		r := &SymbolDetails{
-			Coin: Coin{
-				Symbol:             q.Symbol,
-				Name:               q.Name,
-				Price:              q.Price,
-				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
-				Time:               q.Time,
-				PriceYesterday:     q.PriceYesterday,
-			},
-			Exchanges: []models.SymbolExchangeDetails{},
-		}
-		r.Change, _ = env.DataStore.GetCurrencyChange()
-
-		s, err := env.DataStore.GetSupply(symbol)
-		if err == nil {
-			r.Coin.CirculatingSupply = &s.CirculatingSupply
-		}
-
-		exs, err := env.DataStore.GetExchangesForSymbol(symbol)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		} else {
-			for _, e := range exs {
-				s, err2 := env.DataStore.GetSymbolExchangeDetails(symbol, e)
-				if err2 == nil {
-					r.Exchanges = append(r.Exchanges, *s)
-				}
-			}
-			c.JSON(http.StatusOK, r)
-		}
+		c.JSON(http.StatusOK, s)
 	}
+
+	/*
+		q, err := env.DataStore.GetQuotation(symbol)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			r := &models.SymbolDetails{
+				Coin: models.Coin{
+					Symbol:             q.Symbol,
+					Name:               q.Name,
+					Price:              q.Price,
+					VolumeYesterdayUSD: q.VolumeYesterdayUSD,
+					Time:               q.Time,
+					PriceYesterday:     q.PriceYesterday,
+				},
+				Exchanges: []models.SymbolExchangeDetails{},
+			}
+			r.Change, _ = env.DataStore.GetCurrencyChange()
+
+			s, err := env.DataStore.GetSupply(symbol)
+			if err == nil {
+				r.Coin.CirculatingSupply = &s.CirculatingSupply
+			}
+
+			exs, err := env.DataStore.GetExchangesForSymbol(symbol)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			} else {
+				for _, e := range exs {
+					s, err2 := env.DataStore.GetSymbolExchangeDetails(symbol, e)
+					if err2 == nil {
+						r.Exchanges = append(r.Exchanges, *s)
+					}
+				}
+				c.JSON(http.StatusOK, r)
+			}
+		}
+	*/
 }
 
 func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
@@ -217,60 +220,16 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 // @Tags dia
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} diaApi.Coins "success"
+// @Success 200 {object} models.Coins "success"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/coins [get]
 func (env *Env) GetCoins(c *gin.Context) {
-
-	symbols := env.DataStore.GetAllSymbols()
-	var coins Coins
-	coins.Coins = []Coin{}
-	coins.CompleteCoinList = []CoinSymbolAndName{}
-	coins.Change, _ = env.DataStore.GetCurrencyChange()
-
-	for _, symbol := range symbols {
-		var c1 Coin
-		log.Debug("Adding symbol", symbol)
-		supply, _ := env.DataStore.GetSupply(symbol)
-		//if supply != nil {
-		price, _ := env.DataStore.GetQuotation(symbol)
-		if price != nil {
-			volume, _ := env.DataStore.GetVolume(symbol)
-			if volume != nil {
-				c1.Price = price.Price
-				c1.Name = price.Name
-				c1.Symbol = price.Symbol
-				if price.PriceYesterday != nil {
-					c1.PriceYesterday = price.PriceYesterday
-				}
-				c1.Time = price.Time
-				c1.VolumeYesterdayUSD = volume
-				if supply != nil {
-					c1.CirculatingSupply = &supply.CirculatingSupply
-				}
-				coins.Coins = append(coins.Coins, c1)
-			}
-		}
-		//}
+	coins, err := env.DataStore.GetCoins()
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, coins)
 	}
-
-	sort.Slice(coins.Coins, func(i, j int) bool {
-
-		if coins.Coins[i].CirculatingSupply == nil {
-			return false
-		}
-		if coins.Coins[j].CirculatingSupply == nil {
-			return true
-		}
-		return (*coins.Coins[i].CirculatingSupply * coins.Coins[i].Price) > (*coins.Coins[j].CirculatingSupply * coins.Coins[j].Price)
-	})
-	for _, coin := range coins.Coins {
-		coins.CompleteCoinList = append(coins.CompleteCoinList, CoinSymbolAndName{coin.Symbol, coin.Name})
-	}
-	if len(coins.Coins) > coinsPerPage {
-		coins.Coins = coins.Coins[:coinsPerPage]
-	}
-	c.JSON(http.StatusOK, coins)
 }
 
 // GetChartPoints godoc
@@ -283,7 +242,7 @@ func (env *Env) GetCoins(c *gin.Context) {
 // @Param   exchange     path    string     true        "Some exchange"
 // @Param   filter     path    string     true        "Some filter"
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} diaApi.points "success"
+// @Success 200 {object} models.Points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
@@ -297,7 +256,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, points{DataPoints: p})
+		c.JSON(http.StatusOK, p)
 	}
 }
 
@@ -310,7 +269,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // @Param   symbol     path    string     true        "Some symbol"
 // @Param   filter     path    string     true        "Some filter"
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} diaApi.points "success"
+// @Success 200 {object} models.Points "success"
 // @Failure 404 {object} restApi.APIError "Symbol not found"
 // @Failure 500 {object} restApi.APIError "error"
 // @Router /v1/chartPointsAllExchanges/:filter:/:symbol: [get]
@@ -323,7 +282,7 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, points{DataPoints: p})
+		c.JSON(http.StatusOK, p)
 	}
 }
 

@@ -1,9 +1,6 @@
 package models
 
 import (
-	//"fmt"
-	//"github.com/diadata-org/diadata/pkg/dia"
-	//clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 )
 

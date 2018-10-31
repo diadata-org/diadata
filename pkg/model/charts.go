@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -44,7 +43,7 @@ func (db *DB) GetChartPoints7Days(symbol string) (r []Point, err error) {
 	return
 }
 
-func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error) {
+func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error) {
 	exchangeQuery := "and exchange='" + exchange + "' "
 	table := ""
 	//	5m 30m 1h 4h 1d 1w
@@ -68,5 +67,7 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 
 	log.Info("GetFilterPoints query:", q, "returned ", len(res))
 
-	return res, err
+	return &Points{
+		DataPoints: res,
+	}, err
 }

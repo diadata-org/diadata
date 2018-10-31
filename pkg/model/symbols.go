@@ -84,3 +84,37 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 
 	return result, err
 }
+
+func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
+	q, err := db.GetQuotation(symbol)
+	if err != nil {
+		return nil, err
+	} else {
+		r := &SymbolDetails{
+			Coin: Coin{
+				Symbol:             q.Symbol,
+				Name:               q.Name,
+				Price:              q.Price,
+				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
+				Time:               q.Time,
+				PriceYesterday:     q.PriceYesterday,
+			},
+			Exchanges: []SymbolExchangeDetails{},
+		}
+		r.Change, _ = db.GetCurrencyChange()
+		s, err := db.GetSupply(symbol)
+		if err == nil {
+			r.Coin.CirculatingSupply = &s.CirculatingSupply
+		}
+		exs, err := db.GetExchangesForSymbol(symbol)
+		if err == nil {
+			for _, e := range exs {
+				s, err2 := db.GetSymbolExchangeDetails(symbol, e)
+				if err2 == nil {
+					r.Exchanges = append(r.Exchanges, *s)
+				}
+			}
+		}
+		return r, err
+	}
+}
