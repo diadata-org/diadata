@@ -69,17 +69,20 @@
 			                </b-dropdown-item>
 		              	</b-dropdown>
 		            </b-col>
-			        <!--<b-col cols="9" md="1">-->
-			        	<!--<br>-->
-			        	<!--<br>-->
-		                <!--<b-dropdown id="dd-currency"-->
-		                          <!--v-bind:text="selectedCurrency"-->
-		                          <!--v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">-->
-			                <!--<b-dropdown-item v-for="currency in currencies" @click="switchCurrencies(currency)">-->
-			                  <!--{{ currency }}-->
-			                <!--</b-dropdown-item>-->
-		              	<!--</b-dropdown>-->
-		            <!--</b-col>-->
+			        <b-col cols="9" md="1">
+			        	<br>
+			        	<br>
+		                <b-dropdown id="dd-exchange"
+		                          v-bind:text="selectedExchange"
+		                          v-bind:class = "{ 'd-none' : exchangeNames.length <= 0, 'd-inline-block' : exchangeNames.length > 0 }">
+			                <b-dropdown-item @click="switchExchange('All')">
+			                  All
+			                </b-dropdown-item>
+							<b-dropdown-item v-for="exchange in exchangeNames" @click="switchExchange(exchange)">
+			                  {{ exchange }}
+			                </b-dropdown-item>
+		              	</b-dropdown>
+		            </b-col>
 			        <b-col cols="9" md="1">
 			        	<br>
 			        	<br>
