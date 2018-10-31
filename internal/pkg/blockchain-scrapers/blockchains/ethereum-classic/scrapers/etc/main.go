@@ -94,8 +94,9 @@ func getInitialSupply() {
 
 func initialize() {
 	e = &ethclassic.EthClient{
-		URL:       rpcURL,
-		LastBlock: -1,
+		URL:        rpcURL,
+		LastBlock:  -1,
+		LastSupply: 72009990.50, // Genesis (60M Crowdsale 12M Other)
 	}
 	config := dia.GetConfigApi()
 	if config == nil {
