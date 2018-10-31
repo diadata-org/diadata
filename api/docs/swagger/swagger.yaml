@@ -22,6 +22,13 @@ definitions:
       time:
         type: string
     type: object
+  dia.Symbols:
+    properties:
+      symbols:
+        items:
+          type: string
+        type: array
+    type: object
   dia.Trade:
     properties:
       estimatedUSDPrice:
@@ -443,4 +450,38 @@ paths:
       summary: Get Symbol Details
       tags:
       - dia
+  /v1/symbols:
+    get:
+      consumes:
+      - application/json
+      description: Get all symbols list
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Some filter
+        in: path
+        name: filter
+        required: true
+        type: string
+      - description: scale 5m 30m 1h 4h 1d 1w
+        in: query
+        name: scale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.Symbols'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get all symbols list
 swagger: "2.0"

@@ -6,6 +6,27 @@ import (
 	"strings"
 )
 
+func (db *DB) GetAllSymbols() []string {
+	r := make(map[string]string)
+
+	// TODO: search in redis instead
+	for _, e := range dia.Exchanges() {
+		p, err := db.GetAvailablePairsForExchange(e)
+		if err == nil {
+			for _, v := range p {
+				r[v.Symbol] = v.Symbol
+			}
+		} else {
+			log.Error("GetAllSymbols", err)
+		}
+	}
+	s := []string{}
+	for _, value := range r {
+		s = append(s, value)
+	}
+	return s
+}
+
 func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
 	var cursor uint64
@@ -19,6 +40,7 @@ func (db *DB) GetSymbols(exchange string) ([]string, error) {
 			return result, err
 		}
 		for _, value := range keys {
+
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
 			if exchange == "" {

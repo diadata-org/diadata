@@ -42,12 +42,14 @@ type Datastore interface {
 	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
+	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
+	GetAllSymbols() []string
 }
 
 const (
-	influxMaxPointsInBatch = 200
+	influxMaxPointsInBatch = 500
 )
 
 type DB struct {
@@ -172,7 +174,7 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
-		log.Info("AddPoint forcing write Bash")
+		log.Debug("AddPoint forcing write Bash")
 		db.WriteBashInflux()
 	}
 }

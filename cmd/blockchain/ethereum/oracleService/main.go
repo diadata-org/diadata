@@ -19,6 +19,7 @@ import(
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
+	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 )
 
@@ -94,11 +95,40 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
 		return err
 	}
+
 	sort.Slice(rawCoins.Coins, func(i, j int) bool {
 		return rawCoins.Coins[i].Price * *rawCoins.Coins[i].CirculatingSupply > rawCoins.Coins[j].Price * *rawCoins.Coins[j].CirculatingSupply
 	})
 	topCoinSlice := rawCoins.Coins[:*topCoins]
+	// Search for NEU tokens
+	neumarkData, err := getCoinDetailsFromDia("NEU")
+	if err != nil {
+		log.Fatalf("Failed to retrieve NEU token from DIA: %v", err)
+		return err
+	}
+	topCoinSlice = append(topCoinSlice, *neumarkData)
 	err = updateTopCoins(topCoinSlice, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+
+	// Get EUR and CAD exchange rates
+	eurRate, err := getECBRatesFromDia("EUR")
+	if err != nil {
+		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "EUR", err)
+		return err
+	}
+	cadRate, err := getECBRatesFromDia("CAD")
+	if err != nil {
+		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "CAD", err)
+		return err
+	}
+
+	ecbRates := []models.Quotation{*eurRate, *cadRate}
+
+	err = updateECBRates(ecbRates, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -114,6 +144,23 @@ func updateTopCoins(topCoins []diaApi.Coin, auth *bind.TransactOpts, contract *o
 		price := element.Price
 		// Get 5 digits after the comma by multiplying price with 100000
 		err := updateOracle(contract, auth, name, symbol, int64(price * 100000), int64(*supply));
+		if err != nil {
+			log.Fatalf("Failed to update Oracle: %v", err)
+			return err
+		}
+		time.Sleep(10 * time.Minute)
+	}
+	return nil
+}
+
+func updateECBRates(ecbRates []models.Quotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	for _, element := range ecbRates {
+		symbol := strings.ToUpper(element.Symbol)
+		name := element.Name
+		price := element.Price
+		// Get 5 digits after the comma by multiplying price with 100000
+		// Set supply to 0, as we don't have a supply for fiat currencies
+		err := updateOracle(contract, auth, name, symbol, int64(price * 100000), 0);
 		if err != nil {
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
@@ -146,6 +193,31 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
+func getCoinDetailsFromDia(symbol string) (*diaApi.Coin, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/symbol/" + symbol)
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b diaApi.SymbolDetails
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b.Coin, nil
+		}
+		return nil, err
+	}
+}
+
 func getToplistFromDia() (*diaApi.Coins, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/coins")
 	if err != nil {
@@ -163,6 +235,32 @@ func getToplistFromDia() (*diaApi.Coins, error) {
 		}
 
 		var b diaApi.Coins
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
+// Getting EUR vs XXX rate
+func getECBRatesFromDia(symbol string) (*models.Quotation, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b models.Quotation
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b, nil

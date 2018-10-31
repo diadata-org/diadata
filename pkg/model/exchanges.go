@@ -47,19 +47,24 @@ func (db *DB) SetLastTradeTimeForExchange(symbol string, exchange string, t time
 	return err
 }
 
-func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) {
+func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX. use influx db trades on 24 hours
 	var result []string
 	var cursor uint64
 	key := "dia_" + dia.FilterKing + "_" + symbol
 	for {
 		var keys []string
 		var err error
-		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 10).Result()
+
+		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 15).Result()
+
+		log.Info("GetExchangesForSymbol ", key+"*", cursor)
+
 		if err != nil {
 			log.Error("GetPairs err", err)
 			return result, err
 		}
 		for _, value := range keys {
+			log.Info("GetExchangesForSymbol ", value)
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
 			if len(s) == 2 {
@@ -78,4 +83,16 @@ func (db *DB) SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) er
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
 	return db.redisClient.Set(key, &p, 0).Err()
+}
+
+// SetAvailablePairsForExchange stores a json containing all pairs available in the exchange in the internal redis db
+func (db *DB) GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error) {
+	key := "dia_available_pairs_" + exchange
+	p := dia.Pairs{}
+	err := db.redisClient.Get(key).Scan(&p)
+	if err != nil {
+		log.Error("Error: %v on GetAvailablePairsForExchange %v\n", err, exchange)
+		return nil, err
+	}
+	return p, nil
 }
