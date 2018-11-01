@@ -85,7 +85,31 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 	return result, err
 }
 
+func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
+	key := getKey("symbol", "details", symbol)
+	r, err := db.getSymbolDetails(symbol)
+	if err == nil {
+		r.Rank = rank
+		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
+		if err != nil {
+			log.Error("UpdateSymbolDetails setting cache\n", err)
+		}
+	} else {
+		log.Error("UpdateSymbolDetails", err)
+	}
+}
+
 func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
+	r := &SymbolDetails{}
+	key := getKey("symbol", "details", symbol)
+	err := db.redisClient.Get(key).Scan(r)
+	if err != nil {
+		return db.getSymbolDetails(symbol)
+	}
+	return r, err
+}
+
+func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 	q, err := db.GetQuotation(symbol)
 	if err != nil {
 		return nil, err
@@ -111,9 +135,17 @@ func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
 			for _, e := range exs {
 				s, err2 := db.GetSymbolExchangeDetails(symbol, e)
 				if err2 == nil {
-					r.Exchanges = append(r.Exchanges, *s)
+					if s.VolumeYesterdayUSD != nil {
+						r.Exchanges = append(r.Exchanges, *s)
+					} else {
+						log.Warning("getSymbolDetails: VolumeYesterdayUSD nil on", e, "for", symbol, " skipping exchange in exchange list.")
+					}
 				}
 			}
+		}
+		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "")
+		if r.Gfx1 == nil || err != nil {
+			log.Error("Couldnt fetch points for ", symbol, err)
 		}
 		return r, err
 	}

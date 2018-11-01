@@ -54,17 +54,14 @@ func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX.
 	for {
 		var keys []string
 		var err error
-
 		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 15).Result()
-
-		log.Info("GetExchangesForSymbol ", key+"*", cursor)
-
+		log.Debug("GetExchangesForSymbol ", key+"*", cursor)
 		if err != nil {
 			log.Error("GetPairs err", err)
 			return result, err
 		}
 		for _, value := range keys {
-			log.Info("GetExchangesForSymbol ", value)
+			log.Debug("GetExchangesForSymbol ", value)
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
 			if len(s) == 2 {

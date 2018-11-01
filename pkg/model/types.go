@@ -95,7 +95,9 @@ func (e *Coins) UnmarshalBinary(data []byte) error {
 type SymbolDetails struct {
 	Change    *Change
 	Coin      Coin
+	Rank      int
 	Exchanges []SymbolExchangeDetails
+	Gfx1      *Points
 }
 
 // MarshalBinary -

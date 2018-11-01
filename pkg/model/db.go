@@ -46,10 +46,12 @@ type Datastore interface {
 	GetAllSymbols() []string
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
+	UpdateSymbolDetails(symbol string, rank int)
 }
 
 const (
 	influxMaxPointsInBatch = 500
+	timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
 type DB struct {

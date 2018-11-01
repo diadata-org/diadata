@@ -183,8 +183,13 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
-	// refresh redis cache for coinhub:
-	s.datastore.GetCoins()
+	c, err := s.datastore.GetCoins()
+	if err == nil {
+		for i, v := range c.Coins {
+			log.Info("UpdateSymbolDetails on ", v.Symbol)
+			s.datastore.UpdateSymbolDetails(v.Symbol, i+1)
+		}
+	}
 }
 
 // runs in a goroutine until s is closed

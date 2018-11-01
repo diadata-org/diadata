@@ -48,7 +48,14 @@ definitions:
       volume:
         type: number
     type: object
-  diaApi.Coin:
+  models.Change:
+    properties:
+      usd:
+        items:
+          $ref: '#/definitions/models.CurrencyChange'
+        type: array
+    type: object
+  models.Coin:
     properties:
       circulatingSupply:
         type: number
@@ -65,57 +72,25 @@ definitions:
       volumeYesterdayUSD:
         type: number
     type: object
-  diaApi.CoinSymbolAndName:
+  models.CoinSymbolAndName:
     properties:
       name:
         type: string
       symbol:
         type: string
     type: object
-  diaApi.Coins:
+  models.Coins:
     properties:
       change:
         $ref: '#/definitions/models.Change'
         type: object
       coins:
         items:
-          $ref: '#/definitions/diaApi.Coin'
+          $ref: '#/definitions/models.Coin'
         type: array
       completeCoinList:
         items:
-          $ref: '#/definitions/diaApi.CoinSymbolAndName'
-        type: array
-    type: object
-  diaApi.Pairs:
-    properties:
-      pairs:
-        items:
-          $ref: '#/definitions/dia.Pair'
-        type: array
-    type: object
-  diaApi.SymbolDetails:
-    properties:
-      change:
-        $ref: '#/definitions/models.Change'
-        type: object
-      coin:
-        $ref: '#/definitions/diaApi.Coin'
-        type: object
-      exchanges:
-        items:
-          $ref: '#/definitions/models.SymbolExchangeDetails'
-        type: array
-    type: object
-  diaApi.points:
-    properties:
-      dataPoints:
-        type: string
-    type: object
-  models.Change:
-    properties:
-      usd:
-        items:
-          $ref: '#/definitions/models.CurrencyChange'
+          $ref: '#/definitions/models.CoinSymbolAndName'
         type: array
     type: object
   models.CurrencyChange:
@@ -125,6 +100,18 @@ definitions:
       rateYesterday:
         type: number
       symbol:
+        type: string
+    type: object
+  models.Pairs:
+    properties:
+      pairs:
+        items:
+          $ref: '#/definitions/dia.Pair'
+        type: array
+    type: object
+  models.Points:
+    properties:
+      dataPoints:
         type: string
     type: object
   models.Quotation:
@@ -143,6 +130,24 @@ definitions:
         type: string
       volumeYesterdayUSD:
         type: number
+    type: object
+  models.SymbolDetails:
+    properties:
+      change:
+        $ref: '#/definitions/models.Change'
+        type: object
+      coin:
+        $ref: '#/definitions/models.Coin'
+        type: object
+      exchanges:
+        items:
+          $ref: '#/definitions/models.SymbolExchangeDetails'
+        type: array
+      gfx1:
+        $ref: '#/definitions/models.Points'
+        type: object
+      rank:
+        type: integer
     type: object
   models.SymbolExchangeDetails:
     properties:
@@ -171,23 +176,7 @@ definitions:
 host: api.diadata.org
 info:
   contact: {}
-  description: The world's crowd-driven financial data community has a professional
-    API made for you.<br><h2>Decentral and transparent by design</h2><br>With our
-    decentral approach to data verification, you can gain a deep insight into current
-    and past pricing, volume and exchange info so you can make the right decisions
-    to stay ahead of the game.<br><br><h3>Find the right data for your needs</h3><br>Show
-    your users the most transparent data on the market with our API. Whether you're
-    building a financial service, a portfolio management tool, a new media offering,
-    or more, we have the most advanced and updated data on the market for your product.<br>For
-    Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).<br><br><h3>Backtest
-    your strategies</h3><br>Use the most efficient and transparent crypto data to
-    run simulations and backtest your trading or investing strategies. With crowd-aggregated
-    hundreds of exchanges you can be sure that you're getting the right picture every
-    single time.<br><br><h3>Run Experiments</h3><br>Build your own models with our
-    data, to further your interest or just for fun. With our flexible and powerful
-    API, we provide you with a set of data that will help you draw insights and make
-    conclusions.<br><br><h3>Request your data</h3><br>Set a bounty on gitcoin.io or
-    drop us [line](mailto:API@diadata.org).
+  description: Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).
   license:
     name: GNU GPLv3
   title: diadata.org API
@@ -224,7 +213,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.points'
+            $ref: '#/definitions/models.Points'
             type: object
         "404":
           description: Symbol not found
@@ -265,7 +254,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.points'
+            $ref: '#/definitions/models.Points'
             type: object
         "404":
           description: Symbol not found
@@ -291,7 +280,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.Coins'
+            $ref: '#/definitions/models.Coins'
             type: object
         "500":
           description: error
@@ -312,7 +301,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.Pairs'
+            $ref: '#/definitions/models.Pairs'
             type: object
         "500":
           description: error
@@ -435,7 +424,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.SymbolDetails'
+            $ref: '#/definitions/models.SymbolDetails'
             type: object
         "404":
           description: Symbol not found

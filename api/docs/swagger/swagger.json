@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "The world's crowd-driven financial data community has a professional API made for you.\u003cbr\u003e\u003ch2\u003eDecentral and transparent by design\u003c/h2\u003e\u003cbr\u003eWith our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eFind the right data for your needs\u003c/h3\u003e\u003cbr\u003eShow your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.\u003cbr\u003eFor Oracle usage see [github](https://github.com/diadata-org/diadata/blob/master/documentation/methodology/Oracles.md).\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eBacktest your strategies\u003c/h3\u003e\u003cbr\u003eUse the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eRun Experiments\u003c/h3\u003e\u003cbr\u003eBuild your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.\u003cbr\u003e\u003cbr\u003e\u003ch3\u003eRequest your data\u003c/h3\u003e\u003cbr\u003eSet a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).",
+        "description": "Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).",
         "title": "diadata.org API",
         "contact": {},
         "license": {
@@ -59,7 +59,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.points"
+                            "$ref": "#/definitions/models.Points"
                         }
                     },
                     "404": {
@@ -119,7 +119,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.points"
+                            "$ref": "#/definitions/models.Points"
                         }
                     },
                     "404": {
@@ -157,7 +157,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.Coins"
+                            "$ref": "#/definitions/models.Coins"
                         }
                     },
                     "500": {
@@ -188,7 +188,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.Pairs"
+                            "$ref": "#/definitions/models.Pairs"
                         }
                     },
                     "500": {
@@ -369,7 +369,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.SymbolDetails"
+                            "$ref": "#/definitions/models.SymbolDetails"
                         }
                     },
                     "404": {
@@ -515,7 +515,18 @@
                 }
             }
         },
-        "diaApi.Coin": {
+        "models.Change": {
+            "type": "object",
+            "properties": {
+                "usd": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CurrencyChange"
+                    }
+                }
+            }
+        },
+        "models.Coin": {
             "type": "object",
             "properties": {
                 "circulatingSupply": {
@@ -541,7 +552,7 @@
                 }
             }
         },
-        "diaApi.CoinSymbolAndName": {
+        "models.CoinSymbolAndName": {
             "type": "object",
             "properties": {
                 "name": {
@@ -552,7 +563,7 @@
                 }
             }
         },
-        "diaApi.Coins": {
+        "models.Coins": {
             "type": "object",
             "properties": {
                 "change": {
@@ -562,62 +573,13 @@
                 "coins": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/diaApi.Coin"
+                        "$ref": "#/definitions/models.Coin"
                     }
                 },
                 "completeCoinList": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/diaApi.CoinSymbolAndName"
-                    }
-                }
-            }
-        },
-        "diaApi.Pairs": {
-            "type": "object",
-            "properties": {
-                "pairs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dia.Pair"
-                    }
-                }
-            }
-        },
-        "diaApi.SymbolDetails": {
-            "type": "object",
-            "properties": {
-                "change": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.Change"
-                },
-                "coin": {
-                    "type": "object",
-                    "$ref": "#/definitions/diaApi.Coin"
-                },
-                "exchanges": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.SymbolExchangeDetails"
-                    }
-                }
-            }
-        },
-        "diaApi.points": {
-            "type": "object",
-            "properties": {
-                "dataPoints": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Change": {
-            "type": "object",
-            "properties": {
-                "usd": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CurrencyChange"
+                        "$ref": "#/definitions/models.CoinSymbolAndName"
                     }
                 }
             }
@@ -632,6 +594,25 @@
                     "type": "number"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Pairs": {
+            "type": "object",
+            "properties": {
+                "pairs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dia.Pair"
+                    }
+                }
+            }
+        },
+        "models.Points": {
+            "type": "object",
+            "properties": {
+                "dataPoints": {
                     "type": "string"
                 }
             }
@@ -659,6 +640,32 @@
                 },
                 "volumeYesterdayUSD": {
                     "type": "number"
+                }
+            }
+        },
+        "models.SymbolDetails": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Change"
+                },
+                "coin": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Coin"
+                },
+                "exchanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SymbolExchangeDetails"
+                    }
+                },
+                "gfx1": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Points"
+                },
+                "rank": {
+                    "type": "integer"
                 }
             }
         },

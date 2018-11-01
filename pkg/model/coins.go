@@ -4,7 +4,6 @@ import (
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 	"sort"
-	"time"
 )
 
 const (
@@ -27,6 +26,7 @@ func (db *DB) GetCoins() (*Coins, error) {
 		coins.Change, _ = db.GetCurrencyChange()
 
 		for _, symbol := range symbols {
+
 			var c1 Coin
 			log.Debug("Adding symbol", symbol)
 			supply, _ := db.GetSupply(symbol)
@@ -34,6 +34,10 @@ func (db *DB) GetCoins() (*Coins, error) {
 			if price != nil {
 				volume, _ := db.GetVolume(symbol)
 				if volume != nil {
+					if *volume < 1.0 {
+						log.Warning("GetCoins: skipping ", symbol, "because <1.0 volume")
+						continue
+					}
 					c1.Price = price.Price
 					c1.Name = price.Name
 					c1.Symbol = price.Symbol
@@ -65,7 +69,7 @@ func (db *DB) GetCoins() (*Coins, error) {
 		if len(coins.Coins) > coinsPerPage {
 			coins.Coins = coins.Coins[:coinsPerPage]
 		}
-		err = db.redisClient.Set(key, &coins, 60*2*time.Second).Err()
+		err = db.redisClient.Set(key, &coins, timeOutRedisOneBlock).Err()
 		if err != nil {
 			log.Error("Error: on GetCoin setting cache\n", err)
 		}
