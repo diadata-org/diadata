@@ -145,7 +145,6 @@ func main() {
 				go handleTrades(d, ps, &wg, w)
 				wg.Add(1)
 			}
-			time.Sleep(1 * time.Second)
 		}
 		defer wg.Wait()
 	}

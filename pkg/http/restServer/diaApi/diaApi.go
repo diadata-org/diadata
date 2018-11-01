@@ -162,48 +162,6 @@ func (env *Env) GetSymbolDetails(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, s)
 	}
-
-	/*
-		q, err := env.DataStore.GetQuotation(symbol)
-		if err != nil {
-			if err == redis.Nil {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			r := &models.SymbolDetails{
-				Coin: models.Coin{
-					Symbol:             q.Symbol,
-					Name:               q.Name,
-					Price:              q.Price,
-					VolumeYesterdayUSD: q.VolumeYesterdayUSD,
-					Time:               q.Time,
-					PriceYesterday:     q.PriceYesterday,
-				},
-				Exchanges: []models.SymbolExchangeDetails{},
-			}
-			r.Change, _ = env.DataStore.GetCurrencyChange()
-
-			s, err := env.DataStore.GetSupply(symbol)
-			if err == nil {
-				r.Coin.CirculatingSupply = &s.CirculatingSupply
-			}
-
-			exs, err := env.DataStore.GetExchangesForSymbol(symbol)
-			if err != nil {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			} else {
-				for _, e := range exs {
-					s, err2 := env.DataStore.GetSymbolExchangeDetails(symbol, e)
-					if err2 == nil {
-						r.Exchanges = append(r.Exchanges, *s)
-					}
-				}
-				c.JSON(http.StatusOK, r)
-			}
-		}
-	*/
 }
 
 func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
@@ -289,6 +247,7 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 // GetAllSymbols godoc
 // @Summary Get all symbols list
 // @Description Get all symbols list
+// @Tags dia
 // @Accept  json
 // @Produce  json
 // @Param   symbol     path    string     true        "Some symbol"
