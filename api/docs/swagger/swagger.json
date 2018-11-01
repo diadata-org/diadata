@@ -398,6 +398,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "dia"
+                ],
                 "summary": "Get all symbols list",
                 "parameters": [
                     {

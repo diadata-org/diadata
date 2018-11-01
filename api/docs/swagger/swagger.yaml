@@ -473,4 +473,6 @@ paths:
             $ref: '#/definitions/restApi.APIError'
             type: object
       summary: Get all symbols list
+      tags:
+      - dia
 swagger: "2.0"

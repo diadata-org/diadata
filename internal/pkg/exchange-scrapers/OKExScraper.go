@@ -103,11 +103,9 @@ func (s *OKExScraper) mainLoop() {
 	for s.run {
 		var message Responses
 		if err := s.wsClient.ReadJSON(&message); err != nil {
-
 			jsonError := strings.HasPrefix(err.Error(), "json:")
-
 			if jsonError == false {
-				fmt.Println("reconnect the scraping to ws")
+				log.Warning("reconnect the scraping to ws, ", err, ":", message)
 				s.reconnectToWS()
 				s.subscribeToALL()
 			}
@@ -146,11 +144,11 @@ func (s *OKExScraper) mainLoop() {
 						ps.chanTrades <- t
 
 					} else {
-						log.Printf("error parsing volume %v", f64Volume_string)
+						log.Error("parsing volume %v", f64Volume_string)
 					}
 
 				} else {
-					log.Printf("error parsing price %v", f64Price_string)
+					log.Error("parsing price %v", f64Price_string)
 				}
 			}
 		}
