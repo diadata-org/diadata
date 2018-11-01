@@ -2,7 +2,6 @@ package ethclassic
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
 	"math"
 	"strconv"
@@ -120,7 +119,6 @@ func (e *EthClient) getBlock(number int64) (EthBlock, error) {
 		err = json.Unmarshal(data, &r)
 		return r.Result, err
 	} else {
-		log.Error("Error retrieving block")
 		return r.Result, err
 	}
 }
@@ -166,7 +164,6 @@ func (e *EthClient) getUncleBlockByIDAndPosition(number int64, postion int) (Eth
 		err = json.Unmarshal(data, &r)
 		return r.Result, err
 	} else {
-		log.Error("Error retrieving block")
 		return r.Result, err
 	}
 

@@ -88,6 +88,10 @@ func getInitialSupply() {
 				log.Fatal(err.Error())
 			}
 			log.Println("Supply at block: " + strconv.Itoa(int(bn)) + " is : " + strconv.FormatFloat(b, 'G', -1, 64))
+		} else {
+			log.Warning("Error retrieving latest block number. ETC node not found. This is normal if the node have not started yet.")
+			time.Sleep(time.Second)
+
 		}
 	}
 }
