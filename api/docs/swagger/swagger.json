@@ -388,6 +388,56 @@
                     }
                 }
             }
+        },
+        "/v1/symbols": {
+            "get": {
+                "description": "Get all symbols list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get all symbols list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Some symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Some filter",
+                        "name": "filter",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/dia.Symbols"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -422,6 +472,17 @@
                 },
                 "time": {
                     "type": "string"
+                }
+            }
+        },
+        "dia.Symbols": {
+            "type": "object",
+            "properties": {
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

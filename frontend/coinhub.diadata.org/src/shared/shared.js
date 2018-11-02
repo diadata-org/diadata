@@ -13,7 +13,7 @@ function getApi() {
 	if (host === 'coinhub.diadata.org') {
 		return 'https://api.diadata.org'
 	} else {
-		return 'http://api.diadata.org'
+		return 'http://api-dev.diadata.org'
 	}
 }
 

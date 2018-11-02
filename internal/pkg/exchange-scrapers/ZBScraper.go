@@ -77,27 +77,27 @@ func (s *ZBScraper) mainLoop() {
 	for true {
 
 		message := &ZBTradeResponse{}
-		if err := s.wsClient.ReadJSON(&message); err != nil {
-			println(err.Error())
+		if s.error = s.wsClient.ReadJSON(&message); s.error != nil {
+			log.Error(s.error.Error())
 			break
 		}
 
 		for _, trade := range message.Data {
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
 			if !ok {
-				log.Printf("unknown pair: %s", message.Channel)
+				log.Error("unknown pair: " + message.Channel)
 				continue
 			}
 
 			f64Price, err := strconv.ParseFloat(trade.Price, 64)
 			if err != nil {
-				log.Printf("error parsing price: %s", trade.Price)
+				log.Error("error parsing price: " + trade.Price)
 				continue
 			}
 
 			f64Volume, err := strconv.ParseFloat(trade.Amount, 64)
 			if err != nil {
-				log.Printf("error parsing volume: %s", trade.Price)
+				log.Error("error parsing volume: " + trade.Price)
 				continue
 			}
 
@@ -117,6 +117,7 @@ func (s *ZBScraper) mainLoop() {
 			ps.chanTrades <- t
 		}
 	}
+	s.cleanup(s.error)
 }
 
 func (s *ZBScraper) cleanup(err error) {
@@ -140,6 +141,7 @@ func (s *ZBScraper) Close() error {
 	}
 
 	close(s.shutdown)
+	s.wsClient.Close()
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

@@ -118,7 +118,6 @@ type ECBPairScraper struct {
 	pair       dia.Pair
 	chanTrades chan *dia.Trade
 	closed     bool
-	lastRecord time.Time
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
@@ -223,41 +222,36 @@ func (s *ECBScraper) Update() error {
 					return fmt.Errorf("error parsing time %v %v", valueCubeTime.Time, err)
 				}
 
-				if time != ps.lastRecord {
-					ps.lastRecord = time
-					t := &dia.Trade{
-						Pair:   pair,
-						Symbol: pair,
-						Price:  rate,
-						Volume: 0,
-						Time:   time,
-						Source: "ECB",
-					}
-					log.Printf("writing trade %#v in %v\n", t, ps.chanTrades)
-					ps.chanTrades <- t
-				} else {
-					log.Printf("ignore because same time %#v\n", pair)
+				t := &dia.Trade{
+					Pair:   pair,
+					Symbol: pair,
+					Price:  rate,
+					Volume: 0,
+					Time:   time,
+					Source: "ECB",
 				}
-
-				if valueCube.Currency == "USD" {
+				log.Printf("writing trade %#v in %v\n", t, ps.chanTrades)
+				ps.chanTrades <- t
+				c := valueCube.Currency
+				if c == "USD" {
 					change.USD = append(change.USD, models.CurrencyChange{
 						Symbol:        "EUR",
 						Rate:          1.0 / euroDollar,
 						RateYesterday: 1.0 / euroDollar, // TOFIX
 					})
 				} else {
-					change.USD = append(change.USD, models.CurrencyChange{
-						Symbol:        valueCube.Currency,
-						Rate:          rate / euroDollar,
-						RateYesterday: rate / euroDollar, // TOFIX
-					})
+					// list for coinhub
+					if (c == "JPY") || c == "GBP" || c == "SEK" || c == "CHF" || c == "NOK" || c == "AUD" || c == "CAD" || c == "CNY" || c == "KRW" {
+						change.USD = append(change.USD, models.CurrencyChange{
+							Symbol:        c,
+							Rate:          rate / euroDollar,
+							RateYesterday: rate / euroDollar, // TOFIX
+						})
+					}
 				}
 			}
 		}
-		//
 		s.datastore.SetCurrencyChange(change)
-		//
 	}
-
 	return err
 }

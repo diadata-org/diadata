@@ -124,3 +124,11 @@ func (e *Supply) UnmarshalBinary(data []byte) error {
 func (e *Pairs) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
+
+// UnmarshalBinary -
+func (e *Pairs) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}

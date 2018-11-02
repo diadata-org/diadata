@@ -95,7 +95,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	if secondPair != "USD" {
 		val, err := s.datastore.GetPriceUSD(secondPair)
 		if err != nil {
-			log.Error("redisClient error ", err, " ignoring ", t)
+			log.Error("Cant find second pair", secondPair, "in redis", err, " ignoring ", t)
 			ignoreTrade = true
 		} else {
 			t.EstimatedUSDPrice = t.Price * val
@@ -128,9 +128,9 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					BeginTime: time.Unix((t.Time.Unix()/s.BlockDuration)*s.BlockDuration, 0),
 				},
 			}
-
-			log.Printf("created new block beginTime: %v", b.TradesBlockData.BeginTime)
-
+			if s.currentBlock != nil {
+				log.Info("created new block beginTime:", b.TradesBlockData.BeginTime, "previous block nb trades:", len(s.currentBlock.TradesBlockData.Trades))
+			}
 			s.currentBlock = b
 			s.datastore.Flush()
 		}

@@ -28,8 +28,8 @@ func (t *Trade) SecondPair() string {
 		return "BTC"
 	}
 
-	if len(pair) == 6 {
-		return pair[len(pair)-3:]
+	if pair[len(pair)-3:] == "BNB" {
+		return "BNB"
 	}
 
 	second := strings.TrimPrefix(pair, t.Symbol+"_")
@@ -37,5 +37,13 @@ func (t *Trade) SecondPair() string {
 		return second
 	}
 
+	second = strings.TrimPrefix(pair, t.Symbol+"-")
+	if second != pair {
+		return second
+	}
+
+	if len(pair) == 6 {
+		return pair[len(pair)-3:]
+	}
 	return strings.TrimPrefix(pair, t.Symbol)
 }

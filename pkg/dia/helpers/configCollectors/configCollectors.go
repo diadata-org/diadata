@@ -28,19 +28,6 @@ func (c *ConfigCollectors) AllPairs() []dia.Pair {
 	return result
 }
 
-func (c *ConfigCollectors) AllSymbols() []string {
-	founds := map[string]bool{}
-	result := []string{}
-
-	for _, configPair := range c.Coins {
-		if _, ok := founds[configPair.Symbol]; !ok {
-			founds[configPair.Symbol] = true
-			result = append(result, configPair.Symbol)
-		}
-	}
-	return result
-}
-
 func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	for _, configPair := range c.Coins {
 		if configPair.Symbol == symbol {

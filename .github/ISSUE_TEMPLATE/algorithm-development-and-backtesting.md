@@ -9,7 +9,7 @@ about: 'Algorithms for sorting, data cleaning, calculation etc. '
 3. Approve or reject work submitted
 ________________________________
 
-Develop an algorithm that <DESCRIBE FUNCTIONALITY, ADD FORMULA OR LINK TO INFORMATION>
+Develop an algorithm that [DESCRIBE FUNCTIONALITY, ADD FORMULA OR LINK TO INFORMATION]
 
 Integrate it with [our filter service](../../internal/pkg/filtersBlockService).
 
