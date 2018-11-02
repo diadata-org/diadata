@@ -75,6 +75,16 @@ nav.bg-info {
 	
 }
 
+@media (min-width: 320px) and (max-width: 767px) {
+    .col-12 {
+        padding: 0;
+    }
+
+    .logo {
+        margin-top: 0;
+    }
+}
+
 
 
 

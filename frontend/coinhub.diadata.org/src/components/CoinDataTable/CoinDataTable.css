@@ -151,6 +151,10 @@ span.coin-name {
 	.link-row a#second {
 		margin-left: 5px;
 	}
+
+	.search-currency-row {
+		padding: 24px 80px 24px 65px;
+	}
 }
 
 @media (min-width: 375px) and (max-width: 767px) {	
@@ -165,7 +169,6 @@ span.coin-name {
 
 	.link-row a#first {
 		margin-left: 20px;
-	
 	}
 }
 
@@ -180,7 +183,7 @@ span.coin-name {
 		padding-top: 0;
 	}
 	.subtext1 ul {
-		padding: 0 0 0 16px;
+		padding: 0 16px 0 16px;
 	}
 	.subtext2 {
 		padding-left: 40px;

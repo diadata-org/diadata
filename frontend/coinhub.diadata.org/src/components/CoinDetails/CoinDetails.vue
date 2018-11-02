@@ -16,8 +16,6 @@
 			<b-container fluid>
 			    <b-row>
 			        <b-col cols="12" md="6">
-			        	<br>
-			        	<br>
 				        <div class="w-100 text-left">
 				        	<h5> {{ coinDetails.coinName}} ({{coinDetails.coinSymbol}}) </h5>
 				        </div>
@@ -47,7 +45,7 @@
 			    	</b-col>
 			    </b-row>
 			    <b-row>
-			        <b-col cols="9" md="6">
+			        <b-col cols="12" md="6">
 			        	<br>
 			        	<br>
 			        	<div class="w-100 text-left">
@@ -58,7 +56,7 @@
 				        	</h3>
 				        </div>
 			        </b-col>
-			        <b-col cols="9" md="3" md-offset="2" offset="1">
+			        <b-col cols="12" md="6">
 			        	<br>
 			        	<br>
 		                <b-dropdown id="dd-algorithm"
@@ -68,10 +66,6 @@
 			                  {{ algorithm }}
 			                </b-dropdown-item>
 		              	</b-dropdown>
-		            </b-col>
-			        <b-col cols="9" md="1">
-			        	<br>
-			        	<br>
 		                <b-dropdown id="dd-exchange"
 		                          v-bind:text="selectedExchange"
 		                          v-bind:class = "{ 'd-none' : exchangeNames.length <= 0, 'd-inline-block' : exchangeNames.length > 0 }">
@@ -82,10 +76,6 @@
 			                  {{ exchange }}
 			                </b-dropdown-item>
 		              	</b-dropdown>
-		            </b-col>
-			        <b-col cols="9" md="1">
-			        	<br>
-			        	<br>
 		                <b-dropdown id="dd-currency"
 		                          v-bind:text="selectedCurrency"
 		                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">

@@ -74,7 +74,8 @@ div.loading-data {
 /deep/ div .table-responsive.main,
 #dd-algorithm,
 /deep/ div .table-responsive.main{
-	padding-right: 70px;
+	padding-right: 16px;
+	margin-right: 0;
 }
 
 /deep/ div .table-responsive.details{

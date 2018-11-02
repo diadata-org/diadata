@@ -2,8 +2,7 @@
 <template>
   <header>
     <b-navbar type="dark" variant="info">
-      <b-row>
-        <b-col cols="12" md="2">
+        <b-col cols="12" md="2" class="logo">
           <b-link href="/" class="logo">
             <b-img :src="logo"  fluid alt="logo" width="150" />
           </b-link>
@@ -27,8 +26,6 @@
             </div>
           </div>
         </b-col>
-
-      </b-row>
     </b-navbar>
   </header>
 </template>
