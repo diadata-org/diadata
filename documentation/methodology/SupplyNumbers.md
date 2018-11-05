@@ -57,7 +57,7 @@ Because Stellar distinguishes between available and distributed coins, we determ
 ### Litecoin
 Litecoin is very similar to Bitcoin.
 One of the major differences is that the time between two blocks is 2.5 minutes instead of 10 in Bitcoin.
-To have a coin mining reward schedule similar to Bitcoin, the halving period was set to 840000, i.e., four times the amount of Bitcoin.
+To have a coin mining reward schedule similar to Bitcoin, the halving period was set to 840,000, i.e., four times the amount of Bitcoin.
 DIA runs a full Litecoin node to monitor the blockchain and determine the amount of currently available LTC by this formula: ![Image of Litecoin reward formula](https://latex.codecogs.com/png.latex?\large&space;s=\sum_{n=0}^{b}{\frac{50}{2^{\lfloor\frac{n}{840000}\rfloor}}}).
 
 ### Tether
@@ -111,3 +111,7 @@ NEM has a fixed circulating supply of 8,999,999,999 coins, that were created in 
 Tezos uses a delegation scheme to earn transaction fees.
 Total supply is fixed at 763,306,930 Tezos, but with the staking scheme a varying amount gets transferred to the fixed address [tz1RCFbB9GpALpsZtu6J58sb74dm8qe6XBzv](https://tzscan.io/tz1RCFbB9GpALpsZtu6J58sb74dm8qe6XBzv).
 Our scrapers monitor this address and subtract the value currently held at this address from the initial supply to determine the amount of Tezos in circulation.
+
+### Zcash
+Zcash has very similar adoption curve to bitcoin and cap at 21,000,000 coins. 
+The Block Rewards will issue a total of 50 Zcash (ZEC) every 10 mins(https://explorer.zcha.in/). The block spacing is 2.5 mins, so each block produces 12.5 ZEC. 10% of all coins mined will go to the Founders Reward. Halving of the mining reward every 4 years.
