@@ -2,19 +2,18 @@
 <template>
   <header>
     <b-navbar type="dark" variant="info">
-      <b-row>
-        <b-col cols="12" md="2">
+        <b-col cols="12" md="2" class="logo">
           <b-link href="/" class="logo">
             <b-img :src="logo"  fluid alt="logo" width="150" />
           </b-link>
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
-          <div class="w-100">
+          <div class="w-100 subheading">
             <b-navbar-brand href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</b-navbar-brand>
           </div>   
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
-          <div class="w-100">
+          <div class="w-100 subheading">
             <b-navbar-brand href="http://swagger.diadata.org/api/swagger/index.html" target="_blank">API Documentation</b-navbar-brand>
           </div>
         </b-col>
@@ -27,8 +26,6 @@
             </div>
           </div>
         </b-col>
-
-      </b-row>
     </b-navbar>
   </header>
 </template>

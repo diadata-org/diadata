@@ -39,13 +39,18 @@ export default {
 			coinSymbol: '',
 			coindata: null,
 			selectedCurrency:'',
+			selectedAlgorithm: '',
+			selectedExchange: '',
 			chartAllOptions: {},
 			chartSimexOptions: {},
 			rateArray: [],
 			error:'',
 			showAllCharts: false,
-			currencies: []
-		};
+			algorithmArray: [],
+			exchangeNames: [],
+			currencies: [],
+			requestURL: ""
+        };
 	},
 	created() {
 		this.coinSymbol = this.$route.params.coinSymbol;
@@ -63,6 +68,7 @@ export default {
 	},
 	methods: {
 		formatPairData() {
+
 			if(localStorage.selectedCurrency) {
 				this.selectedCurrency = localStorage.selectedCurrency;
 			}
@@ -70,10 +76,32 @@ export default {
 				this.selectedCurrency = "USD";
 			}
 
+            if(localStorage.selectedAlgorithm) {
+                this.selectedAlgorithm = localStorage.selectedAlgorithm;
+            }
+            else{
+                this.selectedAlgorithm = "MA120";
+            }
+
+            if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
+                this.selectedExchange = localStorage.selectedExchange;
+                this.requestURL = `/v1/chartPoints/${this.selectedAlgorithm}/${this.selectedExchange}/${this.coinSymbol.toUpperCase()}`;
+            }
+            else{
+                this.selectedExchange = "All";
+                this.requestURL = `/v1/chartPointsAllExchanges/${this.selectedAlgorithm}/${this.coinSymbol.toUpperCase()}`;
+            }
+
 			let {Coin, Change, Exchanges } = this.coindata;
 
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
+			this.algorithmArray = [
+				"MA120",
+				"MAIR120",
+				"MED120",
+				"MEDIR120",
+			];
 
 			// format the coin details
 			const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
@@ -107,8 +135,15 @@ export default {
 				});
 			});
 
+			this.exchangeNames = Exchanges.map((elem) => {
+                return elem.Name;
+			} );
+
 			Exchanges = sortBy(Exchanges, 'VolumeYesterdayUSD').reverse();
 			this.exchanges = Exchanges;
+
+
+
 			// finally fetch the chart details
 			this.fetchCoinChartDetails();
 		},
@@ -124,8 +159,9 @@ export default {
 			}
 		},
 		async fetchCoinChartDetails() {
+
 			try {
-				let response1 = await axios.get(shared.getApi()+`/v1/chartPointsAllExchanges/MA120/${this.coinSymbol.toUpperCase()}`);
+				let response1 = await axios.get(shared.getApi()+this.requestURL);
 
 				const price = 'Price (' + this.selectedCurrency + ')';
 				const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
@@ -273,6 +309,16 @@ export default {
 		switchCurrencies : function(selectedCurrency){
 			this.selectedCurrency = selectedCurrency;
 			localStorage.selectedCurrency = selectedCurrency;
+			this.formatPairData();
+		},
+		switchAlgorithm : function(selectedAlgorithm){
+			this.selectedAlgorithm = selectedAlgorithm;
+			localStorage.selectedAlgorithm = selectedAlgorithm;
+			this.formatPairData();
+		},
+		switchExchange : function(selectedExchange){
+			this.selectedExchange = selectedExchange;
+			localStorage.selectedExchange = selectedExchange;
 			this.formatPairData();
 		},
 	},

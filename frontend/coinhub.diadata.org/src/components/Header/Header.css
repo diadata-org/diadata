@@ -20,6 +20,7 @@ nav.bg-info {
 .subheading-wrap {
 	display: flex;
 	align-items: center;
+	justify-content: flex-end;
 }
 
 .sub-header {
@@ -72,6 +73,16 @@ nav.bg-info {
 		margin-top: 5px;
 	}
 	
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+    .col-12 {
+        padding: 0;
+    }
+
+    .logo {
+        margin-top: 0;
+    }
 }
 
 
