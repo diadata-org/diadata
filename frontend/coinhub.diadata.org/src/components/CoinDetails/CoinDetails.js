@@ -50,7 +50,7 @@ export default {
 			exchangeNames: [],
 			currencies: [],
 			requestURL: ""
-        };
+    };
 	},
 	created() {
 		this.coinSymbol = this.$route.params.coinSymbol;
@@ -99,7 +99,6 @@ export default {
 			this.algorithmArray = [
 				"MA120",
 				"MAIR120",
-				"MED120",
 				"MEDIR120",
 			];
 
