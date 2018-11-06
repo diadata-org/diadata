@@ -12,3 +12,10 @@ Along with the actual data there is a metadata field for the timestamp of the la
 
 Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract.
 In the event view, the latest updates can be seen.
+
+## Example DApp
+As an example application, we implemented and deployed a [simple smart contract that converts crypto asset prices from our oracle from USD to EUR](https://etherscan.io/address/0xccb30bf12177705d41ac208802a6066482a76eaa).
+By calling `getAddetEurRate()` (use the "Read Contract" tab for easy web access) the requested crypto asset price is retrieved from our oracle and multiplied by the ECB exchange rate for EUR-USD, which we also publish in that oracle contract.
+The source code of that example contract can be found at the "Code" tab.
+This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address, where the oracle is deployed, afterwards.
+Ideally, this is done in a way that allows updates should the oracle address change at any time in the future.
