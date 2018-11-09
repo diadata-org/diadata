@@ -1,0 +1,45 @@
+version: '3.2'
+
+services:
+  gethc:
+    image:
+      unscipreneur/ethereum-classic-geth
+    hostname: etcnode
+    volumes:
+       - /home/srv-local/gethc:/root/.ethereum-classic
+    command: "--name geth-classic --rpc --cache=1024 --rpcaddr=0.0.0.0 --rpcport=8545"
+    ports:
+      - 8545
+      - 30303
+    logging:
+      options:
+        max-size: "50m"
+    networks:
+      - scrapers-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+
+  etc:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-etc
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_etc
+    networks:
+      - scrapers-network
+    depends_on:
+      - gethc
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+secrets:
+  api_diadata:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
+
+networks:
+  scrapers-network:
