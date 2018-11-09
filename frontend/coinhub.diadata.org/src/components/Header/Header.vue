@@ -2,8 +2,8 @@
 <template>
   <header>
     <b-navbar type="dark" variant="info">
-        <b-col cols="12" md="2" class="logo">
-          <b-link href="/" class="logo">
+        <b-col cols="12" md="2">
+          <b-link href="/" class="subheading-wrap logo">
             <b-img :src="logo"  fluid alt="logo" width="150" />
           </b-link>
         </b-col>

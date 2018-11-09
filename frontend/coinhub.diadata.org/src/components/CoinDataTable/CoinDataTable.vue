@@ -40,7 +40,7 @@
 	                </model-list-select>
 	             
 	            </b-col>
-	            <b-col cols="2" md="2" offset-md="6" offset="1">
+	            <b-col cols="2" md="2" offset-md="6" offset="1" class="dd-currency-wrap">
 	                <b-dropdown id="dd-currency" 
 	                          v-bind:text="selectedCurrency" 
 	                          v-bind:class = "{ 'd-none' : currencies.length <= 0, 'd-inline-block' : currencies.length > 0 }">

@@ -56,6 +56,10 @@ div.loading-data {
 	display: none;
 }
 
+.dd-currency-wrap {
+	padding: 0;
+}
+
 #dd-currency {
 	float:right;
 	padding: 0;

@@ -56,9 +56,7 @@
 				        	</h3>
 				        </div>
 			        </b-col>
-			        <b-col cols="12" md="6">
-			        	<br>
-			        	<br>
+			        <b-col cols="12" md="6" class="dropdown-wrap">
 		                <b-dropdown id="dd-algorithm"
 		                          v-bind:text="selectedAlgorithm"
 		                          v-bind:class = "{ 'd-none' : algorithmArray.length <= 0, 'd-inline-block' : algorithmArray.length > 0 }">

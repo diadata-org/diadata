@@ -156,4 +156,23 @@ div.loading-data {
 		text-align: left;
 		margin-right: 0;
 	}
+
+	#dd-currency,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner,
+	#dd-exchange,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner,
+	#dd-algorithm,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner{
+		margin-right: 0;
+		padding-right: 0;
+	}
+
+	.dropdown-wrap {
+		display: flex;
+		justify-content: space-around;
+
+	}
 }
