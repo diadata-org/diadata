@@ -2,7 +2,6 @@ package scrapers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	ws "github.com/gorilla/websocket"
@@ -175,7 +174,7 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		Pair:      strings.ToLower(pair.ForeignName),
 	}
 	if err := s.wsClient.WriteJSON(a); err != nil {
-		fmt.Println(err.Error())
+		log.Error("ScrapePair" + err.Error())
 	}
 	return ps, nil
 }
@@ -209,7 +208,7 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		if serr == nil {
 			pairs = append(pairs, dia.Pair{
 				Symbol:      symbol,
-				ForeignName: p,
+				ForeignName: strings.ToUpper(p),
 				Exchange:    s.exchangeName,
 			})
 		} else {

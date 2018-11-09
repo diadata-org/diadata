@@ -92,14 +92,13 @@ export default {
                 this.requestURL = `/v1/chartPointsAllExchanges/${this.selectedAlgorithm}/${this.coinSymbol.toUpperCase()}`;
             }
 
-			let {Coin, Change, Exchanges } = this.coindata;
+			let {Change, Coin, Rank, Exchanges} = this.coindata;
 
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
 			this.algorithmArray = [
 				"MA120",
 				"MAIR120",
-				"MED120",
 				"MEDIR120",
 			];
 
@@ -117,7 +116,7 @@ export default {
 				coinPriceFormatted,
 				change24,
 				change24Formatted,
-				rank: localStorage.rank,
+				rank: Rank, // localStorage.rank,
 				volume24Formatted,
 				circulatingSupplyFormattedWithoutSymbol,
 			};

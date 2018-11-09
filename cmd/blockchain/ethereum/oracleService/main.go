@@ -1,28 +1,26 @@
 package main
 
-import(
-	"os"
+import (
 	"bufio"
-	"fmt"
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
-	"time"
-	"strings"
 	"net/http"
-	"io/ioutil"
+	"os"
 	"sort"
+	"strings"
+	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
-	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/model"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
-
 
 func main() {
 	/*
@@ -81,12 +79,12 @@ func main() {
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				periodicOracleUpdateHelper(topCoins, auth, contract)
 			}
 		}
 	}()
-	select{}
+	select {}
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
@@ -97,7 +95,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 
 	sort.Slice(rawCoins.Coins, func(i, j int) bool {
-		return rawCoins.Coins[i].Price * *rawCoins.Coins[i].CirculatingSupply > rawCoins.Coins[j].Price * *rawCoins.Coins[j].CirculatingSupply
+		return rawCoins.Coins[i].Price**rawCoins.Coins[i].CirculatingSupply > rawCoins.Coins[j].Price**rawCoins.Coins[j].CirculatingSupply
 	})
 	topCoinSlice := rawCoins.Coins[:*topCoins]
 	// Search for NEU tokens
@@ -112,7 +110,6 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
 	}
-
 
 	// Get EUR and CAD exchange rates
 	eurRate, err := getECBRatesFromDia("EUR")
@@ -136,14 +133,14 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	return nil
 }
 
-func updateTopCoins(topCoins []diaApi.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
 	for _, element := range topCoins {
 		symbol := strings.ToUpper(element.Symbol)
 		name := element.Name
 		supply := element.CirculatingSupply
 		price := element.Price
 		// Get 5 digits after the comma by multiplying price with 100000
-		err := updateOracle(contract, auth, name, symbol, int64(price * 100000), int64(*supply));
+		err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(*supply))
 		if err != nil {
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
@@ -160,7 +157,7 @@ func updateECBRates(ecbRates []models.Quotation, auth *bind.TransactOpts, contra
 		price := element.Price
 		// Get 5 digits after the comma by multiplying price with 100000
 		// Set supply to 0, as we don't have a supply for fiat currencies
-		err := updateOracle(contract, auth, name, symbol, int64(price * 100000), 0);
+		err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
 		if err != nil {
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
@@ -170,7 +167,7 @@ func updateECBRates(ecbRates []models.Quotation, auth *bind.TransactOpts, contra
 	return nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) (error) {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) error {
 	var err error
 	if deployedContract != "" {
 		*contract, err = oracleService.NewDiaOracle(common.HexToAddress(deployedContract), conn)
@@ -193,7 +190,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func getCoinDetailsFromDia(symbol string) (*diaApi.Coin, error) {
+func getCoinDetailsFromDia(symbol string) (*models.Coin, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/symbol/" + symbol)
 	if err != nil {
 		return nil, err
@@ -209,7 +206,7 @@ func getCoinDetailsFromDia(symbol string) (*diaApi.Coin, error) {
 			return nil, err
 		}
 
-		var b diaApi.SymbolDetails
+		var b models.SymbolDetails
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b.Coin, nil
@@ -218,7 +215,7 @@ func getCoinDetailsFromDia(symbol string) (*diaApi.Coin, error) {
 	}
 }
 
-func getToplistFromDia() (*diaApi.Coins, error) {
+func getToplistFromDia() (*models.Coins, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/coins")
 	if err != nil {
 		return nil, err
@@ -234,7 +231,7 @@ func getToplistFromDia() (*diaApi.Coins, error) {
 			return nil, err
 		}
 
-		var b diaApi.Coins
+		var b models.Coins
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b, nil
@@ -281,7 +278,7 @@ func updateOracle(
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 800725,
-	//	Nonce: big.NewInt(time.Now().Unix()),
+		//	Nonce: big.NewInt(time.Now().Unix()),
 	}, name, symbol, big.NewInt(price), big.NewInt(supply), big.NewInt(time.Now().Unix()))
 	// prices are with 5 digits after the comma
 	if err != nil {
