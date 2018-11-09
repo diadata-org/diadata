@@ -40,17 +40,18 @@ export default {
 			coindata: null,
 			selectedCurrency:'',
 			selectedAlgorithm: '',
+			selectedAlgorithmName: '',
 			selectedExchange: '',
 			chartAllOptions: {},
 			chartSimexOptions: {},
 			rateArray: [],
 			error:'',
 			showAllCharts: false,
-			algorithmArray: [],
+			algorithms: [],
 			exchangeNames: [],
 			currencies: [],
 			requestURL: ""
-    };
+        };
 	},
 	created() {
 		this.coinSymbol = this.$route.params.coinSymbol;
@@ -81,6 +82,7 @@ export default {
             }
             else{
                 this.selectedAlgorithm = "MA120";
+                this.selectedAlgorithmName = "somename MA120";
             }
 
             if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
@@ -96,11 +98,16 @@ export default {
 
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
-			this.algorithmArray = [
-				"MA120",
-				"MAIR120",
-				"MEDIR120",
-			];
+			this.algorithms = [{
+				displayName: "MA120",
+                urlString: "MA120"
+            },{
+				displayName: "MAIR120",
+                urlString: "MAIR120"
+            }, {
+				displayName: "MEDIR120",
+                urlString: "MEDIR120"
+            }];
 
 			// format the coin details
 			const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
@@ -311,8 +318,9 @@ export default {
 			this.formatPairData();
 		},
 		switchAlgorithm : function(selectedAlgorithm){
-			this.selectedAlgorithm = selectedAlgorithm;
-			localStorage.selectedAlgorithm = selectedAlgorithm;
+			this.selectedAlgorithm = selectedAlgorithm.urlString;
+			this.selectedAlgorithmName = selectedAlgorithm.displayName;
+			localStorage.selectedAlgorithm = selectedAlgorithm.urlString;
 			this.formatPairData();
 		},
 		switchExchange : function(selectedExchange){

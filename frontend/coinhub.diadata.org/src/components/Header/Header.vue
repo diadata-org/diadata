@@ -3,12 +3,12 @@
   <header>
     <b-navbar type="dark" variant="info">
         <b-col cols="12" md="2" class="logo">
-          <b-link href="/" class="logo">
+          <b-link href="/" class="subheading-wrap logo">
             <b-img :src="logo"  fluid alt="logo" width="150" />
           </b-link>
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
-          <div class="w-100 subheading">
+          <div class="w-100">
             <b-navbar-brand href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</b-navbar-brand>
           </div>   
         </b-col>
