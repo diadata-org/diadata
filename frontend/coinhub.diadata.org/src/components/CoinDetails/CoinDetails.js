@@ -99,13 +99,10 @@ export default {
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
 			this.algorithms = [{
-				displayName: "Moving Avg, 120s",
+				displayName: "Moving Avg",
                 urlString: "MA120"
             },{
-				displayName: "Moving Avg, 120s, Interq. Range",
-                urlString: "MAIR120"
-            }, {
-				displayName: "Median, 120s, Interq. Range",
+				displayName: "Outlier Cleaned (IQR acceptable range)",
                 urlString: "MEDIR120"
             }];
 
