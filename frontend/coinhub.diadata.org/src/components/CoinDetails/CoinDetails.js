@@ -77,12 +77,13 @@ export default {
 				this.selectedCurrency = "USD";
 			}
 
-            if(localStorage.selectedAlgorithm) {
+            if(localStorage.selectedAlgorithm && localStorage.selectedAlgorithmName) {
                 this.selectedAlgorithm = localStorage.selectedAlgorithm;
+                this.selectedAlgorithmName = localStorage.selectedAlgorithmName;
             }
-            else{
+            else {
                 this.selectedAlgorithm = "MA120";
-                this.selectedAlgorithmName = "Moving Avg, 120s";
+                this.selectedAlgorithmName = "Moving Avg";
             }
 
             if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
@@ -318,6 +319,7 @@ export default {
 			this.selectedAlgorithm = selectedAlgorithm.urlString;
 			this.selectedAlgorithmName = selectedAlgorithm.displayName;
 			localStorage.selectedAlgorithm = selectedAlgorithm.urlString;
+			localStorage.selectedAlgorithmName = selectedAlgorithm.displayName;
 			this.formatPairData();
 		},
 		switchExchange : function(selectedExchange){
