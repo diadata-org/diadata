@@ -1,22 +1,26 @@
 package scrapers
 
 import (
+	"bytes"
+	"compress/flate"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
-var _OKExSocketurl string = "wss://real.okex.com:10441/websocket"
+var _OKExSocketurl = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
 
 type Response struct {
 	Channel string     `json:"channel"`
@@ -58,11 +62,10 @@ func NewOKExScraper(exchangeName string) *OKExScraper {
 		error:        nil,
 	}
 
-	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(_OKExSocketurl, nil)
+	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketurl.String(), nil)
 
 	if err != nil {
-		println(err.Error())
+		log.Error("dial:", err)
 	}
 
 	s.wsClient = SwConn
@@ -72,11 +75,11 @@ func NewOKExScraper(exchangeName string) *OKExScraper {
 
 // Useful to reconnect to ws when the connection is down
 func (s *OKExScraper) reconnectToWS() {
-	var wsDialer ws.Dialer
-	SwConn_new, _, err := wsDialer.Dial(_OKExSocketurl, nil)
+
+	SwConn_new, _, err := ws.DefaultDialer.Dial(_OKExSocketurl.String(), nil)
 
 	if err != nil {
-		println(err.Error())
+		log.Error("dial:", err)
 	}
 
 	s.wsClient = SwConn_new
@@ -102,58 +105,81 @@ func (s *OKExScraper) mainLoop() {
 	s.run = true
 	for s.run {
 		var message Responses
-		if err := s.wsClient.ReadJSON(&message); err != nil {
-			jsonError := strings.HasPrefix(err.Error(), "json:")
-			if jsonError == false {
-				log.Warning("reconnect the scraping to ws, ", err, ":", message)
-				s.reconnectToWS()
-				s.subscribeToALL()
-			}
+		messageType, messageTemp, err := s.wsClient.ReadMessage()
+		if err != nil {
+			log.Warning("reconnect the scraping to ws, ", err, ":", message)
+			s.reconnectToWS()
+			s.subscribeToALL()
 		} else {
+			switch messageType {
+			case ws.TextMessage:
+				// no need uncompressed
+				fmt.Printf("recv text: %s", messageTemp)
+			case ws.BinaryMessage:
+				// uncompressed
+				text, err := GzipDecode(messageTemp)
+				if err != nil {
+					log.Error("err", err)
+					return
+				}
+				json.Unmarshal(text, &message)
 
-			var splitString = strings.Split(message[0].Channel, "_")
-			var forName = strings.ToUpper(splitString[3] + "_" + splitString[4])
-			ps, ok := s.pairScrapers[forName]
+				//skip subscribe channel confirm data
+				if message[0].Binary == 0 {
 
-			if ok {
+					var splitString = strings.Split(message[0].Channel, "_")
+					var forName = strings.ToUpper(splitString[3] + "_" + splitString[4])
+					ps, ok := s.pairScrapers[forName]
 
-				f64Price_string := message[0].Data[0][1]
-				f64Price, err := strconv.ParseFloat(f64Price_string, 64)
+					if ok {
 
-				if err == nil {
+						f64Price_string := message[0].Data[0][1]
+						f64Price, err := strconv.ParseFloat(f64Price_string, 64)
 
-					f64Volume_string := message[0].Data[0][2]
-					f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
+						if err == nil {
 
-					if err == nil {
+							f64Volume_string := message[0].Data[0][2]
+							f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
 
-						timeStamp := time.Now().UTC()
-						if message[0].Data[0][4] == "ask" {
-							f64Volume = -f64Volume
+							if err == nil {
+
+								timeStamp := time.Now().UTC()
+								if message[0].Data[0][4] == "ask" {
+									f64Volume = -f64Volume
+								}
+
+								t := &dia.Trade{
+									Symbol:         ps.pair.Symbol,
+									Pair:           forName,
+									Price:          f64Price,
+									Volume:         f64Volume,
+									Time:           timeStamp,
+									ForeignTradeID: message[0].Data[0][0],
+									Source:         s.exchangeName,
+								}
+								ps.chanTrades <- t
+
+							} else {
+								log.Error("parsing volume %v", f64Volume_string)
+							}
+
+						} else {
+							log.Error("parsing price %v", f64Price_string)
 						}
-
-						t := &dia.Trade{
-							Symbol:         ps.pair.Symbol,
-							Pair:           forName,
-							Price:          f64Price,
-							Volume:         f64Volume,
-							Time:           timeStamp,
-							ForeignTradeID: message[0].Data[0][0],
-							Source:         s.exchangeName,
-						}
-						ps.chanTrades <- t
-
-					} else {
-						log.Error("parsing volume %v", f64Volume_string)
 					}
-
-				} else {
-					log.Error("parsing price %v", f64Price_string)
 				}
 			}
 		}
 	}
 	s.cleanup(errors.New("Main loop terminated by Close()"))
+}
+
+func GzipDecode(in []byte) ([]byte, error) {
+	reader := flate.NewReader(bytes.NewReader(in))
+	defer reader.Close()
+
+	return ioutil.ReadAll(reader)
+
 }
 
 func (s *OKExScraper) cleanup(err error) {
@@ -214,7 +240,8 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		Channel: "ok_sub_spot_" + strings.ToLower(pair.ForeignName) + "_deals",
 	}
 
-	if err := s.wsClient.WriteJSON(a); err != nil {
+	subByteString := `{"channel":` + `"` + a.Channel + `"` + `,"event":` + `"` + a.Event + `"}`
+	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(subByteString)); err != nil {
 		fmt.Println(err.Error())
 	}
 
