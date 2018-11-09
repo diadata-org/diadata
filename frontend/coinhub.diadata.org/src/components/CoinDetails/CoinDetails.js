@@ -82,7 +82,7 @@ export default {
             }
             else{
                 this.selectedAlgorithm = "MA120";
-                this.selectedAlgorithmName = "somename MA120";
+                this.selectedAlgorithmName = "Moving Avg, 120s";
             }
 
             if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
@@ -99,13 +99,13 @@ export default {
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
 			this.algorithms = [{
-				displayName: "MA120",
+				displayName: "Moving Avg, 120s",
                 urlString: "MA120"
             },{
-				displayName: "MAIR120",
+				displayName: "Moving Avg, 120s, Interq. Range",
                 urlString: "MAIR120"
             }, {
-				displayName: "MEDIR120",
+				displayName: "Median, 120s, Interq. Range",
                 urlString: "MEDIR120"
             }];
 
