@@ -77,12 +77,13 @@ export default {
 				this.selectedCurrency = "USD";
 			}
 
-            if(localStorage.selectedAlgorithm) {
+            if(localStorage.selectedAlgorithm && localStorage.selectedAlgorithmName) {
                 this.selectedAlgorithm = localStorage.selectedAlgorithm;
+                this.selectedAlgorithmName = localStorage.selectedAlgorithmName;
             }
-            else{
+            else {
                 this.selectedAlgorithm = "MA120";
-                this.selectedAlgorithmName = "somename MA120";
+                this.selectedAlgorithmName = "Moving Avg";
             }
 
             if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
@@ -99,13 +100,10 @@ export default {
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
 			this.algorithms = [{
-				displayName: "MA120",
+				displayName: "Moving Avg",
                 urlString: "MA120"
             },{
-				displayName: "MAIR120",
-                urlString: "MAIR120"
-            }, {
-				displayName: "MEDIR120",
+				displayName: "Outlier Cleaned (IQR acceptable range)",
                 urlString: "MEDIR120"
             }];
 
@@ -321,6 +319,7 @@ export default {
 			this.selectedAlgorithm = selectedAlgorithm.urlString;
 			this.selectedAlgorithmName = selectedAlgorithm.displayName;
 			localStorage.selectedAlgorithm = selectedAlgorithm.urlString;
+			localStorage.selectedAlgorithmName = selectedAlgorithm.displayName;
 			this.formatPairData();
 		},
 		switchExchange : function(selectedExchange){
