@@ -47,6 +47,7 @@ type Datastore interface {
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
+	GetConfigTogglePairDiscovery() (bool, error)
 }
 
 const (
