@@ -19,13 +19,36 @@ div.loading-data {
 
 .coin-details div .container-fluid {
 	padding-left: 6rem;
+	padding-top: 16px;
+}
+
+.dropdown-wrap {
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
 }
 
 #dd-currency,
 #dd-exchange,
 #dd-algorithm {
-	float:right;
 	padding: 0;
+	margin: 16px 0 0 16px;
+	width: 130px;
+}
+
+/deep/ #dd-currency .dropdown-toggle,
+/deep/ #dd-exchange .dropdown-toggle,
+/deep/ #dd-algorithm .dropdown-toggle {
+	width: 130px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+
+/deep/ .dropdown-toggle::after {
+	position: absolute;
+	top: 18px;
+	right: 7px;
 }
 
 /deep/ #dd-currency .btn,
@@ -74,7 +97,6 @@ div.loading-data {
 /deep/ div .table-responsive.main,
 #dd-algorithm,
 /deep/ div .table-responsive.main{
-	padding-right: 16px;
 	margin-right: 0;
 }
 
@@ -148,6 +170,24 @@ div.loading-data {
 		margin-right: 1px;
 	}
 
+	#dd-currency,
+	#dd-exchange,
+	#dd-algorithm {
+		padding: 0;
+		margin: 6px 0;
+		-webkit-box-flex: 1;
+		-ms-flex: 1;
+		flex: 1;
+		text-align: center;
+		min-width: 100px;
+	}
+
+	/deep/ #dd-currency .dropdown-toggle,
+	/deep/ #dd-exchange .dropdown-toggle,
+	/deep/ #dd-algorithm .dropdown-toggle {
+		width: 93%;
+	}
+
 }
 
 @media (max-width: 576px) {	
@@ -168,11 +208,5 @@ div.loading-data {
 	.data-sources-banner{
 		margin-right: 0;
 		padding-right: 0;
-	}
-
-	.dropdown-wrap {
-		display: flex;
-		justify-content: space-around;
-
 	}
 }
