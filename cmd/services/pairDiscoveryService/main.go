@@ -64,38 +64,49 @@ func (t *Task) stop() {
 }
 
 func updateExchangePairs() {
-	log.Println("Updating exchanges pairs...")
-	for _, e := range dia.Exchanges() {
-		c, err := getConfig(e)
-		var s scrapers.APIScraper
-		if err == nil {
-			s = scrapers.NewAPIScraper(e, c.ApiKey, c.SecretKey)
-		} else {
-			log.Error("Error processing config for exchange:"+e+" error:", err.Error())
-			s = scrapers.NewAPIScraper(e, "", "")
-		}
-		if s != nil {
-			p, err := s.FetchAvailablePairs()
-			if err == nil {
-				err := db.SetAvailablePairsForExchange(e, p)
-				if err == nil {
-					log.Println("Exchange :" + e + " updated")
-				} else {
-					log.Error("Error adding pairs  to redis for exchange:"+e+" error:", err.Error())
-				}
-			} else {
-				log.Error("Error fetching pairs for exchange:"+e+" error:", err.Error())
-			}
-			go func(s scrapers.APIScraper, e string) {
-				time.Sleep(5 * time.Second)
-				log.Error("Closing scrapper: " + e)
-				s.Close()
-			}(s, e)
-		} else {
-			log.Error("Error creating APIScraper forexchange:" + e)
-		}
+	t, err := db.GetConfigTogglePairDiscovery()
+	if err != nil {
+		log.Error("updateExchangePairs GetConfigTogglePairDiscovery", err.Error())
+		return
 	}
-	log.Println("Update complete.")
+	if t == false {
+		log.Info("GetConfigTogglePairDiscovery = false, using default values")
+		getInitialExchangePairs()
+	} else {
+		for _, e := range dia.Exchanges() {
+			log.Println("Updating", e)
+			c, err := getConfig(e)
+			var s scrapers.APIScraper
+			if err == nil {
+				s = scrapers.NewAPIScraper(e, c.ApiKey, c.SecretKey)
+			} else {
+				log.Error("Error processing config for exchange:"+e+" error:", err.Error())
+				s = scrapers.NewAPIScraper(e, "", "")
+			}
+			if s != nil {
+				p, err := s.FetchAvailablePairs()
+				if err == nil {
+					err := db.SetAvailablePairsForExchange(e, p)
+					if err == nil {
+						log.Println("Exchange :" + e + " updated")
+					} else {
+						log.Error("Error adding pairs  to redis for exchange:"+e+" error:", err.Error())
+					}
+				} else {
+					log.Error("Error fetching pairs for exchange:"+e+" error:", err.Error())
+				}
+				go func(s scrapers.APIScraper, e string) {
+					time.Sleep(5 * time.Second)
+					log.Error("Closing scrapper: " + e)
+					s.Close()
+				}(s, e)
+			} else {
+				log.Error("Error creating APIScraper forexchange:" + e)
+			}
+		}
+		log.Println("Update complete.")
+	}
+
 }
 
 func getInitialExchangePairs() {
@@ -127,7 +138,6 @@ func main() {
 	if e != nil {
 		panic("Can not initialize db error:" + e.Error())
 	}
-	getInitialExchangePairs()
 	updateExchangePairs()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)

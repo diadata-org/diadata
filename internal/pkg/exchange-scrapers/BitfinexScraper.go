@@ -228,6 +228,9 @@ func (s *BitfinexScraper) normalizeSymbol(foreignName string) (symbol string, er
 			if symbol == "QSH" {
 				return "QASH", nil
 			}
+			if symbol == "DSH" {
+				return "DASH", nil
+			}
 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 		}
 	}
