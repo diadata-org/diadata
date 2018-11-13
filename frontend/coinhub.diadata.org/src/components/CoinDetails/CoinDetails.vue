@@ -36,11 +36,11 @@
 			        	<br>
 			        	<br>
 			        	<div class="text-methodology w-100 text-right">
-				        	<h6 class="font-weight-bold"> Methodology to the price collection can be found
+				        	<p class="font-weight-bold"> Methodology to the price collection can be found
 				        		<b-link target="_blank" href="https://github.com/diadata-org/diadata/blob/master/documentation/methodology/ExchangePrices.md">
 				        			here
 				        		</b-link>
-				        	</h6>
+				        	</p>
 				        </div>
 			    	</b-col>
 			    </b-row>

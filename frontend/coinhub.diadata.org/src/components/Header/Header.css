@@ -11,16 +11,21 @@ nav.bg-info {
 .navbar {
     position: relative;
     justify-content: unset;
+	padding: 0.5rem 5rem;
 }
 
 .navbar-brand {
 	margin-right: 0;
 }
 
+.logo {
+	padding: 0;
+}
+
 .subheading-wrap {
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	padding: 0;
 }
 
 .sub-header {

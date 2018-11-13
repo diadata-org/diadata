@@ -43,8 +43,8 @@ div.loading-data {
 
 .line-separator {
 	border-bottom: 2px solid #564dfc;
-	margin-left: 80px;
-	margin-right: 80px;
+	margin-left: 5rem;
+	margin-right: 5rem;
 }
 
 .ui.search.selection.dropdown {
