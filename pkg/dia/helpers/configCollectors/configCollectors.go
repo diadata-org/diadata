@@ -49,7 +49,7 @@ func configFileConnectors(exchange string) string {
 	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + ".json"
 }
 
-func NewConfigCollectors(exchange string) *ConfigCollectors {
+func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 	var connectorConfig = ConfigCollectors{
 		Coins: []dia.Pair{},
 	}
@@ -69,12 +69,19 @@ func NewConfigCollectors(exchange string) *ConfigCollectors {
 		file := configFileConnectors(exchange)
 		err := gonfig.GetConf(file, &connectorConfig)
 		if err != nil {
-			log.Fatal("error loading <", file, "> ", err)
+			log.Error("error loading <", file, "> ", err)
 			return nil
 		} else {
 			log.Printf("loaded  <%v>", file)
 		}
 	}
-
 	return &connectorConfig
+}
+
+func NewConfigCollectors(exchange string) *ConfigCollectors {
+	cc := NewConfigCollectorsIfExists(exchange)
+	if cc == nil {
+		log.Fatal("error in NewConfigCollectors")
+	}
+	return cc
 }
