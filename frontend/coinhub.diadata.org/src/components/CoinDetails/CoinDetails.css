@@ -209,3 +209,10 @@ div.loading-data {
 		padding-right: 0;
 	}
 }
+
+@media (min-width: 768px)  and (max-width: 1023px){
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
+	}
+}
