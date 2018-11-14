@@ -38,6 +38,7 @@ func Exchanges() []string {
 		QuoineExchange,
 		SimexExchange,
 		ZBExchange,
+		UnknownExchange,
 	}
 }
 
