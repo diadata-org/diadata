@@ -156,6 +156,7 @@ docker system prune -f
 
 showHelp() {
 	  echo "-s <stack>" >&2
+	  ls deployments/docker-compose.*
       echo "-c to use cache" >&2
       echo "-d to deploy stack" >&2
       echo "-r <machine> for remote" >&2

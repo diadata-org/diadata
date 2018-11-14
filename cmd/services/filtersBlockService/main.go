@@ -33,8 +33,11 @@ func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer
 			return
 		}
 		block++
-		log.Infoln("generated ", block, " blocks")
-		kafkaHelper.WriteMessage(w, t)
+		log.Infoln("kafka: generated ", block, " blocks")
+		err := kafkaHelper.WriteMessage(w, t)
+		if err != nil {
+			log.Errorln("kafka: handleBlocks", err)
+		}
 	}
 }
 
@@ -128,7 +131,8 @@ func main() {
 
 		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
-		w := kafkaHelper.NewWriter(kafkaHelper.TopicFiltersBlock)
+		w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicFiltersBlock)
+
 		defer w.Close()
 
 		wg := sync.WaitGroup{}

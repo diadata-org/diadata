@@ -17,6 +17,7 @@ type Client struct {
 	token                 string
 	lastSupplyUpdateTime  time.Time
 	lastSupplyUpdateValue float64
+	url                   string
 }
 
 type Symbols struct {
@@ -31,7 +32,7 @@ type response struct {
 
 func (c *Client) refresh() error {
 
-	url := BaseUrl + "auth/refresh_token"
+	url := c.url + "auth/refresh_token"
 
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -57,7 +58,7 @@ func (c *Client) login() error {
 		Username string
 		Password string
 	}
-	url := BaseUrl + "login"
+	url := c.url + "login"
 
 	jsonStr, err := json.Marshal(&login{
 		Username: c.config.ApiKey,
@@ -167,11 +168,25 @@ func GetConfigApi() *ConfigApi {
 	return &c
 }
 
-func NewClient(config *ConfigApi) *Client {
-
+func NewClientWithUrl(config *ConfigApi, url string) *Client {
 	c := &Client{
 		config: config,
 		token:  "",
+		url:    url,
+	}
+	err := c.login()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return c
+}
+
+func NewClient(config *ConfigApi) *Client {
+	c := &Client{
+		config: config,
+		token:  "",
+		url:    BaseUrl,
 	}
 	err := c.login()
 	if err != nil {
@@ -240,7 +255,7 @@ func (c *Client) sendSupply(s *Supply) error {
 		return err
 	}
 
-	url := BaseUrl + "v1/supply"
+	url := c.url + "v1/supply"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 
