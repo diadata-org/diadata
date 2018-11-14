@@ -244,6 +244,11 @@
       "Symbol": "XEM",
       "ForeignName" : "XEMBTC",
       "Exchange" : "Binance"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName" : "SNTBTC",
+      "Exchange" : "Binance"
     }
   ]
 }

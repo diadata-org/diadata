@@ -134,6 +134,18 @@
       "Symbol": "BCN",
       "ForeignName": "BCN_BTC",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNT_BTC",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNT_USDT",
+      "Exchange": "OKEx"
     }
+
+
   ]
 }

@@ -199,6 +199,16 @@
       "Symbol": "DGB",
       "ForeignName": "DGBBTC",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNTUSDT",
+      "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNTBTC",
+      "Exchange": "Huobi"
     }
   ]
 }
