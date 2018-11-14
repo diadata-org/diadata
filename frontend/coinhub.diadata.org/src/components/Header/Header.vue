@@ -8,9 +8,11 @@
           </b-link>
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
-          <div class="w-100">
-            <b-navbar-brand href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</b-navbar-brand>
-          </div>   
+          <div class="w-100 subheading">
+              <div class="w-100">
+                  <b-navbar-brand href="https://github.com/diadata-org/diadata" target="_blank">DIA Methodology</b-navbar-brand>
+              </div>
+          </div>
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
           <div class="w-100 subheading">

@@ -18,7 +18,8 @@ div.loading-data {
 }
 
 .coin-details div .container-fluid {
-	padding-left: 6rem;
+	padding-left: 5rem;
+	padding-right: 5rem;
 	padding-top: 16px;
 }
 
@@ -78,7 +79,6 @@ div.loading-data {
 
 .coindata-charts {
 	width: 100%;
-	margin-right: 70px;
 }
 
 .data-sources-banner {
@@ -86,7 +86,6 @@ div.loading-data {
 	background-color: #00CCB7;
 	color: #fff;
 	text-align: center;
-	margin-right: 70px;
 	line-height: 56px;
 	font-size: 1.25rem;
 }
@@ -113,6 +112,7 @@ div.loading-data {
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
 	text-align: right;
+	white-space: nowrap;
 }
 
 /deep/ table thead tr th:first-child,
@@ -144,13 +144,15 @@ div.loading-data {
     color: #000000 !important;
 }
 
-.text-methodology h6 {
+.text-methodology {
 	margin-right: 80px;
+	text-align: right;
 }
 
-@media (max-width: 768px) {	
-	.coin-details div .container-fluid  {
-		padding-left: 10px;
+@media (max-width: 768px) {
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
 	}
 
 	#dd-currency,
@@ -188,6 +190,10 @@ div.loading-data {
 		width: 93%;
 	}
 
+	.text-methodology {
+		text-align: left;
+	}
+
 }
 
 @media (max-width: 576px) {	
@@ -208,5 +214,12 @@ div.loading-data {
 	.data-sources-banner{
 		margin-right: 0;
 		padding-right: 0;
+	}
+}
+
+@media (min-width: 768px)  and (max-width: 1023px){
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
 	}
 }
