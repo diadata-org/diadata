@@ -85,6 +85,10 @@ nav.bg-info {
 }
 
 @media (min-width: 320px) and (max-width: 767px) {
+	.navbar {
+		padding: 0.5rem 16px;
+	}
+
     .col-12 {
         padding: 0;
     }

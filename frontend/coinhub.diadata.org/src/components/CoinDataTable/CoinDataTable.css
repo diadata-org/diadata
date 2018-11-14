@@ -128,6 +128,11 @@ span.coin-name {
 	text-align: center;
 }
 
+/deep/ table thead th:nth-child(7),
+/deep/ table td:nth-child(7){
+	padding-left: 30px;
+}
+
 /deep/ table thead tr th:first-child,
 /deep/ table thead tr th:nth-child(5),
 /deep/ table thead tr th:nth-child(9),
@@ -183,7 +188,11 @@ span.coin-name {
 }
 
 
-@media (min-width: 320px) and (max-width: 767px) {	
+@media (min-width: 320px) and (max-width: 767px) {
+
+	.coin-data {
+		margin: 20px 16px 0 16px;
+	}
 
 	.search-currency-row,
 	.subtext1,
@@ -191,9 +200,11 @@ span.coin-name {
 		padding-left: 1px;
 		padding-right: 0;
 	}
-	.subtext1 ul {
-		padding: 0 16px 0 16px;
+
+	.search-currency-row div {
+		padding: 0;
 	}
+
 	.subtext2 {
 		padding-left: 40px;
 	}

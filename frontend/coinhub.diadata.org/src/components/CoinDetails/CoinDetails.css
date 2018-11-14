@@ -112,6 +112,7 @@ div.loading-data {
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
 	text-align: right;
+	white-space: nowrap;
 }
 
 /deep/ table thead tr th:first-child,
@@ -143,13 +144,15 @@ div.loading-data {
     color: #000000 !important;
 }
 
-.text-methodology h6 {
+.text-methodology {
 	margin-right: 80px;
+	text-align: right;
 }
 
-@media (max-width: 768px) {	
-	.coin-details div .container-fluid  {
-		padding-left: 10px;
+@media (max-width: 768px) {
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
 	}
 
 	#dd-currency,
@@ -185,6 +188,10 @@ div.loading-data {
 	/deep/ #dd-exchange .dropdown-toggle,
 	/deep/ #dd-algorithm .dropdown-toggle {
 		width: 93%;
+	}
+
+	.text-methodology {
+		text-align: left;
 	}
 
 }
