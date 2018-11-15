@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func (t *Trade) SecondPair() string {
+func (t *Trade) SecondPair(exchange string) string {
 
 	pair := strings.ToUpper(t.Pair)
 
@@ -17,7 +17,14 @@ func (t *Trade) SecondPair() string {
 	}
 
 	if pair[len(pair)-3:] == "USD" {
-		return "USD"
+		switch exchange {
+		case BitfinexExchange:
+			return "USDT"
+		case HitBTCExchange:
+			return "USDT"
+		default:
+			return "USD"
+		}
 	}
 
 	if pair[len(pair)-3:] == "ETH" {
