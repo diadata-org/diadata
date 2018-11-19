@@ -85,7 +85,6 @@ The first quotations in our database are daily exchange rates from the European 
 DIA is open for anyone to contribute and we always welcome pull requests.
 We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
 
-### Alpha Version - dApp Registry
+## Alpha Version - dApp Registry
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
 * [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
-

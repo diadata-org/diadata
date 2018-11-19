@@ -1,6 +1,11 @@
 {
   "Coins": [
     {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSDT",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "BNB",
       "ForeignName": "BNBUSDT",
       "Exchange": "Binance"
