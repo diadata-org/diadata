@@ -46,6 +46,11 @@
       "Exchange": "Bitfinex"
     },
     {
+      "Symbol": "ETH",
+      "ForeignName": "ETHBTC",
+      "Exchange": "Bitfinex"
+    },
+		{
       "Symbol": "MIOTA",
       "ForeignName": "IOTUSD",
       "Exchange": "Bitfinex"

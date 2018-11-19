@@ -11,6 +11,11 @@
       "Exchange": "Kraken"
     },
     {
+      "Symbol": "ETH",
+      "ForeignName": "XETHXXBT",
+      "Exchange": "Kraken"
+    },
+    {
       "Symbol": "EOS",
       "ForeignName": "EOSEUR",
       "Exchange": "Kraken"

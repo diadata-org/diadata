@@ -96,6 +96,11 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "ETH",
+      "ForeignName": "ETHBTC",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "BCC",
       "ForeignName": "BCCUSDT",
       "Exchange": "Binance"
