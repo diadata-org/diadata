@@ -89,6 +89,10 @@ func NewDataStore() (*DB, error) {
 	return NewDataStoreWithOptions(true)
 }
 
+func NewDataStoreWithoutRedis() (*DB, error) {
+	return NewDataStoreWithOptions(false)
+}
+
 func NewDataStoreWithOptions(red bool) (*DB, error) {
 	var r *redis.Client
 	if red {

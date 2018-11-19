@@ -91,7 +91,7 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 func (s *TradesBlockService) process(t dia.Trade) {
 
 	var ignoreTrade bool
-	secondPair := t.SecondPair(t.Source)
+	secondPair := t.SecondPair()
 	if secondPair != "USD" {
 		val, err := s.datastore.GetPriceUSD(secondPair)
 		if err != nil {
