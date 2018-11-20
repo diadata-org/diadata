@@ -88,3 +88,5 @@ We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool fo
 ## Alpha Version - dApp Registry
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
 * [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
+* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
+* [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
