@@ -41,13 +41,13 @@ func (pdf *PDFLaplace) GetScale() float64 {
 
 //DidConverge Return true if the solution converged satisfactory
 //TODO: Implasdement convergence check
-func (pdf *PDFLaplace) DidConverge() (bool, error) {
-	return pdf.initialized, pdf.e
+func (pdf *PDFLaplace) DidConverge() bool {
+	return pdf.initialized
 }
 
 //DidGetSolution returns true if enough points where provided to perform estimation
-func (pdf *PDFLaplace) DidGetSolution() (bool, error) {
-	return pdf.initialized, pdf.e
+func (pdf *PDFLaplace) DidGetSolution() bool {
+	return pdf.initialized
 
 }
 
