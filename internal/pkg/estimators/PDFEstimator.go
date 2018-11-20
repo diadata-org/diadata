@@ -18,12 +18,15 @@ type PDFEstimator interface {
 const (
 	//Laplace distribution name
 	Laplace = "Laplace"
+	//Student distribution name
+	Student = "Student"
 )
 
 //PDFEstimators gives a list of the available PDF estimators
 func PDFEstimators() []string {
 	return []string{
 		Laplace,
+		Student,
 	}
 }
 
@@ -32,6 +35,8 @@ func NewPDFEstimator(estimator string) PDFEstimator {
 	switch estimator {
 	case Laplace:
 		return NewPDFEstimatorLaplace()
+	case Student:
+		return NewPDFEstimatorStudentT()
 	default:
 		return nil
 	}
