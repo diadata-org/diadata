@@ -2,8 +2,8 @@ package estimators
 
 //PDF Provability Density Function
 type PDF interface {
-	DidConverge() (bool, error)
-	DidGetSolution() (bool, error)
+	DidConverge() bool
+	DidGetSolution() bool
 	GetName() string
 	GetError() error
 }
@@ -16,6 +16,7 @@ type PDFEstimator interface {
 }
 
 const (
+	//Laplace distribution name
 	Laplace = "Laplace"
 )
 
