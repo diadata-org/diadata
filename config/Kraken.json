@@ -16,6 +16,46 @@
       "Exchange": "Kraken"
     },
     {
+      "Symbol": "BCH",
+      "ForeignName": "BCHEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHUSD",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSD",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADACAD",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAETH",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAXBT",
+      "Exchange": "Kraken"
+    },
+    {
       "Symbol": "EOS",
       "ForeignName": "EOSEUR",
       "Exchange": "Kraken"
