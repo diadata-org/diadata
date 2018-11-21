@@ -26,6 +26,16 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "BTG",
+      "ForeignName": "BTGBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGETH",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "ONT",
       "ForeignName": "ONTUSDT",
       "Exchange": "Binance"

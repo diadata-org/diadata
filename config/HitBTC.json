@@ -224,6 +224,21 @@
       "Symbol": "NEU",
       "ForeignName" : "NEUBTC",
       "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName" : "BTGUSDT",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName" : "BTGBTC",
+      "Exchange" : "HitBTC"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName" : "BTGETH",
+      "Exchange" : "HitBTC"
     }
   ]
 }

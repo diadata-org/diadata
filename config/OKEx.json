@@ -144,8 +144,16 @@
       "Symbol": "SNT",
       "ForeignName": "SNT_USDT",
       "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTG_USDT",
+      "Exchange": "OKEx"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTG_BTC",
+      "Exchange": "OKEx"
     }
-
-
   ]
 }

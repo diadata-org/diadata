@@ -209,6 +209,11 @@
       "Symbol": "SNT",
       "ForeignName": "SNTBTC",
       "Exchange": "Huobi"
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGBTC",
+      "Exchange": "Huobi"
     }
   ]
 }
