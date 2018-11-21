@@ -2,7 +2,7 @@
   "Coins": [
     {
       "Symbol": "BCH",
-      "ForeignName": "BCH_BTC",
+      "ForeignName": "BCHABC_BTC",
       "Exchange": "OKEx"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "Symbol": "BCH",
-      "ForeignName": "BCH_USDT",
+      "ForeignName": "BCHABC_USDT",
       "Exchange": "OKEx"
     },
     {
