@@ -52,12 +52,12 @@
     },
     {
       "Symbol": "ETC",
-      "ForeignName": "ETCXBT",
+      "ForeignName": "XETCXXBT",
       "Exchange": "Kraken"
     },
     {
       "Symbol": "ETC",
-      "ForeignName": "ETCETH",
+      "ForeignName": "XETCXETH",
       "Exchange": "Kraken"
     },
     {
@@ -77,12 +77,12 @@
     },
     {
       "Symbol": "LTC",
-      "ForeignName": "LTCXBT",
+      "ForeignName": "XLTCXXBT",
       "Exchange": "Kraken"
     },
     {
       "Symbol": "XMR",
-      "ForeignName": "XMRXBT",
+      "ForeignName": "XXMRXXBT",
       "Exchange": "Kraken"
     },
     {
@@ -102,12 +102,12 @@
     },
     {
       "Symbol": "REP",
-      "ForeignName": "REPXBT",
+      "ForeignName": "XREPXXBT",
       "Exchange": "Kraken"
     },
     {
       "Symbol": "REP",
-      "ForeignName": "REPETH",
+      "ForeignName": "XREPXETH",
       "Exchange": "Kraken"
     },
     {
@@ -117,17 +117,17 @@
     },
     {
       "Symbol": "XRP",
-      "ForeignName": "XRPXBT",
+      "ForeignName": "XXRPXXBT",
       "Exchange": "Kraken"
     },
     {
       "Symbol": "XLM",
-      "ForeignName": "XLMXBT",
+      "ForeignName": "XXLMXXBT",
       "Exchange": "Kraken"
     },
     {
       "Symbol": "ZEC",
-      "ForeignName": "ZECXBT",
+      "ForeignName": "XZECXXBT",
       "Exchange": "Kraken"
     },
     {
