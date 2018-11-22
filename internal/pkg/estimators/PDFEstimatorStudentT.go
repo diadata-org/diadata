@@ -1,7 +1,6 @@
 package estimators
 
 import (
-	// "gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/optimize"
 	"gonum.org/v1/gonum/stat"
 	"gonum.org/v1/gonum/stat/distuv"
@@ -134,13 +133,14 @@ func (e *PDFEstimatorStudentT) fit(samples []float64) (*optimize.Result, error) 
 	}
 }
 
-//Compute estimate Laplace distribution parameters
+//Compute estimate Students T distribution parameters
 func (e *PDFEstimatorStudentT) Compute() error {
 	pdf := e.pdf.(*PDFStudentT)
 	if r, err := e.fit(e.samples); err != nil {
 		pdf.initialized = false
 		pdf.e = err
 		e.e = err
+		e.pdf = pdf
 		return err
 	} else {
 		pdf.initialized = true
@@ -149,6 +149,10 @@ func (e *PDFEstimatorStudentT) Compute() error {
 		} else {
 			pdf.converged = false
 		}
+		pdf.sigma = e.s.Sigma
+		pdf.mu = e.s.Mu
+		pdf.nu = e.s.Nu
+		e.pdf = pdf
 	}
 	return nil
 }
