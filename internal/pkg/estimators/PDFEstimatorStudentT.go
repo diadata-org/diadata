@@ -31,7 +31,7 @@ func newPDFStudentT() PDF {
 	}
 }
 
-//GetName return Laplace
+//GetName returns Student
 func (pdf *PDFStudentT) GetName() string {
 	return pdf.name
 }
@@ -76,6 +76,11 @@ type PDFEstimatorStudentT struct {
 	samples      []float64
 	// Here until it can be moved to gonum
 	s distuv.StudentsT
+}
+
+//GetMinimumNumberOfSamples returns the required number of samples to perform estimation
+func (pdf *PDFStudentT) GetMinimumNumberOfSamples() int {
+	return 10
 }
 
 //NewPDFEstimatorStudentT Returns an estimator for Laplace distribution

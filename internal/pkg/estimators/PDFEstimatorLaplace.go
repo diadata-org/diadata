@@ -65,6 +65,11 @@ type PDFEstimatorLaplace struct {
 	samples      []float64
 }
 
+//GetMinimumNumberOfSamples returns the required number of samples to perform estimation
+func (e *PDFEstimatorLaplace) GetMinimumNumberOfSamples() int {
+	return 1
+}
+
 //NewPDFEstimatorLaplace Returns an estimator for Laplace distribution
 func NewPDFEstimatorLaplace() *PDFEstimatorLaplace {
 	return &PDFEstimatorLaplace{

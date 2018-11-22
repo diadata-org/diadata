@@ -13,6 +13,7 @@ type PDFEstimator interface {
 	GetPDF() PDF
 	AddSamples(samples []float64)
 	Compute() error
+	GetMinimumNumberOfSamples() int
 }
 
 const (
