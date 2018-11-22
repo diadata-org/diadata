@@ -8,6 +8,21 @@ func (t *Trade) SecondPair() string {
 
 	pair := strings.ToUpper(t.Pair)
 
+	switch t.Source {
+	case KrakenExchange:
+		if pair[len(pair)-3:] == "XBT" {
+			return "BTC"
+		}
+	case BitfinexExchange:
+		if pair[len(pair)-3:] == "USD" {
+			return "USDT"
+		}
+	case HitBTCExchange:
+		if pair[len(pair)-3:] == "USD" {
+			return "USDT"
+		}
+	}
+
 	if pair[len(pair)-4:] == "USDT" {
 		return "USDT"
 	}
@@ -17,14 +32,7 @@ func (t *Trade) SecondPair() string {
 	}
 
 	if pair[len(pair)-3:] == "USD" {
-		switch t.Source {
-		case BitfinexExchange:
-			return "USDT"
-		case HitBTCExchange:
-			return "USDT"
-		default:
-			return "USD"
-		}
+		return "USD"
 	}
 
 	if pair[len(pair)-3:] == "ETH" {
