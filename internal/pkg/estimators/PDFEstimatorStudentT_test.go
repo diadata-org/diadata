@@ -101,14 +101,14 @@ func TestStudentComputeWithRandomSamples(t *testing.T) {
 			if !pdf.DidConverge() {
 				t.Errorf("Fit did not converge")
 			}
-			if !floats.EqualWithinAbsOrRel(e.s.Nu, s.Nu, 1e-2, 1e-2) {
-				t.Errorf("unexpected Nu result for test :%d got:%f, want:%f", i, e.s.Nu, s.Nu)
+			if !floats.EqualWithinAbsOrRel(e.GetPDF().(*PDFStudentT).GetNu(), s.Nu, 1e-2, 1e-2) {
+				t.Errorf("unexpected Nu result for test :%d got:%f, want:%f", i, e.GetPDF().(*PDFStudentT).GetNu(), s.Nu)
 			}
-			if !floats.EqualWithinAbsOrRel(e.s.Mu, s.Mu, 1e-2, 1e-2) {
-				t.Errorf("unexpected Mu result for test :%d got:%f, want:%f", i, e.s.Mu, s.Mu)
+			if !floats.EqualWithinAbsOrRel(e.GetPDF().(*PDFStudentT).GetLocation(), s.Mu, 1e-2, 1e-2) {
+				t.Errorf("unexpected Mu result for test :%d got:%f, want:%f", i, e.GetPDF().(*PDFStudentT).GetLocation(), s.Mu)
 			}
-			if !floats.EqualWithinAbsOrRel(e.s.Sigma, s.Sigma, 2e-2, 2e-2) {
-				t.Errorf("unexpected Sigma result for test :%d got:%f, want:%f", i, e.s.Sigma, s.Sigma)
+			if !floats.EqualWithinAbsOrRel(e.GetPDF().(*PDFStudentT).GetScale(), s.Sigma, 2e-2, 2e-2) {
+				t.Errorf("unexpected Sigma result for test :%d got:%f, want:%f", i, e.GetPDF().(*PDFStudentT).GetScale(), s.Sigma)
 			}
 		}
 	}
