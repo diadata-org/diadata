@@ -1,15 +1,17 @@
 package dia
 
 import (
-	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
+
+	"github.com/tkanos/gonfig"
 )
 
 const (
 	KrakenExchange   = "Kraken"
 	BitfinexExchange = "Bitfinex"
 	BinanceExchange  = "Binance"
+	BittrexExchange  = "Bittrex"
 	CoinBaseExchange = "CoinBase"
 	HitBTCExchange   = "HitBTC"
 	SimexExchange    = "Simex"
@@ -28,6 +30,7 @@ func Exchanges() []string {
 	return []string{
 		BinanceExchange,
 		BitfinexExchange,
+		BittrexExchange,
 		CoinBaseExchange,
 		GateIOExchange,
 		HitBTCExchange,
