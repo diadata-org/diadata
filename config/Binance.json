@@ -16,6 +16,21 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "ADA",
+      "ForeignName": "ADABTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHBTC",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "OMG",
       "ForeignName": "OMGUSDT",
       "Exchange": "Binance"
@@ -33,6 +48,21 @@
     {
       "Symbol": "BTG",
       "ForeignName": "BTGETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPETH",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHABCBTC",
       "Exchange": "Binance"
     },
     {
@@ -121,13 +151,38 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "LTC",
+      "ForeignName": "LTCBTC",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "XRP",
       "ForeignName": "XRPUSDT",
       "Exchange": "Binance"
     },
     {
+      "Symbol": "XRP",
+      "ForeignName": "XRPBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRBTC",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "EOS",
       "ForeignName": "EOSUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSETH",
       "Exchange": "Binance"
     },
     {
@@ -141,8 +196,18 @@
       "Exchange": "Binance"
     },
     {
+      "Symbol": "XLM",
+      "ForeignName": "XLMBTC",
+      "Exchange": "Binance"
+    },
+    {
       "Symbol": "ONT",
       "ForeignName": "ONTUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECBTC",
       "Exchange": "Binance"
     },
     {
@@ -153,6 +218,16 @@
     {
       "Symbol": "ETC",
       "ForeignName": "ETCUSDT",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCBTC",
+      "Exchange": "Binance"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCETH",
       "Exchange": "Binance"
     },
     {

@@ -42,11 +42,6 @@
     },
     {
       "Symbol": "ADA",
-      "ForeignName": "ADACAD",
-      "Exchange": "Kraken"
-    },
-    {
-      "Symbol": "ADA",
       "ForeignName": "ADAETH",
       "Exchange": "Kraken"
     },
@@ -56,8 +51,38 @@
       "Exchange": "Kraken"
     },
     {
+      "Symbol": "ETC",
+      "ForeignName": "ETCXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCETH",
+      "Exchange": "Kraken"
+    },
+    {
       "Symbol": "EOS",
       "ForeignName": "EOSEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSETH",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRXBT",
       "Exchange": "Kraken"
     },
     {
@@ -73,6 +98,36 @@
     {
       "Symbol": "QTUM",
       "ForeignName": "QTUMEUR",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPETH",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMXBT",
+      "Exchange": "Kraken"
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECXBT",
       "Exchange": "Kraken"
     },
     {
