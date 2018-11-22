@@ -87,11 +87,7 @@ func (e *PDFEstimatorLaplace) AddSamples(samples []float64) {
 //Compute estimate Laplace distribution parameters
 func (e *PDFEstimatorLaplace) Compute() error {
 	var d distuv.Laplace
-	w := make([]float64, len(e.samples))
-	for i := 0; i < len(w); i++ {
-		w[i] = 1
-	}
-	d.Fit(e.samples, w)
+	d.Fit(e.samples, nil)
 	pdf := e.pdf.(*PDFLaplace)
 	pdf.mu = d.Mu
 	pdf.b = d.Scale
