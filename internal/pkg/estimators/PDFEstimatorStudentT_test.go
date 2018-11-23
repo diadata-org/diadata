@@ -66,7 +66,7 @@ func TestStudentFitWithRandomSamples(t *testing.T) {
 	}
 }
 
-func TestStudentComputeWithRandomSamples(t *testing.T) {
+func TestPDFEstimatorStudentComputeWithRandomSamples(t *testing.T) {
 	cases := []struct {
 		nSamples  int
 		wantNu    float64
@@ -111,5 +111,14 @@ func TestStudentComputeWithRandomSamples(t *testing.T) {
 				t.Errorf("unexpected Sigma result for test :%d got:%f, want:%f", i, e.GetPDF().(*PDFStudentT).GetScale(), s.Sigma)
 			}
 		}
+	}
+}
+
+func TestPDFEstimatorStudentComputeNotEnoughSamples(t *testing.T) {
+	e := NewPDFEstimatorStudentT()
+	samples := make([]float64, e.GetMinimumNumberOfSamples()-1)
+	e.AddSamples(samples)
+	if err := e.Compute(); err == nil {
+		t.Errorf("Error expected")
 	}
 }

@@ -31,3 +31,10 @@ func TestPDFEstimatorLaplace(t *testing.T) {
 		compareNumbers(t, c.b, pdf.b, i, "Scale")
 	}
 }
+func TestPDFEstimatorLaplaceComputeNotEnoughSamples(t *testing.T) {
+	e := NewPDFEstimatorLaplace()
+	e.AddSamples([]float64{})
+	if err := e.Compute(); err == nil {
+		t.Errorf("Error expected")
+	}
+}

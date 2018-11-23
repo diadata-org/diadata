@@ -1,6 +1,7 @@
 package estimators
 
 import (
+	"errors"
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
@@ -59,22 +60,24 @@ func (pdf *PDFLaplace) GetError() error {
 
 //PDFEstimatorLaplace Estimates Laplace distribution from samples
 type PDFEstimatorLaplace struct {
-	distribution string
-	pdf          PDF
-	e            error
-	samples      []float64
+	distribution           string
+	pdf                    PDF
+	e                      error
+	samples                []float64
+	MinimumNumberOfSamples int
 }
 
 //GetMinimumNumberOfSamples returns the required number of samples to perform estimation
 func (e *PDFEstimatorLaplace) GetMinimumNumberOfSamples() int {
-	return 1
+	return e.MinimumNumberOfSamples
 }
 
 //NewPDFEstimatorLaplace Returns an estimator for Laplace distribution
 func NewPDFEstimatorLaplace() *PDFEstimatorLaplace {
 	return &PDFEstimatorLaplace{
-		distribution: Laplace,
-		pdf:          newPDFLaplace(),
+		distribution:           Laplace,
+		pdf:                    newPDFLaplace(),
+		MinimumNumberOfSamples: 1,
 	}
 }
 
@@ -91,6 +94,9 @@ func (e *PDFEstimatorLaplace) AddSamples(samples []float64) {
 
 //Compute estimate Laplace distribution parameters
 func (e *PDFEstimatorLaplace) Compute() error {
+	if len(e.samples) < e.MinimumNumberOfSamples {
+		return errors.New("Not enough samples")
+	}
 	var d distuv.Laplace
 	d.Fit(e.samples, nil)
 	pdf := e.pdf.(*PDFLaplace)

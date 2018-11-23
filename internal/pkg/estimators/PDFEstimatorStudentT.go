@@ -1,6 +1,7 @@
 package estimators
 
 import (
+	"errors"
 	"gonum.org/v1/gonum/optimize"
 	"gonum.org/v1/gonum/stat"
 	"gonum.org/v1/gonum/stat/distuv"
@@ -70,26 +71,28 @@ func (pdf *PDFStudentT) GetError() error {
 
 //PDFEstimatorStudentT Estimates Students T distribution from samples
 type PDFEstimatorStudentT struct {
-	distribution string
-	pdf          PDF
-	e            error
-	samples      []float64
+	distribution           string
+	pdf                    PDF
+	e                      error
+	samples                []float64
+	MinimumNumberOfSamples int
 	// Here until it can be moved to gonum
 	s distuv.StudentsT
-}
-
-//GetMinimumNumberOfSamples returns the required number of samples to perform estimation
-func (pdf *PDFStudentT) GetMinimumNumberOfSamples() int {
-	return 10
 }
 
 //NewPDFEstimatorStudentT Returns an estimator for Laplace distribution
 func NewPDFEstimatorStudentT() *PDFEstimatorStudentT {
 	return &PDFEstimatorStudentT{
-		distribution: Student,
-		pdf:          newPDFStudentT(),
-		s:            distuv.StudentsT{},
+		distribution:           Student,
+		pdf:                    newPDFStudentT(),
+		s:                      distuv.StudentsT{},
+		MinimumNumberOfSamples: 10,
 	}
+}
+
+//GetMinimumNumberOfSamples returns the required number of samples to perform estimation
+func (e *PDFEstimatorStudentT) GetMinimumNumberOfSamples() int {
+	return e.MinimumNumberOfSamples
 }
 
 //GetPDF Get Students T distribution. You need to call compute before
@@ -101,6 +104,7 @@ func (e *PDFEstimatorStudentT) GetPDF() PDF {
 func (e *PDFEstimatorStudentT) AddSamples(samples []float64) {
 	e.samples = append(e.samples, samples...)
 }
+
 func (e *PDFEstimatorStudentT) fit(samples []float64) (*optimize.Result, error) {
 	s := e.s
 	mu := stat.Mean(samples, nil)
@@ -140,6 +144,9 @@ func (e *PDFEstimatorStudentT) fit(samples []float64) (*optimize.Result, error) 
 
 //Compute estimate Students T distribution parameters
 func (e *PDFEstimatorStudentT) Compute() error {
+	if len(e.samples) < e.MinimumNumberOfSamples {
+		return errors.New("Not enough samples")
+	}
 	pdf := e.pdf.(*PDFStudentT)
 	if r, err := e.fit(e.samples); err != nil {
 		pdf.initialized = false
