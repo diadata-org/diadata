@@ -4,22 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
-	"strings"
-  "strconv"
-	"sync"
-	"time"
 )
 
-
 type ConfirmData struct {
-	Result []interface{} `json:"result"`
-  Success bool `json:"success"`
-  Message string `json:"message"`
+	Result  []interface{} `json:"result"`
+	Success bool          `json:"success"`
+	Message string        `json:"message"`
 }
 
 var _bittrexapiurl string = "https://api.bittrex.com/api/v1.1/public"
@@ -47,13 +47,10 @@ func NewBittrexScraper(exchangeName string) *BittrexScraper {
 		exchangeName: exchangeName,
 		error:        nil,
 	}
-  p, _ := s.FetchAvailablePairs()
-  fmt.Println(p)
 
 	go s.mainLoop()
 	return s
 }
-
 
 // runs in a goroutine until s is closed
 func (s *BittrexScraper) mainLoop() {
@@ -73,18 +70,18 @@ func (s *BittrexScraper) mainLoop() {
 			// more or less 60 calls per minute, the limit is 300
 			time.Sleep(1 * time.Second)
 
-      //swap the pairs name, necessary for api call
-      sPairs := strings.Split(key,"-")
-      sLeft, sRight := sPairs[0], sPairs[1]
+			//swap the pairs name, necessary for api call
+			sPairs := strings.Split(key, "-")
+			sLeft, sRight := sPairs[0], sPairs[1]
 
-    	pairTrade := getAPICallBittrex("/getmarkethistory?market=" + sRight + "-" + sLeft)
+			pairTrade := getAPICallBittrex("/getmarkethistory?market=" + sRight + "-" + sLeft)
 
 			if len(pairTrade) > 0 {
 				newId := 0
 				atLeastOneUpdate := false
 				for _, elTrade := range pairTrade {
 
-          tradeReturn := elTrade.(map[string]interface{})
+					tradeReturn := elTrade.(map[string]interface{})
 					idInt := int(tradeReturn["Id"].(float64))
 
 					if el.lastIdTrade < idInt {
@@ -93,8 +90,8 @@ func (s *BittrexScraper) mainLoop() {
 							atLeastOneUpdate = true
 						}
 
-            f64Price := tradeReturn["Price"].(float64)
-            f64Volume := tradeReturn["Quantity"].(float64)
+						f64Price := tradeReturn["Price"].(float64)
+						f64Volume := tradeReturn["Quantity"].(float64)
 
 						if tradeReturn["OrderType"] == "SELL" {
 							f64Volume = -f64Volume
@@ -131,7 +128,7 @@ func getAPICallBittrex(params ...string) []interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-  defer req.Body.Close()
+	defer req.Body.Close()
 	body, readErr := ioutil.ReadAll(req.Body)
 	if readErr != nil {
 		fmt.Println(readErr)
@@ -141,7 +138,7 @@ func getAPICallBittrex(params ...string) []interface{} {
 	if jsonErr != nil {
 		fmt.Println(jsonErr)
 	}
-  return confirmTemp.Result
+	return confirmTemp.Result
 }
 
 func (s *BittrexScraper) cleanup(err error) {
@@ -185,10 +182,10 @@ func (s *BittrexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &BittrexPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
-    lastIdTrade: 0,
+		parent:      s,
+		pair:        pair,
+		chanTrades:  make(chan *dia.Trade),
+		lastIdTrade: 0,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -212,32 +209,32 @@ func (s *BittrexScraper) normalizeSymbol(baseCurrency string, name string) (symb
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
-  allPairs := getAPICallBittrex("/getmarkets")
-  if len(allPairs) > 0 {
-    for _, p := range allPairs {
-      pairReturn := p.(map[string]interface{})
-      symbol, serr := s.normalizeSymbol(pairReturn["MarketCurrency"].(string), pairReturn["MarketCurrencyLong"].(string))
-      if serr == nil {
-        pairs = append(pairs, dia.Pair{
-          Symbol:      symbol,
-          ForeignName: symbol + "-" + pairReturn["BaseCurrency"].(string),
-          Exchange:    s.exchangeName,
-        })
-        } else {
-          log.Error(serr)
-        }
-      }
-    }
-    return
+	allPairs := getAPICallBittrex("/getmarkets")
+	if len(allPairs) > 0 {
+		for _, p := range allPairs {
+			pairReturn := p.(map[string]interface{})
+			symbol, serr := s.normalizeSymbol(pairReturn["MarketCurrency"].(string), pairReturn["MarketCurrencyLong"].(string))
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: symbol + "-" + pairReturn["BaseCurrency"].(string),
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // BittrexPairScraper implements PairScraper for Bittrex
 type BittrexPairScraper struct {
-	parent     *BittrexScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
-  lastIdTrade int
+	parent      *BittrexScraper
+	pair        dia.Pair
+	chanTrades  chan *dia.Trade
+	closed      bool
+	lastIdTrade int
 }
 
 // Close stops listening for trades of the pair associated with s
