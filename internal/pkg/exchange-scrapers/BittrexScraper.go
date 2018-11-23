@@ -67,7 +67,7 @@ func (s *BittrexScraper) mainLoop() {
 		}
 		for key, el := range s.pairScrapers {
 
-			// more or less 60 calls per minute, the limit is 300
+			// more or less 60 calls per minute, the limit is 60
 			time.Sleep(1 * time.Second)
 
 			//swap the pairs name, necessary for api call
