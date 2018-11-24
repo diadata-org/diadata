@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"sync"
 	"time"
 )
@@ -70,7 +71,13 @@ func (s *EstimatorsService) cleanup(err error) {
 
 //CreateEstimator creates only selected estimators since some are really CPU intense process
 func (s *EstimatorsService) CreateEstimator(estimator string, symbol string, exchange string) {
-	s.estimators[symbol+exchange] = append(s.estimators[symbol+exchange], NewPDFEstimator(estimator))
+	//check if exist then append
+	for _, e := range PDFEstimators() {
+		if strings.EqualFold(e, estimator) {
+			s.estimators[symbol+exchange] = append(s.estimators[symbol+exchange], NewPDFEstimator(estimator))
+			return
+		}
+	}
 }
 
 //computeEstimators will run the estimators which can be cpu intensive

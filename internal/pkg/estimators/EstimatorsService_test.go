@@ -15,6 +15,19 @@ func TestShutdown(t *testing.T) {
 	e.Close()
 }
 
+func TestCreateEstimator(t *testing.T) {
+	e := NewEstimatorsService(nil)
+	e.CreateEstimator(PDFEstimators()[0], "symbol", "exchange")
+	if len(e.estimators) != 1 {
+		t.Errorf("Estimator was not added")
+	}
+	e.CreateEstimator("Estimator not implemented", "symbol", "exchange")
+	if len(e.estimators) != 1 {
+		t.Errorf("Estimator was added")
+	}
+	e.Close()
+}
+
 type distribution interface {
 	Rand() float64
 }
