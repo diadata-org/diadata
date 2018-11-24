@@ -6,6 +6,7 @@ type PDF interface {
 	DidGetSolution() bool
 	GetName() string
 	GetError() error
+	MarshalBinary() ([]byte, error)
 }
 
 //PDFEstimator estimate a PDF based on samples

@@ -1,6 +1,7 @@
 package estimators
 
 import (
+	"encoding/json"
 	"errors"
 	"gonum.org/v1/gonum/optimize"
 	"gonum.org/v1/gonum/stat"
@@ -67,6 +68,11 @@ func (pdf *PDFStudentT) DidGetSolution() bool {
 func (pdf *PDFStudentT) GetError() error {
 	return pdf.e
 
+}
+
+// MarshalBinary -
+func (pdf *PDFStudentT) MarshalBinary() ([]byte, error) {
+	return json.Marshal(pdf)
 }
 
 //PDFEstimatorStudentT Estimates Students T distribution from samples

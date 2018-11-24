@@ -1,6 +1,7 @@
 package estimators
 
 import (
+	"encoding/json"
 	"errors"
 	"gonum.org/v1/gonum/stat/distuv"
 )
@@ -56,6 +57,11 @@ func (pdf *PDFLaplace) DidGetSolution() bool {
 func (pdf *PDFLaplace) GetError() error {
 	return pdf.e
 
+}
+
+// MarshalBinary -
+func (pdf *PDFLaplace) MarshalBinary() ([]byte, error) {
+	return json.Marshal(pdf)
 }
 
 //PDFEstimatorLaplace Estimates Laplace distribution from samples
