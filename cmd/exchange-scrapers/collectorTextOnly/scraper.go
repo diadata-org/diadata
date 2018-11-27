@@ -22,7 +22,7 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup) {
 			if ps.Error() != nil {
 				log.Printf("Error: %s\n", ps.Error())
 			} else {
-				log.Printf("PairScraper for %s was shut down by user", ps.Pair())
+				log.Printf("PairScraper for %v was shut down by user", ps.Pair())
 			}
 			wg.Done()
 			return
