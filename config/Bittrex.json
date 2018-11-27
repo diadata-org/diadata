@@ -240,6 +240,12 @@
       "Ignore": false,
       "Symbol": "TUSD"
     },
+		{
+			"Exchange": "Bittrex",
+			"ForeignName" : "USDT-USD",
+			"Ignore": false,
+			"Symbol": "USDT"
+		},
     {
       "Exchange": "Bittrex",
       "ForeignName": "XMR-BTC",
