@@ -21,8 +21,8 @@ services:
         window: 20s
   kafka0:
     image: wurstmeister/kafka:latest
-    ports:
-      - "9094:9094"
+#    ports:
+#      - "9094:9094"
     networks:
       - kafka-network
     deploy:
@@ -31,12 +31,13 @@ services:
       HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+   #   KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://kafka0:9094
       KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_LOG_DIRS: /kafka/kafka-logs-1
-      KAFKA_LOG_RETENTION_BYTES: -1
-      KAFKA_LOG_RETENTION_HOURS: -1
+   #   KAFKA_LOG_RETENTION_BYTES: -1
+   #   KAFKA_LOG_RETENTION_HOURS: -1
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_MESSAGE_MAX_BYTES: 10000000
     volumes:

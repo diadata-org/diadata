@@ -1,104 +1,124 @@
 {
   "Coins": [
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_USDT",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCC_USDT",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_USDT",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEO_USDT",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZEC_USDT",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEO_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASH_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZEC_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "BCH",
+      "Exchange": "LBank",
       "ForeignName": "BCC_BTC",
-      "Exchange": "LBank"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_BTC",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOS_ETH",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZEC_ETH",
-      "Exchange": "LBank"
-    },
-    {
-      "Symbol": "BCH",
+      "Exchange": "LBank",
       "ForeignName": "BCC_ETH",
-      "Exchange": "LBank"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "TRX",
-      "ForeignName": "TRX_ETH",
-      "Exchange": "LBank"
+      "Exchange": "LBank",
+      "ForeignName": "BCC_USDT",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_ETH",
-      "Exchange": "LBank"
+      "Exchange": "LBank",
+      "ForeignName": "BTC_USDT",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "QTUM",
+      "Exchange": "LBank",
+      "ForeignName": "DASH_BTC",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "EOS_ETH",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ETC_BTC",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ETH_BTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ETH_USDT",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "LTC_BTC",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "NEO_BTC",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "NEO_USDT",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "QTUM_BTC",
-      "Exchange": "LBank"
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "QTUM",
+      "Exchange": "LBank",
+      "ForeignName": "QTUM_ETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "QTUM_USDT",
-      "Exchange": "LBank"
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "VET",
+      "Exchange": "LBank",
+      "ForeignName": "TRX_ETH",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "VET_USDT",
-      "Exchange": "LBank"
+      "Ignore": false,
+      "Symbol": "VET"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ZEC_BTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ZEC_ETH",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ZEC_USDT",
+      "Ignore": false,
+      "Symbol": "ZEC"
     }
   ]
 }

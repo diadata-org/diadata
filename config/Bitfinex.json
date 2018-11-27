@@ -1,134 +1,160 @@
 {
   "Coins": [
     {
-      "Symbol": "USDT",
-      "ForeignName": "USDTUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRXUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "BCC",
+      "Exchange": "Bitfinex",
       "ForeignName": "BCCUSD",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "BCC"
     },
     {
-      "Symbol": "BCH",
+      "Exchange": "Bitfinex",
       "ForeignName": "BCHUSD",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "BTC",
+      "Exchange": "Bitfinex",
       "ForeignName": "BTCUSD",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName": "DSHUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETCUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHBTC",
-      "Exchange": "Bitfinex"
-    },
-		{
-      "Symbol": "MIOTA",
-      "ForeignName": "IOTUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTCUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "VEN",
-      "ForeignName": "VENUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "XMR",
-      "ForeignName": "XMRUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZECUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZBTC",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZUSD",
-      "Exchange": "Bitfinex"
-    },
-    {
-      "Symbol": "BTG",
+      "Exchange": "Bitfinex",
       "ForeignName": "BTGUSD",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "BTG"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMUSD",
-      "Exchange": "Bitfinex"
+      "Exchange": "Bitfinex",
+      "ForeignName": "DSHUSD",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMBTC",
-      "Exchange": "Bitfinex"
+      "Exchange": "Bitfinex",
+      "ForeignName": "EOSUSD",
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMETH",
-      "Exchange": "Bitfinex"
+      "Exchange": "Bitfinex",
+      "ForeignName": "ETCUSD",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
-      "Symbol": "ETP",
+      "Exchange": "Bitfinex",
+      "ForeignName": "ETHBTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ETHUSD",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Bitfinex",
       "ForeignName": "ETPUSD",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "ETP"
     },
     {
-      "Symbol": "REP",
+      "Exchange": "Bitfinex",
+      "ForeignName": "IOTUSD",
+      "Ignore": false,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "LTCUSD",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "NEOUSD",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "QTUMBTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "QTUMETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "QTUMUSD",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Bitfinex",
       "ForeignName": "REPBTC",
-      "Exchange": "Bitfinex"
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "TRXUSD",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "USDTUSD",
+      "Ignore": false,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "VENUSD",
+      "Ignore": false,
+      "Symbol": "VEN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "XLMUSD",
+      "Ignore": false,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "XMRUSD",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "XRPUSD",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "XTZBTC",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "XTZUSD",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ZECUSD",
+      "Ignore": false,
+      "Symbol": "ZEC"
     }
   ]
 }

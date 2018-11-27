@@ -1,25 +1,28 @@
 {
   "Coins": [
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTC-USD",
-      "Exchange": "CoinBase"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTC-USD",
-      "Exchange": "CoinBase"
-    },
-    {
-      "Symbol": "BCH",
+      "Exchange": "CoinBase",
       "ForeignName": "BCH-USD",
-      "Exchange": "CoinBase"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "ETH",
+      "Exchange": "CoinBase",
+      "ForeignName": "BTC-USD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "ETH-BTC",
-      "Exchange": "CoinBase"
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "LTC-USD",
+      "Ignore": false,
+      "Symbol": "LTC"
     }
-
   ]
 }

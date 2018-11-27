@@ -1,244 +1,292 @@
 {
   "Coins": [
     {
-      "Symbol": "BTC",
-      "ForeignName" : "BTCUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "ADXETH",
+      "Ignore": false,
+      "Symbol": "ADX"
     },
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETHBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCDBTC",
+      "Ignore": false,
+      "Symbol": "BCD"
     },
     {
-      "Symbol": "BCH",
-      "ForeignName" : "BCHBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCHBTC",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "XRP",
-      "ForeignName" : "XRPBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCHUSD",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETHUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCNBTC",
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "BCH",
-      "ForeignName" : "BCHUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCNETH",
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "XMR",
-      "ForeignName" : "XMRBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BCNUSDT",
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTCUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BTCUSD",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASHBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BTGBTC",
+      "Ignore": false,
+      "Symbol": "BTG"
     },
     {
-      "Symbol": "ZRX",
-      "ForeignName" : "ZRXETH",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "ZRX",
-      "ForeignName" : "ZRXUSDT",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BTGETH",
+      "Ignore": false,
+      "Symbol": "BTG"
     },
     {
-      "Symbol": "ZEC",
-      "ForeignName" : "ZECBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "BTGUSDT",
+      "Ignore": false,
+      "Symbol": "BTG"
     },
     {
-      "Symbol": "DICE",
-      "ForeignName" : "DICEETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "CNDBTC",
+      "Ignore": false,
+      "Symbol": "CND"
     },
     {
-      "Symbol": "ADX",
-      "ForeignName" : "ADXETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "CNXBTC",
+      "Ignore": false,
+      "Symbol": "CNX"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTCBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "DASHBTC",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName" : "EOSUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "DICEETH",
+      "Ignore": false,
+      "Symbol": "DICE"
     },
     {
-      "Symbol": "VERI",
-      "ForeignName" : "VERIETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "EMGOBTC",
+      "Ignore": false,
+      "Symbol": "EMGO"
     },
     {
-      "Symbol": "PPC",
-      "ForeignName" : "PPCUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "EOSUSD",
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "SPF",
-      "ForeignName" : "SPFETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "ETHBTC",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "PPC",
-      "ForeignName" : "PPCBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "ETHUSD",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName" : "QTUMETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "HTMLUSD",
+      "Ignore": false,
+      "Symbol": "HTML"
     },
     {
-      "Symbol": "VERI",
-      "ForeignName" : "VERIUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "LSKBTC",
+      "Ignore": false,
+      "Symbol": "LSK"
     },
     {
-      "Symbol": "STRAT",
-      "ForeignName" : "STRATBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "LSKETH",
+      "Ignore": false,
+      "Symbol": "LSK"
     },
     {
-      "Symbol": "BCD",
-      "ForeignName" : "BCDBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "LSKUSDT",
+      "Ignore": false,
+      "Symbol": "LSK"
     },
     {
-      "Symbol": "SNT",
-      "ForeignName" : "SNTETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "LTCBTC",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "EMGO",
-      "ForeignName" : "EMGOBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "LTCUSD",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "HTML",
-      "ForeignName" : "HTMLUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "NEUBTC",
+      "Ignore": false,
+      "Symbol": "NEU"
     },
     {
-      "Symbol": "CND",
-      "ForeignName" : "CNDBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "PPCBTC",
+      "Ignore": false,
+      "Symbol": "PPC"
     },
     {
-      "Symbol": "ZPT",
-      "ForeignName" : "ZPTUSD",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "PPCUSD",
+      "Ignore": false,
+      "Symbol": "PPC"
     },
     {
-      "Symbol": "XMC",
-      "ForeignName" : "XMCUSDT",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "QTUMBTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "XMC",
-      "ForeignName" : "XMCETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "QTUMETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "XTZ",
-      "ForeignName" : "XTZUSDT",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "QTUMETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "XTZ",
-      "ForeignName" : "XTZETH",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "LSK",
-      "ForeignName" : "LSKETH",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "LSK",
-      "ForeignName" : "LSKBTC",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "LSK",
-      "ForeignName" : "LSKUSDT",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "QTUM",
-      "ForeignName" : "QTUMETH",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "QTUM",
-      "ForeignName" : "QTUMBTC",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "QTUM",
-      "ForeignName" : "QTUMUSDT",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "BCN",
-      "ForeignName" : "BCNETH",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "BCN",
-      "ForeignName" : "BCNBTC",
-      "Exchange" : "HitBTC"
-    },
-		{
-      "Symbol": "BCN",
-      "ForeignName" : "BCNUSDT",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "QTUMUSDT",
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "CNX",
-      "ForeignName" : "CNXBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "SNTETH",
+      "Ignore": false,
+      "Symbol": "SNT"
     },
     {
-      "Symbol": "XEM",
-      "ForeignName" : "XEMBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "SPFETH",
+      "Ignore": false,
+      "Symbol": "SPF"
     },
     {
-      "Symbol": "NEU",
-      "ForeignName" : "NEUBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "STRATBTC",
+      "Ignore": false,
+      "Symbol": "STRAT"
     },
     {
-      "Symbol": "BTG",
-      "ForeignName" : "BTGUSDT",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "VERIETH",
+      "Ignore": false,
+      "Symbol": "VERI"
     },
     {
-      "Symbol": "BTG",
-      "ForeignName" : "BTGBTC",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "VERIUSD",
+      "Ignore": false,
+      "Symbol": "VERI"
     },
     {
-      "Symbol": "BTG",
-      "ForeignName" : "BTGETH",
-      "Exchange" : "HitBTC"
+      "Exchange": "HitBTC",
+      "ForeignName": "XEMBTC",
+      "Ignore": false,
+      "Symbol": "XEM"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XMCETH",
+      "Ignore": false,
+      "Symbol": "XMC"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XMCUSDT",
+      "Ignore": false,
+      "Symbol": "XMC"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XMRBTC",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XRPBTC",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XTZETH",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "XTZUSDT",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "ZECBTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "ZPTUSD",
+      "Ignore": false,
+      "Symbol": "ZPT"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "ZRXETH",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "HitBTC",
+      "ForeignName": "ZRXUSDT",
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }

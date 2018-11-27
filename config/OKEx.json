@@ -1,159 +1,190 @@
 {
   "Coins": [
     {
-      "Symbol": "BCH",
+      "Exchange": "OKEx",
       "ForeignName": "BCHABC_BTC",
-      "Exchange": "OKEx"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "BCH",
+      "Exchange": "OKEx",
       "ForeignName": "BCHABC_USDT",
-      "Exchange": "OKEx"
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_ETH",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEO_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEO_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "MKR",
-      "ForeignName": "MKR_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "MKR",
-      "ForeignName": "MKR_ETH",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRX_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRX_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSK_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSK_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSK_ETH",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "DCR",
-      "ForeignName": "DCR_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "DCR",
-      "ForeignName": "DCR_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "DCR",
-      "ForeignName": "DCR_ETH",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_BTC",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_ETH",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCN_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "BCN",
+      "Exchange": "OKEx",
       "ForeignName": "BCN_BTC",
-      "Exchange": "OKEx"
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "SNT",
-      "ForeignName": "SNT_BTC",
-      "Exchange": "OKEx"
+      "Exchange": "OKEx",
+      "ForeignName": "BCN_USDT",
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "SNT",
-      "ForeignName": "SNT_USDT",
-      "Exchange": "OKEx"
+      "Exchange": "OKEx",
+      "ForeignName": "BTC_USDT",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "BTG",
-      "ForeignName": "BTG_USDT",
-      "Exchange": "OKEx"
-    },
-    {
-      "Symbol": "BTG",
+      "Exchange": "OKEx",
       "ForeignName": "BTG_BTC",
-      "Exchange": "OKEx"
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "BTG_USDT",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DCR_BTC",
+      "Ignore": false,
+      "Symbol": "DCR"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DCR_ETH",
+      "Ignore": false,
+      "Symbol": "DCR"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DCR_USDT",
+      "Ignore": false,
+      "Symbol": "DCR"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ETC_BTC",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ETC_ETH",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ETC_USDT",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ETH_BTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ETH_USDT",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LSK_BTC",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LSK_ETH",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LSK_USDT",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LTC_BTC",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LTC_USDT",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "MKR_ETH",
+      "Ignore": false,
+      "Symbol": "MKR"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "MKR_USDT",
+      "Ignore": false,
+      "Symbol": "MKR"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "NEO_BTC",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "NEO_USDT",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "QTUM_BTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "QTUM_ETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "QTUM_USDT",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SNT_BTC",
+      "Ignore": false,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SNT_USDT",
+      "Ignore": false,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ZRX_BTC",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ZRX_USDT",
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }

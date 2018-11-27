@@ -1,349 +1,418 @@
 {
   "Coins": [
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTCUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BNB",
-      "ForeignName": "BNBUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ADA",
-      "ForeignName": "ADAUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ADA",
+      "Exchange": "Binance",
       "ForeignName": "ADABTC",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "ADA",
+      "Exchange": "Binance",
       "ForeignName": "ADAETH",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName": "DASHBTC",
-      "Exchange": "Binance"
+      "Exchange": "Binance",
+      "ForeignName": "ADAUSDT",
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName": "OMGUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BTG",
-      "ForeignName": "BTGUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BTG",
-      "ForeignName": "BTGBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BTG",
-      "ForeignName": "BTGETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "REP",
-      "ForeignName": "REPBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "REP",
-      "ForeignName": "REPETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCHABCBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRXBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRXETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSKBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSKETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSKBNB",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMUSDT",
-      "Exchange": "Binance"
-    },
-		{
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMBNB",
-      "Exchange": "Binance"
-    },
-		{
-      "Symbol": "BCN",
-      "ForeignName": "BCNBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCNETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCNBNB",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BCC",
-      "ForeignName": "BCCUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTCUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTCBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XMR",
-      "ForeignName": "XMRBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "IOTA",
-      "ForeignName": "IOTAUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZECBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRXUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETCUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETCBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETCETH",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ICX",
-      "ForeignName": "ICXUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "NULS",
-      "ForeignName": "NULSUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "VET",
-      "ForeignName": "VETUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "PAX",
-      "ForeignName": "PAXUSDT",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "AE",
+      "Exchange": "Binance",
       "ForeignName": "AEBTC",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "AE"
     },
     {
-      "Symbol": "BTS",
-      "ForeignName": "BTSBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "BCD",
-      "ForeignName": "BCDBTC",
-      "Exchange": "Binance"
-    },  
-    {
-      "Symbol": "ZIL",
-      "ForeignName": "ZILBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "NANO",
-      "ForeignName": "NANOBTC",
-      "Exchange": "Binance"
-    }, 
-    {
-      "Symbol": "ICX",
-      "ForeignName": "ICXUSDT",
-      "Exchange": "Binance"
-    }, 
-    {
-      "Symbol": "SC",
-      "ForeignName": "SCBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "STEEM",
-      "ForeignName": "STEEMBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "XVG",
-      "ForeignName": "XVGBTC",
-      "Exchange": "Binance"
-    }, 
-    {
-      "Symbol": "NPXS",
-      "ForeignName": "NPXSBTC",
-      "Exchange": "Binance"
-    }, 
-    {
-      "Symbol": "WAVES",
-      "ForeignName": "WAVESBTC",
-      "Exchange": "Binance"
-    }, 
-    {
-      "Symbol": "WAVES",
-      "ForeignName": "WAVESBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "AION",
+      "Exchange": "Binance",
       "ForeignName": "AIONBTC",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "AION"
     },
     {
-      "Symbol": "WTC",
-      "ForeignName": "WTCBTC",
-      "Exchange": "Binance"
-    },
-    {
-      "Symbol": "ARDR",
+      "Exchange": "Binance",
       "ForeignName": "ARDRBTC",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "ARDR"
     },
     {
-      "Symbol": "WAN",
-      "ForeignName": "WANBTC",
-      "Exchange": "Binance"
+      "Exchange": "Binance",
+      "ForeignName": "BCCUSDT",
+      "Ignore": false,
+      "Symbol": "BCC"
     },
     {
-      "Symbol": "HOT",
+      "Exchange": "Binance",
+      "ForeignName": "BCDBTC",
+      "Ignore": false,
+      "Symbol": "BCD"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BCHABCBTC",
+      "Ignore": false,
+      "Symbol": "BCH"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BCNBNB",
+      "Ignore": false,
+      "Symbol": "BCN"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BCNBTC",
+      "Ignore": false,
+      "Symbol": "BCN"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BCNETH",
+      "Ignore": false,
+      "Symbol": "BCN"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BNBUSDT",
+      "Ignore": false,
+      "Symbol": "BNB"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BTCUSDT",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BTGBTC",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BTGETH",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BTGUSDT",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "BTSBTC",
+      "Ignore": false,
+      "Symbol": "BTS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "DASHBTC",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "EOSBTC",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "EOSETH",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "EOSUSDT",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ETCBTC",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ETCETH",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ETCUSDT",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ETHBTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ETHUSDT",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Binance",
       "ForeignName": "HOTBTC",
-      "Exchange": "Binance"
+      "Ignore": false,
+      "Symbol": "HOT"
     },
     {
-      "Symbol": "XEM",
-      "ForeignName" : "XEMBTC",
-      "Exchange" : "Binance"
+      "Exchange": "Binance",
+      "ForeignName": "ICXUSDT",
+      "Ignore": false,
+      "Symbol": "ICX"
     },
     {
-      "Symbol": "SNT",
-      "ForeignName" : "SNTBTC",
-      "Exchange" : "Binance"
+      "Exchange": "Binance",
+      "ForeignName": "ICXUSDT",
+      "Ignore": false,
+      "Symbol": "ICX"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "IOTAUSDT",
+      "Ignore": false,
+      "Symbol": "IOTA"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "LSKBNB",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "LSKBTC",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "LSKETH",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "LTCBTC",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "LTCUSDT",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "NANOBTC",
+      "Ignore": false,
+      "Symbol": "NANO"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "NPXSBTC",
+      "Ignore": false,
+      "Symbol": "NPXS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "NULSUSDT",
+      "Ignore": false,
+      "Symbol": "NULS"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "OMGUSDT",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ONTUSDT",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ONTUSDT",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "PAXUSDT",
+      "Ignore": false,
+      "Symbol": "PAX"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "QTUMBNB",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "QTUMBTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "QTUMETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "QTUMUSDT",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "REPBTC",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "REPETH",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "SCBTC",
+      "Ignore": false,
+      "Symbol": "SC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "SNTBTC",
+      "Ignore": false,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "STEEMBTC",
+      "Ignore": false,
+      "Symbol": "STEEM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "TRXUSDT",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "VETUSDT",
+      "Ignore": false,
+      "Symbol": "VET"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "WANBTC",
+      "Ignore": false,
+      "Symbol": "WAN"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "WAVESBTC",
+      "Ignore": false,
+      "Symbol": "WAVES"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "WAVESBTC",
+      "Ignore": false,
+      "Symbol": "WAVES"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "WTCBTC",
+      "Ignore": false,
+      "Symbol": "WTC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XEMBTC",
+      "Ignore": false,
+      "Symbol": "XEM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XLMBTC",
+      "Ignore": false,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XLMUSDT",
+      "Ignore": false,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XMRBTC",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XRPBTC",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XRPUSDT",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "XVGBTC",
+      "Ignore": false,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ZECBTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ZILBTC",
+      "Ignore": false,
+      "Symbol": "ZIL"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ZRXBTC",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "ZRXETH",
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }

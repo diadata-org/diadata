@@ -1,74 +1,88 @@
 {
   "Coins": [
     {
-      "Symbol": "BTC",
-      "ForeignName" : "BTCUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "BTCUSD",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETHUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "DASHBTC",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETHBTC",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "DASHETH",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTCUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "DASHUSD",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTCBTC",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "EOSBTC",
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTCETH",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "EOSETH",
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASHUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "EOSUSD",
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASHBTC",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "ETHBTC",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASHETH",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "ETHUSD",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName" : "EOSBTC",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "LTCBTC",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName" : "EOSUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "LTCETH",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName" : "EOSETH",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "LTCUSD",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName" : "OMGETH",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "OMGETH",
+      "Ignore": false,
+      "Symbol": "OMG"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName" : "OMGUSD",
-      "Exchange" : "Simex"
+      "Exchange": "Simex",
+      "ForeignName": "OMGUSD",
+      "Ignore": false,
+      "Symbol": "OMG"
     }
   ]
 }

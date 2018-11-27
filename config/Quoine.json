@@ -1,1639 +1,1966 @@
 {
   "Coins": [
     {
-      "Symbol": "ETH",
-      "ForeignName": "ETHCNY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHINR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FSN",
-      "ForeignName": "FSNQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITH",
-      "ForeignName": "MITHQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHHKD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHPHP",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHCNY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHINR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONT",
-      "ForeignName": "ONTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BRC",
-      "ForeignName": "BRCBCH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VUU",
-      "ForeignName": "VUUBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "AMLT",
-      "ForeignName": "AMLTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCIDR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPT",
-      "ForeignName": "TPTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONG",
-      "ForeignName": "ONGQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CAN",
-      "ForeignName": "CANBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XES",
-      "ForeignName": "XESQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CAN",
-      "ForeignName": "CANQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCHKD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GEN",
-      "ForeignName": "GENQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CMCT",
-      "ForeignName": "CMCTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPT",
-      "ForeignName": "TPTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTAUD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPIDR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GZE",
-      "ForeignName": "GZEETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GZE",
-      "ForeignName": "GZEQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CRPT",
-      "ForeignName": "CRPTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCAUD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCPHP",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHAUD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VET",
-      "ForeignName": "VETETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "EZT",
-      "ForeignName": "EZTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLUZ",
-      "ForeignName": "FLUZQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PAL",
-      "ForeignName": "PALBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PAL",
-      "ForeignName": "PALQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SER",
-      "ForeignName": "SERQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IXT",
-      "ForeignName": "IXTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XNK",
-      "ForeignName": "XNKETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BMC",
-      "ForeignName": "BMCQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VIO",
-      "ForeignName": "VIOQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SER",
-      "ForeignName": "SERBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "KRL",
-      "ForeignName": "KRLQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SHP",
-      "ForeignName": "SHPBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SHP",
-      "ForeignName": "SHPQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SGN",
-      "ForeignName": "SGNQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DACS",
-      "ForeignName": "DACSQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHIDR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZPR",
-      "ForeignName": "ZPRQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBT",
-      "ForeignName": "UBTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHHKD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "HAV",
-      "ForeignName": "HAVQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONG",
-      "ForeignName": "ONGBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PLC",
-      "ForeignName": "PLCQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "WIN",
-      "ForeignName": "WINBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IGNX",
-      "ForeignName": "IGNXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHPHP",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ONG",
-      "ForeignName": "ONGETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PWV",
-      "ForeignName": "PWVQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MGO",
-      "ForeignName": "MGOQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RBLX",
-      "ForeignName": "RBLXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MCO",
-      "ForeignName": "MCOQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UKG",
-      "ForeignName": "UKGQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ELY",
-      "ForeignName": "ELYQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IGNX",
-      "ForeignName": "IGNXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MT",
-      "ForeignName": "MTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SAL",
-      "ForeignName": "SALQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MT",
-      "ForeignName": "MTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "HERO",
-      "ForeignName": "HEROETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ELY",
-      "ForeignName": "ELYETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CMCT",
-      "ForeignName": "CMCTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PWV",
-      "ForeignName": "PWVETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VIO",
-      "ForeignName": "VIOBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LND",
-      "ForeignName": "LNDQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZECBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FDX",
-      "ForeignName": "FDXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BRC",
-      "ForeignName": "BRCQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PWV",
-      "ForeignName": "PWVBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTRN",
-      "ForeignName": "BTRNQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IGNX",
-      "ForeignName": "IGNXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ELY",
-      "ForeignName": "ELYBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLP",
-      "ForeignName": "FLPQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASHUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GET",
-      "ForeignName": "GETQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "THRT",
-      "ForeignName": "THRTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "WIN",
-      "ForeignName": "WINQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SNIP",
-      "ForeignName": "SNIPBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UKG",
-      "ForeignName": "UKGETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DRG",
-      "ForeignName": "DRGQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PAL",
-      "ForeignName": "PALETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SER",
-      "ForeignName": "SERETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SNIP",
-      "ForeignName": "SNIPQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ALX",
-      "ForeignName": "ALXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTX",
-      "ForeignName": "FTXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XEM",
-      "ForeignName": "XEMBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CAN",
-      "ForeignName": "CANETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "HERO",
-      "ForeignName": "HEROQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "PLC",
-      "ForeignName": "PLCETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SPHTX",
-      "ForeignName": "SPHTXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LALA",
-      "ForeignName": "LALAQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLIXX",
-      "ForeignName": "FLIXXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLP",
-      "ForeignName": "FLPETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CRPT",
-      "ForeignName": "CRPTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ADH",
-      "ForeignName": "ADHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CMCT",
-      "ForeignName": "CMCTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STAC",
-      "ForeignName": "STACBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ECH",
-      "ForeignName": "ECHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "1WO",
-      "ForeignName": "1WOQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ALX",
-      "ForeignName": "ALXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCINR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTT",
-      "ForeignName": "FTTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCCNY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IPSX",
-      "ForeignName": "IPSXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FSN",
-      "ForeignName": "FSNBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ADH",
-      "ForeignName": "ADHQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LDC",
-      "ForeignName": "LDCETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLIXX",
-      "ForeignName": "FLIXXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ECH",
-      "ForeignName": "ECHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LND",
-      "ForeignName": "LNDBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASHEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITH",
-      "ForeignName": "MITHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VZT",
-      "ForeignName": "VZTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IDH",
-      "ForeignName": "IDHQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FDX",
-      "ForeignName": "FDXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASHJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XNK",
-      "ForeignName": "XNKQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SPHTX",
-      "ForeignName": "SPHTXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XNK",
-      "ForeignName": "XNKBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STX",
-      "ForeignName": "STXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ALX",
-      "ForeignName": "ALXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IDH",
-      "ForeignName": "IDHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BRC",
-      "ForeignName": "BRCBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MTN",
-      "ForeignName": "MTNQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DENT",
-      "ForeignName": "DENTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTRN",
-      "ForeignName": "BTRNBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RBLX",
-      "ForeignName": "RBLXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STX",
-      "ForeignName": "STXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IDH",
-      "ForeignName": "IDHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLP",
-      "ForeignName": "FLPBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XES",
-      "ForeignName": "XESETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTX",
-      "ForeignName": "FTXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITX",
-      "ForeignName": "MITXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "OAX",
-      "ForeignName": "OAXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "1WO",
-      "ForeignName": "1WOETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GEN",
-      "ForeignName": "GENBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTCBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "EARTH",
-      "ForeignName": "EARTHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MTN",
-      "ForeignName": "MTNBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SPHTX",
-      "ForeignName": "SPHTXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STU",
-      "ForeignName": "STUETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPAY",
-      "ForeignName": "TPAYETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GET",
-      "ForeignName": "GETETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IHF",
-      "ForeignName": "IHFETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GEN",
-      "ForeignName": "GENETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETN",
-      "ForeignName": "ETNETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZPR",
-      "ForeignName": "ZPRETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STORJ",
-      "ForeignName": "STORJETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DRG",
-      "ForeignName": "DRGBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DACS",
-      "ForeignName": "DACSBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "EZT",
-      "ForeignName": "EZTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LIKE",
-      "ForeignName": "LIKEBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LIKE",
-      "ForeignName": "LIKEETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GZE",
-      "ForeignName": "GZEBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZCO",
-      "ForeignName": "ZCOBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ADH",
-      "ForeignName": "ADHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GET",
-      "ForeignName": "GETBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IHF",
-      "ForeignName": "IHFBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCHUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLIXX",
-      "ForeignName": "FLIXXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPAY",
-      "ForeignName": "TPAYBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MRK",
-      "ForeignName": "MRKBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCHSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCHJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STU",
-      "ForeignName": "STUBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UKG",
-      "ForeignName": "UKGBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRPJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XES",
-      "ForeignName": "XESBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RKT",
-      "ForeignName": "RKTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "WIN",
-      "ForeignName": "WINETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LALA",
-      "ForeignName": "LALABTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZCO",
-      "ForeignName": "ZCOQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IXT",
-      "ForeignName": "IXTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASHSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MTN",
-      "ForeignName": "MTNETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETN",
-      "ForeignName": "ETNQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITH",
-      "ForeignName": "MITHETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VUU",
-      "ForeignName": "VUUETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBTC",
-      "ForeignName": "UBTCETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GAT",
-      "ForeignName": "GATBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BMC",
-      "ForeignName": "BMCBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHIDR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "HERO",
-      "ForeignName": "HEROBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FCT",
-      "ForeignName": "FCTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VUU",
-      "ForeignName": "VUUQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VIO",
-      "ForeignName": "VIOETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FLUZ",
-      "ForeignName": "FLUZETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPT",
-      "ForeignName": "TPTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BTRN",
-      "ForeignName": "BTRNETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ENJ",
-      "ForeignName": "ENJBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MRK",
-      "ForeignName": "MRKQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STAC",
-      "ForeignName": "STACQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LIKE",
-      "ForeignName": "LIKEQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "TPAY",
-      "ForeignName": "TPAYQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "STU",
-      "ForeignName": "STUQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTX",
-      "ForeignName": "FTXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITX",
-      "ForeignName": "MITXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LND",
-      "ForeignName": "LNDETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ENJ",
-      "ForeignName": "ENJQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IXT",
-      "ForeignName": "IXTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GAT",
-      "ForeignName": "GATQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LDC",
-      "ForeignName": "LDCQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "EARTH",
-      "ForeignName": "EARTHQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "UBT",
-      "ForeignName": "UBTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DENT",
-      "ForeignName": "DENTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "VZT",
-      "ForeignName": "VZTQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "RBLX",
-      "ForeignName": "RBLXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BMC",
-      "ForeignName": "BMCETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MT",
-      "ForeignName": "MTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "REP",
-      "ForeignName": "REPBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FDX",
-      "ForeignName": "FDXQASH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FCT",
-      "ForeignName": "FCTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ZCO",
-      "ForeignName": "ZCOETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IND",
-      "ForeignName": "INDETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BRC",
-      "ForeignName": "BRCETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "GAT",
-      "ForeignName": "GATETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "EZT",
-      "ForeignName": "EZTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FSN",
-      "ForeignName": "FSNETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ENJ",
-      "ForeignName": "ENJETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MCO",
-      "ForeignName": "MCOBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DENT",
-      "ForeignName": "DENTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHJPY",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "QASH",
-      "ForeignName": "QASHEUR",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "KRL",
-      "ForeignName": "KRLBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SHP",
-      "ForeignName": "SHPETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "KRL",
-      "ForeignName": "KRLETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IPSX",
-      "ForeignName": "IPSXETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "THRT",
-      "ForeignName": "THRTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOSGD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SNIP",
-      "ForeignName": "SNIPETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SIX",
-      "ForeignName": "SIXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "1WO",
+      "Exchange": "Quoine",
       "ForeignName": "1WOBTC",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "1WO"
     },
     {
-      "Symbol": "QASH",
-      "ForeignName": "QASHAUD",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "1WOETH",
+      "Ignore": false,
+      "Symbol": "1WO"
     },
     {
-      "Symbol": "ETC",
-      "ForeignName": "ETCBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "1WOQASH",
+      "Ignore": false,
+      "Symbol": "1WO"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUMBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "ADHBTC",
+      "Ignore": false,
+      "Symbol": "ADH"
     },
     {
-      "Symbol": "NEO",
-      "ForeignName": "NEOJPY",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "ADHETH",
+      "Ignore": false,
+      "Symbol": "ADH"
     },
     {
-      "Symbol": "STAC",
-      "ForeignName": "STACETH",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "ADHQASH",
+      "Ignore": false,
+      "Symbol": "ADH"
     },
     {
-      "Symbol": "AMLT",
+      "Exchange": "Quoine",
+      "ForeignName": "ALXBTC",
+      "Ignore": false,
+      "Symbol": "ALX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ALXETH",
+      "Ignore": false,
+      "Symbol": "ALX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ALXQASH",
+      "Ignore": false,
+      "Symbol": "ALX"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "AMLTBTC",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "AMLT"
     },
     {
-      "Symbol": "MGO",
-      "ForeignName": "MGOBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "SAL",
-      "ForeignName": "SALETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOUSD",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTT",
-      "ForeignName": "FTTBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "CRPT",
-      "ForeignName": "CRPTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MRK",
-      "ForeignName": "MRKETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "LALA",
-      "ForeignName": "LALAETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "FTT",
-      "ForeignName": "FTTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "DRG",
-      "ForeignName": "DRGETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MITX",
-      "ForeignName": "MITXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "MGO",
-      "ForeignName": "MGOETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "IPSX",
-      "ForeignName": "IPSXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ETN",
-      "ForeignName": "ETNBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCHBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "HAV",
-      "ForeignName": "HAVBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "OAX",
-      "ForeignName": "OAXBTC",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "AMLT",
+      "Exchange": "Quoine",
       "ForeignName": "AMLTETH",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "AMLT"
     },
     {
-      "Symbol": "THRT",
-      "ForeignName": "THRTETH",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "AMLTQASH",
+      "Ignore": false,
+      "Symbol": "AMLT"
     },
     {
-      "Symbol": "SAL",
-      "ForeignName": "SALBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "BCHBTC",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "LDC",
-      "ForeignName": "LDCBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "BCHJPY",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "STORJ",
-      "ForeignName": "STORJBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "BCHSGD",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "DACS",
+      "Exchange": "Quoine",
+      "ForeignName": "BCHUSD",
+      "Ignore": false,
+      "Symbol": "BCH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BMCBTC",
+      "Ignore": false,
+      "Symbol": "BMC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BMCETH",
+      "Ignore": false,
+      "Symbol": "BMC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BMCQASH",
+      "Ignore": false,
+      "Symbol": "BMC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BRCBCH",
+      "Ignore": false,
+      "Symbol": "BRC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BRCBTC",
+      "Ignore": false,
+      "Symbol": "BRC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BRCETH",
+      "Ignore": false,
+      "Symbol": "BRC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BRCQASH",
+      "Ignore": false,
+      "Symbol": "BRC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCAUD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCCNY",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCEUR",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCHKD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCIDR",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCINR",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCJPY",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCPHP",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCSGD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCUSD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTRNBTC",
+      "Ignore": false,
+      "Symbol": "BTRN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTRNETH",
+      "Ignore": false,
+      "Symbol": "BTRN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTRNQASH",
+      "Ignore": false,
+      "Symbol": "BTRN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CANBTC",
+      "Ignore": false,
+      "Symbol": "CAN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CANETH",
+      "Ignore": false,
+      "Symbol": "CAN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CANQASH",
+      "Ignore": false,
+      "Symbol": "CAN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CMCTBTC",
+      "Ignore": false,
+      "Symbol": "CMCT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CMCTETH",
+      "Ignore": false,
+      "Symbol": "CMCT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CMCTQASH",
+      "Ignore": false,
+      "Symbol": "CMCT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CRPTBTC",
+      "Ignore": false,
+      "Symbol": "CRPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CRPTETH",
+      "Ignore": false,
+      "Symbol": "CRPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "CRPTQASH",
+      "Ignore": false,
+      "Symbol": "CRPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DACSBTC",
+      "Ignore": false,
+      "Symbol": "DACS"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "DACSETH",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "DACS"
     },
     {
-      "Symbol": "VET",
-      "ForeignName": "VETBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "DACSQASH",
+      "Ignore": false,
+      "Symbol": "DACS"
     },
     {
-      "Symbol": "QASH",
-      "ForeignName": "QASHSGD",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "DASHBTC",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "EARTH",
+      "Exchange": "Quoine",
+      "ForeignName": "DASHEUR",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DASHJPY",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DASHSGD",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DASHUSD",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DENTBTC",
+      "Ignore": false,
+      "Symbol": "DENT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DENTETH",
+      "Ignore": false,
+      "Symbol": "DENT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DENTQASH",
+      "Ignore": false,
+      "Symbol": "DENT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DRGBTC",
+      "Ignore": false,
+      "Symbol": "DRG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DRGETH",
+      "Ignore": false,
+      "Symbol": "DRG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "DRGQASH",
+      "Ignore": false,
+      "Symbol": "DRG"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "EARTHBTC",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "EARTH"
     },
     {
-      "Symbol": "XMR",
-      "ForeignName": "XMRBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "EARTHETH",
+      "Ignore": false,
+      "Symbol": "EARTH"
     },
     {
-      "Symbol": "ZPR",
-      "ForeignName": "ZPRBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "EARTHQASH",
+      "Ignore": false,
+      "Symbol": "EARTH"
     },
     {
-      "Symbol": "PLC",
-      "ForeignName": "PLCBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "ECHBTC",
+      "Ignore": false,
+      "Symbol": "ECH"
     },
     {
-      "Symbol": "SGN",
-      "ForeignName": "SGNETH",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "ECHETH",
+      "Ignore": false,
+      "Symbol": "ECH"
     },
     {
-      "Symbol": "VZT",
-      "ForeignName": "VZTETH",
-      "Exchange": "Quoine"
-    },
-    {
-      "Symbol": "ECH",
+      "Exchange": "Quoine",
       "ForeignName": "ECHQASH",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "ECH"
     },
     {
-      "Symbol": "FLUZ",
+      "Exchange": "Quoine",
+      "ForeignName": "ELYBTC",
+      "Ignore": false,
+      "Symbol": "ELY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ELYETH",
+      "Ignore": false,
+      "Symbol": "ELY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ELYQASH",
+      "Ignore": false,
+      "Symbol": "ELY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ENJBTC",
+      "Ignore": false,
+      "Symbol": "ENJ"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ENJETH",
+      "Ignore": false,
+      "Symbol": "ENJ"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ENJQASH",
+      "Ignore": false,
+      "Symbol": "ENJ"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETCBTC",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHAUD",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHBTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHCNY",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHEUR",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHHKD",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHIDR",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHINR",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHJPY",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHPHP",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHSGD",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETHUSD",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETNBTC",
+      "Ignore": false,
+      "Symbol": "ETN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETNETH",
+      "Ignore": false,
+      "Symbol": "ETN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETNQASH",
+      "Ignore": false,
+      "Symbol": "ETN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "EZTBTC",
+      "Ignore": false,
+      "Symbol": "EZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "EZTETH",
+      "Ignore": false,
+      "Symbol": "EZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "EZTQASH",
+      "Ignore": false,
+      "Symbol": "EZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FCTBTC",
+      "Ignore": false,
+      "Symbol": "FCT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FCTETH",
+      "Ignore": false,
+      "Symbol": "FCT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FDXBTC",
+      "Ignore": false,
+      "Symbol": "FDX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FDXETH",
+      "Ignore": false,
+      "Symbol": "FDX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FDXQASH",
+      "Ignore": false,
+      "Symbol": "FDX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLIXXBTC",
+      "Ignore": false,
+      "Symbol": "FLIXX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLIXXETH",
+      "Ignore": false,
+      "Symbol": "FLIXX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLIXXQASH",
+      "Ignore": false,
+      "Symbol": "FLIXX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLPBTC",
+      "Ignore": false,
+      "Symbol": "FLP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLPETH",
+      "Ignore": false,
+      "Symbol": "FLP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FLPQASH",
+      "Ignore": false,
+      "Symbol": "FLP"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "FLUZBTC",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "FLUZ"
     },
     {
-      "Symbol": "UBT",
-      "ForeignName": "UBTBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "FLUZETH",
+      "Ignore": false,
+      "Symbol": "FLUZ"
     },
     {
-      "Symbol": "SGN",
-      "ForeignName": "SGNBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "FLUZQASH",
+      "Ignore": false,
+      "Symbol": "FLUZ"
     },
     {
-      "Symbol": "IND",
-      "ForeignName": "INDBTC",
-      "Exchange": "Quoine"
+      "Exchange": "Quoine",
+      "ForeignName": "FSNBTC",
+      "Ignore": false,
+      "Symbol": "FSN"
     },
     {
-      "Symbol": "HAV",
+      "Exchange": "Quoine",
+      "ForeignName": "FSNETH",
+      "Ignore": false,
+      "Symbol": "FSN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FSNQASH",
+      "Ignore": false,
+      "Symbol": "FSN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTTBTC",
+      "Ignore": false,
+      "Symbol": "FTT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTTETH",
+      "Ignore": false,
+      "Symbol": "FTT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTTQASH",
+      "Ignore": false,
+      "Symbol": "FTT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTXBTC",
+      "Ignore": false,
+      "Symbol": "FTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTXETH",
+      "Ignore": false,
+      "Symbol": "FTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "FTXQASH",
+      "Ignore": false,
+      "Symbol": "FTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GATBTC",
+      "Ignore": false,
+      "Symbol": "GAT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GATETH",
+      "Ignore": false,
+      "Symbol": "GAT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GATQASH",
+      "Ignore": false,
+      "Symbol": "GAT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GENBTC",
+      "Ignore": false,
+      "Symbol": "GEN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GENETH",
+      "Ignore": false,
+      "Symbol": "GEN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GENQASH",
+      "Ignore": false,
+      "Symbol": "GEN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GETBTC",
+      "Ignore": false,
+      "Symbol": "GET"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GETETH",
+      "Ignore": false,
+      "Symbol": "GET"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GETQASH",
+      "Ignore": false,
+      "Symbol": "GET"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GZEBTC",
+      "Ignore": false,
+      "Symbol": "GZE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GZEETH",
+      "Ignore": false,
+      "Symbol": "GZE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "GZEQASH",
+      "Ignore": false,
+      "Symbol": "GZE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "HAVBTC",
+      "Ignore": false,
+      "Symbol": "HAV"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "HAVETH",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "HAV"
     },
     {
-      "Symbol": "MCO",
+      "Exchange": "Quoine",
+      "ForeignName": "HAVQASH",
+      "Ignore": false,
+      "Symbol": "HAV"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "HEROBTC",
+      "Ignore": false,
+      "Symbol": "HERO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "HEROETH",
+      "Ignore": false,
+      "Symbol": "HERO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "HEROQASH",
+      "Ignore": false,
+      "Symbol": "HERO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IDHBTC",
+      "Ignore": false,
+      "Symbol": "IDH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IDHETH",
+      "Ignore": false,
+      "Symbol": "IDH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IDHQASH",
+      "Ignore": false,
+      "Symbol": "IDH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IGNXBTC",
+      "Ignore": false,
+      "Symbol": "IGNX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IGNXETH",
+      "Ignore": false,
+      "Symbol": "IGNX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IGNXQASH",
+      "Ignore": false,
+      "Symbol": "IGNX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IHFBTC",
+      "Ignore": false,
+      "Symbol": "IHF"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IHFETH",
+      "Ignore": false,
+      "Symbol": "IHF"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "INDBTC",
+      "Ignore": false,
+      "Symbol": "IND"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "INDETH",
+      "Ignore": false,
+      "Symbol": "IND"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IPSXBTC",
+      "Ignore": false,
+      "Symbol": "IPSX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IPSXETH",
+      "Ignore": false,
+      "Symbol": "IPSX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IPSXQASH",
+      "Ignore": false,
+      "Symbol": "IPSX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IXTBTC",
+      "Ignore": false,
+      "Symbol": "IXT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IXTETH",
+      "Ignore": false,
+      "Symbol": "IXT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "IXTQASH",
+      "Ignore": false,
+      "Symbol": "IXT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "KRLBTC",
+      "Ignore": false,
+      "Symbol": "KRL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "KRLETH",
+      "Ignore": false,
+      "Symbol": "KRL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "KRLQASH",
+      "Ignore": false,
+      "Symbol": "KRL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LALABTC",
+      "Ignore": false,
+      "Symbol": "LALA"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LALAETH",
+      "Ignore": false,
+      "Symbol": "LALA"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LALAQASH",
+      "Ignore": false,
+      "Symbol": "LALA"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LDCBTC",
+      "Ignore": false,
+      "Symbol": "LDC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LDCETH",
+      "Ignore": false,
+      "Symbol": "LDC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LDCQASH",
+      "Ignore": false,
+      "Symbol": "LDC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LIKEBTC",
+      "Ignore": false,
+      "Symbol": "LIKE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LIKEETH",
+      "Ignore": false,
+      "Symbol": "LIKE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LIKEQASH",
+      "Ignore": false,
+      "Symbol": "LIKE"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LNDBTC",
+      "Ignore": false,
+      "Symbol": "LND"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LNDETH",
+      "Ignore": false,
+      "Symbol": "LND"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LNDQASH",
+      "Ignore": false,
+      "Symbol": "LND"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "LTCBTC",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MCOBTC",
+      "Ignore": false,
+      "Symbol": "MCO"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "MCOETH",
-      "Exchange": "Quoine"
+      "Ignore": false,
+      "Symbol": "MCO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MCOQASH",
+      "Ignore": false,
+      "Symbol": "MCO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MGOBTC",
+      "Ignore": false,
+      "Symbol": "MGO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MGOETH",
+      "Ignore": false,
+      "Symbol": "MGO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MGOQASH",
+      "Ignore": false,
+      "Symbol": "MGO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITHBTC",
+      "Ignore": false,
+      "Symbol": "MITH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITHETH",
+      "Ignore": false,
+      "Symbol": "MITH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITHQASH",
+      "Ignore": false,
+      "Symbol": "MITH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITXBTC",
+      "Ignore": false,
+      "Symbol": "MITX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITXETH",
+      "Ignore": false,
+      "Symbol": "MITX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MITXQASH",
+      "Ignore": false,
+      "Symbol": "MITX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MRKBTC",
+      "Ignore": false,
+      "Symbol": "MRK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MRKETH",
+      "Ignore": false,
+      "Symbol": "MRK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MRKQASH",
+      "Ignore": false,
+      "Symbol": "MRK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTBTC",
+      "Ignore": false,
+      "Symbol": "MT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTETH",
+      "Ignore": false,
+      "Symbol": "MT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTNBTC",
+      "Ignore": false,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTNETH",
+      "Ignore": false,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTNQASH",
+      "Ignore": false,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "MTQASH",
+      "Ignore": false,
+      "Symbol": "MT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOBTC",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOETH",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOEUR",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOJPY",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOSGD",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "NEOUSD",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "OAXBTC",
+      "Ignore": false,
+      "Symbol": "OAX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "OAXETH",
+      "Ignore": false,
+      "Symbol": "OAX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONGBTC",
+      "Ignore": false,
+      "Symbol": "ONG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONGETH",
+      "Ignore": false,
+      "Symbol": "ONG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONGQASH",
+      "Ignore": false,
+      "Symbol": "ONG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONTBTC",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONTETH",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONTQASH",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONTUSD",
+      "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PALBTC",
+      "Ignore": false,
+      "Symbol": "PAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PALETH",
+      "Ignore": false,
+      "Symbol": "PAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PALQASH",
+      "Ignore": false,
+      "Symbol": "PAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PLCBTC",
+      "Ignore": false,
+      "Symbol": "PLC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PLCETH",
+      "Ignore": false,
+      "Symbol": "PLC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PLCQASH",
+      "Ignore": false,
+      "Symbol": "PLC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PWVBTC",
+      "Ignore": false,
+      "Symbol": "PWV"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PWVETH",
+      "Ignore": false,
+      "Symbol": "PWV"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "PWVQASH",
+      "Ignore": false,
+      "Symbol": "PWV"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHAUD",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHBTC",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHCNY",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHETH",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHEUR",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHHKD",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHIDR",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHINR",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHJPY",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHPHP",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHSGD",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QASHUSD",
+      "Ignore": false,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMBTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMEUR",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMJPY",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMSGD",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "QTUMUSD",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RBLXBTC",
+      "Ignore": false,
+      "Symbol": "RBLX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RBLXETH",
+      "Ignore": false,
+      "Symbol": "RBLX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RBLXQASH",
+      "Ignore": false,
+      "Symbol": "RBLX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "REPBTC",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTAUD",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTBTC",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTETH",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTEUR",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTJPY",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTQASH",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTSGD",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "RKTUSD",
+      "Ignore": false,
+      "Symbol": "RKT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SALBTC",
+      "Ignore": false,
+      "Symbol": "SAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SALETH",
+      "Ignore": false,
+      "Symbol": "SAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SALQASH",
+      "Ignore": false,
+      "Symbol": "SAL"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SERBTC",
+      "Ignore": false,
+      "Symbol": "SER"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SERETH",
+      "Ignore": false,
+      "Symbol": "SER"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SERQASH",
+      "Ignore": false,
+      "Symbol": "SER"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SGNBTC",
+      "Ignore": false,
+      "Symbol": "SGN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SGNETH",
+      "Ignore": false,
+      "Symbol": "SGN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SGNQASH",
+      "Ignore": false,
+      "Symbol": "SGN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SHPBTC",
+      "Ignore": false,
+      "Symbol": "SHP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SHPETH",
+      "Ignore": false,
+      "Symbol": "SHP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SHPQASH",
+      "Ignore": false,
+      "Symbol": "SHP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SIXBTC",
+      "Ignore": false,
+      "Symbol": "SIX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SNIPBTC",
+      "Ignore": false,
+      "Symbol": "SNIP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SNIPETH",
+      "Ignore": false,
+      "Symbol": "SNIP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SNIPQASH",
+      "Ignore": false,
+      "Symbol": "SNIP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SPHTXBTC",
+      "Ignore": false,
+      "Symbol": "SPHTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SPHTXETH",
+      "Ignore": false,
+      "Symbol": "SPHTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "SPHTXQASH",
+      "Ignore": false,
+      "Symbol": "SPHTX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STACBTC",
+      "Ignore": false,
+      "Symbol": "STAC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STACETH",
+      "Ignore": false,
+      "Symbol": "STAC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STACQASH",
+      "Ignore": false,
+      "Symbol": "STAC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STORJBTC",
+      "Ignore": false,
+      "Symbol": "STORJ"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STORJETH",
+      "Ignore": false,
+      "Symbol": "STORJ"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STUBTC",
+      "Ignore": false,
+      "Symbol": "STU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STUETH",
+      "Ignore": false,
+      "Symbol": "STU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STUQASH",
+      "Ignore": false,
+      "Symbol": "STU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STXBTC",
+      "Ignore": false,
+      "Symbol": "STX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "STXETH",
+      "Ignore": false,
+      "Symbol": "STX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "THRTBTC",
+      "Ignore": false,
+      "Symbol": "THRT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "THRTETH",
+      "Ignore": false,
+      "Symbol": "THRT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "THRTQASH",
+      "Ignore": false,
+      "Symbol": "THRT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPAYBTC",
+      "Ignore": false,
+      "Symbol": "TPAY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPAYETH",
+      "Ignore": false,
+      "Symbol": "TPAY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPAYQASH",
+      "Ignore": false,
+      "Symbol": "TPAY"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPTBTC",
+      "Ignore": false,
+      "Symbol": "TPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPTETH",
+      "Ignore": false,
+      "Symbol": "TPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TPTQASH",
+      "Ignore": false,
+      "Symbol": "TPT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TRXBTC",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TRXETH",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTBTC",
+      "Ignore": false,
+      "Symbol": "UBT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCBTC",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCETH",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCJPY",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCQASH",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCSGD",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTCUSD",
+      "Ignore": false,
+      "Symbol": "UBTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTETH",
+      "Ignore": false,
+      "Symbol": "UBT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UBTQASH",
+      "Ignore": false,
+      "Symbol": "UBT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UKGBTC",
+      "Ignore": false,
+      "Symbol": "UKG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UKGETH",
+      "Ignore": false,
+      "Symbol": "UKG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "UKGQASH",
+      "Ignore": false,
+      "Symbol": "UKG"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VETBTC",
+      "Ignore": false,
+      "Symbol": "VET"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VETETH",
+      "Ignore": false,
+      "Symbol": "VET"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VIOBTC",
+      "Ignore": false,
+      "Symbol": "VIO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VIOETH",
+      "Ignore": false,
+      "Symbol": "VIO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VIOQASH",
+      "Ignore": false,
+      "Symbol": "VIO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VUUBTC",
+      "Ignore": false,
+      "Symbol": "VUU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VUUETH",
+      "Ignore": false,
+      "Symbol": "VUU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VUUQASH",
+      "Ignore": false,
+      "Symbol": "VUU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VZTBTC",
+      "Ignore": false,
+      "Symbol": "VZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VZTETH",
+      "Ignore": false,
+      "Symbol": "VZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "VZTQASH",
+      "Ignore": false,
+      "Symbol": "VZT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "WINBTC",
+      "Ignore": false,
+      "Symbol": "WIN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "WINETH",
+      "Ignore": false,
+      "Symbol": "WIN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "WINQASH",
+      "Ignore": false,
+      "Symbol": "WIN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XEMBTC",
+      "Ignore": false,
+      "Symbol": "XEM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XESBTC",
+      "Ignore": false,
+      "Symbol": "XES"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XESETH",
+      "Ignore": false,
+      "Symbol": "XES"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XESQASH",
+      "Ignore": false,
+      "Symbol": "XES"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XLMBTC",
+      "Ignore": false,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XLMETH",
+      "Ignore": false,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XMRBTC",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XNKBTC",
+      "Ignore": false,
+      "Symbol": "XNK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XNKETH",
+      "Ignore": false,
+      "Symbol": "XNK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XNKQASH",
+      "Ignore": false,
+      "Symbol": "XNK"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPBTC",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPEUR",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPIDR",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPJPY",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPQASH",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPSGD",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "XRPUSD",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZCOBTC",
+      "Ignore": false,
+      "Symbol": "ZCO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZCOETH",
+      "Ignore": false,
+      "Symbol": "ZCO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZCOQASH",
+      "Ignore": false,
+      "Symbol": "ZCO"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZECBTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZPRBTC",
+      "Ignore": false,
+      "Symbol": "ZPR"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZPRETH",
+      "Ignore": false,
+      "Symbol": "ZPR"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ZPRQASH",
+      "Ignore": false,
+      "Symbol": "ZPR"
     }
   ]
 }

@@ -1,639 +1,766 @@
 {
   "Coins": [
     {
-      "Symbol": "1ST",
+      "Exchange": "ZB",
       "ForeignName": "1stbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "1ST"
     },
     {
-      "Symbol": "1ST",
+      "Exchange": "ZB",
       "ForeignName": "1stusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "1ST"
     },
     {
-      "Symbol": "ADA",
+      "Exchange": "ZB",
       "ForeignName": "adabtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "ADA",
+      "Exchange": "ZB",
       "ForeignName": "adausdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "AE",
+      "Exchange": "ZB",
       "ForeignName": "aebtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "AE"
     },
     {
-      "Symbol": "AE",
+      "Exchange": "ZB",
       "ForeignName": "aeusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "AE"
     },
     {
-      "Symbol": "BAT",
+      "Exchange": "ZB",
       "ForeignName": "batbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "BAT",
+      "Exchange": "ZB",
       "ForeignName": "batusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "BCC",
+      "Exchange": "ZB",
       "ForeignName": "bccbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCC"
     },
     {
-      "Symbol": "BCC",
+      "Exchange": "ZB",
       "ForeignName": "bccusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCC"
     },
     {
-      "Symbol": "BCD",
+      "Exchange": "ZB",
       "ForeignName": "bcdbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCD"
     },
     {
-      "Symbol": "BCD",
+      "Exchange": "ZB",
       "ForeignName": "bcdusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCD"
     },
     {
-      "Symbol": "BCW",
+      "Exchange": "ZB",
       "ForeignName": "bcwbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCW"
     },
     {
-      "Symbol": "BCW",
+      "Exchange": "ZB",
       "ForeignName": "bcwusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCW"
     },
     {
-      "Symbol": "BCX",
+      "Exchange": "ZB",
       "ForeignName": "bcxbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCX"
     },
     {
-      "Symbol": "BCX",
+      "Exchange": "ZB",
       "ForeignName": "bcxusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BCX"
     },
     {
-      "Symbol": "BDS",
+      "Exchange": "ZB",
       "ForeignName": "bdsbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BDS"
     },
     {
-      "Symbol": "BITE",
+      "Exchange": "ZB",
       "ForeignName": "bitebtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BITE"
     },
     {
-      "Symbol": "BTC",
+      "Exchange": "ZB",
       "ForeignName": "btcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "BTH",
+      "Exchange": "ZB",
       "ForeignName": "bthbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTH"
     },
     {
-      "Symbol": "BTH",
+      "Exchange": "ZB",
       "ForeignName": "bthusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTH"
     },
     {
-      "Symbol": "BTM",
+      "Exchange": "ZB",
       "ForeignName": "btmbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTM"
     },
     {
-      "Symbol": "BTM",
+      "Exchange": "ZB",
       "ForeignName": "btmusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTM"
     },
     {
-      "Symbol": "BTN",
+      "Exchange": "ZB",
       "ForeignName": "btnbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTN"
     },
     {
-      "Symbol": "BTN",
+      "Exchange": "ZB",
       "ForeignName": "btnusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTN"
     },
     {
-      "Symbol": "BTP",
+      "Exchange": "ZB",
       "ForeignName": "btpbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTP"
     },
     {
-      "Symbol": "BTP",
+      "Exchange": "ZB",
       "ForeignName": "btpusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTP"
     },
     {
-      "Symbol": "BTS",
+      "Exchange": "ZB",
       "ForeignName": "btsbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTS"
     },
     {
-      "Symbol": "BTS",
+      "Exchange": "ZB",
       "ForeignName": "btsusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "BTS"
     },
     {
-      "Symbol": "CDC",
+      "Exchange": "ZB",
       "ForeignName": "cdcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "CDC"
     },
     {
-      "Symbol": "CDC",
+      "Exchange": "ZB",
       "ForeignName": "cdcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "CDC"
     },
     {
-      "Symbol": "CHAT",
+      "Exchange": "ZB",
       "ForeignName": "chatbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "CHAT"
     },
     {
-      "Symbol": "CHAT",
+      "Exchange": "ZB",
       "ForeignName": "chatusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "CHAT"
     },
     {
-      "Symbol": "DASH",
+      "Exchange": "ZB",
       "ForeignName": "dashbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "DASH",
+      "Exchange": "ZB",
       "ForeignName": "dashusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "DDM",
+      "Exchange": "ZB",
       "ForeignName": "ddmbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DDM"
     },
     {
-      "Symbol": "DDM",
+      "Exchange": "ZB",
       "ForeignName": "ddmusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DDM"
     },
     {
-      "Symbol": "DOGE",
+      "Exchange": "ZB",
       "ForeignName": "dogebtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DOGE"
     },
     {
-      "Symbol": "DOGE",
+      "Exchange": "ZB",
       "ForeignName": "dogeusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "DOGE"
     },
     {
-      "Symbol": "EDO",
+      "Exchange": "ZB",
       "ForeignName": "edobtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EDO"
     },
     {
-      "Symbol": "EDO",
+      "Exchange": "ZB",
       "ForeignName": "edousdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EDO"
     },
     {
-      "Symbol": "ENT",
+      "Exchange": "ZB",
       "ForeignName": "entbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ENT"
     },
     {
-      "Symbol": "ENT",
+      "Exchange": "ZB",
       "ForeignName": "entusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ENT"
     },
     {
-      "Symbol": "EOS",
+      "Exchange": "ZB",
       "ForeignName": "eosbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EOS"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName": "eosusdt",
-      "Exchange": "ZB"
-    },
-    {
-      "Symbol": "EOSDAC",
+      "Exchange": "ZB",
       "ForeignName": "eosdacbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EOSDAC"
     },
     {
-      "Symbol": "EOSDAC",
+      "Exchange": "ZB",
       "ForeignName": "eosdacusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EOSDAC"
     },
     {
-      "Symbol": "EPC",
+      "Exchange": "ZB",
+      "ForeignName": "eosusdt",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "epcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "EPC"
     },
     {
-      "Symbol": "ETC",
+      "Exchange": "ZB",
       "ForeignName": "etcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
-      "Symbol": "ETC",
+      "Exchange": "ZB",
       "ForeignName": "etcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
-      "Symbol": "ETH",
+      "Exchange": "ZB",
       "ForeignName": "ethbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "ETH",
+      "Exchange": "ZB",
       "ForeignName": "ethusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "FUN",
+      "Exchange": "ZB",
       "ForeignName": "funbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "FUN"
     },
     {
-      "Symbol": "FUN",
+      "Exchange": "ZB",
       "ForeignName": "funusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "FUN"
     },
     {
-      "Symbol": "GNT",
+      "Exchange": "ZB",
       "ForeignName": "gntbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "GNT"
     },
     {
-      "Symbol": "GNT",
+      "Exchange": "ZB",
       "ForeignName": "gntusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "GNT"
     },
     {
-      "Symbol": "GRAM",
+      "Exchange": "ZB",
       "ForeignName": "grambtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "GRAM"
     },
     {
-      "Symbol": "GRAM",
+      "Exchange": "ZB",
       "ForeignName": "gramusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "GRAM"
     },
     {
-      "Symbol": "HLC",
+      "Exchange": "ZB",
       "ForeignName": "hlcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HLC"
     },
     {
-      "Symbol": "HLC",
+      "Exchange": "ZB",
       "ForeignName": "hlcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HLC"
     },
     {
-      "Symbol": "HOTC",
+      "Exchange": "ZB",
       "ForeignName": "hotcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HOTC"
     },
     {
-      "Symbol": "HOTC",
+      "Exchange": "ZB",
       "ForeignName": "hotcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HOTC"
     },
     {
-      "Symbol": "HPY",
+      "Exchange": "ZB",
       "ForeignName": "hpybtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HPY"
     },
     {
-      "Symbol": "HPY",
+      "Exchange": "ZB",
       "ForeignName": "hpyusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HPY"
     },
     {
-      "Symbol": "HSR",
+      "Exchange": "ZB",
       "ForeignName": "hsrbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HSR"
     },
     {
-      "Symbol": "HSR",
+      "Exchange": "ZB",
       "ForeignName": "hsrusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "HSR"
     },
     {
-      "Symbol": "ICX",
+      "Exchange": "ZB",
       "ForeignName": "icxbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ICX"
     },
     {
-      "Symbol": "ICX",
+      "Exchange": "ZB",
       "ForeignName": "icxusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ICX"
     },
     {
-      "Symbol": "INK",
+      "Exchange": "ZB",
       "ForeignName": "inkbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "INK"
     },
     {
-      "Symbol": "INK",
+      "Exchange": "ZB",
       "ForeignName": "inkusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "INK"
     },
     {
-      "Symbol": "KAN",
+      "Exchange": "ZB",
       "ForeignName": "kanbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "KAN"
     },
     {
-      "Symbol": "KAN",
+      "Exchange": "ZB",
       "ForeignName": "kanusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "KAN"
     },
     {
-      "Symbol": "KNC",
+      "Exchange": "ZB",
       "ForeignName": "kncbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "KNC"
     },
     {
-      "Symbol": "KNC",
+      "Exchange": "ZB",
       "ForeignName": "kncusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "KNC"
     },
     {
-      "Symbol": "LBTC",
+      "Exchange": "ZB",
       "ForeignName": "lbtcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "LBTC"
     },
     {
-      "Symbol": "LBTC",
+      "Exchange": "ZB",
       "ForeignName": "lbtcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "LBTC"
     },
     {
-      "Symbol": "LTC",
+      "Exchange": "ZB",
       "ForeignName": "ltcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "LTC",
+      "Exchange": "ZB",
       "ForeignName": "ltcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "MANA",
+      "Exchange": "ZB",
       "ForeignName": "manabtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MANA"
     },
     {
-      "Symbol": "MANA",
+      "Exchange": "ZB",
       "ForeignName": "manausdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MANA"
     },
     {
-      "Symbol": "MCO",
+      "Exchange": "ZB",
       "ForeignName": "mcobtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MCO"
     },
     {
-      "Symbol": "MCO",
+      "Exchange": "ZB",
       "ForeignName": "mcousdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MCO"
     },
     {
-      "Symbol": "MITH",
+      "Exchange": "ZB",
       "ForeignName": "mithbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MITH"
     },
     {
-      "Symbol": "MITH",
+      "Exchange": "ZB",
       "ForeignName": "mithusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MITH"
     },
     {
-      "Symbol": "MTL",
+      "Exchange": "ZB",
       "ForeignName": "mtlbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MTL"
     },
     {
-      "Symbol": "MTL",
+      "Exchange": "ZB",
       "ForeignName": "mtlusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "MTL"
     },
     {
-      "Symbol": "NEO",
+      "Exchange": "ZB",
       "ForeignName": "neobtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "NEO"
     },
     {
-      "Symbol": "NEO",
+      "Exchange": "ZB",
       "ForeignName": "neousdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "NEO"
     },
     {
-      "Symbol": "OMG",
+      "Exchange": "ZB",
       "ForeignName": "omgbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "OMG"
     },
     {
-      "Symbol": "OMG",
+      "Exchange": "ZB",
       "ForeignName": "omgusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "OMG"
     },
     {
-      "Symbol": "QTUM",
+      "Exchange": "ZB",
       "ForeignName": "qtumbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "QTUM",
+      "Exchange": "ZB",
       "ForeignName": "qtumusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "QUN",
+      "Exchange": "ZB",
       "ForeignName": "qunbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "QUN"
     },
     {
-      "Symbol": "QUN",
+      "Exchange": "ZB",
       "ForeignName": "qunusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "QUN"
     },
     {
-      "Symbol": "RCN",
+      "Exchange": "ZB",
       "ForeignName": "rcnbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "RCN"
     },
     {
-      "Symbol": "RCN",
+      "Exchange": "ZB",
       "ForeignName": "rcnusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "RCN"
     },
     {
-      "Symbol": "SAFE",
+      "Exchange": "ZB",
       "ForeignName": "safebtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SAFE"
     },
     {
-      "Symbol": "SAFE",
+      "Exchange": "ZB",
       "ForeignName": "safeusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SAFE"
     },
     {
-      "Symbol": "SBTC",
+      "Exchange": "ZB",
       "ForeignName": "sbtcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SBTC"
     },
     {
-      "Symbol": "SBTC",
+      "Exchange": "ZB",
       "ForeignName": "sbtcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SBTC"
     },
     {
-      "Symbol": "SLT",
+      "Exchange": "ZB",
       "ForeignName": "sltbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SLT"
     },
     {
-      "Symbol": "SLT",
+      "Exchange": "ZB",
       "ForeignName": "sltusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SLT"
     },
     {
-      "Symbol": "SNT",
+      "Exchange": "ZB",
       "ForeignName": "sntbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SNT"
     },
     {
-      "Symbol": "SNT",
+      "Exchange": "ZB",
       "ForeignName": "sntusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SNT"
     },
     {
-      "Symbol": "SUB",
+      "Exchange": "ZB",
       "ForeignName": "subbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SUB"
     },
     {
-      "Symbol": "SUB",
+      "Exchange": "ZB",
       "ForeignName": "subusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "SUB"
     },
     {
-      "Symbol": "TOPC",
+      "Exchange": "ZB",
       "ForeignName": "topcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TOPC"
     },
     {
-      "Symbol": "TOPC",
+      "Exchange": "ZB",
       "ForeignName": "topcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TOPC"
     },
     {
-      "Symbol": "TRUE",
+      "Exchange": "ZB",
       "ForeignName": "truebtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TRUE"
     },
     {
-      "Symbol": "TRUE",
+      "Exchange": "ZB",
       "ForeignName": "trueusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TRUE"
     },
     {
-      "Symbol": "TV",
+      "Exchange": "ZB",
       "ForeignName": "tvbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TV"
     },
     {
-      "Symbol": "TV",
+      "Exchange": "ZB",
       "ForeignName": "tvusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "TV"
     },
     {
-      "Symbol": "UBTC",
+      "Exchange": "ZB",
       "ForeignName": "ubtcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "UBTC"
     },
     {
-      "Symbol": "UBTC",
+      "Exchange": "ZB",
       "ForeignName": "ubtcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "UBTC"
     },
     {
-      "Symbol": "XEM",
+      "Exchange": "ZB",
       "ForeignName": "xembtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XEM"
     },
     {
-      "Symbol": "XEM",
+      "Exchange": "ZB",
       "ForeignName": "xemusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XEM"
     },
     {
-      "Symbol": "XLM",
+      "Exchange": "ZB",
       "ForeignName": "xlmbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XLM"
     },
     {
-      "Symbol": "XLM",
+      "Exchange": "ZB",
       "ForeignName": "xlmusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XLM"
     },
     {
-      "Symbol": "XRP",
+      "Exchange": "ZB",
       "ForeignName": "xrpbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XRP"
     },
     {
-      "Symbol": "XRP",
+      "Exchange": "ZB",
       "ForeignName": "xrpusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XRP"
     },
     {
-      "Symbol": "XUC",
+      "Exchange": "ZB",
       "ForeignName": "xucbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XUC"
     },
     {
-      "Symbol": "XWC",
+      "Exchange": "ZB",
       "ForeignName": "xwcbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XWC"
     },
     {
-      "Symbol": "XWC",
+      "Exchange": "ZB",
       "ForeignName": "xwcusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "XWC"
     },
     {
-      "Symbol": "ZB",
+      "Exchange": "ZB",
       "ForeignName": "zbbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ZB"
     },
     {
-      "Symbol": "ZB",
+      "Exchange": "ZB",
       "ForeignName": "zbusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ZB"
     },
     {
-      "Symbol": "ZRX",
+      "Exchange": "ZB",
       "ForeignName": "zrxbtc",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ZRX"
     },
     {
-      "Symbol": "ZRX",
+      "Exchange": "ZB",
       "ForeignName": "zrxusdt",
-      "Exchange": "ZB"
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }

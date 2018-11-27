@@ -1,214 +1,256 @@
 {
   "Coins": [
     {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCH_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "DOGE",
-      "ForeignName": "DOGE_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOS_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRP_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZEC_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEO_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "XMR",
-      "ForeignName": "XMR_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "MIOTA",
-      "ForeignName": "IOTA_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "DOGE",
-      "ForeignName": "DOGE_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOS_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BCH",
-      "ForeignName": "BCH_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASH_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "OMG",
-      "ForeignName": "OMG_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ADA",
+      "Exchange": "GateIO",
       "ForeignName": "ADA_BTC",
-      "Exchange": "GateIO"
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "EOS",
-      "ForeignName": "EOS_ETH",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BAT",
+      "Exchange": "GateIO",
       "ForeignName": "BAT_ETH",
-      "Exchange": "GateIO"
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_ETH",
-      "Exchange": "GateIO"
+      "Exchange": "GateIO",
+      "ForeignName": "BCH_BTC",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName": "OMG_ETH",
-      "Exchange": "GateIO"
+      "Exchange": "GateIO",
+      "ForeignName": "BCH_USDT",
+      "Ignore": false,
+      "Symbol": "BCH"
     },
     {
-      "Symbol": "VET",
-      "ForeignName": "VET_ETH",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZ_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZ_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZ_ETH",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRX_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRX_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "ZRX",
-      "ForeignName": "ZRX_ETH",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSK_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "LSK",
-      "ForeignName": "LSK_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "DCR",
-      "ForeignName": "DCR_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "DCR",
-      "ForeignName": "DCR_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_BTC",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "QTUM",
-      "ForeignName": "QTUM_ETH",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCN_USDT",
-      "Exchange": "GateIO"
-    },
-    {
-      "Symbol": "BCN",
+      "Exchange": "GateIO",
       "ForeignName": "BCN_BTC",
-      "Exchange": "GateIO"
+      "Ignore": false,
+      "Symbol": "BCN"
     },
     {
-      "Symbol": "BTM",
+      "Exchange": "GateIO",
+      "ForeignName": "BCN_USDT",
+      "Ignore": false,
+      "Symbol": "BCN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "BTC_USDT",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BTM_USDT",
-      "Exchange": "GateIO"
+      "Ignore": false,
+      "Symbol": "BTM"
     },
     {
-      "Symbol": "NAS",
+      "Exchange": "GateIO",
+      "ForeignName": "DASH_BTC",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DCR_BTC",
+      "Ignore": false,
+      "Symbol": "DCR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DCR_USDT",
+      "Ignore": false,
+      "Symbol": "DCR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DOGE_BTC",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DOGE_USDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "EOS_BTC",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "EOS_ETH",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "EOS_USDT",
+      "Ignore": false,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ETC_BTC",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ETC_ETH",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ETC_USDT",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ETH_BTC",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ETH_USDT",
+      "Ignore": false,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "IOTA_USDT",
+      "Ignore": false,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "LSK_BTC",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "LSK_USDT",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "LTC_USDT",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "NAS_USDT",
-      "Exchange": "GateIO"
+      "Ignore": false,
+      "Symbol": "NAS"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "NEO_USDT",
+      "Ignore": false,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OMG_BTC",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OMG_ETH",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "QTUM_BTC",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "QTUM_ETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "QTUM_USDT",
+      "Ignore": false,
+      "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "VET_ETH",
+      "Ignore": false,
+      "Symbol": "VET"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "XMR_USDT",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "XRP_USDT",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "XTZ_BTC",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "XTZ_ETH",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "XTZ_USDT",
+      "Ignore": false,
+      "Symbol": "XTZ"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ZEC_USDT",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ZRX_BTC",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ZRX_ETH",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ZRX_USDT",
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }

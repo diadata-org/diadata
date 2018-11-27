@@ -1,254 +1,304 @@
 {
   "Coins": [
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETH-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ADA-BTC",
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "XRP",
-      "ForeignName" : "XRP-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ADA-ETH",
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "XRP",
-      "ForeignName" : "XRP-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ADA-USDT",
+      "Ignore": false,
+      "Symbol": "ADA"
     },
     {
-      "Symbol": "BAT",
-      "ForeignName" : "BAT-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BAT-BTC",
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "NEO",
-      "ForeignName" : "NEO-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BAT-ETH",
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASH-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BAT-USDT",
+      "Ignore": false,
+      "Symbol": "BAT"
     },
     {
-      "Symbol": "ADA",
-      "ForeignName" : "ADA-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BNT-ETH",
+      "Ignore": false,
+      "Symbol": "BNT"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName" : "OMG-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BSV-BTC",
+      "Ignore": false,
+      "Symbol": "BSV"
     },
     {
-      "Symbol": "TRX",
-      "ForeignName" : "TRX-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "BTC-USDT",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
-      "Symbol": "ETC",
-      "ForeignName" : "ETC-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "DASH-ETH",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "REP",
-      "ForeignName" : "REP-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "DASH-USDT",
+      "Ignore": false,
+      "Symbol": "DASH"
     },
     {
-      "Symbol": "SNT",
-      "ForeignName" : "SNT-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "DOGE-BTC",
+      "Ignore": false,
+      "Symbol": "DOGE"
     },
     {
-      "Symbol": "BNT",
-      "ForeignName" : "BNT-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "DOGE-USDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
     },
     {
-      "Symbol": "MCO",
-      "ForeignName" : "MCO-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "DTA-BTC",
+      "Ignore": false,
+      "Symbol": "DTA"
     },
     {
-      "Symbol": "ENG",
-      "ForeignName" : "ENG-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ENG-BTC",
+      "Ignore": false,
+      "Symbol": "ENG"
     },
     {
-      "Symbol": "TUSD",
-      "ForeignName" : "TUSD-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ENG-ETH",
+      "Ignore": false,
+      "Symbol": "ENG"
     },
     {
-      "Symbol": "ZEC",
-      "ForeignName" : "ZEC-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ETC-ETH",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTC-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ETC-USDT",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
-      "Symbol": "XMR",
-      "ForeignName" : "XMR-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ETH-BTC",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "QTUM",
-      "ForeignName" : "QTUM-ETH",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ETH-USDT",
+      "Ignore": false,
+      "Symbol": "ETH"
     },
     {
-      "Symbol": "BAT",
-      "ForeignName" : "BAT-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "FCT-BTC",
+      "Ignore": false,
+      "Symbol": "FCT"
     },
     {
-      "Symbol": "DOGE",
-      "ForeignName" : "DOGE-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "LTC-BTC",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "ADA",
-      "ForeignName" : "ADA-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "LTC-ETH",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "XMR",
-      "ForeignName" : "XMR-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "LTC-USDT",
+      "Ignore": false,
+      "Symbol": "LTC"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTC-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "MCO-ETH",
+      "Ignore": false,
+      "Symbol": "MCO"
     },
     {
-      "Symbol": "ZEC",
-      "ForeignName" : "ZEC-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "NEO-BTC",
+      "Ignore": false,
+      "Symbol": "NEO"
     },
     {
-      "Symbol": "NEO",
-      "ForeignName" : "NEO-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "NEO-ETH",
+      "Ignore": false,
+      "Symbol": "NEO"
     },
     {
-      "Symbol": "ENG",
-      "ForeignName" : "ENG-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "NEO-USDT",
+      "Ignore": false,
+      "Symbol": "NEO"
     },
     {
-      "Symbol": "STORJ",
-      "ForeignName" : "STORJ-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "OMG-ETH",
+      "Ignore": false,
+      "Symbol": "OMG"
     },
     {
-      "Symbol": "TUSD",
-      "ForeignName" : "TUSD-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "OMG-USDT",
+      "Ignore": false,
+      "Symbol": "OMG"
     },
     {
-      "Symbol": "BSV",
-      "ForeignName" : "BSV-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "QTUM-ETH",
+      "Ignore": false,
+      "Symbol": "QTUM"
     },
     {
-      "Symbol": "BTC",
-      "ForeignName" : "BTC-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "REP-ETH",
+      "Ignore": false,
+      "Symbol": "REP"
     },
     {
-      "Symbol": "ETH",
-      "ForeignName" : "ETH-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "SNT-ETH",
+      "Ignore": false,
+      "Symbol": "SNT"
     },
     {
-      "Symbol": "XRP",
-      "ForeignName" : "XRP-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "SRN-BTC",
+      "Ignore": false,
+      "Symbol": "SRN"
     },
     {
-      "Symbol": "TUSD",
-      "ForeignName" : "TUSD-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "STORJ-BTC",
+      "Ignore": false,
+      "Symbol": "STORJ"
     },
     {
-      "Symbol": "TRX",
-      "ForeignName" : "TRX-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "TRX-ETH",
+      "Ignore": false,
+      "Symbol": "TRX"
     },
     {
-      "Symbol": "NEO",
-      "ForeignName" : "NEO-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "TRX-USDT",
+      "Ignore": false,
+      "Symbol": "TRX"
     },
     {
-      "Symbol": "ZEC",
-      "ForeignName" : "ZEC-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "TUSD-BTC",
+      "Ignore": false,
+      "Symbol": "TUSD"
     },
     {
-      "Symbol": "LTC",
-      "ForeignName" : "LTC-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "TUSD-ETH",
+      "Ignore": false,
+      "Symbol": "TUSD"
     },
     {
-      "Symbol": "ADA",
-      "ForeignName" : "ADA-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "TUSD-USDT",
+      "Ignore": false,
+      "Symbol": "TUSD"
     },
     {
-      "Symbol": "XMR",
-      "ForeignName" : "XMR-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XMR-BTC",
+      "Ignore": false,
+      "Symbol": "XMR"
     },
     {
-      "Symbol": "ETC",
-      "ForeignName" : "ETC-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XMR-ETH",
+      "Ignore": false,
+      "Symbol": "XMR"
     },
     {
-      "Symbol": "DASH",
-      "ForeignName" : "DASH-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XMR-USDT",
+      "Ignore": false,
+      "Symbol": "XMR"
     },
     {
-      "Symbol": "DOGE",
-      "ForeignName" : "DOGE-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XRP-BTC",
+      "Ignore": false,
+      "Symbol": "XRP"
     },
     {
-      "Symbol": "OMG",
-      "ForeignName" : "OMG-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XRP-ETH",
+      "Ignore": false,
+      "Symbol": "XRP"
     },
     {
-      "Symbol": "BAT",
-      "ForeignName" : "BAT-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "XRP-USDT",
+      "Ignore": false,
+      "Symbol": "XRP"
     },
     {
-      "Symbol": "ZRX",
-      "ForeignName" : "ZRX-USDT",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ZEC-BTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
     },
     {
-      "Symbol": "DTA",
-      "ForeignName" : "DTA-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ZEC-ETH",
+      "Ignore": false,
+      "Symbol": "ZEC"
     },
     {
-      "Symbol": "SRN",
-      "ForeignName" : "SRN-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ZEC-USDT",
+      "Ignore": false,
+      "Symbol": "ZEC"
     },
     {
-      "Symbol": "FCT",
-      "ForeignName" : "FCT-BTC",
-      "Exchange" : "Bittrex"
+      "Exchange": "Bittrex",
+      "ForeignName": "ZRX-USDT",
+      "Ignore": false,
+      "Symbol": "ZRX"
     }
   ]
 }
