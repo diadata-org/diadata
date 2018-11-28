@@ -2,159 +2,1485 @@
   "Coins": [
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "BCCUSD",
-      "Ignore": false,
-      "Symbol": "BCC"
+      "ForeignName": "agibtc",
+      "Ignore": true,
+      "Symbol": "AGI"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "BCHUSD",
-      "Ignore": false,
-      "Symbol": "BCH"
+      "ForeignName": "agieth",
+      "Ignore": true,
+      "Symbol": "AGI"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "BTCUSD",
-      "Ignore": false,
+      "ForeignName": "agiusd",
+      "Ignore": true,
+      "Symbol": "AGI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "aidbtc",
+      "Ignore": true,
+      "Symbol": "AID"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "aideth",
+      "Ignore": true,
+      "Symbol": "AID"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "aidusd",
+      "Ignore": true,
+      "Symbol": "AID"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "antbtc",
+      "Ignore": true,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "anteth",
+      "Ignore": true,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "antusd",
+      "Ignore": true,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "atmbtc",
+      "Ignore": true,
+      "Symbol": "ATM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "atmeth",
+      "Ignore": true,
+      "Symbol": "ATM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "atmusd",
+      "Ignore": true,
+      "Symbol": "ATM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "aucbtc",
+      "Ignore": true,
+      "Symbol": "AUC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "auceth",
+      "Ignore": true,
+      "Symbol": "AUC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "aucusd",
+      "Ignore": true,
+      "Symbol": "AUC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "avtbtc",
+      "Ignore": true,
+      "Symbol": "AVT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "avteth",
+      "Ignore": true,
+      "Symbol": "AVT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "avtusd",
+      "Ignore": true,
+      "Symbol": "AVT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "batbtc",
+      "Ignore": true,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bateth",
+      "Ignore": true,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "batusd",
+      "Ignore": true,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bbneth",
+      "Ignore": true,
+      "Symbol": "BBN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bbnusd",
+      "Ignore": true,
+      "Symbol": "BBN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bcibtc",
+      "Ignore": true,
+      "Symbol": "BCI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bciusd",
+      "Ignore": true,
+      "Symbol": "BCI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bftbtc",
+      "Ignore": true,
+      "Symbol": "BFT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bfteth",
+      "Ignore": true,
+      "Symbol": "BFT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bftusd",
+      "Ignore": true,
+      "Symbol": "BFT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bntbtc",
+      "Ignore": true,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bnteth",
+      "Ignore": true,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "bntusd",
+      "Ignore": true,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "boxeth",
+      "Ignore": true,
+      "Symbol": "BOX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "boxusd",
+      "Ignore": true,
+      "Symbol": "BOX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "btceur",
+      "Ignore": true,
       "Symbol": "BTC"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "BTGUSD",
-      "Ignore": false,
+      "ForeignName": "btcgbp",
+      "Ignore": true,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "btcjpy",
+      "Ignore": true,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "btcusd",
+      "Ignore": true,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "btgbtc",
+      "Ignore": true,
       "Symbol": "BTG"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "DSHUSD",
-      "Ignore": false,
-      "Symbol": "DASH"
+      "ForeignName": "btgusd",
+      "Ignore": true,
+      "Symbol": "BTG"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "EOSUSD",
-      "Ignore": false,
+      "ForeignName": "cbtbtc",
+      "Ignore": true,
+      "Symbol": "CBT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cbteth",
+      "Ignore": true,
+      "Symbol": "CBT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cbtusd",
+      "Ignore": true,
+      "Symbol": "CBT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cfibtc",
+      "Ignore": true,
+      "Symbol": "CFI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cfieth",
+      "Ignore": true,
+      "Symbol": "CFI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cfiusd",
+      "Ignore": true,
+      "Symbol": "CFI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cndbtc",
+      "Ignore": true,
+      "Symbol": "CND"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cndeth",
+      "Ignore": true,
+      "Symbol": "CND"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cndusd",
+      "Ignore": true,
+      "Symbol": "CND"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cnneth",
+      "Ignore": true,
+      "Symbol": "CNN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "cnnusd",
+      "Ignore": true,
+      "Symbol": "CNN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ctxbtc",
+      "Ignore": true,
+      "Symbol": "CTX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ctxeth",
+      "Ignore": true,
+      "Symbol": "CTX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ctxusd",
+      "Ignore": true,
+      "Symbol": "CTX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "daibtc",
+      "Ignore": true,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "daieth",
+      "Ignore": true,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "daiusd",
+      "Ignore": true,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "datbtc",
+      "Ignore": true,
+      "Symbol": "DAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dateth",
+      "Ignore": true,
+      "Symbol": "DAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "datusd",
+      "Ignore": true,
+      "Symbol": "DAT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dgbbtc",
+      "Ignore": true,
+      "Symbol": "DGB"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dgbusd",
+      "Ignore": true,
+      "Symbol": "DGB"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dgxeth",
+      "Ignore": true,
+      "Symbol": "DGX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dgxusd",
+      "Ignore": true,
+      "Symbol": "DGX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dshbtc",
+      "Ignore": true,
+      "Symbol": "DSH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dshusd",
+      "Ignore": true,
+      "Symbol": "DSH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dtabtc",
+      "Ignore": true,
+      "Symbol": "DTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dtaeth",
+      "Ignore": true,
+      "Symbol": "DTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dtausd",
+      "Ignore": true,
+      "Symbol": "DTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dthbtc",
+      "Ignore": true,
+      "Symbol": "DTH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dtheth",
+      "Ignore": true,
+      "Symbol": "DTH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "dthusd",
+      "Ignore": true,
+      "Symbol": "DTH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "edobtc",
+      "Ignore": true,
+      "Symbol": "EDO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "edoeth",
+      "Ignore": true,
+      "Symbol": "EDO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "edousd",
+      "Ignore": true,
+      "Symbol": "EDO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "elfbtc",
+      "Ignore": true,
+      "Symbol": "ELF"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "elfeth",
+      "Ignore": true,
+      "Symbol": "ELF"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "elfusd",
+      "Ignore": true,
+      "Symbol": "ELF"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "enjeth",
+      "Ignore": true,
+      "Symbol": "ENJ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "enjusd",
+      "Ignore": true,
+      "Symbol": "ENJ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "eosbtc",
+      "Ignore": true,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "ETCUSD",
-      "Ignore": false,
+      "ForeignName": "eoseth",
+      "Ignore": true,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "eoseur",
+      "Ignore": true,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "eosgbp",
+      "Ignore": true,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "eosjpy",
+      "Ignore": true,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "eosusd",
+      "Ignore": true,
+      "Symbol": "EOS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "essbtc",
+      "Ignore": true,
+      "Symbol": "ESS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "esseth",
+      "Ignore": true,
+      "Symbol": "ESS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "essusd",
+      "Ignore": true,
+      "Symbol": "ESS"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "etcbtc",
+      "Ignore": true,
       "Symbol": "ETC"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "ETHBTC",
-      "Ignore": false,
+      "ForeignName": "etcusd",
+      "Ignore": true,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ethbtc",
+      "Ignore": true,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "ETHUSD",
-      "Ignore": false,
+      "ForeignName": "etheur",
+      "Ignore": true,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "ETPUSD",
-      "Ignore": false,
+      "ForeignName": "ethgbp",
+      "Ignore": true,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ethjpy",
+      "Ignore": true,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ethusd",
+      "Ignore": true,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "etpbtc",
+      "Ignore": true,
       "Symbol": "ETP"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "IOTUSD",
-      "Ignore": false,
+      "ForeignName": "etpeth",
+      "Ignore": true,
+      "Symbol": "ETP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "etpusd",
+      "Ignore": true,
+      "Symbol": "ETP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "fsnbtc",
+      "Ignore": true,
+      "Symbol": "FSN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "fsneth",
+      "Ignore": true,
+      "Symbol": "FSN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "fsnusd",
+      "Ignore": true,
+      "Symbol": "FSN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "funbtc",
+      "Ignore": true,
+      "Symbol": "FUN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "funeth",
+      "Ignore": true,
+      "Symbol": "FUN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "funusd",
+      "Ignore": true,
+      "Symbol": "FUN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "gntbtc",
+      "Ignore": true,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "gnteth",
+      "Ignore": true,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "gntusd",
+      "Ignore": true,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "inteth",
+      "Ignore": true,
+      "Symbol": "INT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "intusd",
+      "Ignore": true,
+      "Symbol": "INT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iosbtc",
+      "Ignore": true,
+      "Symbol": "IOST"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ioseth",
+      "Ignore": true,
+      "Symbol": "IOST"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iosusd",
+      "Ignore": true,
+      "Symbol": "IOST"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iotbtc",
+      "Ignore": true,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "LTCUSD",
-      "Ignore": false,
+      "ForeignName": "ioteth",
+      "Ignore": true,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ioteur",
+      "Ignore": true,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iotgbp",
+      "Ignore": true,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iotjpy",
+      "Ignore": true,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "iotusd",
+      "Ignore": true,
+      "Symbol": "MIOTA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lrcbtc",
+      "Ignore": true,
+      "Symbol": "LRC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lrceth",
+      "Ignore": true,
+      "Symbol": "LRC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lrcusd",
+      "Ignore": true,
+      "Symbol": "LRC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "ltcbtc",
+      "Ignore": true,
       "Symbol": "LTC"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "NEOUSD",
-      "Ignore": false,
+      "ForeignName": "ltcusd",
+      "Ignore": true,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lymbtc",
+      "Ignore": true,
+      "Symbol": "LYM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lymeth",
+      "Ignore": true,
+      "Symbol": "LYM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "lymusd",
+      "Ignore": true,
+      "Symbol": "LYM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "maneth",
+      "Ignore": true,
+      "Symbol": "MAN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "manusd",
+      "Ignore": true,
+      "Symbol": "MAN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mgoeth",
+      "Ignore": true,
+      "Symbol": "MGO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mgousd",
+      "Ignore": true,
+      "Symbol": "MGO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mkrbtc",
+      "Ignore": true,
+      "Symbol": "MKR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mkreth",
+      "Ignore": true,
+      "Symbol": "MKR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mkrusd",
+      "Ignore": true,
+      "Symbol": "MKR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mlneth",
+      "Ignore": true,
+      "Symbol": "MLN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mlnusd",
+      "Ignore": true,
+      "Symbol": "MLN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mtnbtc",
+      "Ignore": true,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mtneth",
+      "Ignore": true,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "mtnusd",
+      "Ignore": true,
+      "Symbol": "MTN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "neobtc",
+      "Ignore": true,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "QTUMBTC",
-      "Ignore": false,
+      "ForeignName": "neoeth",
+      "Ignore": true,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "neoeur",
+      "Ignore": true,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "neogbp",
+      "Ignore": true,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "neojpy",
+      "Ignore": true,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "neousd",
+      "Ignore": true,
+      "Symbol": "NEO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "nioeth",
+      "Ignore": true,
+      "Symbol": "NIO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "niousd",
+      "Ignore": true,
+      "Symbol": "NIO"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "odebtc",
+      "Ignore": true,
+      "Symbol": "ODE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "odeeth",
+      "Ignore": true,
+      "Symbol": "ODE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "odeusd",
+      "Ignore": true,
+      "Symbol": "ODE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "omgbtc",
+      "Ignore": true,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "omgeth",
+      "Ignore": true,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "omgusd",
+      "Ignore": true,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "onleth",
+      "Ignore": true,
+      "Symbol": "ONL"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "onlusd",
+      "Ignore": true,
+      "Symbol": "ONL"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "poabtc",
+      "Ignore": true,
+      "Symbol": "POA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "poaeth",
+      "Ignore": true,
+      "Symbol": "POA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "poausd",
+      "Ignore": true,
+      "Symbol": "POA"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "qshbtc",
+      "Ignore": true,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "qsheth",
+      "Ignore": true,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "qshusd",
+      "Ignore": true,
+      "Symbol": "QASH"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "qtmbtc",
+      "Ignore": true,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "QTUMETH",
-      "Ignore": false,
+      "ForeignName": "qtmeth",
+      "Ignore": true,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "QTUMUSD",
-      "Ignore": false,
+      "ForeignName": "qtmusd",
+      "Ignore": true,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "REPBTC",
-      "Ignore": false,
+      "ForeignName": "rbtbtc",
+      "Ignore": true,
+      "Symbol": "RBT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rbtusd",
+      "Ignore": true,
+      "Symbol": "RBT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rdnbtc",
+      "Ignore": true,
+      "Symbol": "RDN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rdneth",
+      "Ignore": true,
+      "Symbol": "RDN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rdnusd",
+      "Ignore": true,
+      "Symbol": "RDN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "repbtc",
+      "Ignore": true,
       "Symbol": "REP"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "TRXUSD",
-      "Ignore": false,
+      "ForeignName": "repeth",
+      "Ignore": true,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "repusd",
+      "Ignore": true,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "reqbtc",
+      "Ignore": true,
+      "Symbol": "REQ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "reqeth",
+      "Ignore": true,
+      "Symbol": "REQ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "requsd",
+      "Ignore": true,
+      "Symbol": "REQ"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rlcbtc",
+      "Ignore": true,
+      "Symbol": "RLC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rlceth",
+      "Ignore": true,
+      "Symbol": "RLC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rlcusd",
+      "Ignore": true,
+      "Symbol": "RLC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rrtbtc",
+      "Ignore": true,
+      "Symbol": "RRT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rrtusd",
+      "Ignore": true,
+      "Symbol": "RRT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rteeth",
+      "Ignore": true,
+      "Symbol": "RTE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "rteusd",
+      "Ignore": true,
+      "Symbol": "RTE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "sanbtc",
+      "Ignore": true,
+      "Symbol": "SAN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "saneth",
+      "Ignore": true,
+      "Symbol": "SAN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "sanusd",
+      "Ignore": true,
+      "Symbol": "SAN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "senbtc",
+      "Ignore": true,
+      "Symbol": "SEN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "seneth",
+      "Ignore": true,
+      "Symbol": "SEN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "senusd",
+      "Ignore": true,
+      "Symbol": "SEN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "sntbtc",
+      "Ignore": true,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "snteth",
+      "Ignore": true,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "sntusd",
+      "Ignore": true,
+      "Symbol": "SNT"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "spkbtc",
+      "Ignore": true,
+      "Symbol": "SPK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "spketh",
+      "Ignore": true,
+      "Symbol": "SPK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "spkusd",
+      "Ignore": true,
+      "Symbol": "SPK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "tkneth",
+      "Ignore": true,
+      "Symbol": "TKN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "tknusd",
+      "Ignore": true,
+      "Symbol": "TKN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "tnbbtc",
+      "Ignore": true,
+      "Symbol": "TNB"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "tnbeth",
+      "Ignore": true,
+      "Symbol": "TNB"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "tnbusd",
+      "Ignore": true,
+      "Symbol": "TNB"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "trxbtc",
+      "Ignore": true,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "USDTUSD",
-      "Ignore": false,
-      "Symbol": "USDT"
+      "ForeignName": "trxeth",
+      "Ignore": true,
+      "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "VENUSD",
-      "Ignore": false,
-      "Symbol": "VEN"
+      "ForeignName": "trxeur",
+      "Ignore": true,
+      "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "XLMUSD",
-      "Ignore": false,
+      "ForeignName": "trxgbp",
+      "Ignore": true,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "trxjpy",
+      "Ignore": true,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "trxusd",
+      "Ignore": true,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "utkbtc",
+      "Ignore": true,
+      "Symbol": "UTK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "utketh",
+      "Ignore": true,
+      "Symbol": "UTK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "utkusd",
+      "Ignore": true,
+      "Symbol": "UTK"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "veebtc",
+      "Ignore": true,
+      "Symbol": "VEE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "veeeth",
+      "Ignore": true,
+      "Symbol": "VEE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "veeusd",
+      "Ignore": true,
+      "Symbol": "VEE"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "waxbtc",
+      "Ignore": true,
+      "Symbol": "WAX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "waxeth",
+      "Ignore": true,
+      "Symbol": "WAX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "waxusd",
+      "Ignore": true,
+      "Symbol": "WAX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "wprbtc",
+      "Ignore": true,
+      "Symbol": "WPR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "wpreth",
+      "Ignore": true,
+      "Symbol": "WPR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "wprusd",
+      "Ignore": true,
+      "Symbol": "WPR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "wtceth",
+      "Ignore": true,
+      "Symbol": "WTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "wtcusd",
+      "Ignore": true,
+      "Symbol": "WTC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xlmbtc",
+      "Ignore": true,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "XMRUSD",
-      "Ignore": false,
+      "ForeignName": "xlmeth",
+      "Ignore": true,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xlmeur",
+      "Ignore": true,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xlmgbp",
+      "Ignore": true,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xlmjpy",
+      "Ignore": true,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xlmusd",
+      "Ignore": true,
+      "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xmrbtc",
+      "Ignore": true,
       "Symbol": "XMR"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "XRPUSD",
-      "Ignore": false,
+      "ForeignName": "xmrusd",
+      "Ignore": true,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xrpbtc",
+      "Ignore": true,
       "Symbol": "XRP"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "XTZBTC",
-      "Ignore": false,
+      "ForeignName": "xrpusd",
+      "Ignore": true,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xtzbtc",
+      "Ignore": true,
       "Symbol": "XTZ"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "XTZUSD",
-      "Ignore": false,
+      "ForeignName": "xtzusd",
+      "Ignore": true,
       "Symbol": "XTZ"
     },
     {
       "Exchange": "Bitfinex",
-      "ForeignName": "ZECUSD",
-      "Ignore": false,
+      "ForeignName": "xvgbtc",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xvgeth",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xvgeur",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xvggbp",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xvgjpy",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "xvgusd",
+      "Ignore": true,
+      "Symbol": "XVG"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zcnbtc",
+      "Ignore": true,
+      "Symbol": "ZCN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zcneth",
+      "Ignore": true,
+      "Symbol": "ZCN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zcnusd",
+      "Ignore": true,
+      "Symbol": "ZCN"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zecbtc",
+      "Ignore": true,
       "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zecusd",
+      "Ignore": true,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zilbtc",
+      "Ignore": true,
+      "Symbol": "ZIL"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zileth",
+      "Ignore": true,
+      "Symbol": "ZIL"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zilusd",
+      "Ignore": true,
+      "Symbol": "ZIL"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zrxbtc",
+      "Ignore": true,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zrxeth",
+      "Ignore": true,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "Bitfinex",
+      "ForeignName": "zrxusd",
+      "Ignore": true,
+      "Symbol": "ZRX"
     }
   ]
 }

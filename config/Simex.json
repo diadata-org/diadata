@@ -2,9 +2,87 @@
   "Coins": [
     {
       "Exchange": "Simex",
+      "ForeignName": "BKXBTC",
+      "Ignore": true,
+      "Symbol": "BKX"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BKXETH",
+      "Ignore": true,
+      "Symbol": "BKX"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BKXUSD",
+      "Ignore": true,
+      "Symbol": "BKX"
+    },
+    {
+      "Exchange": "Simex",
       "ForeignName": "BTCUSD",
       "Ignore": false,
       "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BTCUSDT",
+      "Ignore": true,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BZSBTC",
+      "Ignore": true,
+      "Symbol": "BZS"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BZSETH",
+      "Ignore": true,
+      "Symbol": "BZS"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "BZSUSD",
+      "Ignore": true,
+      "Symbol": "BZS"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CLBTC",
+      "Ignore": true,
+      "Symbol": "CL"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CLETH",
+      "Ignore": true,
+      "Symbol": "CL"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CLUSD",
+      "Ignore": true,
+      "Symbol": "CL"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CSBTC",
+      "Ignore": true,
+      "Symbol": "CS"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CSETH",
+      "Ignore": true,
+      "Symbol": "CS"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "CSUSD",
+      "Ignore": true,
+      "Symbol": "CS"
     },
     {
       "Exchange": "Simex",
@@ -23,6 +101,36 @@
       "ForeignName": "DASHUSD",
       "Ignore": false,
       "Symbol": "DASH"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "DIVIBTC",
+      "Ignore": true,
+      "Symbol": "DIVI"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "DIVIUSD",
+      "Ignore": true,
+      "Symbol": "DIVI"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "DIVXBTC",
+      "Ignore": true,
+      "Symbol": "DIVX"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "DIVXETH",
+      "Ignore": true,
+      "Symbol": "DIVX"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "DIVXUSD",
+      "Ignore": true,
+      "Symbol": "DIVX"
     },
     {
       "Exchange": "Simex",
@@ -56,6 +164,60 @@
     },
     {
       "Exchange": "Simex",
+      "ForeignName": "GOLDBTC",
+      "Ignore": true,
+      "Symbol": "GOLD"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "GOLDETH",
+      "Ignore": true,
+      "Symbol": "GOLD"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "GOLDUSD",
+      "Ignore": true,
+      "Symbol": "GOLD"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "HMQBTC",
+      "Ignore": true,
+      "Symbol": "HMQ"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "HMQETH",
+      "Ignore": true,
+      "Symbol": "HMQ"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "HMQUSD",
+      "Ignore": true,
+      "Symbol": "HMQ"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "KWATTBTC",
+      "Ignore": true,
+      "Symbol": "KWATT"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "KWATTETH",
+      "Ignore": true,
+      "Symbol": "KWATT"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "KWATTUSD",
+      "Ignore": true,
+      "Symbol": "KWATT"
+    },
+    {
+      "Exchange": "Simex",
       "ForeignName": "LTCBTC",
       "Ignore": false,
       "Symbol": "LTC"
@@ -74,6 +236,108 @@
     },
     {
       "Exchange": "Simex",
+      "ForeignName": "MADUSD",
+      "Ignore": true,
+      "Symbol": "MAD"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MLCBTC",
+      "Ignore": true,
+      "Symbol": "MLC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MLCETH",
+      "Ignore": true,
+      "Symbol": "MLC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MLCUSD",
+      "Ignore": true,
+      "Symbol": "MLC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MNTPBTC",
+      "Ignore": true,
+      "Symbol": "MNTP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MNTPETH",
+      "Ignore": true,
+      "Symbol": "MNTP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MNTPUSD",
+      "Ignore": true,
+      "Symbol": "MNTP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTHBTC",
+      "Ignore": true,
+      "Symbol": "MTH"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTHETH",
+      "Ignore": true,
+      "Symbol": "MTH"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTHUSD",
+      "Ignore": true,
+      "Symbol": "MTH"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTRCBTC",
+      "Ignore": true,
+      "Symbol": "MTRC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTRCETH",
+      "Ignore": true,
+      "Symbol": "MTRC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "MTRCUSD",
+      "Ignore": true,
+      "Symbol": "MTRC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "NBTKBTC",
+      "Ignore": true,
+      "Symbol": "NBTK"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "NBTKETH",
+      "Ignore": true,
+      "Symbol": "NBTK"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "NBTKUSD",
+      "Ignore": true,
+      "Symbol": "NBTK"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "OMGBTC",
+      "Ignore": true,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Simex",
       "ForeignName": "OMGETH",
       "Ignore": false,
       "Symbol": "OMG"
@@ -83,6 +347,210 @@
       "ForeignName": "OMGUSD",
       "Ignore": false,
       "Symbol": "OMG"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "PYNBTC",
+      "Ignore": true,
+      "Symbol": "PYN"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "PYNETH",
+      "Ignore": true,
+      "Symbol": "PYN"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "RBMUSD",
+      "Ignore": true,
+      "Symbol": "RBM"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "RBTC",
+      "Ignore": true,
+      "Symbol": "R"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "REPBTC",
+      "Ignore": true,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "REPETH",
+      "Ignore": true,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "REPUSD",
+      "Ignore": true,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "RETH",
+      "Ignore": true,
+      "Symbol": "R"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "RUSD",
+      "Ignore": true,
+      "Symbol": "R"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SBTC",
+      "Ignore": true,
+      "Symbol": "S"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SETH",
+      "Ignore": true,
+      "Symbol": "S"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SOCBTC",
+      "Ignore": true,
+      "Symbol": "SOC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SOCETH",
+      "Ignore": true,
+      "Symbol": "SOC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SOCUSD",
+      "Ignore": true,
+      "Symbol": "SOC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SRUB",
+      "Ignore": true,
+      "Symbol": "S"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "SUSD",
+      "Ignore": true,
+      "Symbol": "S"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "TELBTC",
+      "Ignore": true,
+      "Symbol": "TEL"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "TELUSD",
+      "Ignore": true,
+      "Symbol": "TEL"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "TMTGBTC",
+      "Ignore": true,
+      "Symbol": "TMTG"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "TMTGETH",
+      "Ignore": true,
+      "Symbol": "TMTG"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "TMTGUSD",
+      "Ignore": true,
+      "Symbol": "TMTG"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "ULTCUSD",
+      "Ignore": true,
+      "Symbol": "ULTC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "VOCTBTC",
+      "Ignore": true,
+      "Symbol": "VOCT"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "VOCTETH",
+      "Ignore": true,
+      "Symbol": "VOCT"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "VOCTUSD",
+      "Ignore": true,
+      "Symbol": "VOCT"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WCOBTC",
+      "Ignore": true,
+      "Symbol": "WCO"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WCOETH",
+      "Ignore": true,
+      "Symbol": "WCO"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WCOUSD",
+      "Ignore": true,
+      "Symbol": "WCO"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WIREBTC",
+      "Ignore": true,
+      "Symbol": "WIRE"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WIREETH",
+      "Ignore": true,
+      "Symbol": "WIRE"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WIREUSD",
+      "Ignore": true,
+      "Symbol": "WIRE"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WTCBTC",
+      "Ignore": true,
+      "Symbol": "WTC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WTCETH",
+      "Ignore": true,
+      "Symbol": "WTC"
+    },
+    {
+      "Exchange": "Simex",
+      "ForeignName": "WTCUSD",
+      "Ignore": true,
+      "Symbol": "WTC"
     }
   ]
 }

@@ -1,6 +1,2058 @@
 {
   "Coins": [
     {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
+      "Exchange": "",
+      "ForeignName": "",
+      "Ignore": true,
+      "Symbol": ""
+    },
+    {
       "Exchange": "Quoine",
       "ForeignName": "1WOBTC",
       "Ignore": false,
@@ -56,24 +2108,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "AMLTBTC",
-      "Ignore": false,
-      "Symbol": "AMLT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "AMLTETH",
-      "Ignore": false,
-      "Symbol": "AMLT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "AMLTQASH",
-      "Ignore": false,
-      "Symbol": "AMLT"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "BCHBTC",
       "Ignore": false,
       "Symbol": "BCH"
@@ -116,30 +2150,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "BRCBCH",
-      "Ignore": false,
-      "Symbol": "BRC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "BRCBTC",
-      "Ignore": false,
-      "Symbol": "BRC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "BRCETH",
-      "Ignore": false,
-      "Symbol": "BRC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "BRCQASH",
-      "Ignore": false,
-      "Symbol": "BRC"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "BTCAUD",
       "Ignore": false,
       "Symbol": "BTC"
@@ -154,6 +2164,12 @@
       "Exchange": "Quoine",
       "ForeignName": "BTCEUR",
       "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "BTCGUSD",
+      "Ignore": true,
       "Symbol": "BTC"
     },
     {
@@ -200,6 +2216,12 @@
     },
     {
       "Exchange": "Quoine",
+      "ForeignName": "BTCUSDC",
+      "Ignore": true,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "BTRNBTC",
       "Ignore": false,
       "Symbol": "BTRN"
@@ -215,42 +2237,6 @@
       "ForeignName": "BTRNQASH",
       "Ignore": false,
       "Symbol": "BTRN"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CANBTC",
-      "Ignore": false,
-      "Symbol": "CAN"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CANETH",
-      "Ignore": false,
-      "Symbol": "CAN"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CANQASH",
-      "Ignore": false,
-      "Symbol": "CAN"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CMCTBTC",
-      "Ignore": false,
-      "Symbol": "CMCT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CMCTETH",
-      "Ignore": false,
-      "Symbol": "CMCT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "CMCTQASH",
-      "Ignore": false,
-      "Symbol": "CMCT"
     },
     {
       "Exchange": "Quoine",
@@ -458,6 +2444,12 @@
     },
     {
       "Exchange": "Quoine",
+      "ForeignName": "ETHGUSD",
+      "Ignore": true,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "ETHHKD",
       "Ignore": false,
       "Symbol": "ETH"
@@ -500,6 +2492,12 @@
     },
     {
       "Exchange": "Quoine",
+      "ForeignName": "ETHUSDC",
+      "Ignore": true,
+      "Symbol": "ETH"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "ETNBTC",
       "Ignore": false,
       "Symbol": "ETN"
@@ -508,6 +2506,12 @@
       "Exchange": "Quoine",
       "ForeignName": "ETNETH",
       "Ignore": false,
+      "Symbol": "ETN"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ETNEUR",
+      "Ignore": true,
       "Symbol": "ETN"
     },
     {
@@ -710,24 +2714,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "GETBTC",
-      "Ignore": false,
-      "Symbol": "GET"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "GETETH",
-      "Ignore": false,
-      "Symbol": "GET"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "GETQASH",
-      "Ignore": false,
-      "Symbol": "GET"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "GZEBTC",
       "Ignore": false,
       "Symbol": "GZE"
@@ -764,24 +2750,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "HEROBTC",
-      "Ignore": false,
-      "Symbol": "HERO"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "HEROETH",
-      "Ignore": false,
-      "Symbol": "HERO"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "HEROQASH",
-      "Ignore": false,
-      "Symbol": "HERO"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "IDHBTC",
       "Ignore": false,
       "Symbol": "IDH"
@@ -797,24 +2765,6 @@
       "ForeignName": "IDHQASH",
       "Ignore": false,
       "Symbol": "IDH"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IGNXBTC",
-      "Ignore": false,
-      "Symbol": "IGNX"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IGNXETH",
-      "Ignore": false,
-      "Symbol": "IGNX"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IGNXQASH",
-      "Ignore": false,
-      "Symbol": "IGNX"
     },
     {
       "Exchange": "Quoine",
@@ -857,24 +2807,6 @@
       "ForeignName": "IPSXQASH",
       "Ignore": false,
       "Symbol": "IPSX"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IXTBTC",
-      "Ignore": false,
-      "Symbol": "IXT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IXTETH",
-      "Ignore": false,
-      "Symbol": "IXT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "IXTQASH",
-      "Ignore": false,
-      "Symbol": "IXT"
     },
     {
       "Exchange": "Quoine",
@@ -1148,24 +3080,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "ONGBTC",
-      "Ignore": false,
-      "Symbol": "ONG"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "ONGETH",
-      "Ignore": false,
-      "Symbol": "ONG"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "ONGQASH",
-      "Ignore": false,
-      "Symbol": "ONG"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "ONTBTC",
       "Ignore": false,
       "Symbol": "ONT"
@@ -1174,6 +3088,12 @@
       "Exchange": "Quoine",
       "ForeignName": "ONTETH",
       "Ignore": false,
+      "Symbol": "ONT"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "ONTJPY",
+      "Ignore": true,
       "Symbol": "ONT"
     },
     {
@@ -1205,42 +3125,6 @@
       "ForeignName": "PALQASH",
       "Ignore": false,
       "Symbol": "PAL"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PLCBTC",
-      "Ignore": false,
-      "Symbol": "PLC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PLCETH",
-      "Ignore": false,
-      "Symbol": "PLC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PLCQASH",
-      "Ignore": false,
-      "Symbol": "PLC"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PWVBTC",
-      "Ignore": false,
-      "Symbol": "PWV"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PWVETH",
-      "Ignore": false,
-      "Symbol": "PWV"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "PWVQASH",
-      "Ignore": false,
-      "Symbol": "PWV"
     },
     {
       "Exchange": "Quoine",
@@ -1442,24 +3326,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "SERBTC",
-      "Ignore": false,
-      "Symbol": "SER"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "SERETH",
-      "Ignore": false,
-      "Symbol": "SER"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "SERQASH",
-      "Ignore": false,
-      "Symbol": "SER"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "SGNBTC",
       "Ignore": false,
       "Symbol": "SGN"
@@ -1493,12 +3359,6 @@
       "ForeignName": "SHPQASH",
       "Ignore": false,
       "Symbol": "SHP"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "SIXBTC",
-      "Ignore": false,
-      "Symbol": "SIX"
     },
     {
       "Exchange": "Quoine",
@@ -1634,24 +3494,6 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "TPTBTC",
-      "Ignore": false,
-      "Symbol": "TPT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "TPTETH",
-      "Ignore": false,
-      "Symbol": "TPT"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "TPTQASH",
-      "Ignore": false,
-      "Symbol": "TPT"
-    },
-    {
-      "Exchange": "Quoine",
       "ForeignName": "TRXBTC",
       "Ignore": false,
       "Symbol": "TRX"
@@ -1661,6 +3503,24 @@
       "ForeignName": "TRXETH",
       "Ignore": false,
       "Symbol": "TRX"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TTUBTC",
+      "Ignore": true,
+      "Symbol": "TTU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TTUETH",
+      "Ignore": true,
+      "Symbol": "TTU"
+    },
+    {
+      "Exchange": "Quoine",
+      "ForeignName": "TTUQASH",
+      "Ignore": true,
+      "Symbol": "TTU"
     },
     {
       "Exchange": "Quoine",
@@ -1736,51 +3596,21 @@
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "VETBTC",
-      "Ignore": false,
-      "Symbol": "VET"
+      "ForeignName": "USDCBTC",
+      "Ignore": true,
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "VETETH",
-      "Ignore": false,
-      "Symbol": "VET"
+      "ForeignName": "USDCETH",
+      "Ignore": true,
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
-      "ForeignName": "VIOBTC",
-      "Ignore": false,
-      "Symbol": "VIO"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "VIOETH",
-      "Ignore": false,
-      "Symbol": "VIO"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "VIOQASH",
-      "Ignore": false,
-      "Symbol": "VIO"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "VUUBTC",
-      "Ignore": false,
-      "Symbol": "VUU"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "VUUETH",
-      "Ignore": false,
-      "Symbol": "VUU"
-    },
-    {
-      "Exchange": "Quoine",
-      "ForeignName": "VUUQASH",
-      "Ignore": false,
-      "Symbol": "VUU"
+      "ForeignName": "USDCQASH",
+      "Ignore": true,
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
