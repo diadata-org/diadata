@@ -37,9 +37,9 @@ type BitfinexScraper struct {
 	// use sync.Maps to concurrently handle multiple pairs
 	pairScrapers      sync.Map          // dia.Pair -> pairScraperSet
 	pairSubscriptions sync.Map          // dia.Pair -> string (subscription ID)
-	pairLocks         sync.Map          // dia.Pair -> sync.Mutex
 	symbols           map[string]string // pair to symbol mapping
 	exchangeName      string
+	chanTrades        chan *dia.Trade
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
@@ -61,6 +61,7 @@ func NewBitfinexScraper(key string, secret string, exchangeName string) *Bitfine
 		symbols:      make(map[string]string),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	// establish connection in the background
@@ -100,23 +101,8 @@ func (s *BitfinexScraper) mainLoop() {
 						ForeignTradeID: strconv.FormatInt(m.ID, 16),
 						Source:         s.exchangeName,
 					}
-					// get lock for pair
-					pairLock, ok := s.pairLocks.Load(m.Pair)
-					if !ok {
-						log.Println("t.Pair:", m.Pair)
-						s.cleanup(errors.New("BitfinexScraper: Received trade for pair not subscribed to"))
-						return
-					}
-					func() { // wrap in func, allowing to unlock using defer
-						pairLock.(*sync.Mutex).Lock()
-						defer pairLock.(*sync.Mutex).Unlock()
-						// send trade to all registered pairscrapers
-						if pairScrapers, ok := s.pairScrapers.Load(t.Pair); ok {
-							for ps := range pairScrapers.(pairScraperSet) {
-								ps.chanTrades <- t
-							}
-						}
-					}()
+
+					s.chanTrades <- t
 				case error:
 					s.cleanup(m)
 					return
@@ -141,7 +127,6 @@ func (s *BitfinexScraper) cleanup(err error) {
 	// close all channels of PairScraper children
 	s.pairScrapers.Range(func(k, v interface{}) bool {
 		for ps := range v.(pairScraperSet) {
-			close(ps.chanTrades)
 			ps.closed = true
 		}
 		s.pairScrapers.Delete(k)
@@ -183,17 +168,12 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		return nil, errors.New("BitfinexScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &BitfinexPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.symbols[pair.ForeignName] = pair.Symbol
 
-	// get lock for pair
-	pairLock, _ := s.pairLocks.LoadOrStore(pair.ForeignName, &sync.Mutex{})
-	pairLock.(*sync.Mutex).Lock()
-	defer pairLock.(*sync.Mutex).Unlock()
 	// initialize pairScraperSet for pair if not already done
 	pairScrapers, _ := s.pairScrapers.LoadOrStore(pair.ForeignName, pairScraperSet{})
 	// register ps
@@ -267,10 +247,9 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // BitfinexPairScraper implements PairScraper for Bitfinex
 type BitfinexPairScraper struct {
-	parent     *BitfinexScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *BitfinexScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -286,17 +265,12 @@ func (ps *BitfinexPairScraper) Close() error {
 	if ps.closed {
 		return errors.New("BitfinexPairScraper: Already closed")
 	}
-	// get lock for pair
-	pairLock, _ := s.pairLocks.Load(ps.pair.Symbol)
-	pairLock.(*sync.Mutex).Lock()
-	defer pairLock.(*sync.Mutex).Unlock()
 	pairScrapers, ok := s.pairScrapers.Load(ps.pair.Symbol)
 	if !ok { // should never happen
 		panic("BitfinexPairScraper: pairScraperSet not found")
 	}
 	// deregister and close channel
 	delete(pairScrapers.(pairScraperSet), ps)
-	close(ps.chanTrades)
 	// if we're the last one for this pair -> unsubscribe
 	if len(pairScrapers.(pairScraperSet)) == 0 {
 		id, ok := s.pairSubscriptions.Load(ps.pair.Symbol)
@@ -312,7 +286,7 @@ func (ps *BitfinexPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *BitfinexPairScraper) Channel() chan *dia.Trade {
+func (ps *BitfinexScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

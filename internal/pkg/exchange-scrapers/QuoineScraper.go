@@ -33,6 +33,7 @@ type QuoineScraper struct {
 
 	pairScrapers   map[string]*QuoinePairScraper
 	productPairIds map[string]int
+	chanTrades     chan *dia.Trade
 }
 
 func NewQuoineScraper(exchangeName string) *QuoineScraper {
@@ -50,6 +51,7 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
 		pairScrapers:   make(map[string]*QuoinePairScraper),
+		chanTrades:     make(chan *dia.Trade),
 	}
 
 	err = scraper.readProductIds()
@@ -115,7 +117,7 @@ func (scraper *QuoineScraper) mainLoop() {
 				Source:         scraper.exchangeName,
 			}
 
-			pairScraper.chanTrades <- trade
+			pairScraper.parent.chanTrades <- trade
 		}
 	}
 	if scraper.error == nil {
@@ -195,9 +197,8 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	pairScraper := &QuoinePairScraper{
-		parent:     scraper,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: scraper,
+		pair:   pair,
 	}
 
 	scraper.pairScrapers[pair.ForeignName] = pairScraper
@@ -218,7 +219,6 @@ func (scraper *QuoineScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
-		close(pairScraper.chanTrades)
 		pairScraper.closed = true
 	}
 
@@ -228,17 +228,16 @@ func (scraper *QuoineScraper) Close() error {
 }
 
 type QuoinePairScraper struct {
-	parent     *QuoineScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *QuoineScraper
+	pair   dia.Pair
+	closed bool
 }
 
 func (pairScraper *QuoinePairScraper) Pair() dia.Pair {
 	return pairScraper.pair
 }
 
-func (pairScraper *QuoinePairScraper) Channel() chan *dia.Trade {
+func (pairScraper *QuoineScraper) Channel() chan *dia.Trade {
 	return pairScraper.chanTrades
 }
 
@@ -252,7 +251,6 @@ func (pairScraper *QuoinePairScraper) Error() error {
 func (pairScraper *QuoinePairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
-	close(pairScraper.chanTrades)
 	pairScraper.closed = true
 	return nil
 }

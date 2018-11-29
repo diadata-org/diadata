@@ -46,6 +46,7 @@ type ZBScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*ZBPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
@@ -57,6 +58,7 @@ func NewZBScraper(exchangeName string) *ZBScraper {
 		pairScrapers: make(map[string]*ZBPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -114,7 +116,7 @@ func (s *ZBScraper) mainLoop() {
 				ForeignTradeID: fmt.Sprint(trade.Tid),
 				Source:         s.exchangeName,
 			}
-			ps.chanTrades <- t
+			ps.parent.chanTrades <- t
 		}
 	}
 	s.cleanup(s.error)
@@ -163,9 +165,8 @@ func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &ZBPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -189,10 +190,9 @@ func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // ZBPairScraper implements PairScraper for ZB
 type ZBPairScraper struct {
-	parent     *ZBScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *ZBScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -201,7 +201,7 @@ func (ps *ZBPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *ZBPairScraper) Channel() chan *dia.Trade {
+func (ps *ZBScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

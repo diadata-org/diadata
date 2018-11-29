@@ -32,6 +32,7 @@ type KrakenScraper struct {
 	api          *krakenapi.KrakenApi
 	ticker       *time.Ticker
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
@@ -45,6 +46,7 @@ func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScr
 		ticker:       time.NewTicker(krakenRefreshDelay),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 	go s.mainLoop()
 	return s
@@ -147,7 +149,7 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *KrakenPairScraper) Channel() chan *dia.Trade {
+func (ps *KrakenScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

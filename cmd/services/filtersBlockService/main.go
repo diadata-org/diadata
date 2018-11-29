@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"context"
 	"context"
 	"flag"
 	"github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
@@ -116,7 +115,7 @@ func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockServi
 func main() {
 
 	if *replayInflux {
-		s, err := models.NewDataStoreWithOptions(false)
+		s, err := models.NewInfluxDataStore()
 		if err != nil {
 			log.Errorln("NewDataStore", err)
 		}

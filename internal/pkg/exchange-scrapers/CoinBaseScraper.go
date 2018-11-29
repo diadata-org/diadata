@@ -27,6 +27,7 @@ type CoinBaseScraper struct {
 	pairScrapers map[string]*CoinBasePairScraper // pc.Pair -> pairScraperSet
 	wsConn       *ws.Conn
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 const (
@@ -47,6 +48,7 @@ func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
 		pairScrapers: make(map[string]*CoinBasePairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial("wss://ws-feed.pro.coinbase.com", nil)
@@ -87,7 +89,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeId), 16),
 								Source:         s.exchangeName,
 							}
-							ps.chanTrades <- t
+							ps.parent.chanTrades <- t
 						}
 					} else {
 						log.Error("error parsing LastSize " + message.LastSize)
@@ -172,7 +174,6 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 type CoinBasePairScraper struct {
 	parent     *CoinBaseScraper
 	pair       dia.Pair
-	chanTrades chan *dia.Trade
 	closed     bool
 	lastRecord int64
 }
@@ -193,7 +194,6 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0, //TODO FIX to figure out the last we got...
-		chanTrades: make(chan *dia.Trade),
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -223,7 +223,7 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *CoinBasePairScraper) Channel() chan *dia.Trade {
+func (ps *CoinBaseScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

@@ -6,28 +6,21 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"sync"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup) {
 	for {
-		t, ok := <-ps.Channel()
-
+		t, ok := <-c
 		if !ok {
-			// log error and return
-			if ps.Error() != nil {
-				log.Printf("Error: %s\n", ps.Error())
-			} else {
-				log.Printf("PairScraper for %v was shut down by user", ps.Pair())
-			}
-			wg.Done()
+			log.Error("error")
 			return
 		}
-		log.Printf("Trade: %v\n", t)
+		log.Printf("handleTrades: %v\n", t)
 	}
 }
 
@@ -67,22 +60,22 @@ func main() {
 			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, configExchangeApi.ApiKey, configExchangeApi.SecretKey)
 			if s != nil {
 				s[configPair.Exchange] = aPIScraper
+				go handleTrades(aPIScraper.Channel(), &wg)
 			} else {
 				fmt.Println("Couldnt create APIScraper for ", configPair.Exchange)
 			}
 		}
 		es := s[configPair.Exchange]
 		if es != nil {
-			ps, err := es.ScrapePair(dia.Pair{
+			_, err := es.ScrapePair(dia.Pair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {
 				log.Println(err)
 			} else {
-				go handleTrades(ps, &wg)
 				wg.Add(1)
 			}
 		}
-		defer wg.Wait()
 	}
+	defer wg.Wait()
 }
