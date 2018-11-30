@@ -27,7 +27,7 @@
     {
       "Exchange": "Simex",
       "ForeignName": "BTCUSDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -333,7 +333,7 @@
     {
       "Exchange": "Simex",
       "ForeignName": "OMGBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
@@ -375,19 +375,19 @@
     {
       "Exchange": "Simex",
       "ForeignName": "REPBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "Simex",
       "ForeignName": "REPETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "Simex",
       "ForeignName": "REPUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {

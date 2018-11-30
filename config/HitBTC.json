@@ -63,19 +63,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "ADABTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ADAETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ADAUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
@@ -111,7 +111,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "AEBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
@@ -345,19 +345,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BATBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "BATETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "BATUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
@@ -435,7 +435,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BCNEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BCN"
     },
     {
@@ -447,7 +447,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BCNUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BCN"
     },
     {
@@ -627,19 +627,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTCDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTCEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTCGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -663,7 +663,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTCTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -687,13 +687,13 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTG"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "BTSBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTS"
     },
     {
@@ -1059,25 +1059,25 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "DASHEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "DASHETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "DASHEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "DASHUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
@@ -1311,19 +1311,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "DOGEBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DOGE"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "DOGEETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DOGE"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "DOGEUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DOGE"
     },
     {
@@ -1557,31 +1557,31 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "EOSBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "EOSDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "EOSETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "EOSEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "EOSGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
@@ -1611,19 +1611,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETCBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETCETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETCUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
@@ -1635,25 +1635,25 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETHDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETHEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETHGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ETHTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
@@ -2373,7 +2373,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "LSKEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LSK"
     },
     {
@@ -2385,7 +2385,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "LSKUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LSK"
     },
     {
@@ -2397,31 +2397,31 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "LTCDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "LTCEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "LTCETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "LTCEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "LTCTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
@@ -2523,19 +2523,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "MCOBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "MCOETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "MCOUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
@@ -2769,43 +2769,43 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEODAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEOUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
@@ -2961,37 +2961,37 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "OMGBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "OMGETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "OMGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ONTBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ONTETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ONTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
@@ -3249,7 +3249,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "QTUMUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
@@ -3261,19 +3261,19 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "REPBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "REPETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "REPUSDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
@@ -3519,7 +3519,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "SNTBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
@@ -3531,7 +3531,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "SNTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
@@ -3615,7 +3615,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "STEEMBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "STEEM"
     },
     {
@@ -3951,25 +3951,25 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "TRXBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "TRXEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "TRXETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "TRXUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
@@ -4257,37 +4257,37 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "XEMEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XEMETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XEMUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XLMBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XLMETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XLMUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
@@ -4335,37 +4335,37 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMRDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMREOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMRETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMREURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMRTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XMRUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
@@ -4377,37 +4377,37 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "XRPDAI",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XRPEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XRPETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XRPEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XRPUSDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "XTZBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XTZ"
     },
     {
@@ -4419,7 +4419,7 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "XTZUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XTZ"
     },
     {
@@ -4491,25 +4491,25 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "ZECEOS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ZECETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ZECEURS",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "ZECUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {

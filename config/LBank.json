@@ -75,13 +75,13 @@
     {
       "Exchange": "LBank",
       "ForeignName": "BTC_LBCN",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "BTC_TUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -99,13 +99,13 @@
     {
       "Exchange": "LBank",
       "ForeignName": "BTS_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTS"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "BTS_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTS"
     },
     {
@@ -207,13 +207,13 @@
     {
       "Exchange": "LBank",
       "ForeignName": "ETH_LBCN",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ETH_TUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {

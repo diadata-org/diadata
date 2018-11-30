@@ -3,7 +3,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "ADABNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
@@ -45,7 +45,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "AEBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
@@ -57,7 +57,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "AEETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
@@ -189,19 +189,19 @@
     {
       "Exchange": "Binance",
       "ForeignName": "BATBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "BATBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "BATETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
@@ -315,7 +315,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "BTSBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTS"
     },
     {
@@ -327,7 +327,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "BTSETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTS"
     },
     {
@@ -399,7 +399,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "DASHETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
@@ -417,13 +417,13 @@
     {
       "Exchange": "Binance",
       "ForeignName": "DCRBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "DCRBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
@@ -549,7 +549,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "EOSBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
@@ -573,7 +573,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "ETCBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
@@ -783,25 +783,25 @@
     {
       "Exchange": "Binance",
       "ForeignName": "IOTABNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "IOTABTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "IOTAETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "IOTAUSDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
@@ -903,7 +903,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "LTCBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
@@ -915,7 +915,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "LTCETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
@@ -951,19 +951,19 @@
     {
       "Exchange": "Binance",
       "ForeignName": "MCOBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "MCOBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "MCOETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
@@ -1137,25 +1137,25 @@
     {
       "Exchange": "Binance",
       "ForeignName": "NEOBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "NEOBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "NEOETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "NEOUSDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
@@ -1227,31 +1227,31 @@
     {
       "Exchange": "Binance",
       "ForeignName": "OMGBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "OMGETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "ONTBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "ONTBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "ONTETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
@@ -1503,7 +1503,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "REPBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
@@ -1641,13 +1641,13 @@
     {
       "Exchange": "Binance",
       "ForeignName": "SNTETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "STEEMBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "STEEM"
     },
     {
@@ -1659,7 +1659,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "STEEMETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "STEEM"
     },
     {
@@ -1779,19 +1779,19 @@
     {
       "Exchange": "Binance",
       "ForeignName": "TRXBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "TRXBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "TRXETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
@@ -1977,7 +1977,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "XEMBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
@@ -1989,13 +1989,13 @@
     {
       "Exchange": "Binance",
       "ForeignName": "XEMETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "XLMBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
@@ -2007,7 +2007,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "XLMETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
@@ -2025,13 +2025,13 @@
     {
       "Exchange": "Binance",
       "ForeignName": "XMRETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "Binance",
       "ForeignName": "XRPBNB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
@@ -2043,7 +2043,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "XRPETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
@@ -2109,7 +2109,7 @@
     {
       "Exchange": "Binance",
       "ForeignName": "ZECETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {

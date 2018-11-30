@@ -111,19 +111,19 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "batbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "bateth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "batusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BAT"
     },
     {
@@ -201,37 +201,37 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btceur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btcgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btcjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btcusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btgbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTG"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "btgusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTG"
     },
     {
@@ -477,37 +477,37 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eosbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eoseth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eoseur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eosgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eosjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "eosusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
@@ -531,43 +531,43 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "etcbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "etcusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ethbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "etheur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ethgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ethjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ethusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
@@ -675,37 +675,37 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "iotbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ioteth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ioteur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "iotgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "iotjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "iotusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
@@ -729,13 +729,13 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ltcbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "ltcusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
@@ -831,37 +831,37 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neobtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neoeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neoeur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neogbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neojpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "neousd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
@@ -897,19 +897,19 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "omgbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "omgeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "omgusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
@@ -963,19 +963,19 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "qtmbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "qtmeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "qtmusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
@@ -1011,19 +1011,19 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "repbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "repeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "repusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "REP"
     },
     {
@@ -1125,19 +1125,19 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "sntbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "snteth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "sntusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
@@ -1191,37 +1191,37 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxeur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "trxusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
@@ -1311,73 +1311,73 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmeth",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmeur",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmgbp",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmjpy",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xlmusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xmrbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xmrusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xrpbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xrpusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xtzbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XTZ"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "xtzusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XTZ"
     },
     {
@@ -1437,13 +1437,13 @@
     {
       "Exchange": "Bitfinex",
       "ForeignName": "zecbtc",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "Bitfinex",
       "ForeignName": "zecusd",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {

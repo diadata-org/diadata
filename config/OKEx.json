@@ -87,49 +87,49 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "ADA-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ADA-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ADA-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ADA-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ADA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "AE-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "AE-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "AE-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "AE-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AE"
     },
     {
@@ -279,19 +279,19 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "BTC-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "BTG-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTG"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "BTG-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTG"
     },
     {
@@ -459,25 +459,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "DASH-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DASH-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DASH-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DASH-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DASH"
     },
     {
@@ -501,25 +501,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "DCR-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DCR-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DCR-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "DCR-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCR"
     },
     {
@@ -705,61 +705,61 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "EOS-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "EOS-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "EOS-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "EOS-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EOS"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETC-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETC-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETC-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETC-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETH-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ETH-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
@@ -1053,25 +1053,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "IOTA-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "IOTA-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "IOTA-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "IOTA-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MIOTA"
     },
     {
@@ -1287,43 +1287,43 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "LSK-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LSK"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LSK-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LSK"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LSK-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LSK"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LTC-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LTC-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LTC-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "LTC-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "LTC"
     },
     {
@@ -1347,19 +1347,19 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "MCO-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "MCO-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "MCO-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MCO"
     },
     {
@@ -1545,25 +1545,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "NEO-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "NEO-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "NEO-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "NEO-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEO"
     },
     {
@@ -1641,37 +1641,37 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "OMG-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "OMG-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "OMG-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OMG"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ONT-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ONT-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ONT-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
@@ -1791,25 +1791,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "QTUM-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "QTUM-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "QTUM-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "QTUM-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "QTUM"
     },
     {
@@ -2079,19 +2079,19 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "SNT-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "SNT-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "SNT-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SNT"
     },
     {
@@ -2319,25 +2319,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "TRX-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "TRX-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "TRX-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "TRX-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TRX"
     },
     {
@@ -2547,79 +2547,79 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "XEM-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XEM-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XEM-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XEM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XLM-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XLM-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XLM-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XLM"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XMR-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XMR-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XMR-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XMR"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XRP-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XRP-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XRP-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "XRP-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XRP"
     },
     {
@@ -2721,25 +2721,25 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "ZEC-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ZEC-ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ZEC-OKB",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "ZEC-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZEC"
     },
     {

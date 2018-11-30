@@ -2169,7 +2169,7 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "BTCGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -2217,7 +2217,7 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "BTCUSDC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTC"
     },
     {
@@ -2445,7 +2445,7 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "ETHGUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
@@ -2493,7 +2493,7 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "ETHUSDC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ETH"
     },
     {
@@ -3093,7 +3093,7 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "ONTJPY",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ONT"
     },
     {
