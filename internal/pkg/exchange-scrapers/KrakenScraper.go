@@ -1,15 +1,12 @@
 package scrapers
 
 import (
-	// "encoding/json"
 	"errors"
 	"fmt"
 	"github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
-	// "io/ioutil"
 	"math"
-	// "net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -195,6 +192,7 @@ func (s *KrakenScraper) Update() {
 
 		if err != nil {
 			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
+			time.Sleep(1 * time.Minute)
 		} else {
 			if r != nil {
 				ps.lastRecord = r.Last
