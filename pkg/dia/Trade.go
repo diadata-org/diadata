@@ -62,3 +62,42 @@ func (t *Trade) SecondPair() string {
 	}
 	return strings.TrimPrefix(pair, t.Symbol)
 }
+
+func (t *Trade) NormalizedSymbol() string {
+	symbol := strings.ToUpper(t.Symbol)
+
+	switch t.Source {
+	case KrakenExchange:
+		if (len(symbol) < 4) {
+			return t.Symbol
+		}
+		if (symbol[:3] == "XBT" || symbol[:4] == "XXBT") {
+			return "BTC"
+		}
+		if (symbol[:4] == "XREP") {
+			return "REP"
+		}
+		if (symbol[:4] == "XETH") {
+			return "ETH"
+		}
+		if (symbol[:4] == "XETC") {
+			return "ETC"
+		}
+		if (symbol[:4] == "XLTC") {
+			return "LTC"
+		}
+		if (symbol[:4] == "XXMR") {
+			return "XMR"
+		}
+		if (symbol[:4] == "XXRP") {
+			return "XRP"
+		}
+		if (symbol[:4] == "XXLM") {
+			return "XLM"
+		}
+		if (symbol[:4] == "XZEC") {
+			return "ZEC"
+		}
+	}
+	return t.Symbol
+}
