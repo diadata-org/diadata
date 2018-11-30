@@ -37,6 +37,7 @@ type BittrexScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*BittrexPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 func NewBittrexScraper(exchangeName string) *BittrexScraper {
@@ -46,6 +47,7 @@ func NewBittrexScraper(exchangeName string) *BittrexScraper {
 		pairScrapers: make(map[string]*BittrexPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	go s.mainLoop()
@@ -107,7 +109,7 @@ func (s *BittrexScraper) mainLoop() {
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["Id"].(float64)), 16),
 							Source:         s.exchangeName,
 						}
-						el.chanTrades <- t
+						el.parent.chanTrades <- t
 					}
 				}
 				if atLeastOneUpdate {
@@ -184,7 +186,6 @@ func (s *BittrexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	ps := &BittrexPairScraper{
 		parent:      s,
 		pair:        pair,
-		chanTrades:  make(chan *dia.Trade),
 		lastIdTrade: 0,
 	}
 
@@ -232,7 +233,6 @@ func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 type BittrexPairScraper struct {
 	parent      *BittrexScraper
 	pair        dia.Pair
-	chanTrades  chan *dia.Trade
 	closed      bool
 	lastIdTrade int
 }
@@ -243,7 +243,7 @@ func (ps *BittrexPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *BittrexPairScraper) Channel() chan *dia.Trade {
+func (ps *BittrexScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

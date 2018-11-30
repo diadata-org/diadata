@@ -51,7 +51,7 @@ type Datastore interface {
 }
 
 const (
-	influxMaxPointsInBatch = 500
+	influxMaxPointsInBatch = 5000
 	timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
@@ -86,16 +86,31 @@ func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb
 }
 
 func NewDataStore() (*DB, error) {
-	return NewDataStoreWithOptions(true)
+	return NewDataStoreWithOptions(true, true)
+}
+func NewInfluxDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(false, true)
+}
+
+func NewRedisDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
+}
+
+func NewDataStoreWithoutInflux() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
 }
 
 func NewDataStoreWithoutRedis() (*DB, error) {
-	return NewDataStoreWithOptions(false)
+	return NewDataStoreWithOptions(false, true)
 }
 
-func NewDataStoreWithOptions(red bool) (*DB, error) {
+func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
+	var ci clientInfluxdb.Client
+	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
-	if red {
+	var err error
+
+	if withRedis {
 		r = redis.NewClient(&redis.Options{
 			Addr:     "redis:6379",
 			Password: "", // no password set
@@ -108,23 +123,22 @@ func NewDataStoreWithOptions(red bool) (*DB, error) {
 		}
 		log.Debug("NewDB", pong2)
 	}
-	i, err := clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-		Addr:     "http://influxdb:8086",
-		Username: "",
-		Password: "",
-	})
-	if err != nil {
-		log.Error("NewDataStore influxdb", err)
+	if withInflux {
+		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
+			Addr:     "http://influxdb:8086",
+			Username: "",
+			Password: "",
+		})
+		if err != nil {
+			log.Error("NewDataStore influxdb", err)
+		}
+		bp, _ = createBatchInflux()
+		_, err = queryInfluxDB(ci, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+		if err != nil {
+			log.Errorln("queryInfluxDB CREATE DATABASE", err)
+		}
 	}
-
-	bp, _ := createBatchInflux()
-
-	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
-	if err != nil {
-		log.Errorln("queryInfluxDB CREATE DATABASE", err)
-	}
-
-	return &DB{r, i, bp, 0}, nil
+	return &DB{r, ci, bp, 0}, nil
 }
 
 func createBatchInflux() (clientInfluxdb.BatchPoints, error) {

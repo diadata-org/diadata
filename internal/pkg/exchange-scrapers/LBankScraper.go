@@ -44,6 +44,7 @@ type LBankScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*LBankPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
@@ -55,6 +56,7 @@ func NewLBankScraper(exchangeName string) *LBankScraper {
 		pairScrapers: make(map[string]*LBankPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -112,7 +114,7 @@ func (s *LBankScraper) mainLoop() {
 				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
 				Source:         s.exchangeName,
 			}
-			ps.chanTrades <- t
+			ps.parent.chanTrades <- t
 		}
 	}
 	s.cleanup(err)
@@ -163,9 +165,8 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		return nil, errors.New("LBankScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &LBankPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 	s.pairScrapers[pair.ForeignName] = ps
 	a := &SubscribeLBank{
@@ -220,10 +221,9 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // LBankPairScraper implements PairScraper for LBank exchange
 type LBankPairScraper struct {
-	parent     *LBankScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *LBankScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -232,7 +232,7 @@ func (ps *LBankPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *LBankPairScraper) Channel() chan *dia.Trade {
+func (ps *LBankScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

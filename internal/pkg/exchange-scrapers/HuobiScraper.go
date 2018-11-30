@@ -49,6 +49,7 @@ type HuobiScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HuobiPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewHuobiScraper returns a new HuobiScraper for the given pair
@@ -60,6 +61,7 @@ func NewHuobiScraper(exchangeName string) *HuobiScraper {
 		pairScrapers: make(map[string]*HuobiPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -141,7 +143,7 @@ func (s *HuobiScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatFloat(md_element["id"].(float64), 'E', -1, 64),
 								Source:         s.exchangeName,
 							}
-							ps.chanTrades <- t
+							ps.parent.chanTrades <- t
 						}
 					} else {
 						log.Printf("Unknown Pair %v", forName)
@@ -196,9 +198,8 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &HuobiPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -270,10 +271,9 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // HuobiPairScraper implements PairScraper for Huobi exchange
 type HuobiPairScraper struct {
-	parent     *HuobiScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *HuobiScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -282,7 +282,7 @@ func (ps *HuobiPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *HuobiPairScraper) Channel() chan *dia.Trade {
+func (ps *HuobiScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

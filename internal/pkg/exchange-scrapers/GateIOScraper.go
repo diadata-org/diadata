@@ -42,6 +42,7 @@ type GateIOScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*GateIOPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
@@ -53,6 +54,7 @@ func NewGateIOScraper(exchangeName string) *GateIOScraper {
 		pairScrapers: make(map[string]*GateIOPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -135,7 +137,7 @@ func (s *GateIOScraper) mainLoop() {
 									ForeignTradeID: strconv.FormatInt(int64(md_inner["id"].(float64)), 16),
 									Source:         s.exchangeName,
 								}
-								ps.chanTrades <- t
+								ps.parent.chanTrades <- t
 							} else {
 								log.Error("error parsing volume %v " + md_inner["amount"].(string))
 							}
@@ -193,9 +195,8 @@ func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &GateIOPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -246,10 +247,9 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // GateIOPairScraper implements PairScraper for GateIO
 type GateIOPairScraper struct {
-	parent     *GateIOScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *GateIOScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -258,7 +258,7 @@ func (ps *GateIOPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *GateIOPairScraper) Channel() chan *dia.Trade {
+func (ps *GateIOScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

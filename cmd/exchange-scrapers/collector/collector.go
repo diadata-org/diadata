@@ -20,34 +20,30 @@ const (
 	watchdogDelay = 60.0 * 2
 )
 
-type doggyBag struct {
-	lastTradeTime time.Time
-	mutex         *sync.Mutex
-}
-
-// pairs contains all pairs currently supported by the DIA scrapers
-
 // handleTrades delegates trade information to Kafka
-func handleTrades(d *doggyBag, ps scrapers.PairScraper, wg *sync.WaitGroup, w *kafka.Writer) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
+	lastTradeTime := time.Now()
+	t := time.NewTicker(watchdogDelay * time.Second)
 	for {
-		t, ok := <-ps.Channel()
-
-		if !ok {
-			// log error and return
-			if ps.Error() != nil {
-				log.Printf("Error: %s\n", ps.Error())
-			} else {
-				log.Printf("PairScraper for %s was shut down by user", ps.Pair())
+		select {
+		case <-t.C:
+			duration := time.Since(lastTradeTime)
+			if duration.Seconds() > watchdogDelay {
+				log.Error(duration)
+				panic("frozen? ")
 			}
-			wg.Done()
-			return
+		case t, ok := <-c:
+			if !ok {
+				wg.Done()
+				log.Error("handleTrades")
+				return
+			}
+			lastTradeTime = time.Now()
+			kafkaHelper.WriteMessage(w, t)
 		}
-		d.mutex.Lock()
-		d.lastTradeTime = time.Now()
-		d.mutex.Unlock()
-		kafkaHelper.WriteMessage(w, t)
 	}
 }
+
 func getConfig(exchange string) (*dia.ConfigApi, error) {
 	var configApi dia.ConfigApi
 	usr, _ := user.Current()
@@ -71,35 +67,10 @@ func init() {
 	}
 }
 
-func watchDog(d *doggyBag) {
-
-	t := time.NewTicker(watchdogDelay * time.Second)
-
-	for {
-		select {
-		case <-t.C:
-			d.mutex.Lock()
-			duration := time.Since(d.lastTradeTime)
-			d.mutex.Unlock()
-			time.Now()
-			if duration.Seconds() > watchdogDelay {
-				log.Error(duration)
-				panic("frozen? ")
-			}
-		}
-	}
-}
-
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	d := &doggyBag{
-		lastTradeTime: time.Now(),
-		mutex:         &sync.Mutex{},
-	}
-
-	//	cc := configCollectors.NewConfigCollectors(*exchange)
-	ds, err := models.NewDataStore()
+	ds, err := models.NewRedisDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
@@ -107,7 +78,7 @@ func main() {
 	}
 	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
 
-	if err != nil {
+	if err != nil || len(pairsExchange) == 0 {
 		log.Error("error on GetAvailablePairsForExchange", err)
 		cc := configCollectors.NewConfigCollectors(*exchange)
 		pairsExchange = cc.AllPairs()
@@ -115,7 +86,7 @@ func main() {
 
 	configApi, err := dia.GetConfig(*exchange)
 	if err != nil {
-		log.Warning("error loading configApi", err)
+		log.Warning("no config for exchange's api ", err)
 	}
 	es := scrapers.NewAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
 
@@ -136,17 +107,16 @@ func main() {
 			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 		} else {
 			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-			ps, err := es.ScrapePair(dia.Pair{
+			_, err := es.ScrapePair(dia.Pair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {
 				log.Println(err)
 			} else {
-				go handleTrades(d, ps, &wg, w)
 				wg.Add(1)
 			}
 		}
 		defer wg.Wait()
 	}
-	go watchDog(d)
+	go handleTrades(es.Channel(), &wg, w)
 }

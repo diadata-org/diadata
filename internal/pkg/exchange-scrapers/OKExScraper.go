@@ -49,6 +49,7 @@ type OKExScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*OKExPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
@@ -60,6 +61,7 @@ func NewOKExScraper(exchangeName string) *OKExScraper {
 		pairScrapers: make(map[string]*OKExPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketurl.String(), nil)
@@ -157,7 +159,7 @@ func (s *OKExScraper) mainLoop() {
 									ForeignTradeID: message[0].Data[0][0],
 									Source:         s.exchangeName,
 								}
-								ps.chanTrades <- t
+								ps.parent.chanTrades <- t
 
 							} else {
 								log.Error("parsing volume %v", f64Volume_string)
@@ -228,9 +230,8 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &OKExPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -300,10 +301,9 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // OKExPairScraper implements PairScraper for OKEx exchange
 type OKExPairScraper struct {
-	parent     *OKExScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *OKExScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -312,7 +312,7 @@ func (ps *OKExPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *OKExPairScraper) Channel() chan *dia.Trade {
+func (ps *OKExScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 
