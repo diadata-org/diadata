@@ -1,0 +1,65 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC"
+    },
+    {
+      "Symbol": "ETH"
+    },
+    {
+      "Symbol": "XRP"
+    },
+    {
+      "Symbol": "BCH"
+    },
+    {
+      "Symbol": "XLM"
+    },
+    {
+      "Symbol": "EOS"
+    },
+    {
+      "Symbol": "LTC"
+    },
+    {
+      "Symbol": "ADA"
+    },
+    {
+      "Symbol": "BNB"
+    },
+    {
+      "Symbol": "XMR"
+    },
+    {
+      "Symbol": "USDT"
+    },
+    {
+      "Symbol": "TRX"
+    },
+    {
+      "Symbol": "DASH"
+    },
+    {
+      "Symbol": "MIOTA"
+    },
+    {
+      "Symbol": "NEO"
+    },
+    {
+      "Symbol": "ETC"
+    },
+    {
+      "Symbol": "XEM"
+    },
+    {
+      "Symbol": "XTZ"
+    },
+    {
+      "Symbol": "ZEC"
+    },
+    {
+      "Symbol": "VET"
+    }
+  ]
+}
+
