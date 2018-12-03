@@ -94,10 +94,17 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	sort.Slice(rawCoins.Coins, func(i, j int) bool {
-		return rawCoins.Coins[i].Price**rawCoins.Coins[i].CirculatingSupply > rawCoins.Coins[j].Price**rawCoins.Coins[j].CirculatingSupply
+	cleanedCoins := []models.Coin{}
+
+	for key := range rawCoins.Coins {
+		if (rawCoins.Coins[key].CirculatingSupply != nil) {
+			cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
+		}
+	}
+	sort.Slice(cleanedCoins, func(i, j int) bool {
+		return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
 	})
-	topCoinSlice := rawCoins.Coins[:*topCoins]
+	topCoinSlice := cleanedCoins[:*topCoins]
 	// Search for NEU tokens
 	neumarkData, err := getCoinDetailsFromDia("NEU")
 	if err != nil {
