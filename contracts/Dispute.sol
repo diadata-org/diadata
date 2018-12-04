@@ -2,10 +2,9 @@ pragma solidity ^0.4.24;
 
 import "./DIAToken.sol";
 import "zos-lib/contracts/Initializable.sol";
-import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 import "openzeppelin-eth/contracts/math/SafeMath.sol";
 
-contract Dispute is Initializable, Ownable {
+contract Dispute is Initializable {
 	using SafeMath for uint;
 	// DIA token
 	DIAToken private dia_;
@@ -37,11 +36,9 @@ contract Dispute is Initializable, Ownable {
 
 	/**
 	* @dev Allows the current owner to transfer control of the contract to a newOwner.
-	* @param _owner The address to set as owner.
 	* @param _dia Address of DIA token contract.
 	*/
-	function initialize(address _owner, DIAToken _dia) public initializer() {
-		Ownable.initialize(_owner);
+	function initialize(DIAToken _dia) public initializer() {
 		dia_ = _dia;
 		voteLength_ = 10;
 		voteCost_ = 10;

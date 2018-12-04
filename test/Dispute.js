@@ -38,7 +38,7 @@ contract('Dispute', function (accounts) {
 
         var callData = encodeCall('initialize', ['address'], [owner]);
         await dia.sendTransaction({ data: callData, from: owner });
-        callData = encodeCall('initialize', ['address', 'address'], [owner, dia.address]);
+        callData = encodeCall('initialize', ['address'], [dia.address]);
         await dispute.sendTransaction({ data: callData, from: owner });
 
         let initialBalance = 1e6;
@@ -46,12 +46,6 @@ contract('Dispute', function (accounts) {
         await dia.mint(holder, initialBalance);
         await dia.increaseAllowance(dispute.address, initialBalance, { from: owner });
         await dia.increaseAllowance(dispute.address, initialBalance, { from: holder });
-    });
-
-    it("First account should be owner", async function () {
-        let contractOwner = await dispute.owner();
-
-        assert.equal(contractOwner, owner, "The owner of the contract is not accounts[0]");
     });
 
     it("DIA token holder should be able to open a dispute", async function () {
@@ -107,6 +101,16 @@ contract('Dispute', function (accounts) {
         let ongoing = await dispute.isDisputeOpen.call(1);
 
         assert.equal(ongoing.valueOf(), false, "Dispute was not closed");
+    });
+
+    it("Dispute can be opened after is closed", async function () {
+        await dispute.openDispute(1);
+        waitNBlocks(10);
+        await dispute.triggerDecision(1, { from: notHolder })
+        await dispute.openDispute(1);
+        let ongoing = await dispute.isDisputeOpen.call(1);
+
+        assert.equal(ongoing.valueOf(), true, "Dispute was not re-opened");
     });
 
     it("Nobody should be able to trigger decision before deadline", async function () {
