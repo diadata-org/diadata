@@ -111,7 +111,6 @@ func (s *KrakenScraper) Close() error {
 type KrakenPairScraper struct {
 	parent     *KrakenScraper
 	pair       dia.Pair
-	chanTrades chan *dia.Trade
 	closed     bool
 	lastRecord int64
 }
@@ -132,7 +131,6 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0, //TODO FIX to figure out the last we got...
-		chanTrades: make(chan *dia.Trade),
 	}
 
 	s.pairScrapers[pair.Symbol] = ps
@@ -200,7 +198,7 @@ func (s *KrakenScraper) Update() {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
 					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
-					ps.chanTrades <- t
+					ps.parent.chanTrades <- t
 				}
 			} else {
 				log.Printf("r nil")
