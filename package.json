@@ -1,0 +1,19 @@
+{
+  "name": "diavote",
+  "version": "1.0.0",
+  "description": "Contracts to handle dia dispute mechanism",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx truffle test"
+  },
+  "author": "Martin Diz",
+  "license": "ISC",
+  "dependencies": {
+    "ganache-cli": "^6.2.3",
+    "openzeppelin-eth": "^2.0.2",
+    "promisify": "0.0.3",
+    "solc": "^0.5.0",
+    "truffle": "^4.1.14",
+    "zos-lib": "^2.0.1"
+  }
+}
