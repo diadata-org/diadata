@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	krakenRefreshDelay = time.Second * 60
+	krakenRefreshDelay = time.Second * 60 * 3
 )
 
 type KrakenScraper struct {

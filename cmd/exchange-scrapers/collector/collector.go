@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	watchdogDelay = 60.0 * 2
+	watchdogDelay = 60.0 * 3.5
 )
 
 // handleTrades delegates trade information to Kafka
