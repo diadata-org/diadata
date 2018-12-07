@@ -374,24 +374,6 @@
     },
     {
       "Exchange": "HitBTC",
-      "ForeignName": "BCCFDAI",
-      "Ignore": true,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "HitBTC",
-      "ForeignName": "BCCFEURS",
-      "Ignore": true,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "HitBTC",
-      "ForeignName": "BCCFTUSD",
-      "Ignore": true,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "HitBTC",
       "ForeignName": "BCDBTC",
       "Ignore": false,
       "Symbol": "BCD"
@@ -404,19 +386,13 @@
     },
     {
       "Exchange": "HitBTC",
-      "ForeignName": "BCHBTC",
+      "ForeignName": "BCHABCBTC",
       "Ignore": false,
       "Symbol": "BCH"
     },
     {
       "Exchange": "HitBTC",
-      "ForeignName": "BCHETH",
-      "Ignore": true,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "HitBTC",
-      "ForeignName": "BCHUSD",
+      "ForeignName": "BCHABCUSD",
       "Ignore": false,
       "Symbol": "BCH"
     },
