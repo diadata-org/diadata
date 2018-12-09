@@ -36,7 +36,7 @@ contract Dispute is Initializable {
 	}
 
 	/**
-	* @dev Allows the current owner to transfer control of the contract to a newOwner.
+	* @dev Acts as constructor for upgradeable contracts
 	* @param _dia Address of DIA token contract.
 	*/
 	function initialize(DIAToken _dia) public initializer() {
@@ -75,11 +75,9 @@ contract Dispute is Initializable {
 	*/
 	function triggerDecision(uint256 _id) public{
 		// Maybe we can get rid of a require
-		// we may need to prevent trigger to be called multiple times for a dispute
-		// we can delete dispute here
-		// Person opening the dispute should vote?
-		// Dispute dispute = disputes_[_id];
 		require(disputes_[_id].deadline > 0, "Dispute not available");
+		// prevent method to be called again before its done
+		disputes_[_id].deadline = 0;
 		require(block.number > disputes_[_id].deadline, "Dispute deadline not reached");
 		uint256 dropVotes = 0;
 		uint256 keepVotes = 0;
