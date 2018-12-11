@@ -3,21 +3,50 @@ const util = require('util');
 const encodeCall = require('zos-lib/lib/helpers/encodeCall').default;
 const Dispute = artifacts.require('Dispute');
 const DIAToken = artifacts.require('DIAToken');
-const disputeLength = 10;//2 * 7 * 24 * 60 * 60 / 15;
+const maxTimeTol = 15
+// prevent tight block times
+const disputeLength = 2 * 7 * 24 * 60 * 60 + maxTimeTol;
 const voteCost = 10;
 
-const waitNBlocks = async n => {
-    const sendAsync = util.promisify(web3.currentProvider.sendAsync);
-    await Promise.all(
-        [...Array(n).keys()].map(i =>
-            sendAsync({
-                jsonrpc: '2.0',
-                method: 'evm_mine',
-                id: i
-            })
-        )
-    );
-};
+
+advanceTimeAndBlock = async (time) => {
+    let block = await web3.eth.getBlock("latest")
+    await advanceTime(time);
+    await advanceBlock();
+    let blockN = await web3.eth.getBlock("latest")
+    assert.notEqual(block.hash, blockN.hash, "Block not mined!");
+    assert.equal(Math.abs(blockN.timestamp - time - block.timestamp) < maxTimeTol, true, "Block timestamp not increased");
+    return Promise.resolve(web3.eth.getBlock('latest'));
+}
+
+advanceTime = (time) => {
+    return new Promise((resolve, reject) => {
+        web3.currentProvider.sendAsync({
+            jsonrpc: "2.0",
+            method: "evm_increaseTime",
+            params: [time],
+            id: new Date().getTime()
+        }, (err, result) => {
+            if (err) { return reject(err); }
+            return resolve(result);
+        });
+    });
+}
+
+advanceBlock = () => {
+    return new Promise((resolve, reject) => {
+        web3.currentProvider.sendAsync({
+            jsonrpc: "2.0",
+            method: "evm_mine",
+            id: new Date().getTime()
+        }, (err, result) => {
+            if (err) { return reject(err); }
+            const newBlockHash = web3.eth.getBlock('latest').hash;
+
+            return resolve(newBlockHash)
+        });
+    });
+}
 
 async function assertRevert(promise) {
     try {
@@ -35,7 +64,6 @@ contract('Dispute', function (accounts) {
     let notHolder = accounts[2];
     let dispute;
     let initialBalance = 1e6;
-
 
     beforeEach('setup contract before each test', async function () {
         dispute = await Dispute.new({ from: owner });
@@ -113,18 +141,19 @@ contract('Dispute', function (accounts) {
             vote = !vote;
         }
 
-        waitNBlocks(disputeLength)
+        await advanceTimeAndBlock(disputeLength)
         await dispute.triggerDecision(1)
 
         let reward = Math.floor((10 - winners) / winners * voteCost);
         vote = true;
 
-        let balance = await dia.balanceOf.call(owner);
-        assert.equal(balance.valueOf(), initialBalance + reward, "Owner balance mismatch");
+
+        let balance = await dispute.checkRewardsBalance.call({ from: owner });
+        assert.equal(balance.valueOf(), voteCost + reward, "Owner balance mismatch");
 
         for (var i = 1; i < 10; i++) {
-            balance = await dia.balanceOf.call(accounts[i]);
-            assert.equal(balance.valueOf(), initialBalance + (vote ? reward : -voteCost), "account " + i.toString() + " balance mismatch");
+            let balance = await dispute.checkRewardsBalance.call({ from: accounts[i] });
+            assert.equal(balance.valueOf(), (vote ? voteCost + reward : 0), "account " + i.toString() + " balance mismatch");
             vote = !vote;
         }
     });
@@ -143,22 +172,24 @@ contract('Dispute', function (accounts) {
             vote = !vote;
         }
 
-        waitNBlocks(disputeLength)
+        await advanceTimeAndBlock(disputeLength);
+
         await dispute.triggerDecision(1)
 
         let reward = (10 - winners) / winners * voteCost
         vote = false;
 
-        let balance = await dia.balanceOf.call(owner);
-        assert.equal(balance.valueOf(), initialBalance - voteCost, "Owner balance mismatch");
+        let balance = await dispute.checkRewardsBalance.call({ from: owner });
+        assert.equal(balance.valueOf(), 0, "Owner balance mismatch");
 
-        balance = await dia.balanceOf.call(holder);
-        assert.equal(balance.valueOf(), initialBalance + reward, "holder balance mismatch");
+        balance = await dispute.checkRewardsBalance.call({ from: holder });
+        assert.equal(balance.valueOf(), voteCost + reward, "holder balance mismatch");
 
 
         for (var i = 2; i < 10; i++) {
-            balance = await dia.balanceOf.call(accounts[i]);
-            assert.equal(balance.valueOf(), initialBalance + (vote ? -voteCost : reward), "account " + i.toString() + " balance mismatch");
+            balance = await dispute.checkRewardsBalance.call({ from: accounts[i] });
+            assert.equal(balance.valueOf(), (vote ? 0 : voteCost + reward), "account " + i.toString() + " balance mismatch");
+
             vote = !vote;
         }
     });
@@ -174,7 +205,7 @@ contract('Dispute', function (accounts) {
 
     it("Anyone should be able to trigger decision after deadline", async function () {
         await dispute.openDispute(1);
-        waitNBlocks(disputeLength);
+        await advanceTimeAndBlock(disputeLength)
         await dispute.triggerDecision(1, { from: notHolder })
         let ongoing = await dispute.isDisputeOpen.call(1);
 
@@ -183,7 +214,8 @@ contract('Dispute', function (accounts) {
 
     it("Event is emitted when dispute is closed", async function () {
         await dispute.openDispute(1);
-        waitNBlocks(disputeLength);
+        await advanceTimeAndBlock(disputeLength)
+
         tx = await dispute.triggerDecision(1, { from: notHolder })
 
         assert.equal(tx.logs[0].event, 'DisputeClosed');
@@ -192,16 +224,17 @@ contract('Dispute', function (accounts) {
     });
 
     it("Event is emitted when dispute is created", async function () {
+        let block = await web3.eth.getBlock("latest")
         let tx = await dispute.openDispute(1);
 
         assert.equal(tx.logs[0].event, 'DisputeOpen');
         assert.equal(tx.logs[0].args._id.valueOf(), 1);
-        assert.equal(tx.logs[0].args._deadline.valueOf(), tx.logs[0].blockNumber + disputeLength);
+        assert.equal(Math.abs(tx.logs[0].args._deadline.valueOf() - block.timestamp - disputeLength + maxTimeTol) < maxTimeTol, true);
     })
 
     it("Dispute can be opened after is closed", async function () {
         await dispute.openDispute(1);
-        waitNBlocks(disputeLength);
+        await advanceTimeAndBlock(disputeLength)
         await dispute.triggerDecision(1, { from: notHolder })
         await dispute.openDispute(1);
         let ongoing = await dispute.isDisputeOpen.call(1);
@@ -211,8 +244,39 @@ contract('Dispute', function (accounts) {
 
     it("Nobody should be able to trigger decision before deadline", async function () {
         await dispute.openDispute(1);
-        waitNBlocks(disputeLength - 1);
+        await advanceTimeAndBlock(disputeLength - 100)
+        await web3.eth.getBlock("latest")
 
         await assertRevert(dispute.triggerDecision(1));
+    });
+
+    it("Participating in multiple votes should grant multiple rewards", async function () {
+        let max = 5;
+        for (let i = 0; i < max; i++) {
+            await dispute.openDispute(i);
+        }
+
+        await advanceTimeAndBlock(disputeLength + 10 * max)
+
+        for (let i = 0; i < max; i++) {
+            await dispute.triggerDecision(i);
+        }
+
+        balance = await dispute.checkRewardsBalance.call()
+        await assert.equal(balance.valueOf(), max * voteCost, "Balance mismatch");
+    });
+
+    it("If reward balance is 0 should not be possible to withdraw", async function () {
+        await assertRevert(dispute.claimRewards());
+    });
+
+    it("If reward balance is not 0 should be possible to withdraw", async function () {
+        await dispute.openDispute(1);
+        await advanceTimeAndBlock(disputeLength)
+        await dispute.triggerDecision(1)
+        await dispute.claimRewards()
+        balance = await dia.balanceOf(owner)
+
+        assert.equal(balance.valueOf(), initialBalance, "Dia holder vote not processed");
     });
 });

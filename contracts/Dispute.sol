@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./DIAToken.sol";
 import "zos-lib/contracts/Initializable.sol";
@@ -13,12 +13,15 @@ contract Dispute is Initializable {
 	// Event to emit when a dispute is finalized
 	event DisputeClosed(uint256 _id, bool _result);
 	// How many blocks should we wait before the dispute can be closed
-	// ~2 weeks. weeks x days x hours x minute x seconds / blockFreq
-	uint constant private voteLength_ = 10;//2*7*24*60*60/15;
+	// ~2 weeks. weeks x days x hours x minute x seconds
+	uint constant private DISPUTE_LENGTH = 2*7*24*60*60;
 	// How many token a user should stake on each vote
-	uint constant private voteCost_ = 10;
+	uint constant private VOTE_COST = 10;
 	// Disputes
 	mapping (uint256=>Disputes) private disputes_;
+	// Rewards that each voter can claim
+	mapping (address=>uint256) public rewards_;
+
 	struct Disputes{
 		// Block number to finalize dispute
 		uint deadline;
@@ -44,17 +47,6 @@ contract Dispute is Initializable {
 	}
 
 	/**
-	* @dev Start a dispute.
-	* @param _id data source identifier.
-	*/
-	function openDispute(uint256 _id) public {
-		require(disputes_[_id].deadline == 0, "Dispute already ongoing");
-		disputes_[_id].deadline = block.number+voteLength_;
-		emit DisputeOpen(_id, disputes_[_id].deadline);
-		vote(_id, true);
-	}
-
-	/**
 	* @dev Cast vote.
 	* @param _id Data source identifier.
 	* @param _vote true for drop and false to keep.
@@ -63,25 +55,34 @@ contract Dispute is Initializable {
 		// check only new voters
 		require (disputes_[_id].votersIndex[msg.sender] == 0, "Address already voted");
 		require (disputes_[_id].deadline > 0, "Dispute not available");
-		dia_.transferFrom(msg.sender, this, voteCost_);
+		dia_.transferFrom(msg.sender, this, VOTE_COST);
 		disputes_[_id].voters.push(Voter(msg.sender, _vote));
-		// Safe math may be required for many many voters
 		disputes_[_id].votersIndex[msg.sender] = disputes_[_id].voters.length;
+	}
+
+	/**
+	* @dev Start a dispute.
+	* @param _id data source identifier.
+	*/
+	function openDispute(uint256 _id) external {
+		require(disputes_[_id].deadline == 0, "Dispute already ongoing");
+		disputes_[_id].deadline = now+DISPUTE_LENGTH;
+		emit DisputeOpen(_id, disputes_[_id].deadline);
+		vote(_id, true);
 	}
 
 	/**
 	* @dev Once the deadline is reached this function should be called to get decision.
 	* @param _id data source id.
 	*/
-	function triggerDecision(uint256 _id) public{
+	function triggerDecision(uint256 _id) external{
 		// Maybe we can get rid of a require
 		require(disputes_[_id].deadline > 0, "Dispute not available");
+		require(now > disputes_[_id].deadline, "Dispute deadline not reached");
 		// prevent method to be called again before its done
 		disputes_[_id].deadline = 0;
-		require(block.number > disputes_[_id].deadline, "Dispute deadline not reached");
 		uint256 dropVotes = 0;
 		uint256 keepVotes = 0;
-		// if total voters did not overflow then votes neither
 		uint totalVoters = disputes_[_id].voters.length;
 		for (uint i = 0; i<totalVoters; i++){
 			if (disputes_[_id].voters[i].vote)
@@ -91,32 +92,42 @@ contract Dispute is Initializable {
 		}
 		bool drop = (dropVotes>keepVotes);
 		uint payment;
+		// use safe math to compute payment
 		if (drop)
-			// Protect the payment
-			payment = ((totalVoters).mul(voteCost_)).div(dropVotes);
+			payment = ((totalVoters).mul(VOTE_COST)).div(dropVotes);
 		else
-			payment = ((totalVoters).mul(voteCost_)).div(keepVotes);
-		// Maybe we can move this to claim reward? so the person closing the vote does not pay transfer fees
-		// Other options is to give vote remanent to person closing the vote
-		// uint winners=0;
+			payment = ((totalVoters).mul(VOTE_COST)).div(keepVotes);
 		for (i = 0; i < totalVoters; i++){
 			if (disputes_[_id].voters[i].vote == drop){
-				dia_.transfer(disputes_[_id].voters[i].id, payment);
-				//winners++;
+				rewards_[disputes_[_id].voters[i].id] += payment;
 			}
 			delete disputes_[_id].votersIndex[disputes_[_id].voters[i].id];
 		}
-		// payment =  totalVoters_[_id]*voteCost_-winers*voteCost_;
-		// dia_.transfer(msg.sender, payment);
 		delete disputes_[_id];
 		emit DisputeClosed(_id, drop);
+	}
+
+	/**
+	* @dev Claim rewards
+	*/
+	function claimRewards() external {
+		require(rewards_[msg.sender] > 0, "No balance to withdraw");
+		dia_.transfer(msg.sender, rewards_[msg.sender]);
+		rewards_[msg.sender] = 0;
+	}
+
+	/**
+	* @dev Check rewards balance for account calling the method
+	*/
+	function checkRewardsBalance() external view returns (uint256) {
+		return rewards_[msg.sender];
 	}
 
 	/**
 	* @dev get dispute status.
 	* @param _id data source id.
 	*/
-	function isDisputeOpen(uint256 _id) public view returns (bool) {
+	function isDisputeOpen(uint256 _id) external view returns (bool) {
 		return (disputes_[_id].deadline>0);
 	}
 
@@ -124,7 +135,7 @@ contract Dispute is Initializable {
 	* @dev check if address voted already.
 	* @param _id data source identifier.
 	*/
-	function didCastVote(uint256 _id) public view returns (bool){
+	function didCastVote(uint256 _id) external view returns (bool){
 		return (disputes_[_id].votersIndex[msg.sender]>0);
 	}
 }
