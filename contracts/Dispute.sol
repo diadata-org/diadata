@@ -13,10 +13,9 @@ contract Dispute is Initializable {
 	// Event to emit when a dispute is finalized
 	event DisputeClosed(uint256 _id, bool _result);
 	// How many blocks should we wait before the dispute can be closed
-	// ~2 weeks. weeks x days x hours x minute x seconds
-	uint constant private DISPUTE_LENGTH = 2*7*24*60*60;
+	uint private DISPUTE_LENGTH;
 	// How many token a user should stake on each vote
-	uint constant private VOTE_COST = 10;
+	uint private VOTE_COST;
 	// Disputes
 	mapping (uint256=>Disputes) private disputes_;
 	// Rewards that each voter can claim
@@ -43,6 +42,9 @@ contract Dispute is Initializable {
 	* @param _dia Address of DIA token contract.
 	*/
 	function initialize(DIAToken _dia) public initializer() {
+		// ~2 weeks. weeks x days x hours x minute x seconds
+		DISPUTE_LENGTH = 2*7*24*60*60;
+		VOTE_COST = 10;
 		dia_ = _dia;
 	}
 
