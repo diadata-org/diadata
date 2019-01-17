@@ -6,11 +6,15 @@ definitions:
         type: string
       foreignName:
         type: string
+      ignore:
+        type: boolean
       symbol:
         type: string
     type: object
   dia.Supply:
     properties:
+      block:
+        type: integer
       circulatingSupply:
         type: number
       name:
@@ -21,6 +25,13 @@ definitions:
         type: string
       time:
         type: string
+    type: object
+  dia.Symbols:
+    properties:
+      symbols:
+        items:
+          type: string
+        type: array
     type: object
   dia.Trade:
     properties:
@@ -41,7 +52,14 @@ definitions:
       volume:
         type: number
     type: object
-  diaApi.Coin:
+  models.Change:
+    properties:
+      usd:
+        items:
+          $ref: '#/definitions/models.CurrencyChange'
+        type: array
+    type: object
+  models.Coin:
     properties:
       circulatingSupply:
         type: number
@@ -58,57 +76,25 @@ definitions:
       volumeYesterdayUSD:
         type: number
     type: object
-  diaApi.CoinSymbolAndName:
+  models.CoinSymbolAndName:
     properties:
       name:
         type: string
       symbol:
         type: string
     type: object
-  diaApi.Coins:
+  models.Coins:
     properties:
       change:
         $ref: '#/definitions/models.Change'
         type: object
       coins:
         items:
-          $ref: '#/definitions/diaApi.Coin'
+          $ref: '#/definitions/models.Coin'
         type: array
       completeCoinList:
         items:
-          $ref: '#/definitions/diaApi.CoinSymbolAndName'
-        type: array
-    type: object
-  diaApi.Pairs:
-    properties:
-      pairs:
-        items:
-          $ref: '#/definitions/dia.Pair'
-        type: array
-    type: object
-  diaApi.SymbolDetails:
-    properties:
-      change:
-        $ref: '#/definitions/models.Change'
-        type: object
-      coin:
-        $ref: '#/definitions/diaApi.Coin'
-        type: object
-      exchanges:
-        items:
-          $ref: '#/definitions/models.SymbolExchangeDetails'
-        type: array
-    type: object
-  diaApi.points:
-    properties:
-      dataPoints:
-        type: string
-    type: object
-  models.Change:
-    properties:
-      usd:
-        items:
-          $ref: '#/definitions/models.CurrencyChange'
+          $ref: '#/definitions/models.CoinSymbolAndName'
         type: array
     type: object
   models.CurrencyChange:
@@ -118,6 +104,18 @@ definitions:
       rateYesterday:
         type: number
       symbol:
+        type: string
+    type: object
+  models.Pairs:
+    properties:
+      pairs:
+        items:
+          $ref: '#/definitions/dia.Pair'
+        type: array
+    type: object
+  models.Points:
+    properties:
+      dataPoints:
         type: string
     type: object
   models.Quotation:
@@ -136,6 +134,24 @@ definitions:
         type: string
       volumeYesterdayUSD:
         type: number
+    type: object
+  models.SymbolDetails:
+    properties:
+      change:
+        $ref: '#/definitions/models.Change'
+        type: object
+      coin:
+        $ref: '#/definitions/models.Coin'
+        type: object
+      exchanges:
+        items:
+          $ref: '#/definitions/models.SymbolExchangeDetails'
+        type: array
+      gfx1:
+        $ref: '#/definitions/models.Points'
+        type: object
+      rank:
+        type: integer
     type: object
   models.SymbolExchangeDetails:
     properties:
@@ -217,7 +233,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.points'
+            $ref: '#/definitions/models.Points'
             type: object
         "404":
           description: Symbol not found
@@ -258,7 +274,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.points'
+            $ref: '#/definitions/models.Points'
             type: object
         "404":
           description: Symbol not found
@@ -284,7 +300,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.Coins'
+            $ref: '#/definitions/models.Coins'
             type: object
         "500":
           description: error
@@ -305,7 +321,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.Pairs'
+            $ref: '#/definitions/models.Pairs'
             type: object
         "500":
           description: error
@@ -428,7 +444,7 @@ paths:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/diaApi.SymbolDetails'
+            $ref: '#/definitions/models.SymbolDetails'
             type: object
         "404":
           description: Symbol not found
@@ -441,6 +457,42 @@ paths:
             $ref: '#/definitions/restApi.APIError'
             type: object
       summary: Get Symbol Details
+      tags:
+      - dia
+  /v1/symbols:
+    get:
+      consumes:
+      - application/json
+      description: Get all symbols list
+      parameters:
+      - description: Some symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Some filter
+        in: path
+        name: filter
+        required: true
+        type: string
+      - description: scale 5m 30m 1h 4h 1d 1w
+        in: query
+        name: scale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/dia.Symbols'
+            type: object
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/restApi.APIError'
+            type: object
+      summary: Get all symbols list
       tags:
       - dia
 swagger: "2.0"

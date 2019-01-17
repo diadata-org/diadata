@@ -6,6 +6,27 @@ import (
 	"strings"
 )
 
+func (db *DB) GetAllSymbols() []string {
+	r := make(map[string]string)
+
+	// TODO: search in redis instead
+	for _, e := range dia.Exchanges() {
+		p, err := db.GetAvailablePairsForExchange(e)
+		if err == nil {
+			for _, v := range p {
+				r[v.Symbol] = v.Symbol
+			}
+		} else {
+			log.Error("GetAllSymbols", err)
+		}
+	}
+	s := []string{}
+	for _, value := range r {
+		s = append(s, value)
+	}
+	return s
+}
+
 func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
 	var cursor uint64
@@ -19,6 +40,7 @@ func (db *DB) GetSymbols(exchange string) ([]string, error) {
 			return result, err
 		}
 		for _, value := range keys {
+
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
 			if exchange == "" {
@@ -61,4 +83,70 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 	result.LastTrades = t
 
 	return result, err
+}
+
+func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
+	key := getKey("symbol", "details", symbol)
+	r, err := db.getSymbolDetails(symbol)
+	if err == nil {
+		r.Rank = rank
+		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
+		if err != nil {
+			log.Error("UpdateSymbolDetails setting cache\n", err)
+		}
+	} else {
+		log.Error("UpdateSymbolDetails", err)
+	}
+}
+
+func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
+	r := &SymbolDetails{}
+	key := getKey("symbol", "details", symbol)
+	err := db.redisClient.Get(key).Scan(r)
+	if err != nil {
+		return db.getSymbolDetails(symbol)
+	}
+	return r, err
+}
+
+func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
+	q, err := db.GetQuotation(symbol)
+	if err != nil {
+		return nil, err
+	} else {
+		r := &SymbolDetails{
+			Coin: Coin{
+				Symbol:             q.Symbol,
+				Name:               q.Name,
+				Price:              q.Price,
+				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
+				Time:               q.Time,
+				PriceYesterday:     q.PriceYesterday,
+			},
+			Exchanges: []SymbolExchangeDetails{},
+		}
+		r.Change, _ = db.GetCurrencyChange()
+		s, err := db.GetSupply(symbol)
+		if err == nil {
+			r.Coin.CirculatingSupply = &s.CirculatingSupply
+		}
+		exs, err := db.GetExchangesForSymbol(symbol)
+		if err == nil {
+			for _, e := range exs {
+				s, err2 := db.GetSymbolExchangeDetails(symbol, e)
+				if err2 == nil {
+					if s.VolumeYesterdayUSD != nil {
+						r.Exchanges = append(r.Exchanges, *s)
+					} else {
+						log.Warning("getSymbolDetails: VolumeYesterdayUSD nil on", e, "for", symbol, " skipping exchange in exchange list.")
+					}
+				}
+			}
+		}
+		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "")
+		if r.Gfx1 == nil || err != nil {
+			log.Error("Couldnt fetch points for ", symbol, err)
+		}
+		return r, err
+	}
 }

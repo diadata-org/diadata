@@ -59,7 +59,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.points"
+                            "$ref": "#/definitions/models.Points"
                         }
                     },
                     "404": {
@@ -119,7 +119,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.points"
+                            "$ref": "#/definitions/models.Points"
                         }
                     },
                     "404": {
@@ -157,7 +157,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.Coins"
+                            "$ref": "#/definitions/models.Coins"
                         }
                     },
                     "500": {
@@ -188,7 +188,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.Pairs"
+                            "$ref": "#/definitions/models.Pairs"
                         }
                     },
                     "500": {
@@ -369,7 +369,7 @@
                         "description": "success",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/diaApi.SymbolDetails"
+                            "$ref": "#/definitions/models.SymbolDetails"
                         }
                     },
                     "404": {
@@ -377,6 +377,59 @@
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/restApi.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/restApi.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/symbols": {
+            "get": {
+                "description": "Get all symbols list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dia"
+                ],
+                "summary": "Get all symbols list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Some symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Some filter",
+                        "name": "filter",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "scale 5m 30m 1h 4h 1d 1w",
+                        "name": "scale",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/dia.Symbols"
                         }
                     },
                     "500": {
@@ -400,6 +453,9 @@
                 "foreignName": {
                     "type": "string"
                 },
+                "ignore": {
+                    "type": "boolean"
+                },
                 "symbol": {
                     "type": "string"
                 }
@@ -408,6 +464,9 @@
         "dia.Supply": {
             "type": "object",
             "properties": {
+                "block": {
+                    "type": "integer"
+                },
                 "circulatingSupply": {
                     "type": "number"
                 },
@@ -422,6 +481,17 @@
                 },
                 "time": {
                     "type": "string"
+                }
+            }
+        },
+        "dia.Symbols": {
+            "type": "object",
+            "properties": {
+                "symbols": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -454,7 +524,18 @@
                 }
             }
         },
-        "diaApi.Coin": {
+        "models.Change": {
+            "type": "object",
+            "properties": {
+                "usd": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CurrencyChange"
+                    }
+                }
+            }
+        },
+        "models.Coin": {
             "type": "object",
             "properties": {
                 "circulatingSupply": {
@@ -480,7 +561,7 @@
                 }
             }
         },
-        "diaApi.CoinSymbolAndName": {
+        "models.CoinSymbolAndName": {
             "type": "object",
             "properties": {
                 "name": {
@@ -491,7 +572,7 @@
                 }
             }
         },
-        "diaApi.Coins": {
+        "models.Coins": {
             "type": "object",
             "properties": {
                 "change": {
@@ -501,62 +582,13 @@
                 "coins": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/diaApi.Coin"
+                        "$ref": "#/definitions/models.Coin"
                     }
                 },
                 "completeCoinList": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/diaApi.CoinSymbolAndName"
-                    }
-                }
-            }
-        },
-        "diaApi.Pairs": {
-            "type": "object",
-            "properties": {
-                "pairs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dia.Pair"
-                    }
-                }
-            }
-        },
-        "diaApi.SymbolDetails": {
-            "type": "object",
-            "properties": {
-                "change": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.Change"
-                },
-                "coin": {
-                    "type": "object",
-                    "$ref": "#/definitions/diaApi.Coin"
-                },
-                "exchanges": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.SymbolExchangeDetails"
-                    }
-                }
-            }
-        },
-        "diaApi.points": {
-            "type": "object",
-            "properties": {
-                "dataPoints": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Change": {
-            "type": "object",
-            "properties": {
-                "usd": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CurrencyChange"
+                        "$ref": "#/definitions/models.CoinSymbolAndName"
                     }
                 }
             }
@@ -571,6 +603,25 @@
                     "type": "number"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Pairs": {
+            "type": "object",
+            "properties": {
+                "pairs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dia.Pair"
+                    }
+                }
+            }
+        },
+        "models.Points": {
+            "type": "object",
+            "properties": {
+                "dataPoints": {
                     "type": "string"
                 }
             }
@@ -598,6 +649,32 @@
                 },
                 "volumeYesterdayUSD": {
                     "type": "number"
+                }
+            }
+        },
+        "models.SymbolDetails": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Change"
+                },
+                "coin": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Coin"
+                },
+                "exchanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SymbolExchangeDetails"
+                    }
+                },
+                "gfx1": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Points"
+                },
+                "rank": {
+                    "type": "integer"
                 }
             }
         },

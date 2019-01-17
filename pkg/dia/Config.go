@@ -1,15 +1,17 @@
 package dia
 
 import (
-	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
+
+	"github.com/tkanos/gonfig"
 )
 
 const (
 	KrakenExchange   = "Kraken"
 	BitfinexExchange = "Bitfinex"
 	BinanceExchange  = "Binance"
+	BittrexExchange  = "Bittrex"
 	CoinBaseExchange = "CoinBase"
 	HitBTCExchange   = "HitBTC"
 	SimexExchange    = "Simex"
@@ -18,115 +20,28 @@ const (
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
 	ZBExchange       = "ZB"
-	QuoineExchange	 = "Quoine"
+	QuoineExchange   = "Quoine"
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
 )
 
-func SymbolsFrontPage() []string {
-	return []string{
-		"BCH",
-		"BTC",
-		"ADA",
-		"DASH",
-		"DOGE",
-		"EOS",
-		"ETH",
-		"BNB",
-		"LTC",
-		"XMR",
-		"NEO",
-		"MIOTA",
-		"XRP",
-		"XLM",
-		"TRX",
-		"USDT",
-		"ETC",
-		"XEM",
-		"XTZ",
-		"VET",
-		"ZEC",
-		"OMG",
-		"MKR",
-		"BTG",
-		"ONT",
-		"ZRX",
-		"LSK",
-		"DCR",
-		"QTUM",
-		"BCN",
-		"DGB",
-		"ICX",
-		"VET",
-		"PAX",
-		"AE",
-		"BTS",
-		"BCD",
-		"ZIL",
-		"NANO",
-		"ICX",
-		"SC",
-		"STEEM",
-		"XVG",
-		"NPXS",
-		"WAVES",
-		"ETN",
-		"BTM",
-		"ETP",
-		"BAT",
-		"GNT",
-		"STRAT",
-		"HOT",
-		"REP",
-		"HOT",
-		"TUSD",
-		"SNT",
-		"PPT",
-		"ARDR",
-		"CNX",
-		"KMD",
-		"WTC",
-		"XET",
-		"LINK",
-		"WAN",
-		"IOST",
-		"MITH",
-		"MAID",
-		"RDD",
-		"AION",
-		"KCS",
-		"MOAC",
-		"CMT",
-		"HC",
-		"ELF",
-		"LRC",
-		"NAS",
-		"HT",
-		"QASH",
-		"GXS",
-		"DCN",
-		"BNT",
-		"AOA",
-		"RHOC",
-		"ARK",
-	}
-}
-
 func Exchanges() []string {
 	return []string{
-		KrakenExchange,
-		BitfinexExchange,
 		BinanceExchange,
+		BitfinexExchange,
+		BittrexExchange,
 		CoinBaseExchange,
-		HitBTCExchange,
-		SimexExchange,
-		HuobiExchange,
-		LBankExchange,
 		GateIOExchange,
+		HitBTCExchange,
+		HuobiExchange,
+		KrakenExchange,
+		LBankExchange,
 		OKExExchange,
-		ZBExchange,
 		QuoineExchange,
+		SimexExchange,
+		ZBExchange,
+		UnknownExchange,
 	}
 }
 

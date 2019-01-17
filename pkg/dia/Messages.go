@@ -15,12 +15,14 @@ type Supply struct {
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
+	Block             int64
 }
 
 type Pair struct {
 	Symbol      string
 	ForeignName string
 	Exchange    string
+	Ignore      bool
 }
 
 type Pairs []Pair
@@ -123,4 +125,12 @@ func (e *Supply) UnmarshalBinary(data []byte) error {
 // MarshalBinary -
 func (e *Pairs) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *Pairs) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
 }

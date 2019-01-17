@@ -13,7 +13,7 @@ func getKeySupply(value string) string {
 }
 
 func (db *DB) SymbolsWithASupply() ([]string, error) {
-	result := []string{"MIOTA"}
+	result := []string{}
 	var cursor uint64
 	key := getKeySupply("")
 	for {

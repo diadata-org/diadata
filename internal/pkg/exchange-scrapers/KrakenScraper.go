@@ -1,22 +1,19 @@
 package scrapers
 
 import (
-	// "encoding/json"
 	"errors"
 	"fmt"
 	"github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
-	// "io/ioutil"
 	"math"
-	// "net/http"
 	"strconv"
 	"sync"
 	"time"
 )
 
 const (
-	krakenRefreshDelay = time.Second * 60
+	krakenRefreshDelay = time.Second * 60 * 3
 )
 
 type KrakenScraper struct {
@@ -32,6 +29,7 @@ type KrakenScraper struct {
 	api          *krakenapi.KrakenApi
 	ticker       *time.Ticker
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
@@ -45,6 +43,7 @@ func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScr
 		ticker:       time.NewTicker(krakenRefreshDelay),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 	go s.mainLoop()
 	return s
@@ -112,7 +111,6 @@ func (s *KrakenScraper) Close() error {
 type KrakenPairScraper struct {
 	parent     *KrakenScraper
 	pair       dia.Pair
-	chanTrades chan *dia.Trade
 	closed     bool
 	lastRecord int64
 }
@@ -133,7 +131,6 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0, //TODO FIX to figure out the last we got...
-		chanTrades: make(chan *dia.Trade),
 	}
 
 	s.pairScrapers[pair.Symbol] = ps
@@ -147,7 +144,7 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *KrakenPairScraper) Channel() chan *dia.Trade {
+func (ps *KrakenScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 
@@ -195,12 +192,13 @@ func (s *KrakenScraper) Update() {
 
 		if err != nil {
 			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
+			time.Sleep(1 * time.Minute)
 		} else {
 			if r != nil {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
 					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
-					ps.chanTrades <- t
+					ps.parent.chanTrades <- t
 				}
 			} else {
 				log.Printf("r nil")

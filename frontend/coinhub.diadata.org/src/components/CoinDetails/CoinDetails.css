@@ -18,49 +18,85 @@ div.loading-data {
 }
 
 .coin-details div .container-fluid {
-	padding-left: 6rem;
+	padding-left: 5rem;
+	padding-right: 5rem;
+	padding-top: 16px;
 }
 
-#dd-currency {
-	float:right;
+.dropdown-wrap {
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+}
+
+#dd-currency,
+#dd-exchange,
+#dd-algorithm {
 	padding: 0;
+	margin: 16px 0 0 16px;
+	width: 130px;
 }
 
-/deep/ #dd-currency .btn {
+/deep/ #dd-currency .dropdown-toggle,
+/deep/ #dd-exchange .dropdown-toggle,
+/deep/ #dd-algorithm .dropdown-toggle {
+	width: 130px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+
+/deep/ .dropdown-toggle::after {
+	position: absolute;
+	top: 18px;
+	right: 7px;
+}
+
+/deep/ #dd-currency .btn,
+/deep/ #dd-exchange .btn,
+/deep/ #dd-algorithm .btn {
 	line-height: 1.9;
 	border-radius: 0;
 }
 
-/deep/ #dd-currency .dropdown-menu {
+/deep/ #dd-currency .dropdown-menu,
+/deep/ #dd-exchange .dropdown-menu,
+/deep/ #dd-algorithm .dropdown-menu {
 	font-size: 12px;
 }
 
 /deep/ #dd-currency button.btn-secondary:hover,
-/deep/ #dd-currency button.btn-secondary {
+/deep/ #dd-currency button.btn-secondary,
+/deep/ #dd-exchange button.btn-secondary:hover,
+/deep/ #dd-exchange button.btn-secondary,
+/deep/ #dd-algorithm button.btn-secondary:hover,
+/deep/ #dd-algorithm button.btn-secondary {
 	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
+    background-color: #00CCB7;
+    border-color: #00CCB7;
     font-weight: 600;
 }
 
 .coindata-charts {
 	width: 100%;
-	margin-right: 70px;
 }
 
 .data-sources-banner {
 	margin-top: 20px;
-	background-color: #FF7096;
+	background-color: #00CCB7;
 	color: #fff;
 	text-align: center;
-	margin-right: 70px;
 	line-height: 56px;
 	font-size: 1.25rem;
 }
 
 #dd-currency,
+/deep/ div .table-responsive.main,
+#dd-exchange,
+/deep/ div .table-responsive.main,
+#dd-algorithm,
 /deep/ div .table-responsive.main{
-	padding-right: 70px;
+	margin-right: 0;
 }
 
 /deep/ div .table-responsive.details{
@@ -76,6 +112,7 @@ div.loading-data {
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
 	text-align: right;
+	white-space: nowrap;
 }
 
 /deep/ table thead tr th:first-child,
@@ -107,24 +144,54 @@ div.loading-data {
     color: #000000 !important;
 }
 
-.text-methodology h6 {
+.text-methodology {
 	margin-right: 80px;
+	text-align: right;
 }
 
-@media (max-width: 768px) {	
-	.coin-details div .container-fluid  {
-		padding-left: 10px;
+@media (max-width: 768px) {
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
 	}
 
 	#dd-currency,
 	/deep/ div .table-responsive.main,
-	.data-sources-banner {
+	.data-sources-banner,
+	#dd-exchange,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner,
+	#dd-algorithm,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner{
 		margin-right: 10px;
 	}
 
 	.coindata-charts {
 		margin-left: 5px;
 		margin-right: 1px;
+	}
+
+	#dd-currency,
+	#dd-exchange,
+	#dd-algorithm {
+		padding: 0;
+		margin: 6px 0;
+		-webkit-box-flex: 1;
+		-ms-flex: 1;
+		flex: 1;
+		text-align: center;
+		min-width: 100px;
+	}
+
+	/deep/ #dd-currency .dropdown-toggle,
+	/deep/ #dd-exchange .dropdown-toggle,
+	/deep/ #dd-algorithm .dropdown-toggle {
+		width: 93%;
+	}
+
+	.text-methodology {
+		text-align: left;
 	}
 
 }
@@ -134,5 +201,25 @@ div.loading-data {
 	.text-methodology h6 {
 		text-align: left;
 		margin-right: 0;
+	}
+
+	#dd-currency,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner,
+	#dd-exchange,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner,
+	#dd-algorithm,
+	/deep/ div .table-responsive.main,
+	.data-sources-banner{
+		margin-right: 0;
+		padding-right: 0;
+	}
+}
+
+@media (min-width: 768px)  and (max-width: 1023px){
+
+	.coin-details div .container-fluid {
+		padding: 16px 16px 0 16px;
 	}
 }

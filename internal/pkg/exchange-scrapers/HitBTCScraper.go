@@ -29,7 +29,6 @@ type Event struct {
 type HitBTCScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -40,6 +39,7 @@ type HitBTCScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HitBTCPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
@@ -51,6 +51,7 @@ func NewHitBTCScraper(exchangeName string) *HitBTCScraper {
 		pairScrapers: make(map[string]*HitBTCPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -67,41 +68,29 @@ func NewHitBTCScraper(exchangeName string) *HitBTCScraper {
 
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
-
+	var err error
 	for true {
-
 		message := &Event{}
-		if err := s.wsClient.ReadJSON(&message); err != nil {
-			println(err.Error())
+		if err = s.wsClient.ReadJSON(&message); err != nil {
+			log.Error(err.Error())
 			break
 		}
-
 		if message.Method == "updateTrades" {
-
 			md := message.Params.(map[string]interface{})
 			ps, ok := s.pairScrapers[md["symbol"].(string)]
-
 			if ok {
-
-				md_data := md["data"].([]interface{})
-
-				for _, v := range md_data {
-
-					md_element := v.(map[string]interface{})
-
-					f64Price_string := md_element["price"].(string)
-					f64Price, err := strconv.ParseFloat(f64Price_string, 64)
-
+				mdData := md["data"].([]interface{})
+				for _, v := range mdData {
+					mdElement := v.(map[string]interface{})
+					f64PriceString := mdElement["price"].(string)
+					f64Price, err := strconv.ParseFloat(f64PriceString, 64)
 					if err == nil {
-
-						f64Volume_string := md_element["quantity"].(string)
-						f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
-
+						f64VolumeString := mdElement["quantity"].(string)
+						f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
 						if err == nil {
-							timeStamp, _ := time.Parse(time.RFC3339, md_element["timestamp"].(string))
-							if md_element["id"] != 0 {
-
-								if md_element["side"] == "sell" {
+							timeStamp, _ := time.Parse(time.RFC3339, mdElement["timestamp"].(string))
+							if mdElement["id"] != 0 {
+								if mdElement["side"] == "sell" {
 									f64Volume = -f64Volume
 								}
 								t := &dia.Trade{
@@ -110,23 +99,24 @@ func (s *HitBTCScraper) mainLoop() {
 									Price:          f64Price,
 									Volume:         f64Volume,
 									Time:           timeStamp,
-									ForeignTradeID: strconv.FormatInt(int64(md_element["id"].(float64)), 16),
+									ForeignTradeID: strconv.FormatInt(int64(mdElement["id"].(float64)), 16),
 									Source:         s.exchangeName,
 								}
-								ps.chanTrades <- t
+								ps.parent.chanTrades <- t
 							}
 						} else {
-							log.Printf("error parsing volume %v", md_element["quantity"].(string))
+							log.Error("error parsing volume " + mdElement["quantity"].(string))
 						}
 					} else {
-						log.Printf("error parsing price %v", md_element["price"].(string))
+						log.Error("error parsing price " + mdElement["price"].(string))
 					}
 				}
 			} else {
-				log.Printf("Unknown Pair %v", md["symbol"].(string))
+				log.Error("Unknown Pair " + md["symbol"].(string))
 			}
 		}
 	}
+	s.cleanup(err)
 }
 
 func (s *HitBTCScraper) cleanup(err error) {
@@ -144,12 +134,11 @@ func (s *HitBTCScraper) cleanup(err error) {
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *HitBTCScraper) Close() error {
-
 	if s.closed {
 		return errors.New("HitBTCScraper: Already closed")
 	}
-
 	close(s.shutdown)
+	s.wsClient.Close()
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -172,9 +161,8 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &HitBTCPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -247,10 +235,9 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // HitBTCPairScraper implements PairScraper for HitBTC
 type HitBTCPairScraper struct {
-	parent     *HitBTCScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *HitBTCScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -259,7 +246,7 @@ func (ps *HitBTCPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *HitBTCPairScraper) Channel() chan *dia.Trade {
+func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

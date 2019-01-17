@@ -36,18 +36,23 @@ type Datastore interface {
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
-
 	Flush() error
-
-	GetFilterPoints(filter string, exchange string, symbol string, scale string) ([]clientInfluxdb.Result, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
+	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
+	GetAllSymbols() []string
+	GetCoins() (*Coins, error)
+	GetSymbolDetails(symbol string) (*SymbolDetails, error)
+	UpdateSymbolDetails(symbol string, rank int)
+	GetConfigTogglePairDiscovery() (bool, error)
 }
 
 const (
-	influxMaxPointsInBatch = 200
+	influxMaxPointsInBatch = 5000
+	timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
 type DB struct {
@@ -81,12 +86,31 @@ func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb
 }
 
 func NewDataStore() (*DB, error) {
-	return NewDataStoreWithOptions(true)
+	return NewDataStoreWithOptions(true, true)
+}
+func NewInfluxDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(false, true)
 }
 
-func NewDataStoreWithOptions(red bool) (*DB, error) {
+func NewRedisDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
+}
+
+func NewDataStoreWithoutInflux() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
+}
+
+func NewDataStoreWithoutRedis() (*DB, error) {
+	return NewDataStoreWithOptions(false, true)
+}
+
+func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
+	var ci clientInfluxdb.Client
+	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
-	if red {
+	var err error
+
+	if withRedis {
 		r = redis.NewClient(&redis.Options{
 			Addr:     "redis:6379",
 			Password: "", // no password set
@@ -99,23 +123,22 @@ func NewDataStoreWithOptions(red bool) (*DB, error) {
 		}
 		log.Debug("NewDB", pong2)
 	}
-	i, err := clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-		Addr:     "http://influxdb:8086",
-		Username: "",
-		Password: "",
-	})
-	if err != nil {
-		log.Error("NewDataStore influxdb", err)
+	if withInflux {
+		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
+			Addr:     "http://influxdb:8086",
+			Username: "",
+			Password: "",
+		})
+		if err != nil {
+			log.Error("NewDataStore influxdb", err)
+		}
+		bp, _ = createBatchInflux()
+		_, err = queryInfluxDB(ci, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+		if err != nil {
+			log.Errorln("queryInfluxDB CREATE DATABASE", err)
+		}
 	}
-
-	bp, _ := createBatchInflux()
-
-	_, err = queryInfluxDB(i, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
-	if err != nil {
-		log.Errorln("queryInfluxDB CREATE DATABASE", err)
-	}
-
-	return &DB{r, i, bp, 0}, nil
+	return &DB{r, ci, bp, 0}, nil
 }
 
 func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
@@ -172,7 +195,7 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
-		log.Info("AddPoint forcing write Bash")
+		log.Debug("AddPoint forcing write Bash")
 		db.WriteBashInflux()
 	}
 }

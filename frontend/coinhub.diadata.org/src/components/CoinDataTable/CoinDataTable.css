@@ -43,9 +43,8 @@ div.loading-data {
 
 .line-separator {
 	border-bottom: 2px solid #564dfc;
-	margin-bottom: 24px;
-	margin-left: 80px;
-	margin-right: 80px;
+	margin-left: 5rem;
+	margin-right: 5rem;
 }
 
 .ui.search.selection.dropdown {
@@ -55,6 +54,10 @@ div.loading-data {
 
 /deep/ .ui.fluid.dropdown > .dropdown.icon {
 	display: none;
+}
+
+.dd-currency-wrap {
+	padding: 0;
 }
 
 #dd-currency {
@@ -74,13 +77,14 @@ div.loading-data {
 /deep/ #dd-currency button.btn-secondary:hover,
 /deep/ #dd-currency button.btn-secondary {
 	color: #fff;
-    background-color: #FF7096;
-    border-color: #FF7096;
+    background-color: #00CCB7;
+    border-color: #00CCB7;
     font-weight: 600;
 }
 
 .subtext1 ul {
 	list-style-type: none;
+	padding: 0;
 }
 
 .subtext1,
@@ -90,8 +94,7 @@ section div .table-responsive{
 }
 
 .search-currency-row {
-	padding-left: 65px;
-	padding-right: 80px;
+	padding: 24px 80px 24px 65px;
 }
 
 .subtext2 {
@@ -106,6 +109,7 @@ span.coin-name {
 /deep/ table thead tr th,
 /deep/ table tbody tr td {
 	text-align: right;
+	white-space: nowrap;
 }
 
 /deep/ table tbody tr td {
@@ -116,6 +120,16 @@ span.coin-name {
 /deep/ table thead th:nth-child(2),
 /deep/ table td:nth-child(2){
 	text-align: left;
+	padding-left: 30px;
+}
+
+/deep/ table thead th:nth-child(4),
+/deep/ table td:nth-child(4){
+	text-align: center;
+}
+
+/deep/ table thead th:nth-child(7),
+/deep/ table td:nth-child(7){
 	padding-left: 30px;
 }
 
@@ -152,6 +166,10 @@ span.coin-name {
 	.link-row a#second {
 		margin-left: 5px;
 	}
+
+	.search-currency-row {
+		padding: 24px 80px 24px 65px;
+	}
 }
 
 @media (min-width: 375px) and (max-width: 767px) {	
@@ -166,20 +184,27 @@ span.coin-name {
 
 	.link-row a#first {
 		margin-left: 20px;
-	
 	}
 }
 
 
-@media (min-width: 320px) and (max-width: 767px) {	
+@media (min-width: 320px) and (max-width: 767px) {
+
+	.coin-data {
+		margin: 20px 16px 0 16px;
+	}
 
 	.search-currency-row,
 	.subtext1,
 	section div .table-responsive{
 		padding-left: 1px;
 		padding-right: 0;
-		padding-top: 0;
 	}
+
+	.search-currency-row div {
+		padding: 0;
+	}
+
 	.subtext2 {
 		padding-left: 40px;
 	}
@@ -195,10 +220,12 @@ span.coin-name {
 	
 }
 
-@media (min-width: 768px)  and (max-width: 1023px){	
-	/deep/ table{
-		width: 160%;
+@media (min-width: 768px)  and (max-width: 1023px){
+
+	.coin-data {
+		margin: 20px 16px 0 16px;
 	}
+
 	/deep/ table td:nth-child(2){
 		text-align: left;
 		padding-left: 2px;
@@ -209,8 +236,12 @@ span.coin-name {
 	section div .table-responsive{
 		padding-left: 1px;
 		padding-right: 0;
-		padding-top: 0;
 	}
+
+	.search-currency-row div {
+		padding: 0;
+	}
+
 	.subtext2 {
 		padding-left: 40px;
 	}
@@ -246,11 +277,10 @@ span.coin-name {
 	}
 }
 
+@media (min-width: 1024px) and (max-width: 1366px)  {
 
-
-@media (min-width: 1024px) and (max-width: 1366px)  {	
-	/deep/ table{
-		width: 150%;
+	.coin-data {
+		margin: 20px 5rem 0 5rem;
 	}
 
 	.search-currency-row,
@@ -258,13 +288,17 @@ span.coin-name {
 	section div .table-responsive{
 		padding-left: 1px;
 		padding-right: 0;
-		padding-top: 0;
 	}
 	.subtext2 {
 		padding-left: 40px;
 	}
+
 	.search-currency-row {
 		padding-left: 0;
+	}
+
+	.search-currency-row div {
+		padding: 0;
 	}
 
 	.line-separator {
@@ -278,5 +312,5 @@ span.coin-name {
 	.link-row a#second {
 		margin-left: 100px;
 	}
-	
+
 }

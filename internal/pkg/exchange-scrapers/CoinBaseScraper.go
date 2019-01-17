@@ -27,6 +27,7 @@ type CoinBaseScraper struct {
 	pairScrapers map[string]*CoinBasePairScraper // pc.Pair -> pairScraperSet
 	wsConn       *ws.Conn
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 const (
@@ -47,46 +48,38 @@ func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
 		pairScrapers: make(map[string]*CoinBasePairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
-
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial("wss://ws-feed.pro.coinbase.com", nil)
 	if err != nil {
 		println(err.Error())
 	}
 	s.wsConn = SwConn
-
 	go s.mainLoop()
 	return s
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
+	var err error
 	for true {
 		message := gdax.Message{}
-		if err := s.wsConn.ReadJSON(&message); err != nil {
+		if err = s.wsConn.ReadJSON(&message); err != nil {
 			println(err.Error())
 			break
 		}
-
 		if message.Type == ChannelTicker {
-			//	log.Printf("message: %+v\n", message)
-
 			ps, ok := s.pairScrapers[message.ProductId]
 			if ok {
 				f64Price, err := strconv.ParseFloat(message.Price, 64)
-
 				if err == nil {
 					f64Volume, err := strconv.ParseFloat(message.LastSize, 64)
-
 					if err == nil {
-
 						if message.TradeId != 0 {
-
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
-
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
 								Pair:           message.ProductId,
@@ -96,35 +89,31 @@ func (s *CoinBaseScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeId), 16),
 								Source:         s.exchangeName,
 							}
-
-							ps.chanTrades <- t
+							ps.parent.chanTrades <- t
 						}
 					} else {
-						log.Printf("error parsing LastSize %v", message.LastSize)
+						log.Error("error parsing LastSize " + message.LastSize)
 					}
 				} else {
-					log.Printf("error parsing price %v", message.Price)
-
+					log.Error("error parsing price " + message.Price)
 				}
 			} else {
-				log.Printf("unknown product %v", message.ProductId)
+				log.Error("unknown productError" + message.ProductId)
 			}
 		}
 	}
+	s.cleanup(err)
 }
 
 // closes all connected PairScrapers
 // must only be called from mainLoop
 func (s *CoinBaseScraper) cleanup(err error) {
-
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
-
 	if err != nil {
 		s.error = err
 	}
 	s.closed = true
-
 	close(s.shutdownDone) // signal that shutdown is complete
 }
 
@@ -134,6 +123,7 @@ func (s *CoinBaseScraper) Close() error {
 	if s.closed {
 		return errors.New("CoinBaseScraper: Already closed")
 	}
+	s.wsConn.Close()
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -184,7 +174,6 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 type CoinBasePairScraper struct {
 	parent     *CoinBaseScraper
 	pair       dia.Pair
-	chanTrades chan *dia.Trade
 	closed     bool
 	lastRecord int64
 }
@@ -205,7 +194,6 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0, //TODO FIX to figure out the last we got...
-		chanTrades: make(chan *dia.Trade),
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -235,7 +223,7 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *CoinBasePairScraper) Channel() chan *dia.Trade {
+func (ps *CoinBaseScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

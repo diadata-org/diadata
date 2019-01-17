@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"io"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 // empty type used for signaling
@@ -17,15 +18,13 @@ type APIScraper interface {
 	ScrapePair(pair dia.Pair) (PairScraper, error)
 	// FetchAvailablePairs returns a list with all available trade pairs
 	FetchAvailablePairs() (pairs []dia.Pair, err error)
+	// Channel returns a channel that can be used to receive trades
+	Channel() chan *dia.Trade
 }
 
 // PairScraper receives trades for a single pc.Pair from a single exchange.
 type PairScraper interface {
 	io.Closer
-
-	// Channel returns a channel that can be used to receive trades
-	Channel() chan *dia.Trade
-
 	// Error returns an error when the channel Channel() is closed
 	// and nil otherwise
 	Error() error
@@ -40,6 +39,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewBinanceScraper(key, secret, dia.BinanceExchange)
 	case dia.BitfinexExchange:
 		return NewBitfinexScraper(key, secret, dia.BitfinexExchange)
+	case dia.BittrexExchange:
+		return NewBittrexScraper(dia.BittrexExchange)
 	case dia.CoinBaseExchange:
 		return NewCoinBaseScraper(dia.CoinBaseExchange)
 	case dia.KrakenExchange:

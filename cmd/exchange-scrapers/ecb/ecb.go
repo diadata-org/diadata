@@ -48,18 +48,13 @@ var (
 var usdFor1Euro = -1.0
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datastore) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 
 	for {
-		t, ok := <-ps.Channel()
+		t, ok := <-c
 
 		if !ok {
-			if ps.Error() != nil {
-				log.Errorln("handleTrades Error:", ps.Error())
-			} else {
-				log.Printf("PairScraper for %s was shut down by user", ps.Pair())
-			}
-			wg.Done()
+			log.Error("error")
 			return
 		}
 
@@ -73,8 +68,9 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datasto
 			ds.SetPriceEUR("EUR", 1)
 		} else {
 			if usdFor1Euro > 0 {
-				ds.SetPriceUSD(symbol, t.Price/usdFor1Euro)
-				ds.SetPriceEUR(symbol, t.Price)
+				log.Info("setting ", symbol, usdFor1Euro/t.Price)
+				ds.SetPriceUSD(symbol, usdFor1Euro/t.Price)
+				ds.SetPriceEUR(symbol, 1/t.Price)
 			}
 		}
 	}
@@ -82,7 +78,6 @@ func handleTrades(ps scrapers.PairScraper, wg *sync.WaitGroup, ds models.Datasto
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
-
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
 	if err != nil {
@@ -92,18 +87,17 @@ func main() {
 		defer sECB.Close()
 
 		for _, pair := range pairs {
-			ps, err := sECB.ScrapePair(dia.Pair{
+			_, err := sECB.ScrapePair(dia.Pair{
 				Symbol:      pair,
 				ForeignName: pair,
 			})
 			if err != nil {
 				log.Fatal(err)
 			}
-			go handleTrades(ps, &wg, ds)
 			wg.Add(1)
 		}
 		sECB.Update()
+		go handleTrades(sECB.Channel(), &wg, ds)
 		defer wg.Wait()
 	}
-
 }

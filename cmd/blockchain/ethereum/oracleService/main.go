@@ -1,27 +1,26 @@
 package main
 
-import(
-	"os"
+import (
 	"bufio"
-	"fmt"
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
-	"time"
-	"strings"
 	"net/http"
-	"io/ioutil"
+	"os"
 	"sort"
+	"strings"
+	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/model"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
-
 
 func main() {
 	/*
@@ -80,12 +79,12 @@ func main() {
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				periodicOracleUpdateHelper(topCoins, auth, contract)
 			}
 		}
 	}()
-	select{}
+	select {}
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
@@ -94,11 +93,46 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
 		return err
 	}
-	sort.Slice(rawCoins.Coins, func(i, j int) bool {
-		return rawCoins.Coins[i].Price * *rawCoins.Coins[i].CirculatingSupply > rawCoins.Coins[j].Price * *rawCoins.Coins[j].CirculatingSupply
+
+	cleanedCoins := []models.Coin{}
+
+	for key := range rawCoins.Coins {
+		if (rawCoins.Coins[key].CirculatingSupply != nil) {
+			cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
+		}
+	}
+	sort.Slice(cleanedCoins, func(i, j int) bool {
+		return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
 	})
-	topCoinSlice := rawCoins.Coins[:*topCoins]
+	topCoinSlice := cleanedCoins[:*topCoins]
+	// Search for NEU tokens
+	neumarkData, err := getCoinDetailsFromDia("NEU")
+	if err != nil {
+		log.Fatalf("Failed to retrieve NEU token from DIA: %v", err)
+		return err
+	}
+	topCoinSlice = append(topCoinSlice, *neumarkData)
 	err = updateTopCoins(topCoinSlice, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	// Get EUR and CAD exchange rates
+	eurRate, err := getECBRatesFromDia("EUR")
+	if err != nil {
+		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "EUR", err)
+		return err
+	}
+	cadRate, err := getECBRatesFromDia("CAD")
+	if err != nil {
+		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "CAD", err)
+		return err
+	}
+
+	ecbRates := []models.Quotation{*eurRate, *cadRate}
+
+	err = updateECBRates(ecbRates, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -106,14 +140,14 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	return nil
 }
 
-func updateTopCoins(topCoins []diaApi.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
 	for _, element := range topCoins {
 		symbol := strings.ToUpper(element.Symbol)
 		name := element.Name
 		supply := element.CirculatingSupply
 		price := element.Price
 		// Get 5 digits after the comma by multiplying price with 100000
-		err := updateOracle(contract, auth, name, symbol, int64(price * 100000), int64(*supply));
+		err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(*supply))
 		if err != nil {
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
@@ -123,7 +157,24 @@ func updateTopCoins(topCoins []diaApi.Coin, auth *bind.TransactOpts, contract *o
 	return nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) (error) {
+func updateECBRates(ecbRates []models.Quotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	for _, element := range ecbRates {
+		symbol := strings.ToUpper(element.Symbol)
+		name := element.Name
+		price := element.Price
+		// Get 5 digits after the comma by multiplying price with 100000
+		// Set supply to 0, as we don't have a supply for fiat currencies
+		err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+		if err != nil {
+			log.Fatalf("Failed to update Oracle: %v", err)
+			return err
+		}
+		time.Sleep(10 * time.Minute)
+	}
+	return nil
+}
+
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) error {
 	var err error
 	if deployedContract != "" {
 		*contract, err = oracleService.NewDiaOracle(common.HexToAddress(deployedContract), conn)
@@ -146,7 +197,32 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func getToplistFromDia() (*diaApi.Coins, error) {
+func getCoinDetailsFromDia(symbol string) (*models.Coin, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/symbol/" + symbol)
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b models.SymbolDetails
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b.Coin, nil
+		}
+		return nil, err
+	}
+}
+
+func getToplistFromDia() (*models.Coins, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/coins")
 	if err != nil {
 		return nil, err
@@ -162,7 +238,33 @@ func getToplistFromDia() (*diaApi.Coins, error) {
 			return nil, err
 		}
 
-		var b diaApi.Coins
+		var b models.Coins
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
+// Getting EUR vs XXX rate
+func getECBRatesFromDia(symbol string) (*models.Quotation, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b models.Quotation
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b, nil
@@ -183,7 +285,7 @@ func updateOracle(
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 800725,
-	//	Nonce: big.NewInt(time.Now().Unix()),
+		//	Nonce: big.NewInt(time.Now().Unix()),
 	}, name, symbol, big.NewInt(price), big.NewInt(supply), big.NewInt(time.Now().Unix()))
 	// prices are with 5 digits after the comma
 	if err != nil {

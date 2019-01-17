@@ -17,6 +17,11 @@ type Client struct {
 	token                 string
 	lastSupplyUpdateTime  time.Time
 	lastSupplyUpdateValue float64
+	url                   string
+}
+
+type Symbols struct {
+	Symbols []string
 }
 
 const BaseUrl string = "https://api.diadata.org/"
@@ -27,7 +32,7 @@ type response struct {
 
 func (c *Client) refresh() error {
 
-	url := BaseUrl + "auth/refresh_token"
+	url := c.url + "auth/refresh_token"
 
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -53,7 +58,7 @@ func (c *Client) login() error {
 		Username string
 		Password string
 	}
-	url := BaseUrl + "login"
+	url := c.url + "login"
 
 	jsonStr, err := json.Marshal(&login{
 		Username: c.config.ApiKey,
@@ -90,6 +95,59 @@ func (c *Client) login() error {
 	return nil
 }
 
+func GetSupply(symbol string) (*Supply, error) {
+	url := BaseUrl + "/v1/supply/" + symbol
+	log.Println("Checking supply for", symbol, "on", url)
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("error on %v -> %v", url, response.StatusCode)
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug("%s\n", string(contents))
+		var b Supply
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			log.Debug("got", b)
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
+// TODO remove URL
+func GetSymbolsList(url string) ([]string, error) {
+	log.Println("getSymbolList")
+	response, err := http.Get(url + "/v1/symbols")
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error getSymbolList")
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+		log.Debug("%s\n", string(contents))
+		var b Symbols
+
+		err = json.Unmarshal(contents, &b)
+
+		if err == nil {
+			return b.Symbols, nil
+		}
+		return nil, err
+	}
+}
+
 func GetConfigApi() *ConfigApi {
 	var c ConfigApi
 	configFile := "/run/secrets/api_diadata"
@@ -110,11 +168,25 @@ func GetConfigApi() *ConfigApi {
 	return &c
 }
 
-func NewClient(config *ConfigApi) *Client {
-
+func NewClientWithUrl(config *ConfigApi, url string) *Client {
 	c := &Client{
 		config: config,
 		token:  "",
+		url:    url,
+	}
+	err := c.login()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return c
+}
+
+func NewClient(config *ConfigApi) *Client {
+	c := &Client{
+		config: config,
+		token:  "",
+		url:    BaseUrl,
 	}
 	err := c.login()
 	if err != nil {
@@ -140,7 +212,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Println("StatusCode", resp.StatusCode)
+	log.Debug("StatusCode", resp.StatusCode)
 
 	if 200 != resp.StatusCode {
 
@@ -160,9 +232,9 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 	return body, nil
 }
 
-func (c *Client) SendSupply(s *Supply) error {
+func (c *Client) SendSupplyWithForceOption(s *Supply, force bool) error {
 	lastUpdate := time.Since(c.lastSupplyUpdateTime)
-	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply {
+	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply || force {
 		c.lastSupplyUpdateTime = time.Now()
 		c.lastSupplyUpdateValue = s.CirculatingSupply
 		return c.sendSupply(s)
@@ -172,6 +244,10 @@ func (c *Client) SendSupply(s *Supply) error {
 	}
 }
 
+func (c *Client) SendSupply(s *Supply) error {
+	return c.SendSupplyWithForceOption(s, false)
+}
+
 func (c *Client) sendSupply(s *Supply) error {
 
 	jsonStr, err := json.Marshal(s)
@@ -179,7 +255,7 @@ func (c *Client) sendSupply(s *Supply) error {
 		return err
 	}
 
-	url := BaseUrl + "v1/supply"
+	url := c.url + "v1/supply"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 

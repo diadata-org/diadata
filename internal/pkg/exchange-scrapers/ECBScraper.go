@@ -29,6 +29,7 @@ type ECBScraper struct {
 	pairScrapers map[string]*ECBPairScraper // dia.Pair -> pairScraperSet
 	ticker       *time.Ticker
 	datastore    models.Datastore
+	chanTrades   chan *dia.Trade
 }
 
 type (
@@ -62,6 +63,7 @@ func NewECBScraper(datastore models.Datastore) *ECBScraper {
 		error:        nil,
 		ticker:       time.NewTicker(refreshDelay),
 		datastore:    datastore,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	go s.mainLoop()
@@ -114,11 +116,9 @@ func (s *ECBScraper) Close() error {
 
 // ECBPairScraper implements PairScraper for ECB
 type ECBPairScraper struct {
-	parent     *ECBScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
-	lastRecord time.Time
+	parent *ECBScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
@@ -134,9 +134,8 @@ func (s *ECBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		return nil, errors.New("ECBScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &ECBPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.Symbol] = ps
@@ -145,7 +144,7 @@ func (s *ECBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *ECBPairScraper) Channel() chan *dia.Trade {
+func (ps *ECBScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 
@@ -223,41 +222,36 @@ func (s *ECBScraper) Update() error {
 					return fmt.Errorf("error parsing time %v %v", valueCubeTime.Time, err)
 				}
 
-				if time != ps.lastRecord {
-					ps.lastRecord = time
-					t := &dia.Trade{
-						Pair:   pair,
-						Symbol: pair,
-						Price:  rate,
-						Volume: 0,
-						Time:   time,
-						Source: "ECB",
-					}
-					log.Printf("writing trade %#v in %v\n", t, ps.chanTrades)
-					ps.chanTrades <- t
-				} else {
-					log.Printf("ignore because same time %#v\n", pair)
+				t := &dia.Trade{
+					Pair:   pair,
+					Symbol: pair,
+					Price:  rate,
+					Volume: 0,
+					Time:   time,
+					Source: "ECB",
 				}
-
-				if valueCube.Currency == "USD" {
+				log.Printf("writing trade %#v in %v\n", t, s.chanTrades)
+				s.chanTrades <- t
+				c := valueCube.Currency
+				if c == "USD" {
 					change.USD = append(change.USD, models.CurrencyChange{
 						Symbol:        "EUR",
 						Rate:          1.0 / euroDollar,
 						RateYesterday: 1.0 / euroDollar, // TOFIX
 					})
 				} else {
-					change.USD = append(change.USD, models.CurrencyChange{
-						Symbol:        valueCube.Currency,
-						Rate:          rate / euroDollar,
-						RateYesterday: rate / euroDollar, // TOFIX
-					})
+					// list for coinhub
+					if (c == "JPY") || c == "GBP" || c == "SEK" || c == "CHF" || c == "NOK" || c == "AUD" || c == "CAD" || c == "CNY" || c == "KRW" {
+						change.USD = append(change.USD, models.CurrencyChange{
+							Symbol:        c,
+							Rate:          rate / euroDollar,
+							RateYesterday: rate / euroDollar, // TOFIX
+						})
+					}
 				}
 			}
 		}
-		//
 		s.datastore.SetCurrencyChange(change)
-		//
 	}
-
 	return err
 }

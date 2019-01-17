@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"os/user"
@@ -27,10 +29,11 @@ func getConfig(exchange string) (*dia.ConfigApi, error) {
 	return &configApi, err
 }
 
+type Pairs struct {
+	Coins []dia.Pair
+}
+
 func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
-	type Pairs struct {
-		Coins []dia.Pair
-	}
 	configFileAPI := "config/" + exchange + ".json"
 	var coins Pairs
 	err := gonfig.GetConf(configFileAPI, &coins)
@@ -63,47 +66,102 @@ func (t *Task) stop() {
 	log.Println("Done")
 }
 
+func savePairsToFile(exchange string, pairs []dia.Pair) {
+	log.Info("savePairsToFile:", exchange)
+	b, e := json.Marshal(&Pairs{pairs})
+	if e == nil {
+		log.Info("marshalled ")
+	} else {
+		log.Error("erreur save", e)
+	}
+	e = ioutil.WriteFile("/tmp/"+exchange+".json", b, 0644)
+}
+
 func updateExchangePairs() {
-	log.Println("Updating exchanges pairs...")
-	for _, e := range dia.Exchanges() {
-		c, err := getConfig(e)
-		var s scrapers.APIScraper
-		if err == nil {
-			s = scrapers.NewAPIScraper(e, c.ApiKey, c.SecretKey)
-		} else {
-			log.Error("Error processing config for exchange:"+e+" error:", err.Error())
-			s = scrapers.NewAPIScraper(e, "", "")
-		}
-		if s != nil {
-			p, err := s.FetchAvailablePairs()
-			if err == nil {
-				err := db.SetAvailablePairsForExchange(e, p)
-				if err == nil {
-					log.Println("Exchange :" + e + " updated")
-				} else {
-					log.Error("Error adding pairs  to redis for exchange:"+e+" error:", err.Error())
-				}
-			} else {
-				log.Error("Error fetching pairs for exchange:"+e+" error:", err.Error())
+	t, err := db.GetConfigTogglePairDiscovery()
+	if err != nil {
+		log.Error("updateExchangePairs GetConfigTogglePairDiscovery", err.Error())
+		return
+	}
+	if t == false {
+		log.Info("GetConfigTogglePairDiscovery = false, using default values")
+		getInitialExchangePairs()
+	} else {
+		for _, e := range dia.Exchanges() {
+			if e == "CoinBase" || e == "Huobi" || e == "Unknown" {
+				continue
 			}
-			go func(s scrapers.APIScraper, e string) {
-				time.Sleep(5 * time.Second)
-				log.Error("Closing scrapper: " + e)
-				s.Close()
-			}(s, e)
-		} else {
-			log.Error("Error creating APIScraper forexchange:" + e)
+			log.Println("Updating", e)
+			c, err := getConfig(e)
+			var s scrapers.APIScraper
+			if err == nil {
+				s = scrapers.NewAPIScraper(e, c.ApiKey, c.SecretKey)
+			} else {
+				log.Error("Error processing config for exchange:"+e+" error:", err.Error())
+				s = scrapers.NewAPIScraper(e, "", "")
+			}
+			if s != nil {
+				p, err := s.FetchAvailablePairs()
+				if err == nil {
+					addLocalPairs(e, p)
+					err := db.SetAvailablePairsForExchange(e, p)
+					if err == nil {
+						log.Println("Exchange :" + e + " updated")
+					} else {
+						log.Error("Error adding pairs  to redis for exchange:"+e+" error:", err.Error())
+					}
+				} else {
+					//	log.Info("locale ", err.Error())
+					log.Error("Error fetching pairs for exchange:"+e+" error:", err.Error())
+				}
+				go func(s scrapers.APIScraper, e string) {
+					time.Sleep(5 * time.Second)
+					log.Error("Closing scrapper: " + e)
+					s.Close()
+				}(s, e)
+			} else {
+				log.Error("Error creating APIScraper forexchange:" + e)
+			}
+		}
+		log.Println("Update complete.")
+	}
+}
+
+func addLocalPairs(exchange string, remotePairs []dia.Pair) []dia.Pair {
+	pLocales, _ := getPairsFromConfig(exchange)
+	log.Info(exchange, " nb remote:", len(remotePairs), " nb pLocales:", len(pLocales))
+	for i, _ := range remotePairs {
+		remotePairs[i].Ignore = true
+	}
+	for i, e := range remotePairs {
+		for _, a := range pLocales {
+			if a.Exchange == e.Exchange && a.Symbol == e.Symbol && e.ForeignName == a.ForeignName {
+				remotePairs[i].Ignore = false
+			}
 		}
 	}
-	log.Println("Update complete.")
+	savePairsToFile(exchange, remotePairs)
+	return remotePairs
 }
 
 func getInitialExchangePairs() {
 	log.Println("Loading pairs from config...")
 	for _, e := range dia.Exchanges() {
+		if e == "Unknown" {
+			continue
+		}
 		p, err := getPairsFromConfig(e)
 		if err == nil {
-			err := db.SetAvailablePairsForExchange(e, p)
+			pairsToSave := []dia.Pair{}
+			for _, pp := range p {
+				if !pp.Ignore {
+					pairsToSave = append(pairsToSave, pp)
+				} else {
+					log.Debug("ignoring", pp)
+				}
+			}
+			// savePairsToFile(e, p)
+			err := db.SetAvailablePairsForExchange(e, pairsToSave)
 			if err == nil {
 				log.Println("Exchange :" + e + " set")
 			} else {
@@ -127,7 +185,7 @@ func main() {
 	if e != nil {
 		panic("Can not initialize db error:" + e.Error())
 	}
-	getInitialExchangePairs()
+	updateExchangePairs()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
