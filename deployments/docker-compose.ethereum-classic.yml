@@ -6,7 +6,7 @@ services:
       unscipreneur/ethereum-classic-geth
     hostname: etcnode
     volumes:
-       - /home/srv-local/gethc:/root/.ethereum-classic
+       - /home/srv/gethc:/root/.ethereum-classic
     command: "--name geth-classic --rpc --cache=1024 --rpcaddr=0.0.0.0 --rpcport=8545"
     ports:
       - 8545

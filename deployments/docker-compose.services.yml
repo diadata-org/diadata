@@ -13,6 +13,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    volumes:
+      - /home/srv/config:/config
   
   filtersblockservice:
     build:

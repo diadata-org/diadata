@@ -77,8 +77,7 @@ func parseTrade(row []interface{}) *dia.Trade {
 func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
-	//q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d ORDER BY ASC", influxDbTradesTable, t.Unix()*1000000000)
-	log.Info(q)
+	log.Debug(q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)

@@ -51,6 +51,19 @@ services:
       options:
         max-size: "50m"
 
+  bittrexcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bittrexcollector:latest
+    command: /bin/collector -exchange=Bittrex
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
   lbankcollector:
     build:
       context: ../../../..
@@ -58,7 +71,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
     command: /bin/collector -exchange=LBank
     networks:
-      - kafka-network      
+      - kafka-network
       - redis-network
     logging:
       options:
@@ -158,7 +171,7 @@ services:
     logging:
       options:
         max-size: "50m"
-  
+
   quoinecollector:
     build:
       context: ../../../..
@@ -179,7 +192,7 @@ secrets:
     file: ../secrets/api_bitfinex.json
   api_kraken:
     file: ../secrets/api_kraken.json
-      
+
 networks:
   kafka-network:
     external:

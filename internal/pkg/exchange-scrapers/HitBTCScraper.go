@@ -39,6 +39,7 @@ type HitBTCScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*HitBTCPairScraper
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
@@ -50,6 +51,7 @@ func NewHitBTCScraper(exchangeName string) *HitBTCScraper {
 		pairScrapers: make(map[string]*HitBTCPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	var wsDialer ws.Dialer
@@ -100,7 +102,7 @@ func (s *HitBTCScraper) mainLoop() {
 									ForeignTradeID: strconv.FormatInt(int64(mdElement["id"].(float64)), 16),
 									Source:         s.exchangeName,
 								}
-								ps.chanTrades <- t
+								ps.parent.chanTrades <- t
 							}
 						} else {
 							log.Error("error parsing volume " + mdElement["quantity"].(string))
@@ -159,9 +161,8 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &HitBTCPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -234,10 +235,9 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // HitBTCPairScraper implements PairScraper for HitBTC
 type HitBTCPairScraper struct {
-	parent     *HitBTCScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *HitBTCScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -246,7 +246,7 @@ func (ps *HitBTCPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *HitBTCPairScraper) Channel() chan *dia.Trade {
+func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

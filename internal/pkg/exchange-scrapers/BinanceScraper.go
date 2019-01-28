@@ -35,6 +35,7 @@ type BinanceScraper struct {
 	pairSubscriptions sync.Map // dia.Pair -> string (subscription ID)
 	pairLocks         sync.Map // dia.Pair -> sync.Mutex
 	exchangeName      string
+	chanTrades        chan *dia.Trade
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
@@ -47,6 +48,7 @@ func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *Bi
 		shutdownDone: make(chan nothing),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 
 	// establish connection in the background
@@ -85,7 +87,6 @@ func (s *BinanceScraper) cleanup(err error) {
 	// close all channels of PairScraper children
 	s.pairScrapers.Range(func(k, v interface{}) bool {
 		for ps := range v.(binancePairScraperSet) {
-			close(ps.chanTrades)
 			ps.closed = true
 		}
 		s.pairScrapers.Delete(k)
@@ -119,9 +120,8 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &BinancePairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
@@ -142,7 +142,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				ForeignTradeID: strconv.FormatInt(event.AggTradeID, 16),
 				Source:         s.exchangeName,
 			}
-			ps.chanTrades <- t
+			ps.parent.chanTrades <- t
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}
@@ -219,10 +219,9 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // BinancePairScraper implements PairScraper for Binance
 type BinancePairScraper struct {
-	parent     *BinanceScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *BinanceScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -246,7 +245,7 @@ func (ps *BinancePairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *BinancePairScraper) Channel() chan *dia.Trade {
+func (ps *BinanceScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 

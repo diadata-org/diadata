@@ -40,17 +40,18 @@ export default {
 			coindata: null,
 			selectedCurrency:'',
 			selectedAlgorithm: '',
+			selectedAlgorithmName: '',
 			selectedExchange: '',
 			chartAllOptions: {},
-			chartSimexOptions: {},
 			rateArray: [],
 			error:'',
 			showAllCharts: false,
-			algorithmArray: [],
+			algorithms: [],
 			exchangeNames: [],
 			currencies: [],
-			requestURL: ""
-    };
+			requestURL: "",
+			chartData: null
+		};
 	},
 	created() {
 		this.coinSymbol = this.$route.params.coinSymbol;
@@ -68,39 +69,43 @@ export default {
 	},
 	methods: {
 		formatPairData() {
-
 			if(localStorage.selectedCurrency) {
 				this.selectedCurrency = localStorage.selectedCurrency;
 			}
-			else{
+			else {
 				this.selectedCurrency = "USD";
 			}
 
-            if(localStorage.selectedAlgorithm) {
-                this.selectedAlgorithm = localStorage.selectedAlgorithm;
-            }
-            else{
-                this.selectedAlgorithm = "MA120";
-            }
+			if(localStorage.selectedAlgorithm && localStorage.selectedAlgorithmName) {
+				this.selectedAlgorithm = localStorage.selectedAlgorithm;
+				this.selectedAlgorithmName = localStorage.selectedAlgorithmName;
+			}
+			else {
+				this.selectedAlgorithm = "MA120";
+				this.selectedAlgorithmName = "Moving Avg";
+			}
 
-            if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
-                this.selectedExchange = localStorage.selectedExchange;
-                this.requestURL = `/v1/chartPoints/${this.selectedAlgorithm}/${this.selectedExchange}/${this.coinSymbol.toUpperCase()}`;
-            }
-            else{
-                this.selectedExchange = "All";
-                this.requestURL = `/v1/chartPointsAllExchanges/${this.selectedAlgorithm}/${this.coinSymbol.toUpperCase()}`;
-            }
+			if(localStorage.selectedExchange && localStorage.selectedExchange !== "All") {
+				this.selectedExchange = localStorage.selectedExchange;
+				this.requestURL = `/v1/chartPoints/${this.selectedAlgorithm}/${this.selectedExchange}/${this.coinSymbol.toUpperCase()}`;
+			}
+			else {
+				this.selectedExchange = "All";
+				this.requestURL = `/v1/chartPointsAllExchanges/${this.selectedAlgorithm}/${this.coinSymbol.toUpperCase()}`;
+			}
 
-			let {Change, Coin, Rank, Exchanges} = this.coindata;
+			let {Change, Coin, Rank, Exchanges, Gfx1} = this.coindata;
 
 			this.rateArray = Change.USD;
 			this.currencies = shared.getCurrencies(this.rateArray);
-			this.algorithmArray = [
-				"MA120",
-				"MAIR120",
-				"MEDIR120",
-			];
+			this.algorithms = [{
+				displayName: "Moving Avg",
+                urlString: "MA120"
+            },{
+				displayName: "Outlier Cleaned (IQR acceptable range)",
+                urlString: "MEDIR120"
+            }];
+      this.chartData = Gfx1;
 
 			// format the coin details
 			const coinPrice = shared.calculateCurrencyFromRate(Coin.Price,this.rateArray,this.selectedCurrency,"today");
@@ -141,9 +146,6 @@ export default {
 			Exchanges = sortBy(Exchanges, 'VolumeYesterdayUSD').reverse();
 			this.exchanges = Exchanges;
 
-
-
-			// finally fetch the chart details
 			this.fetchCoinChartDetails();
 		},
 		async fetchCoinDetails() {
@@ -160,13 +162,20 @@ export default {
 		async fetchCoinChartDetails() {
 
 			try {
-				let response1 = await axios.get(shared.getApi()+this.requestURL);
+				//if(!this.requestURL.includes("MA120") || this.chartData == null) {
+				if (this.chartData === null || this.chartData.DataPoints[0].Series[0].values[0][2] !== this.selectedAlgorithm) {
+					console.log("in the reload")
+					let chartResponse = await axios.get(shared.getApi() + this.requestURL);
+					this.chartData = chartResponse.data;
+				}
+				console.log("dpo algo: " + this.chartData.DataPoints[0].Series[0].values[0]);
+				console.log("sel algo: " + this.selectedAlgorithm);
 
 				const price = 'Price (' + this.selectedCurrency + ')';
 				const currencySymbol  = getSymbolFromCurrency(this.selectedCurrency);
 
-				if(response1.data !== undefined) {
-					const MA120AllArray = this.formatChartValues(response1.data.DataPoints[0].Series[0].values);
+				if(this.chartData !== null) {
+					const chartDataFormatted = this.formatChartValues(this.chartData.DataPoints[0].Series[0].values);
 
 					this.chartAllOptions = {
 						chart: {
@@ -222,69 +231,13 @@ export default {
 						},
 						series: [{
 							name: "2 Minute MA",
-							data: MA120AllArray,
+							data: chartDataFormatted,
 						}]
 					};
 
 					// simex
 					this.showAllCharts = true;
 
-					this.chartSimexOptions = {
-					chart: {
-						zoomType: 'x'
-					},
-					rangeSelector: {
-						buttons: [{
-							type: 'ytd',
-							text: 'YTD'
-						}, {
-							type: 'month',
-							count: 1,
-							text: '1M'
-						},{
-							type: 'day',
-							count: 7,
-							text: '7D'
-						},{
-							type: 'day',
-							count: 1,
-							text: '1D'
-						}],
-						selected: 3
-					},
-					title: {
-						text: 'Simex'
-					},
-					subtitle: {
-						text: ''
-					},
-					xAxis: {
-						type: 'datetime',
-						dateTimeLabelFormats: { // don't display the dummy year
-							month: '%e. %b',
-							year: '%b'
-						},
-						title: {
-							text: 'Time'
-						}
-					},
-					yAxis: {
-						title: {
-							text: price
-						},
-						min: 0
-					},
-					tooltip: {
-						headerFormat: '<b>{series.name}</b><br>',
-						pointFormat: `{point.x:%e. %b}: ${currencySymbol }{point.y:.2f} `
-					},
-					series: [{
-						name: "MA120",
-						data: []
-					},{
-						name: "2 Min. MA",
-						data: []
-					}]};
 				}
 				this.loading = false;
 			} catch(error) {
@@ -311,8 +264,11 @@ export default {
 			this.formatPairData();
 		},
 		switchAlgorithm : function(selectedAlgorithm){
-			this.selectedAlgorithm = selectedAlgorithm;
-			localStorage.selectedAlgorithm = selectedAlgorithm;
+			this.selectedAlgorithm = selectedAlgorithm.urlString;
+			this.selectedAlgorithmName = selectedAlgorithm.displayName;
+			localStorage.selectedAlgorithm = selectedAlgorithm.urlString;
+			localStorage.selectedAlgorithmName = selectedAlgorithm.displayName;
+			this.chartData = null;
 			this.formatPairData();
 		},
 		switchExchange : function(selectedExchange){

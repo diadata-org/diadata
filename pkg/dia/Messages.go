@@ -22,6 +22,7 @@ type Pair struct {
 	Symbol      string
 	ForeignName string
 	Exchange    string
+	Ignore      bool
 }
 
 type Pairs []Pair

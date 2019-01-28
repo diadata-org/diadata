@@ -11,16 +11,21 @@ nav.bg-info {
 .navbar {
     position: relative;
     justify-content: unset;
+	padding: 0.5rem 5rem;
 }
 
 .navbar-brand {
 	margin-right: 0;
 }
 
+.logo {
+	padding: 0;
+}
+
 .subheading-wrap {
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	padding: 0;
 }
 
 .sub-header {
@@ -49,6 +54,10 @@ nav.bg-info {
 }
 
 @media (min-width: 768px) and  (max-width: 1023px){
+
+	.navbar {
+		padding: 0.5rem 16px;
+	}
 	
 	.row {
 	  margin-right: 0!important;
@@ -76,6 +85,10 @@ nav.bg-info {
 }
 
 @media (min-width: 320px) and (max-width: 767px) {
+	.navbar {
+		padding: 0.5rem 16px;
+	}
+
     .col-12 {
         padding: 0;
     }

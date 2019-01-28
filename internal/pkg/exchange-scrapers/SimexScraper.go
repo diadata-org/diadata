@@ -41,6 +41,7 @@ type SimexScraper struct {
 	pairScrapers map[string]*SimexPairScraper
 	pairIdTrade  map[string]*PairIdMap
 	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 func NewSimexScraper(exchangeName string) *SimexScraper {
@@ -50,6 +51,7 @@ func NewSimexScraper(exchangeName string) *SimexScraper {
 		pairScrapers: make(map[string]*SimexPairScraper),
 		exchangeName: exchangeName,
 		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
 	pairMap := map[string]*PairIdMap{}
 	//API call used for retrievi all pairs
@@ -137,7 +139,7 @@ func (s *SimexScraper) mainLoop() {
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["id"].(float64)), 16),
 							Source:         s.exchangeName,
 						}
-						el.chanTrades <- t
+						el.parent.chanTrades <- t
 					}
 				}
 				if atLeastOneUpdate {
@@ -211,9 +213,8 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	ps := &SimexPairScraper{
-		parent:     s,
-		pair:       pair,
-		chanTrades: make(chan *dia.Trade),
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.ForeignName] = ps
@@ -275,10 +276,9 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 // SimexPairScraper implements PairScraper for Simex
 type SimexPairScraper struct {
-	parent     *SimexScraper
-	pair       dia.Pair
-	chanTrades chan *dia.Trade
-	closed     bool
+	parent *SimexScraper
+	pair   dia.Pair
+	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -287,7 +287,7 @@ func (ps *SimexPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *SimexPairScraper) Channel() chan *dia.Trade {
+func (ps *SimexScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 
