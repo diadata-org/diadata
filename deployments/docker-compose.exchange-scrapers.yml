@@ -184,6 +184,18 @@ services:
     logging:
       options:
         max-size: "50m"
+  bitbaycollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bitbaycollector:latest
+    command: /bin/collector -exchange=BitBay
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
 
 secrets:
   api_binance:

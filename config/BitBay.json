@@ -1,0 +1,550 @@
+{
+  "Coins": [
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTCUSD",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LSKUSD",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LTCUSD",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GAMEUSD",
+      "Ignore": false,
+      "Symbol": "GAME"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "DASHUSD",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BCCUSD",
+      "Ignore": false,
+      "Symbol": "BCC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTGUSD",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "KZCUSD",
+      "Ignore": false,
+      "Symbol": "KZC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XINUSD",
+      "Ignore": false,
+      "Symbol": "XIN"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XRPUSD",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XMRUSD",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZECUSD",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GNTUSD",
+      "Ignore": false,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "OMGUSD",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "FTOUSD",
+      "Ignore": false,
+      "Symbol": "FTO"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZRXUSD",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "PAYUSD",
+      "Ignore": false,
+      "Symbol": "PAY"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BATUSD",
+      "Ignore": false,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "REPUSD",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "NEUUSD",
+      "Ignore": false,
+      "Symbol": "NEU"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "TRXUSD",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BOBUSD",
+      "Ignore": false,
+      "Symbol": "BOB"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BSVUSD",
+      "Ignore": false,
+      "Symbol": "BSV"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LSKBTC",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LTCBTC",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GAMEBTC",
+      "Ignore": false,
+      "Symbol": "GAME"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "DASHBTC",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BCCBTC",
+      "Ignore": false,
+      "Symbol": "BCC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTGBTC",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "KZCBTC",
+      "Ignore": false,
+      "Symbol": "KZC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XINBTC",
+      "Ignore": false,
+      "Symbol": "XIN"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XRPBTC",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XMRBTC",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZECBTC",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GNTBTC",
+      "Ignore": false,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "OMGBTC",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "FTOBTC",
+      "Ignore": false,
+      "Symbol": "FTO"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZRXBTC",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "PAYBTC",
+      "Ignore": false,
+      "Symbol": "PAY"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BATBTC",
+      "Ignore": false,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "REPBTC",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "NEUBTC",
+      "Ignore": false,
+      "Symbol": "NEU"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "TRXBTC",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BOBBTC",
+      "Ignore": false,
+      "Symbol": "BOB"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BSVBTC",
+      "Ignore": false,
+      "Symbol": "BSV"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTCEUR",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LSKEUR",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LTCEUR",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GAMEEUR",
+      "Ignore": false,
+      "Symbol": "GAME"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "DASHEUR",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BCCEUR",
+      "Ignore": false,
+      "Symbol": "BCC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTGEUR",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "KZCEUR",
+      "Ignore": false,
+      "Symbol": "KZC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XINEUR",
+      "Ignore": false,
+      "Symbol": "XIN"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XRPEUR",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XMREUR",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZECEUR",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GNTEUR",
+      "Ignore": false,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "OMGEUR",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "FTOEUR",
+      "Ignore": false,
+      "Symbol": "FTO"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZRXEUR",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "PAYEUR",
+      "Ignore": false,
+      "Symbol": "PAY"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BATEUR",
+      "Ignore": false,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "REPEUR",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "NEUEUR",
+      "Ignore": false,
+      "Symbol": "NEU"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "TRXEUR",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BOBEUR",
+      "Ignore": false,
+      "Symbol": "BOB"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BSVEUR",
+      "Ignore": false,
+      "Symbol": "BSV"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTCPLN",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LSKPLN",
+      "Ignore": false,
+      "Symbol": "LSK"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "LTCPLN",
+      "Ignore": false,
+      "Symbol": "LTC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GAMEPLN",
+      "Ignore": false,
+      "Symbol": "GAME"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "DASHPLN",
+      "Ignore": false,
+      "Symbol": "DASH"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BCCPLN",
+      "Ignore": false,
+      "Symbol": "BCC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BTGPLN",
+      "Ignore": false,
+      "Symbol": "BTG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "KZCPLN",
+      "Ignore": false,
+      "Symbol": "KZC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XINPLN",
+      "Ignore": false,
+      "Symbol": "XIN"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XRPPLN",
+      "Ignore": false,
+      "Symbol": "XRP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "XMRPLN",
+      "Ignore": false,
+      "Symbol": "XMR"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZECPLN",
+      "Ignore": false,
+      "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "GNTPLN",
+      "Ignore": false,
+      "Symbol": "GNT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "OMGPLN",
+      "Ignore": false,
+      "Symbol": "OMG"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "FTOPLN",
+      "Ignore": false,
+      "Symbol": "FTO"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "ZRXPLN",
+      "Ignore": false,
+      "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "PAYPLN",
+      "Ignore": false,
+      "Symbol": "PAY"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BATPLN",
+      "Ignore": false,
+      "Symbol": "BAT"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "REPPLN",
+      "Ignore": false,
+      "Symbol": "REP"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "NEUPLN",
+      "Ignore": false,
+      "Symbol": "NEU"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "TRXPLN",
+      "Ignore": false,
+      "Symbol": "TRX"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BOBPLN",
+      "Ignore": false,
+      "Symbol": "BOB"
+    },
+    {
+      "Exchange": "BitBay",
+      "ForeignName": "BSVPLN",
+      "Ignore": false,
+      "Symbol": "BSV"
+    }
+  ]
+}
