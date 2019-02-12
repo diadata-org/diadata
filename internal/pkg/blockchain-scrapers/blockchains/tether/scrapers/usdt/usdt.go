@@ -18,6 +18,9 @@ const symbol = "USDT"
 func firstLoad(supply *string) chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Navigate(`https://wallet.tether.to/transparency`),
+		chromedp.Sleep(10 * time.Second),
+		chromedp.WaitVisible(`#transparency`, chromedp.ByID),
+		chromedp.Text(`#transparency > div:nth-child(2) > table > tbody > tr:nth-child(10) > td`, supply, chromedp.NodeVisible, chromedp.ByID),
 	}
 }
 
