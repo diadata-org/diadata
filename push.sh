@@ -258,17 +258,16 @@ main() {
 		read LINENUMBER
 	fi
 
-
 	if [ "$LINENUMBER" == "a" ]
 	then
 		NUMBER=`wc -l $FILETMP | cut -f1 -d\ `
 		for (( c=0; c<$NUMBER; c++ ))
 		do
-			RESULT=`cat $FILETMP | grep $c | cut -f2 -d\- `
+			RESULT=`cat $FILETMP | grep $c | cut -f2- -d\- `
 			rebuild_service $RESULT
 		done
 	else
-		RESULT=`cat $FILETMP | grep $LINENUMBER | cut -f2 -d\- `
+		RESULT=`cat $FILETMP | grep $LINENUMBER | cut -f2- -d\- `
 		rebuild_service $RESULT
 	fi
 
