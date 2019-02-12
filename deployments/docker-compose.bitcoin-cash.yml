@@ -5,7 +5,7 @@ services:
     image:
       uphold/bitcoin-abc
     volumes:
-      - /home/srv-local/bitcoin-cash:/var/lib/bitcoin-cash
+      - /home/srv/bitcoin-cash:/var/lib/bitcoin-cash
     command: -printtoconsole -prune=550 -rpcallowip=::/0 -disablewallet -rpcuser=mysecretrpcdiauser -rpcpassword=njTcaNX74sSf46_TXacMVlyPMJjuv9i03bqBgj9KQ8E=
     environment:
       - BITCOIN_ABC_DATA=/var/lib/bitcoin-cash

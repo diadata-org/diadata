@@ -5,6 +5,7 @@ RUN set -o errexit -o nounset \
     && echo "git clone" \
     && git clone https://github.com/tronprotocol/java-tron.git \
     && cd java-tron \
+		&& git checkout master \
 		&& gradle build
 
 # Change work directory

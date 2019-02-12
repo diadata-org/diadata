@@ -13,6 +13,9 @@ services:
       - scrapers-network
     deploy:
       mode: global
+      resources:
+        limits:
+          memory: 6G
       restart_policy:
         delay: 2s
         window: 20s

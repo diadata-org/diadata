@@ -5,8 +5,8 @@ services:
     image:
       ethereum/client-go:alpine
     volumes:
-      - /home/srv-local/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "light"
+      - /home/srv/geth:/root/.ethereum
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast"
     logging:
       options:
         max-size: "50m"

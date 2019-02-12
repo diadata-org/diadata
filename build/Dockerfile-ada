@@ -10,6 +10,6 @@ RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/scrapers /bin/ada
+COPY --from=build /go/bin/ada /bin/ada
 
 CMD ["ada"]

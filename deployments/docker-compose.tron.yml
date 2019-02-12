@@ -8,7 +8,7 @@ services:
     image:
       ${DOCKER_HUB_LOGIN}/${STACKNAME}_tron
     working_dir: /java-tron/build/libs
-    command: bash -c "java -jar java-tron.jar --witness"
+    command: bash -c "java -jar FullNode.jar --witness"
     logging:
       options:
         max-size: "50m"
