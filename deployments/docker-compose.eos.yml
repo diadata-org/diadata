@@ -1,11 +1,11 @@
 version: '3.2'
 
 services:
-  eos-node:
-    image: ${DOCKER_HUB_LOGIN}/eos:mainnet
+  eosnode:
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eosnode
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-node-eos
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eosnode
     volumes:
       - eosio:/opt/eosio
     logging:
@@ -18,9 +18,9 @@ services:
       - scrapers-network
 
   eos:
-    image: ${DOCKER_HUB_LOGIN}/eos:scraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eos
     depends_on:
-      - eos-node
+      - eosnode
     build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eos
