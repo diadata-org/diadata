@@ -2793,13 +2793,13 @@
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEUETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEU"
     },
     {
       "Exchange": "HitBTC",
       "ForeignName": "NEUUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NEU"
     },
     {

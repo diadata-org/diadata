@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// > SELECT MEAN(value) FROM filters WHERE "symbol"='BTC' and "filter"='MA120' GROUP BY TIME(10m) ORDER by time desc limit 10;
 func (db *DB) GetChartPoints7Days(symbol string) (r []Point, err error) {
 	r = []Point{}
 	table := influxDbFiltersTable
