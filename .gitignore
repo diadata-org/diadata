@@ -12,3 +12,5 @@ go.*
 *-workspace
 .idea
 .DS_Store
+
+.zos.session
