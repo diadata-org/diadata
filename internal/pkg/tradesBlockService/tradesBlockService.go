@@ -110,7 +110,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	if s.currentBlock != nil &&
 		s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
-		log.Debug("ignore trade should be in previous block %v", t)
+		log.Debugf("ignore trade should be in previous block %v", t)
 		ignoreTrade = true
 	}
 
@@ -136,7 +136,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {
-		log.Debug("ignore trade  %v", t)
+		log.Debugf("ignore trade  %v", t)
 	}
 }
 

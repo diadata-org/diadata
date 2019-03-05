@@ -110,7 +110,7 @@ func GetSupply(symbol string) (*Supply, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Debug("%s\n", string(contents))
+		log.Debugf("%s\n", string(contents))
 		var b Supply
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
@@ -136,7 +136,7 @@ func GetSymbolsList(url string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Debug("%s\n", string(contents))
+		log.Debugf("%s\n", string(contents))
 		var b Symbols
 
 		err = json.Unmarshal(contents, &b)

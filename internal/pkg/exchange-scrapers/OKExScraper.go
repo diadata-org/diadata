@@ -162,11 +162,11 @@ func (s *OKExScraper) mainLoop() {
 								ps.parent.chanTrades <- t
 
 							} else {
-								log.Error("parsing volume %v", f64Volume_string)
+								log.Errorf("parsing volume %v", f64Volume_string)
 							}
 
 						} else {
-							log.Error("parsing price %v", f64Price_string)
+							log.Errorf("parsing price %v", f64Price_string)
 						}
 					}
 				}
