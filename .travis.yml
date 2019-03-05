@@ -3,7 +3,7 @@ dist: xenial
 language: go
 
 before_install:
-  - sudo apt-get install -y pkg_config
+  - sudo apt-get install -y pkg-config
   - wget https://download.libsodium.org/libsodium/releases/old/unsupported/libsodium-1.0.12.tar.gz && tar -xf libsodium-1.0.12.tar.gz && cd libsodium-1.0.12 && ./configure && make && sudo make install
 addons:
   apt:
