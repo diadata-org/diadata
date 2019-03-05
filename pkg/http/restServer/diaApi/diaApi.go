@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	_ "github.com/influxdata/influxdb/client/v2"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"

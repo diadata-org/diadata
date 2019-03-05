@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 	"github.com/diadata-org/diadata/pkg/dia"
-	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
+	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	"time"
 )
 
