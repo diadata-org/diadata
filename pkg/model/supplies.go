@@ -28,7 +28,7 @@ func (db *DB) SymbolsWithASupply() ([]string, error) {
 			result = append(result, strings.Replace(value, key, "", 1))
 		}
 		if cursor == 0 {
-			log.Debug("SymbolsWithASupply %v returns %v", key, result)
+			log.Debugf("SymbolsWithASupply %v returns %v", key, result)
 			return result, nil
 		}
 	}
@@ -49,7 +49,7 @@ func (a *DB) GetSupply(symbol string) (*dia.Supply, error) {
 		value := &dia.Supply{}
 		err := a.redisClient.Get(key).Scan(value)
 		if err != nil {
-			log.Error("Error: %v on GetSupply %v\n", err, symbol)
+			log.Errorf("Error: %v on GetSupply %v\n", err, symbol)
 			return nil, err
 		}
 		return value, err
@@ -61,7 +61,7 @@ func (a *DB) SetSupply(supply *dia.Supply) error {
 	log.Debug("setting ", key, supply)
 	err := a.redisClient.Set(key, supply, 0).Err()
 	if err != nil {
-		log.Error("Error: %v on SetSupply %v\n", err, supply.Symbol)
+		log.Errorf("Error: %v on SetSupply %v\n", err, supply.Symbol)
 	}
 	return err
 }

@@ -77,8 +77,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	graph.BackgroundColor = color.Transparent
 	line.LineStyle.Color = blue
 
-	line.ShadeColor = new(color.Color)
-	*line.ShadeColor = lightBlue
+	line.FillColor = lightBlue
 
 	// add a small margin at the bottom
 	graph.Y.Min = min - (max-min)*0.1

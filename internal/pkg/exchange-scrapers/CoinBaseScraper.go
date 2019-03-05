@@ -6,7 +6,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	ws "github.com/gorilla/websocket"
-	"github.com/preichenberger/go-gdax"
+	gdax "github.com/preichenberger/go-gdax"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -70,23 +70,23 @@ func (s *CoinBaseScraper) mainLoop() {
 			break
 		}
 		if message.Type == ChannelTicker {
-			ps, ok := s.pairScrapers[message.ProductId]
+			ps, ok := s.pairScrapers[message.ProductID]
 			if ok {
 				f64Price, err := strconv.ParseFloat(message.Price, 64)
 				if err == nil {
 					f64Volume, err := strconv.ParseFloat(message.LastSize, 64)
 					if err == nil {
-						if message.TradeId != 0 {
+						if message.TradeID != 0 {
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
-								Pair:           message.ProductId,
+								Pair:           message.ProductID,
 								Price:          f64Price,
 								Volume:         f64Volume,
 								Time:           message.Time.Time(),
-								ForeignTradeID: strconv.FormatInt(int64(message.TradeId), 16),
+								ForeignTradeID: strconv.FormatInt(int64(message.TradeID), 16),
 								Source:         s.exchangeName,
 							}
 							ps.parent.chanTrades <- t
@@ -98,7 +98,7 @@ func (s *CoinBaseScraper) mainLoop() {
 					log.Error("error parsing price " + message.Price)
 				}
 			} else {
-				log.Error("unknown productError" + message.ProductId)
+				log.Error("unknown productError" + message.ProductID)
 			}
 		}
 	}
@@ -155,11 +155,11 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			symbol, serr := s.normalizeSymbol(p.Id)
+			symbol, serr := s.normalizeSymbol(p.ID)
 			if serr == nil {
 				pairs = append(pairs, dia.Pair{
 					Symbol:      symbol,
-					ForeignName: p.Id,
+					ForeignName: p.ID,
 					Exchange:    s.exchangeName,
 				})
 			} else {
