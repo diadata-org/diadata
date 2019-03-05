@@ -65,7 +65,7 @@ func (db *DB) GetPriceUSD(symbol string) (float64, error) {
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
 		if err != redis.Nil {
-			log.Error("Error: %v on GetPriceUSD %v\n", err, symbol)
+			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
 		}
 		return 0.0, err
 	}
@@ -78,7 +78,7 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
 		if err != redis.Nil {
-			log.Error("Error: %v on GetQuotation %v\n", err, key)
+			log.Errorf("Error: %v on GetQuotation %v\n", err, key)
 		}
 		return nil, err
 	}

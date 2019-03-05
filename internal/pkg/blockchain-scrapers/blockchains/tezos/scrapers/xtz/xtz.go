@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DefinitelyNotAGoat/goTezos"
+	goTezos "github.com/DefinitelyNotAGoat/go-Tezos"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-const rpcURL = "http://tezosnode:8732"
+const rpcURL = "http://tezosnode"
+const rpcPort = ":8732"
 const xtzAddress = "tz1RCFbB9GpALpsZtu6J58sb74dm8qe6XBzv"
 const totalSupply = 763306930.69
 const decimals = 1e8
@@ -22,13 +23,13 @@ const blockFrequency = 60
 
 var client *dia.Client
 
-func retrieveXTZSupply() {
-	b, eg := goTezos.GetChainHead()
+func retrieveXTZSupply(gt *goTezos.GoTezos) {
+	b, eg := gt.GetChainHead()
 	if eg != nil {
 		log.Error("Error getting block:" + eg.Error())
 	} else {
 		log.Println("Block hash:" + b.Hash)
-		v, e := goTezos.GetAccountBalanceAtBlock(xtzAddress, b.Hash)
+		v, e := gt.GetAccountBalanceAtBlock(xtzAddress, b.Hash)
 		if e != nil {
 			log.Error("Error retrieving balance for:" + xtzAddress + " error:" + e.Error())
 		} else {
@@ -50,13 +51,13 @@ type Task struct {
 	ticker *time.Ticker
 }
 
-func (t *Task) run() {
+func (t *Task) run(gt *goTezos.GoTezos) {
 	for {
 		select {
 		case <-t.closed:
 			return
 		case <-t.ticker.C:
-			retrieveXTZSupply()
+			retrieveXTZSupply(gt)
 		}
 	}
 }
@@ -69,7 +70,8 @@ func (t *Task) stop() {
 }
 
 func main() {
-	goTezos.SetRPCURL(rpcURL)
+	gt := goTezos.NewGoTezos()
+	gt.AddNewClient(goTezos.NewTezosRPCClient(rpcURL, rpcPort))
 	task := &Task{
 		closed: make(chan struct{}),
 		ticker: time.NewTicker(time.Second * blockFrequency),
@@ -87,7 +89,7 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run() }()
+	go func() { defer task.wg.Done(); task.run(gt) }()
 	select {
 	case <-c:
 		log.Println("Got signal.")

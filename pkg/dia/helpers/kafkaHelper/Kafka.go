@@ -184,7 +184,7 @@ func NewReaderXElementsBeforeLastMessage(topic int, x int64) *kafka.Reader {
 	if err == nil && o-x > 0 {
 		offset = o - x
 	} else {
-		log.Warning("err %v on readOffset on topic %v", err, topic)
+		log.Warningf("err %v on readOffset on topic %v", err, topic)
 	}
 
 	log.Println("NewReaderXElementsBeforeLastMessage: setting offset ", offset, "/", o)
