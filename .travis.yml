@@ -1,4 +1,13 @@
+dist: xenial
+
 language: go
 
 go:
 - "1.10.1"
+
+before_install:
+  - sudo apt-get install -y libsodium-dev
+addons:
+  apt:
+    update: true
+
