@@ -19,7 +19,7 @@ var (
 	dev          = flag.Bool("dev", false, "Dev mode - prints to stdout instead of sending to dia")
 	symbol       = "MKR"
 	address      = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
-	ownerAddress = "0x0000000000000000000000000000000000000000"
+	ownerAddress = "0x8ee7d9235e01e6b42345120b5d270bdb763624c7"
 )
 
 func init() {
