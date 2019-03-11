@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
-	clientInfluxdb "github.com/influxdata/influxdb/client/v2"
+	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -286,12 +286,12 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 	}).Err()
 	log.Debug("SetZSETValue ", key, member, unixTime)
 	if err != nil {
-		log.Error("Error: %v on SetZSETValue %v\n", err, key)
+		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
 	// purging old values
 	err = db.redisClient.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
 	if err != nil {
-		log.Error("Error: %v on SetZSETValue %v\n", err, key)
+		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
 
 	if err := db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
@@ -312,7 +312,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 	if err == nil {
 		if len(vals) > 0 {
 			fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
-			log.Debug("returned value: %v", result)
+			log.Debugf("returned value: %v", result)
 		} else {
 			err = errors.New("getZSETValue no value found")
 		}
@@ -322,11 +322,11 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 func (db *DB) getZSETSum(key string) (*float64, error) {
 
-	log.Debug("getZSETSum: %v \n", key)
+	log.Debugf("getZSETSum: %v \n", key)
 
 	vals, err := db.redisClient.ZRange(key, 0, -1).Result()
 	if err != nil {
-		log.Error("Error: %v on getZSETSum %v\n", err, key)
+		log.Errorf("Error: %v on getZSETSum %v\n", err, key)
 		return nil, err
 	} else {
 		result := 0.0
@@ -347,7 +347,7 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	if err == nil {
 		if len(vals) == 1 {
 			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
-			log.Debug("returned value: %v", value)
+			log.Debugf("returned value: %v", value)
 		} else {
 			err = errors.New("getZSETLastValue no value found")
 			log.Errorln("Error: on getZSETLastValue", err, key)

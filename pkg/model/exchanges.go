@@ -69,7 +69,7 @@ func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX.
 			}
 		}
 		if cursor == 0 {
-			log.Debug("GetExchangesForSymbol %v returns %v", key, result)
+			log.Debugf("GetExchangesForSymbol %v returns %v", key, result)
 			return result, nil
 		}
 	}
@@ -88,7 +88,7 @@ func (db *DB) GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error) 
 	p := dia.Pairs{}
 	err := db.redisClient.Get(key).Scan(&p)
 	if err != nil {
-		log.Error("Error: %v on GetAvailablePairsForExchange %v\n", err, exchange)
+		log.Errorf("Error: %v on GetAvailablePairsForExchange %v\n", err, exchange)
 		return nil, err
 	}
 	return p, nil

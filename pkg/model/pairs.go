@@ -30,7 +30,7 @@ func (db *DB) GetPairs(exchange string) ([]dia.Pair, error) {
 			}
 		}
 		if cursor == 0 {
-			log.Debug("GetPairs %v returns %v", key, result)
+			log.Debugf("GetPairs %v returns %v", key, result)
 			return result, nil
 		}
 	}
