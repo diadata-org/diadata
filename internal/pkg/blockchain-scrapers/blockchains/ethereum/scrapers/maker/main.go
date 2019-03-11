@@ -18,7 +18,7 @@ var (
 	rpcEndpoint  = flag.String("rpc", "https://mainnet.infura.io/v3/7db804679c8644fcbfbfd440ed2332eb", "geth RPC endpoint")
 	dev          = flag.Bool("dev", false, "Dev mode - prints to stdout instead of sending to dia")
 	symbol       = "MKR"
-	address      = "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359"
+	address      = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
 	ownerAddress = "0x0000000000000000000000000000000000000000"
 )
 
@@ -56,7 +56,7 @@ func main() {
 		//Infinite loop, sends tokenSupply every 10 seconds
 		supply, err := token.TotalSupply(nil)
 		if err != nil {
-			//Perhaps these should not be a fatal error?
+			//Perhaps this should not be a fatal error?
 			log.Fatalf("Failed to retrieve token supply: %v", err)
 		}
 
@@ -65,13 +65,8 @@ func main() {
 			log.Fatalf("Failed to retrieve token ownerSupply: %v", err)
 		}
 
-		//frozenSupply, err := token.FreezeOf(nil, common.HexToAddress(ownerAddress))
-		//if err != nil {
-			//log.Fatalf("Failed to retrieve token frozenSupply: %v", err)
-		//}
-
 		tmpSupply := supply.Sub(supply, ownerSupply)
-		resultSupply := tmpSupply//supply.Sub(tmpSupply, frozenSupply)
+		resultSupply := tmpSupply
 
 		decimals, err := token.Decimals(nil)
 		if err != nil {
