@@ -5,8 +5,11 @@ import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
+	"gonum.org/v1/plot/vg/vgimg"
 	"image/color"
 	"math"
+	"os"
 )
 
 const (
@@ -16,10 +19,9 @@ const (
 )
 
 func PriceGraph(prices []float64, times []int64, path string) error {
-	graph, err := plot.New()
-	if err != nil {
-		return err
-	}
+	// color definitions
+	blue := color.RGBA{R: 40, G: 54, B: 142, A: 255}
+	lightBlue := color.RGBA{R: 204, G: 223, B: 248, A: 255}
 
 	// downsample data
 	factor, index, sumPrices, sumTimes := len(times)/NUM_DATAPOINTS, 0, float64(0), int64(0)
@@ -63,20 +65,24 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 		dataPoints = newDatapoints
 	}
 
-	// insert data in line
+	// Create plot object
+	graph, err := plot.New()
+	if err != nil {
+		return err
+	}
+
+	// configure graph
+	graph.HideAxes()
+	graph.BackgroundColor = color.Transparent
+
+	// Create line object
 	line, err := plotter.NewLine(dataPoints)
 	if err != nil {
 		return err
 	}
 
-	// change presentation
-	blue := color.RGBA{R: 40, G: 54, B: 142, A: 255}
-	lightBlue := color.RGBA{R: 204, G: 223, B: 248, A: 255}
-
-	graph.HideAxes()
-	graph.BackgroundColor = color.Transparent
+	// configure line
 	line.LineStyle.Color = blue
-
 	line.FillColor = lightBlue
 
 	// add a small margin at the bottom
@@ -87,8 +93,25 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 	// add line to graph
 	graph.Add(line)
 
-	// Save graph
-	err = graph.Save(IMAGE_WIDTH*vg.Centimeter, IMAGE_HEIGHT*vg.Centimeter, path)
+	// Draw and save graph
+	c := vgimg.PngCanvas{vgimg.NewWith(
+		vgimg.UseWH(IMAGE_WIDTH * vg.Centimeter, IMAGE_HEIGHT * vg.Centimeter),
+		vgimg.UseBackgroundColor(color.Transparent),
+	)}
+	graph.Draw(draw.New(c))
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = c.WriteTo(f)
+	if err != nil {
+		return err
+	}
+
+	err = f.Close()
 	if err != nil {
 		return err
 	}
