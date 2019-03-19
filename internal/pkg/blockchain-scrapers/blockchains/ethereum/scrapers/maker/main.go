@@ -15,11 +15,11 @@ import (
 //Be sure to run : abigen --abi erc20.abi --pkg main --type Token --out erc20.go
 //erc20.abi taken from https://github.com/ethereum/wiki/wiki/Contract-ERC20-ABI
 var (
-	rpcEndpoint  = flag.String("rpc", "https://mainnet.infura.io/v3/7db804679c8644fcbfbfd440ed2332eb", "geth RPC endpoint")
+	rpcEndpoint  = flag.String("rpc", "http://geth:8545", "geth RPC endpoint")
 	dev          = flag.Bool("dev", false, "Dev mode - prints to stdout instead of sending to dia")
 	symbol       = "MKR"
 	address      = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
-	ownerAddress = "0x8ee7d9235e01e6b42345120b5d270bdb763624c7"
+	ownerAddress = "0x731c6F8C754FA404CFCC2Ed8035EF79262f65702"
 )
 
 func init() {
