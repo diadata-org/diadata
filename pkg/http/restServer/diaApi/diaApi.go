@@ -263,3 +263,52 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
 	}
 }
+
+
+func (env *Env) GetAllTokenDetails(c *gin.Context){
+	var (
+		sto STO
+		result gin.H
+	)
+	token_symbol := c.Param("token_symbol")
+	row := db.QueryRow("select token_name, token_status, token_symbol, industry, amount_raised, currency, issuance_price,min_invest, closing_date, target_investor_type, jurisdictions_avail, restricted_area, secondary_market, website, whitepaper, prospectus, smart_contract, github, blockchain, issuer_address, token_used, dividend, voting, equity_ownership, mme_class, interest, portfolio from SecurityTokens where token_symbol = ?;",token_symbol)
+
+	err = row.Scan(&sto.Token_Name, &sto.Token_Status, &sto.Token_Symbol, &sto.Industry, &sto.Amount_Raised, &sto.Currency, &sto.Issuance_Price, &sto.Min_Invest, &sto.Closing_Date, &sto.Target_Investor_Type, &sto.Jurisdictions_Avail, &sto.Restricted_Area, &sto.Secondary_Market, &sto.Website, &sto.Whitepaper, &sto.Prospectus, &sto.Smart_Contract, &sto.Github, &sto.Blockchain, &sto.Issuer_Address, &sto.Token_Used, &sto.Dividend, &sto.Voting, &sto.Equity_Ownership, &sto.MME_Class, &sto.Interest, &sto.Portfolio)
+
+	if err != nil {
+		// If no results send null
+		result = gin.H{
+			"result": nil,
+			"count":  0,
+		}
+	} else {
+		result = gin.H{
+			"result": sto,
+			"count":  1,
+		}
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func (env *Env) GetAllTokens(c *gin.Context){
+	var (
+		sto  STO2
+		tokens []STO2
+	)
+	rows, err := db.Query("select token_name, token_symbol from SecurityTokens;")
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	for rows.Next() {
+		err = rows.Scan(&sto.Token_Name, &sto.Token_Symbol)
+		tokens = append(tokens, sto)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+	}
+	defer rows.Close()
+	c.JSON(http.StatusOK, gin.H{
+		"result": tokens,
+		"count":  len(tokens),
+	})
+}
