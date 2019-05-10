@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/appleboy/gin-jwt"
 	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -12,14 +14,12 @@ import (
 	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	_"net/http"
 	"time"
-	"database/sql"
-	"fmt"
-	"net/http"
-		_ "github.com/go-sql-driver/mysql"
 )
 
 // @Title diadata.org API
@@ -100,40 +100,6 @@ func main() {
 	err = db.Ping()
 	if err != nil {
 		fmt.Print(err.Error())
-	}
-	type STO struct {
-    Token_Name           string
-    Token_Status         string
-    Token_Symbol         string
-    Industry             string
-    Amount_Raised        string
-    Currency             string
-    Issuance_Price       string
-    Min_Invest           string
-    Closing_Date         string
-    Target_Investor_Type string
-    Jurisdictions_Avail  string
-    Restricted_Area      string
-    Secondary_Market     string
-    Website              string
-    Whitepaper           string
-    Prospectus           string
-    Smart_Contract       string
-    Github               string
-    Blockchain           string
-    Issuer_Address       string
-    Token_Used           string
-    Dividend             string
-    Voting               string
-    Equity_Ownership     string
-    MME_Class            string
-    Interest             string
-    Portfolio            string
-	}
-
-  type STO2 struct {
-    Token_Name           string
-    Token_Symbol         string
 	}
 
 	// the jwt middleware
@@ -246,8 +212,8 @@ func main() {
 		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
 		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
 		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
-		dia.GET("/token/:token_symbol",cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllTokenDetails))
-		dia.GET("/tokens", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllTokens))
+		dia.GET("/token/:token_symbol", diaApiEnv.GetAllTokenDetails)
+		dia.GET("/tokens", diaApiEnv.GetAllTokens)
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
