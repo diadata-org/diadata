@@ -1,10 +1,7 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"github.com/appleboy/gin-jwt"
-	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
@@ -14,11 +11,9 @@ import (
 	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	_"net/http"
 	"time"
 )
 
@@ -90,17 +85,6 @@ func main() {
 	r.Use(gin.Recovery())
 
 	config := dia.GetConfigApi()
-
-	db, err := sql.Open("mysql", "root:@93MySQL@/sys")
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	defer db.Close()
-	// make sure connection is available
-	err = db.Ping()
-	if err != nil {
-		fmt.Print(err.Error())
-	}
 
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{

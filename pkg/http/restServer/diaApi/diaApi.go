@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"database/sql"
 )
 
 type Env struct {
@@ -270,10 +271,20 @@ func (env *Env) GetAllTokenDetails(c *gin.Context){
 		sto dia.Security_Token_Details
 		result gin.H
 	)
+	db, err := sql.Open("mysql", "root:@93MySQL@/sys")
+	if err != nil {
+		log.Print(err.Error())
+	}
+	defer db.Close()
+	// make sure connection is available
+	err = db.Ping()
+	if err != nil {
+		log.Print(err.Error())
+	}
 	token_symbol := c.Param("token_symbol")
 	row := db.QueryRow("select token_name, token_status, token_symbol, industry, amount_raised, currency, issuance_price,min_invest, closing_date, target_investor_type, jurisdictions_avail, restricted_area, secondary_market, website, whitepaper, prospectus, smart_contract, github, blockchain, issuer_address, token_used, dividend, voting, equity_ownership, mme_class, interest, portfolio from SecurityTokens where token_symbol = ?;",token_symbol)
 
-	err := row.Scan(&sto.Token_Name, &sto.Token_Status, &sto.Token_Symbol, &sto.Industry, &sto.Amount_Raised, &sto.Currency, &sto.Issuance_Price, &sto.Min_Invest, &sto.Closing_Date, &sto.Target_Investor_Type, &sto.Jurisdictions_Avail, &sto.Restricted_Area, &sto.Secondary_Market, &sto.Website, &sto.Whitepaper, &sto.Prospectus, &sto.Smart_Contract, &sto.Github, &sto.Blockchain, &sto.Issuer_Address, &sto.Token_Used, &sto.Dividend, &sto.Voting, &sto.Equity_Ownership, &sto.MME_Class, &sto.Interest, &sto.Portfolio)
+	err = row.Scan(&sto.Token_Name, &sto.Token_Status, &sto.Token_Symbol, &sto.Industry, &sto.Amount_Raised, &sto.Currency, &sto.Issuance_Price, &sto.Min_Invest, &sto.Closing_Date, &sto.Target_Investor_Type, &sto.Jurisdictions_Avail, &sto.Restricted_Area, &sto.Secondary_Market, &sto.Website, &sto.Whitepaper, &sto.Prospectus, &sto.Smart_Contract, &sto.Github, &sto.Blockchain, &sto.Issuer_Address, &sto.Token_Used, &sto.Dividend, &sto.Voting, &sto.Equity_Ownership, &sto.MME_Class, &sto.Interest, &sto.Portfolio)
 
 	if err != nil {
 		// If no results send null
@@ -295,6 +306,16 @@ func (env *Env) GetAllTokens(c *gin.Context){
 		sto  dia.Security_Token_Symbols
 		tokens []dia.Security_Token_Symbols
 	)
+	db, err := sql.Open("mysql", "root:@93MySQL@/sys")
+	if err != nil {
+		log.Print(err.Error())
+	}
+	defer db.Close()
+	// make sure connection is available
+	err = db.Ping()
+	if err != nil {
+		log.Print(err.Error())
+	}
 	rows, err := db.Query("select token_name, token_symbol from SecurityTokens;")
 	if err != nil {
 		log.Print(err.Error())
