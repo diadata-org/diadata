@@ -16,3 +16,4 @@ services:
 networks:
   mysql-network:
     driver: overlay
+    attachable: true
