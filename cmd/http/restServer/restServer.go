@@ -86,6 +86,17 @@ func main() {
 
 	config := dia.GetConfigApi()
 
+	db, err := sql.Open("mysql", "root:example@(mysql:3306)/sys")
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer db.Close()
+	// make sure connection is available
+	err = db.Ping()
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "party zone",
