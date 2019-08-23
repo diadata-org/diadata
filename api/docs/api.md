@@ -7,8 +7,7 @@ Version: 1.0
 
 ## Paths
 
-### GET /v1/chartPoints/ {#GET--v1-chartPoints-}
-
+### GET /v1/chartPoints/ 
 Get chart points for.
 
 Query Params:
@@ -22,16 +21,15 @@ Path Params:
 Responses:
   - 200: success.
 
-    [models.Points](#models.Points)
+    [models.Points](#modelspoints)
   - 404: Symbol not found.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/chartPointsAllExchanges/ {#GET--v1-chartPointsAllExchanges-}
-
+### GET /v1/chartPointsAllExchanges/ 
 Get Symbol Details.
 
 Query Params:
@@ -44,51 +42,38 @@ Path Params:
 Responses:
   - 200: success.
 
-    [models.Points](#models.Points)
+    [models.Points](#modelspoints)
   - 404: Symbol not found.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/coins {#GET--v1-coins}
-
+### GET /v1/coins
 Get coins.
 
-
-
-
-
 Responses:
   - 200: success.
 
-    [models.Coins](#models.Coins)
+    [models.Coins](#modelscoins)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/pairs/ {#GET--v1-pairs-}
-
+### GET /v1/pairs/
 Get pairs.
 
-
-
-
-
 Responses:
   - 200: success.
 
-    [models.Pairs](#models.Pairs)
+    [models.Pairs](#modelspairs)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/quotation/ {#GET--v1-quotation-}
-
+### GET /v1/quotation/
 Get quotation.
-
-
 
 Path Params:
   - symbol [string]: Some symbol.
@@ -96,15 +81,15 @@ Path Params:
 Responses:
   - 200: success.
 
-    [models.Quotation](#models.Quotation)
+    [models.Quotation](#modelsquotation)
   - 404: Symbol not found.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### POST /v1/supply {#POST--v1-supply}
+### POST /v1/supply
 
 Post the circulating supply.
 
@@ -112,57 +97,50 @@ Query Params:
   - Symbol [string]: Coin symbol.
   - CirculatingSupply [number]: number of coins in circulating supply.
 
-
-
 Responses:
   - 200: success.
 
-    [dia.Supply](#dia.Supply)
+    [dia.Supply](#diasupply)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/supply/ {#GET--v1-supply-}
+### GET /v1/supply/
 
 Get supply.
 
-
-
 Path Params:
   - symbol [string]: Some symbol.
 
 Responses:
   - 200: success.
 
-    [dia.Supply](#dia.Supply)
+    [dia.Supply](#diasupply)
   - 404: Symbol not found.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/symbol/ {#GET--v1-symbol-}
-
+### GET /v1/symbol/
 Get Symbol Details.
 
-
-
 Path Params:
   - symbol [string]: Some symbol.
 
 Responses:
   - 200: success.
 
-    [models.SymbolDetails](#models.SymbolDetails)
+    [models.SymbolDetails](#modelssymboldetails)
   - 404: Symbol not found.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
-### GET /v1/symbols {#GET--v1-symbols}
+### GET /v1/symbols
 
 Get all symbols list.
 
@@ -176,10 +154,10 @@ Path Params:
 Responses:
   - 200: success.
 
-    [dia.Symbols](#dia.Symbols)
+    [dia.Symbols](#diasymbols)
   - 500: error.
 
-    [restApi.APIError](#restApi.APIError)
+    [restApi.APIError](#restapiapierror)
 
 
 ## Definitions
@@ -199,13 +177,13 @@ Responses:
   - estimatedUSDPrice *(number)*  - foreignTradeID *(string)*  - pair *(string)*  - price *(number)*  - source *(string)*  - symbol *(string)*  - time *(string)*  - volume *(number)*
 ### models.Change
 
-  - usd *(array)*    - [models.CurrencyChange](#models.CurrencyChange)
+  - usd *(array)*    - [models.CurrencyChange](#modelscurrencychange)
 ### models.Coin
 
   - circulatingSupply *(number)*  - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - symbol *(string)*  - time *(string)*  - volumeYesterdayUSD *(number)*
 ### models.Coins
 
-  - change *(object)*  - coins *(array)*    - [models.Coin](#models.Coin)  - completeCoinList *(array)*    - [models.CoinSymbolAndName](#models.CoinSymbolAndName)
+  - change *(object)*  - coins *(array)*    - [models.Coin](#modelscoin)  - completeCoinList *(array)*    - [models.CoinSymbolAndName](#modelscoinsymbolandname)
 ### models.CoinSymbolAndName
 
   - name *(string)*  - symbol *(string)*
@@ -214,7 +192,7 @@ Responses:
   - rate *(number)*  - rateYesterday *(number)*  - symbol *(string)*
 ### models.Pairs
 
-  - pairs *(array)*    - [dia.Pair](#dia.Pair)
+  - pairs *(array)*    - [dia.Pair](#diapair)
 ### models.Points
 
   - dataPoints *(string)*
@@ -223,10 +201,10 @@ Responses:
   - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - source *(string)*  - symbol *(string)*  - time *(string)*  - volumeYesterdayUSD *(number)*
 ### models.SymbolDetails
 
-  - change *(object)*  - coin *(object)*  - exchanges *(array)*    - [models.SymbolExchangeDetails](#models.SymbolExchangeDetails)  - gfx1 *(object)*  - rank *(integer)*
+  - change *(object)*  - coin *(object)*  - exchanges *(array)*    - [models.SymbolExchangeDetails](#modelssymbolexchangedetails)  - gfx1 *(object)*  - rank *(integer)*
 ### models.SymbolExchangeDetails
 
-  - lastTrades *(array)*    - [dia.Trade](#dia.Trade)  - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - time *(string)*  - volumeYesterdayUSD *(number)*
+  - lastTrades *(array)*    - [dia.Trade](#diatrade)  - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - time *(string)*  - volumeYesterdayUSD *(number)*
 ### restApi.APIError
 
   - errorcode *(integer)*  - errormessage *(string)*
