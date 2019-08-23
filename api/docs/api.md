@@ -4,6 +4,9 @@ The world's crowd-driven financial data community has a professional API made fo
 
 Version: 1.0
 
+## Base URL
+
+The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of this base URL.
 
 ## Paths
 
