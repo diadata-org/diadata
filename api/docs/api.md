@@ -185,48 +185,48 @@ Responses:
 ## Definitions
 
 
-### dia.Pair{#dia.Pair}
+### dia.Pair
 
   - exchange *(string)*  - foreignName *(string)*  - ignore *(boolean)*  - symbol *(string)*
-### dia.Supply{#dia.Supply}
+### dia.Supply
 
   - block *(integer)*  - circulatingSupply *(number)*  - name *(string)*  - source *(string)*  - symbol *(string)*  - time *(string)*
-### dia.Symbols{#dia.Symbols}
+### dia.Symbols
 
   - symbols *(array)*    - type: string
-### dia.Trade{#dia.Trade}
+### dia.Trade
 
   - estimatedUSDPrice *(number)*  - foreignTradeID *(string)*  - pair *(string)*  - price *(number)*  - source *(string)*  - symbol *(string)*  - time *(string)*  - volume *(number)*
-### models.Change{#models.Change}
+### models.Change
 
   - usd *(array)*    - [models.CurrencyChange](#models.CurrencyChange)
-### models.Coin{#models.Coin}
+### models.Coin
 
   - circulatingSupply *(number)*  - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - symbol *(string)*  - time *(string)*  - volumeYesterdayUSD *(number)*
-### models.Coins{#models.Coins}
+### models.Coins
 
   - change *(object)*  - coins *(array)*    - [models.Coin](#models.Coin)  - completeCoinList *(array)*    - [models.CoinSymbolAndName](#models.CoinSymbolAndName)
-### models.CoinSymbolAndName{#models.CoinSymbolAndName}
+### models.CoinSymbolAndName
 
   - name *(string)*  - symbol *(string)*
-### models.CurrencyChange{#models.CurrencyChange}
+### models.CurrencyChange
 
   - rate *(number)*  - rateYesterday *(number)*  - symbol *(string)*
-### models.Pairs{#models.Pairs}
+### models.Pairs
 
   - pairs *(array)*    - [dia.Pair](#dia.Pair)
-### models.Points{#models.Points}
+### models.Points
 
   - dataPoints *(string)*
-### models.Quotation{#models.Quotation}
+### models.Quotation
 
   - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - source *(string)*  - symbol *(string)*  - time *(string)*  - volumeYesterdayUSD *(number)*
-### models.SymbolDetails{#models.SymbolDetails}
+### models.SymbolDetails
 
   - change *(object)*  - coin *(object)*  - exchanges *(array)*    - [models.SymbolExchangeDetails](#models.SymbolExchangeDetails)  - gfx1 *(object)*  - rank *(integer)*
-### models.SymbolExchangeDetails{#models.SymbolExchangeDetails}
+### models.SymbolExchangeDetails
 
   - lastTrades *(array)*    - [dia.Trade](#dia.Trade)  - name *(string)*  - price *(number)*  - priceYesterday *(number)*  - time *(string)*  - volumeYesterdayUSD *(number)*
-### restApi.APIError{#restApi.APIError}
+### restApi.APIError
 
   - errorcode *(integer)*  - errormessage *(string)*
