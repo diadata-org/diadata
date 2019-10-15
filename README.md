@@ -10,6 +10,13 @@ All DIA data points can be used in Ethereum Smart Contracts.
 We provide oracle solutions to use this financial information in any smart contract.
 The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
+## Alpha Version - dApp Registry
+* [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
+* [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
+* [Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
+* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
+* [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+
 ## Methodology Documentation
 Currently, DIA collects several classes of data.
 Separate documentation exists for each of these different use cases.
@@ -36,7 +43,7 @@ The event fields show the values in the following locations:
 * Name is displayed in the sixth and last field (display as `text`).
 
 ## API Access
-You can find documnentation for our [live API](https://api.diadata.org/v1) on our [swagger site](https://api.diadata.org/swagger/index.html).
+You can find documnentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](api/docs/api.md).
 Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset (e.g., BTC for Bitcoin).
@@ -85,9 +92,4 @@ The first quotations in our database are daily exchange rates from the European 
 DIA is open for anyone to contribute and we always welcome pull requests.
 We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
 
-## Alpha Version - dApp Registry
-* [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
-* [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
-* [Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
-* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
-* [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+
