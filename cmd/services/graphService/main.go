@@ -23,7 +23,7 @@ func main() {
 	for {
 		for _, symbol := range dataStore.GetAllSymbols() {
 
-			log.Info("sleeping...")
+			log.Infof("sleeping, next symbol is %s...", symbol)
 			time.Sleep(1 * time.Second)
 
 			points, err := dataStore.GetChartPoints7Days(symbol)
