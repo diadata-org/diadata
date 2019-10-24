@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/diadata/badge/?version=latest)](https://diadata.readthedocs.io/en/latest/?badge=latest)
+
 # DIA: Technical Introduction 
 Welcome to the [DIAdata.org](https://diadata.org/) platform.
 DIA is an ecosystem for open financial data in a financial smart contract ecosystem.
