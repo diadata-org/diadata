@@ -1,14 +1,5 @@
-site_name: DIAdata
+site_name: Diadata
 docs_dir: documentation
-nav:
-  - DIA Data Documnentation: '../README.md'
-  - Methodology:
-    - Pricing Methodology of Crypto Exchange Quotations: 'methodology/ExchangePrices.md'
-    - Oracles in DIA: 'methodology/Oracles.md'
-    - Circulating Supply Numbers: 'methodology/SupplyNumbers.md'
-  - Tutorials:
-    - Write your own blockchain scraper: 'tutorials/BlockchainScraper.md'
-    - Write your own exchange scraper: 'tutorials/ExchangeScraper.md'
 theme:
   name: readthedocs
   highlightjs: true
