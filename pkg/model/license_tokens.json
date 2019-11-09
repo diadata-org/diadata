@@ -5,12 +5,14 @@
 			"Name": "BAT",
 			"Licenses":
 				[
-					"Binance": "BY-NC",
-					"Bitfinex": "BY-NC",
-					"HitBTC": "BY",
-					"Huobi": "BY",
-					"Coinbase": "BY",
-					"Kraken": "BY"
+					{
+						"Binance": "BY-NC",
+						"Bitfinex": "BY-NC",
+						"HitBTC": "BY",
+						"Huobi": "BY",
+						"Coinbase": "BY",
+						"Kraken": "BY"
+					}
 				]
 		},
 		{
