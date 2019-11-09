@@ -4,304 +4,352 @@
 		{
 			"Name": "BAT",
 			"Licenses":
-				[
-					{
-						"Binance": "BY-NC",
-						"Bitfinex": "BY-NC",
-						"HitBTC": "BY",
-						"Huobi": "BY",
-						"Coinbase": "BY",
-						"Kraken": "BY"
-					}
-				]
+			[
+				{
+					"Binance": "BY-NC",
+					"Bitfinex": "BY-NC",
+					"HitBTC": "BY",
+					"Huobi": "BY",
+					"Coinbase": "BY",
+					"Kraken": "BY"
+				}
+			]
 		},
 		{
 			"Name": "BNB",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "BTC",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "BCH",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "BYT",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ADA",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "DASH",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "EOS",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ETH",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ETC",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "LTC",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "MKR",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XMR",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XEM",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "NEO",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "OMG",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ONT",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XRP",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XLM",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "USDT",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XTZ",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "XTR",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ZC",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "ZIL",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		},
 		{
 			"Name": "0x",
 			"Licenses":
-				[
+			[
+				{
 					"Binance": "BY-NC",
 					"Bitfinex": "BY-NC",
 					"HitBTC": "BY",
 					"Huobi": "BY",
 					"Coinbase": "BY",
 					"Kraken": "BY"
-				]
+				}
+			]
 		}
 	]
 }
