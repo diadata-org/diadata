@@ -12,6 +12,7 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+      - mysql-network
     secrets:
       - api_diadata
     logging:
@@ -66,3 +67,6 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  mysql-network:
+    external:
+        name: mysql_mysql-network

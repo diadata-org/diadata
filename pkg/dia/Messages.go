@@ -70,6 +70,43 @@ type FilterPoint struct {
 	Time   time.Time
 }
 
+//mysql - STO
+
+type Security_Token_Details struct {
+	Token_Name           string
+	Token_Status         string
+	Token_Symbol         string
+	Industry             string
+	Amount_Raised        string
+	Currency             string
+	Issuance_Price       string
+	Min_Invest           string
+	Closing_Date         string
+	Target_Investor_Type string
+	Jurisdictions_Avail  string
+	Restricted_Area      string
+	Secondary_Market     string
+	Website              string
+	Whitepaper           string
+	Prospectus           string
+	Smart_Contract       string
+	Github               string
+	Blockchain           string
+	Issuer_Address       string
+	Token_Used           string
+	Dividend             string
+	Voting               string
+	Equity_Ownership     string
+	MME_Class            string
+	Interest             string
+	Portfolio            string
+}
+
+type Security_Token_Symbols struct {
+	Token_Name           string
+	Token_Symbol         string
+}
+
 // MarshalBinary -
 func (e *FiltersBlock) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)

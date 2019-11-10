@@ -1,0 +1,19 @@
+# Use root/example as user/password credentials
+
+version: '3.5'
+
+services:
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    networks:
+      - mysql-network
+
+networks:
+  mysql-network:
+    driver: overlay
+    attachable: true
