@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
@@ -26,6 +27,10 @@ type FTXFuturesScraper struct {
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
 	Logger    *log.Logger
+}
+
+type tradeMessageFTX struct {
+	Type string `json:"type"`
 }
 
 func (s *FTXFuturesScraper) send(message *map[string]string, market string, websocketConn *websocket.Conn) {
@@ -82,12 +87,20 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 			}()
 			for {
 				_, message, err := ws.ReadMessage()
+				decodedMsg := tradeMessageFTX{}
 				if err != nil {
 					s.Logger.Printf("[ERROR] problem reading FTX on [%s], err: %s", market, err)
 					return
 				}
-				_, err = s.Writer.Write(string(message)+"|", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
+				err = json.Unmarshal(message, &decodedMsg)
+				if err != nil {
+					s.Logger.Printf("[ERROR] could not unmarshal FTX message on [%s], err: %s", market, err)
+				}
 				s.Logger.Printf("[DEBUG] received new message: %s", message)
+				if decodedMsg.Type != "subscribed" && decodedMsg.Type != "pong" && decodedMsg.Type != "unsubscribed" {
+					s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
+					_, err = s.Writer.Write(string(message)+"|", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
+				}
 			}
 		}()
 	}
