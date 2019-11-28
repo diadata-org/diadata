@@ -59,20 +59,30 @@ func (s *HuobiFuturesScraper) pong(time string, market string, websocketConn *we
 	return n, err
 }
 
-// scraperClose cleans up at end of WSRun execution
-func (s *HuobiFuturesScraper) scraperClose(market string, websocketConn *websocket.Conn) {
-	message := []byte("{\"Unsub\":\"market." + market + ".trade.detail\"}")
-	_, err := s.send(message, market, websocketConn)
-	if err != nil {
-		s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
-		return
+// Authenticate - not required for Huobi to scrape the futures data.
+func (s *HuobiFuturesScraper) Authenticate(market string, connection interface{}) error { return nil }
+
+// ScraperClose - clean up after the scraper.
+func (s *HuobiFuturesScraper) ScraperClose(market string, connection interface{}) error {
+	switch c := connection.(type) {
+	case *websocket.Conn:
+		message := []byte("{\"Unsub\":\"market." + market + ".trade.detail\"}")
+		_, err := s.send(message, market, c)
+		if err != nil {
+			s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
+			return err
+		}
+		err = c.Close()
+		if err != nil {
+			s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
+			return err
+		}
+		time.Sleep(time.Duration(retryIn) * time.Second)
+		return nil
+	default:
+		s.Logger.Printf("[ERROR] unknown connection type: %T. Expected golang.org/x/net/websocket pointer.", connection)
+		return fmt.Errorf("unknown connection type: %T", connection)
 	}
-	err = websocketConn.Close()
-	if err != nil {
-		s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
-		return
-	}
-	time.Sleep(time.Duration(retryIn) * time.Second)
 }
 
 // Scrape starts a websocket scraper for market
@@ -83,7 +93,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 		func() {
 			ws, err := websocket.Dial(wsURLHuobi, "", "http://www.google.com")
 			// defer inside of the function will cleanup before the next run
-			defer s.scraperClose(market, ws)
+			defer s.ScraperClose(market, ws)
 			if err != nil {
 				// an error opening is fatal. let this kill the programme
 				s.Logger.Printf("[ERROR] [%s] %v\n", market, err)
@@ -197,23 +207,3 @@ func parseGzip(data []byte) ([]byte, error) {
 	}
 	return unzipped, nil
 }
-
-
-// example usage:
-// func main() {
-// 	wg := sync.WaitGroup{}
-// 	writer := writers.FileWriter{}
-// 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-
-// 	var huobiScraper scrapers.FuturesScraper = &scrapers.HuobiFuturesScraper{
-// 		WaitGroup: &wg,
-// 		Markets:   []string{"BTC_NW"},
-// 		// alternatively, you can call AllFuturesMarketsHuobi for Markets instantiation.
-// 		// Markets: scrapers.AllFuturesMarketsHuobi(),
-// 		Writer: &writer,
-// 		Logger: logger,
-// 	}
-// 	huobiScraper.ScrapeMarkets()
-
-// 	wg.Wait()
-// }

@@ -33,27 +33,42 @@ type tradeMessageFTX struct {
 	Type string `json:"type"`
 }
 
-func (s *FTXFuturesScraper) send(message *map[string]string, market string, websocketConn *websocket.Conn) {
+func (s *FTXFuturesScraper) send(message *map[string]string, market string, websocketConn *websocket.Conn) error {
 	err := websocketConn.WriteJSON(*message)
 	if err != nil {
 		s.Logger.Printf("[ERROR] problem sending FTX message on market: [%s], err: %s", market, err)
-		return
+		return err
 	}
 	s.Logger.Printf("[DEBUG] sent message [%s]: %s", market, message)
+	return nil
 }
 
-func (s *FTXFuturesScraper) scraperClose(market string, websocketConn *websocket.Conn) {
-	err := websocketConn.WriteJSON(map[string]string{"op": "unsubscribe", "channel": "trades", "market": market})
-	if err != nil {
-		s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
-		return
+// Authenticate - placeholder here, since we do not need to authneticate the connection.
+func (s *FTXFuturesScraper) Authenticate(market string, connection interface{}) error { return nil }
+
+// ScraperClose - safely closes the scraper; We pass the interface connection as the second argument
+// primarily for the reason that Huobi scraper does not use the gorilla websocket; It uses golang's x websocket;
+// If we did not define this method in our FuturesScraper interface, we could have easily used the pointer
+// to gorilla websocket here; However, to make FuturesScraper more ubiquituous, we need an interface here.
+func (s *FTXFuturesScraper) ScraperClose(market string, connection interface{}) error {
+	switch c := connection.(type) {
+	case *websocket.Conn:
+		err := c.WriteJSON(map[string]string{"op": "unsubscribe", "channel": "trades", "market": market})
+		if err != nil {
+			s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
+			return err
+		}
+		err = c.Close()
+		if err != nil {
+			s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
+			return err
+		}
+		time.Sleep(time.Duration(retryIn) * time.Second)
+		return nil
+	default:
+		s.Logger.Printf("[ERROR] unknown connection type: %T. Expected gorilla/websocket pointer.", connection)
+		return fmt.Errorf("unknown connection type: %T", connection)
 	}
-	err = websocketConn.Close()
-	if err != nil {
-		s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
-		return
-	}
-	time.Sleep(time.Duration(retryIn) * time.Second)
 }
 
 // Scrape starts a websocket scraper for market
@@ -69,9 +84,17 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				s.Logger.Printf("[ERROR] dial: %s", err)
 				return
 			}
-			defer s.scraperClose(market, ws)
-			s.send(&map[string]string{"market": market, "channel": "trades", "op": "subscribe"}, market, ws)
-			s.send(&map[string]string{"op": "ping"}, market, ws)
+			defer s.ScraperClose(market, ws)
+			err = s.send(&map[string]string{"market": market, "channel": "trades", "op": "subscribe"}, market, ws)
+			if err != nil {
+				s.Logger.Printf("[ERROR] could not send a channel subscription message. Retrying.")
+				return
+			}
+			err = s.send(&map[string]string{"op": "ping"}, market, ws)
+			if err != nil {
+				s.Logger.Printf("[ERROR] could not send an initial ping message. Retrying.")
+				return
+			}
 			tick := time.NewTicker(15 * time.Second) // every 15 seconds we have to ping FTX
 			defer tick.Stop()
 			// we require a separate goroutine for ticker, because ReadMessage is blocking
