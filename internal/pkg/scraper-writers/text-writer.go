@@ -3,6 +3,7 @@ package writers
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -12,7 +13,7 @@ type FileWriter struct{}
 // GetWriteFileName - Will generate the file name for you of the format yyyy-mm-dd-exchange-market.txt. New files will be created at midnight because the scrapers are calling this method each time before writing to file.
 func (f *FileWriter) GetWriteFileName(exchange string, market string) string {
 	now := time.Now()
-	return fmt.Sprintf("%v-%v-%v-%v-%v.txt", now.Year(), int(now.Month()), now.Day(), exchange, market)
+	return f.clean(fmt.Sprintf("%v-%v-%v-%v-%v.txt", now.Year(), int(now.Month()), now.Day(), exchange, market))
 }
 
 // Write - Will write to the filename the line.
@@ -27,4 +28,8 @@ func (f *FileWriter) Write(line string, filename string) (int, error) {
 		return n, err
 	}
 	return n, nil
+}
+
+func (f *FileWriter) clean(s string) string {
+	return strings.Replace(s, "/", "_", -1)
 }
