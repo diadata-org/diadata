@@ -49,7 +49,7 @@ type HuobiFuturesScraper struct {
 // sends a byte message to huobi websocket
 func (s *HuobiFuturesScraper) send(message []byte, market string, websocketConn *websocket.Conn) (int, error) {
 	n, err := websocketConn.Write(message)
-	s.Logger.Printf("[DEBUG] [%s] Send: %s\n", market, message)
+	s.Logger.Printf("[DEBUG] [%s] send: %s", market, message)
 	return n, err
 }
 
@@ -69,19 +69,16 @@ func (s *HuobiFuturesScraper) ScraperClose(market string, connection interface{}
 		message := []byte("{\"Unsub\":\"market." + market + ".trade.detail\"}")
 		_, err := s.send(message, market, c)
 		if err != nil {
-			s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
 			return err
 		}
 		err = c.Close()
 		if err != nil {
-			s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
 			return err
 		}
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
-		s.Logger.Printf("[ERROR] unknown connection type: %T. Expected golang.org/x/net/websocket pointer.", connection)
-		return fmt.Errorf("unknown connection type: %T", connection)
+		return fmt.Errorf("unknown connection type, expected golang.org/x/net/websocket, got: %T", connection)
 	}
 }
 
@@ -96,14 +93,14 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			defer s.ScraperClose(market, ws)
 			if err != nil {
 				// an error opening is fatal. let this kill the programme
-				s.Logger.Printf("[ERROR] [%s] %v\n", market, err)
+				s.Logger.Printf("[ERROR] [%s] %s", market, err)
 				return
 			}
 			// subscribe to the trade detail channel
 			message := []byte("{\"Sub\":\"market." + market + ".trade.detail\"}")
 			_, err = s.send(message, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] Problem subscriping to the [%s] trade channel. %v\n", market, err)
+				s.Logger.Printf("[ERROR] problem subscriping to the [%s] trade channel, err: %s", market, err)
 				return
 			}
 			// create the conduit for the received messages
@@ -111,7 +108,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			for {
 				m, err := ws.Read(msg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] [%s] %v\n", market, err)
+					s.Logger.Printf("[ERROR] [%s] %s", market, err)
 					// an error reading means we may have lost the connection
 					// return out and just try again
 					return
@@ -119,15 +116,15 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 				newmsg := msg[:m]
 				unzipmsg, err := parseGzip(newmsg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] [%s] %v\n", market, err)
+					s.Logger.Printf("[ERROR] [%s] %s", market, err)
 					return
 				}
-				s.Logger.Printf("[DEBUG] [%s] byteLen:%d, unzipLen:%d %s\n", market, m, len(unzipmsg), unzipmsg)
+				s.Logger.Printf("[DEBUG] [%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
 				if len(unzipmsg) == pingMsgLengthHuobi {
 					if "ping" == string(unzipmsg[2:6]) {
 						_, err := s.pong(string(unzipmsg[8:21]), market, ws)
 						if err != nil {
-							s.Logger.Printf("[ERROR] [%s] Problem ponging the websocket server. %v\n", market, err)
+							s.Logger.Printf("[ERROR] [%s] problem ponging the websocket server, err: %s", market, err)
 							return
 						}
 					}
@@ -135,7 +132,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					// ensure that scrapeDataSaveLocation exists
 					_, err := s.Writer.Write(string(unzipmsg)+"|", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
 					if err != nil {
-						s.Logger.Printf("[ERROR] [%s] problem saving to %s. %v\n", market, s.Writer.GetWriteFileName("huobi", market), err)
+						s.Logger.Printf("[ERROR] [%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
 						return
 					}
 				}
@@ -176,17 +173,17 @@ func AllFuturesMarketsHuobi() []string {
 func (s *HuobiFuturesScraper) validateMarket(market string) {
 	parts := strings.Split(market, "_")
 	if len(parts) != 2 {
-		panic("Incorrect market provided. Should be of the form symbol_frequency")
+		panic("incorrect market provided. should be of the form symbol_frequency")
 	}
 	tradeSymbol := parts[0]
 	tradeFrequency := parts[1]
 	containsSymbol := utils.Contains(&allowedMarketsHuobi, tradeSymbol)
 	if !containsSymbol {
-		panic("Provided trade symbol is not supported")
+		panic("provided trade symbol is not supported")
 	}
 	containsFreq := utils.Contains(&allowedFrequenciesHuobi, tradeFrequency)
 	if !containsFreq {
-		panic("Provided frequency is not supported")
+		panic("provided frequency is not supported")
 	}
 }
 
@@ -197,12 +194,10 @@ func parseGzip(data []byte) ([]byte, error) {
 	r, err := gzip.NewReader(b)
 	defer r.Close()
 	if err != nil {
-		fmt.Println("[parseGzip] NewReader error:", err)
 		return nil, err
 	}
 	unzipped, err := ioutil.ReadAll(r)
 	if err != nil {
-		fmt.Println("[parseGzip] ioutil.ReadAll error:", err)
 		return nil, err
 	}
 	return unzipped, nil

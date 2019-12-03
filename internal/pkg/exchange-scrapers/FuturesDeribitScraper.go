@@ -50,7 +50,6 @@ type messageGETDeribit struct {
 func (s *DeribitFuturesScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
 	err := websocketConn.WriteJSON(*message)
 	if err != nil {
-		s.Logger.Printf("[ERROR] problem sending Deribit message on market: [%s], err: %s", market, err)
 		return err
 	}
 	s.Logger.Printf("[DEBUG] sent message [%s]: %s", market, message)
@@ -63,19 +62,16 @@ func (s *DeribitFuturesScraper) ScraperClose(market string, websocketConnection 
 	case *websocket.Conn:
 		err := c.WriteJSON(map[string]string{"op": "unsubscribe", "channel": "trades", "market": market})
 		if err != nil {
-			s.Logger.Printf("[ERROR] failed to send close message for [%s] websocket, err: %s", market, err)
 			return err
 		}
 		err = c.Close()
 		if err != nil {
-			s.Logger.Printf("[ERROR] failed to close the websocket for [%s]", market)
 			return err
 		}
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
-		s.Logger.Printf("[ERROR] unknown connection type: %T. Expected gorilla/websocket pointer.", c)
-		return fmt.Errorf("unknown connection type: %T", c)
+		return fmt.Errorf("unknown connection type, expected gorilla/websocket, got: %T", c)
 	}
 }
 
@@ -87,6 +83,7 @@ func (s *DeribitFuturesScraper) Authenticate(market string, websocketConnection 
 			"method": "public/auth",
 			"params": &map[string]string{
 				"grant_type": "client_credentials",
+				// "scope":         "session:apiconsole-bq7yiuifb88",
 				"client_id":     s.AccessKey,
 				"client_secret": s.AccessSecret,
 			},
@@ -94,8 +91,7 @@ func (s *DeribitFuturesScraper) Authenticate(market string, websocketConnection 
 		}, market, c)
 		return err
 	default:
-		s.Logger.Printf("[ERROR] unknown connection type: %T. Expected gorilla/websocket pointer.", c)
-		return fmt.Errorf("unknown connection type: %T", c)
+		return fmt.Errorf("unknown connection type, expected gorilla/websocket, got: %T", c)
 	}
 }
 
@@ -130,14 +126,14 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Printf("[ERROR] dial: %s", err)
+				s.Logger.Printf("[ERROR] could not dial the websocket: %s", err)
 				return
 			}
 			defer s.ScraperClose(market, ws)
 			// 1. authenticate
 			err = s.Authenticate(market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not authenticate. Retrying.")
+				s.Logger.Printf("[ERROR] could not authenticate. retrying, err: %s", err)
 				return
 			}
 			time.Sleep(time.Second)
@@ -151,7 +147,7 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 				"id":      0,
 			}, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send ws message. Restarting the websocket.")
+				s.Logger.Printf("[ERROR] could not send ws message. restarting the websocket, err: %s", err)
 				return
 			}
 			// 3. refresh the token more often than 900 seconds
@@ -170,7 +166,7 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 				_, message, err := ws.ReadMessage()
 				decodedMsg := messageDeribit{}
 				if err != nil {
-					s.Logger.Printf("[ERROR] problem reading Deribit on [%s], err: %s", market, err)
+					s.Logger.Printf("[ERROR] problem reading deribit on [%s], err: %s", market, err)
 					return
 				}
 				strMessage := string(message)
@@ -210,11 +206,11 @@ func (s *DeribitFuturesScraper) ScrapeMarkets() {
 func (s *DeribitFuturesScraper) validateMarket(market string) {
 	allFuturesMarketsDeribit, err := allDeribitFuturesMarkets()
 	if err != nil {
-		panic(fmt.Sprintf("Could not fetch any futures markets, err: %s", err))
+		panic(fmt.Sprintf("could not fetch any futures markets, err: %s", err))
 	}
 	containsMarket := utils.Contains(&allFuturesMarketsDeribit, market)
 	if !containsMarket {
-		panic(fmt.Sprintf("Market %s is not available", market))
+		panic(fmt.Sprintf("%s market is unavailable", market))
 	}
 }
 
@@ -224,44 +220,39 @@ func (s *DeribitFuturesScraper) validateRefreshEveryToken() {
 	}
 }
 
-// this will fetch all the futures markets, either ETH or BTC. We use this method to validate that the markets
-// that the user instantiated the scraper with are valid. This is done in the validateMarket method.
 func makeFuturesMarketsRequest(market string) ([]string, error) {
 	if market != "BTC" && market != "ETH" {
-		panic("Unsupported market. Only BTC & ETH are supported.")
+		panic("unsupported market. only btc & eth are supported")
 	}
 	resp, err := http.Get("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
-		fmt.Printf("[ERROR] issue making a GET request to obtain all tradable futures markets. Err: %s", err)
-		return []string{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("[ERROR] issue reading the GET request body. Err: %s", err)
-		return []string{}, err
+		return nil, err
 	}
 	decodedMsg := messageGETDeribit{}
 	err = json.Unmarshal(body, &decodedMsg)
 	if err != nil {
-		fmt.Printf("[ERROR] issue decoding the JSON response. Err: %s", err)
+		return nil, err
 	}
-	allMarkets := []string{}
+	allBTCMarkets := []string{}
 	for _, market := range decodedMsg.Result {
-		allMarkets = append(allMarkets, market.InstrumentName)
+		allBTCMarkets = append(allBTCMarkets, market.InstrumentName)
 	}
-	// fmt.Println("[INFO] the decoded message is:", decodedMsg)
-	return allMarkets, nil
+	return allBTCMarkets, nil
 }
 
 func allDeribitFuturesMarkets() ([]string, error) {
 	BTCMarkets, err := makeFuturesMarketsRequest("BTC")
 	if err != nil {
-		return []string{}, fmt.Errorf("Could not fetch BTC futures markets, err:%s", err)
+		return nil, fmt.Errorf("could not fetch btc futures markets, err: %s", err)
 	}
 	ETHMarkets, err := makeFuturesMarketsRequest("ETH")
 	if err != nil {
-		return []string{}, fmt.Errorf("Could not fetch ETH futures markets, err:%s", err)
+		return nil, fmt.Errorf("could not fetch eth futures markets, err: %s", err)
 	}
 	return append(BTCMarkets, ETHMarkets...), nil
 }
@@ -298,4 +289,3 @@ func allDeribitFuturesMarkets() ([]string, error) {
 
 // 	wg.Wait()
 // }
-
