@@ -94,6 +94,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			if err != nil {
 				// an error opening is fatal. let this kill the programme
 				s.Logger.Printf("[ERROR] [%s] %s", market, err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
 			// subscribe to the trade detail channel
@@ -130,7 +131,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					}
 				} else {
 					// ensure that scrapeDataSaveLocation exists
-					_, err := s.Writer.Write(string(unzipmsg)+"|", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
+					_, err := s.Writer.Write(string(unzipmsg)+"\n", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
 					if err != nil {
 						s.Logger.Printf("[ERROR] [%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
 						return
