@@ -31,20 +31,20 @@ type DeribitFuturesScraper struct {
 	AccessKey    string
 	AccessSecret string
 
-	RefereshToken     string // this is the token that we will use to refresh our existing AccessToken that we receive by authenticating, note that we do not need to use this AccessToken anywhere in our case
-	RefreshTokenEvery int16  // how often we refresh the token (in seconds)
+	RefreshTokenEvery int16 // how often we refresh the token (in seconds)
 }
 
-type messageDeribit struct {
+type deribitRefreshMessage struct {
 	Result struct {
 		RefreshToken string `json:"refresh_token"`
 	} `json:"result"`
 }
 
-type messageGETDeribit struct {
-	Result []struct {
-		InstrumentName string `json:"instrument_name"`
-	} `json:"result"`
+type deribitErrorMessage struct {
+	Error struct {
+		Message string `json:"message"`
+		Code    int64  `json:"code"`
+	} `json:"error"`
 }
 
 func (s *DeribitFuturesScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
@@ -96,8 +96,8 @@ func (s *DeribitFuturesScraper) Authenticate(market string, websocketConnection 
 }
 
 // when we authenticate, we get back a refresh token that we use to keep alive our websocket connection
-func (s *DeribitFuturesScraper) refreshToken(market string, websocketConn *websocket.Conn) (bool, error) {
-	if s.RefereshToken == "" {
+func (s *DeribitFuturesScraper) refreshToken(previousToken string, market string, websocketConn *websocket.Conn) (bool, error) {
+	if previousToken == "" {
 		return false, nil
 	}
 	// refresh
@@ -105,7 +105,8 @@ func (s *DeribitFuturesScraper) refreshToken(market string, websocketConn *webso
 		"method": "public/auth",
 		"params": &map[string]string{
 			"grant_type":    "refresh_token",
-			"refresh_token": s.RefereshToken,
+			"refresh_token": previousToken,
+			// "scope":         "account:read block_trade:read mainaccount session:apiconsole-jrbedpbe16e trade:read wallet:read",
 		},
 		"jsonrpc": "2.0",
 	}, market, websocketConn)
@@ -122,11 +123,14 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
+			refreshToken := ""
+			failedToRefreshToken := make(chan interface{})
 			u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
 			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
 				s.Logger.Printf("[ERROR] could not dial the websocket: %s", err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
 			defer s.ScraperClose(market, ws)
@@ -158,35 +162,75 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 				for {
 					select {
 					case <-tick.C:
-						s.refreshToken(market, ws)
+						isRefreshed, err := s.refreshToken(refreshToken, market, ws)
+						if err != nil {
+							close(failedToRefreshToken)
+							time.Sleep(time.Duration(60) * time.Minute) // something very long
+						}
+						maxRetryAttempts := 5
+						if !isRefreshed {
+							for i := 1; i < maxRetryAttempts; i++ {
+								isRefreshed, err := s.refreshToken(refreshToken, market, ws)
+								if isRefreshed {
+									break
+								}
+								if err != nil {
+									close(failedToRefreshToken)
+									time.Sleep(time.Duration(60) * time.Minute) // something very long
+								}
+							}
+						}
 					}
 				}
 			}()
 			for {
-				_, message, err := ws.ReadMessage()
-				decodedMsg := messageDeribit{}
-				if err != nil {
-					s.Logger.Printf("[ERROR] problem reading deribit on [%s], err: %s", market, err)
+				select {
+				case <-failedToRefreshToken:
+					s.Logger.Printf("[ERROR] failed to refresh token numerous times. restarting the scraper")
+					time.Sleep(time.Duration(retryIn) * time.Second)
 					return
-				}
-				strMessage := string(message)
-				s.Logger.Printf("[DEBUG] received new message: %v", strMessage)
-				// check if the received message containss the refresh_token json key
-				if strings.Contains(strMessage, "refresh_token") {
-					err = json.Unmarshal(message, &decodedMsg)
+				default:
+					_, message, err := ws.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
 					if err != nil {
-						s.Logger.Printf("[ERROR] problem unmarshalling the message that contains refresh_token")
+						s.Logger.Printf("[ERROR] problem reading deribit on [%s], err: %s", market, err)
 						return
 					}
-					s.Logger.Printf("[INFO] obtained a new refresh token on [%s], updating '%s'", market, s.RefereshToken)
-					s.RefereshToken = decodedMsg.Result.RefreshToken
-				} else {
-					// only save the messages if the message does not contain thre refresh_token string
-					s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
-					_, err = s.Writer.Write(strMessage+"|", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
-					if err != nil {
-						s.Logger.Printf("[ERROR] issue saving to file on [%s], err: %s", market, err)
-						return
+					strMessage := string(message)
+					s.Logger.Printf("[DEBUG] received new message: %v", strMessage)
+					// check if the received message containss the refresh_token json key
+					if strings.Contains(strMessage, "refresh_token") {
+						decodedMsg := deribitRefreshMessage{}
+						err = json.Unmarshal(message, &decodedMsg)
+						if err != nil {
+							s.Logger.Printf("[ERROR] problem unmarshalling the message: %s, err: %s", message, err)
+							return
+						}
+						s.Logger.Printf("[INFO] obtained a new refresh token on [%s], updating '%s'", market, decodedMsg.Result.RefreshToken)
+						refreshToken = decodedMsg.Result.RefreshToken
+					} else if strings.Contains(strMessage, "error") {
+						decodedMsg := deribitErrorMessage{}
+						err = json.Unmarshal(message, &decodedMsg)
+						if err != nil {
+							s.Logger.Printf("[ERROR] problem unmarshalling the message: %s, err: %s", message, err)
+							return
+						}
+						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
+						if err != nil {
+							s.Logger.Printf("[ERROR] issue saving to file on [%s], err: %s", market, err)
+						}
+						if decodedMsg.Error.Message != "" {
+							if decodedMsg.Error.Code == 13009 {
+								panic("wrong or expired authorization token or bad signature. For example, please check scope of the token, \"connection\" scope can't be reused for other connections.")
+							}
+						}
+					} else {
+						// only save the messages if the message does not contain thre refresh_token string
+						s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
+						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
+						if err != nil {
+							s.Logger.Printf("[ERROR] issue saving to file on [%s], err: %s", market, err)
+							return
+						}
 					}
 				}
 			}
@@ -220,7 +264,7 @@ func (s *DeribitFuturesScraper) validateRefreshEveryToken() {
 	}
 }
 
-func makeFuturesMarketsRequest(market string) ([]string, error) {
+func deribitFuturesMarkets(market string) ([]string, error) {
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported market. only btc & eth are supported")
 	}
@@ -233,24 +277,26 @@ func makeFuturesMarketsRequest(market string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	decodedMsg := messageGETDeribit{}
+	decodedMsg := deribitInstruments{}
 	err = json.Unmarshal(body, &decodedMsg)
 	if err != nil {
 		return nil, err
 	}
-	allBTCMarkets := []string{}
+	allFuturesMarkets := []string{}
 	for _, market := range decodedMsg.Result {
-		allBTCMarkets = append(allBTCMarkets, market.InstrumentName)
+		if market.Kind == "future" {
+			allFuturesMarkets = append(allFuturesMarkets, market.InstrumentName)
+		}
 	}
-	return allBTCMarkets, nil
+	return allFuturesMarkets, nil
 }
 
 func allDeribitFuturesMarkets() ([]string, error) {
-	BTCMarkets, err := makeFuturesMarketsRequest("BTC")
+	BTCMarkets, err := deribitFuturesMarkets("BTC")
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch btc futures markets, err: %s", err)
 	}
-	ETHMarkets, err := makeFuturesMarketsRequest("ETH")
+	ETHMarkets, err := deribitFuturesMarkets("ETH")
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch eth futures markets, err: %s", err)
 	}
@@ -276,14 +322,14 @@ func allDeribitFuturesMarkets() ([]string, error) {
 
 // 	var deribitScraper scrapers.FuturesScraper = &scrapers.DeribitFuturesScraper{
 // 		WaitGroup: &wg,
-// 		Markets:   []string{"BTC-PERPETUAL", "ETH-PERPETUAL", "ETH-6DEC19-220-C", "ETH-13DEC19-180-C"},
+// 		Markets:   []string{"BTC-PERPETUAL", "ETH-PERPETUAL"},
 // 		Writer:    &writer,
 // 		Logger:    logger,
 
 // 		AccessKey:    "yourDeribitAccessKey",
 // 		AccessSecret: "yourDeribiAccessSecret",
-
-// 		RefreshTokenEvery: 60,
+//      // expiry is 900 seconds for the refreshToken, so renew just before then
+// 		RefreshTokenEvery: 800,
 // 	}
 // 	deribitScraper.ScrapeMarkets()
 
