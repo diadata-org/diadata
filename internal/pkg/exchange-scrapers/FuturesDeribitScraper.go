@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -17,22 +18,6 @@ import (
 )
 
 const scrapeDataSaveLocationDeribit = ""
-
-// DeribitFuturesScraper - scrapes the futures from the Deribit exchange
-type DeribitFuturesScraper struct {
-	Markets   []string
-	WaitGroup *sync.WaitGroup
-	Writer    writers.Writer
-	Logger    *log.Logger
-
-	// required for deribit to:
-	// 1. authenticate (trades is a private channel)
-	// 2. referesh the token from step 1., so that the channel isn't closed
-	AccessKey    string
-	AccessSecret string
-
-	RefreshTokenEvery int16 // how often we refresh the token (in seconds)
-}
 
 type deribitRefreshMessage struct {
 	Result struct {
@@ -47,7 +32,30 @@ type deribitErrorMessage struct {
 	} `json:"error"`
 }
 
-func (s *DeribitFuturesScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
+// NewDeribitFuturesScraper - creates a deribit futures scraper for you for the markets that you supply. Some of the markets available are: "BTC-PERPETUAL" and "ETH-PERPETUAL".
+func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
+	wg := sync.WaitGroup{}
+	writer := writers.FileWriter{}
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+
+	var scraper DeribitScraper = DeribitScraper{
+		WaitGroup: &wg,
+		Markets:   markets, // e.g. []string{"BTC-PERPETUAL", "ETH-PERPETUAL"}
+		Writer:    &writer,
+		Logger:    logger,
+
+		AccessKey:    accessKey,
+		AccessSecret: accessSecret,
+
+		// expiry is 900 seconds
+		RefreshTokenEvery: 800,
+		MarketKind:        DeribitFuture, // DO NOT change this.
+	}
+
+	return &scraper
+}
+
+func (s *DeribitScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
 	err := websocketConn.WriteJSON(*message)
 	if err != nil {
 		return err
@@ -57,7 +65,7 @@ func (s *DeribitFuturesScraper) send(message *map[string]interface{}, market str
 }
 
 // ScraperClose - responsible for closing out the scraper for a market
-func (s *DeribitFuturesScraper) ScraperClose(market string, websocketConnection interface{}) error {
+func (s *DeribitScraper) ScraperClose(market string, websocketConnection interface{}) error {
 	switch c := websocketConnection.(type) {
 	case *websocket.Conn:
 		err := c.WriteJSON(map[string]string{"op": "unsubscribe", "channel": "trades", "market": market})
@@ -76,7 +84,7 @@ func (s *DeribitFuturesScraper) ScraperClose(market string, websocketConnection 
 }
 
 // Authenticate - authenticates with your access key and access secret to retrieve the trade details
-func (s *DeribitFuturesScraper) Authenticate(market string, websocketConnection interface{}) error {
+func (s *DeribitScraper) Authenticate(market string, websocketConnection interface{}) error {
 	switch c := websocketConnection.(type) {
 	case *websocket.Conn:
 		err := s.send(&map[string]interface{}{
@@ -96,7 +104,7 @@ func (s *DeribitFuturesScraper) Authenticate(market string, websocketConnection 
 }
 
 // when we authenticate, we get back a refresh token that we use to keep alive our websocket connection
-func (s *DeribitFuturesScraper) refreshToken(previousToken string, market string, websocketConn *websocket.Conn) (bool, error) {
+func (s *DeribitScraper) refreshToken(previousToken string, market string, websocketConn *websocket.Conn) (bool, error) {
 	if previousToken == "" {
 		return false, nil
 	}
@@ -117,8 +125,8 @@ func (s *DeribitFuturesScraper) refreshToken(previousToken string, market string
 }
 
 // Scrape starts a websocket scraper for market
-func (s *DeribitFuturesScraper) Scrape(market string) {
-	s.validateMarket(market)
+func (s *DeribitScraper) Scrape(market string) {
+	s.validateMarket(market, s.MarketKind)
 	s.validateRefreshEveryToken()
 	for {
 		// immediately invoked function expression for easy clenup with defer
@@ -239,7 +247,7 @@ func (s *DeribitFuturesScraper) Scrape(market string) {
 }
 
 // ScrapeMarkets - will scrape the markets specified during instantiation
-func (s *DeribitFuturesScraper) ScrapeMarkets() {
+func (s *DeribitScraper) ScrapeMarkets() {
 	for _, market := range s.Markets {
 		s.WaitGroup.Add(1)
 		go s.Scrape(market)
@@ -247,8 +255,9 @@ func (s *DeribitFuturesScraper) ScrapeMarkets() {
 	s.WaitGroup.Wait()
 }
 
-func (s *DeribitFuturesScraper) validateMarket(market string) {
-	allFuturesMarketsDeribit, err := allDeribitFuturesMarkets()
+// marketKind can be "future" or "option"
+func (s *DeribitScraper) validateMarket(market string, marketKind DeribitScraperKind) {
+	allFuturesMarketsDeribit, err := allDeribitMarketsOfKind(marketKind)
 	if err != nil {
 		panic(fmt.Sprintf("could not fetch any futures markets, err: %s", err))
 	}
@@ -258,13 +267,13 @@ func (s *DeribitFuturesScraper) validateMarket(market string) {
 	}
 }
 
-func (s *DeribitFuturesScraper) validateRefreshEveryToken() {
+func (s *DeribitScraper) validateRefreshEveryToken() {
 	if s.RefreshTokenEvery >= 900 {
 		panic("When you use https://testapp.deribit.com/api_console, you will see that upon a successful authentication, the response will include expiresIn field. Which is set at 900. This means that the token we generated is only valid for 900 seconds, and we have to refresh it before then.")
 	}
 }
 
-func deribitFuturesMarkets(market string) ([]string, error) {
+func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, error) {
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported market. only btc & eth are supported")
 	}
@@ -282,56 +291,32 @@ func deribitFuturesMarkets(market string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	allFuturesMarkets := []string{}
+	allMarkets := []string{}
 	for _, market := range decodedMsg.Result {
-		if market.Kind == "future" {
-			allFuturesMarkets = append(allFuturesMarkets, market.InstrumentName)
+		switch marketKind {
+		case DeribitFuture:
+			if market.Kind == "future" {
+				allMarkets = append(allMarkets, market.InstrumentName)
+			}
+		case DeribitOption:
+			if market.Kind == "option" {
+				allMarkets = append(allMarkets, market.InstrumentName)
+			}
+		default:
+			panic("unknown market kind")
 		}
 	}
-	return allFuturesMarkets, nil
+	return allMarkets, nil
 }
 
-func allDeribitFuturesMarkets() ([]string, error) {
-	BTCMarkets, err := deribitFuturesMarkets("BTC")
+func allDeribitMarketsOfKind(marketKind DeribitScraperKind) ([]string, error) {
+	BTCMarkets, err := deribitMarkets("BTC", marketKind)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch btc futures markets, err: %s", err)
 	}
-	ETHMarkets, err := deribitFuturesMarkets("ETH")
+	ETHMarkets, err := deribitMarkets("ETH", marketKind)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch eth futures markets, err: %s", err)
 	}
 	return append(BTCMarkets, ETHMarkets...), nil
 }
-
-// example usage
-// package main
-
-// import (
-// 	"log"
-// 	"os"
-// 	"sync"
-
-// 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
-// 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
-// )
-
-// func main() {
-// 	wg := sync.WaitGroup{}
-// 	writer := writers.FileWriter{}
-// 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-
-// 	var deribitScraper scrapers.FuturesScraper = &scrapers.DeribitFuturesScraper{
-// 		WaitGroup: &wg,
-// 		Markets:   []string{"BTC-PERPETUAL", "ETH-PERPETUAL"},
-// 		Writer:    &writer,
-// 		Logger:    logger,
-
-// 		AccessKey:    "yourDeribitAccessKey",
-// 		AccessSecret: "yourDeribiAccessSecret",
-//      // expiry is 900 seconds for the refreshToken, so renew just before then
-// 		RefreshTokenEvery: 800,
-// 	}
-// 	deribitScraper.ScrapeMarkets()
-
-// 	wg.Wait()
-// }
