@@ -149,15 +149,33 @@ func (s *DeribitScraper) Scrape(market string) {
 				return
 			}
 			time.Sleep(time.Second)
-			// 2. subscribe to channel
-			err = s.send(&map[string]interface{}{
+			// 2. subscribe to channel depending on the market kind. for futures, collect trades, for options, collect ob
+			optionRequest := &map[string]interface{}{
+				"method": "public/subscribe",
+				"params": &map[string]interface{}{
+					"channels": []string{"book." + market + ".none.1.100ms"}, // will give us orderbook snapshots every 100 ms
+				},
+				"jsonrpc": "2.0",
+				"id":      0,
+			}
+			futureRequest := &map[string]interface{}{
 				"method": "private/subscribe",
 				"params": &map[string]interface{}{
 					"channels": []string{"trades." + market + ".raw"},
 				},
 				"jsonrpc": "2.0",
 				"id":      0,
-			}, market, ws)
+			}
+
+			switch s.MarketKind {
+			case DeribitFuture:
+				err = s.send(futureRequest, market, ws)
+			case DeribitOption:
+				err = s.send(optionRequest, market, ws)
+			default:
+				panic("unknown market kind")
+			}
+
 			if err != nil {
 				s.Logger.Printf("[ERROR] could not send ws message. restarting the websocket, err: %s", err)
 				return
@@ -320,3 +338,11 @@ func allDeribitMarketsOfKind(marketKind DeribitScraperKind) ([]string, error) {
 	}
 	return append(BTCMarkets, ETHMarkets...), nil
 }
+
+// usage example
+// func main() {
+// 	wg := sync.WaitGroup{}
+// 	futuresDeribit := scrapers.NewDeribitFuturesScraper([]string{"BTC-PERPETUAL", "ETH-PERPETUAL"}, "accessKey", "secretKey")
+// 	futuresDeribit.ScrapeMarkets()
+// 	wg.Wait()
+// }
