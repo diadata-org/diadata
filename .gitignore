@@ -14,3 +14,6 @@ go.*
 .DS_Store
 
 .zos.session
+.vscode/
+bin/
+pkg/mod
