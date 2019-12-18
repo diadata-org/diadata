@@ -139,6 +139,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
 				s.Logger.Printf("[ERROR] dial: %s", err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
 			defer s.ScraperClose(market, ws)
@@ -190,7 +191,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 				s.Logger.Printf("[DEBUG] received a message: %s", message)
 				if msg.Notice == "OrdersMatched" {
 					s.Logger.Printf("[DEBUG] received new match message on [%s]: %s", market, message)
-					_, err = s.Writer.Write(string(message)+"|", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
+					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
 					if err != nil {
 						s.Logger.Printf("[ERROR] could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
 						return

@@ -77,7 +77,8 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not fial ftx websocket: %s", err)
+				s.Logger.Printf("[ERROR] could not dial ftx websocket: %s", err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
 			defer s.ScraperClose(market, ws)
@@ -119,7 +120,7 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				s.Logger.Printf("[DEBUG] received new message: %s", message)
 				if decodedMsg.Type != "subscribed" && decodedMsg.Type != "pong" && decodedMsg.Type != "unsubscribed" {
 					s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
-					_, err = s.Writer.Write(string(message)+"|", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
+					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
 					if err != nil {
 						s.Logger.Printf("[ERROR] could not write to file, err: %s", err)
 						return
