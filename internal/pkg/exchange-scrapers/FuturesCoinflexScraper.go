@@ -191,11 +191,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 				s.Logger.Printf("[DEBUG] received a message: %s", message)
 				if msg.Notice == "OrdersMatched" {
 					s.Logger.Printf("[DEBUG] received new match message on [%s]: %s", market, message)
-<<<<<<< HEAD
-					_, err = s.Writer.Write(string(message)+"|", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
-=======
 					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
->>>>>>> 3b1670241e30725832048d5bc30330ba3321c305
 					if err != nil {
 						s.Logger.Printf("[ERROR] could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
 						return
