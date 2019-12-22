@@ -115,6 +115,10 @@ func (s *CryptofacilitiesScraper) Scrape(market string) {
 			}()
 			for {
 				_, message, err := ws.ReadMessage()
+				if err != nil {
+					s.Logger.Errorf("repeated read error, restarting")
+					return
+				}
 				s.Logger.Debugf("received new message: %s, saving new message", message)
 				_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCryptofacilities+s.Writer.GetWriteFileName("cryptofacilities", market))
 				if err != nil {
