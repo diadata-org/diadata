@@ -3,16 +3,15 @@ package scrapers
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"sync"
 	"time"
 
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	zap "go.uber.org/zap"
 )
 
 // DeribitOptionsScraper - used to maintain the order book and save it every x seconds
@@ -62,7 +61,8 @@ const deribitOptionsMetaFilename string = "deribit-options-meta.txt"
 func NewDeribitOptionsScraper(markets []string, accessKey string, accessSecret string) OptionsScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
@@ -196,7 +196,7 @@ func (s *DeribitOptionsScraper) GetAndStoreOptionsMeta(market string) error {
 			if err != nil {
 				return err
 			}
-			s.deribitScraper.Logger.Printf("[DEBUG] new option, writing to meta file. option: %s", line)
+			s.deribitScraper.Logger.Debugf("new option, writing to meta file. option: %s", line)
 			_, err = s.deribitScraper.Writer.Write(string(line)+"\n", deribitOptionsMetaFilename)
 			if err != nil {
 				return err
@@ -208,9 +208,10 @@ func (s *DeribitOptionsScraper) GetAndStoreOptionsMeta(market string) error {
 
 // ParseOrderbookFile reads the order book data file and converts the order book into an array of OptionOrderbookDatum
 func ParseOrderbookFile(path string) ([]OptionOrderbookDatum, error) {
+	optionData := []OptionOrderbookDatum{}
 	file, err := os.Open(path)
 	if err != nil {
-		return []OptionOrderbookDatum{}, err
+		return optionData, err
 	}
 	defer file.Close()
 	reader := bufio.NewReader(file)
@@ -222,7 +223,7 @@ func ParseOrderbookFile(path string) ([]OptionOrderbookDatum, error) {
 		optionDatum := &deribitOrderbookDatum{}
 		err = json.Unmarshal(line, optionDatum)
 		if optionDatum.Params.Data.InstrumentName != "" {
-			tm := time.Unix(optionDatum.Params.Data.Timestamp/1000, 0) // their unix timestamp is in milliseconds, therefore divide by 1000
+			tm := time.Unix(optionDatum.Params.Data.Timestamp/1000, 0)
 			optionOrderbookDatum := OptionOrderbookDatum{
 				InstrumentName:  optionDatum.Params.Data.InstrumentName,
 				ObservationTime: tm,
@@ -231,16 +232,16 @@ func ParseOrderbookFile(path string) ([]OptionOrderbookDatum, error) {
 				AskSize:         optionDatum.Params.Data.Asks[0][1],
 				BidSize:         optionDatum.Params.Data.Bids[0][1],
 			}
-			fmt.Println(optionOrderbookDatum)
+			optionData = append(optionData, optionOrderbookDatum)
 		}
 		if err != nil {
-			return []OptionOrderbookDatum{}, err
+			return optionData, err
 		}
 	}
 	if err != nil {
-		return []OptionOrderbookDatum{}, err
+		return optionData, err
 	}
-	return []OptionOrderbookDatum{}, nil
+	return optionData, nil
 }
 
 // usage example

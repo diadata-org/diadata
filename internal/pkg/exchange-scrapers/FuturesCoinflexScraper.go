@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	zap "go.uber.org/zap"
 )
 
 const scrapeDataSaveLocationCoinflex = ""
@@ -22,7 +22,7 @@ type CoinflexFuturesScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
-	Logger    *log.Logger
+	Logger    *zap.SugaredLogger
 }
 
 type tradeMessageCoinflex struct {
@@ -80,12 +80,29 @@ type ordersMatchedCoinflex struct {
 	AskCounterFee int64  `json:"ask_counter_fee"`
 }
 
+// NewCoinflexFuturesScraper - returns an instance of the coinflex scraper
+func NewCoinflexFuturesScraper(markets []string) FuturesScraper {
+	wg := sync.WaitGroup{}
+	writer := writers.FileWriter{}
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
+
+	var scraper FuturesScraper = &CoinflexFuturesScraper{
+		WaitGroup: &wg,
+		Markets:   markets,
+		Writer:    &writer,
+		Logger:    logger,
+	}
+
+	return scraper
+}
+
 func (s *CoinflexFuturesScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
 	err := websocketConn.WriteJSON(*message)
 	if err != nil {
 		return err
 	}
-	s.Logger.Printf("[DEBUG] sent message [%s]: %s", market, message)
+	s.Logger.Debugf("sent message [%s]: %s", market, message)
 	return nil
 }
 
@@ -118,9 +135,9 @@ func (s *CoinflexFuturesScraper) ScraperClose(market string, connection interfac
 func (s *CoinflexFuturesScraper) Scrape(market string) {
 	validated, err := s.validateMarket(market)
 	if !validated || err != nil {
-		s.Logger.Printf("[ERROR] could not validate %s market", market)
+		s.Logger.Errorf("could not validate %s market", market)
 		if err != nil {
-			s.Logger.Printf("[ERROR] issue with validating, err: %s", err)
+			s.Logger.Errorf("issue with validating, err: %s", err)
 		}
 		return
 	}
@@ -128,17 +145,17 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 	// splits the string market into the base and the counter and then finds the int id of them.
 	// coinflex expects that we provide an int for the assets when we make the websocket requests.
 	if err != nil {
-		s.Logger.Printf("[ERROR] issue with getting an id for base and quote: %s", err)
+		s.Logger.Errorf("issue with getting an id for base and quote: %s", err)
 		return
 	}
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
 			u := url.URL{Scheme: "wss", Host: "api.coinflex.com", Path: "/v1"}
-			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
+			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Printf("[ERROR] dial: %s", err)
+				s.Logger.Errorf("dial: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
@@ -146,16 +163,16 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 			// to let you know that the websocket connection is alive. Coinflex do not have the heartbeat channel
 			// and they send you frame pong messages. Thus, this handler.
 			ws.SetPongHandler(func(appData string) error {
-				s.Logger.Printf("[DEBUG] received a pong frame")
+				s.Logger.Debugf("received a pong frame")
 				return nil
 			})
 			err = s.send(&map[string]interface{}{"base": baseID, "counter": quoteID, "watch": true, "method": "WatchOrders"}, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send a channel subscription message. retrying")
+				s.Logger.Errorf("could not send a channel subscription message. retrying")
 				return
 			}
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send an initial ping message. retrying")
+				s.Logger.Errorf("could not send an initial ping message. retrying")
 				return
 			}
 			tick := time.NewTicker(30 * time.Second) // every 45 seconds we have to ping Coinflex. we also have a 15 second write limit of the ping frame (thus, 30 seconds here)
@@ -169,10 +186,10 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 					case <-tick.C:
 						err := s.write(websocket.PingMessage, []byte{}, ws)
 						if err != nil {
-							s.Logger.Printf("[ERROR] error experienced pinging coinflex, err: %s", err)
+							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
 							return
 						}
-						s.Logger.Printf("[DEBUG] pinged the coinflex server. market: [%s]", market)
+						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
 					}
 				}
 			}()
@@ -180,20 +197,20 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 				_, message, err := ws.ReadMessage()
 				msg := ordersMatchedCoinflex{}
 				if err != nil {
-					s.Logger.Printf("[ERROR] problem reading coinflex on [%s], err: %s", market, err)
+					s.Logger.Errorf("problem reading coinflex on [%s], err: %s", market, err)
 					return
 				}
 				err = json.Unmarshal(message, &msg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] could not unmarshal coinflex message on [%s], err: %s", market, err)
+					s.Logger.Errorf("could not unmarshal coinflex message on [%s], err: %s", market, err)
 					return
 				}
-				s.Logger.Printf("[DEBUG] received a message: %s", message)
+				s.Logger.Debugf("received a message: %s", message)
 				if msg.Notice == "OrdersMatched" {
-					s.Logger.Printf("[DEBUG] received new match message on [%s]: %s", market, message)
+					s.Logger.Debugf("received new match message on [%s]: %s", market, message)
 					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
 					if err != nil {
-						s.Logger.Printf("[ERROR] could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
+						s.Logger.Errorf("could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
 						return
 					}
 				}
@@ -280,7 +297,7 @@ func (s *CoinflexFuturesScraper) getAllAssets() ([]assetCoinflex, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.Logger.Printf("[DEBUG] retrieved all of the Coinflex assets: %s", string(body))
+	s.Logger.Debugf("retrieved all of the Coinflex assets: %s", string(body))
 	assets := []assetCoinflex{}
 	err = json.Unmarshal(body, &assets)
 	if err != nil {
@@ -303,21 +320,3 @@ func (s *CoinflexFuturesScraper) assetID(asset string) (int64, error) {
 	}
 	return assetsID, nil
 }
-
-// example usage
-// func main() {
-// 	wg := sync.WaitGroup{}
-// 	writer := writers.FileWriter{}
-// 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-
-// 	var coinflexScraper scrapers.FuturesScraper = &scrapers.CoinflexFuturesScraper{
-// 		WaitGroup: &wg,
-// 		Markets:   []string{"FLEX/USDT"}, // this market is good to test that the pong frames come back
-// 		// Markets:   []string{"ETH/USDT", "BCH/USDT", "XBT/USDT", "FLEX/USDT", "USDC/USDT", "XBTDEC/USDTDEC", "BCHDEC/USDTDEC", "ETHDEC/USDTDEC", "USDCDEC/USDTDEC", "DOTF/USDTDOT", "DFNF/USDTDFN"},
-// 		Writer: &writer,
-// 		Logger: logger,
-// 	}
-// 	coinflexScraper.ScrapeMarkets()
-
-// 	wg.Wait()
-// }
