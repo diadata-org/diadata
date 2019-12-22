@@ -1,0 +1,150 @@
+package scrapers
+
+import (
+	"fmt"
+	"net/url"
+	"sync"
+	"time"
+
+	zap "go.uber.org/zap"
+
+	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/gorilla/websocket"
+)
+
+const scrapeDataSaveLocationCryptofacilities = ""
+
+// CryptofacilitiesScraper - use the NewCryptofacilitiesScraper function to create an instance
+type CryptofacilitiesScraper struct {
+	Markets   []string
+	WaitGroup *sync.WaitGroup
+	Writer    writers.Writer
+	Logger    *zap.SugaredLogger
+}
+
+// NewCryptofacilitiesScraper - returns an instance of an options scraper.
+func NewCryptofacilitiesScraper(markets []string) FuturesScraper {
+	wg := sync.WaitGroup{}
+	writer := writers.FileWriter{}
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
+
+	var scraper FuturesScraper = &CryptofacilitiesScraper{
+		WaitGroup: &wg,
+		Markets:   markets,
+		Writer:    &writer,
+		Logger:    logger,
+	}
+
+	return scraper
+}
+
+func (s *CryptofacilitiesScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
+	err := websocketConn.WriteJSON(*message)
+	if err != nil {
+		return err
+	}
+	s.Logger.Debugf("sent message [%s]: %s", market, message)
+	return nil
+}
+
+// Authenticate - placeholder here, since we do not need to authneticate the connection.
+func (s *CryptofacilitiesScraper) Authenticate(market string, connection interface{}) error {
+	return nil
+}
+
+// ScraperClose - safely closes the scraper; We pass the interface connection as the second argument
+// primarily for the reason that Huobi scraper does not use the gorilla websocket; It uses golang's x websocket;
+// If we did not define this method in our FuturesScraper interface, we could have easily used the pointer
+// to gorilla websocket here; However, to make FuturesScraper more ubiquituous, we need an interface here.
+func (s *CryptofacilitiesScraper) ScraperClose(market string, connection interface{}) error {
+	switch c := connection.(type) {
+	case *websocket.Conn:
+		err := s.write(websocket.CloseMessage, []byte{}, c)
+		if err != nil {
+			return err
+		}
+		err = c.Close()
+		if err != nil {
+			return err
+		}
+		time.Sleep(time.Duration(retryIn) * time.Second)
+		return nil
+	default:
+		return fmt.Errorf("unknown connection type: %T", connection)
+	}
+}
+
+// Scrape starts a websocket scraper for market
+func (s *CryptofacilitiesScraper) Scrape(market string) {
+	for {
+		// immediately invoked function expression for easy clenup with defer
+		func() {
+			u := url.URL{Scheme: "wss", Host: "www.cryptofacilities.com", Path: "/ws/v1"}
+			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
+			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			if err != nil {
+				s.Logger.Errorf("could not dial cryptofacilities websocket: %s", err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
+				return
+			}
+			defer s.ScraperClose(market, ws)
+			ws.SetPongHandler(func(appData string) error {
+				s.Logger.Debugf("received a pong frame")
+				return nil
+			})
+			err = s.send(&map[string]interface{}{"event": "subscribe", "feed": "trade", "product_ids": []string{market}}, market, ws)
+			if err != nil {
+				s.Logger.Errorf("could not send a channel subscription message. retrying, err: %s", err)
+				return
+			}
+			tick := time.NewTicker(30 * time.Second)
+			defer tick.Stop()
+			go func() {
+				for {
+					select {
+					case <-tick.C:
+						err := s.write(websocket.PingMessage, []byte{}, ws)
+						if err != nil {
+							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
+							return
+						}
+						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
+					}
+				}
+			}()
+			for {
+				_, message, err := ws.ReadMessage()
+				s.Logger.Debugf("received new message: %s, saving new message", message)
+				_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCryptofacilities+s.Writer.GetWriteFileName("cryptofacilities", market))
+				if err != nil {
+					s.Logger.Errorf("could not write to file, err: %s", err)
+					return
+				}
+			}
+		}()
+	}
+}
+
+// write's primary purpose is to write a ping frame op code to keep the websocket connection alive
+func (s *CryptofacilitiesScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
+	ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	return ws.WriteMessage(mt, payload)
+}
+
+// ScrapeMarkets - will scrape the markets specified during instantiation
+func (s *CryptofacilitiesScraper) ScrapeMarkets() {
+	for _, market := range s.Markets {
+		s.WaitGroup.Add(1)
+		go s.Scrape(market)
+	}
+	s.WaitGroup.Wait()
+}
+
+// usage example
+// func main() {
+// 	wg := sync.WaitGroup{}
+// 	futuresDeribit := scrapers.NewCryptofacilitiesScraper([]string{"PI_XBTUSD", "PI_LTCUSD"})
+// 	futuresDeribit.ScrapeMarkets()
+// 	wg.Wait()
+// }
