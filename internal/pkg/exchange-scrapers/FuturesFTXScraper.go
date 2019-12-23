@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"sync"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	zap "go.uber.org/zap"
 )
 
 var allFuturesMarketsFTX = []string{"BTC-PERP", "ETH-PERP", "LINK-PERP",
@@ -26,11 +26,28 @@ type FTXFuturesScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
-	Logger    *log.Logger
+	Logger    *zap.SugaredLogger
 }
 
 type tradeMessageFTX struct {
 	Type string `json:"type"`
+}
+
+// NewFTXFuturesScraper - returns an instance of the FTX scraper
+func NewFTXFuturesScraper(markets []string) FuturesScraper {
+	wg := sync.WaitGroup{}
+	writer := writers.FileWriter{}
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
+
+	var scraper FuturesScraper = &FTXFuturesScraper{
+		WaitGroup: &wg,
+		Markets:   markets, // []string{"BNB-PERP", "ETH-PERP", "BTC-PERP", "EOS-PERP"}
+		Writer:    &writer,
+		Logger:    logger,
+	}
+
+	return scraper
 }
 
 func (s *FTXFuturesScraper) send(message *map[string]string, market string, websocketConn *websocket.Conn) error {
@@ -38,7 +55,7 @@ func (s *FTXFuturesScraper) send(message *map[string]string, market string, webs
 	if err != nil {
 		return err
 	}
-	s.Logger.Printf("[DEBUG] sent message [%s]: %s", market, message)
+	s.Logger.Debugf("sent message [%s]: %s", market, message)
 	return nil
 }
 
@@ -74,22 +91,22 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
 			u := url.URL{Scheme: "wss", Host: "ftx.com", Path: "/ws"}
-			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
+			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not dial ftx websocket: %s", err)
+				s.Logger.Errorf("could not dial ftx websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
 			defer s.ScraperClose(market, ws)
 			err = s.send(&map[string]string{"market": market, "channel": "trades", "op": "subscribe"}, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send a channel subscription message. retrying, err: %s", err)
+				s.Logger.Errorf("could not send a channel subscription message. retrying, err: %s", err)
 				return
 			}
 			err = s.send(&map[string]string{"op": "ping"}, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send an initial ping message. retrying, err: %s", err)
+				s.Logger.Errorf("could not send an initial ping message. retrying, err: %s", err)
 				return
 			}
 			tick := time.NewTicker(15 * time.Second) // every 15 seconds we have to ping FTX
@@ -109,20 +126,20 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				_, message, err := ws.ReadMessage()
 				decodedMsg := tradeMessageFTX{}
 				if err != nil {
-					s.Logger.Printf("[ERROR] problem reading ftx on [%s], err: %s", market, err)
+					s.Logger.Errorf("problem reading ftx on [%s], err: %s", market, err)
 					return
 				}
 				err = json.Unmarshal(message, &decodedMsg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] could not unmarshal ftx message on [%s], err: %s", market, err)
+					s.Logger.Errorf("could not unmarshal ftx message on [%s], err: %s", market, err)
 					return
 				}
-				s.Logger.Printf("[DEBUG] received new message: %s", message)
+				s.Logger.Debugf("received new message: %s", message)
 				if decodedMsg.Type != "subscribed" && decodedMsg.Type != "pong" && decodedMsg.Type != "unsubscribed" {
-					s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
+					s.Logger.Debugf("saving new message on [%s]", market)
 					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
 					if err != nil {
-						s.Logger.Printf("[ERROR] could not write to file, err: %s", err)
+						s.Logger.Errorf("could not write to file, err: %s", err)
 						return
 					}
 				}
@@ -146,20 +163,4 @@ func (s *FTXFuturesScraper) validateMarket(market string) {
 		panic(fmt.Sprintf("Market %s is not available", market))
 	}
 }
-
-// example usage
-// func main() {
-// 	wg := sync.WaitGroup{}
-// 	writer := writers.FileWriter{}
-// 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
-
-// 	var ftxScraper scrapers.FuturesScraper = &scrapers.FTXFuturesScraper{
-// 		WaitGroup: &wg,
-// 		Markets:   []string{"BNB-PERP", "ETH-PERP", "BTC-PERP", "EOS-PERP"},
-// 		Writer:    &writer,
-// 		Logger:    logger,
-// 	}
-// 	ftxScraper.ScrapeMarkets()
-
-// 	wg.Wait()
-// }
+	

@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -15,6 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	zap "go.uber.org/zap"
 )
 
 const scrapeDataSaveLocationDeribit = ""
@@ -36,7 +35,8 @@ type deribitErrorMessage struct {
 func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
@@ -60,7 +60,7 @@ func (s *DeribitScraper) send(message *map[string]interface{}, market string, we
 	if err != nil {
 		return err
 	}
-	s.Logger.Printf("[DEBUG] sent message [%s]: %s", market, message)
+	s.Logger.Debugf("sent message [%s]: %s", market, message)
 	return nil
 }
 
@@ -134,10 +134,10 @@ func (s *DeribitScraper) Scrape(market string) {
 			refreshToken := ""
 			failedToRefreshToken := make(chan interface{})
 			u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
-			s.Logger.Printf("[DEBUG] connecting to [%s], market: [%s]", u.String(), market)
+			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not dial the websocket: %s", err)
+				s.Logger.Errorf("could not dial the websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
@@ -145,7 +145,7 @@ func (s *DeribitScraper) Scrape(market string) {
 			// 1. authenticate
 			err = s.Authenticate(market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not authenticate. retrying, err: %s", err)
+				s.Logger.Errorf("could not authenticate. retrying, err: %s", err)
 				return
 			}
 			time.Sleep(time.Second)
@@ -177,7 +177,7 @@ func (s *DeribitScraper) Scrape(market string) {
 			}
 
 			if err != nil {
-				s.Logger.Printf("[ERROR] could not send ws message. restarting the websocket, err: %s", err)
+				s.Logger.Errorf("could not send ws message. restarting the websocket, err: %s", err)
 				return
 			}
 			// 3. refresh the token more often than 900 seconds
@@ -212,37 +212,37 @@ func (s *DeribitScraper) Scrape(market string) {
 			for {
 				select {
 				case <-failedToRefreshToken:
-					s.Logger.Printf("[ERROR] failed to refresh token numerous times. restarting the scraper")
+					s.Logger.Errorf("failed to refresh token numerous times. restarting the scraper")
 					time.Sleep(time.Duration(retryIn) * time.Second)
 					return
 				default:
 					_, message, err := ws.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
 					if err != nil {
-						s.Logger.Printf("[ERROR] problem reading deribit on [%s], err: %s", market, err)
+						s.Logger.Errorf("problem reading deribit on [%s], err: %s", market, err)
 						return
 					}
 					strMessage := string(message)
-					s.Logger.Printf("[DEBUG] received new message: %v", strMessage)
+					s.Logger.Debugf("received new message: %v", strMessage)
 					// check if the received message containss the refresh_token json key
 					if strings.Contains(strMessage, "refresh_token") {
 						decodedMsg := deribitRefreshMessage{}
 						err = json.Unmarshal(message, &decodedMsg)
 						if err != nil {
-							s.Logger.Printf("[ERROR] problem unmarshalling the message: %s, err: %s", message, err)
+							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
-						s.Logger.Printf("[INFO] obtained a new refresh token on [%s], updating '%s'", market, decodedMsg.Result.RefreshToken)
+						s.Logger.Infof("obtained a new refresh token on [%s], updating '%s'", market, decodedMsg.Result.RefreshToken)
 						refreshToken = decodedMsg.Result.RefreshToken
 					} else if strings.Contains(strMessage, "error") {
 						decodedMsg := deribitErrorMessage{}
 						err = json.Unmarshal(message, &decodedMsg)
 						if err != nil {
-							s.Logger.Printf("[ERROR] problem unmarshalling the message: %s, err: %s", message, err)
+							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
 						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
 						if err != nil {
-							s.Logger.Printf("[ERROR] issue saving to file on [%s], err: %s", market, err)
+							s.Logger.Errorf("issue saving to file on [%s], err: %s", market, err)
 						}
 						if decodedMsg.Error.Message != "" {
 							if decodedMsg.Error.Code == 13009 {
@@ -251,10 +251,10 @@ func (s *DeribitScraper) Scrape(market string) {
 						}
 					} else {
 						// only save the messages if the message does not contain thre refresh_token string
-						s.Logger.Printf("[DEBUG] saving new message on [%s]", market)
+						s.Logger.Debugf("saving new message on [%s]", market)
 						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
 						if err != nil {
-							s.Logger.Printf("[ERROR] issue saving to file on [%s], err: %s", market, err)
+							s.Logger.Errorf("issue saving to file on [%s], err: %s", market, err)
 							return
 						}
 					}
