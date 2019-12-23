@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	zap "go.uber.org/zap"
 )
 
 // DeribitScraperKind - used to distinguish between the futures and options scrapers
@@ -22,7 +23,7 @@ type DeribitScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
-	Logger    *log.Logger
+	Logger    *zap.SugaredLogger
 
 	// required for deribit to:
 	// 1. authenticate (trades is a private channel)

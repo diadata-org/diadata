@@ -6,14 +6,14 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
 	"sync"
 	"time"
 
-	utils "github.com/nazariyv/diadata-scrapers/pkg/utils"
-	writers "github.com/nazariyv/diadata-scrapers/pkg/writers"
+	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
+	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"golang.org/x/net/websocket"
+	zap "go.uber.org/zap"
 )
 
 // --------------------------------- Config --------------------------------------------------
@@ -41,15 +41,32 @@ type HuobiFuturesScraper struct {
 	Markets   []string // markets to scrape. To scrape all, call AllFuturesMarketsHuobi()
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer // an interface to write the messages
-	Logger    *log.Logger
+	Logger    *zap.SugaredLogger
 }
 
 // --------------------------------------------------------------------------------------------
 
+// NewHuobiFuturesScraper - returns an instance of the Huobi scraper
+func NewHuobiFuturesScraper(markets []string) FuturesScraper {
+	wg := sync.WaitGroup{}
+	writer := writers.FileWriter{}
+	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
+	defer logger.Sync()
+
+	var scraper FuturesScraper = &HuobiFuturesScraper{
+		WaitGroup: &wg,
+		Markets:   markets, // []string{"BNB-PERP", "ETH-PERP", "BTC-PERP", "EOS-PERP"}
+		Writer:    &writer,
+		Logger:    logger,
+	}
+
+	return scraper
+}
+
 // sends a byte message to huobi websocket
 func (s *HuobiFuturesScraper) send(message []byte, market string, websocketConn *websocket.Conn) (int, error) {
 	n, err := websocketConn.Write(message)
-	s.Logger.Printf("[DEBUG] [%s] send: %s", market, message)
+	s.Logger.Debugf("[%s] send: %s", market, message)
 	return n, err
 }
 
@@ -93,7 +110,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			defer s.ScraperClose(market, ws)
 			if err != nil {
 				// an error opening is fatal. let this kill the programme
-				s.Logger.Printf("[ERROR] [%s] %s", market, err)
+				s.Logger.Errorf("[%s] %s", market, err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
@@ -101,7 +118,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			message := []byte("{\"Sub\":\"market." + market + ".trade.detail\"}")
 			_, err = s.send(message, market, ws)
 			if err != nil {
-				s.Logger.Printf("[ERROR] problem subscriping to the [%s] trade channel, err: %s", market, err)
+				s.Logger.Errorf("problem subscriping to the [%s] trade channel, err: %s", market, err)
 				return
 			}
 			// create the conduit for the received messages
@@ -109,7 +126,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			for {
 				m, err := ws.Read(msg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] [%s] %s", market, err)
+					s.Logger.Errorf("[%s] %s", market, err)
 					// an error reading means we may have lost the connection
 					// return out and just try again
 					return
@@ -117,15 +134,15 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 				newmsg := msg[:m]
 				unzipmsg, err := parseGzip(newmsg)
 				if err != nil {
-					s.Logger.Printf("[ERROR] [%s] %s", market, err)
+					s.Logger.Errorf("[%s] %s", market, err)
 					return
 				}
-				s.Logger.Printf("[DEBUG] [%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
+				s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
 				if len(unzipmsg) == pingMsgLengthHuobi {
 					if "ping" == string(unzipmsg[2:6]) {
 						_, err := s.pong(string(unzipmsg[8:21]), market, ws)
 						if err != nil {
-							s.Logger.Printf("[ERROR] [%s] problem ponging the websocket server, err: %s", market, err)
+							s.Logger.Errorf("[%s] problem ponging the websocket server, err: %s", market, err)
 							return
 						}
 					}
@@ -133,7 +150,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					// ensure that scrapeDataSaveLocation exists
 					_, err := s.Writer.Write(string(unzipmsg)+"\n", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
 					if err != nil {
-						s.Logger.Printf("[ERROR] [%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
+						s.Logger.Errorf("[%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
 						return
 					}
 				}
