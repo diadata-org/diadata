@@ -6,8 +6,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -124,6 +127,7 @@ func (s *CoinflexFuturesScraper) ScraperClose(market string, connection interfac
 		if err != nil {
 			return err
 		}
+		s.Logger.Infof("gracefully shutdown coinflex scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -148,6 +152,17 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 		s.Logger.Errorf("issue with getting an id for base and quote: %s", err)
 		return
 	}
+
+	// this block is for listening to sigterms and interupts
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	userCancelled := make(chan bool, 1)
+	go func() {
+		sig := <-sigs
+		fmt.Println(sig)
+		userCancelled <- true
+	}()
+
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
@@ -194,24 +209,31 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 				}
 			}()
 			for {
-				_, message, err := ws.ReadMessage()
-				msg := ordersMatchedCoinflex{}
-				if err != nil {
-					s.Logger.Errorf("problem reading coinflex on [%s], err: %s", market, err)
-					return
-				}
-				err = json.Unmarshal(message, &msg)
-				if err != nil {
-					s.Logger.Errorf("could not unmarshal coinflex message on [%s], err: %s", market, err)
-					return
-				}
-				s.Logger.Debugf("received a message: %s", message)
-				if msg.Notice == "OrdersMatched" {
-					s.Logger.Debugf("received new match message on [%s]: %s", market, message)
-					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
+				select {
+				case <-userCancelled:
+					s.Logger.Infof("received interrupt, gracefully shutting down")
+					s.ScraperClose(market, ws)
+					os.Exit(0)
+				default:
+					_, message, err := ws.ReadMessage()
+					msg := ordersMatchedCoinflex{}
 					if err != nil {
-						s.Logger.Errorf("could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
+						s.Logger.Errorf("problem reading coinflex on [%s], err: %s", market, err)
 						return
+					}
+					err = json.Unmarshal(message, &msg)
+					if err != nil {
+						s.Logger.Errorf("could not unmarshal coinflex message on [%s], err: %s", market, err)
+						return
+					}
+					s.Logger.Debugf("received a message: %s", message)
+					if msg.Notice == "OrdersMatched" {
+						s.Logger.Debugf("received new match message on [%s]: %s", market, message)
+						_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market))
+						if err != nil {
+							s.Logger.Errorf("could not save to file: %s, on market: [%s], err: %s", scrapeDataSaveLocationCoinflex+s.Writer.GetWriteFileName("coinflex", market), market, err)
+							return
+						}
 					}
 				}
 			}

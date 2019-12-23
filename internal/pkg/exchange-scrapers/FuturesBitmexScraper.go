@@ -11,28 +11,28 @@ import (
 
 	zap "go.uber.org/zap"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"github.com/gorilla/websocket"
+	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 )
 
-const scrapeDataSaveLocationBitflyer = ""
+const scrapeDataSaveLocationBitmex = ""
 
-// BitflyerScraper - use the NewBitflyerFuturesScraper function to create an instance
-type BitflyerScraper struct {
+// BitmexScraper - use the NewBitmexFuturesScraper function to create an instance
+type BitmexScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
 	Logger    *zap.SugaredLogger
 }
 
-// NewBitflyerFuturesScraper - returns an instance of an options scraper.
-func NewBitflyerFuturesScraper(markets []string) FuturesScraper {
+// NewBitmexFuturesScraper - returns an instance of an options scraper.
+func NewBitmexFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer logger.Sync()
 
-	var scraper FuturesScraper = &BitflyerScraper{
+	var scraper FuturesScraper = &BitmexScraper{
 		WaitGroup: &wg,
 		Markets:   markets,
 		Writer:    &writer,
@@ -42,7 +42,7 @@ func NewBitflyerFuturesScraper(markets []string) FuturesScraper {
 	return scraper
 }
 
-func (s *BitflyerScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
+func (s *BitmexScraper) send(message *map[string]interface{}, market string, websocketConn *websocket.Conn) error {
 	err := websocketConn.WriteJSON(*message)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (s *BitflyerScraper) send(message *map[string]interface{}, market string, w
 }
 
 // Authenticate - placeholder here, since we do not need to authneticate the connection.
-func (s *BitflyerScraper) Authenticate(market string, connection interface{}) error {
+func (s *BitmexScraper) Authenticate(market string, connection interface{}) error {
 	return nil
 }
 
@@ -60,11 +60,11 @@ func (s *BitflyerScraper) Authenticate(market string, connection interface{}) er
 // primarily for the reason that Huobi scraper does not use the gorilla websocket; It uses golang's x websocket;
 // If we did not define this method in our FuturesScraper interface, we could have easily used the pointer
 // to gorilla websocket here; However, to make FuturesScraper more ubiquituous, we need an interface here.
-func (s *BitflyerScraper) ScraperClose(market string, connection interface{}) error {
+func (s *BitmexScraper) ScraperClose(market string, connection interface{}) error {
 	switch c := connection.(type) {
 	case *websocket.Conn:
 		// unsubscribe from the channel
-		err := s.send(&map[string]interface{}{"jsonrpc": "2.0", "method": "unsubscribe", "params": &map[string]interface{}{"channel": "lightning_ticker_" + market}}, market, c)
+		err := s.send(&map[string]interface{}{"op": "unsubscribe", "args": []string{"trade:" + market}}, market, c)
 		if err != nil {
 			s.Logger.Errorf("could not send a channel unsubscription message, err: %s", err)
 			return err
@@ -78,7 +78,7 @@ func (s *BitflyerScraper) ScraperClose(market string, connection interface{}) er
 		if err != nil {
 			return err
 		}
-		s.Logger.Infof("gracefully shutdown bitflyer scraper on market: %s", market)
+		s.Logger.Infof("gracefully shutdown bitmex scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -87,7 +87,7 @@ func (s *BitflyerScraper) ScraperClose(market string, connection interface{}) er
 }
 
 // Scrape starts a websocket scraper for market
-func (s *BitflyerScraper) Scrape(market string) {
+func (s *BitmexScraper) Scrape(market string) {
 	// this block is for listening to sigterms and interupts
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -101,11 +101,11 @@ func (s *BitflyerScraper) Scrape(market string) {
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
-			u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
+			u := url.URL{Scheme: "wss", Host: "www.bitmex.com", Path: "/realtime"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Errorf("could not dial Bitflyer websocket: %s", err)
+				s.Logger.Errorf("could not dial Bitmex websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
@@ -114,7 +114,7 @@ func (s *BitflyerScraper) Scrape(market string) {
 				s.Logger.Debugf("received a pong frame")
 				return nil
 			})
-			err = s.send(&map[string]interface{}{"jsonrpc": "2.0", "method": "subscribe", "params": &map[string]interface{}{"channel": "lightning_ticker_" + market}}, market, ws)
+			err = s.send(&map[string]interface{}{"op": "subscribe", "args": []string{"trade:" + market}}, market, ws)
 			if err != nil {
 				s.Logger.Errorf("could not send a channel subscription message. retrying, err: %s", err)
 				return
@@ -147,7 +147,7 @@ func (s *BitflyerScraper) Scrape(market string) {
 						return
 					}
 					s.Logger.Debugf("received new message: %s, saving new message", message)
-					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationBitflyer+s.Writer.GetWriteFileName("Bitflyer", market))
+					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationBitmex+s.Writer.GetWriteFileName("Bitmex", market))
 					if err != nil {
 						s.Logger.Errorf("could not write to file, err: %s", err)
 						return
@@ -159,13 +159,13 @@ func (s *BitflyerScraper) Scrape(market string) {
 }
 
 // write's primary purpose is to write a ping frame op code to keep the websocket connection alive
-func (s *BitflyerScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
+func (s *BitmexScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
 	ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
 	return ws.WriteMessage(mt, payload)
 }
 
 // ScrapeMarkets - will scrape the markets specified during instantiation
-func (s *BitflyerScraper) ScrapeMarkets() {
+func (s *BitmexScraper) ScrapeMarkets() {
 	for _, market := range s.Markets {
 		s.WaitGroup.Add(1)
 		go s.Scrape(market)
@@ -176,7 +176,7 @@ func (s *BitflyerScraper) ScrapeMarkets() {
 // usage example
 // func main() {
 // 	wg := sync.WaitGroup{}
-// 	futuresBitflyer := scrapers.NewBitflyerFuturesScraper([]string{"BTCJPY27DEC2019", "BTCJPY03JAN2020", "BTCJPY27MAR2020"})
-// 	futuresBitflyer.ScrapeMarkets()
+// 	futuresBitmex := scrapers.NewBitmexFuturesScraper([]string{"XBTUSD", "XBTZ19", "XBTH20", "XBTM20", "ETHUSD", "ETHZ19", "ETHH20"})
+// 	futuresBitmex.ScrapeMarkets()
 // 	wg.Wait()
 // }
