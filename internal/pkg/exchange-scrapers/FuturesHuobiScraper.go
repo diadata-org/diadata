@@ -155,7 +155,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					newmsg := msg[:m]
 					unzipmsg, err := parseGzip(newmsg)
 					if err != nil {
-						s.Logger.Errorf("[%s] %s", market, err)
+						s.Logger.Errorf("[%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
 						return
 					}
 					s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
