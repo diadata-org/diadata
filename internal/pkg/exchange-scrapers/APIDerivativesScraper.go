@@ -1,14 +1,13 @@
 package scrapers
 
 import (
-	"log"
 	"sync"
 
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	zap "go.uber.org/zap"
 )
 
-// DeribitScraperKind - used to distinguish between the futures and options scrapers
+// DeribitScraperKind - used to distinguish between the futures and options scraper
 type DeribitScraperKind int
 
 const (
@@ -18,7 +17,7 @@ const (
 	DeribitOption
 )
 
-// DeribitScraper - used in conjunction with the DeribitScraperKind in a new struct to define futures and options scrapers
+// DeribitScraper - used in conjunction with the DeribitScraperKind to define futures / options Deribit scraper
 type DeribitScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup

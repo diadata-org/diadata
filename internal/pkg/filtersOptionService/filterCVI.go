@@ -26,7 +26,7 @@ func Eod(t time.Time, timezone string) (time.Time, error) {
 	return time.Date(year, month, day, 0, 0, 0, 0, l), nil
 }
 
-// Bod - gives you today's beginning of day
+// Bod - gives you t's beginning of day
 func Bod(t time.Time, timezone string) (time.Time, error) {
 	nilTime := time.Time{}
 	l, err := time.LoadLocation(timezone)
@@ -265,7 +265,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
-		if absDiff > 0.5 {
+		if absDiff > 0.49 {
 			// do not update the CVI time so that we can check whether we have had the baseline for two minutes or more
 			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue

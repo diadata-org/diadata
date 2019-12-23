@@ -155,7 +155,7 @@ func (s *BitflyerScraper) ScrapeMarkets() {
 // usage example
 // func main() {
 // 	wg := sync.WaitGroup{}
-// 	futuresDeribit := scrapers.NewBitflyerFuturesScraper([]string{"BTCJPY27DEC2019", "BTCJPY03JAN2020", "BTCJPY27MAR2020"})
-// 	futuresDeribit.ScrapeMarkets()
+// 	futuresBitflyer := scrapers.NewBitflyerFuturesScraper([]string{"BTCJPY27DEC2019", "BTCJPY03JAN2020", "BTCJPY27MAR2020"})
+// 	futuresBitflyer.ScrapeMarkets()
 // 	wg.Wait()
 // }
