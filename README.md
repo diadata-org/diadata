@@ -14,6 +14,7 @@ The correctness of oracle data can always be verified by monitoring our off-chai
 
 ## Alpha Version - dApp Registry
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
+* [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs 
 * [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
 * [Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
