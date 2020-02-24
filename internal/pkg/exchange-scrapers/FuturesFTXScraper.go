@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -77,6 +80,7 @@ func (s *FTXFuturesScraper) ScraperClose(market string, connection interface{}) 
 		if err != nil {
 			return err
 		}
+		s.Logger.Infof("gracefully shutdown ftx scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -87,6 +91,17 @@ func (s *FTXFuturesScraper) ScraperClose(market string, connection interface{}) 
 // Scrape starts a websocket scraper for market
 func (s *FTXFuturesScraper) Scrape(market string) {
 	s.validateMarket(market)
+
+	// this block is for listening to sigterms and interupts
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	userCancelled := make(chan bool, 1)
+	go func() {
+		sig := <-sigs
+		fmt.Println(sig)
+		userCancelled <- true
+	}()
+
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
@@ -123,24 +138,31 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				}
 			}()
 			for {
-				_, message, err := ws.ReadMessage()
-				decodedMsg := tradeMessageFTX{}
-				if err != nil {
-					s.Logger.Errorf("problem reading ftx on [%s], err: %s", market, err)
-					return
-				}
-				err = json.Unmarshal(message, &decodedMsg)
-				if err != nil {
-					s.Logger.Errorf("could not unmarshal ftx message on [%s], err: %s", market, err)
-					return
-				}
-				s.Logger.Debugf("received new message: %s", message)
-				if decodedMsg.Type != "subscribed" && decodedMsg.Type != "pong" && decodedMsg.Type != "unsubscribed" {
-					s.Logger.Debugf("saving new message on [%s]", market)
-					_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
+				select {
+				case <-userCancelled:
+					s.Logger.Infof("received interrupt, gracefully shutting down")
+					s.ScraperClose(market, ws)
+					os.Exit(0)
+				default:
+					_, message, err := ws.ReadMessage()
+					decodedMsg := tradeMessageFTX{}
 					if err != nil {
-						s.Logger.Errorf("could not write to file, err: %s", err)
+						s.Logger.Errorf("problem reading ftx on [%s], err: %s", market, err)
 						return
+					}
+					err = json.Unmarshal(message, &decodedMsg)
+					if err != nil {
+						s.Logger.Errorf("could not unmarshal ftx message on [%s], err: %s", market, err)
+						return
+					}
+					s.Logger.Debugf("received new message: %s", message)
+					if decodedMsg.Type != "subscribed" && decodedMsg.Type != "pong" && decodedMsg.Type != "unsubscribed" {
+						s.Logger.Debugf("saving new message on [%s]", market)
+						_, err = s.Writer.Write(string(message)+"\n", scrapeDataSaveLocationFTX+s.Writer.GetWriteFileName("ftx", market))
+						if err != nil {
+							s.Logger.Errorf("could not write to file, err: %s", err)
+							return
+						}
 					}
 				}
 			}
@@ -163,4 +185,3 @@ func (s *FTXFuturesScraper) validateMarket(market string) {
 		panic(fmt.Sprintf("Market %s is not available", market))
 	}
 }
-	

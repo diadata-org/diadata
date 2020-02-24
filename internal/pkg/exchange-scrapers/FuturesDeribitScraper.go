@@ -6,8 +6,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -76,6 +79,7 @@ func (s *DeribitScraper) ScraperClose(market string, websocketConnection interfa
 		if err != nil {
 			return err
 		}
+		s.Logger.Infof("gracefully shutdown deribit scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -128,6 +132,17 @@ func (s *DeribitScraper) refreshToken(previousToken string, market string, webso
 func (s *DeribitScraper) Scrape(market string) {
 	s.validateMarket(market, s.MarketKind)
 	s.validateRefreshEveryToken()
+
+	// this block is for listening to sigterms and interupts
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	userCancelled := make(chan bool, 1)
+	go func() {
+		sig := <-sigs
+		fmt.Println(sig)
+		userCancelled <- true
+	}()
+
 	for {
 		// immediately invoked function expression for easy clenup with defer
 		func() {
@@ -211,6 +226,10 @@ func (s *DeribitScraper) Scrape(market string) {
 			}()
 			for {
 				select {
+				case <-userCancelled:
+					s.Logger.Infof("received interrupt, gracefully shutting down")
+					s.ScraperClose(market, ws)
+					os.Exit(0)
 				case <-failedToRefreshToken:
 					s.Logger.Errorf("failed to refresh token numerous times. restarting the scraper")
 					time.Sleep(time.Duration(retryIn) * time.Second)
