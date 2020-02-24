@@ -265,7 +265,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
-		if absDiff > 0.5 {
+		if absDiff > 0.49 {
 			// do not update the CVI time so that we can check whether we have had the baseline for two minutes or more
 			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue

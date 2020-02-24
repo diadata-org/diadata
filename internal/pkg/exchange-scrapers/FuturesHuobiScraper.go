@@ -6,8 +6,11 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
@@ -92,6 +95,7 @@ func (s *HuobiFuturesScraper) ScraperClose(market string, connection interface{}
 		if err != nil {
 			return err
 		}
+		s.Logger.Infof("gracefully shutdown huobi scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -102,6 +106,17 @@ func (s *HuobiFuturesScraper) ScraperClose(market string, connection interface{}
 // Scrape starts a websocket scraper for market
 func (s *HuobiFuturesScraper) Scrape(market string) {
 	s.validateMarket(market)
+
+	// this block is for listening to sigterms and interupts
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	userCancelled := make(chan bool, 1)
+	go func() {
+		sig := <-sigs
+		fmt.Println(sig)
+		userCancelled <- true
+	}()
+
 	for {
 		// IIFE for easy cleanup with defer
 		func() {
@@ -124,34 +139,41 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			// create the conduit for the received messages
 			var msg = make([]byte, 512)
 			for {
-				m, err := ws.Read(msg)
-				if err != nil {
-					s.Logger.Errorf("[%s] %s", market, err)
-					// an error reading means we may have lost the connection
-					// return out and just try again
-					return
-				}
-				newmsg := msg[:m]
-				unzipmsg, err := parseGzip(newmsg)
-				if err != nil {
-					s.Logger.Errorf("[%s] %s", market, err)
-					return
-				}
-				s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
-				if len(unzipmsg) == pingMsgLengthHuobi {
-					if "ping" == string(unzipmsg[2:6]) {
-						_, err := s.pong(string(unzipmsg[8:21]), market, ws)
-						if err != nil {
-							s.Logger.Errorf("[%s] problem ponging the websocket server, err: %s", market, err)
-							return
-						}
+				select {
+				case <-userCancelled:
+					s.Logger.Infof("received interrupt, gracefully shutting down")
+					s.ScraperClose(market, ws)
+					os.Exit(0)
+				default:
+					m, err := ws.Read(msg)
+					if err != nil {
+						s.Logger.Errorf("[%s] %s", market, err)
+						// an error reading means we may have lost the connection
+						// return out and just try again
+						return
 					}
-				} else {
-					// ensure that scrapeDataSaveLocation exists
-					_, err := s.Writer.Write(string(unzipmsg)+"\n", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
+					newmsg := msg[:m]
+					unzipmsg, err := parseGzip(newmsg)
 					if err != nil {
 						s.Logger.Errorf("[%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
 						return
+					}
+					s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
+					if len(unzipmsg) == pingMsgLengthHuobi {
+						if "ping" == string(unzipmsg[2:6]) {
+							_, err := s.pong(string(unzipmsg[8:21]), market, ws)
+							if err != nil {
+								s.Logger.Errorf("[%s] problem ponging the websocket server, err: %s", market, err)
+								return
+							}
+						}
+					} else {
+						// ensure that scrapeDataSaveLocation exists
+						_, err := s.Writer.Write(string(unzipmsg)+"\n", scrapeDataSaveLocationHuobi+s.Writer.GetWriteFileName("huobi", market))
+						if err != nil {
+							s.Logger.Errorf("[%s] problem saving to %s, err: %s", market, s.Writer.GetWriteFileName("huobi", market), err)
+							return
+						}
 					}
 				}
 			}
