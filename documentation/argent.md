@@ -16,7 +16,7 @@ Not Applicable ⚠
 
 ### Verified Admin Key OpSec
 
-Unverifiable ⚠️
+Unverifiable ⚠
 
 ### Admin Key Address
 
