@@ -1,4 +1,4 @@
-# README
+# Readme
 
 [![Documentation Status](https://readthedocs.org/projects/diadata/badge/?version=latest)](https://diadata.readthedocs.io/en/latest/?badge=latest)
 
