@@ -1,3 +1,7 @@
+---
+description: About DIA
+---
+
 # Readme
 
 [![Documentation Status](https://readthedocs.org/projects/diadata/badge/?version=latest)](https://diadata.readthedocs.io/en/latest/?badge=latest)
@@ -12,12 +16,19 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 ### Alpha Version - dApp Registry
 
-* [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
-* [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs 
-* [Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
-* [Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
-* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
-* [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+[SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs 
+
+[Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
+
+[Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+
+[CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
+
+[Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
+
+[Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
+
+
 
 ### Methodology Documentation
 
@@ -67,11 +78,11 @@ Currently, DIA collects data from several crypto exchanges. To get an overview, 
 
 Here you can find the introduction to the structure of the system and first steps to contribute.
 
-### DIA Technical Structure
+## DIA Technical Structure
 
-DIA is setup as a hybrid system with off-chain components for storing and proceccing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract plaform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
+DIA is setup as a hybrid system with off-chain components for storing and proceccing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract platform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
 
-#### Centralized Backend
+### Centralized Backend hased on-chain
 
 For collecting financial data, we use a centralized backend that runs collectors for all kinds of financial data. All collected data is processed by a database setup consisting of a stream-oriented kafka instance and a key-value store for faster access of certain intermediate results. These collectors are separated in different classes:
 
