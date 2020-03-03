@@ -4,7 +4,7 @@ description: 'Our Mission: Wikipedia for Financial Data'
 
 # Readme
 
-[![Documentation Status](https://readthedocs.org/projects/diadata/badge/?version=latest)](https://diadata.readthedocs.io/en/latest/?badge=latest) [![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api)
+[![Documentation Status](https://readthedocs.org/projects/diadata/badge/?version=latest)](https://diadata.readthedocs.io/en/latest/?badge=latest) [![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
 ## DIA: Technical Introduction
 
