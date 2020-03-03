@@ -1,2 +1,2 @@
-# methodology
+# Methodology
 
