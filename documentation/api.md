@@ -27,9 +27,9 @@ Version: 1.0
 
 The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of this base URL.
 
-## Usage limits
+## Fair usage limits
 
-We employ a fair-usage policy. The number of requests client applications make is logged, and these logs are subject to review. Excessive \(and unfair\) usage may result in action being taken to limit an application’s access to the Web API. Currently this is at 5 requests per minute.
+We employ a fair-usage policy. The number of requests client applications make is logged, and these logs are subject to review. Excessive \(and unfair\) usage may result in action being taken to limit an application’s access to the Web API. Currently this is at **5 requests per minute.**
 
 ## Paths
 
