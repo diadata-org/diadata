@@ -1,7 +1,7 @@
 # Table of contents
 
 * [README](README.md)
-* [documentation](documentation/README.md)
+* [Documentation](documentation/README.md)
   * [DIAdata.org API](documentation/api.md)
   * [DIA data documentation](documentation/index.md)
   * [tutorials](documentation/tutorials/README.md)
@@ -11,9 +11,11 @@
     * [Circulating Supply Numbers](documentation/methodology/supplynumbers.md)
     * [Oracles in DIA](documentation/methodology/oracles.md)
     * [Pricing Methodology of Crypto Exchange Quotations](documentation/methodology/exchangeprices.md)
-* [api](api/README.md)
+* [Api](api/README.md)
   * [docs](api/docs/README.md)
     * [diadata.org API](api/docs/api.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
 * [Contributing](contributing.md)
+* [Licence Agreement](licence-agreement.md)
+* [Disclaimer](disclaimer.md)
 
