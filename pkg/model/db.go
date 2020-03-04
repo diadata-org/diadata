@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"time"
 )
 
 type Datastore interface {
@@ -48,6 +49,7 @@ type Datastore interface {
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
 	GetConfigTogglePairDiscovery() (bool, error)
+	SetInterestRate(ir dia.InterestRate) error
 }
 
 const (
@@ -280,7 +282,7 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
-	err := db.redisClient.ZAdd(key, redis.Z{
+	err := db.redisClient.ZAdd(key, &redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
 	}).Err()
@@ -304,7 +306,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 	result := 0.0
 	max := strconv.FormatInt(atUnixTime, 10)
-	vals, err := db.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+	vals, err := db.redisClient.ZRangeByScoreWithScores(key, &redis.ZRangeBy{
 		Min: "-inf",
 		Max: max,
 	}).Result()

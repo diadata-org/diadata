@@ -1,0 +1,15 @@
+FROM golang:latest as build
+
+WORKDIR $GOPATH/src/
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/exchange-scrapers/sofr
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/sofr /bin/sofr
+
+CMD ["sofr"]

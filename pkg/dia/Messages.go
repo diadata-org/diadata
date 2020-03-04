@@ -38,6 +38,13 @@ type Trade struct {
 	Source            string
 }
 
+type InterestRate struct {
+	Symbol string
+	Value  float64
+	Time   time.Time
+	Source string
+}
+
 type TradesBlockData struct {
 	BeginTime    time.Time
 	EndTime      time.Time

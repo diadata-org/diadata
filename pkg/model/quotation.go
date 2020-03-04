@@ -2,11 +2,12 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 const (
@@ -36,6 +37,11 @@ func getKeyQuotation(value string) string {
 
 func getKeyQuotationEUR(value string) string {
 	return "dia_quotation_EUR_" + value
+}
+
+func getKeyInterestRate(symbol string, date time.Time) string {
+	// @symbol is the symbol of the interest rate (such as SFOR) set at time @date.
+	return "dia_quotation_" + symbol + "_" + date.String()
 }
 
 func (a *DB) SetPriceUSD(symbol string, price float64) error {
@@ -116,4 +122,34 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
 	return err
+}
+
+func (db *DB) SetInterestRate(ir dia.InterestRate) error {
+
+	if db.redisClient == nil {
+		return nil
+	}
+	// Prepare interest rate quantities for database
+	key := getKeyInterestRate(ir.Symbol, ir.Time)
+	// Write interest rate quantities into database
+	log.Debug("setting", key, ir)
+	err := db.redisClient.Set(key, ir, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
+	}
+	return err
+}
+
+func (db *DB) GetInterestRate(symbol string, date time.Time) (float64, error) {
+
+	key := getKeyInterestRate(symbol, date)
+	ir := &dia.InterestRate{}
+	err := db.redisClient.Get(key).Scan(ir)
+	if err != nil {
+		if err != redis.Nil {
+			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
+		}
+		return 0.0, err
+	}
+	return ir.Value, nil
 }

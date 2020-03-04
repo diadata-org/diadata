@@ -4168,6 +4168,8 @@ func NameForSymbol(symbol string) string {
 		return "RPICoin"
 	case "CHEESE":
 		return "Cheesecoin"
+	case "SOFR":
+		return "Secured Overnight Financing Rate"
 	default:
 		return NameForSymbolManuallyAdded(symbol)
 	}
