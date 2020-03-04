@@ -12,11 +12,20 @@ services:
       options:
         max-size: "50m"
 
-  hitbtccollector:
+  sofr:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_hitbtccollector:latest
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-sofr
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_sofr:latest
+    networks:
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+  hitbtccollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=HitBTC -onePairPerSymbol
     networks:
       - kafka-network
@@ -26,10 +35,8 @@ services:
         max-size: "50m"
 
   gateiocollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_gateiocollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=GateIO
     networks:
       - kafka-network
@@ -38,11 +45,23 @@ services:
       options:
         max-size: "50m"
 
-  simexcollector:
+  genericcollector:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_simexcollector:latest
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    restart: "no"
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+
+  simexcollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Simex
     networks:
       - kafka-network
@@ -52,10 +71,8 @@ services:
         max-size: "50m"
 
   bittrexcollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bittrexcollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Bittrex
     networks:
       - kafka-network
@@ -65,10 +82,8 @@ services:
         max-size: "50m"
 
   lbankcollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_lbankcollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=LBank
     networks:
       - kafka-network
@@ -78,10 +93,8 @@ services:
         max-size: "50m"
 
   okexcollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_okexcollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=OKEx -onePairPerSymbol
     networks:
       - kafka-network
@@ -91,10 +104,8 @@ services:
         max-size: "50m"
 
   huobicollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_huobicollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Huobi
     networks:
       - kafka-network
@@ -104,10 +115,8 @@ services:
         max-size: "50m"
 
   coinbasecollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_coinbasecollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=CoinBase
     networks:
       - kafka-network
@@ -117,10 +126,8 @@ services:
         max-size: "50m"
 
   binancecollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binancecollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Binance
     networks:
       - kafka-network
@@ -132,10 +139,8 @@ services:
         max-size: "50m"
 
   bitfinexcollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bitfinexcollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Bitfinex
     networks:
       - kafka-network
@@ -147,10 +152,8 @@ services:
       - api_bitfinex
 
   krakencollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_krakencollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Kraken
     networks:
       - kafka-network
@@ -160,10 +163,8 @@ services:
         max-size: "50m"
 
   zbcollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_zbcollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=ZB
     networks:
       - kafka-network
@@ -173,10 +174,8 @@ services:
         max-size: "50m"
 
   quoinecollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_quoinecollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Quoine
     networks:
       - kafka-network
@@ -184,11 +183,10 @@ services:
     logging:
       options:
         max-size: "50m"
+
   bitbaycollector:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericCollector
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_bitbaycollector:latest
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=BitBay
     networks:
       - kafka-network

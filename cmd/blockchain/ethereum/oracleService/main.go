@@ -75,7 +75,7 @@ func main() {
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(4 * time.Hour)
+	ticker := time.NewTicker(24 * time.Hour)
 	go func() {
 		for {
 			select {
@@ -106,33 +106,6 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	})
 	topCoinSlice := cleanedCoins[:*topCoins]
 
-	// Get EUR and CAD exchange rates
-	eurRate, err := getECBRatesFromDia("EUR")
-	if err != nil {
-		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "EUR", err)
-		return err
-	}
-	cadRate, err := getECBRatesFromDia("CAD")
-	if err != nil {
-		log.Fatalf("Failed to retrieve currency %s from DIA: %v", "CAD", err)
-		return err
-	}
-
-	ecbRates := []models.Quotation{*eurRate, *cadRate}
-
-	err = updateECBRates(ecbRates, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
-		return err
-	}
-
-	// Search for NEU tokens
-	neumarkData, err := getCoinDetailsFromDia("NEU")
-	if err != nil {
-		log.Printf("Failed to retrieve NEU token from DIA: %v", err)
-		return nil //TODO: return err insteal of nil, log.fatal
-	}
-	topCoinSlice = append(topCoinSlice, *neumarkData)
 	err = updateTopCoins(topCoinSlice, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
