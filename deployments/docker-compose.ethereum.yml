@@ -3,7 +3,7 @@ version: '3.2'
 services:
   geth:
     image:
-      ethereum/client-go:alpine
+      ethereum/client-go:stable
     volumes:
       - /home/srv/geth:/root/.ethereum
     command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast"
