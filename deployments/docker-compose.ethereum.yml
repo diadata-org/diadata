@@ -40,8 +40,6 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice
     networks:
       - scrapers-network
-    depends_on:
-      - geth
     command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef
     logging:
       options:
@@ -69,6 +67,36 @@ services:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-maker-token
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_maker-token
+    networks:
+      - scrapers-network
+    depends_on:
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+  xcel-token:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xcel-token
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xcel-token
+    networks:
+      - scrapers-network
+    depends_on:
+      - geth
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - api_diadata
+
+  aragon-token:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-aragon-token
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_aragon-token
     networks:
       - scrapers-network
     depends_on:
