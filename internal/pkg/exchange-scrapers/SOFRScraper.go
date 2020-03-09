@@ -32,33 +32,35 @@ type SOFRScraper struct {
 	chanInterestRate chan *dia.InterestRate
 }
 
-type Rss struct {
-	Channel Channel `xml:"channel"`
-	Item    Item    `xml:"item"`
-}
+type (
 
-type Channel struct {
-	Title       string `xml:"title"`
-	Link        string `xml:"link"`
-	Description string `xml:"description"`
-}
-type Item struct {
-	Title       string     `xml:"title"`
-	Link        string     `xml:"link"`
-	Description string     `xml:"description"`
-	Date        string     `xml:"date"`
-	Statistics  Statistics `xml:"statistics"`
-}
-
-type Statistics struct {
-	Country    string `xml:"country"`
-	InstAbbrev string `xml:"institutionAbbrev"`
-	Rate       Rate   `xml:"interestRate"`
-}
-type Rate struct {
-	Value    string `xml:"value"`
-	RateType string `xml:"rateType"`
-}
+	// Define the fields associated with the rss document.
+	Rss struct {
+		Channel Channel `xml:"channel"`
+		Item    Item    `xml:"item"`
+	}
+	Channel struct {
+		Title       string `xml:"title"`
+		Link        string `xml:"link"`
+		Description string `xml:"description"`
+	}
+	Item struct {
+		Title       string     `xml:"title"`
+		Link        string     `xml:"link"`
+		Description string     `xml:"description"`
+		Date        string     `xml:"date"`
+		Statistics  Statistics `xml:"statistics"`
+	}
+	Statistics struct {
+		Country    string `xml:"country"`
+		InstAbbrev string `xml:"institutionAbbrev"`
+		Rate       Rate   `xml:"interestRate"`
+	}
+	Rate struct {
+		Value    string `xml:"value"`
+		RateType string `xml:"rateType"`
+	}
+)
 
 // NewSOFRScraper returns a new SOFRScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
@@ -176,14 +178,13 @@ func (s *SOFRScraper) Update() error {
 		fmt.Println(err)
 	}
 
-	// Convert time string to Time type in UTC
+	// Convert time string to Time type in UTC and pass date (without daytime)
 	dateTime, err := time.Parse(time.RFC3339, rss.Item.Date)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		dateTime = dateTime.UTC()
 	}
-	fmt.Println(dateTime.String())
 
 	t := &dia.InterestRate{
 		Symbol: symbol,
