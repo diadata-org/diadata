@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/appleboy/gin-jwt"
+	"github.com/blockstatecom/gin-jwt"
 	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
