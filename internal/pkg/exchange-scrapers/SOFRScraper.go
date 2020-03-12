@@ -192,7 +192,6 @@ func (s *SOFRScraper) Update() error {
 		Time:   dateTime,
 		Source: "FED",
 	}
-	// ---------------------------------------------------------------------------
 
 	// Send new data through channel chanInterestRate
 	log.Printf("writing interestRate %#v in %v\n", t, s.chanInterestRate)
