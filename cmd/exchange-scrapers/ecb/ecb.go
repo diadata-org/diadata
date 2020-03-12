@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"sync"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
@@ -83,7 +84,7 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
-		sECB := scrapers.NewECBScraper(ds)
+		sECB := scrapers.SpawnECBScraper(ds)
 		defer sECB.Close()
 
 		for _, pair := range pairs {
@@ -96,7 +97,10 @@ func main() {
 			}
 			wg.Add(1)
 		}
-		sECB.Update()
+
+		// This should be uncommented in case "go mainLoop.go" is deleted from SpawnECBScraper
+		// go sECB.MainLoop()
+
 		go handleTrades(sECB.Channel(), &wg, ds)
 		defer wg.Wait()
 	}
