@@ -50,6 +50,8 @@ type Datastore interface {
 	UpdateSymbolDetails(symbol string, rank int)
 	GetConfigTogglePairDiscovery() (bool, error)
 	SetInterestRate(ir dia.InterestRate) error
+	SetOptionMeta(optionMeta *dia.OptionMeta) error
+	GetOptionMeta(baseCurrency  string) ([]dia.OptionMeta, error)
 }
 
 const (
@@ -68,6 +70,7 @@ const (
 	influxDbName         = "dia"
 	influxDbTradesTable  = "trades"
 	influxDbFiltersTable = "filters"
+	influxDbOptionsTable = "options"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -114,7 +117,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 
 	if withRedis {
 		r = redis.NewClient(&redis.Options{
-			Addr:     "redis:6379",
+			Addr:     "localhost:6379", /// TODO: Change to redis:
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
@@ -127,7 +130,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr:     "http://influxdb:8086",
+			Addr:     "http://localhost:8086", ///TODO: Change to influxdb
 			Username: "",
 			Password: "",
 		})
@@ -157,7 +160,7 @@ func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
 func (db *DB) Flush() error {
 	var err error
 	if db.influxBatchPoints != nil {
-		err = db.WriteBashInflux()
+		err = db.WriteBatchInflux()
 	}
 	return err
 }
@@ -182,10 +185,10 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange st
 	}
 }
 
-func (db *DB) WriteBashInflux() error {
+func (db *DB) WriteBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
-		log.Errorln("WriteBashInflux", err)
+		log.Errorln("WriteBatchInflux", err)
 		db.influxBatchPoints, _ = createBatchInflux()
 	} else {
 		db.influxPointsInBatch = 0
@@ -198,7 +201,7 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Debug("AddPoint forcing write Bash")
-		db.WriteBashInflux()
+		db.WriteBatchInflux()
 	}
 }
 
@@ -255,6 +258,64 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		db.addPoint(pt)
 	}
 	return err
+}
+
+/// TODO: Option stuff here
+func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
+	tags := map[string]string{"instrumentName": t.InstrumentName}
+	fields := map[string]interface{}{
+		"askPrice": t.AskPrice,
+		"bidPrice": t.BidPrice,
+		"askSize":  t.AskSize,
+		"bidSize":  t.BidSize,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbOptionsTable, tags, fields, t.ObservationTime)
+	if err != nil {
+		log.Errorln("NewOptionInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderbookDatum, error) {
+	retval := dia.OptionOrderbookDatum{}
+	q := fmt.Sprintf("SELECT LAST(askPrice), bidPrice, askSize, bidSize, observationTime FROM %s WHERE instrumentName ='%s'", influxDbOptionsTable, t.InstrumentName)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		retval.InstrumentName = t.InstrumentName
+		retval.ObservationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+		if err != nil {
+			return retval, err
+		}
+		retval.AskPrice, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		retval.BidPrice, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		retval.AskSize, err  = res[0].Series[0].Values[0][3].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		retval.BidSize, err  = res[0].Series[0].Values[0][4].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		return retval, nil
+	}
+	return retval, nil
 }
 
 func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error {

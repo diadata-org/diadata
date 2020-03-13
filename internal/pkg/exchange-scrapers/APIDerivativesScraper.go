@@ -1,10 +1,11 @@
 package scrapers
 
 import (
-	"log"
+	//"log"
 	"sync"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	//writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/diadata-org/diadata/pkg/model"
 	zap "go.uber.org/zap"
 )
 
@@ -20,10 +21,11 @@ const (
 
 // DeribitScraper - used in conjunction with the DeribitScraperKind in a new struct to define futures and options scrapers
 type DeribitScraper struct {
-	Markets   []string
-	WaitGroup *sync.WaitGroup
-	Writer    writers.Writer
-	Logger    *zap.SugaredLogger
+	Markets					[]string
+	WaitGroup				*sync.WaitGroup
+	//Writer					writers.Writer
+	Logger					*zap.SugaredLogger
+	DataStore  *models.DB
 
 	// required for deribit to:
 	// 1. authenticate (trades is a private channel)

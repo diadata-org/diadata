@@ -1,16 +1,15 @@
 package scrapers
 
 import (
-	"bufio"
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/dia"
 	zap "go.uber.org/zap"
 )
 
@@ -58,17 +57,24 @@ type deribitInstruments struct {
 const deribitOptionsMetaFilename string = "deribit-options-meta.txt"
 
 // NewDeribitOptionsScraper - returns an instance of an options scraper.
-func NewDeribitOptionsScraper(markets []string, accessKey string, accessSecret string) OptionsScraper {
+func NewDeribitOptionsScraper(owg *sync.WaitGroup, market string, accessKey string, accessSecret string) OptionsScraper {
 	wg := sync.WaitGroup{}
-	writer := writers.FileWriter{}
+	//writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer logger.Sync()
 
+	ds, err := models.NewDataStore()
+	if err != nil {
+		logger.Errorf("Could not create datastore: %s", err)
+		return nil
+	}
+
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
-		Markets:   markets, // e.g. []string{"BTC-20DEC19-5750-C", "BTC-20DEC19-7500-P"}
-		Writer:    &writer,
+		Markets:   []string{market}, // e.g. []string{"BTC-20DEC19-5750-C", "BTC-20DEC19-7500-P"}
+		//Writer:    &writer,
 		Logger:    logger,
+		DataStore: ds,
 
 		AccessKey:    accessKey,
 		AccessSecret: accessSecret,
@@ -78,12 +84,12 @@ func NewDeribitOptionsScraper(markets []string, accessKey string, accessSecret s
 		MarketKind:        DeribitOption, // DO NOT change this.
 	}
 
-	owg := sync.WaitGroup{}
+	//owg := sync.WaitGroup{}
 
 	var optionsScraper DeribitOptionsScraper = DeribitOptionsScraper{
 		deribitScraper:   scraper,
 		collectMetaEvery: 6, // hours
-		optionsWaitGroup: &owg,
+		optionsWaitGroup: owg,
 	}
 
 	return &optionsScraper
@@ -118,6 +124,7 @@ func (s *DeribitOptionsScraper) Scrape(market string) {
 	}()
 }
 
+/// TODO: Remove because new interface only holds 1 market per scraper
 // ScrapeMarkets - scrapes all the optiosn markets
 func (s *DeribitOptionsScraper) ScrapeMarkets() {
 	for _, market := range s.deribitScraper.Markets {
@@ -127,36 +134,18 @@ func (s *DeribitOptionsScraper) ScrapeMarkets() {
 	s.optionsWaitGroup.Wait()
 }
 
+/// TODO: Ask Database if metadata is available for this instrument
 // note, this function requires meta to be stored in a file
-func metaOnOptionIsAvailable(option deribitInstrument) (bool, error) {
-	// O(n) complexity at worst, where n is the number of rows in the file
-	// ^ complexity in terms of the file, not the input. O(1) from input perspective.
-	// 1. read the file
-	file, err := os.Open(deribitOptionsMetaFilename)
+func (s *DeribitOptionsScraper) MetaOnOptionIsAvailable(option deribitInstrument) (bool, error) {
+	optionMetas, err := s.deribitScraper.DataStore.GetOptionMeta(option.BaseCurrency)
 	if err != nil {
 		return false, err
 	}
-	defer file.Close()
-	reader := bufio.NewReader(file)
-	// 2. check each line whether option is in there
-	for {
-		line, _, err := reader.ReadLine()
-		if err == io.EOF {
-			break
-		}
-		optionMeta := &deribitInstrument{}
-		err = json.Unmarshal(line, optionMeta)
-		if err != nil {
-			return false, err
-		}
-		if *optionMeta == option {
+	for _, optionMeta := range optionMetas {
+		if (optionMeta.InstrumentName == option.InstrumentName) {
 			return true, nil
 		}
 	}
-	if err != nil {
-		return false, err
-	}
-	// 3. return the boolean that signifies its presence or lack of it (true / available)
 	return false, nil
 }
 
@@ -183,12 +172,12 @@ func (s *DeribitOptionsScraper) GetAndStoreOptionsMeta(market string) error {
 		if instrument.Kind != "option" {
 			continue
 		}
-		available, err := metaOnOptionIsAvailable(instrument)
+		available, err := s.MetaOnOptionIsAvailable(instrument)
 		if err != nil {
 			switch os.IsNotExist(err) {
-			case true: // if the file does not exist, then we clearly have no meta
-			case false:
-				return err
+				case true: // if the file does not exist, then we clearly have no meta
+				case false:
+					return err
 			}
 		}
 		if !available {
@@ -196,56 +185,28 @@ func (s *DeribitOptionsScraper) GetAndStoreOptionsMeta(market string) error {
 			if err != nil {
 				return err
 			}
-			s.deribitScraper.Logger.Debugf("new option, writing to meta file. option: %s", line)
-			_, err = s.deribitScraper.Writer.Write(string(line)+"\n", deribitOptionsMetaFilename)
-			if err != nil {
-				return err
+			s.deribitScraper.Logger.Debugf("new option, writing to redis. option: %s", line)
+			optionType := dia.CallOption
+			if instrument.OptionType == "put" {
+				optionType = dia.PutOption
 			}
+			optionMeta := dia.OptionMeta{
+				InstrumentName: instrument.InstrumentName,
+				BaseCurrency:   instrument.BaseCurrency,
+				ExpirationTime: time.Unix(instrument.ExpirationTimestamp/1000, (instrument.ExpirationTimestamp%1000)*1e6),
+				StrikePrice:    instrument.Strike,
+				OptionType:     optionType,
+			}
+			s.deribitScraper.DataStore.SetOptionMeta(&optionMeta)
 		}
 	}
 	return nil
 }
 
-// ParseOrderbookFile reads the order book data file and converts the order book into an array of OptionOrderbookDatum
-func ParseOrderbookFile(path string) ([]OptionOrderbookDatum, error) {
-	optionData := []OptionOrderbookDatum{}
-	file, err := os.Open(path)
-	if err != nil {
-		return optionData, err
-	}
-	defer file.Close()
-	reader := bufio.NewReader(file)
-	for {
-		line, _, err := reader.ReadLine()
-		if err == io.EOF {
-			break
-		}
-		optionDatum := &deribitOrderbookDatum{}
-		err = json.Unmarshal(line, optionDatum)
-		if optionDatum.Params.Data.InstrumentName != "" {
-			tm := time.Unix(optionDatum.Params.Data.Timestamp/1000, 0)
-			optionOrderbookDatum := OptionOrderbookDatum{
-				InstrumentName:  optionDatum.Params.Data.InstrumentName,
-				ObservationTime: tm,
-				AskPrice:        optionDatum.Params.Data.Asks[0][0],
-				BidPrice:        optionDatum.Params.Data.Bids[0][0],
-				AskSize:         optionDatum.Params.Data.Asks[0][1],
-				BidSize:         optionDatum.Params.Data.Bids[0][1],
-			}
-			optionData = append(optionData, optionOrderbookDatum)
-		}
-		if err != nil {
-			return optionData, err
-		}
-	}
-	if err != nil {
-		return optionData, err
-	}
-	return optionData, nil
-}
-
 // usage example
-// func main() {
-// 	optionsScraper := scrapers.NewDeribitOptionsScraper([]string{"BTC-27DEC19-7750-C", "BTC-31JAN20-8000-C", "BTC-26JUN20-8000-C", "BTC-27DEC19-12000-C"}, "accessKey", "secretKey")
-// 	optionsScraper.ScrapeMarkets()
-// }
+/*func main() {
+	// 	optionsScraper := scrapers.NewDeribitOptionsScraper([]string{"BTC-27DEC19-7750-C", "BTC-31JAN20-8000-C", "BTC-26JUN20-8000-C", "BTC-27DEC19-12000-C"}, "accessKey", "secretKey")
+	optionsScraper.ScrapeAllMarkets()
+	data, _ := scrapers.ParseOrderbookFile("/home/samuel/go/src/github.com/diadata-org/diadata/diadata-scrapers/examples/deribit/options/2020-1-23-deribit-BTC-24JAN20-8250-P.txt") //TODO: correct path
+	fmt.Println(data)
+}*/

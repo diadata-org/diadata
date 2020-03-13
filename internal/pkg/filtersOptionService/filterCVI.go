@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"math"
 	"time"
+	"errors"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // expiration related -------------------------------------
@@ -151,10 +155,156 @@ func MinutesInYear(year int) (float64, error) {
 
 // --------------------------------------------------------
 
+func TimeToMaturity(option dia.OptionMetaForward) float64 {
+	endtime := option.ExpirationTime
+	starttime := time.Now()
+
+	return endtime.Sub(starttime).Minutes()
+}
+
+// Get the forward option meta information for near and next term
+func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error) {
+	result := []dia.OptionMetaForward{}
+	timeResult := dia.OptionMeta{}
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return result, err
+	}
+
+	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	if err != nil {
+		return result, err
+	}
+
+	// Create date so late it is out of target range
+	earliestDate := time.Now().Add(62 * 24 * time.Hour)
+	// Determine date of NextTerm
+	for _, optionMeta := range(optionsMeta) {
+		if optionMeta.ExpirationTime.Sub(time.Now()) > 62 * 24 * time.Hour {
+			continue
+		}
+		if optionMeta.ExpirationTime.Sub(time.Now()) < 20 * 24 * time.Hour {
+			continue
+		}
+		if optionMeta.ExpirationTime.Unix() < earliestDate.Unix() {
+			earliestDate = optionMeta.ExpirationTime
+			timeResult = optionMeta
+		}
+	}
+	if timeResult.InstrumentName == "" {
+		err = errors.New("No matching instrument found.")
+	}
+	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+// Find last option with expiration date before NextTermOption
+func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([]dia.OptionMetaForward, error) {
+	log.Info("GetNearTermOptionMeta")
+	timeResult := dia.OptionMeta{}
+	result := []dia.OptionMetaForward{}
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return result, err
+	}
+
+	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	if err != nil {
+		return result, err
+	}
+	latestFoundDate := time.Now().Add(1 * time.Second)
+	for _, optionMeta := range(optionsMeta) {
+		if optionMeta.ExpirationTime.Unix() >= expirationNextTerm.Unix() {
+			continue
+		}
+		if optionMeta.ExpirationTime.Unix() > latestFoundDate.Unix() {
+			latestFoundDate = optionMeta.ExpirationTime
+			timeResult = optionMeta
+		}
+	}
+	if timeResult.InstrumentName == "" {
+		err = errors.New("No matching instrument found.")
+	}
+	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+	return result, err
+}
+
+func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta []dia.OptionMeta) ([]dia.OptionMetaForward, error) {
+	result := []dia.OptionMetaForward{}
+	type OptionMetaOrderbook struct {
+		orderbookDataPut  dia.OptionOrderbookDatum
+		orderbookDataCall dia.OptionOrderbookDatum
+		optionMetaPut     dia.OptionMeta
+		optionMetaCall    dia.OptionMeta
+	}
+
+	orderbookDataStore := make(map[string]OptionMetaOrderbook)
+
+	// Add all options that expire at the same date into one object of type OptionMetaOrderbook
+	for _, optionMeta := range(optionsMeta) {
+		if optionMeta.ExpirationTime.Equal(timeResult.ExpirationTime) {
+			orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
+			if err != nil {
+				return result, err
+			}
+			if orderbookData.InstrumentName != "" {
+				generalizedInstrumentName := optionMeta.InstrumentName[:16]
+				switch optionMeta.OptionType {
+				case dia.CallOption:
+					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+							orderbookDataCall: orderbookData,
+							optionMetaCall:    optionMeta,
+							orderbookDataPut:  val.orderbookDataPut,
+							optionMetaPut:     val.optionMetaPut,
+						}
+					} else {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+							orderbookDataCall: orderbookData,
+							optionMetaCall:    optionMeta,
+						}
+					}
+				case dia.PutOption:
+					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+							orderbookDataPut:  orderbookData,
+							optionMetaPut:     optionMeta,
+							orderbookDataCall: val.orderbookDataCall,
+							optionMetaCall:    val.optionMetaCall,
+						}
+					} else {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+							orderbookDataPut: orderbookData,
+							optionMetaPut:    optionMeta,
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for _, orderbookData := range orderbookDataStore {
+		result = append(result, dia.OptionMetaForward {
+			ExpirationTime: orderbookData.optionMetaCall.ExpirationTime,
+			StrikePrice: orderbookData.optionMetaCall.StrikePrice,
+			CallPrice:   math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
+			PutPrice:    math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
+		})
+	}
+	return result, nil
+}
+
 // variance / index - calculation related
 
 // VarianceIndex is used to calculate variance for near term and next term options; later on these two values are used in interpolation to obtain a CVI value; r - risk free rate; t - time to expiration; f - forward index level; k0 - strike price just below the forward index level; LaTeX equation for the output of this function is: \sigma^2_j = \frac{1}{T_j} \left(2 \sum_i \frac{\Delta K_i}{K_i^2} \exp{(RT_j)} \cdot Q(K_i) - \left( \frac{F_j}{K_0} - 1 \right)^2 \right), \forall \ j \in \{1,2\}
-func VarianceIndex(optionsMeta []scrapers.OptionMetaIndex, r float64, t float64, f float64, k0 float64) (float64, error) {
+func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f float64, k0 float64) (float64, error) {
 	if len(optionsMeta) <= 3 {
 		return 0, fmt.Errorf("not enough options to compute the CVI")
 	}
@@ -180,7 +330,7 @@ func VarianceIndex(optionsMeta []scrapers.OptionMetaIndex, r float64, t float64,
 }
 
 // ForwardIndexLevel calculates the forward level; used to compute the forward level for near-term & next-term options; r - risk free rate; t - time to expiration; LaTeX equation for the forward index level is: F_j = \texttt{Strike Price}_j + \exp{(R_j T)} \cdot (\texttt{Call Price}_j - \texttt{Put Price}_j)
-func ForwardIndexLevel(optionsMeta []scrapers.OptionMetaForward, r float64, t float64) (float64, error) {
+func ForwardIndexLevel(optionsMeta []dia.OptionMetaForward, r float64, t float64) (float64, error) {
 	if len(optionsMeta) <= 1 {
 		return 0, fmt.Errorf("not enough data points to compute the forward level")
 	}

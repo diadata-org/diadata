@@ -15,7 +15,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/diadata-org/diadata/pkg/dia"
 	zap "go.uber.org/zap"
 )
 
@@ -34,17 +34,35 @@ type deribitErrorMessage struct {
 	} `json:"error"`
 }
 
+type ParsedDeribitResponse struct {
+	Jsonrpc string                      `json:"jsonrpc"`
+	Method  string                      `json:"method"`
+	Params  ParsedDeribitResponseParams `json:"params"`
+}
+
+type ParsedDeribitResponseParams struct {
+	Channel string                            `json:"channel"`
+	Data    ParsedDeribitOptionOrderbookEntry `json:"data"`
+}
+
+type ParsedDeribitOptionOrderbookEntry struct {
+	Timestamp      int64       `json:"timestamp"`
+	InstrumentName string      `json:"instrument_name"`
+	ChangeId       int64       `json:"change_id"`
+	Bids           [][]float64 `json:"bids"`
+	Asks           [][]float64 `json:"asks"`
+}
+
 // NewDeribitFuturesScraper - creates a deribit futures scraper for you for the markets that you supply. Some of the markets available are: "BTC-PERPETUAL" and "ETH-PERPETUAL".
 func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
 	wg := sync.WaitGroup{}
-	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer logger.Sync()
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
 		Markets:   markets, // e.g. []string{"BTC-PERPETUAL", "ETH-PERPETUAL"}
-		Writer:    &writer,
+		//Writer:    &writer,
 		Logger:    logger,
 
 		AccessKey:    accessKey,
@@ -241,8 +259,8 @@ func (s *DeribitScraper) Scrape(market string) {
 						return
 					}
 					strMessage := string(message)
-					s.Logger.Debugf("received new message: %v", strMessage)
-					// check if the received message containss the refresh_token json key
+					//s.Logger.Debugf("received new message: %v", strMessage)
+					// check if the received message contains the refresh_token json key
 					if strings.Contains(strMessage, "refresh_token") {
 						decodedMsg := deribitRefreshMessage{}
 						err = json.Unmarshal(message, &decodedMsg)
@@ -259,23 +277,44 @@ func (s *DeribitScraper) Scrape(market string) {
 							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
-						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
-						if err != nil {
-							s.Logger.Errorf("issue saving to file on [%s], err: %s", market, err)
-						}
 						if decodedMsg.Error.Message != "" {
 							if decodedMsg.Error.Code == 13009 {
 								panic("wrong or expired authorization token or bad signature. For example, please check scope of the token, \"connection\" scope can't be reused for other connections.")
 							}
 						}
-					} else {
-						// only save the messages if the message does not contain thre refresh_token string
-						s.Logger.Debugf("saving new message on [%s]", market)
-						_, err = s.Writer.Write(strMessage+"\n", scrapeDataSaveLocationDeribit+s.Writer.GetWriteFileName("deribit", market))
+					} else if strings.Contains(strMessage, `"method":"subscription"`) {
+						// Magic happens here :-)
+						// only save the messages if the message does not contain thre refresh_token string and no error
+						//s.Logger.Debugf("saving new orderbook message on [%s]", market)
+						parsedResult := ParsedDeribitResponse{}
+						err = json.Unmarshal(message, &parsedResult)
 						if err != nil {
-							s.Logger.Errorf("issue saving to file on [%s], err: %s", market, err)
+							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
+						if len(parsedResult.Params.Data.Bids) == 0 ||
+						   len(parsedResult.Params.Data.Asks) == 0 {
+								 s.Logger.Errorf("problem with message %s", message)
+							return
+						}
+						orderbookEntry := dia.OptionOrderbookDatum{
+							InstrumentName:  parsedResult.Params.Data.InstrumentName,
+							// Caution: The response contains the Unix timestamp in Milliseconds
+							ObservationTime: time.Unix(parsedResult.Params.Data.Timestamp / 1000, (parsedResult.Params.Data.Timestamp % 1000) * 1e6),
+							AskPrice:        parsedResult.Params.Data.Asks[0][0],
+							BidPrice:        parsedResult.Params.Data.Bids[0][0],
+							AskSize:         parsedResult.Params.Data.Asks[0][1],
+							BidSize:         parsedResult.Params.Data.Bids[0][1],
+						}
+						err := s.DataStore.SaveOptionOrderbookDatumInflux(orderbookEntry)
+						if err != nil {
+							s.Logger.Errorf("Error writing into influxdb: %s", err)
+							return
+						}
+					} else {
+						// only save the messages if it is a control message
+						//s.Logger.Debugf("saving new message on [%s]", market)
+						//s.Logger.Debug(strMessage)
 					}
 				}
 			}
