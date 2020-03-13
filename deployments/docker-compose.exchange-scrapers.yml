@@ -12,17 +12,6 @@ services:
       options:
         max-size: "50m"
 
-  sofr:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-sofr
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_sofr:latest
-    networks:
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-
   hitbtccollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
