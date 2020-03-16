@@ -15,7 +15,7 @@ services:
         max-size: "50m"
     volumes:
       - /home/srv/config:/config
-  
+
   filtersblockservice:
     build:
       context: ../../../..
@@ -25,6 +25,17 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+    logging:
+      options:
+        max-size: "50m"
+
+  estimatorsservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-estimatorsService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_estimatorsservice:latest
+    networks:
+      - kafka-network
     logging:
       options:
         max-size: "50m"
