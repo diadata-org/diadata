@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/appleboy/gin-jwt"
+	jwt "github.com/appleboy/gin-jwt"
 	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/swaggo/gin-swagger"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
@@ -197,6 +197,7 @@ func main() {
 		dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
 		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
 
+		dia.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 		dia.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 
 		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
@@ -206,5 +207,5 @@ func main() {
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run(":8080")
+	r.Run(":8081")
 }

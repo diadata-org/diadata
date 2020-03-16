@@ -5,17 +5,18 @@ These instructions concern scrapers for a single (floating point) number. For sc
 ## Add your own scraper
 
 In order to add your own scraper for a new data source, you must adhere to our format. We use Go modules for our scrapers, so that each data provider is living as an independent module.
-A scraper for rates such as interest rates (see for instance ESTERScraper.go and SOFRScraper.go) must have a function `ScrapePair(pair dia.Pair)` that can be called from our system. It returns a `PairScraper`.
 
-Let's assume you want to scrape a data source that provides trade information. Create a new file in `exchange-scrapers/` and call it `MySourceScraper.go`. At first, its content looks like this:
+### Practical advice
+Let's assume you want to scrape a data source that provides floating point information. Create a new file in `exchange-scrapers/` and call it `MySourceScraper.go`. The main difference between scrapers is the Update() method, where the actual scraping is done.
 
 ```go
-func (s *MyScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *MyScraper) Update() error {
   // scraper code here
 }
 ```
 
-The `PairScraper` interface is defined as a collection of methods. The most important one is returning a channel which is filled with every trade the scraper witnesses
+### Overview of architecture
+
 
 ```go
 // PairScraper receives trades for a single pc.Pair from a single exchange.
@@ -23,7 +24,7 @@ type PairScraper interface {
   io.Closer
 
   // Channel returns a channel that can be used to receive trades
-  Channel() chan *dia.Trade
+  Channel() chan *models.InterestRate
 
   // Error returns an error when the channel Channel() is closed
   // and nil otherwise

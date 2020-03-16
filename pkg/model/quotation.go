@@ -20,16 +20,17 @@ const (
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
 )
 
-// MarshalBinary -
+// MarshalBinary for quotations
 func (e *Quotation) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
 
+// MarshalBinary for interest rates
 func (e *InterestRate) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-// UnmarshalBinary -
+// UnmarshalBinary for quotations
 func (e *Quotation) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
@@ -37,6 +38,7 @@ func (e *Quotation) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+// UnmarshalBinary for interest rates
 func (e *InterestRate) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
@@ -52,14 +54,16 @@ func getKeyQuotationEUR(value string) string {
 	return "dia_quotation_EUR_" + value
 }
 
+// getKeyInterestRate returns a string that is used as key for storing an interest
+// rate in the Redis database.
+// @symbol is the symbol of the interest rate (such as SFOR) set at time @date.
 func getKeyInterestRate(symbol string, date time.Time) string {
-	// @symbol is the symbol of the interest rate (such as SFOR) set at time @date.
 	return "dia_quotation_" + symbol + "_" + date.String()
 }
 
-func (a *DB) SetPriceUSD(symbol string, price float64) error {
+func (db *DB) SetPriceUSD(symbol string, price float64) error {
 
-	return a.SetQuotation(&Quotation{
+	return db.SetQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
@@ -137,6 +141,7 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 	return err
 }
 
+// SetInterestRate writes the interest rate struct ir into the Redis database
 func (db *DB) SetInterestRate(ir *InterestRate) error {
 
 	if db.redisClient == nil {
@@ -153,11 +158,15 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	return err
 }
 
+// GetInterestRate returns the interest rate value for the last time stamp before @date.
+// If @date is an empty string it returns the rate at the latest time stamp.
+// @symbol is the shorthand symbol for the requested interest rate.
+// @date is a string in the format yyyy-mm-dd.
 func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
-	// Return the interest rate value for the last time stamp before @date.
-	// @symbol is the shorthand symbol for the requested interest rate.
-	// @date is a string in the format yyyy-mm-dd.
 
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
 	key, _ := db.matchKeyInterestRate(symbol, date)
 
 	// Run database querie with found key
@@ -172,9 +181,9 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	return ir, nil
 }
 
+// matchKeyInterestRate returns the key in the database db with the youngest timestamp
+// younger than the date @date. Given as string formatted as "yyyy-mm-dd hh:mm:ss".
 func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
-	// Return the key in the database db with the youngest timestamp younger than
-	// the date @date. Given as string formatted as "yyyy-mm-dd hh:mm:ss".
 
 	exDate, err := db.findLastDay(symbol, date)
 	if err != nil {
@@ -194,49 +203,9 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	return strSlice[index], nil
 }
 
-// func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
-// 	// Return the key in the database db with timestamp closest to the
-// 	// date given as string in the format "yyyy-mm-dd". Here, we assume
-// 	// that the data in the database is scraped once a day.
-
-// 	pattern := "*" + symbol + "_" + date + "*"
-// 	strSlice := db.redisClient.Keys(pattern)
-
-// 	fmt.Println("strSlice is now: ", strSlice)
-
-// 	var key string
-// 	err := errors.New("")
-// 	if len(strSlice.Val()) != 0 {
-// 		key = strSlice.Val()[0]
-// 	} else {
-// 		// If no result, do the same for yesterday
-// 		yesterday := getYesterday(date, "2006-01-02")
-// 		pattern = "*" + symbol + "_" + yesterday + "*"
-// 		strSlice = db.redisClient.Keys(pattern)
-// 		if len(strSlice.Val()) == 0 {
-// 			err = errors.New("No data found in database")
-// 		} else {
-// 			key = strSlice.Val()[0]
-// 		}
-// 	}
-// 	return key, err
-// }
-
-func (db *DB) ExistInterestRate(symbol, date string) bool {
-	// Returns true if a database entry with given date stamp exists, and false otherwise.
-	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
-	pattern := "*" + symbol + "_" + date + "*"
-	strSlice := db.redisClient.Keys(pattern).Val()
-	if len(strSlice) == 0 {
-		return false
-	}
-	return true
-}
-
+// findLastDay returns the youngest date before @date that has an entry in the database.
+// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
 func (db *DB) findLastDay(symbol, date string) (string, error) {
-	// Return the youngest date before @date that has an entry in the database.
-	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
-
 	maxDays := 30 // Remark: This could be a function parameter as well...
 	for count := 0; count < maxDays; count++ {
 		if db.ExistInterestRate(symbol, date) {
@@ -249,6 +218,18 @@ func (db *DB) findLastDay(symbol, date string) (string, error) {
 	// If no entry found in the last @maxDays days return error
 	err := errors.New("No database entry found in the last " + strconv.FormatInt(int64(maxDays), 10) + "days.")
 	return "", err
+}
+
+// ExistInterestRate returns true if a database entry with given date stamp exists,
+// and false otherwise.
+// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
+func (db *DB) ExistInterestRate(symbol, date string) bool {
+	pattern := "*" + symbol + "_" + date + "*"
+	strSlice := db.redisClient.Keys(pattern).Val()
+	if len(strSlice) == 0 {
+		return false
+	}
+	return true
 }
 
 func getYesterday(date, layout string) string {

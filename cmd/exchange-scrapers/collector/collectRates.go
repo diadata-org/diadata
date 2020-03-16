@@ -2,18 +2,19 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/diadata/pkg/model"
-	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
-	"github.com/tkanos/gonfig"
 	"os/user"
 	"strings"
 	"sync"
 	"time"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
+	"github.com/tkanos/gonfig"
 )
 
 const (
@@ -76,7 +77,7 @@ func main() {
 	} else {
 
 	}
-	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
+	rates, err := ds.GetAvailablePairsForExchange(*exchange)
 
 	if err != nil || len(pairsExchange) == 0 {
 		log.Error("error on GetAvailablePairsForExchange", err)
