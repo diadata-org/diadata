@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/websocket"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
 )
 
