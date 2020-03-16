@@ -2,9 +2,10 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	"time"
 )
 
 type Point struct {
@@ -29,6 +30,13 @@ type Quotation struct {
 	VolumeYesterdayUSD *float64
 	Source             string
 	Time               time.Time
+}
+
+type InterestRate struct {
+	Symbol string
+	Value  float64
+	Time   time.Time
+	Source string
 }
 
 type CurrencyChange struct {

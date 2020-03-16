@@ -3,16 +3,17 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	"github.com/diadata-org/diadata/pkg/http/restApi"
-	"github.com/diadata-org/diadata/pkg/model"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/http/restApi"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+	log "github.com/sirupsen/logrus"
 )
 
 type Env struct {
@@ -83,6 +84,22 @@ func (env *Env) PostSupply(c *gin.Context) {
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
 	q, err := env.DataStore.GetQuotation(symbol)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+func (env *Env) GetInterestRate(c *gin.Context) {
+	symbol := c.Param("symbol")
+	date := c.Param("time")
+
+	q, err := env.DataStore.GetInterestRate(symbol, date)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)

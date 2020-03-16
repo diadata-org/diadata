@@ -1,15 +1,16 @@
 package main
 
 import (
+	"sync"
+
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
 // handleInterestRate delegates rate information to Kafka
-func handleInterestRate(c chan *dia.InterestRate, ds models.Datastore) {
-
+func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds models.Datastore) {
+	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
 		t, ok := <-c
@@ -17,25 +18,25 @@ func handleInterestRate(c chan *dia.InterestRate, ds models.Datastore) {
 			log.Error("error")
 			return
 		}
-		log.Println(t.Symbol)
-		ds.SetInterestRate(*t)
+		ds.SetInterestRate(t)
 	}
 }
 
 // main manages all Scraper and handles incoming trade information
 func main() {
 
+	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
 
 		// sSOFR points to a SOFRScraper struct
-		sSOFR := scrapers.NewSOFRScraper(ds)
+		sSOFR := scrapers.SpawnSOFRScraper(ds)
 		defer sSOFR.Close()
 
-		sSOFR.Update()
-		handleInterestRate(sSOFR.Channel(), ds)
-
+		wg.Add(1)
+		go handleInterestRate(sSOFR.Channel(), &wg, ds)
+		defer wg.Wait()
 	}
 }

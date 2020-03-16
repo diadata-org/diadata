@@ -2,6 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -23,8 +25,19 @@ func (e *Quotation) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
 
+func (e *InterestRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
 // UnmarshalBinary -
 func (e *Quotation) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *InterestRate) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}
@@ -124,7 +137,7 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 	return err
 }
 
-func (db *DB) SetInterestRate(ir dia.InterestRate) error {
+func (db *DB) SetInterestRate(ir *InterestRate) error {
 
 	if db.redisClient == nil {
 		return nil
@@ -140,16 +153,123 @@ func (db *DB) SetInterestRate(ir dia.InterestRate) error {
 	return err
 }
 
-func (db *DB) GetInterestRate(symbol string, date time.Time) (float64, error) {
+func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
+	// Return the interest rate value for the last time stamp before @date.
+	// @symbol is the shorthand symbol for the requested interest rate.
+	// @date is a string in the format yyyy-mm-dd.
 
-	key := getKeyInterestRate(symbol, date)
-	ir := &dia.InterestRate{}
+	key, _ := db.matchKeyInterestRate(symbol, date)
+
+	// Run database querie with found key
+	ir := &InterestRate{}
 	err := db.redisClient.Get(key).Scan(ir)
 	if err != nil {
 		if err != redis.Nil {
 			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
 		}
-		return 0.0, err
+		return ir, err
 	}
-	return ir.Value, nil
+	return ir, nil
+}
+
+func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
+	// Return the key in the database db with the youngest timestamp younger than
+	// the date @date. Given as string formatted as "yyyy-mm-dd hh:mm:ss".
+
+	exDate, err := db.findLastDay(symbol, date)
+	if err != nil {
+
+	}
+	// Determine all database entries with given date
+	pattern := "*" + symbol + "_" + exDate + "*"
+	strSlice := db.redisClient.Keys(pattern).Val()
+
+	var strSliceFormatted []string
+	layout := "2006-01-02 15:04:05"
+	for _, key := range strSlice {
+		date, _ := time.Parse(layout, key)
+		strSliceFormatted = append(strSliceFormatted, date.String())
+	}
+	_, index := maxString(strSliceFormatted)
+	return strSlice[index], nil
+}
+
+// func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
+// 	// Return the key in the database db with timestamp closest to the
+// 	// date given as string in the format "yyyy-mm-dd". Here, we assume
+// 	// that the data in the database is scraped once a day.
+
+// 	pattern := "*" + symbol + "_" + date + "*"
+// 	strSlice := db.redisClient.Keys(pattern)
+
+// 	fmt.Println("strSlice is now: ", strSlice)
+
+// 	var key string
+// 	err := errors.New("")
+// 	if len(strSlice.Val()) != 0 {
+// 		key = strSlice.Val()[0]
+// 	} else {
+// 		// If no result, do the same for yesterday
+// 		yesterday := getYesterday(date, "2006-01-02")
+// 		pattern = "*" + symbol + "_" + yesterday + "*"
+// 		strSlice = db.redisClient.Keys(pattern)
+// 		if len(strSlice.Val()) == 0 {
+// 			err = errors.New("No data found in database")
+// 		} else {
+// 			key = strSlice.Val()[0]
+// 		}
+// 	}
+// 	return key, err
+// }
+
+func (db *DB) ExistInterestRate(symbol, date string) bool {
+	// Returns true if a database entry with given date stamp exists, and false otherwise.
+	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
+	pattern := "*" + symbol + "_" + date + "*"
+	strSlice := db.redisClient.Keys(pattern).Val()
+	if len(strSlice) == 0 {
+		return false
+	}
+	return true
+}
+
+func (db *DB) findLastDay(symbol, date string) (string, error) {
+	// Return the youngest date before @date that has an entry in the database.
+	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
+
+	maxDays := 30 // Remark: This could be a function parameter as well...
+	for count := 0; count < maxDays; count++ {
+		if db.ExistInterestRate(symbol, date) {
+			return date, nil
+		}
+		// If date has no entry, look for one the day before
+		date = getYesterday(date, "2006-01-02")
+	}
+
+	// If no entry found in the last @maxDays days return error
+	err := errors.New("No database entry found in the last " + strconv.FormatInt(int64(maxDays), 10) + "days.")
+	return "", err
+}
+
+func getYesterday(date, layout string) string {
+	// Returns the day before @date in the world of strings, formatted as @layout
+	dateTime, err := time.Parse(layout, date)
+	if err != nil {
+		log.Printf("Error: %v on date format %s\n", err, date)
+	}
+	yesterday := dateTime.AddDate(0, 0, -1)
+	return yesterday.Format(layout)
+}
+
+func maxString(sl []string) (string, int64) {
+	// Return the maximum of a slice of strings along with its index
+	index := int64(0)
+	max := sl[0]
+	for k, entry := range sl {
+		if entry > max {
+			max = entry
+			index = int64(k)
+		}
+	}
+	return max, index
 }
