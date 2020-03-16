@@ -158,6 +158,10 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	// @symbol is the shorthand symbol for the requested interest rate.
 	// @date is a string in the format yyyy-mm-dd.
 
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
+	
 	key, _ := db.matchKeyInterestRate(symbol, date)
 
 	// Run database querie with found key
@@ -194,33 +198,6 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	return strSlice[index], nil
 }
 
-// func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
-// 	// Return the key in the database db with timestamp closest to the
-// 	// date given as string in the format "yyyy-mm-dd". Here, we assume
-// 	// that the data in the database is scraped once a day.
-
-// 	pattern := "*" + symbol + "_" + date + "*"
-// 	strSlice := db.redisClient.Keys(pattern)
-
-// 	fmt.Println("strSlice is now: ", strSlice)
-
-// 	var key string
-// 	err := errors.New("")
-// 	if len(strSlice.Val()) != 0 {
-// 		key = strSlice.Val()[0]
-// 	} else {
-// 		// If no result, do the same for yesterday
-// 		yesterday := getYesterday(date, "2006-01-02")
-// 		pattern = "*" + symbol + "_" + yesterday + "*"
-// 		strSlice = db.redisClient.Keys(pattern)
-// 		if len(strSlice.Val()) == 0 {
-// 			err = errors.New("No data found in database")
-// 		} else {
-// 			key = strSlice.Val()[0]
-// 		}
-// 	}
-// 	return key, err
-// }
 
 func (db *DB) ExistInterestRate(symbol, date string) bool {
 	// Returns true if a database entry with given date stamp exists, and false otherwise.
