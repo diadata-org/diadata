@@ -49,7 +49,8 @@ type Datastore interface {
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
 	GetConfigTogglePairDiscovery() (bool, error)
-	SetInterestRate(ir dia.InterestRate) error
+	SetInterestRate(ir *InterestRate) error
+	GetInterestRate(symbol, date string) (*InterestRate, error)
 }
 
 const (
