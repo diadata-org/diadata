@@ -18,19 +18,17 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 ### Alpha Version - dApp Registry
 
-[SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs 
+[SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
 
 [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 
-[Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+[Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund)
 
 [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
 
-[Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
+[Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2)
 
 [Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
-
-
 
 ### How to contribute
 
