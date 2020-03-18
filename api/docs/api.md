@@ -54,7 +54,7 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-_Remark:_ Careful! Succesful responses can be rather large.
+_Remark:_ Careful! Successful responses can be rather large.
 
 ### GET /v1/chartPointsAllExchanges/
 
@@ -84,7 +84,7 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-_Remark:_ Careful! Succesful responses can be rather large.
+_Remark:_ Careful! Successful responses can be rather large.
 
 ### GET /v1/coins
 
