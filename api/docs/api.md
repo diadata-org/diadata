@@ -86,6 +86,117 @@ Responses:
 
 _Remark:_ Careful! Successful responses can be rather large.
 
+### GET /v1/quotation/
+
+Get a quotation.  
+Example: [https://api.diadata.org/v1/quotation/ETH](https://api.diadata.org/v1/quotation/ETH)
+
+Path Params:
+
+* symbol \[string\]: Some symbol.
+
+Responses:
+
+* 200: success.
+
+  [models.Quotation](api.md#modelsquotation)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/interestrate/
+
+Get value for a certain rate type.  
+Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-03-16](https://api.diadata.org/v1/interestrate/ESTER/2020-03-16)
+
+Path Params:
+
+* rateType \[string\]: Short hand notation for a rate
+* date \[string\]: In the format yyyy:mm:dd  date is an optional parameter. When omitted, the most recent value is returned.
+
+Responses:
+
+* 200: success.
+
+  [models.InterestRate](api.md#modelsquotation)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/supply/
+
+Get the circulating supply corresponding to a symbol.  
+Example: [https://api.diadata.org/v1/supply/ETH](https://api.diadata.org/v1/supply/ETH)
+
+Path Params:
+
+* symbol \[string\]: Some symbol.
+
+Responses:
+
+* 200: success.
+
+  [dia.Supply](api.md#diasupply)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### POST /v1/supply
+
+Post the circulating supply.
+
+Query Params:
+
+* Symbol \[string\]: Coin symbol.
+* CirculatingSupply \[number\]: number of coins in circulating supply.
+
+Responses:
+
+* 200: success.
+
+  [dia.Supply](api.md#diasupply)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/symbol/
+
+Get Symbol Details.
+
+Path Params:
+
+* symbol \[string\]: Some symbol.
+
+Responses:
+
+* 200: success.
+
+  [models.SymbolDetails](api.md#modelssymboldetails)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
 ### GET /v1/coins
 
 Get all available coins.  
@@ -116,106 +227,10 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-### GET /v1/quotation/
-
-Get a quotation.  
-Example: [https://api.diadata.org/v1/quotation/ETH](https://api.diadata.org/v1/quotation/ETH)
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-
-Responses:
-
-* 200: success.
-
-  [models.Quotation](api.md#modelsquotation)
-
-* 404: Symbol not found.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-### POST /v1/supply
-
-Post the circulating supply.
-
-Query Params:
-
-* Symbol \[string\]: Coin symbol.
-* CirculatingSupply \[number\]: number of coins in circulating supply.
-
-Responses:
-
-* 200: success.
-
-  [dia.Supply](api.md#diasupply)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-### GET /v1/supply/
-
-Get the circulating supply corresponding to a symbol.  
-Example: [https://api.diadata.org/v1/supply/ETH](https://api.diadata.org/v1/supply/ETH)
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-
-Responses:
-
-* 200: success.
-
-  [dia.Supply](api.md#diasupply)
-
-* 404: Symbol not found.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-### GET /v1/symbol/
-
-Get Symbol Details.
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-
-Responses:
-
-* 200: success.
-
-  [models.SymbolDetails](api.md#modelssymboldetails)
-
-* 404: Symbol not found.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
 ### GET /v1/symbols
 
 Get all available symbols.  
 Example: [https://api.diadata.org/v1/symbols](https://api.diadata.org/v1/symbols)
-
-Query Params:
-
-* scale \[string\]: scale 5m 30m 1h 4h 1d 1w.
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-* filter \[string\]: Some filter.
 
 Responses:
 
@@ -227,27 +242,16 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
+### GET /v1/interestrates
 
-
-### GET /v1/interestrate/
-
-Get interest rate.  
-Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-03-16](https://api.diadata.org/v1/interestrate/ESTER/2020-03-16)
-
-Path Params:
-
-* rateType \[string\]: Short hand notation for a rate
-* date \[string\]: In the format yyyy:mm:dd  date is an optional parameter. When omitted, the most recent value is returned.
+Get all available interest rates.  
+Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/coins)
 
 Responses:
 
 * 200: success.
 
-  [models.InterestRate](api.md#modelsquotation)
-
-* 404: Symbol not found.
-
-  [restApi.APIError](api.md#restapiapierror)
+  [dia.Symbols](api.md#diasymbols)
 
 * 500: error.
 
