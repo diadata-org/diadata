@@ -1,15 +1,9 @@
 package main
 
 import (
-<<<<<<< HEAD
 	"time"
 
 	jwt "github.com/blockstatecom/gin-jwt"
-
-=======
-	"github.com/blockstatecom/gin-jwt"
-	"time"
->>>>>>> 66d39a1993b67b018e5ffeb3d684d6f7eb5f8dce
 	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"

@@ -161,7 +161,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	if date == "" {
 		date = time.Now().Format("2006-01-02")
 	}
-	
+
 	key, _ := db.matchKeyInterestRate(symbol, date)
 
 	// Run database querie with found key
@@ -169,7 +169,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	err := db.redisClient.Get(key).Scan(ir)
 	if err != nil {
 		if err != redis.Nil {
-			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
+			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
 		}
 		return ir, err
 	}
@@ -198,7 +198,6 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	return strSlice[index], nil
 }
 
-
 func (db *DB) ExistInterestRate(symbol, date string) bool {
 	// Returns true if a database entry with given date stamp exists, and false otherwise.
 	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
@@ -211,7 +210,7 @@ func (db *DB) ExistInterestRate(symbol, date string) bool {
 }
 
 func (db *DB) findLastDay(symbol, date string) (string, error) {
-	// Return the youngest date before @date that has an entry in the database.
+	// Return the oldest date before @date that has an entry in the database.
 	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
 
 	maxDays := 30 // Remark: This could be a function parameter as well...
