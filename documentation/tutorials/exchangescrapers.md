@@ -2,7 +2,7 @@
 
 ## Add your own scraper
 
-In order to add your own scraper for a new data source, you must adhere to our format. We use Go modules for our scrapers, so that each data provider is living as an independent module. A scraper for cryptocurrencies must have a function `ScrapePair(pair dia.Pair)` that can be called from our system. It returns a `PairScraper`.
+In order to add your own scraper for a new data source, you must adhere to our format. A scraper for cryptocurrencies must have a function `ScrapePair(pair dia.Pair)` that can be called from our system. It returns a `PairScraper`.
 
 Let's assume you want to scrape a data source that provides trade information. Create a new file in `exchange-scrapers/` and call it `MySourceScraper.go`. At first, its content looks like this:
 

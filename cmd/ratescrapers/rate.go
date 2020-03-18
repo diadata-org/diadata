@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"flag"
 
 	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
 	// scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
@@ -26,12 +27,9 @@ func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds mode
 // main manages all Scraper and handles incoming trade information
 func main() {
 
-	// // Parse the option for the type of interest rate
-	// rateType := flag.String("type", "ESTER", "Type of interest rate")
-	// flag.Parse()
-
-	// Hard code rateType for testing
-	rateType := "ESTER"
+	// Parse the option for the type of interest rate
+	rateType := flag.String("type", "ESTER", "Type of interest rate")
+	flag.Parse()
 
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
@@ -40,7 +38,7 @@ func main() {
 	} else {
 
 		// Spawn the corresponding rate scraper
-		sRate := ratescrapers.SpawnRateScraper(ds, rateType)
+		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)
 		defer sRate.Close()
 
 		// Send rates to the database while the scraper scrapes

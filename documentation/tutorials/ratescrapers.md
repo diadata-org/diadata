@@ -1,9 +1,10 @@
 # Write your own rate scraper
 
-These instructions concern scrapers for a single (floating point) number. For scrapers yielding pairs of numbers see the instructions in exchangescrapers.md.
+These instructions concern writing scrapers for single units characterised by a (floating point) number. For scrapers describing the relation between pairs of units, i.e. exchange rates see the instructions in exchangescrapers.md.
 
-## Add your own scraper
+## Instructions for the addition of a rate scraper
 
+<<<<<<< HEAD
 In order to add your own scraper for a new data source, you must adhere to our format. We use Go modules for our scrapers, so that each data provider is living as an independent module.
 
 ### Practical advice
@@ -11,10 +12,17 @@ Let's assume you want to scrape a data source that provides floating point infor
 
 ```go
 func (s *MyScraper) Update() error {
+=======
+In order to add your own scraper for a new data source, you must adhere to our format. Create the package file `UpdateMYRATE.go` in the package `/internal/pkg/ratescrapers`. The central method is ` UpdateMYRATE()`. This method acts on a RateScraper struct which is defined in RateScraper.go in the ratescrapers package. For instance, for the the Euro Short-Term Rate (ESTER) issued by the ECB, `UpdateESTER.go` would look like
+
+```go
+func (s *RateScraper) UpdateESTER() error {
+>>>>>>> master
   // scraper code here
 }
 ```
 
+<<<<<<< HEAD
 ### Overview of architecture
 
 
@@ -32,38 +40,16 @@ type PairScraper interface {
 
   // Pair returns the pair this scraper is subscribed to
   Pair() dia.Pair
-}
-```
-
-The other methods are mainly for Error handling, maintenance and shutdown. Our system is running the data scraper on our premises as an example. Of course, it is also possible to host your own data provider but in this simple example we assume that MyScraper is hosted on DIA servers.
-
-For testing your scraper, you should create a config file for your api inside the `config/secrets` directory.
-
-Its name must be MySource.json and its format should be:
-
-```javascript
-{
-  "ApiKey": "xx",
-  "SecretKey": "yy"
-}
-```
-
-Add a reference to your scraper in the switch statement
+=======
+The scraped data has to be written into a struct of type InterestRate from `pkg/model/types.go`
 
 ```go
-switch e := configPair.Exchange; e {
-    case dia.MySourceExchange:
-      s[configPair.Exchange] = scrapers.NewMySourceScraper(configApi.ApiKey, configApi.SecretKey)
+type InterestRate struct {
+	Symbol string
+	Value  float64
+	Time   time.Time
+	Source string
+>>>>>>> master
 }
 ```
-
-scraper.go will try to create a scraper for each exchange and collect the data pairs present in `config/exchange-scrapers.json`
-
-This is the basic structure of these files. Run the scraping binary by calling:
-
-```text
-go run scraper.go
-```
-
-from the `cmd` directory.
-
+and sent to the channel chanInterestRate of s. In order to write a new scraper, it is not imperative to understand the architecture of the pathway from top to bottom, but it might be helpful. For a first impression you can have a look at the following [diagram](github.com/diadata-org/diadata/documentation/tutorials/rate_scraper_diagram_down.pdf).
