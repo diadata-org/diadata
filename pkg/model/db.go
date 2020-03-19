@@ -71,6 +71,7 @@ const (
 	influxDbTradesTable  = "trades"
 	influxDbFiltersTable = "filters"
 	influxDbOptionsTable = "options"
+	influxDbCVITable     = "cvi"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -261,6 +262,25 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 }
 
 /// TODO: Option stuff here
+func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
+	fields := map[string]interface{}{
+		"value": cviValue,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbCVITable, nil, fields, observationTime)
+	if err != nil {
+		log.Errorln("NewOptionInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+	}
+
+	return err
+}
+
 func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
 	tags := map[string]string{"instrumentName": t.InstrumentName}
 	fields := map[string]interface{}{

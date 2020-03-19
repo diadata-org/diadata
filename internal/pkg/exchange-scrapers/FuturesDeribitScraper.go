@@ -17,6 +17,7 @@ import (
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	"github.com/diadata-org/diadata/pkg/dia"
 	zap "go.uber.org/zap"
+	log "github.com/sirupsen/logrus"
 )
 
 const scrapeDataSaveLocationDeribit = ""
@@ -62,7 +63,6 @@ func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret s
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
 		Markets:   markets, // e.g. []string{"BTC-PERPETUAL", "ETH-PERPETUAL"}
-		//Writer:    &writer,
 		Logger:    logger,
 
 		AccessKey:    accessKey,
@@ -81,7 +81,7 @@ func (s *DeribitScraper) send(message *map[string]interface{}, market string, we
 	if err != nil {
 		return err
 	}
-	s.Logger.Debugf("sent message [%s]: %s", market, message)
+	//log.Debugf("sent message [%s]: %s", market, message)
 	return nil
 }
 
@@ -97,7 +97,7 @@ func (s *DeribitScraper) ScraperClose(market string, websocketConnection interfa
 		if err != nil {
 			return err
 		}
-		s.Logger.Infof("gracefully shutdown deribit scraper on market: %s", market)
+		log.Infof("gracefully shutdown deribit scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
 	default:
@@ -167,10 +167,10 @@ func (s *DeribitScraper) Scrape(market string) {
 			refreshToken := ""
 			failedToRefreshToken := make(chan interface{})
 			u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
-			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
+			log.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
-				s.Logger.Errorf("could not dial the websocket: %s", err)
+				log.Errorf("could not dial the websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
@@ -178,7 +178,7 @@ func (s *DeribitScraper) Scrape(market string) {
 			// 1. authenticate
 			err = s.Authenticate(market, ws)
 			if err != nil {
-				s.Logger.Errorf("could not authenticate. retrying, err: %s", err)
+				log.Errorf("could not authenticate. retrying, err: %s", err)
 				return
 			}
 			time.Sleep(time.Second)
@@ -210,7 +210,7 @@ func (s *DeribitScraper) Scrape(market string) {
 			}
 
 			if err != nil {
-				s.Logger.Errorf("could not send ws message. restarting the websocket, err: %s", err)
+				log.Errorf("could not send ws message. restarting the websocket, err: %s", err)
 				return
 			}
 			// 3. refresh the token more often than 900 seconds
@@ -245,36 +245,36 @@ func (s *DeribitScraper) Scrape(market string) {
 			for {
 				select {
 				case <-userCancelled:
-					s.Logger.Infof("received interrupt, gracefully shutting down")
+					log.Infof("received interrupt, gracefully shutting down")
 					s.ScraperClose(market, ws)
 					os.Exit(0)
 				case <-failedToRefreshToken:
-					s.Logger.Errorf("failed to refresh token numerous times. restarting the scraper")
+					log.Errorf("failed to refresh token numerous times. restarting the scraper")
 					time.Sleep(time.Duration(retryIn) * time.Second)
 					return
 				default:
 					_, message, err := ws.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
 					if err != nil {
-						s.Logger.Errorf("problem reading deribit on [%s], err: %s", market, err)
+						log.Errorf("problem reading deribit on [%s], err: %s", market, err)
 						return
 					}
 					strMessage := string(message)
-					//s.Logger.Debugf("received new message: %v", strMessage)
+					log.Debugf("received new message: %v", strMessage)
 					// check if the received message contains the refresh_token json key
 					if strings.Contains(strMessage, "refresh_token") {
 						decodedMsg := deribitRefreshMessage{}
 						err = json.Unmarshal(message, &decodedMsg)
 						if err != nil {
-							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+							log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
-						s.Logger.Infof("obtained a new refresh token on [%s], updating '%s'", market, decodedMsg.Result.RefreshToken)
+						log.Debugf("obtained a new refresh token on [%s], updating '%s'", market, decodedMsg.Result.RefreshToken)
 						refreshToken = decodedMsg.Result.RefreshToken
 					} else if strings.Contains(strMessage, "error") {
 						decodedMsg := deribitErrorMessage{}
 						err = json.Unmarshal(message, &decodedMsg)
 						if err != nil {
-							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+							log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
 						if decodedMsg.Error.Message != "" {
@@ -285,16 +285,16 @@ func (s *DeribitScraper) Scrape(market string) {
 					} else if strings.Contains(strMessage, `"method":"subscription"`) {
 						// Magic happens here :-)
 						// only save the messages if the message does not contain thre refresh_token string and no error
-						//s.Logger.Debugf("saving new orderbook message on [%s]", market)
+						//log.Debugf("saving new orderbook message on [%s]", market)
 						parsedResult := ParsedDeribitResponse{}
 						err = json.Unmarshal(message, &parsedResult)
 						if err != nil {
-							s.Logger.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+							log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
 							return
 						}
 						if len(parsedResult.Params.Data.Bids) == 0 ||
 						   len(parsedResult.Params.Data.Asks) == 0 {
-								 s.Logger.Errorf("problem with message %s", message)
+								 log.Errorf("problem with message %s", message)
 							return
 						}
 						orderbookEntry := dia.OptionOrderbookDatum{
@@ -308,13 +308,13 @@ func (s *DeribitScraper) Scrape(market string) {
 						}
 						err := s.DataStore.SaveOptionOrderbookDatumInflux(orderbookEntry)
 						if err != nil {
-							s.Logger.Errorf("Error writing into influxdb: %s", err)
+							log.Errorf("Error writing into influxdb: %s", err)
 							return
 						}
 					} else {
 						// only save the messages if it is a control message
-						//s.Logger.Debugf("saving new message on [%s]", market)
-						//s.Logger.Debug(strMessage)
+						//log.Debugf("saving new message on [%s]", market)
+						//log.Debug(strMessage)
 					}
 				}
 			}
@@ -396,11 +396,3 @@ func allDeribitMarketsOfKind(marketKind DeribitScraperKind) ([]string, error) {
 	}
 	return append(BTCMarkets, ETHMarkets...), nil
 }
-
-// usage example
-// func main() {
-// 	wg := sync.WaitGroup{}
-// 	futuresDeribit := scrapers.NewDeribitFuturesScraper([]string{"BTC-PERPETUAL", "ETH-PERPETUAL"}, "accessKey", "secretKey")
-// 	futuresDeribit.ScrapeMarkets()
-// 	wg.Wait()
-// }

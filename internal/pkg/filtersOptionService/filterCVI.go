@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 	"errors"
+	"strings"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -232,13 +233,13 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 	if err != nil {
 		return result, err
 	}
-	return result, nil
 	return result, err
 }
 
 func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta []dia.OptionMeta) ([]dia.OptionMetaForward, error) {
 	result := []dia.OptionMetaForward{}
 	type OptionMetaOrderbook struct {
+		generalizedInstrumentName string
 		orderbookDataPut  dia.OptionOrderbookDatum
 		orderbookDataCall dia.OptionOrderbookDatum
 		optionMetaPut     dia.OptionMeta
@@ -260,10 +261,11 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 				case dia.CallOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
 						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
-							orderbookDataCall: orderbookData,
-							optionMetaCall:    optionMeta,
-							orderbookDataPut:  val.orderbookDataPut,
-							optionMetaPut:     val.optionMetaPut,
+							generalizedInstrumentName: generalizedInstrumentName,
+							orderbookDataCall:         orderbookData,
+							optionMetaCall:            optionMeta,
+							orderbookDataPut:          val.orderbookDataPut,
+							optionMetaPut:             val.optionMetaPut,
 						}
 					} else {
 						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
@@ -274,10 +276,11 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 				case dia.PutOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
 						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
-							orderbookDataPut:  orderbookData,
-							optionMetaPut:     optionMeta,
-							orderbookDataCall: val.orderbookDataCall,
-							optionMetaCall:    val.optionMetaCall,
+							generalizedInstrumentName: generalizedInstrumentName,
+							orderbookDataPut:          orderbookData,
+							optionMetaPut:             optionMeta,
+							orderbookDataCall:         val.orderbookDataCall,
+							optionMetaCall:            val.optionMetaCall,
 						}
 					} else {
 						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
@@ -291,11 +294,41 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 	}
 
 	for _, orderbookData := range orderbookDataStore {
+		if orderbookData.optionMetaCall.StrikePrice == 0 {
+			log.Error("here")
+			log.Error(orderbookData)
+		}
 		result = append(result, dia.OptionMetaForward {
+			GeneralizedInstrumentName: orderbookData.generalizedInstrumentName,
 			ExpirationTime: orderbookData.optionMetaCall.ExpirationTime,
 			StrikePrice: orderbookData.optionMetaCall.StrikePrice,
 			CallPrice:   math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
 			PutPrice:    math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
+		})
+	}
+	return result, nil
+}
+
+func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionMetaIndex, error) {
+	result := []dia.OptionMetaIndex{}
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return result, err
+	}
+
+	// Get options from DB
+	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	for _, optionMeta := range optionsMeta {
+		if !strings.Contains(optionMeta.InstrumentName, maturityDate) {
+			continue
+		}
+		orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
+		if err != nil {
+			return result, err
+		}
+		result = append(result, dia.OptionMetaIndex {
+			optionMeta,
+			orderbookData,
 		})
 	}
 	return result, nil
@@ -323,8 +356,13 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 			continue
 		}
 		deltaK = ((optionsMeta[ix-1].StrikePrice + optionsMeta[ix+1].StrikePrice) / 2)
+		log.Info("prev option: ", optionsMeta[ix-1])
+		log.Info("next option: ", optionsMeta[ix+1])
+		log.Info("deltaK: ", deltaK)
 		lh += deltaK * ((option.AskPrice + option.BidPrice) / 2)
 	}
+
+	log.Info("lh: ", lh)
 
 	return (1 / t) * (2*math.Exp(r*t)*lh - math.Pow(f/k0-1, 2)), nil
 }
@@ -379,6 +417,14 @@ func CVI(sigma1 float64, sigma2 float64, t1 float64, t2 float64, year int) (floa
 
 	cvi := 100 * math.Sqrt((t1*math.Pow(sigma1, 2)*w1+t2*math.Pow(sigma2, 2)*w2)*(N365/N30))
 	return cvi, nil
+}
+
+func CVIToDatastore(value float64) error {
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return err
+	}
+	return ds.SaveCVIInflux(value, time.Now())
 }
 
 // CVIFiltering is the actual filtering algorithm; computedCVIs is the channel through which we receive the calculated CVIs, filteredCVIs is the channel through which we send the filtered CVIs

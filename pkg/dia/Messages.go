@@ -78,6 +78,7 @@ type OptionMetaIndex struct {
 }
 
 type OptionMetaForward struct {
+	GeneralizedInstrumentName string
 	StrikePrice     float64
 	CallPrice       float64
 	PutPrice        float64 // this, as well as the above is defined as the bid price at a given strike price
