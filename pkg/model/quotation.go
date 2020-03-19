@@ -18,6 +18,7 @@ const (
 	BufferTTL       = 60 * 60
 	BiggestWindow   = Window2
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
+	keyAllRates     = "all_rates"
 )
 
 // MarshalBinary for quotations
@@ -142,6 +143,7 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 }
 
 // SetInterestRate writes the interest rate struct ir into the Redis database
+// and writes rate type into set of available rates if not done yet.
 func (db *DB) SetInterestRate(ir *InterestRate) error {
 
 	if db.redisClient == nil {
@@ -155,6 +157,13 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	if err != nil {
 		log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
 	}
+
+	// Write rate type into set of available rates
+	err = db.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
+	if err != nil {
+		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
+	}
+
 	return err
 }
 
@@ -167,10 +176,6 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	if date == "" {
 		date = time.Now().Format("2006-01-02")
 	}
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 	key, _ := db.matchKeyInterestRate(symbol, date)
 
 	// Run database querie with found key
@@ -207,27 +212,9 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	return strSlice[index], nil
 }
 
-<<<<<<< HEAD
 // findLastDay returns the youngest date before @date that has an entry in the database.
 // @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
 func (db *DB) findLastDay(symbol, date string) (string, error) {
-=======
-func (db *DB) ExistInterestRate(symbol, date string) bool {
-	// Returns true if a database entry with given date stamp exists, and false otherwise.
-	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
-	pattern := "*" + symbol + "_" + date + "*"
-	strSlice := db.redisClient.Keys(pattern).Val()
-	if len(strSlice) == 0 {
-		return false
-	}
-	return true
-}
-
-func (db *DB) findLastDay(symbol, date string) (string, error) {
-	// Return the oldest date before @date that has an entry in the database.
-	// @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
-
->>>>>>> master
 	maxDays := 30 // Remark: This could be a function parameter as well...
 	for count := 0; count < maxDays; count++ {
 		if db.ExistInterestRate(symbol, date) {

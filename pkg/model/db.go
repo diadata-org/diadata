@@ -51,6 +51,7 @@ type Datastore interface {
 	GetConfigTogglePairDiscovery() (bool, error)
 	SetInterestRate(ir *InterestRate) error
 	GetInterestRate(symbol, date string) (*InterestRate, error)
+	GetRates() []string
 }
 
 const (
@@ -115,12 +116,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 
 	if withRedis {
 		r = redis.NewClient(&redis.Options{
-<<<<<<< HEAD
-			// Addr: "redis:6379",
-			Addr:     "localhost:6379",
-=======
-			Addr:     "redis:6379",
->>>>>>> master
+			Addr: "redis:6379",
+			// Addr:     "localhost:6379",
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
@@ -133,7 +130,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr:     "http://influxdb:8086",
+			Addr: "http://influxdb:8086",
+			// Addr:     "http://localhost:8086",
 			Username: "",
 			Password: "",
 		})

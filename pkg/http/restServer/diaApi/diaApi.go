@@ -111,6 +111,14 @@ func (env *Env) GetInterestRate(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetRates(c *gin.Context) {
+	q := env.DataStore.GetRates()
+	if len(q) == 0 {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
 // GetSupply godoc
 // @Summary Get supply
 // @Description GetSupply
