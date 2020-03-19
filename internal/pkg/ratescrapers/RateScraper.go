@@ -62,8 +62,7 @@ func (s *RateScraper) mainLoop(scrapeType string) {
 	}
 }
 
-// closes all connected Scrapers
-// must only be called from mainLoop
+// closes all connected Scrapers. Must only be called from mainLoop
 func (s *RateScraper) cleanup(err error) {
 
 	s.errorLock.Lock()
@@ -96,8 +95,8 @@ func (s *RateScraper) Channel() chan *models.InterestRate {
 	return s.chanInterestRate
 }
 
+// Update calls the appropriate function corresponding to the rate type.
 func (s *RateScraper) Update(rateType string) error {
-	// Returns the appropriate update function corresponding to the rate type.
 	switch rateType {
 	case "ESTER":
 		return s.UpdateESTER()

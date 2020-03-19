@@ -2,32 +2,22 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
-	"github.com/tkanos/gonfig"
 	"io/ioutil"
 	"os"
 	"os/signal"
-	"os/user"
-	"strings"
 	"sync"
 	"time"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
+	"github.com/tkanos/gonfig"
 )
 
 var (
 	db models.Datastore
 )
-
-func getConfig(exchange string) (*dia.ConfigApi, error) {
-	var configApi dia.ConfigApi
-	usr, _ := user.Current()
-	dir := usr.HomeDir
-	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
-	err := gonfig.GetConf(configFileApi, &configApi)
-	return &configApi, err
-}
 
 type Pairs struct {
 	Coins []dia.Pair
@@ -92,7 +82,7 @@ func updateExchangePairs() {
 				continue
 			}
 			log.Println("Updating", e)
-			c, err := getConfig(e)
+			c, err := dia.GetConfig(e)
 			var s scrapers.APIScraper
 			if err == nil {
 				s = scrapers.NewAPIScraper(e, c.ApiKey, c.SecretKey)
