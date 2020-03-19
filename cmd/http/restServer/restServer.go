@@ -205,5 +205,5 @@ func main() {
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run(":8081")
+	r.Run(":8080")
 }
