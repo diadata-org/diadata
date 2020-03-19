@@ -2,18 +2,16 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"sync"
+	"time"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
-	"github.com/tkanos/gonfig"
-	"os/user"
-	"strings"
-	"sync"
-	"time"
 )
 
 const (
@@ -42,15 +40,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 			kafkaHelper.WriteMessage(w, t)
 		}
 	}
-}
-
-func getConfig(exchange string) (*dia.ConfigApi, error) {
-	var configApi dia.ConfigApi
-	usr, _ := user.Current()
-	dir := usr.HomeDir
-	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
-	err := gonfig.GetConf(configFileApi, &configApi)
-	return &configApi, err
 }
 
 var (

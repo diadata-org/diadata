@@ -2,11 +2,12 @@ package models
 
 import (
 	// "encoding/json"
-	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 )
 
 func getKeyLastTradeTimeForExchange(symbol string, exchange string) string {
@@ -82,7 +83,7 @@ func (db *DB) SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) er
 	return db.redisClient.Set(key, &p, 0).Err()
 }
 
-// SetAvailablePairsForExchange stores a json containing all pairs available in the exchange in the internal redis db
+// GetAvailablePairsForExchange a slice of all pairs available in the exchange in the internal redis db
 func (db *DB) GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error) {
 	key := "dia_available_pairs_" + exchange
 	p := dia.Pairs{}

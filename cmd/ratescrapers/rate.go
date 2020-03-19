@@ -1,11 +1,10 @@
 package main
 
 import (
-	"sync"
 	"flag"
+	"sync"
 
 	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
-	// scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
