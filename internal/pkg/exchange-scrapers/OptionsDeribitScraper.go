@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 	"net/url"
+	"strings"
+	"fmt"
 
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -25,13 +27,15 @@ type DeribitOptionsScraper struct {
 }
 
 type AllDeribitOptionsScrapers struct {
-	Scrapers         []*DeribitOptionsScraper
-	collectMetaEvery int16
-	ds               *models.DB
-	accessKey        string
-	accessSecret     string
-	owg              *sync.WaitGroup
-	WsConnection       *websocket.Conn
+	Scrapers          []*DeribitOptionsScraper
+	collectMetaEvery  int16
+	ds                *models.DB
+	accessKey         string
+	accessSecret      string
+	owg               *sync.WaitGroup
+	WsConnection      *websocket.Conn
+	refreshToken      string
+	RefreshTokenEvery int16
 }
 
 type deribitInstrument struct {
@@ -94,6 +98,7 @@ func NewAllDeribitOptionsScrapers(owg *sync.WaitGroup, markets []string, accessK
 	result.accessKey = accessKey
 	result.accessSecret = accessSecret
 	result.owg = owg
+	result.RefreshTokenEvery = 800
 	return result
 }
 
@@ -126,10 +131,17 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 	return optionsScraper
 }
 
-// Authenticate - authenticates
-func (s *DeribitOptionsScraper) Authenticate(market string, websocketConnection interface{}) error {
-	return s.deribitScraper.Authenticate(market, websocketConnection)
+func (s *AllDeribitOptionsScrapers) send(message *map[string]interface{}, websocketConn *websocket.Conn) error {
+	err := websocketConn.WriteJSON(*message)
+	if err != nil {
+		return err
+	}
+	return nil
 }
+// Authenticate - authenticates
+/*func (s *DeribitOptionsScraper) Authenticate(market string, websocketConnection interface{}) error {
+	return s.deribitScraper.Authenticate(market, websocketConnection)
+}*/
 
 // ScraperClose - responsible for closing out the scraper for a market
 func (s *DeribitOptionsScraper) ScraperClose(market string, websocketConnection interface{}) error {
@@ -171,12 +183,163 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 // ScrapeMarkets - scrapes all the optiosn markets
 //func (s *DeribitOptionsScraper) ScrapeMarkets() {
 func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
+	// 1. authenticate
+	err := s.Authenticate(s.WsConnection)
+	if err != nil {
+		log.Errorf("could not authenticate. retrying, err: %s", err)
+		return
+	}
+	log.Info("Authentication done")
+	go s.refreshWsToken()
+	go func() {
+		for {
+			s.handleWsMessage()
+		}
+		time.Sleep(10 * time.Second)
+	}()
 	for {
 		for _, scraper := range s.Scrapers {
 			scraper.optionsWaitGroup.Add(1)
+			time.Sleep(1 * time.Second)
 			go scraper.Scrape(scraper.deribitScraper.Markets[0])
 		}
-		time.Sleep(10 * time.Second)
+	}
+}
+
+func (s *AllDeribitOptionsScrapers) handleWsMessage() {
+	_, message, err := s.WsConnection.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
+	if err != nil {
+		log.Errorf("problem reading deribit, err: %s", err)
+		return
+	}
+	strMessage := string(message)
+	log.Debugf("received new message: %v", strMessage)
+	// check if the received message contains the refresh_token json key
+	if strings.Contains(strMessage, "refresh_token") {
+		decodedMsg := deribitRefreshMessage{}
+		err = json.Unmarshal(message, &decodedMsg)
+		if err != nil {
+			log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+			return
+		}
+		log.Debugf("obtained a new refresh token, updating '%s'", decodedMsg.Result.RefreshToken)
+		s.refreshToken = decodedMsg.Result.RefreshToken
+	} else if strings.Contains(strMessage, "error") {
+		decodedMsg := deribitErrorMessage{}
+		err = json.Unmarshal(message, &decodedMsg)
+		if err != nil {
+			log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+			return
+		}
+		if decodedMsg.Error.Message != "" {
+			if decodedMsg.Error.Code == 13009 {
+				panic("wrong or expired authorization token or bad signature. For example, please check scope of the token, \"connection\" scope can't be reused for other connections.")
+			}
+		}
+	} else if strings.Contains(strMessage, `"method":"subscription"`) {
+		// Magic happens here :-)
+		// only save the messages if the message does not contain thre refresh_token string and no error
+		//log.Debugf("saving new orderbook message on [%s]", market)
+		parsedResult := ParsedDeribitResponse{}
+		err = json.Unmarshal(message, &parsedResult)
+		if err != nil {
+			log.Errorf("problem unmarshalling the message: %s, err: %s", message, err)
+			return
+		}
+		if len(parsedResult.Params.Data.Bids) == 0 ||
+			 len(parsedResult.Params.Data.Asks) == 0 {
+				 log.Errorf("No bid or ask in message %s", message)
+			return
+		}
+		orderbookEntry := dia.OptionOrderbookDatum {
+			InstrumentName:  parsedResult.Params.Data.InstrumentName,
+			// Caution: The response contains the Unix timestamp in Milliseconds
+			ObservationTime: time.Unix(parsedResult.Params.Data.Timestamp / 1000, (parsedResult.Params.Data.Timestamp % 1000) * 1e6),
+			AskPrice:        parsedResult.Params.Data.Asks[0][0],
+			BidPrice:        parsedResult.Params.Data.Bids[0][0],
+			AskSize:         parsedResult.Params.Data.Asks[0][1],
+			BidSize:         parsedResult.Params.Data.Bids[0][1],
+		}
+		err := s.ds.SaveOptionOrderbookDatumInflux(orderbookEntry)
+		if err != nil {
+			log.Errorf("Error writing into influxdb: %s", err)
+			return
+		}
+		log.Debug("Write msg to db: ", orderbookEntry)
+	} else {
+		// only save the messages if it is a control message
+		//log.Debugf("saving new message on [%s]", market)
+		log.Debugf(strMessage)
+	}
+}
+
+// Authenticate - authenticates with your access key and access secret to retrieve the trade details
+func (s *AllDeribitOptionsScrapers) Authenticate(websocketConnection interface{}) error {
+	switch c := websocketConnection.(type) {
+	case *websocket.Conn:
+		err := s.send(&map[string]interface{}{
+			"method": "public/auth",
+			"params": &map[string]string{
+				"grant_type": "client_credentials",
+				"client_id":     s.accessKey,
+				"client_secret": s.accessSecret,
+			},
+			"jsonrpc": "2.0",
+		}, c)
+		return err
+	default:
+		return fmt.Errorf("unknown connection type, expected gorilla/websocket, got: %T", c)
+	}
+}
+
+// when we authenticate, we get back a refresh token that we use to keep alive our websocket connection
+func (s *AllDeribitOptionsScrapers) handleRefreshToken(previousToken string, websocketConn *websocket.Conn) (bool, error) {
+	if previousToken == "" {
+		return false, nil
+	}
+	// refresh
+	err := s.send(&map[string]interface{}{
+		"method": "public/auth",
+		"params": &map[string]string{
+			"grant_type":    "refresh_token",
+			"refresh_token": previousToken,
+		},
+		"jsonrpc": "2.0",
+	}, websocketConn)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *AllDeribitOptionsScrapers) refreshWsToken() {
+	failedToRefreshToken := make(chan interface{})
+	// 3. refresh the token more often than 900 seconds                          
+	tick := time.NewTicker(time.Duration(s.RefreshTokenEvery) * time.Second) // every RefreshTokenEvery seconds we have to refresh token
+	defer tick.Stop()
+	// we require a separate goroutine for ticker, so that we can refresh our access token everyRefreshToken seconds
+	for {
+		select {
+		case <-tick.C:
+			isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+			if err != nil {
+				close(failedToRefreshToken)
+				time.Sleep(time.Duration(60) * time.Minute) // something very long
+			}
+			maxRetryAttempts := 5
+			if !isRefreshed {
+				for i := 1; i < maxRetryAttempts; i++ {
+					isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+					if isRefreshed {
+						break
+					}
+					if err != nil {
+						close(failedToRefreshToken)
+						time.Sleep(time.Duration(60) * time.Minute) // something very long
+					}
+				}
+			}
+		}
 	}
 }
 

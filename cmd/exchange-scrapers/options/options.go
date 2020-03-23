@@ -12,41 +12,10 @@ import (
 // pairs contains all pairs currently supported by the DIA scrapers
 var (
 	instruments = []string{
-
-/*		"BTC-27MAR20-6000-C",
-		"BTC-24APR20-6000-C",
-		"BTC-27MAR20-6000-P",
-		"BTC-24APR20-6000-P",
-
-		"BTC-27MAR20-7000-C",
-		"BTC-24APR20-7000-C",
-		"BTC-27MAR20-7000-P",
-		"BTC-24APR20-7000-P",
-
-		"BTC-27MAR20-8000-C",
-		"BTC-24APR20-8000-C",
-		"BTC-27MAR20-8000-P",
-		"BTC-24APR20-8000-P",*/
-
 		"BTC-27MAR20-9000-C",
 		"BTC-24APR20-9000-C",
 		"BTC-27MAR20-9000-P",
 		"BTC-24APR20-9000-P",
-
-		/*"BTC-27MAR20-10000-C",
-		"BTC-24APR20-10000-C",
-		"BTC-27MAR20-10000-P",
-		"BTC-24APR20-10000-P",
-
-		"BTC-27MAR20-11000-C",
-		"BTC-24APR20-11000-C",
-		"BTC-27MAR20-11000-P",
-		"BTC-24APR20-11000-P",
-
-		"BTC-27MAR20-12000-C",
-		"BTC-24APR20-12000-C",
-		"BTC-27MAR20-12000-P",
-		"BTC-24APR20-12000-P",*/
 	}
 )
 
@@ -55,7 +24,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	allScrapers := scrapers.NewAllDeribitOptionsScrapers(&wg, instruments, "rHQ8rYAo", "UmX8Ea0FelZzvT0nB44ZUWdRu6jyBYUMZDqE_gtQ2us")
 	go allScrapers.GetMetas()
-	//go allScrapers.RefreshMetas("BTC")
+	go allScrapers.RefreshMetas("BTC")
 	allScrapers.ScrapeMarkets()
 
 	log.Info(wg)
