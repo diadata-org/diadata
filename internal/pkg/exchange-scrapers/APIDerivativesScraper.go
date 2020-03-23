@@ -6,6 +6,7 @@ import (
 
 	//writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"github.com/diadata-org/diadata/pkg/model"
+	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
 )
 
@@ -25,7 +26,8 @@ type DeribitScraper struct {
 	WaitGroup				*sync.WaitGroup
 	//Writer					writers.Writer
 	Logger					*zap.SugaredLogger
-	DataStore  *models.DB
+	DataStore       *models.DB
+	WsConnection    *websocket.Conn
 
 	// required for deribit to:
 	// 1. authenticate (trades is a private channel)

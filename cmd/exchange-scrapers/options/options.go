@@ -29,9 +29,9 @@ var (
 		"BTC-24APR20-8000-P",*/
 
 		"BTC-27MAR20-9000-C",
-		//"BTC-24APR20-9000-C",
+		"BTC-24APR20-9000-C",
 		"BTC-27MAR20-9000-P",
-		//"BTC-24APR20-9000-P",
+		"BTC-24APR20-9000-P",
 
 		/*"BTC-27MAR20-10000-C",
 		"BTC-24APR20-10000-C",
@@ -55,9 +55,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	allScrapers := scrapers.NewAllDeribitOptionsScrapers(&wg, instruments, "rHQ8rYAo", "UmX8Ea0FelZzvT0nB44ZUWdRu6jyBYUMZDqE_gtQ2us")
 	go allScrapers.GetMetas()
-	//for _, optionsScraper := range allScrapers.Scrapers {
-	//	go optionsScraper.ScrapeMarkets()
-	//}
+	//go allScrapers.RefreshMetas("BTC")
 	allScrapers.ScrapeMarkets()
 
 	log.Info(wg)

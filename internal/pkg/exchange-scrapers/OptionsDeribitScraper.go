@@ -6,26 +6,32 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"net/url"
 
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	zap "go.uber.org/zap"
+	"github.com/gorilla/websocket"
 )
 
 // DeribitOptionsScraper - used to maintain the order book and save it every x seconds
 type DeribitOptionsScraper struct {
-	deribitScraper    DeribitScraper
+	deribitScraper     *DeribitScraper
 	//collectMetaEvery int16 // minutes, polls the rest api to see if there are any new options and saves any new options to the same file
-	optionsWaitGroup  *sync.WaitGroup
-	scraperIsRunning   bool
+	optionsWaitGroup   *sync.WaitGroup
+	ScraperIsRunning   bool
 	ScraperIsRunningMu sync.Mutex
 }
 
 type AllDeribitOptionsScrapers struct {
-	Scrapers         []DeribitOptionsScraper
+	Scrapers         []*DeribitOptionsScraper
 	collectMetaEvery int16
 	ds               *models.DB
+	accessKey        string
+	accessSecret     string
+	owg              *sync.WaitGroup
+	WsConnection       *websocket.Conn
 }
 
 type deribitInstrument struct {
@@ -70,26 +76,33 @@ func NewAllDeribitOptionsScrapers(owg *sync.WaitGroup, markets []string, accessK
 	if err != nil {
 		return result
 	}
+	u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
+	log.Debugf("connecting to [%s]", u.String())
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil {
+		log.Errorf("could not dial the websocket: %s", err)
+		time.Sleep(time.Duration(retryIn) * time.Second)
+		return result
+	}
+	result.WsConnection = ws
 	result.collectMetaEvery = 6 // hours
 	for _, market := range markets {
-		newScraper := NewDeribitOptionsScraper(owg, market, accessKey, accessSecret)
-		result.Scrapers = append(result.Scrapers, *newScraper)
+		newScraper := NewDeribitOptionsScraper(ds, owg, market, accessKey, accessSecret, ws)
+		result.Scrapers = append(result.Scrapers, &newScraper)
 	}
 	result.ds = ds
+	result.accessKey = accessKey
+	result.accessSecret = accessSecret
+	result.owg = owg
 	return result
 }
 
 // NewDeribitOptionsScraper - returns an instance of an options scraper.
-func NewDeribitOptionsScraper(owg *sync.WaitGroup, market string, accessKey string, accessSecret string) *DeribitOptionsScraper {
+func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string, accessKey string, accessSecret string, ws *websocket.Conn) DeribitOptionsScraper {
 	wg := sync.WaitGroup{}
 	logger := zap.NewExample().Sugar()
+	optionsScraper := DeribitOptionsScraper{}
 	defer logger.Sync()
-
-	ds, err := models.NewDataStore()
-	if err != nil {
-		logger.Errorf("Could not create datastore: %s", err)
-		return nil
-	}
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
@@ -103,17 +116,14 @@ func NewDeribitOptionsScraper(owg *sync.WaitGroup, market string, accessKey stri
 		// expiry is 900 seconds
 		RefreshTokenEvery: 800,
 		MarketKind:        DeribitOption, // DO NOT change this.
+		WsConnection:      ws,
 	}
 
 	//owg := sync.WaitGroup{}
 
-	var optionsScraper DeribitOptionsScraper = DeribitOptionsScraper{
-		deribitScraper:   scraper,
-		//collectMetaEvery: 6, // hours
-		optionsWaitGroup: owg,
-	}
-
-	return &optionsScraper
+	optionsScraper.deribitScraper = &scraper
+	optionsScraper.optionsWaitGroup = owg
+	return optionsScraper
 }
 
 // Authenticate - authenticates
@@ -130,19 +140,14 @@ func (s *DeribitOptionsScraper) ScraperClose(market string, websocketConnection 
 func (s *DeribitOptionsScraper) Scrape(market string) {
 	// calling the futures scraper to collect the options order book data
 	s.ScraperIsRunningMu.Lock()
-	log.Info("Is ", market, " running already? ", s.scraperIsRunning)
-	start := !s.scraperIsRunning
-	s.scraperIsRunning = true
+	start := !s.ScraperIsRunning
+	s.ScraperIsRunning = true
 	s.ScraperIsRunningMu.Unlock()
 	if start {
-		go func() {
-			log.Info("Start new scraper for ", market)
-			s.deribitScraper.Scrape(market) // this will work forever and it will close the scraper inside of it
-			log.Info("Scraper died for ", market)
-			s.ScraperIsRunningMu.Lock()
-			s.scraperIsRunning = false
-			s.ScraperIsRunningMu.Unlock()
-		}()
+		s.deribitScraper.Scrape(market) // this will work forever and it will close the scraper inside of it
+		s.ScraperIsRunningMu.Lock()
+		s.ScraperIsRunning = false
+		s.ScraperIsRunningMu.Unlock()
 	}
 	s.optionsWaitGroup.Wait()
 }
@@ -150,7 +155,6 @@ func (s *DeribitOptionsScraper) Scrape(market string) {
 func (s *AllDeribitOptionsScrapers) GetMetas() {
 	tick := time.NewTicker(time.Duration(s.collectMetaEvery) * time.Hour)
 	defer tick.Stop()
-	log.Info("GetMetas")
 	s.GetAndStoreOptionsMeta("BTC")
 	s.GetAndStoreOptionsMeta("ETH")
 	go func() {
@@ -167,20 +171,24 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 // ScrapeMarkets - scrapes all the optiosn markets
 //func (s *DeribitOptionsScraper) ScrapeMarkets() {
 func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
-	/*for _, market := range s.deribitScraper.Markets {
-		s.optionsWaitGroup.Add(1)
-		go s.Scrape(market)
-	}
-	s.optionsWaitGroup.Wait()*/
 	for {
 		for _, scraper := range s.Scrapers {
 			scraper.optionsWaitGroup.Add(1)
-			//log.Info("Scrapers running: ", s.Scrapers)
-			//log.Info("scraper: ", scraper)
 			go scraper.Scrape(scraper.deribitScraper.Markets[0])
 		}
 		time.Sleep(10 * time.Second)
 	}
+}
+
+func (s *AllDeribitOptionsScrapers) AddMarket(market string) {
+	for _, scraper := range s.Scrapers {
+		if scraper.deribitScraper.Markets[0] == market {
+			return
+		}
+	}
+	newScraper := NewDeribitOptionsScraper(s.ds, s.owg, market, s.accessKey, s.accessSecret, s.WsConnection)
+	s.Scrapers = append(s.Scrapers, &newScraper)
+	return
 }
 
 // note, this function requires meta to be stored in a file
@@ -225,11 +233,6 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 			return err
 		}
 		if !available {
-			/*line, err := json.Marshal(instrument)
-			if err != nil {
-				return err
-			}*/
-			//s.deribitScraper.Logger.Debugf("new option, writing to redis. option: %s", line)
 			optionType := dia.CallOption
 			if instrument.OptionType == "put" {
 				optionType = dia.PutOption
@@ -245,4 +248,34 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 		}
 	}
 	return nil
+}
+
+func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
+	tick := time.NewTicker(time.Duration(s.collectMetaEvery) * time.Hour)
+	defer tick.Stop()
+	go func() {
+		for {
+			metas, err := s.ds.GetOptionMeta(currency)
+			if err != nil {
+				log.Error(err)
+			}
+			for _, meta := range metas {
+				s.AddMarket(meta.InstrumentName)
+			}
+			select {
+				case <-tick.C:
+			}
+		}
+	}()
+	return nil
+}
+
+func (s *AllDeribitOptionsScrapers) Close() {
+	for _, scraper := range s.Scrapers {
+		scraper.ScraperClose(scraper.deribitScraper.Markets[0], s.WsConnection)
+	}
+	err := s.WsConnection.Close()
+	if err != nil {
+		log.Error(err)
+	}
 }

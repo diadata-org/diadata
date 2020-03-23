@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
+	//"net/url"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
+	"errors"
 
 	"github.com/gorilla/websocket"
 	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
@@ -93,10 +94,10 @@ func (s *DeribitScraper) ScraperClose(market string, websocketConnection interfa
 		if err != nil {
 			return err
 		}
-		err = c.Close()
+		/*err = c.Close()
 		if err != nil {
 			return err
-		}
+		}*/
 		log.Infof("gracefully shutdown deribit scraper on market: %s", market)
 		time.Sleep(time.Duration(retryIn) * time.Second)
 		return nil
@@ -148,7 +149,10 @@ func (s *DeribitScraper) refreshToken(previousToken string, market string, webso
 
 // Scrape starts a websocket scraper for market
 func (s *DeribitScraper) Scrape(market string) {
-	s.validateMarket(market, s.MarketKind)
+	err := s.validateMarket(market, s.MarketKind)
+	if err != nil {
+		return
+	}
 	s.validateRefreshEveryToken()
 
 	// this block is for listening to sigterms and interupts
@@ -166,7 +170,7 @@ func (s *DeribitScraper) Scrape(market string) {
 		func() {
 			refreshToken := ""
 			failedToRefreshToken := make(chan interface{})
-			u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
+			/*u := url.URL{Scheme: "wss", Host: "www.deribit.com", Path: "/ws/api/v2/"}
 			log.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
@@ -174,14 +178,14 @@ func (s *DeribitScraper) Scrape(market string) {
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer s.ScraperClose(market, ws)*/
 			// 1. authenticate
-			err = s.Authenticate(market, ws)
+			err = s.Authenticate(market, s.WsConnection)
 			if err != nil {
 				log.Errorf("could not authenticate. retrying, err: %s", err)
 				return
 			}
-			time.Sleep(time.Second)
+			//time.Sleep(time.Second)
 			// 2. subscribe to channel depending on the market kind. for futures, collect trades, for options, collect ob
 			optionRequest := &map[string]interface{}{
 				"method": "public/subscribe",
@@ -202,9 +206,9 @@ func (s *DeribitScraper) Scrape(market string) {
 
 			switch s.MarketKind {
 			case DeribitFuture:
-				err = s.send(futureRequest, market, ws)
+				err = s.send(futureRequest, market, s.WsConnection)
 			case DeribitOption:
-				err = s.send(optionRequest, market, ws)
+				err = s.send(optionRequest, market, s.WsConnection)
 			default:
 				panic("unknown market kind")
 			}
@@ -221,7 +225,7 @@ func (s *DeribitScraper) Scrape(market string) {
 				for {
 					select {
 					case <-tick.C:
-						isRefreshed, err := s.refreshToken(refreshToken, market, ws)
+						isRefreshed, err := s.refreshToken(refreshToken, market, s.WsConnection)
 						if err != nil {
 							close(failedToRefreshToken)
 							time.Sleep(time.Duration(60) * time.Minute) // something very long
@@ -229,7 +233,7 @@ func (s *DeribitScraper) Scrape(market string) {
 						maxRetryAttempts := 5
 						if !isRefreshed {
 							for i := 1; i < maxRetryAttempts; i++ {
-								isRefreshed, err := s.refreshToken(refreshToken, market, ws)
+								isRefreshed, err := s.refreshToken(refreshToken, market, s.WsConnection)
 								if isRefreshed {
 									break
 								}
@@ -246,14 +250,14 @@ func (s *DeribitScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					log.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					s.ScraperClose(market, s.WsConnection)
 					os.Exit(0)
 				case <-failedToRefreshToken:
 					log.Errorf("failed to refresh token numerous times. restarting the scraper")
 					time.Sleep(time.Duration(retryIn) * time.Second)
 					return
 				default:
-					_, message, err := ws.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
+					_, message, err := s.WsConnection.ReadMessage() // this code is blocking. that is why we need big sleep time in the refreshToken goroutine
 					if err != nil {
 						log.Errorf("problem reading deribit on [%s], err: %s", market, err)
 						return
@@ -294,7 +298,7 @@ func (s *DeribitScraper) Scrape(market string) {
 						}
 						if len(parsedResult.Params.Data.Bids) == 0 ||
 						   len(parsedResult.Params.Data.Asks) == 0 {
-								 log.Errorf("problem with message %s", message)
+								 log.Errorf("No bid or ask in message %s", message)
 							return
 						}
 						orderbookEntry := dia.OptionOrderbookDatum{
@@ -311,10 +315,11 @@ func (s *DeribitScraper) Scrape(market string) {
 							log.Errorf("Error writing into influxdb: %s", err)
 							return
 						}
+						log.Debug("Write msg to db: ", orderbookEntry)
 					} else {
 						// only save the messages if it is a control message
 						//log.Debugf("saving new message on [%s]", market)
-						//log.Debug(strMessage)
+						log.Debugf(strMessage)
 					}
 				}
 			}
@@ -332,15 +337,16 @@ func (s *DeribitScraper) ScrapeMarkets() {
 }
 
 // marketKind can be "future" or "option"
-func (s *DeribitScraper) validateMarket(market string, marketKind DeribitScraperKind) {
+func (s *DeribitScraper) validateMarket(market string, marketKind DeribitScraperKind) error {
 	allFuturesMarketsDeribit, err := allDeribitMarketsOfKind(marketKind)
 	if err != nil {
-		panic(fmt.Sprintf("could not fetch any futures markets, err: %s", err))
+		return err
 	}
 	containsMarket := utils.Contains(&allFuturesMarketsDeribit, market)
 	if !containsMarket {
-		panic(fmt.Sprintf("%s market is unavailable", market))
+		return errors.New(market + " market is unavailable")
 	}
+	return nil
 }
 
 func (s *DeribitScraper) validateRefreshEveryToken() {
