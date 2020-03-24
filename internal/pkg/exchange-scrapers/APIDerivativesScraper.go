@@ -1,10 +1,8 @@
 package scrapers
 
 import (
-	//"log"
 	"sync"
 
-	//writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
@@ -24,7 +22,6 @@ const (
 type DeribitScraper struct {
 	Markets					[]string
 	WaitGroup				*sync.WaitGroup
-	//Writer					writers.Writer
 	Logger					*zap.SugaredLogger
 	DataStore       *models.DB
 	WsConnection    *websocket.Conn

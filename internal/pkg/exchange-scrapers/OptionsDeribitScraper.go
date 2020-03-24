@@ -20,7 +20,6 @@ import (
 // DeribitOptionsScraper - used to maintain the order book and save it every x seconds
 type DeribitOptionsScraper struct {
 	deribitScraper     *DeribitScraper
-	//collectMetaEvery int16 // minutes, polls the rest api to see if there are any new options and saves any new options to the same file
 	optionsWaitGroup   *sync.WaitGroup
 	ScraperIsRunning   bool
 	ScraperIsRunningMu sync.Mutex
@@ -124,7 +123,6 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 		WsConnection:      ws,
 	}
 
-	//owg := sync.WaitGroup{}
 
 	optionsScraper.deribitScraper = &scraper
 	optionsScraper.optionsWaitGroup = owg
@@ -138,10 +136,6 @@ func (s *AllDeribitOptionsScrapers) send(message *map[string]interface{}, websoc
 	}
 	return nil
 }
-// Authenticate - authenticates
-/*func (s *DeribitOptionsScraper) Authenticate(market string, websocketConnection interface{}) error {
-	return s.deribitScraper.Authenticate(market, websocketConnection)
-}*/
 
 // ScraperClose - responsible for closing out the scraper for a market
 func (s *DeribitOptionsScraper) ScraperClose(market string, websocketConnection interface{}) error {
@@ -181,7 +175,6 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 }
 
 // ScrapeMarkets - scrapes all the optiosn markets
-//func (s *DeribitOptionsScraper) ScrapeMarkets() {
 func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
 	// 1. authenticate
 	err := s.Authenticate(s.WsConnection)
@@ -195,12 +188,12 @@ func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
 		for {
 			s.handleWsMessage()
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(30 * time.Second)
 	}()
 	for {
 		for _, scraper := range s.Scrapers {
 			scraper.optionsWaitGroup.Add(1)
-			time.Sleep(1 * time.Second)
+			time.Sleep(10 * time.Second)
 			go scraper.Scrape(scraper.deribitScraper.Markets[0])
 		}
 	}
