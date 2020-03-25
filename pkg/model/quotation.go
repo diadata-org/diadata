@@ -62,17 +62,12 @@ func getKeyInterestRate(symbol string, date time.Time) string {
 	return "dia_quotation_" + symbol + "_" + date.String()
 }
 
-<<<<<<< HEAD
 // ------------------------------------------------------------------------------
 // EXCHANGE RATES
 // ------------------------------------------------------------------------------
 
 func (db *DB) SetPriceUSD(symbol string, price float64) error {
 
-=======
-func (db *DB) SetPriceUSD(symbol string, price float64) error {
-
->>>>>>> ratesFrontend
 	return db.SetQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
@@ -151,13 +146,10 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 	return err
 }
 
-<<<<<<< HEAD
 // ------------------------------------------------------------------------------
 // INTEREST RATES
 // ------------------------------------------------------------------------------
 
-=======
->>>>>>> ratesFrontend
 // SetInterestRate writes the interest rate struct ir into the Redis database
 // and writes rate type into set of available rates if not done yet.
 func (db *DB) SetInterestRate(ir *InterestRate) error {
@@ -238,11 +230,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 }
 
 // matchKeyInterestRate returns the key in the database db with the youngest timestamp
-<<<<<<< HEAD
 // younger than the date @date, given as substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
-=======
-// younger than the date @date. Given as string formatted as "yyyy-mm-dd hh:mm:ss".
->>>>>>> ratesFrontend
 func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 
 	exDate, err := db.findLastDay(symbol, date)
