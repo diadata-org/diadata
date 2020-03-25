@@ -19,5 +19,3 @@
 * [Licence Agreement](licence-agreement.md)
 * [Disclaimer](disclaimer.md)
 
-## DIAgram
-

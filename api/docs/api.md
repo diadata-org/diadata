@@ -1,7 +1,7 @@
 # diadata.org API
 
 The world's crowd-driven financial data community has a professional API made for you.  
-Decentral and transparent by design  
+Decentral and transparent by design.  
 With our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.  
   
 **Find the right data for your needs**  
@@ -27,7 +27,8 @@ The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of t
 
 ### GET /v1/chartPoints/
 
-Get chart points for.
+Get chart points for an exchange.  
+Example: [https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS](https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS)
 
 Query Params:
 
@@ -35,9 +36,9 @@ Query Params:
 
 Path Params:
 
-* symbol \[string\]: Some symbol.
-* exchange \[string\]: Some exchange.
-* filter \[string\]: Some filter.
+* filter \[string\]: Some filter. \(for now MEDIR120 or MAIR120\)
+* trading place \[string\]: Some trading place.
+* symbol \[string\]: Some symbol from GET /v1/coins
 
 Responses:
 
@@ -52,10 +53,13 @@ Responses:
 * 500: error.
 
   [restApi.APIError](api.md#restapiapierror)
+
+_Remark:_ Careful! Successful responses can be rather large.
 
 ### GET /v1/chartPointsAllExchanges/
 
-Get Symbol Details.
+Get Symbol Details.  
+Example: [https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS](https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS)
 
 Query Params:
 
@@ -63,8 +67,8 @@ Query Params:
 
 Path Params:
 
+* filter \[string\]: Some filter. \(for now MEDIR120 or MAIR120\)
 * symbol \[string\]: Some symbol.
-* filter \[string\]: Some filter.
 
 Responses:
 
@@ -80,37 +84,12 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-### GET /v1/coins
-
-Get coins.
-
-Responses:
-
-* 200: success.
-
-  [models.Coins](api.md#modelscoins)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-### GET /v1/pairs/
-
-Get pairs.
-
-Responses:
-
-* 200: success.
-
-  [models.Pairs](api.md#modelspairs)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
+_Remark:_ Careful! Successful responses can be rather large.
 
 ### GET /v1/quotation/
 
-Get quotation.
+Get a quotation.  
+Example: [https://api.diadata.org/v1/quotation/ETH](https://api.diadata.org/v1/quotation/ETH)
 
 Path Params:
 
@@ -121,6 +100,53 @@ Responses:
 * 200: success.
 
   [models.Quotation](api.md#modelsquotation)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/interestrate/
+
+Get value for a certain rate type.  
+Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-03-16](https://api.diadata.org/v1/interestrate/ESTER/2020-03-16)
+
+Path Params:
+
+* rateType \[string\]: Short hand notation for a rate
+* date \[string\]: In the format yyyy:mm:dd  date is an optional parameter. When omitted, the most recent value is returned.
+
+Responses:
+
+* 200: success.
+
+  [models.InterestRate](api.md#modelsquotation)
+
+* 404: Symbol not found.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/supply/
+
+Get the circulating supply corresponding to a symbol.  
+Example: [https://api.diadata.org/v1/supply/ETH](https://api.diadata.org/v1/supply/ETH)
+
+Path Params:
+
+* symbol \[string\]: Some symbol.
+
+Responses:
+
+* 200: success.
+
+  [dia.Supply](api.md#diasupply)
 
 * 404: Symbol not found.
 
@@ -149,28 +175,6 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-### GET /v1/supply/
-
-Get supply.
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-
-Responses:
-
-* 200: success.
-
-  [dia.Supply](api.md#diasupply)
-
-* 404: Symbol not found.
-
-  [restApi.APIError](api.md#restapiapierror)
-
-* 500: error.
-
-  [restApi.APIError](api.md#restapiapierror)
-
 ### GET /v1/symbol/
 
 Get Symbol Details.
@@ -193,18 +197,40 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
+### GET /v1/coins
+
+Get all available coins.  
+Example: [https://api.diadata.org/v1/coins](https://api.diadata.org/v1/coins)
+
+Responses:
+
+* 200: success.
+
+  [models.Coins](api.md#modelscoins)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
+### GET /v1/pairs/
+
+Get all available pairs.   
+Example: [https://api.diadata.org/v1/pairs](https://api.diadata.org/v1/pairs)
+
+Responses:
+
+* 200: success.
+
+  [models.Pairs](api.md#modelspairs)
+
+* 500: error.
+
+  [restApi.APIError](api.md#restapiapierror)
+
 ### GET /v1/symbols
 
-Get all symbols list.
-
-Query Params:
-
-* scale \[string\]: scale 5m 30m 1h 4h 1d 1w.
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-* filter \[string\]: Some filter.
+Get all available symbols.  
+Example: [https://api.diadata.org/v1/symbols](https://api.diadata.org/v1/symbols)
 
 Responses:
 
@@ -216,65 +242,38 @@ Responses:
 
   [restApi.APIError](api.md#restapiapierror)
 
-## Definitions
+### GET /v1/interestrates
 
-### dia.Pair
+Get all available interest rates.  
+Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/coins)
 
-* exchange _\(string\)_ - foreignName _\(string\)_ - ignore _\(boolean\)_ - symbol _\(string\)_
+Responses:
 
-  **dia.Supply**
+* 200: success.
 
-* block _\(integer\)_ - circulatingSupply _\(number\)_ - name _\(string\)_ - source _\(string\)_ - symbol _\(string\)_ - time _\(string\)_
+  [dia.Symbols](api.md#diasymbols)
 
-  **dia.Symbols**
+* 500: error.
 
-* symbols _\(array\)_ - type: string
+  [restApi.APIError](api.md#restapiapierror)
 
-  **dia.Trade**
+## Use cases
 
-* estimatedUSDPrice _\(number\)_ - foreignTradeID _\(string\)_ - pair _\(string\)_ - price _\(number\)_ - source _\(string\)_ - symbol _\(string\)_ - time _\(string\)_ - volume _\(number\)_
+### Bash scripting
 
-  **models.Change**
+The API can be accessed through a Linux terminal by using curl.  For example  
+`curl https://api.diadata.org/v1/interestrate/ESTER/2020-03-16 >> userPath/myFile.txt`  
+writes the return value of the GET request into `myFile.txt` for further processing.
 
-* usd _\(array\)_ - [models.CurrencyChange](api.md#modelscurrencychange)
+### Usage with Python
 
-  **models.Coin**
+The object obtained in an API GET request is a string which complies with Python syntax. It can be cast into a list or dictionary resp. using Python's `eval(string)` function.
 
-* circulatingSupply _\(number\)_ - name _\(string\)_ - price _\(number\)_ - priceYesterday _\(number\)_ - symbol _\(string\)_ - time _\(string\)_ - volumeYesterdayUSD _\(number\)_
 
-  **models.Coins**
 
-* change _\(object\)_ - coins _\(array\)_ - [models.Coin](api.md#modelscoin) - completeCoinList _\(array\)_ - [models.CoinSymbolAndName](api.md#modelscoinsymbolandname)
 
-  **models.CoinSymbolAndName**
 
-* name _\(string\)_ - symbol _\(string\)_
 
-  **models.CurrencyChange**
 
-* rate _\(number\)_ - rateYesterday _\(number\)_ - symbol _\(string\)_
 
-  **models.Pairs**
-
-* pairs _\(array\)_ - [dia.Pair](api.md#diapair)
-
-  **models.Points**
-
-* dataPoints _\(string\)_
-
-  **models.Quotation**
-
-* name _\(string\)_ - price _\(number\)_ - priceYesterday _\(number\)_ - source _\(string\)_ - symbol _\(string\)_ - time _\(string\)_ - volumeYesterdayUSD _\(number\)_
-
-  **models.SymbolDetails**
-
-* change _\(object\)_ - coin _\(object\)_ - exchanges _\(array\)_ - [models.SymbolExchangeDetails](api.md#modelssymbolexchangedetails) - gfx1 _\(object\)_ - rank _\(integer\)_
-
-  **models.SymbolExchangeDetails**
-
-* lastTrades _\(array\)_ - [dia.Trade](api.md#diatrade) - name _\(string\)_ - price _\(number\)_ - priceYesterday _\(number\)_ - time _\(string\)_ - volumeYesterdayUSD _\(number\)_
-
-  **restApi.APIError**
-
-* errorcode _\(integer\)_ - errormessage _\(string\)_
 
