@@ -95,22 +95,35 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	}
 }
 
+// GetInterestRate is the delegate method to fetch the value of
+// the interest rate with symbol @symbol at the date @time.
+// Optional query parameters allow to obtain data in a time range.
 func (env *Env) GetInterestRate(c *gin.Context) {
 	symbol := c.Param("symbol")
 	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
 
-	q, err := env.DataStore.GetInterestRate(symbol, date)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
+	if dateInit == "noRange" {
+		q, err := env.DataStore.GetInterestRate(symbol, date)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
 		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+			c.JSON(http.StatusOK, q)
 		}
 	} else {
+		q := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
 		c.JSON(http.StatusOK, q)
 	}
 }
 
+// GetRates is the delegate method for fetching all rate types
+// present in the (redis) database.
 func (env *Env) GetRates(c *gin.Context) {
 	q := env.DataStore.GetRates()
 	if len(q) == 0 {

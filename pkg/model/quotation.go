@@ -62,6 +62,10 @@ func getKeyInterestRate(symbol string, date time.Time) string {
 	return "dia_quotation_" + symbol + "_" + date.String()
 }
 
+// ------------------------------------------------------------------------------
+// EXCHANGE RATES
+// ------------------------------------------------------------------------------
+
 func (db *DB) SetPriceUSD(symbol string, price float64) error {
 
 	return db.SetQuotation(&Quotation{
@@ -142,6 +146,10 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 	return err
 }
 
+// ------------------------------------------------------------------------------
+// INTEREST RATES
+// ------------------------------------------------------------------------------
+
 // SetInterestRate writes the interest rate struct ir into the Redis database
 // and writes rate type into set of available rates if not done yet.
 func (db *DB) SetInterestRate(ir *InterestRate) error {
@@ -165,6 +173,37 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	}
 
 	return err
+}
+
+// GetInterestRateRange returns the interest rate values for a range of timestamps.
+// @symbol is the shorthand symbol for the requested interest rate.
+// @dateInit and @dateFinal are strings in the format yyyy-mm-dd.
+func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) []*InterestRate {
+
+	// Fetch all available keys for @symbol
+	patt := "dia_quotation_" + symbol + "_*"
+	allKeys := db.redisClient.Keys(patt).Val()
+
+	// Set bounds on database's keys for the requested time range
+	stampInit := "dia_quotation_" + symbol + "_" + dateInit + " 00:00:01 +0000 UTC"
+	stampFinal := "dia_quotation_" + symbol + "_" + dateFinal + " 23:59:59 +0000 UTC"
+
+	// Get value for each key
+	allValues := []*InterestRate{}
+	for _, key := range allKeys {
+		if stampInit <= key && key <= stampFinal {
+			// Run database querie with key
+			ir := &InterestRate{}
+			err := db.redisClient.Get(key).Scan(ir)
+			// ? Make slice of errors ?
+			if err != nil {
+				log.Info("Database entry not found")
+			} else {
+				allValues = append(allValues, ir)
+			}
+		}
+	}
+	return allValues
 }
 
 // GetInterestRate returns the interest rate value for the last time stamp before @date.
@@ -191,7 +230,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 }
 
 // matchKeyInterestRate returns the key in the database db with the youngest timestamp
-// younger than the date @date. Given as string formatted as "yyyy-mm-dd hh:mm:ss".
+// younger than the date @date, given as substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
 func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 
 	exDate, err := db.findLastDay(symbol, date)
