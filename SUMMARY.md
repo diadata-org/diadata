@@ -5,6 +5,7 @@
   * [DIAdata.org API](documentation/api.md)
   * [DIA data documentation](documentation/index.md)
   * [Tutorials](documentation/tutorials/README.md)
+    * [Write your own rate scraper](documentation/tutorials/write-your-own-rate-scraper.md)
     * [Write your own blockchain scraper](documentation/tutorials/blockchainscraper.md)
     * [Write your own exchange scraper](documentation/tutorials/exchangescrapers.md)
   * [Methodology](documentation/methodology/README.md)
