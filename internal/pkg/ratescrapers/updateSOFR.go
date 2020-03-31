@@ -44,7 +44,7 @@ type (
 	}
 )
 
-// Update makes a GET request from an rss feed and sends updated value through
+// UpdateSOFR makes a GET request from an rss feed and sends updated value through
 // Channel s.chanInterestRate
 func (s *RateScraper) UpdateSOFR() error {
 	log.Printf("SOFRScraper update")

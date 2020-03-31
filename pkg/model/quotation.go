@@ -178,10 +178,13 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 // GetInterestRateRange returns the interest rate values for a range of timestamps.
 // @symbol is the shorthand symbol for the requested interest rate.
 // @dateInit and @dateFinal are strings in the format yyyy-mm-dd.
-func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) []*InterestRate {
+func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error) {
 
 	// Fetch all available keys for @symbol
 	patt := "dia_quotation_" + symbol + "_*"
+
+	// !!! Caution: KEYS should not be used in a production environment as it
+	// can severly slow down the system. Use SCAN instead.
 	allKeys := db.redisClient.Keys(patt).Val()
 
 	// Set bounds on database's keys for the requested time range
@@ -195,15 +198,16 @@ func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) []*Intere
 			// Run database querie with key
 			ir := &InterestRate{}
 			err := db.redisClient.Get(key).Scan(ir)
-			// ? Make slice of errors ?
 			if err != nil {
-				log.Info("Database entry not found")
-			} else {
-				allValues = append(allValues, ir)
+				if err != redis.Nil {
+					log.Errorf("Error: %v on Symbol %v in redis database\n", err, symbol)
+				}
+				return allValues, err
 			}
+			allValues = append(allValues, ir)
 		}
 	}
-	return allValues
+	return allValues, nil
 }
 
 // GetInterestRate returns the interest rate value for the last time stamp before @date.

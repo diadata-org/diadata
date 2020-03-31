@@ -32,6 +32,16 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
+
+	// -------------------------------------------------------------------------
+	// Prefill the database with historic data when the scrapers are initialized
+	// -------------------------------------------------------------------------
+
+	ratescrapers.WriteHistoricSOFR(ds)
+	ratescrapers.WriteHistoricSOFRAvg(ds)
+
+	// -------------------------------------------------------------------------
+
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {

@@ -117,8 +117,16 @@ func (env *Env) GetInterestRate(c *gin.Context) {
 			c.JSON(http.StatusOK, q)
 		}
 	} else {
-		q := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
-		c.JSON(http.StatusOK, q)
+		q, err := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
 	}
 }
 
