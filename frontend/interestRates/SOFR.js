@@ -15,9 +15,9 @@ function getRateInfo() {
 
 function getApi(type) {
 	if(type == 'historic') {
-		return 'http://localhost:8081/v1/interestrate/SOFR?dateInit=2018-11-01&dateFinal=2020-03-29'
+		return 'https://api.diadata.org/v1/interestrate/SOFR?dateInit=2018-11-01&dateFinal=2020-03-29'
 	} else if(type == 'actual') {
-        return 'http://localhost:8081/v1/interestrate/SOFR/2020-03-30'
+        return 'https://api.diadata.org/v1/interestrate/SOFR/2020-03-30'
     }
 }
 
