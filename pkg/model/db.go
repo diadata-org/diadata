@@ -118,8 +118,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 
 	if withRedis {
 		r = redis.NewClient(&redis.Options{
-			//Addr:     "redis:6379", /// TODO: Change to redis:
-			Addr:     "localhost:6379", /// TODO: Change to redis:
+			Addr:     "redis:6379", /// TODO: Change to redis:
+			//Addr:     "localhost:6379", /// TODO: Change to redis:
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
@@ -132,8 +132,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			//Addr:     "http://influxdb:8086", ///TODO: Change to influxdb
-			Addr:     "http://localhost:8086", ///TODO: Change to influxdb
+			Addr:     "http://influxdb:8086", ///TODO: Change to influxdb
+			//Addr:     "http://localhost:8086", ///TODO: Change to influxdb
 			Username: "",
 			Password: "",
 		})

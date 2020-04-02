@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 	"errors"
+	"sort"
 	"strings"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
@@ -295,8 +296,8 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 
 	for _, orderbookData := range orderbookDataStore {
 		if orderbookData.optionMetaCall.StrikePrice == 0 {
-			log.Error("here")
-			log.Error(orderbookData)
+			log.Error("StrikePrice == 0 ", orderbookData)
+			continue
 		}
 		result = append(result, dia.OptionMetaForward {
 			GeneralizedInstrumentName: orderbookData.generalizedInstrumentName,
@@ -323,14 +324,18 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 			continue
 		}
 		orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
-		if err != nil {
-			return result, err
+		if err != nil  || orderbookData.BidSize == 0{
+			log.Error("Error retrieving OptionOrderbookData: ", err)
+			continue
 		}
 		result = append(result, dia.OptionMetaIndex {
 			optionMeta,
 			orderbookData,
 		})
 	}
+	sort.Slice(result, func (i, j int) bool {
+		return result[i].StrikePrice > result[j].StrikePrice
+	})
 	return result, nil
 }
 
@@ -357,14 +362,16 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		}
 		deltaK = ((optionsMeta[ix-1].StrikePrice + optionsMeta[ix+1].StrikePrice) / 2)
 		log.Info("prev option: ", optionsMeta[ix-1])
+		log.Info("this option: ", optionsMeta[ix])
 		log.Info("next option: ", optionsMeta[ix+1])
 		log.Info("deltaK: ", deltaK)
+		log.Info("midpoint: ", (option.AskPrice + option.BidPrice) / 2)
 		lh += deltaK * ((option.AskPrice + option.BidPrice) / 2)
 	}
 
 	log.Info("lh: ", lh)
 
-	return (1 / t) * (2*math.Exp(r*t)*lh - math.Pow(f/k0-1, 2)), nil
+	return math.Sqrt((1 / t) * (2*math.Exp(r*t)*lh - math.Pow(f/k0-1, 2))), nil
 }
 
 // ForwardIndexLevel calculates the forward level; used to compute the forward level for near-term & next-term options; r - risk free rate; t - time to expiration; LaTeX equation for the forward index level is: F_j = \texttt{Strike Price}_j + \exp{(R_j T)} \cdot (\texttt{Call Price}_j - \texttt{Put Price}_j)

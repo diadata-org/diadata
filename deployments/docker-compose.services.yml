@@ -43,6 +43,18 @@ services:
       options:
         max-size: "50m"
 
+  cviservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-cviService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_cviservice:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    logging:
+      options:
+        max-size: "50m"
+
   pairdiscoveryservice:
     build:
       context: ../../../..

@@ -52,11 +52,15 @@ func main() {
 			log.Error(err)
 		}
 
+		fmt.Println("-----")
+		fmt.Println(omINear)
+		fmt.Println("-----")
+
 		vindNear, err := filters.VarianceIndex(omINear, 0.0054, tNear, neartermFwdIndexLevel, 13000.0)
 		if err != nil {
 			log.Error(err)
 		}
-		fmt.Println(vindNear)
+		fmt.Println("vindNear: ", vindNear)
 
 		omINext, err := filters.GetOptionMetaIndex("BTC", optionMetaNext[0].GeneralizedInstrumentName[4:11])
 		if err != nil {
