@@ -4,13 +4,14 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -53,9 +54,9 @@ type (
 	}
 )
 
-// NewECBScraper returns a new ECBScraper initialized with default values.
+// SpawnECBScraper returns a new ECBScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewECBScraper(datastore models.Datastore) *ECBScraper {
+func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 	s := &ECBScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -66,6 +67,7 @@ func NewECBScraper(datastore models.Datastore) *ECBScraper {
 		chanTrades:   make(chan *dia.Trade),
 	}
 
+	log.Info("Scraper is built and initiated")
 	go s.mainLoop()
 	return s
 }
@@ -168,7 +170,8 @@ func (ps *ECBPairScraper) Pair() dia.Pair {
 
 // retrieve performs a HTTP Get request for the rss feed and decodes the results.
 func (s *ECBScraper) Update() error {
-	log.Printf("ECBScraper update")
+
+	log.Printf("Executing ECBScraper update")
 
 	// Retrieve the rss feed document from the web.
 	resp, err := http.Get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
@@ -253,5 +256,6 @@ func (s *ECBScraper) Update() error {
 		}
 		s.datastore.SetCurrencyChange(change)
 	}
+	log.Info("Update done")
 	return err
 }

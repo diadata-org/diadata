@@ -8,7 +8,7 @@ description: 'Our Mission: Wikipedia for Financial Data'
 
 ## DIA: Technical Introduction
 
-![](.gitbook/assets/dia_logo_colour_fill.png)
+![](.gitbook/assets/180926_dia_assets-57.png)
 
 Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps.
 
@@ -18,19 +18,17 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 ### Alpha Version - dApp Registry
 
-[SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs 
+Crypto Volatility Index
+
+[SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
+
+[FINOA](https://finoa.io) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI 
 
 [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 
-[Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund) 
+[Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund)
 
-[CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CMC
-
-[Neufund](https://blog.neufund.org/neufund-1-1-is-live-on-mainnet-db35d77b2ef2) 
-
-[Helena/Consensys](https://helena.network) - Delivering real-time blockchain fundamental insights
-
-
+[CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
 
 ### How to contribute
 

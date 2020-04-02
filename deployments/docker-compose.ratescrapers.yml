@@ -1,0 +1,45 @@
+version: '3.2'
+services:
+
+  sofr-scraper:
+    depends_on: [ratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ratescraper:latest
+    command: /bin/ratescrapers -type SOFR
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+  ester-scraper:
+    depends_on: [ratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ratescraper:latest
+    command: /bin/ratescrapers -type ESTER
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+  ratescraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-ratescraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ratescraper:latest
+    restart: "no"
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
+  redis-network:
+    external:
+        name: redis_redis-network

@@ -3,16 +3,17 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	"github.com/diadata-org/diadata/pkg/http/restApi"
-	"github.com/diadata-org/diadata/pkg/model"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/http/restApi"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+	log "github.com/sirupsen/logrus"
 )
 
 type Env struct {
@@ -92,6 +93,51 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, q)
 	}
+}
+
+// GetInterestRate is the delegate method to fetch the value of
+// the interest rate with symbol @symbol at the date @time.
+// Optional query parameters allow to obtain data in a time range.
+func (env *Env) GetInterestRate(c *gin.Context) {
+	symbol := c.Param("symbol")
+	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
+
+	if dateInit == "noRange" {
+		q, err := env.DataStore.GetInterestRate(symbol, date)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+	} else {
+		q, err := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+	}
+}
+
+// GetRates is the delegate method for fetching all rate types
+// present in the (redis) database.
+func (env *Env) GetRates(c *gin.Context) {
+	q := env.DataStore.GetRates()
+	if len(q) == 0 {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
 }
 
 // GetSupply godoc
