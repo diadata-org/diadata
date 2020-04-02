@@ -201,6 +201,7 @@ func main() {
 		dia.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
 		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
+		dia.GET("/cviIndex", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
