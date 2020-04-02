@@ -182,9 +182,7 @@ func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*Inter
 
 	// Fetch all available keys for @symbol
 	patt := "dia_quotation_" + symbol + "_*"
-
-	// !!! Caution: KEYS should not be used in a production environment as it
-	// can severly slow down the system. Use SCAN instead.
+	// Comment: This could be improved. Should be when the database gets larger.
 	allKeys := db.redisClient.Keys(patt).Val()
 
 	// Set bounds on database's keys for the requested time range

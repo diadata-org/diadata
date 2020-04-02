@@ -1,4 +1,4 @@
-package ratescrapers
+package staticscrapers
 
 import (
 	"bytes"

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
+	staticscrapers "github.com/diadata-org/diadata/internal/pkg/static-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -33,18 +34,21 @@ func main() {
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
 
-	// -------------------------------------------------------------------------
-	// Prefill the database with historic data when the scrapers are initialized
-	// -------------------------------------------------------------------------
-
-	ratescrapers.WriteHistoricSOFR(ds)
-	ratescrapers.WriteHistoricSOFRAvg(ds)
-
-	// -------------------------------------------------------------------------
-
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
+
+		// Download historic data (in case there is)
+		err = staticscrapers.LoadHistoricRate(*rateType)
+		if err != nil {
+			log.Errorf("Error downloading resources for rate %s: %v", *rateType, err)
+		}
+
+		// Writing historic data into database
+		err = staticscrapers.WriteHistoricRate(ds, *rateType)
+		if err != nil {
+			log.Errorf("Error writing rate %s: %v", *rateType, err)
+		}
 
 		// Spawn the corresponding rate scraper
 		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)

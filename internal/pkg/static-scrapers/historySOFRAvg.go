@@ -1,4 +1,4 @@
-package ratescrapers
+package staticscrapers
 
 import (
 	"bytes"
@@ -102,9 +102,6 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 
 	for i := 0; i < numData; i++ {
 
-		// Collect entries of InterestRate struct -----------------------------------
-		symbol := histDataSlice[i].CrateOperationAvg.CrateTypeAvg.CTypeAvg
-
 		// Convert interest rate from string to float64
 		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CrateIndexAvg.CValueAvg, 64)
 		if err != nil {
@@ -121,7 +118,7 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 		}
 
 		t := models.InterestRate{
-			Symbol: symbol,
+			Symbol: "SOFR-AVG",
 			Value:  rate,
 			Time:   dateTime,
 			Source: "FED",
