@@ -1,6 +1,8 @@
 package staticscrapers
 
 import (
+	"errors"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -60,6 +62,10 @@ func WriteHistoricRate(ds models.Datastore, rateType string) error {
 			log.Errorln("Error on writing historic SAFR Average data: ", err)
 			return err
 		}
+	default:
+		err := errors.New("Error: Rate type not recognized")
+		log.Errorln(err)
+		return err
 	}
 	return nil
 
