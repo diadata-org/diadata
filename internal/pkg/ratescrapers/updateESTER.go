@@ -106,7 +106,7 @@ func getRSS() (string, error) {
 	return "", err
 }
 
-// Update makes a GET request from an rss feed and sends updated value through
+// UpdateESTER makes a GET request from an rss feed and sends updated value through
 // Channel s.chanInterestRate
 func (s *RateScraper) UpdateESTER() error {
 	log.Printf("ESTERScraper update")

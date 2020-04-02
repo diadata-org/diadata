@@ -17,40 +17,30 @@ import (
 type (
 
 	// Define the fields associated with the rss document.
-	RssSOFR struct {
-		Channel Channel `xml:"channel"`
-		Item    Item    `xml:"item"`
+	RssSAFR struct {
+		ItemInd ItemInd `xml:"item"`
 	}
-	Channel struct {
-		Title       string `xml:"title"`
-		Link        string `xml:"link"`
-		Description string `xml:"description"`
+	ItemInd struct {
+		DescriptionInd string        `xml:"description"`
+		DateInd        string        `xml:"date"`
+		StatisticsInd  StatisticsInd `xml:"statistics"`
 	}
-	Item struct {
-		Title       string     `xml:"title"`
-		Link        string     `xml:"link"`
-		Description string     `xml:"description"`
-		Date        string     `xml:"date"`
-		Statistics  Statistics `xml:"statistics"`
+	StatisticsInd struct {
+		RateInd RateInd `xml:"interestRate"`
 	}
-	Statistics struct {
-		Country    string `xml:"country"`
-		InstAbbrev string `xml:"institutionAbbrev"`
-		Rate       Rate   `xml:"interestRate"`
-	}
-	Rate struct {
-		Value    string `xml:"value"`
-		RateType string `xml:"rateType"`
+	RateInd struct {
+		ValueInd    string `xml:"value"`
+		RateTypeInd string `xml:"rateType"`
 	}
 )
 
-// UpdateSOFR makes a GET request from an rss feed and sends updated value through
+// UpdateSAFR makes a GET request from an rss feed and sends updated value through
 // Channel s.chanInterestRate
-func (s *RateScraper) UpdateSOFR() error {
-	log.Printf("SOFRScraper update")
+func (s *RateScraper) UpdateSAFR() error {
+	log.Printf("SAFRScraper update")
 
 	// Get rss from fed webpage
-	response, err := http.Get("https://apps.newyorkfed.org/rss/feeds/sofr")
+	response, err := http.Get("https://apps.newyorkfed.org/rss/feeds/sofr-avg-ind")
 
 	// Check, whether request successful
 	if err != nil {
@@ -76,7 +66,7 @@ func (s *RateScraper) UpdateSOFR() error {
 	}
 
 	// Decode the body
-	rss := new(RssSOFR)
+	rss := new(RssSAFR)
 	buffer := bytes.NewBuffer(XMLdata)
 	decoded := xml.NewDecoder(buffer)
 	err = decoded.Decode(rss)
@@ -87,16 +77,16 @@ func (s *RateScraper) UpdateSOFR() error {
 	}
 
 	// Collext entries of InterestRate struct -----------------------------------
-	symbol := rss.Item.Statistics.Rate.RateType
+	symbol := rss.ItemInd.StatisticsInd.RateInd.RateTypeInd
 
 	// Convert interest rate from string to float64
-	rate, err := strconv.ParseFloat(rss.Item.Statistics.Rate.Value, 64)
+	rate, err := strconv.ParseFloat(rss.ItemInd.StatisticsInd.RateInd.ValueInd, 64)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	// Convert time string to Time type in UTC and pass date (without daytime)
-	dateTime, err := time.Parse(time.RFC3339, rss.Item.Date)
+	dateTime, err := time.Parse(time.RFC3339, rss.ItemInd.DateInd)
 	if err != nil {
 		fmt.Println(err)
 	} else {

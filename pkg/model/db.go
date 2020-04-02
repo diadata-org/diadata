@@ -51,6 +51,7 @@ type Datastore interface {
 	GetConfigTogglePairDiscovery() (bool, error)
 	SetInterestRate(ir *InterestRate) error
 	GetInterestRate(symbol, date string) (*InterestRate, error)
+	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRates() []string
 }
 

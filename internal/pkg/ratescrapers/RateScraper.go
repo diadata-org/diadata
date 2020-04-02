@@ -33,7 +33,7 @@ type RateScraper struct {
 
 // SpawnRateScraper returns a new RateScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func SpawnRateScraper(datastore models.Datastore, scrapeType string) *RateScraper {
+func SpawnRateScraper(datastore models.Datastore, rateType string) *RateScraper {
 	s := &RateScraper{
 		shutdown:         make(chan nothing),
 		shutdownDone:     make(chan nothing),
@@ -44,16 +44,16 @@ func SpawnRateScraper(datastore models.Datastore, scrapeType string) *RateScrape
 	}
 
 	log.Info("Rate scraper is built and triggered")
-	go s.mainLoop(scrapeType)
+	go s.mainLoop(rateType)
 	return s
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (s *RateScraper) mainLoop(scrapeType string) {
+func (s *RateScraper) mainLoop(rateType string) {
 	for {
 		select {
 		case <-s.ticker.C:
-			s.Update(scrapeType)
+			s.Update(rateType)
 		case <-s.shutdown: // user requested shutdown
 			log.Println("RateScraper shutting down")
 			s.cleanup(nil)
@@ -102,6 +102,11 @@ func (s *RateScraper) Update(rateType string) error {
 		return s.UpdateESTER()
 	case "SOFR":
 		return s.UpdateSOFR()
+	case "SAFR":
+		return s.UpdateSAFR()
+	case "SAFR-AVGS":
+		// This method/flag comprises the rates SAFR30, SAFR90 and SAFR180.
+		return s.UpdateSAFRAvgs()
 	}
-	return errors.New(rateType + " does not exist in database")
+	return errors.New("Error: " + rateType + " does not exist in database")
 }
