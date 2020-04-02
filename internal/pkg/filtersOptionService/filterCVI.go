@@ -434,6 +434,14 @@ func CVIToDatastore(value float64) error {
 	return ds.SaveCVIInflux(value, time.Now())
 }
 
+func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return []dia.CviDataPoint{}, err
+	}
+	return ds.GetCVIInflux(starttime, endtime)
+}
+
 // CVIFiltering is the actual filtering algorithm; computedCVIs is the channel through which we receive the calculated CVIs, filteredCVIs is the channel through which we send the filtered CVIs
 func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrapers.ComputedCVI) {
 	// it is the responsibility of the function that filters the CVIs to close the channel through which it communicates these values

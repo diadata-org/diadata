@@ -85,6 +85,11 @@ type OptionMetaForward struct {
 	ExpirationTime  time.Time
 }
 
+type CviDataPoint struct {
+	Timestamp time.Time
+	Value     float64
+}
+
 type TradesBlockData struct {
 	BeginTime    time.Time
 	EndTime      time.Time

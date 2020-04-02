@@ -62,5 +62,3 @@ func (db *DB) GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error) {
 	}
 	return result, err
 }
-
-///TODO: Delete old instruments

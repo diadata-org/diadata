@@ -52,6 +52,8 @@ type Datastore interface {
 	SetInterestRate(ir dia.InterestRate) error
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency  string) ([]dia.OptionMeta, error)
+	SaveCVIInflux(float64, time.Time) error
+	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
 }
 
 const (
@@ -118,8 +120,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 
 	if withRedis {
 		r = redis.NewClient(&redis.Options{
-			Addr:     "redis:6379", /// TODO: Change to redis:
-			//Addr:     "localhost:6379", /// TODO: Change to redis:
+			//Addr:     "redis:6379", /// TODO: Change to redis:
+			Addr:     "localhost:6379", /// TODO: Change to redis:
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
@@ -132,8 +134,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr:     "http://influxdb:8086", ///TODO: Change to influxdb
-			//Addr:     "http://localhost:8086", ///TODO: Change to influxdb
+			//Addr:     "http://influxdb:8086", ///TODO: Change to influxdb
+			Addr:     "http://localhost:8086", ///TODO: Change to influxdb
 			Username: "",
 			Password: "",
 		})
@@ -281,6 +283,32 @@ func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	}
 
 	return err
+}
+
+func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+	retval := []dia.CviDataPoint{}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			currentPoint := dia.CviDataPoint{}
+			currentPoint.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			currentPoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			retval = append(retval, currentPoint)
+		}
+	} else {
+		return retval, errors.New("Error parsing CVI value from Database")
+	}
+	return retval, nil
 }
 
 func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
