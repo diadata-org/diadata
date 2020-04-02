@@ -30,6 +30,12 @@ func LoadHistoricRate(rateType string) error {
 func WriteHistoricRate(ds models.Datastore, rateType string) error {
 
 	switch rateType {
+	case "PRE-ESTER":
+		err := WriteHistoricPreESTER(ds)
+		if err != nil {
+			log.Errorln("Error on writing historic Pre-ESTER data: ", err)
+			return err
+		}
 	case "ESTER":
 		err := WriteHistoricESTER(ds)
 		if err != nil {
@@ -42,16 +48,16 @@ func WriteHistoricRate(ds models.Datastore, rateType string) error {
 			log.Errorln("Error on writing historic SOFR data: ", err)
 			return err
 		}
-	case "SOFR-AVG":
-		err := WriteHistoricSOFRAvg(ds)
+	case "SAFR":
+		err := WriteHistoricSAFR(ds)
 		if err != nil {
-			log.Errorln("Error on writing historic SOFR average data: ", err)
+			log.Errorln("Error on writing historic SAFR data: ", err)
 			return err
 		}
-	case "PRE-ESTER":
-		err := WriteHistoricPreESTER(ds)
+	case "SAFR-AVGS":
+		err := WriteHistoricSAFRAvgs(ds)
 		if err != nil {
-			log.Errorln("Error on writing historic Pre-ESTER data: ", err)
+			log.Errorln("Error on writing historic SAFR Average data: ", err)
 			return err
 		}
 	}

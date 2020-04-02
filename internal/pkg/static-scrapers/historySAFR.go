@@ -15,49 +15,49 @@ import (
 )
 
 type (
-	CsafrRatesSecondaryFindByDateResponseAvg struct {
+	CsafrRatesSecondaryFindByDateResponseInd struct {
 		XMLName               xml.Name                 `xml:"safrRatesSecondaryFindByDateResponse,omitempty" json:"safrRatesSecondaryFindByDateResponse,omitempty"`
-		CsafrRatesFindItemAvg []*CsafrRatesFindItemAvg `xml:"safrRatesFindItem,omitempty" json:"safrRatesFindItem,omitempty"`
+		CsafrRatesFindItemInd []*CsafrRatesFindItemInd `xml:"safrRatesFindItem,omitempty" json:"safrRatesFindItem,omitempty"`
 	}
 
-	CsafrRatesFindItemAvg struct {
+	CsafrRatesFindItemInd struct {
 		XMLName           xml.Name           `xml:"safrRatesFindItem,omitempty" json:"safrRatesFindItem,omitempty"`
-		CrateOperationAvg *CrateOperationAvg `xml:"rateOperation,omitempty" json:"rateOperation,omitempty"`
+		CrateOperationInd *CrateOperationInd `xml:"rateOperation,omitempty" json:"rateOperation,omitempty"`
 	}
 
-	CrateOperationAvg struct {
+	CrateOperationInd struct {
 		XMLName             xml.Name             `xml:"rateOperation,omitempty" json:"rateOperation,omitempty"`
-		CeffectiveDateAvg   *CeffectiveDateAvg   `xml:"effectiveDate,omitempty" json:"effectiveDate,omitempty"`
-		CinsertTimestampAvg *CinsertTimestampAvg `xml:"insertTimestamp,omitempty" json:"insertTimestamp,omitempty"`
-		CrateIndexAvg       *CrateIndexAvg       `xml:"rateIndex,omitempty" json:"rateIndex,omitempty"`
-		CrateTypeAvg        *CrateTypeAvg        `xml:"rateType,omitempty" json:"rateType,omitempty"`
+		CeffectiveDateInd   *CeffectiveDateInd   `xml:"effectiveDate,omitempty" json:"effectiveDate,omitempty"`
+		CinsertTimestampInd *CinsertTimestampInd `xml:"insertTimestamp,omitempty" json:"insertTimestamp,omitempty"`
+		CrateIndexInd       *CrateIndexInd       `xml:"rateIndex,omitempty" json:"rateIndex,omitempty"`
+		CrateTypeInd        *CrateTypeInd        `xml:"rateType,omitempty" json:"rateType,omitempty"`
 	}
 
-	CeffectiveDateAvg struct {
+	CeffectiveDateInd struct {
 		XMLName     xml.Name `xml:"effectiveDate,omitempty" json:"effectiveDate,omitempty"`
-		CEffDateAvg string   `xml:",chardata" json:",omitempty"`
+		CEffDateInd string   `xml:",chardata" json:",omitempty"`
 	}
 
-	CinsertTimestampAvg struct {
+	CinsertTimestampInd struct {
 		XMLName       xml.Name `xml:"insertTimestamp,omitempty" json:"insertTimestamp,omitempty"`
-		CTimestampAvg string   `xml:",chardata" json:",omitempty"`
+		CTimestampInd string   `xml:",chardata" json:",omitempty"`
 	}
 
-	CrateIndexAvg struct {
+	CrateIndexInd struct {
 		XMLName   xml.Name `xml:"rateIndex,omitempty" json:"rateIndex,omitempty"`
-		CValueAvg string   `xml:",chardata" json:",omitempty"`
+		CValueInd string   `xml:",chardata" json:",omitempty"`
 	}
 
-	CrateTypeAvg struct {
+	CrateTypeInd struct {
 		XMLName  xml.Name `xml:"rateType,omitempty" json:"rateType,omitempty"`
-		CTypeAvg string   `xml:",chardata" json:",omitempty"`
+		CTypeInd string   `xml:",chardata" json:",omitempty"`
 	}
 )
 
-// WriteHistoricSOFRAvg makes a GET request to fetch the historic data of the SOFR
+// WriteHistoricSAFR makes a GET request to fetch the historic data of the SOFR
 // average index and writes it into the redis database.
-func WriteHistoricSOFRAvg(ds models.Datastore) error {
-	log.Printf("Writing historic SOFR average values")
+func WriteHistoricSAFR(ds models.Datastore) error {
+	log.Printf("Writing historic SAFR values")
 
 	// Get rss from fed webpage
 	response, err := http.Get("https://apps.newyorkfed.org/api/safrate/r1")
@@ -86,7 +86,7 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 	}
 
 	// Decode the body
-	rss := new(CsafrRatesSecondaryFindByDateResponseAvg)
+	rss := new(CsafrRatesSecondaryFindByDateResponseInd)
 	buffer := bytes.NewBuffer(XMLdata)
 	decoded := xml.NewDecoder(buffer)
 	err = decoded.Decode(rss)
@@ -97,19 +97,19 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 	}
 
 	// A slice containing all historic data
-	histDataSlice := rss.CsafrRatesFindItemAvg
+	histDataSlice := rss.CsafrRatesFindItemInd
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
 
 		// Convert interest rate from string to float64
-		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CrateIndexAvg.CValueAvg, 64)
+		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
+		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
 
 		if err != nil {
 			fmt.Println(err)
@@ -118,7 +118,7 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 		}
 
 		t := models.InterestRate{
-			Symbol: "SOFR-AVG",
+			Symbol: "SAFR",
 			Value:  rate,
 			Time:   dateTime,
 			Source: "FED",
@@ -128,7 +128,7 @@ func WriteHistoricSOFRAvg(ds models.Datastore) error {
 
 	}
 
-	log.Info("Writing historic SOFR average data complete.")
+	log.Info("Writing historic SAFR data complete.")
 
 	return err
 }

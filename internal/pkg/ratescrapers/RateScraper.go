@@ -102,6 +102,11 @@ func (s *RateScraper) Update(rateType string) error {
 		return s.UpdateESTER()
 	case "SOFR":
 		return s.UpdateSOFR()
+	case "SAFR":
+		return s.UpdateSAFR()
+	case "SAFR-AVGS":
+		// This method/flag comprises the rates SAFR30, SAFR90 and SAFR180.
+		return s.UpdateSAFRAvgs()
 	}
 	return errors.New("Error: " + rateType + " does not exist in database")
 }
