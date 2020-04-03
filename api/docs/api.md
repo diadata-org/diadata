@@ -70,12 +70,19 @@ Path Params:
 ### GET /v1/interestrate/
 
 Get value for a certain rate type.  
-Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-03-16](https://api.diadata.org/v1/interestrate/ESTER/2020-03-16)
+Example: [https://api.diadata.org/v1/interestrate/SOFR/2020-03-16](%20https://api.diadata.org/v1/interestrate/SOFR/2020-03-16)
+
+Get rate values for a range of timestamps using optinal query parameters.  
+Example: [https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16](https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16)
 
 Path Params:
 
 * rateType \[string\]: Short hand notation/symbol for a rate
 * date \[string\]: In the format yyyy:mm:dd  date is an optional parameter. When omitted, the most recent value is returned.
+
+Optional Query Params:
+
+* dateInit, dateFinal \[string\]: In the format yyyy:mm:dd
 
 ### GET /v1/supply/
 
@@ -105,23 +112,25 @@ Path Params:
 
 ### GET /v1/coins
 
-Get all available coins.  
+Get a list of all available coins.  
 Example: [https://api.diadata.org/v1/coins](https://api.diadata.org/v1/coins)
+
+### GET /v1/interestrates
+
+Get a list of all available Symbols of interest rates.  
+Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/coins)
 
 ### GET /v1/pairs/
 
-Get all available pairs.   
+Get a list of all available pairs.   
 Example: [https://api.diadata.org/v1/pairs](https://api.diadata.org/v1/pairs)
 
 ### GET /v1/symbols
 
-Get all available symbols.  
+Get a list of all available symbols.  
 Example: [https://api.diadata.org/v1/symbols](https://api.diadata.org/v1/symbols)
 
-### GET /v1/interestrates
 
-Get all available interest rates.  
-Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/coins)
 
 ### Responses for all GET  requests:
 
