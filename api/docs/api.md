@@ -104,7 +104,8 @@ Query Params:
 
 ### GET /v1/symbol/
 
-Get Symbol Details.
+Get Symbol Details.  
+Example: [https://api.diadata.org/v1/symbol/ETH](https://api.diadata.org/v1/symbol/ETH)
 
 Path Params:
 
