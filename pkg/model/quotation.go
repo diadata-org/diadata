@@ -57,7 +57,7 @@ func getKeyQuotationEUR(value string) string {
 
 // getKeyInterestRate returns a string that is used as key for storing an interest
 // rate in the Redis database.
-// @symbol is the symbol of the interest rate (such as SFOR) set at time @date.
+// @symbol is the symbol of the interest rate (such as SOFR) set at time @date.
 func getKeyInterestRate(symbol string, date time.Time) string {
 	return "dia_quotation_" + symbol + "_" + date.String()
 }
@@ -151,7 +151,7 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 // ------------------------------------------------------------------------------
 
 // SetInterestRate writes the interest rate struct ir into the Redis database
-// and writes rate type into set of available rates if not done yet.
+// and writes rate type into a set of all available rates (if not done yet).
 func (db *DB) SetInterestRate(ir *InterestRate) error {
 
 	if db.redisClient == nil {
