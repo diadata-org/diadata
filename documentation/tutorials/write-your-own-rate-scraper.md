@@ -27,5 +27,5 @@ type InterestRate struct {
 }
 ```
 
-and sent to the channel chanInterestRate of s. In order to write a new scraper, it is not imperative to understand the architecture of the pathway from top to bottom, but it might be helpful. For a first impression you can have a look at the following [diagram](github.com/diadata-org/diadata/documentation/tutorials/rate_scraper_diagram_down.pdf).
+and sent to the channel chanInterestRate of s. In order to write a new scraper, it is not imperative to understand the architecture of the pathway from top to bottom, but it might be helpful. For a first impression you can have a look at the following [diagram](https://github.com/diadata-org/diadata/tree/master/documentation/tutorials/rate_scraper_diagram_down.pdf).
 

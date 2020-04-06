@@ -30,6 +30,9 @@ The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of t
 Get chart points for an exchange.  
 Example: [https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS](https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS)
 
+For a list of available trading places see:  
+[https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M4DjNVf9NcISNyqFK4p/documentation/index](https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M4DjNVf9NcISNyqFK4p/documentation/index)
+
 Query Params:
 
 * scale \[string\]: scale 5m 30m 1h 4h 1d 1w.
@@ -45,7 +48,8 @@ _Remark:_ Careful! Successful responses can be rather large.
 ### GET /v1/chartPointsAllExchanges/
 
 Get Symbol Details.  
-Example: [https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS](https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS)
+Example: [https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS](https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS)  
+
 
 Query Params:
 
@@ -115,6 +119,11 @@ Path Params:
 
 Get a list of all available coins.  
 Example: [https://api.diadata.org/v1/coins](https://api.diadata.org/v1/coins)
+
+### GET /v1/exchanges
+
+Get a list of all available trading places.  
+Example: [https://api.diadata.org/v1/exchanges](https://api.diadata.org/v1/exchanges)
 
 ### GET /v1/interestrates
 
