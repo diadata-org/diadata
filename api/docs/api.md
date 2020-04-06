@@ -155,5 +155,5 @@ writes the return value of the GET request into `myFile.txt` for further process
 
 ### Usage with Python
 
-The object obtained in an API GET request is a string which complies with Python syntax. It can be cast into a list or dictionary resp. using Python's `eval(string)` function.
+The JSON object obtained in an API GET request complies with Python syntax. It can be cast into a list or dictionary resp. using Python's `eval(string)` function.
 
