@@ -53,6 +53,7 @@ type Datastore interface {
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRates() []string
+	GetExchanges() []string
 }
 
 const (

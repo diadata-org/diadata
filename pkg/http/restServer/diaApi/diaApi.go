@@ -235,6 +235,16 @@ func (env *Env) GetCoins(c *gin.Context) {
 	}
 }
 
+// GetExchanges is the delegate method for fetching all
+// available trading places.
+func (env *Env) GetExchanges(c *gin.Context) {
+	q := env.DataStore.GetExchanges()
+	if len(q) == 0 {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
 // GetChartPoints godoc
 // @Summary Get chart points for
 // @Description Get Symbol Details
