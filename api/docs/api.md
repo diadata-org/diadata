@@ -58,15 +58,6 @@ Path Params:
 
 _Remark:_ Careful! Successful responses can be rather large.
 
-### GET /v1/quotation/
-
-Get a quotation.  
-Example: [https://api.diadata.org/v1/quotation/ETH](https://api.diadata.org/v1/quotation/ETH)
-
-Path Params:
-
-* symbol \[string\]: Some symbol.
-
 ### GET /v1/interestrate/
 
 Get value for a certain rate type.  
@@ -83,6 +74,15 @@ Path Params:
 Optional Query Params:
 
 * dateInit, dateFinal \[string\]: In the format yyyy:mm:dd
+
+### GET /v1/quotation/
+
+Get a quotation.  
+Example: [https://api.diadata.org/v1/quotation/ETH](https://api.diadata.org/v1/quotation/ETH)
+
+Path Params:
+
+* symbol \[string\]: Some symbol.
 
 ### GET /v1/supply/
 
