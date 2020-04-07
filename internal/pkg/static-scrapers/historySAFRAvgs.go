@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -66,30 +65,7 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 	log.Printf("Writing historic SAFR average values")
 
 	// Get rss from fed webpage
-	response, err := http.Get("https://apps.newyorkfed.org/api/safrate/r1")
-
-	// Check, whether request successful
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	// Close response body after function
-	defer response.Body.Close()
-
-	// Check the status code for a 200 so we know we have received a
-	// proper response.
-	if response.StatusCode != 200 {
-		return fmt.Errorf("HTTP Response Error %d", response.StatusCode)
-	}
-
-	// Read the response body
-	XMLdata, err := ioutil.ReadAll(response.Body)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
 
 	// Decode the body
 	rss := new(CsafrRatesSecondaryFindByDateResponseAvg)
