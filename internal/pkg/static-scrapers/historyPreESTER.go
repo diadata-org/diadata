@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

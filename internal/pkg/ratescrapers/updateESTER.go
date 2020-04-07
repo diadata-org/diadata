@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -97,6 +97,9 @@ func (s *RateScraper) UpdateESTER() error {
 
 	// Get response from ESTER feed
 	XMLdata, err := utils.GetRequest(address)
+	if err != nil {
+		return err
+	}
 
 	// Decode the body
 	rss := new(RssESTER)

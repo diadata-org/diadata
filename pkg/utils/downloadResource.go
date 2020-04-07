@@ -43,8 +43,8 @@ func GetRequest(url string) ([]byte, error) {
 
 	// Check, whether the request was successful
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Error(err)
+		return []byte{}, err
 	}
 
 	// Close response body after function
@@ -53,15 +53,17 @@ func GetRequest(url string) ([]byte, error) {
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
-		log.Errorf("HTTP Response Error %d", response.StatusCode)
+		log.Error("HTTP Response Error: ", response.StatusCode)
+		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
 	}
 
 	// Read the response body
 	XMLdata, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Error(err)
+		return []byte{}, err
 	}
+
 	return XMLdata, err
 }

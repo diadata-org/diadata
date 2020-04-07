@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -16,6 +15,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
@@ -273,13 +273,13 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		Id           string `json:"instrument_id"`
 		BaseCurrency string `json:"base_currency"`
 	}
-	response, err := http.Get("https://www.okex.com/api/spot/v3/products")
+
+	data, err := utils.GetRequest("https://www.okex.com/api/spot/v3/products")
+
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
+
 	var ar []APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {

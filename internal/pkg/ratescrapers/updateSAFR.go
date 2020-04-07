@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,6 +40,9 @@ func (s *RateScraper) UpdateSAFR() error {
 
 	// Get rss from fed webpage
 	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/rss/feeds/sofr-avg-ind")
+	if err != nil {
+		return err
+	}
 
 	// Decode the body
 	rss := new(RssSAFR)

@@ -3,13 +3,13 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // API base url
@@ -126,25 +126,21 @@ func (s *BitBayScraper) mainLoop() {
 // retrieve pair data
 func fetchPairs(pairs string) ([]TradeInfo, error) {
 	log.Info("requesting:" + apiURL + pairs + apiRequest)
-	req, err := http.Get(apiURL + pairs + apiRequest)
-	if err != nil {
-		log.Error("error with get:", err)
-		return nil, err
-	}
-	defer req.Body.Close()
-	body, readErr := ioutil.ReadAll(req.Body)
-	if readErr != nil {
-		log.Error("error reading all:", readErr)
-		return nil, readErr
-	}
+
+	body, err := utils.GetRequest(apiURL + pairs + apiRequest)
 	type APIResponse []TradeInfo
 	var ar APIResponse
+
+	if err != nil {
+		return ar, err
+	}
+
 	jsonErr := json.Unmarshal(body, &ar)
 	if jsonErr != nil {
 		log.Error("Error unmarshalling:", jsonErr)
 		return nil, jsonErr
 	}
-	return ar, nil
+	return ar, err
 }
 
 // Close channels for shutdown

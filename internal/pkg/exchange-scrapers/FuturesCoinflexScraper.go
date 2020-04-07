@@ -3,8 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
@@ -13,8 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/websocket"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
 )
 
@@ -291,15 +290,11 @@ func (s *CoinflexFuturesScraper) validateMarket(market string) (bool, error) {
 }
 
 func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, error) {
-	resp, err := http.Get("https://webapi.coinflex.com/markets/")
+	body, err := utils.GetRequest("https://webapi.coinflex.com/markets/")
 	if err != nil {
 		return []marketCoinflex{}, err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return []marketCoinflex{}, err
-	}
+
 	markets := []marketCoinflex{}
 	err = json.Unmarshal(body, &markets)
 	if err != nil {
@@ -310,12 +305,7 @@ func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, e
 
 // uses /assets/ GET endpoint to obtain all the Coinflex's assets
 func (s *CoinflexFuturesScraper) getAllAssets() ([]assetCoinflex, error) {
-	resp, err := http.Get("https://webapi.coinflex.com/assets/")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := utils.GetRequest("https://webapi.coinflex.com/assets/")
 	if err != nil {
 		return nil, err
 	}

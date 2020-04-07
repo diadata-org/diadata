@@ -3,14 +3,14 @@
 	<ID>IREF000001</ID>
 	<Test>false</Test>
 
-	<Prepared>2020-04-07T12:46:32Z</Prepared>
+	<Prepared>2020-04-07T16:03:47Z</Prepared>
 	<Sender id="4F0">
 		<Name xml:lang="en" >European Central Bank</Name>
 		<Contact>
 		<Department xml:lang="en" >DG Statistics</Department>
 		<URI>mailto:statistics@ecb.europa.eu</URI></Contact>
 	</Sender>
-	<Extracted>2020-04-07T12:46:32Z</Extracted>
+	<Extracted>2020-04-07T16:03:47Z</Extracted>
 </Header>
 <DataSet action="Replace">
 		<Series FREQ.297="B" BENCHMARK_ITEM.297="EU000A2X2A25" DATA_TYPE_EST.297="CM" TIME_FORMAT="P1D">

@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/tkanos/gonfig"
 	"io/ioutil"
 	"net/http"
 	"os/user"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/utils"
+	log "github.com/sirupsen/logrus"
+	"github.com/tkanos/gonfig"
 )
 
 type Client struct {
@@ -98,54 +100,43 @@ func (c *Client) login() error {
 func GetSupply(symbol string) (*Supply, error) {
 	url := BaseUrl + "/v1/supply/" + symbol
 	log.Println("Checking supply for", symbol, "on", url)
-	response, err := http.Get(url)
+
+	contents, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, err
-	} else {
-		defer response.Body.Close()
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("error on %v -> %v", url, response.StatusCode)
-		}
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-		log.Debugf("%s\n", string(contents))
-		var b Supply
-		err = b.UnmarshalBinary(contents)
-		if err == nil {
-			log.Debug("got", b)
-			return &b, nil
-		}
+	}
+
+	log.Debugf("%s\n", string(contents))
+	var b Supply
+	err = b.UnmarshalBinary(contents)
+	if err != nil {
 		return nil, err
 	}
+
+	log.Debug("got", b)
+	return &b, nil
+
 }
 
 // TODO remove URL
 func GetSymbolsList(url string) ([]string, error) {
 	log.Println("getSymbolList")
-	response, err := http.Get(url + "/v1/symbols")
+
+	contents, err := utils.GetRequest(url + "/v1/symbols")
 	if err != nil {
 		return nil, err
-	} else {
-		defer response.Body.Close()
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error getSymbolList")
-		}
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-		log.Debugf("%s\n", string(contents))
-		var b Symbols
+	}
 
-		err = json.Unmarshal(contents, &b)
+	log.Debugf("%s\n", string(contents))
+	var b Symbols
 
-		if err == nil {
-			return b.Symbols, nil
-		}
+	err = json.Unmarshal(contents, &b)
+
+	if err != nil {
 		return nil, err
 	}
+
+	return b.Symbols, nil
 }
 
 func GetConfigApi() *ConfigApi {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 )
@@ -249,7 +250,7 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 		date, _ := time.Parse(layout, key)
 		strSliceFormatted = append(strSliceFormatted, date.String())
 	}
-	_, index := maxString(strSliceFormatted)
+	_, index := utils.MaxString(strSliceFormatted)
 	return strSlice[index], nil
 }
 
@@ -290,17 +291,4 @@ func getYesterday(date, layout string) string {
 	}
 	yesterday := dateTime.AddDate(0, 0, -1)
 	return yesterday.Format(layout)
-}
-
-func maxString(sl []string) (string, int64) {
-	// Return the maximum of a slice of strings along with its index
-	index := int64(0)
-	max := sl[0]
-	for k, entry := range sl {
-		if entry > max {
-			max = entry
-			index = int64(k)
-		}
-	}
-	return max, index
 }

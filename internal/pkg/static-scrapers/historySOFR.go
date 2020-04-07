@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -77,6 +77,10 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 
 	// Get rss from fed webpage
 	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/mktrates/r3")
+
+	if err != nil {
+		return err
+	}
 
 	// Decode the body
 	rss := new(CmktRatesSecondaryFindByDateResponse)
