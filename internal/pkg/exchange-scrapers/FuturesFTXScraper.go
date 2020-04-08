@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/websocket"
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
 )
 

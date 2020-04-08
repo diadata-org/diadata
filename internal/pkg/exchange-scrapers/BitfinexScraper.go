@@ -3,18 +3,18 @@ package scrapers
 import (
 	"context"
 	"errors"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	bitfinex "github.com/bitfinexcom/bitfinex-api-go/v2"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 type pairScraperSet map[*BitfinexPairScraper]nothing
@@ -222,13 +222,11 @@ func (s *BitfinexScraper) normalizeSymbol(foreignName string) (symbol string, er
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	response, err := http.Get("https://api.bitfinex.com/v1/symbols")
+
+	data, err := utils.GetRequest("https://api.bitfinex.com/v1/symbols")
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
 		symbol, serr := s.normalizeSymbol(p)

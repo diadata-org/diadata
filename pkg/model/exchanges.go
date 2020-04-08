@@ -10,6 +10,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// GetExchanges returns all available trading places.
+// Comment: Think about getting the exchanges from redis.
+func (db *DB) GetExchanges() (allExchanges []string) {
+	listExch := dia.Exchanges()
+	for _, exchange := range listExch {
+		if exchange != "Unknown" {
+			allExchanges = append(allExchanges, exchange)
+		}
+	}
+	return
+}
+
 func getKeyLastTradeTimeForExchange(symbol string, exchange string) string {
 	if exchange == "" {
 		return "dia_TLT_" + symbol

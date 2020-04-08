@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -13,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -126,14 +125,9 @@ func (s *BittrexScraper) mainLoop() {
 
 func getAPICallBittrex(params ...string) []interface{} {
 
-	req, err := http.Get(_bittrexapiurl + params[0])
+	body, err := utils.GetRequest(_bittrexapiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
-	}
-	defer req.Body.Close()
-	body, readErr := ioutil.ReadAll(req.Body)
-	if readErr != nil {
-		fmt.Println(readErr)
 	}
 	confirmTemp := ConfirmData{}
 	jsonErr := json.Unmarshal(body, &confirmTemp)

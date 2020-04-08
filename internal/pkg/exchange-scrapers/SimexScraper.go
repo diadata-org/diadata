@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type PairIdMap struct {
@@ -155,14 +155,12 @@ func (s *SimexScraper) mainLoop() {
 }
 
 func getAPICall(params ...string) []interface{} {
-	req, err := http.Get(_apiurl + params[0])
+
+	body, err := utils.GetRequest(_apiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
 	}
-	body, readErr := ioutil.ReadAll(req.Body)
-	if readErr != nil {
-		fmt.Println(readErr)
-	}
+
 	confirmTemp := Confirm{}
 	jsonErr := json.Unmarshal(body, &confirmTemp)
 	if jsonErr != nil {
@@ -248,13 +246,13 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	type APIResponse struct {
 		Data []DataT `json:"data"`
 	}
-	response, err := http.Get("https://simex.global/api/pairs")
+
+	data, err := utils.GetRequest("https://simex.global/api/pairs")
+
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
+
 	var ar APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {

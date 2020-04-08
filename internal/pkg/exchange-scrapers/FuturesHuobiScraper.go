@@ -13,10 +13,10 @@ import (
 	"syscall"
 	"time"
 
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
-	"golang.org/x/net/websocket"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	zap "go.uber.org/zap"
+	"golang.org/x/net/websocket"
 )
 
 // --------------------------------- Config --------------------------------------------------

@@ -8,6 +8,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 )
@@ -57,7 +58,7 @@ func getKeyQuotationEUR(value string) string {
 
 // getKeyInterestRate returns a string that is used as key for storing an interest
 // rate in the Redis database.
-// @symbol is the symbol of the interest rate (such as SFOR) set at time @date.
+// @symbol is the symbol of the interest rate (such as SOFR) set at time @date.
 func getKeyInterestRate(symbol string, date time.Time) string {
 	return "dia_quotation_" + symbol + "_" + date.String()
 }
@@ -151,7 +152,7 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 // ------------------------------------------------------------------------------
 
 // SetInterestRate writes the interest rate struct ir into the Redis database
-// and writes rate type into set of available rates if not done yet.
+// and writes rate type into a set of all available rates (if not done yet).
 func (db *DB) SetInterestRate(ir *InterestRate) error {
 
 	if db.redisClient == nil {
@@ -249,7 +250,7 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 		date, _ := time.Parse(layout, key)
 		strSliceFormatted = append(strSliceFormatted, date.String())
 	}
-	_, index := maxString(strSliceFormatted)
+	_, index := utils.MaxString(strSliceFormatted)
 	return strSlice[index], nil
 }
 
@@ -290,17 +291,4 @@ func getYesterday(date, layout string) string {
 	}
 	yesterday := dateTime.AddDate(0, 0, -1)
 	return yesterday.Format(layout)
-}
-
-func maxString(sl []string) (string, int64) {
-	// Return the maximum of a slice of strings along with its index
-	index := int64(0)
-	max := sl[0]
-	for k, entry := range sl {
-		if entry > max {
-			max = entry
-			index = int64(k)
-		}
-	}
-	return max, index
 }

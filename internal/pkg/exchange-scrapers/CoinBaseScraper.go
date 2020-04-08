@@ -3,16 +3,16 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	ws "github.com/gorilla/websocket"
-	gdax "github.com/preichenberger/go-gdax"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
+	gdax "github.com/preichenberger/go-gdax"
+	log "github.com/sirupsen/logrus"
 )
 
 type CoinBaseScraper struct {
@@ -144,13 +144,11 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, er
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	response, err := http.Get("https://api.pro.coinbase.com/products")
+
+	data, err := utils.GetRequest("https://api.pro.coinbase.com/products")
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
 	var ar []gdax.Product
 	err = json.Unmarshal(data, &ar)
 	if err == nil {

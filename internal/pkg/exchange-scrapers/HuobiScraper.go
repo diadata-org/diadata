@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 var _HuobiSocketurl string = "wss://api.huobi.pro/ws"
@@ -243,13 +243,13 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	type APIResponse struct {
 		Data []DataT `json:"data"`
 	}
-	response, err := http.Get("http://api.huobi.pro/v1/common/symbols")
+
+	data, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
+
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
+
 	var ar APIResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {

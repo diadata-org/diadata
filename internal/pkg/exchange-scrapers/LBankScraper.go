@@ -2,17 +2,17 @@ package scrapers
 
 import (
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	"hash/fnv"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
@@ -196,13 +196,11 @@ func (s *LBankScraper) normalizeSymbol(foreignName string) (symbol string, err e
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	response, err := http.Get("https://api.lbkex.com/v1/currencyPairs.do")
+
+	data, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
 		symbol, serr := s.normalizeSymbol(p)
@@ -217,6 +215,7 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		}
 	}
 	return
+
 }
 
 // LBankPairScraper implements PairScraper for LBank exchange

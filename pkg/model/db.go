@@ -53,6 +53,7 @@ type Datastore interface {
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRates() []string
+  GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency  string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
@@ -268,7 +269,6 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	return err
 }
 
-/// TODO: Option stuff here
 func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	fields := map[string]interface{}{
 		"value": cviValue,

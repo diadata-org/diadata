@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/adshao/go-binance"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/adshao/go-binance"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
@@ -191,13 +191,11 @@ func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
-	response, err := http.Get("https://api.binance.com//api/v1/exchangeInfo")
+	data, err := utils.GetRequest("https://api.binance.com//api/v1/exchangeInfo")
+
 	if err != nil {
-		log.Error("The HTTP request failed:", err)
 		return
 	}
-	defer response.Body.Close()
-	data, _ := ioutil.ReadAll(response.Body)
 	var ar binance.ExchangeInfo
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
