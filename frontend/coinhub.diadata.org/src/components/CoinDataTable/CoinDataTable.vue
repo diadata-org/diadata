@@ -83,7 +83,7 @@
 				      {{ data.item.circulatingSupplyFormatted }}
 				    </template>
 				    <template slot="oracle" slot-scope="data">
-				    	<b-link target="_blank" href="https://github.com/diadata-org/api-golang/blob/master/documentation/methodology/Oracles.md">
+				    	<b-link target="_blank" href="https://github.com/diadata-org/diadata/tree/master/documentation/methodology/oracles.md">
 				    		<b-img :src="data.value" fluid alt="Oracle"  width ="20" height = "20"/>
 				    	</b-link>
 				    </template>

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -93,6 +94,37 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, q)
 	}
+}
+
+func (env *Env) GetCviIndex(c *gin.Context) {
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" || endtimeStr == "" {
+		starttime = time.Unix(0, 0)
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, q)
 }
 
 // GetInterestRate is the delegate method to fetch the value of

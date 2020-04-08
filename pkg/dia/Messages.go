@@ -3,6 +3,8 @@ package dia
 import (
 	"encoding/json"
 	"time"
+	"strings"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -36,6 +38,56 @@ type Trade struct {
 	ForeignTradeID    string
 	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
 	Source            string
+}
+
+type InterestRate struct {
+	Symbol string
+	Value  float64
+	Time   time.Time
+	Source string
+}
+
+type OptionType int
+
+// signals if the option is call or a put
+const (
+	CallOption OptionType = iota + 1
+	PutOption
+)
+
+type OptionOrderbookDatum struct {
+	InstrumentName   string
+	ObservationTime  time.Time
+	AskPrice         float64
+	BidPrice         float64
+	AskSize          float64
+	BidSize          float64
+}
+
+type OptionMeta struct {
+	InstrumentName string
+	BaseCurrency   string
+	ExpirationTime time.Time
+	StrikePrice		 float64
+	OptionType     OptionType
+}
+
+type OptionMetaIndex struct {
+	OptionMeta
+	OptionOrderbookDatum
+}
+
+type OptionMetaForward struct {
+	GeneralizedInstrumentName string
+	StrikePrice     float64
+	CallPrice       float64
+	PutPrice        float64 // this, as well as the above is defined as the bid price at a given strike price
+	ExpirationTime  time.Time
+}
+
+type CviDataPoint struct {
+	Timestamp time.Time
+	Value     float64
 }
 
 type TradesBlockData struct {
@@ -132,5 +184,61 @@ func (e *Pairs) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (e *OptionMeta) MarshalBinary() ([]byte, error) {
+	basicOptionMeta := struct {
+		InstrumentName string     `json:"instrumentname"`
+		BaseCurrency   string     `json:"basecurrency"`
+		ExpirationTime string     `json:"expirationtime"`
+		StrikePrice    float64    `json:"strikeprice"`
+		OptionType     OptionType `json:"optiontype"`
+	}{
+		InstrumentName: e.InstrumentName,
+		BaseCurrency:   e.BaseCurrency,
+		ExpirationTime: e.ExpirationTime.Format(time.RFC3339),
+		StrikePrice:    e.StrikePrice,
+		OptionType:     e.OptionType,
+	}
+
+	return json.Marshal(basicOptionMeta)
+}
+
+func (e *OptionMeta) UnmarshalBinary(data []byte) error {
+	var rawStrings map[string]interface{}
+
+	err := json.Unmarshal(data, &rawStrings)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	for k, v := range rawStrings {
+		if strings.ToLower(k) == "strikeprice" {
+			e.StrikePrice = v.(float64)
+		}
+		if strings.ToLower(k) == "instrumentname" {
+			e.InstrumentName = v.(string)
+		}
+		if strings.ToLower(k) == "basecurrency" {
+			e.BaseCurrency = v.(string)
+		}
+		if strings.ToLower(k) == "optiontype" {
+			if int(v.(float64)) == 2 {
+				e.OptionType = PutOption
+			} else {
+				e.OptionType = CallOption
+			}
+		}
+		if strings.ToLower(k) == "expirationtime" {
+			t, err := time.Parse(time.RFC3339, v.(string))
+			if err != nil {
+				return err
+			}
+			e.ExpirationTime = t
+		}
+	}
+
 	return nil
 }
