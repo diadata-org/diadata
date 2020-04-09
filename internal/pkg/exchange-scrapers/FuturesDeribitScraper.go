@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sync"
 	"time"
 
@@ -167,15 +165,11 @@ func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, err
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported market. only btc & eth are supported")
 	}
-	resp, err := http.Get("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
+	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	decodedMsg := deribitInstruments{}
 	err = json.Unmarshal(body, &decodedMsg)
 	if err != nil {
