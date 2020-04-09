@@ -210,10 +210,10 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	callingInstance := os.Getenv("_")
-	if callingInstance[:2] == "./" {
-		r.Run(":8080")
-	} else {
+	if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
 		r.Run(":8081")
+	} else {
+		r.Run(":8080")
 	}
 
 }
