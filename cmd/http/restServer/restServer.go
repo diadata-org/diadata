@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	jwt "github.com/blockstatecom/gin-jwt"
@@ -208,5 +209,11 @@ func main() {
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run(":8080")
+	callingInstance := os.Getenv("_")
+	if callingInstance[:2] == "./" {
+		r.Run(":8080")
+	} else {
+		r.Run(":8081")
+	}
+
 }
