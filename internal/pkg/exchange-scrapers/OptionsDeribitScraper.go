@@ -2,19 +2,18 @@ package scrapers
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"sync"
-	"time"
+	"fmt"
 	"net/url"
 	"strings"
-	"fmt"
+	"sync"
+	"time"
 
-	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	zap "go.uber.org/zap"
-	"github.com/gorilla/websocket"
 )
 
 // DeribitOptionsScraper - used to maintain the order book and save it every x seconds
@@ -122,7 +121,6 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 		MarketKind:        DeribitOption, // DO NOT change this.
 		WsConnection:      ws,
 	}
-
 
 	optionsScraper.deribitScraper = &scraper
 	optionsScraper.optionsWaitGroup = owg
@@ -240,14 +238,14 @@ func (s *AllDeribitOptionsScrapers) handleWsMessage() {
 			return
 		}
 		if len(parsedResult.Params.Data.Bids) == 0 ||
-			 len(parsedResult.Params.Data.Asks) == 0 {
-				 log.Errorf("No bid or ask in message %s", message)
+			len(parsedResult.Params.Data.Asks) == 0 {
+			log.Errorf("No bid or ask in message %s", message)
 			return
 		}
-		orderbookEntry := dia.OptionOrderbookDatum {
-			InstrumentName:  parsedResult.Params.Data.InstrumentName,
+		orderbookEntry := dia.OptionOrderbookDatum{
+			InstrumentName: parsedResult.Params.Data.InstrumentName,
 			// Caution: The response contains the Unix timestamp in Milliseconds
-			ObservationTime: time.Unix(parsedResult.Params.Data.Timestamp / 1000, (parsedResult.Params.Data.Timestamp % 1000) * 1e6),
+			ObservationTime: time.Unix(parsedResult.Params.Data.Timestamp/1000, (parsedResult.Params.Data.Timestamp%1000)*1e6),
 			AskPrice:        parsedResult.Params.Data.Asks[0][0],
 			BidPrice:        parsedResult.Params.Data.Bids[0][0],
 			AskSize:         parsedResult.Params.Data.Asks[0][1],
@@ -273,7 +271,7 @@ func (s *AllDeribitOptionsScrapers) Authenticate(websocketConnection interface{}
 		err := s.send(&map[string]interface{}{
 			"method": "public/auth",
 			"params": &map[string]string{
-				"grant_type": "client_credentials",
+				"grant_type":    "client_credentials",
 				"client_id":     s.accessKey,
 				"client_secret": s.accessSecret,
 			},
@@ -307,7 +305,7 @@ func (s *AllDeribitOptionsScrapers) handleRefreshToken(previousToken string, web
 
 func (s *AllDeribitOptionsScrapers) refreshWsToken() {
 	failedToRefreshToken := make(chan interface{})
-	// 3. refresh the token more often than 900 seconds                          
+	// 3. refresh the token more often than 900 seconds
 	tick := time.NewTicker(time.Duration(s.RefreshTokenEvery) * time.Second) // every RefreshTokenEvery seconds we have to refresh token
 	defer tick.Stop()
 	// we require a separate goroutine for ticker, so that we can refresh our access token everyRefreshToken seconds
@@ -354,7 +352,7 @@ func (s *AllDeribitOptionsScrapers) MetaOnOptionIsAvailable(option deribitInstru
 		return false, err
 	}
 	for _, optionMeta := range optionMetas {
-		if (optionMeta.InstrumentName == option.InstrumentName) {
+		if optionMeta.InstrumentName == option.InstrumentName {
 			return true, nil
 		}
 	}
@@ -366,12 +364,7 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported deribit market. only btc and eth are supported")
 	}
-	resp, err := http.Get("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
 		return err
 	}
@@ -393,7 +386,7 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 			if instrument.OptionType == "put" {
 				optionType = dia.PutOption
 			}
-			optionMeta := dia.OptionMeta {
+			optionMeta := dia.OptionMeta{
 				InstrumentName: instrument.InstrumentName,
 				BaseCurrency:   instrument.BaseCurrency,
 				ExpirationTime: time.Unix(instrument.ExpirationTimestamp/1000, (instrument.ExpirationTimestamp%1000)*1e6),
@@ -419,7 +412,7 @@ func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
 				s.AddMarket(meta.InstrumentName)
 			}
 			select {
-				case <-tick.C:
+			case <-tick.C:
 			}
 		}
 	}()

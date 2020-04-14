@@ -2,17 +2,15 @@ package scrapers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sync"
 	"time"
-	"errors"
 
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
-	utils "github.com/diadata-org/diadata/internal/pkg/scraper-utils"
-	zap "go.uber.org/zap"
 	log "github.com/sirupsen/logrus"
+	zap "go.uber.org/zap"
 )
 
 const scrapeDataSaveLocationDeribit = ""
@@ -103,36 +101,36 @@ func (s *DeribitScraper) Scrape(market string) {
 	}
 	s.validateRefreshEveryToken()
 
-			optionRequest := &map[string]interface{}{
-				"method": "public/subscribe",
-				"params": &map[string]interface{}{
-					"channels": []string{"book." + market + ".none.1.100ms"}, // will give us orderbook snapshots every 100 ms
-				},
-				"jsonrpc": "2.0",
-				"id":      0,
-			}
-			futureRequest := &map[string]interface{}{
-				"method": "private/subscribe",
-				"params": &map[string]interface{}{
-					"channels": []string{"trades." + market + ".raw"},
-				},
-				"jsonrpc": "2.0",
-				"id":      0,
-			}
+	optionRequest := &map[string]interface{}{
+		"method": "public/subscribe",
+		"params": &map[string]interface{}{
+			"channels": []string{"book." + market + ".none.1.100ms"}, // will give us orderbook snapshots every 100 ms
+		},
+		"jsonrpc": "2.0",
+		"id":      0,
+	}
+	futureRequest := &map[string]interface{}{
+		"method": "private/subscribe",
+		"params": &map[string]interface{}{
+			"channels": []string{"trades." + market + ".raw"},
+		},
+		"jsonrpc": "2.0",
+		"id":      0,
+	}
 
-			switch s.MarketKind {
-			case DeribitFuture:
-				err = s.send(futureRequest, s.WsConnection)
-			case DeribitOption:
-				err = s.send(optionRequest, s.WsConnection)
-			default:
-				panic("unknown market kind")
-			}
+	switch s.MarketKind {
+	case DeribitFuture:
+		err = s.send(futureRequest, s.WsConnection)
+	case DeribitOption:
+		err = s.send(optionRequest, s.WsConnection)
+	default:
+		panic("unknown market kind")
+	}
 
-			if err != nil {
-				log.Errorf("could not send ws message. restarting the websocket, err: %s", err)
-				return
-			}
+	if err != nil {
+		log.Errorf("could not send ws message. restarting the websocket, err: %s", err)
+		return
+	}
 }
 
 // ScrapeMarkets - will scrape the markets specified during instantiation
@@ -167,15 +165,11 @@ func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, err
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported market. only btc & eth are supported")
 	}
-	resp, err := http.Get("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
+	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	decodedMsg := deribitInstruments{}
 	err = json.Unmarshal(body, &decodedMsg)
 	if err != nil {

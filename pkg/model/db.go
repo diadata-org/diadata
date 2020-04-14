@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -121,11 +122,20 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
 	var err error
+	callingInstance := os.Getenv("_")
+	address := ""
 
 	if withRedis {
+		// Run localhost for testing and server otherwise
+		if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
+			// Testing: redis is called by go (usr/bin/go)
+			address = "localhost:6379"
+		} else {
+			// Production: redis is called by some other binary
+			address = "redis:6379"
+		}
 		r = redis.NewClient(&redis.Options{
-			Addr: "redis:6379", /// TODO: Change to redis:
-			//Addr:     "localhost:6379", /// TODO: Change to redis:
+			Addr:     address,
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
@@ -137,9 +147,15 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		log.Debug("NewDB", pong2)
 	}
 	if withInflux {
+		if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
+			// Testing: redis is called by go (i.e. usr/bin/go)
+			address = "http://localhost:8086"
+		} else {
+			// Production: redis is called by some other binary
+			address = "http://influxdb:8086"
+		}
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr: "http://influxdb:8086", ///TODO: Change to influxdb
-			//Addr:     "http://localhost:8086", ///TODO: Change to influxdb
+			Addr:     address,
 			Username: "",
 			Password: "",
 		})
