@@ -263,7 +263,7 @@ func (db *DB) findLastDay(symbol, date string) (string, error) {
 			return date, nil
 		}
 		// If date has no entry, look for one the day before
-		date = getYesterday(date, "2006-01-02")
+		date = utils.GetYesterday(date, "2006-01-02")
 	}
 
 	// If no entry found in the last @maxDays days return error
@@ -281,14 +281,4 @@ func (db *DB) ExistInterestRate(symbol, date string) bool {
 		return false
 	}
 	return true
-}
-
-func getYesterday(date, layout string) string {
-	// Returns the day before @date in the world of strings, formatted as @layout
-	dateTime, err := time.Parse(layout, date)
-	if err != nil {
-		log.Printf("Error: %v on date format %s\n", err, date)
-	}
-	yesterday := dateTime.AddDate(0, 0, -1)
-	return yesterday.Format(layout)
 }
