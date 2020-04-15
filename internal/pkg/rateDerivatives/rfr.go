@@ -8,11 +8,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// RateFactor computes the integer a rate is multiplied by in the computation
+// RateFactor returns the integer a rate is multiplied by in the computation
 // of (compunded) RFRs.
 func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 
-	if utils.CheckWeekDay(date) == false {
+	if utils.CheckWeekDay(date) == false || utils.ContainsDay(holidays, date) {
 		log.Error("The rate factor can only be computed for business days")
 		err := errors.New("date error")
 		return 0, err
@@ -37,7 +37,7 @@ func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 func CumulativeRate(rate []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int) (float64, error) {
 
 	if dateInit.After(dateFinal) {
-		log.Error("The final date cannot be smaller than the initial date.")
+		log.Error("The final date cannot be before the initial date.")
 		return float64(0), errors.New("date error")
 	}
 	calendarDays, _ := utils.CountDays(dateInit, dateFinal, false)

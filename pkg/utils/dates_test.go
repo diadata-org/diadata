@@ -81,6 +81,7 @@ func TestCountDays(t *testing.T) {
 	date1, _ := time.Parse("2006-01-02", "2020-04-01")
 	date2, _ := time.Parse("2006-01-02 15:04:05", "2020-04-10 14:22:55")
 	date3, _ := time.Parse("2006-01-02", "2020-04-02")
+	date4, _ := time.Parse("2006-01-02", "2020-04-03")
 
 	tables := []struct {
 		dateInit  time.Time
@@ -91,9 +92,10 @@ func TestCountDays(t *testing.T) {
 	}{
 		{date1, date2, true, 7, nil},
 		{date1, date2, false, 9, nil},
-		// {date2, date1, false, 9, errors.New("date error")},
 		{date1, date3, true, 1, nil},
 		{date1, date3, false, 1, nil},
+		{date1, date4, false, 2, nil},
+		{date1, date4, true, 2, nil},
 	}
 	for _, table := range tables {
 		value, err := CountDays(table.dateInit, table.dateFinal, table.business)
