@@ -6,6 +6,9 @@ services:
   influxdb:
 #    ports:
 #      - "8086:8086"
+    environment:
+      - export EXEC_MODE=production
+
     image: influxdb
     volumes:
       - /home/srv/influxdb:/var/lib/influxdb

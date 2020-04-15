@@ -2,6 +2,8 @@ version: '3.2'
 services:
 
   restserver:
+    environment:
+      - export EXEC_MODE=production
     ports:
       - "8080:8080"
     build:

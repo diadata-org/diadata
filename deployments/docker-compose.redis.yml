@@ -4,6 +4,8 @@ version: '3.2'
 services:
 
   redis:
+    environment:
+      - export EXEC_MODE=production
     image: redis
     volumes:
       - /home/srv/redis:/data
