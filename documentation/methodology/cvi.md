@@ -6,7 +6,7 @@ The CVI is calculated on top of bid/ask information received from crypto \(BTC\)
 
 Instruments are named uniquely to identify them. For example, BTC-03JUN2020-6000-C is the name of a Bitcoin call option expiring at 3rd of June 2020 for a strike price of 6000 USD.
 
-To calculate the CVI, the option levels of tw dates are considered: The next Friday that is at least one month away from now and the first Friday with available options before that date. With that we ensure that the future market is observed appropriately.
+To calculate the CVI, the option levels of two dates are considered: The next Friday that is at least one month away from now and the first Friday with available options before that date. With that we ensure that the future market is observed appropriately.
 
 {% hint style="info" %}
 Options typically expire on Fridays only, thus we can only observe them for these dates.
