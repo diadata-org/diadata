@@ -11,6 +11,7 @@
     * [Circulating Supply Numbers](documentation/methodology/supplynumbers.md)
     * [Oracles in DIA](documentation/methodology/oracles.md)
     * [Crypto Volatility Index](documentation/methodology/cvi.md)
+    * [Overnight Rates](documentation/methodology/overnight-rates.md)
     * [Pricing Methodology of Crypto Exchange Quotations](documentation/methodology/exchangeprices.md)
 * [API](api/README.md)
   * [diadata.org API](api/api.md)
