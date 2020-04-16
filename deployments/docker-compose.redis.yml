@@ -5,7 +5,7 @@ services:
 
   redis:
     environment:
-      - export EXEC_MODE=production
+      - EXEC_MODE=production
     image: redis
     volumes:
       - /home/srv/redis:/data
