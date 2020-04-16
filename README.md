@@ -34,3 +34,11 @@ Crypto Volatility Index
 
 DIA is open for anyone to contribute and we always welcome pull requests. We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
 
+
+
+### **Feedback**
+
+Your feedback helps improve DIA in order for us to find data and applications that are the most useful for you and the broader developer community.
+
+Link: [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform)
+
