@@ -1,3 +1,9 @@
+---
+description: >-
+  Overnight rates are interest rates that large banks use to borrow and lend
+  from one another in the overnight market.
+---
+
 # Overnight Rates
 
 ## Secured Overnight Financing Rate \(SOFR\)
