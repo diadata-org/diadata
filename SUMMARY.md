@@ -2,7 +2,6 @@
 
 * [Readme](README.md)
 * [Documentation](documentation/README.md)
-  * [DIAdata.org API](documentation/api.md)
   * [DIA data documentation](documentation/index.md)
   * [Tutorials](documentation/tutorials/README.md)
     * [Write your own rate scraper](documentation/tutorials/write-your-own-rate-scraper.md)
