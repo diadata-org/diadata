@@ -209,11 +209,12 @@ func main() {
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	callingInstance := os.Getenv("_")
-	if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
-		r.Run(":8081")
-	} else {
+	// This environment variable is either set in docker-compose or empty
+	executionMode := os.Getenv("EXEC_MODE")
+	if executionMode == "production" {
 		r.Run(":8080")
+	} else {
+		r.Run(":8081")
 	}
 
 }

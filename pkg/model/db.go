@@ -122,17 +122,16 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
 	var err error
-	callingInstance := os.Getenv("_")
+	// This environment variable is either set in docker-compose or empty
+	executionMode := os.Getenv("EXEC_MODE")
 	address := ""
 
 	if withRedis {
-		// Run localhost for testing and server otherwise
-		if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
-			// Testing: redis is called by go (usr/bin/go)
-			address = "localhost:6379"
-		} else {
-			// Production: redis is called by some other binary
+		// Run localhost for testing and server for production
+		if executionMode == "production" {
 			address = "redis:6379"
+		} else {
+			address = "localhost:6379"
 		}
 		r = redis.NewClient(&redis.Options{
 			Addr:     address,
@@ -147,12 +146,10 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		log.Debug("NewDB", pong2)
 	}
 	if withInflux {
-		if callingInstance[len(callingInstance)-3:len(callingInstance)] == "/go" {
-			// Testing: redis is called by go (i.e. usr/bin/go)
-			address = "http://localhost:8086"
-		} else {
-			// Production: redis is called by some other binary
+		if executionMode == "production" {
 			address = "http://influxdb:8086"
+		} else {
+			address = "http://localhost:8086"
 		}
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
 			Addr:     address,
