@@ -11,6 +11,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   safr-scraper:
     depends_on: [ratescraper]
@@ -22,6 +24,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   safrAvgs-scraper:
     depends_on: [ratescraper]
@@ -33,6 +37,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   ester-scraper:
     depends_on: [ratescraper]
@@ -44,6 +50,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   ratescraper:
     build:
@@ -57,6 +65,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
 networks:
   influxdb-network:

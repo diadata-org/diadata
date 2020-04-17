@@ -1,0 +1,23 @@
+version: '3.2'
+services:
+
+  deribitscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-deribitScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_deribitscraper:latest
+    restart: "no"
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
