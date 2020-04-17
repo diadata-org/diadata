@@ -83,7 +83,7 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 
 	// Pick the actual value out of all data
 	numData := len(rss.CsafrRatesFindItemAvg)
-	ActData := rss.CsafrRatesFindItemAvg[numData]
+	ActData := rss.CsafrRatesFindItemAvg[numData-1]
 
 	// Convert rates from string to float64
 	rate1, err := strconv.ParseFloat(ActData.CrateOperationAvg.CTenor1Avg.CValue1Avg, 64)
