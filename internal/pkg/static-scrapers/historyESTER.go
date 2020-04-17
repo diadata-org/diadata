@@ -48,6 +48,7 @@ func GetHistoricESTER() error {
 		"emoveItem=&removedItemList=&mergeFilter=&activeTab=EST&showHide=&MAX_DOW" +
 		"NLOAD_SERIES=500&SERIES_MAX_NUM=50&node=9698150&legendRef=reference&legendNor=&exportType=sdmx&ajaxTab=true"
 	pathESTERAbs, _ := filepath.Abs(pathESTER)
+	os.MkdirAll(filepath.Dir(pathESTERAbs), os.ModePerm)
 
 	err := utils.DownloadResource(pathESTERAbs, linkESTER)
 	if err != nil {

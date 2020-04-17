@@ -51,6 +51,7 @@ func GetHistoricPreESTER() error {
 		"=&removedItemList=&mergeFilter=&activeTab=MMSR&showHide=&MAX_DOWNLOAD_SERIES=500&" +
 		"SERIES_MAX_NUM=50&node=9693657&legendPub=published&legendNor=&exportType=sdmx&ajaxTab=true"
 	pathPreESTERAbs, _ := filepath.Abs(pathPreESTER)
+	os.MkdirAll(filepath.Dir(pathPreESTERAbs), os.ModePerm)
 
 	err := utils.DownloadResource(pathPreESTERAbs, linkPreESTER)
 	if err != nil {
