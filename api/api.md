@@ -65,7 +65,7 @@ _Remark:_ Careful! Successful responses can be rather large.
 ### GET /v1/interestrate/
 
 Get value for a certain rate type.  
-Example: [https://api.diadata.org/v1/interestrate/SOFR/2020-03-16](https://github.com/diadata-org/diadata/tree/196f03f0c67f405c4bc03a27e3470e02f0383cbe/v1/interestrate/SOFR/2020-03-16/README.md)
+Example: [https://api.diadata.org/v1/interestrate/SOFR/2020-04-20](https://api.diadata.org/v1/interestrate/SOFR/2020-04-20)
 
 Get rate values for a range of timestamps using optinal query parameters.  
 Example: [https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16](https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16)
@@ -128,7 +128,7 @@ Example: [https://api.diadata.org/v1/exchanges](https://api.diadata.org/v1/excha
 ### GET /v1/interestrates
 
 Get a list of all available interest rates.  
-Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/coins)
+Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/interestrates)
 
 ### GET /v1/pairs/
 
