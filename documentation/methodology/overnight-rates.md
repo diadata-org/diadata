@@ -16,7 +16,7 @@ Sources:
 [https://apps.newyorkfed.org/markets/autorates/SO](https://apps.newyorkfed.org/markets/autorates/SOFR)[FR](https://apps.newyorkfed.org/markets/autorates/SOFR)  
 [https://www.newyorkfed.org/medialibrary/Microsites/arrc/files/2019/Users\_Guide\_to\_SOFR.pdf](https://www.newyorkfed.org/medialibrary/Microsites/arrc/files/2019/Users_Guide_to_SOFR.pdf)
 
-Example for API request:  
+Example for API call:  
 [https://api.diadata.org/v1/interestrate/SOFR/2020-04-16](https://api.diadata.org/v1/interestrate/SOFR/2020-04-16)
 
 ### SOFR Index \(SAFR\)
@@ -28,7 +28,7 @@ Each business day, the New York Fed publishes the SAFR on the New York Fed's web
 Source:  
 [https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind\#Chart12](https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind#Chart12)
 
-Example for API request:  
+Example for API call:  
 [https://api.diadata.org/v1/interestrate/SAFR/2020-04-16](https://api.diadata.org/v1/interestrate/SAFR/2020-04-16)
 
 ### SAFR30, SAFR90 and SAFR180
@@ -38,7 +38,7 @@ These rates are compounded averages of the SOFR over rolling 30-, 90-, and 180-c
 Source:  
 [https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind\#Chart12](https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind#Chart12)
 
-Example for API request:  
+Example for API call:  
 [https://api.diadata.org/v1/interestrate/SAFR90/2020-04-16](https://api.diadata.org/v1/interestrate/SAFR90/2020-04-16)
 
 ## Euro Short-Term Rate \(€STR\)
@@ -61,7 +61,7 @@ Sources:
   
 [https://en.wikipedia.org/wiki/%E2%82%ACSTR](https://en.wikipedia.org/wiki/%E2%82%ACSTR)
 
-Example for API request:  
+Example for API call:  
 [https://api.diadata.org/v1/interestrate/ESTER/2020-04-16](https://api.diadata.org/v1/interestrate/ESTER/2020-04-16)
 
 ##  
