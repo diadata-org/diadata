@@ -65,10 +65,10 @@ _Remark:_ Careful! Successful responses can be rather large.
 ### GET /v1/interestrate/
 
 Get value for a certain rate type.  
-Example: [https://api.diadata.org/v1/interestrate/SOFR/2020-04-20](https://api.diadata.org/v1/interestrate/SOFR/2020-04-20)
+Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-04-20](https://api.diadata.org/v1/interestrate/ESTER/2020-04-20)
 
 Get rate values for a range of timestamps using optinal query parameters.  
-Example: [https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16](https://api.diadata.org/v1/interestrate/SOFR?dateInit=2020-02-20&dateFinal=2020-03-16)
+Example: [https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16](https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16)
 
 Path Params:
 

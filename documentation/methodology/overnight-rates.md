@@ -45,7 +45,7 @@ It is calculated as a volume-weighted trimmed mean rounded to the third decimal.
 
 A pro rata calculation is applied to volumes that span the thresholds for trimming to ensure that exactly 50% of the total eligible volume is used in the calculation of the volume-weighted mean.
 
-The rate is published on every [TARGET2](https://en.wikipedia.org/wiki/TARGET2) business day at 8:00 CET \(reflecting the trading activity of the previous business day\). If errors are detected, the €STR is revised and republished on the same day at 9:00 CET
+The rate is published on every [TARGET2](https://en.wikipedia.org/wiki/TARGET2) business day at 8:00 CET \(reflecting the trading activity of the previous business day\). If errors are detected, the €STR is revised and republished on the same day at 9:00 CET.
 
 Sources:  
 [https://www.ecb.europa.eu/paym/initiatives/interest\_rate\_benchmarks/shared/pdf/ecb.ESTER\_methodology\_and\_policies.en.pdf](https://www.ecb.europa.eu/paym/initiatives/interest_rate_benchmarks/shared/pdf/ecb.ESTER_methodology_and_policies.en.pdf)  
