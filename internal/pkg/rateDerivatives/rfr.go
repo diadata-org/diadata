@@ -27,14 +27,13 @@ func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 	return rate, nil
 }
 
-// CumulativeRate returns the cumulative compounded index for the rate values
-// given by the slice @rate.
+// CompoundedRate returns the compounded index for the rate values given by the slice @rate.
 // @rate is a slice with daily rates for all business days in the respective period.
 // @daysPerYear determines the total number of days per business year.
 // @holidays is a slice of strings where each entry corresponds to a special holiday (i.e. not a
 // 			saturday or sunday) in the respective period. Each day is in the format yyyy-mm-dd.
 // @dateInit, @dateFinal determine the period of the loan. Both are given as yyyy-mm-dd.
-func CumulativeRate(rate []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int) (float64, error) {
+func CompoundedRate(rate []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int) (float64, error) {
 
 	if dateInit.After(dateFinal) {
 		log.Error("The final date cannot be before the initial date.")
@@ -59,4 +58,9 @@ func CumulativeRate(rate []float64, dateInit, dateFinal time.Time, holidays []ti
 	}
 
 	return (prod - float64(1)) * float64(daysPerYear) / float64(calendarDays), nil
+}
+
+// IndexCompounded returns the compounded rate at the day @date.
+func IndexCompounded(symbol string, date time.Time, holidays []time.Time, daysPerYear int) {
+	// to do
 }

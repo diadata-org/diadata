@@ -53,7 +53,7 @@ type Datastore interface {
 	SetInterestRate(ir *InterestRate) error
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
-	GetRates() []string
+	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)

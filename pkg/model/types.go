@@ -39,6 +39,11 @@ type InterestRate struct {
 	Source string
 }
 
+type InterestRateMeta struct {
+	Symbol    string
+	FirstDate string
+}
+
 type CurrencyChange struct {
 	Symbol        string
 	Rate          float64
