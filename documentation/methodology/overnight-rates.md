@@ -61,7 +61,8 @@ Sources:
   
 [https://en.wikipedia.org/wiki/%E2%82%ACSTR](https://en.wikipedia.org/wiki/%E2%82%ACSTR)
 
-Example for API call:  
+**Remark:**  
+In the DIA API we use the former abbreviation ESTER in order to avoid the special symbol €. Hence, an examplary API call looks like:  
 [https://api.diadata.org/v1/interestrate/ESTER/2020-04-16](https://api.diadata.org/v1/interestrate/ESTER/2020-04-16)
 
 ##  
