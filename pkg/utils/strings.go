@@ -22,3 +22,16 @@ func MaxString(sl []string) (string, int64) {
 	}
 	return max, index
 }
+
+// MinString return the maximum of a slice of strings along with its index
+func MinString(sl []string) (string, int64) {
+	index := int64(0)
+	min := sl[0]
+	for k, entry := range sl {
+		if entry < min {
+			min = entry
+			index = int64(k)
+		}
+	}
+	return min, index
+}

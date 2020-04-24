@@ -5,8 +5,8 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -168,9 +168,12 @@ func (env *Env) GetInterestRate(c *gin.Context) {
 // GetRates is the delegate method for fetching all rate types
 // present in the (redis) database.
 func (env *Env) GetRates(c *gin.Context) {
-	q := env.DataStore.GetRates()
+	q, err := env.DataStore.GetRatesMeta()
 	if len(q) == 0 {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
 	c.JSON(http.StatusOK, q)
 }
