@@ -2,7 +2,9 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -20,14 +22,39 @@ func (db *DB) GetRates() []string {
 func (db *DB) GetRatesMeta() (RatesMeta []InterestRateMeta, err error) {
 	allRates := db.GetRates()
 	for _, symbol := range allRates {
+		// Get first publication date
 		newdate, err := db.GetFirstDate(symbol)
 		if err != nil {
 			return []InterestRateMeta{}, err
 		}
-		newEntry := InterestRateMeta{symbol, newdate}
+		// Get issuing entity
+		issuer, err := db.GetIssuer(symbol)
+		if err != nil {
+			return []InterestRateMeta{}, err
+		}
+		// Fill meta type
+		newEntry := InterestRateMeta{symbol, newdate, issuer}
 		RatesMeta = append(RatesMeta, newEntry)
 	}
 	return
+}
+
+// GetIssuer returns the issuing entity of the rate given by @symbol
+func (db *DB) GetIssuer(symbol string) (string, error) {
+	newdate, err := db.GetFirstDate(symbol)
+	if err != nil {
+		return "", err
+	}
+	layout := "2006-01-02 15:04:05 +0000 UTC"
+	time, _ := time.Parse(layout, newdate)
+	fmt.Println(time)
+	key := getKeyInterestRate(symbol, time)
+	ir := &InterestRate{}
+	err = db.redisClient.Get(key).Scan(ir)
+	if err != nil {
+		return "", err
+	}
+	return ir.Source, nil
 }
 
 // GetFirstDate returns the oldest date written in the database for the rate with symbol @symbol
