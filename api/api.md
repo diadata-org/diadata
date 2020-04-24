@@ -127,7 +127,7 @@ Example: [https://api.diadata.org/v1/exchanges](https://api.diadata.org/v1/excha
 
 ### GET /v1/interestrates
 
-Get a list of all available interest rates.  
+Get a list of all available interest rates along with some metadata on the rate such as first publication date.  
 Example: [https://api.diadata.org/v1/interestrates](https://api.diadata.org/v1/interestrates)
 
 ### GET /v1/pairs/
