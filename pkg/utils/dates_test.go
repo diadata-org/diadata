@@ -53,7 +53,7 @@ func TestContainsDay(t *testing.T) {
 	}
 }
 
-func TestCompareDays(t *testing.T) {
+func TestSameDays(t *testing.T) {
 	date1, _ := time.Parse("2006-01-02", "2020-04-01")
 	date2, _ := time.Parse("2006-01-02 15:04:05", "2020-04-18 14:22:55")
 	date3, _ := time.Parse("2006-01-02 15:04:05", "2020-04-18 02:22:55")
@@ -70,7 +70,7 @@ func TestCompareDays(t *testing.T) {
 		{date4, date3, true},
 	}
 	for _, table := range tables {
-		value := CompareDays(table.date1, table.date2)
+		value := SameDays(table.date1, table.date2)
 		if value != table.value {
 			t.Errorf("Got %v and %v are the same day: %v, but should be %v.", table.date1, table.date2, value, table.value)
 		}

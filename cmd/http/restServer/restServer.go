@@ -200,6 +200,7 @@ func main() {
 		dia.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
 		dia.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 		dia.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
+		dia.GET("/compoundedRate/:symbol/:time/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
 		dia.GET("/exchanges", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
 		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
