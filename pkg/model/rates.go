@@ -2,16 +2,19 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	keyAllRates     = "all_rates"
+	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -33,7 +36,7 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 		return nil
 	}
 	// Prepare interest rate quantities for database
-	key := getKeyInterestRate(ir.Symbol, ir.Time)
+	key := getKeyInterestRate(ir.Symbol, ir.EffectiveDate)
 	// Write interest rate quantities into database
 	log.Debug("setting", key, ir)
 	err := db.redisClient.Set(key, ir, TimeOutRedis).Err()
@@ -78,13 +81,15 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 // @dateInit and @dateFinal are strings in the format yyyy-mm-dd.
 func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error) {
 
+	// dateInit = utils.GetTomorrow(dateInit, "2006-01-02")
+
 	// Fetch all available keys for @symbol
 	patt := "dia_quotation_" + symbol + "_*"
 	// Comment: This could be improved. Should be when the database gets larger.
 	allKeys := db.redisClient.Keys(patt).Val()
 
 	// Set bounds on database's keys for the requested time range
-	stampInit := "dia_quotation_" + symbol + "_" + dateInit + " 00:00:01 +0000 UTC"
+	stampInit := "dia_quotation_" + symbol + "_" + dateInit + " 00:00:00 +0000 UTC"
 	stampFinal := "dia_quotation_" + symbol + "_" + dateFinal + " 23:59:59 +0000 UTC"
 
 	// Get value for each key
@@ -167,10 +172,14 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 	// Comment: This could be improved. Should be when the database gets larger.
 	allKeys := db.redisClient.Keys(patt).Val()
 	oldestKey, _ := utils.MinString(allKeys)
-	// Isolate the timestamp from the key
-	oldestDate := strings.SplitN(oldestKey, "_", 4)[3]
-	time, _ := time.Parse(TimeLayoutRedis, oldestDate)
-	return time, nil
+
+	// Scan the struct corresponding to the oldest timestamp and fetch effective date.
+	ir := &InterestRate{}
+	err := db.redisClient.Get(oldestKey).Scan(ir)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return ir.EffectiveDate, nil
 }
 
 // ---------------------------------------------------------------------------------------
@@ -185,7 +194,7 @@ func (db *DB) GetCompoundedRateOld(symbol string, date time.Time, zone string, d
 	if err != nil {
 		return
 	}
-	holidays, err := utils.GetHolidays(zone, dateInit, date)
+	holidays, err := utils.GetHolidaysZone(zone, dateInit, date)
 	if err != nil {
 		return
 	}
@@ -200,9 +209,9 @@ func (db *DB) GetCompoundedRateOld(symbol string, date time.Time, zone string, d
 	}
 	// Sort ratesApi (type []*InterestRates) in increasing order according to date
 	sort.Slice(ratesAPI, func(i, j int) bool {
-		return (ratesAPI[i].Time).Before(ratesAPI[j].Time)
+		return (ratesAPI[i].EffectiveDate).Before(ratesAPI[j].EffectiveDate)
 	})
-	// Coumpounded indices start at day zero with value 1
+	// Compounded indices start at day zero with value 1
 	dateInit = dateInit.AddDate(0, 0, -1)
 	rates := []float64{1}
 	// Extract rates' values
@@ -214,48 +223,39 @@ func (db *DB) GetCompoundedRateOld(symbol string, date time.Time, zone string, d
 }
 
 // GetCompoundedRate returns the compounded rate at the day @date. It computes the rate for all
-// days for which an entry is present in the database.
+// days for which an entry is present in the database. All other days are assumed to be holidays (or weekends).
 func (db *DB) GetCompoundedRate(symbol string, date time.Time, daysPerYear int) (compRate float64, err error) {
 
+	// Get initial date for the rate with @symbol
 	dateInit, err := db.GetFirstDate(symbol)
 	if err != nil {
 		return
 	}
 
+	// Get rate data from database
 	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
 	if err != nil {
 		return
 	}
-	// Sort ratesApi (type []*InterestRates) in increasing order according to date
-	sort.Slice(ratesAPI, func(i, j int) bool {
-		return (ratesAPI[i].Time).Before(ratesAPI[j].Time)
-	})
 
-	// Shift dates as database works with publishing dates
-	dateInit = dateInit.AddDate(0, 0, -1)
-	date = date.AddDate(0, 0, -1)
-
-	// Get "holidays" from non-existent database entries
-	holidays := []time.Time{}
+	// Determine holidays through missing database entries
 	existDates := []time.Time{}
 	for _, entry := range ratesAPI {
-		existDates = append(existDates, (*entry).Time)
+		existDates = append(existDates, (*entry).EffectiveDate)
 	}
-	auxDate := dateInit
-	for !utils.SameDays(auxDate, date.AddDate(0, 0, 1)) {
-		if !utils.ContainsDay(existDates, auxDate) && utils.CheckWeekDay(auxDate) {
-			holidays = append(holidays, auxDate)
-			auxDate = auxDate.AddDate(0, 0, 1)
-		} else {
-			auxDate = auxDate.AddDate(0, 0, 1)
-		}
-	}
-	fmt.Println(holidays)
+	holidays := utils.GetHolidays(existDates, dateInit, date)
+
 	// Check whether given (last) day is holiday or weekend. In case it is, consider last workday.
 	for utils.ContainsDay(holidays, date) || !utils.CheckWeekDay(date) {
 		date = date.AddDate(0, 0, -1)
-
 	}
+
+	// Sort ratesApi (type []*InterestRates) in increasing order according to date
+	// and remove the data for the final date, as only past values are compounded.
+	sort.Slice(ratesAPI, func(i, j int) bool {
+		return (ratesAPI[i].EffectiveDate).Before(ratesAPI[j].EffectiveDate)
+	})
+	ratesAPI = ratesAPI[:len(ratesAPI)-1]
 
 	// Remove holiday if after @date
 	for i, day := range holidays {
@@ -265,11 +265,8 @@ func (db *DB) GetCompoundedRate(symbol string, date time.Time, daysPerYear int) 
 		}
 	}
 
-	fmt.Println(dateInit)
-	fmt.Println(date)
-
-	rates := []float64{}
 	// Extract rates' values
+	rates := []float64{}
 	for i := range ratesAPI {
 		rates = append(rates, ratesAPI[i].Value)
 	}

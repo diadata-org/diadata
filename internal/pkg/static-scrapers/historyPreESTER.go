@@ -105,10 +105,10 @@ func WriteHistoricPreESTER(ds models.Datastore) error {
 		}
 
 		t := models.InterestRate{
-			Symbol: "PRE-ESTER",
-			Value:  rate,
-			Time:   dateTime,
-			Source: "ECB",
+			Symbol:          "PRE-ESTER",
+			Value:           rate,
+			PublicationTime: dateTime,
+			Source:          "ECB",
 		}
 
 		ds.SetInterestRate(&t)

@@ -73,10 +73,11 @@ func (s *RateScraper) UpdateSAFR() error {
 	}
 
 	t := &models.InterestRate{
-		Symbol: symbol,
-		Value:  rate,
-		Time:   dateTime,
-		Source: "FED",
+		Symbol:          symbol,
+		Value:           rate,
+		PublicationTime: dateTime,
+		EffectiveDate:   dateTime,
+		Source:          "FED",
 	}
 
 	// Send new data through channel chanInterestRate

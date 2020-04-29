@@ -102,7 +102,6 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 
 	// Convert time string to Time type in UTC and pass date (without daytime)
 	dateTime, err := time.Parse(time.RFC3339, ActData.CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
-
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -110,24 +109,27 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 	}
 
 	t1 := &models.InterestRate{
-		Symbol: "SAFR30",
-		Value:  rate1,
-		Time:   dateTime,
-		Source: "FED",
+		Symbol:          "SOFR30",
+		Value:           rate1,
+		PublicationTime: dateTime,
+		EffectiveDate:   dateTime,
+		Source:          "FED",
 	}
 
 	t2 := &models.InterestRate{
-		Symbol: "SAFR90",
-		Value:  rate2,
-		Time:   dateTime,
-		Source: "FED",
+		Symbol:          "SOFR90",
+		Value:           rate2,
+		PublicationTime: dateTime,
+		EffectiveDate:   dateTime,
+		Source:          "FED",
 	}
 
 	t3 := &models.InterestRate{
-		Symbol: "SAFR180",
-		Value:  rate3,
-		Time:   dateTime,
-		Source: "FED",
+		Symbol:          "SOFR180",
+		Value:           rate3,
+		PublicationTime: dateTime,
+		EffectiveDate:   dateTime,
+		Source:          "FED",
 	}
 
 	// Send new data through channel chanInterestRate

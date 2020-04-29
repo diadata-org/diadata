@@ -2,7 +2,6 @@ package ratederivatives
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"time"
 
@@ -20,8 +19,8 @@ func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 		return 0, err
 	}
 	rate := 1
+	// Increment @rate for each holiday/weekend day after date
 	date = date.AddDate(0, 0, 1)
-	// Remark: Caution with the check for holidays - formats have to be the same.
 	for !utils.CheckWeekDay(date) || utils.ContainsDay(holidays, date) {
 		rate++
 		date = date.AddDate(0, 0, 1)
@@ -33,40 +32,32 @@ func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 // @rate is a slice with daily rates for all business days in the respective period.
 // @daysPerYear determines the total number of days per business year.
 // @holidays is a slice of strings where each entry corresponds to a special holiday (i.e. not a
-// 			saturday or sunday) in the respective period. Each day is in the format yyyy-mm-dd.
-// @dateInit, @dateFinal determine the period of the loan. Both are given as yyyy-mm-dd.
+// 			saturday or sunday) in the respective period.
+// @dateInit, @dateFinal determine the period of the loan.
 func CompoundedRate(rate []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int) (float64, error) {
 
 	if utils.AfterDay(dateInit, dateFinal) {
 		log.Error("The final date cannot be before the initial date.")
 		return float64(0), errors.New("date error")
 	}
-	calendarDays, _ := utils.CountDays(dateInit, dateFinal, false)
-	businessDays, _ := utils.CountDays(dateInit, dateFinal, true)
-	businessDays -= len(holidays)
-
-	fmt.Println("No of business days: ", businessDays)
-	fmt.Println("No of calendar days: ", calendarDays)
 
 	// Check consistency of dates, holidays and rates
-	if len(rate) != businessDays {
+	NumBusinessDays, _ := utils.CountDays(dateInit, dateFinal, true)
+	NumBusinessDays -= len(holidays)
+	if len(rate) != NumBusinessDays {
 		log.Error("The given number of rate values and business days is not consistent.")
 		return float64(0), errors.New("date error")
 	}
-	fmt.Println(rate)
-	// Iterate through business days
+
+	// Iterate through business days to compute the compounded rate
 	prod := float64(1)
-	for i := 0; i < businessDays; i++ {
+	for i := 0; i < NumBusinessDays; i++ {
 		n, _ := RateFactor(dateInit, holidays)
-		if utils.SameDays(dateInit, dateFinal) {
-			// If the last day is before a holiday/weekend, only count it once.
-			n = 1
-		}
-		fmt.Println(n)
 		factor := 1 + (rate[i]/100)*float64(n)/float64(daysPerYear)
 		prod *= factor
 		dateInit = dateInit.AddDate(0, 0, n)
 	}
-	// return (prod - float64(1)) * float64(daysPerYear) / float64(calendarDays), nil
+
+	// In case of the SOFR Index, results are rounded to eight decimals
 	return math.Round(prod*1e8) * 1e-8, nil
 }

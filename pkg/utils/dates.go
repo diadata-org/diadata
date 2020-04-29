@@ -46,12 +46,12 @@ func AfterDay(date1, date2 time.Time) bool {
 }
 
 // CountDays returns the number of days between
-// @dateInit and @dateFinal, both given as converted from a string in the format yyyy-mm-dd, including the last day.
+// @dateInit and @dateFinal, both given as converted from a string in the format yyyy-mm-dd, excluding the last day.
 // @bool If true only business days are counted.
 func CountDays(dateInit, dateFinal time.Time, business bool) (days int, err error) {
 
 	if SameDays(dateInit, dateFinal) {
-		return 1, nil
+		return 0, nil
 	}
 	days = 0
 	if dateInit.After(dateFinal) {
@@ -62,7 +62,7 @@ func CountDays(dateInit, dateFinal time.Time, business bool) (days int, err erro
 
 	for {
 		if SameDays(dateInit, dateFinal) {
-			return days + 1, nil
+			return days, nil
 		}
 		if business {
 			if CheckWeekDay(dateInit) {
@@ -76,8 +76,28 @@ func CountDays(dateInit, dateFinal time.Time, business bool) (days int, err erro
 	}
 }
 
-// GetHolidays returns a slice of dates which are holidays in @zone between @dateInit and @dateFinal
-func GetHolidays(zone string, dateInit, dateFinal time.Time) (holidays []time.Time, err error) {
+// GetHolidays returns "holidays" as non-weekend complement of given days @workdays
+func GetHolidays(workdays []time.Time, dateInit, date time.Time) []time.Time {
+
+	if AfterDay(dateInit, date) {
+		log.Error("The initial date must not be after the final date.")
+		return []time.Time{}
+	}
+	auxDate := dateInit
+	holidays := []time.Time{}
+	for !SameDays(auxDate, date.AddDate(0, 0, 1)) {
+		if !ContainsDay(workdays, auxDate) && CheckWeekDay(auxDate) {
+			holidays = append(holidays, auxDate)
+			auxDate = auxDate.AddDate(0, 0, 1)
+		} else {
+			auxDate = auxDate.AddDate(0, 0, 1)
+		}
+	}
+	return holidays
+}
+
+// GetHolidaysZone returns a slice of dates which are holidays in @zone between @dateInit and @dateFinal
+func GetHolidaysZone(zone string, dateInit, dateFinal time.Time) (holidays []time.Time, err error) {
 	c := LocalCal(zone)
 	if SameDays(dateInit, dateFinal) {
 		if c.IsHoliday(dateInit) {

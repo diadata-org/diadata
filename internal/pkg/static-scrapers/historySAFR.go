@@ -90,18 +90,23 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
 		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
-
 		if err != nil {
-			fmt.Println(err)
+			log.Errorf("Error parsing publishing time of historic SAFR:", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
+		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationInd.CeffectiveDateInd.CEffDateInd)
+		if err != nil {
+			log.Errorf("Error parsing effective date of historic SAFR:", err)
+		}
+
 		t := models.InterestRate{
-			Symbol: "SAFR",
-			Value:  rate,
-			Time:   dateTime,
-			Source: "FED",
+			Symbol:          "SAFR",
+			Value:           rate,
+			PublicationTime: dateTime,
+			EffectiveDate:   effDate,
+			Source:          "FED",
 		}
 
 		ds.SetInterestRate(&t)

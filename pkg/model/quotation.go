@@ -16,8 +16,6 @@ const (
 	BufferTTL       = 60 * 60
 	BiggestWindow   = Window2
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
-	keyAllRates     = "all_rates"
-	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
 
 // MarshalBinary for quotations
