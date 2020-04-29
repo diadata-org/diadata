@@ -121,7 +121,7 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 	}
 	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
 	for i := range q {
-		q[i].Value /= 243.05812295231785
+		q[i].Value /= 2430.5812295231785
 	}
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
