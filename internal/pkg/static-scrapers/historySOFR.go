@@ -117,11 +117,14 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
+		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
+
 		t := models.InterestRate{
-			Symbol: symbol,
-			Value:  rate,
-			Time:   dateTime,
-			Source: "FED",
+			Symbol:          symbol,
+			Value:           rate,
+			PublicationTime: dateTime,
+			EffectiveDate:   effDate,
+			Source:          "FED",
 		}
 
 		ds.SetInterestRate(&t)

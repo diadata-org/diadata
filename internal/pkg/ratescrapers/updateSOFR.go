@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -82,11 +83,21 @@ func (s *RateScraper) UpdateSOFR() error {
 		dateTime = dateTime.UTC()
 	}
 
+	// Extract effective date from title
+	titleString := rss.Item.Title
+	dateRegexp, _ := regexp.Compile(`\d{4}-\d{2}-\d{2}`)
+	foundDate := dateRegexp.FindString(titleString)
+	effDate, err := time.Parse("2006-01-02", foundDate)
+	if err != nil {
+		log.Errorf("Error parsing the effective date of %v", symbol)
+	}
+
 	t := &models.InterestRate{
-		Symbol: symbol,
-		Value:  rate,
-		Time:   dateTime,
-		Source: "FED",
+		Symbol:          symbol,
+		Value:           rate,
+		PublicationTime: dateTime,
+		EffectiveDate:   effDate,
+		Source:          "FED",
 	}
 
 	// Send new data through channel chanInterestRate

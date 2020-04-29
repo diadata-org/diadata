@@ -105,32 +105,39 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
 		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
-
 		if err != nil {
-			fmt.Println(err)
+			log.Error("Error parsing publishing time for SOFRXXX", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
+		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
+		if err != nil {
+			log.Error("Error parsing effective date for SOFRXXX", err)
+		}
+
 		t1 := models.InterestRate{
-			Symbol: "SAFR30",
-			Value:  rate1,
-			Time:   dateTime,
-			Source: "FED",
+			Symbol:          "SOFR30",
+			Value:           rate1,
+			PublicationTime: dateTime,
+			EffectiveDate:   effDate,
+			Source:          "FED",
 		}
 
 		t2 := models.InterestRate{
-			Symbol: "SAFR90",
-			Value:  rate2,
-			Time:   dateTime,
-			Source: "FED",
+			Symbol:          "SOFR90",
+			Value:           rate2,
+			PublicationTime: dateTime,
+			EffectiveDate:   effDate,
+			Source:          "FED",
 		}
 
 		t3 := models.InterestRate{
-			Symbol: "SAFR180",
-			Value:  rate3,
-			Time:   dateTime,
-			Source: "FED",
+			Symbol:          "SOFR180",
+			Value:           rate3,
+			PublicationTime: dateTime,
+			EffectiveDate:   effDate,
+			Source:          "FED",
 		}
 
 		ds.SetInterestRate(&t1)

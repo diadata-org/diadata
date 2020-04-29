@@ -1,5 +1,9 @@
 package utils
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 // Contains takes a slice of strings and a string and checks if it is contained in the slice.
 func Contains(s *[]string, str string) bool {
 	for _, a := range *s {
@@ -12,6 +16,10 @@ func Contains(s *[]string, str string) bool {
 
 // MaxString return the maximum of a slice of strings along with its index
 func MaxString(sl []string) (string, int64) {
+	if len(sl) < 1 {
+		log.Error("Cannot find maximum in empty slice")
+		return "", 0
+	}
 	index := int64(0)
 	max := sl[0]
 	for k, entry := range sl {
@@ -25,6 +33,10 @@ func MaxString(sl []string) (string, int64) {
 
 // MinString return the maximum of a slice of strings along with its index
 func MinString(sl []string) (string, int64) {
+	if len(sl) < 1 {
+		log.Error("Cannot find minimum in empty slice")
+		return "", 0
+	}
 	index := int64(0)
 	min := sl[0]
 	for k, entry := range sl {

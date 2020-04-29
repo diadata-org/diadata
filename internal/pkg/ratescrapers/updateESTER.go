@@ -34,12 +34,14 @@ type (
 	EstrData struct {
 		Results Results `xml:"CALCULATION_RESULTS"`
 	}
+
 	Results struct {
-		Rate string `xml:"RATE"`
+		RefDate string `xml:"REF_DATE"`
+		Rate    string `xml:"RATE"`
 	}
 )
 
-func getRSS() (string, error) {
+func getRSS() (pubDate string, link string, err error) {
 	// Scrapes the actual rss feed address for the ESTER index
 
 	// First define the structure for decoding the xml
@@ -50,9 +52,10 @@ func getRSS() (string, error) {
 			Link  string `xml:"link"`
 		}
 		Channel struct {
-			Title string `xml:"title"`
-			Link  string `xml:"link"`
-			Item  []Item `xml:"item"`
+			Title   string `xml:"title"`
+			Link    string `xml:"link"`
+			PubDate string `xml:"pubDate"`
+			Item    []Item `xml:"item"`
 		}
 		RssMain struct {
 			Channel Channel `xml:"channel"`
@@ -75,11 +78,12 @@ func getRSS() (string, error) {
 	// Determine the item containing the link to the ESTER feed
 	for _, item := range rss.Channel.Item {
 		if strings.Contains(item.Title, "EURO-SHORT-TERM-RATE") {
-			return item.Link, nil
+			pubDate = rss.Channel.PubDate
+			link = item.Link
+			return
 		}
 	}
-
-	return "", err
+	return "", "", err
 }
 
 // UpdateESTER makes a GET request from an rss feed and sends updated value through
@@ -87,8 +91,8 @@ func getRSS() (string, error) {
 func (s *RateScraper) UpdateESTER() error {
 	log.Printf("ESTERScraper update")
 
-	// Get link to ESTER publication feed
-	address, err := getRSS()
+	// Get link to ESTER publication feed and publication time
+	pubTime, address, err := getRSS()
 
 	if err != nil {
 		fmt.Println(err)
@@ -120,22 +124,25 @@ func (s *RateScraper) UpdateESTER() error {
 		fmt.Println(err)
 	}
 
-	// Convert time string to Time type in UTC
-	layout := "2006-01-02T15:04:05"
+	// Convert publication time and effective date from string to Time type in UTC
 	loc, _ := time.LoadLocation("CET") // Time is given as CET time
-	dateTime, err := time.ParseInLocation(layout, rss.Header.ReleaseTime, loc)
-
+	publicationTime, err := time.ParseInLocation("2006/01/02 15:04:05", pubTime, loc)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		dateTime = dateTime.UTC()
+		publicationTime = publicationTime.UTC()
+	}
+	effDate, err := time.Parse("2006-01-02", rss.RssBody.Content.EstrData.Results.RefDate)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	t := &models.InterestRate{
-		Symbol: "ESTER",
-		Value:  rate,
-		Time:   dateTime,
-		Source: "ECB",
+		Symbol:          "ESTER",
+		Value:           rate,
+		PublicationTime: publicationTime,
+		EffectiveDate:   effDate,
+		Source:          "ECB",
 	}
 
 	// Send new data through channel chanInterestRate

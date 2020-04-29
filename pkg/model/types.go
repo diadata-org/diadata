@@ -33,15 +33,16 @@ type Quotation struct {
 }
 
 type InterestRate struct {
-	Symbol string
-	Value  float64
-	Time   time.Time
-	Source string
+	Symbol          string
+	Value           float64
+	PublicationTime time.Time
+	EffectiveDate   time.Time
+	Source          string
 }
 
 type InterestRateMeta struct {
 	Symbol    string
-	FirstDate string
+	FirstDate time.Time
 	Issuer    string
 }
 

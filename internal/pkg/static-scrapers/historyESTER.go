@@ -88,11 +88,12 @@ func WriteHistoricESTER(ds models.Datastore) error {
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
 		// ESTR is published at around 08:00 CET. This timestamp lacks in historic tables.
-		myTime := histDataSlice[i].AttrTIME_PERIOD + "T08:00:00"
-		layout := "2006-01-02T15:04:05"
-		loc, _ := time.LoadLocation("CET")
+		myTime := histDataSlice[i].AttrTIME_PERIOD
+		layout := "2006-01-02"
+		// loc, _ := time.LoadLocation("CET")
 		// Parse time to UTC time
-		dateTime, err := time.ParseInLocation(layout, myTime, loc)
+		// dateTime, err := time.ParseInLocation(layout, myTime, loc)
+		dateTime, err := time.Parse(layout, myTime)
 
 		if err != nil {
 			fmt.Println(err)
@@ -101,10 +102,11 @@ func WriteHistoricESTER(ds models.Datastore) error {
 		}
 
 		t := models.InterestRate{
-			Symbol: "ESTER",
-			Value:  rate,
-			Time:   dateTime,
-			Source: "ECB",
+			Symbol:          "ESTER",
+			Value:           rate,
+			PublicationTime: dateTime,
+			EffectiveDate:   dateTime,
+			Source:          "ECB",
 		}
 
 		ds.SetInterestRate(&t)
