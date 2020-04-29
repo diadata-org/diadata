@@ -186,42 +186,6 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 // Risk-free rates methods
 // ---------------------------------------------------------------------------------------
 
-// GetCompoundedRateOld returns the compounded rate at the day @date. This relies on the consistence of
-// holidays given by calendar package and actual bank holidays of the rate's issuing bank.
-func (db *DB) GetCompoundedRateOld(symbol string, date time.Time, zone string, daysPerYear int) (compRate float64, err error) {
-
-	dateInit, err := db.GetFirstDate(symbol)
-	if err != nil {
-		return
-	}
-	holidays, err := utils.GetHolidaysZone(zone, dateInit, date)
-	if err != nil {
-		return
-	}
-	// Check whether given day is holiday or weekend. In case it is, consider last workday.
-	for utils.ContainsDay(holidays, date) || !utils.CheckWeekDay(date) {
-		date = date.AddDate(0, 0, -1)
-	}
-
-	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
-	if err != nil {
-		return
-	}
-	// Sort ratesApi (type []*InterestRates) in increasing order according to date
-	sort.Slice(ratesAPI, func(i, j int) bool {
-		return (ratesAPI[i].EffectiveDate).Before(ratesAPI[j].EffectiveDate)
-	})
-	// Compounded indices start at day zero with value 1
-	dateInit = dateInit.AddDate(0, 0, -1)
-	rates := []float64{1}
-	// Extract rates' values
-	for i := range ratesAPI {
-		rates = append(rates, ratesAPI[i].Value)
-	}
-	compRate, err = ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear)
-	return
-}
-
 // GetCompoundedRate returns the compounded rate at the day @date. It computes the rate for all
 // days for which an entry is present in the database. All other days are assumed to be holidays (or weekends).
 func (db *DB) GetCompoundedRate(symbol string, date time.Time, daysPerYear int) (compRate float64, err error) {
