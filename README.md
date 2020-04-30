@@ -18,8 +18,6 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 ### Alpha Version - dApp Registry
 
-Crypto Volatility Index
-
 [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
 
 [FINOA](https://finoa.io) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI 
