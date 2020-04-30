@@ -6,9 +6,7 @@ Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem
 
 All DIA data points can be used in Ethereum Smart Contracts. We provide oracle solutions to use this financial information in any smart contract. The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
-
-
-## Coinhub Oracles
+## Immutable Oracle Feeds
 
 The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price, and supply data. By using `getParameters(asset_index)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
 
@@ -71,8 +69,4 @@ For collecting financial data, we use a centralized backend that runs collectors
 * Quotation Scrapers: They are used to collect official quotations from central trusted providers.
 
   The first quotations in our database are daily exchange rates from the European Central Bank \(ECB\) against various international currencies.
-
-## How to contribute
-
-DIA is open for anyone to contribute and we always welcome pull requests. We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
 

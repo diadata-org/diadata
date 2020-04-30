@@ -8,9 +8,21 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 {% page-ref page="index/tutorials/" %}
 
-{% page-ref page="../api/" %}
-
 {% page-ref page="index/methodology/" %}
+
+{% tabs %}
+{% tab title="Digital Assets" %}
+{% page-ref page="index/methodology/exchangeprices.md" %}
+
+{% page-ref page="index/methodology/digital-assets/supplynumbers.md" %}
+
+{% page-ref page="index/methodology/digital-assets/cvi.md" %}
+{% endtab %}
+
+{% tab title="Traditional Assets" %}
+{% page-ref page="index/methodology/traditional-assets/overnight-rates.md" %}
+{% endtab %}
+{% endtabs %}
 
 
 

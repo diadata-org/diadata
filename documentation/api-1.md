@@ -1,8 +1,40 @@
-# diadata.org API
+# API Documentation
 
 The world's crowd-driven financial data community has a professional API made for you.  
 Decentral and transparent by design.  
 With our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.
+
+{% api-method method="get" host="" path="" %}
+{% api-method-summary %}
+
+{% endapi-method-summary %}
+
+{% api-method-description %}
+
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
 
 **Find the right data for your needs**  
 Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.  
@@ -148,11 +180,11 @@ Example: [https://api.diadata.org/v1/symbols](https://api.diadata.org/v1/symbols
 
 * 404: Symbol not found.
 
-  [restApi.APIError](api.md#restapiapierror)
+  [restApi.APIError](api-1.md#restapiapierror)
 
 * 500: error.
 
-  [restApi.APIError](api.md#restapiapierror)
+  [restApi.APIError](api-1.md#restapiapierror)
 
 ## Use cases
 
