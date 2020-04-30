@@ -498,7 +498,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     //wallet to disperse loyalty points as needed.
     address public loyaltyWallet = address(0x0);
 
-    //address where team vesting contract will relase the team vested tokens
+    //address where team vesting contract will release the team vested tokens
     address public teamVestingContractAddress;
 
     bool public isTeamVestingInitiated = false;

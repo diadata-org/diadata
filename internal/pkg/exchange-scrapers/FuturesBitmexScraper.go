@@ -88,7 +88,7 @@ func (s *BitmexScraper) ScraperClose(market string, connection interface{}) erro
 
 // Scrape starts a websocket scraper for market
 func (s *BitmexScraper) Scrape(market string) {
-	// this block is for listening to sigterms and interupts
+	// this block is for listening to sigterms and interrupts
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	userCancelled := make(chan bool, 1)

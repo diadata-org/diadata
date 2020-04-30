@@ -32,7 +32,7 @@ type tradeMessageCoinflex struct {
 }
 
 // the response of https://webapi.coinflex.com/markets/ is a list of marketCoinglex JSON objects
-// This is used to validate that the market that you have selected to scrape acutally exists. This is done
+// This is used to validate that the market that you have selected to scrape actually exists. This is done
 // validateMarket function.
 type marketCoinflex struct {
 	Base     int64  `json:"base"`
@@ -152,7 +152,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 		return
 	}
 
-	// this block is for listening to sigterms and interupts
+	// this block is for listening to sigterms and interrupts
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	userCancelled := make(chan bool, 1)

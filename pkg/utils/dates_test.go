@@ -100,7 +100,7 @@ func TestCountDays(t *testing.T) {
 	for _, table := range tables {
 		value, err := CountDays(table.dateInit, table.dateFinal, table.business)
 		if value != table.days {
-			t.Errorf("Number of days bewteen %v and %v is %v but should be %v, as business is %v.", table.dateInit, table.dateFinal, value, table.days, table.business)
+			t.Errorf("Number of days between %v and %v is %v but should be %v, as business is %v.", table.dateInit, table.dateFinal, value, table.days, table.business)
 		}
 		if err != nil {
 			t.Errorf("Error should be %v but is %v", table.err, err)
