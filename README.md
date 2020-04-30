@@ -16,6 +16,22 @@ Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem
 
 All DIA data points can be used in Ethereum Smart Contracts. We provide oracle solutions to use this financial information in any smart contract. The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
+## Get started right away
+
+{% page-ref page="api/" %}
+
+{% page-ref page="documentation/index/tutorials/" %}
+
+
+
+### **Feedback**
+
+Your feedback helps improve DIA in order for us to find data and applications that are the most useful for you and the broader developer community.
+
+Link: [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform)
+
+
+
 ### Alpha Version - dApp Registry
 
 [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
@@ -28,15 +44,5 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
 
-### How to contribute
 
-DIA is open for anyone to contribute and we always welcome pull requests. We also provide tasks on [Gitcoin](https://gitcoin.co/), a collaboration tool focused on cryptocurrency projects.
-
-
-
-### **Feedback**
-
-Your feedback helps improve DIA in order for us to find data and applications that are the most useful for you and the broader developer community.
-
-Link: [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform)
 

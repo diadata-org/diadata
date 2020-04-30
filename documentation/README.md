@@ -6,11 +6,11 @@ Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem
 
 All DIA data points can be used in Ethereum Smart Contracts. We provide oracle solutions to use this financial information in any smart contract. The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
-{% page-ref page="tutorials/" %}
+{% page-ref page="index/tutorials/" %}
 
 {% page-ref page="../api/" %}
 
-{% page-ref page="methodology/" %}
+{% page-ref page="index/methodology/" %}
 
 
 
