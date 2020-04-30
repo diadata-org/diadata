@@ -208,6 +208,7 @@ func main() {
 		dia.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 		dia.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
 		dia.GET("/compoundedRate/:symbol/:time/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
+		dia.GET("/compoundedAvg/:symbol/:time/:days/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvg))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

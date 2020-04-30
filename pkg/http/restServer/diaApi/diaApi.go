@@ -178,7 +178,33 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
 	// Compute compunded rate and return if no error
-	q, err := env.DataStore.GetCompoundedRate(symbol, date, daysPerYear)
+	q, err := env.DataStore.GetCompoundedIndex(symbol, date, daysPerYear)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+// GetCompoundedAvg is the delegate method to fetch compunded rate values for interest rates
+func (env *Env) GetCompoundedAvg(c *gin.Context) {
+	// Import and cast input from API call
+	symbol := c.Param("symbol")
+	datestring := c.Param("time")
+	date, _ := time.Parse("2006-01-02", datestring)
+	days := c.Param("days")
+	calDays, err := strconv.Atoi(days)
+	dpy := c.Param("dpy")
+	daysPerYear, err := strconv.Atoi(dpy)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	}
+	// Compute compunded rate and return if no error
+	q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)

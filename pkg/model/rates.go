@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"time"
@@ -186,14 +187,17 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 // Risk-free rates methods
 // ---------------------------------------------------------------------------------------
 
-// GetCompoundedRate returns the compounded rate at the day @date. It computes the rate for all
+// GetCompoundedRate returns the compounded rate for the period @dateInit to @date. It computes the rate for all
 // days for which an entry is present in the database. All other days are assumed to be holidays (or weekends).
-func (db *DB) GetCompoundedRate(symbol string, date time.Time, daysPerYear int) (compRate float64, err error) {
+func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPerYear int) (compRate float64, err error) {
 
 	// Get initial date for the rate with @symbol
-	dateInit, err := db.GetFirstDate(symbol)
+	firstPublication, err := db.GetFirstDate(symbol)
 	if err != nil {
 		return
+	}
+	if utils.AfterDay(firstPublication, dateInit) {
+		log.Error("Initial date cannot be earlier than first publication date.")
 	}
 
 	// Get rate data from database
@@ -234,8 +238,31 @@ func (db *DB) GetCompoundedRate(symbol string, date time.Time, daysPerYear int) 
 	for i := range ratesAPI {
 		rates = append(rates, ratesAPI[i].Value)
 	}
+	fmt.Println(rates)
 	compRate, err = ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear)
 	return
+}
+
+// GetCompoundedIndex returns the compounded index over the maximal period of existence of @symbol
+func (db *DB) GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (float64, error) {
+	// Get initial date for the rate with @symbol
+	dateInit, err := db.GetFirstDate(symbol)
+	if err != nil {
+		return 0, err
+	}
+	return db.GetCompoundedRate(symbol, dateInit, date, daysPerYear)
+}
+
+// GetCompoundedAvg returns the compounded average of the index @symbol over rolling @calDays calendar days.
+func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (float64, error) {
+	dateInit := date.AddDate(0, 0, -calDays)
+	fmt.Println(dateInit)
+	index, err := db.GetCompoundedRate(symbol, dateInit, date, daysPerYear)
+	if err != nil {
+		return 0, err
+	}
+	compAvg := 100 * (index - 1) * float64(daysPerYear) / float64(calDays)
+	return compAvg, nil
 }
 
 // ---------------------------------------------------------------------------------------

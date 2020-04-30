@@ -1,30 +1,24 @@
 var chart;
-// The chart is shifted to the left when reaching @maxPoints
-const maxPoints = 10000;
-let today = new Date().toISOString().slice(0, 10);
-let yesterday = new Date(Date.now() - 864e5).toISOString().slice(0,10);
 
-// ------------------------------------------------------------------------------------------------
-// Only this part is rate specific -> Refactoring?
-// ------------------------------------------------------------------------------------------------
-
-RateInfo = {
-	name: 'Secured Overnight Financing Rate',
-	symbol: 'SOFR',
-	timeUpdate: 10000,
+IndexInfo = {
+	name: 'Volatility Index',
+	symbol: 'VIX',
+	timeInterval: 100000,
+	timeUpdate: 10000
 }
+
+let now = Math.round(Date.now()/1000);
+let beforeNow = (now - IndexInfo.timeInterval).toString();
+now = now.toString()
 
 getApi =  {
-	historic: 'https://api.diadata.org/v1/interestrate/SOFR?dateInit=2018-11-01&dateFinal=' + yesterday,
-	actual: 'https://api.diadata.org/v1/interestrate/SOFR/' + today,
+	prefill: 'https://api.diadata.org/v1/cviIndex?starttime=1&endtime=1586085310',
+	postfill: 'https://api.diadata.org/v1/cviIndex?starttime=1586085311&endtime=' + beforeNow,
+	update: 'https://api.diadata.org/v1/cviIndex?starttime=' + beforeNow + '&endtime=' + now,
 }
 
 // ------------------------------------------------------------------------------------------------
-// The code below is rate independent / can easily be made rate independent
-// ------------------------------------------------------------------------------------------------
-
-// ------------------------------------------------------------------------------------------------
-// Prefill with historic data
+// Prefill with data
 // ------------------------------------------------------------------------------------------------
 
 function getHistoric(url, callback) {
@@ -51,52 +45,66 @@ function getHistoric(url, callback) {
     request.send()
 }
 
-getHistoric(getApi.historic, function(obj) {
-    // Each entry of obj corresponds to rate information at a specific timestamp.
+// Fill chart with data upon loading screen
+getHistoric(getApi.prefill, function(obj) {
+    // Each entry of obj corresponds to rate information at a specific timestamp
 	prefillArray = []
     for(i = 0; i < obj.length; i++) {  
-        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
-    }
-    // Sort array by date ...
-    prefillArray.sort()
-    // ... and fill the chart.
+        prefillArray.push([Date.parse(obj[i].Timestamp), obj[i].Value]);
+	}
+    // Fill the chart
     chart.series[0].setData(prefillArray)
 });
 
+
 // ------------------------------------------------------------------------------------------------
-// Update asynchronously
+// As soon as chart is loaded add all data and then update asynchonously
 // ------------------------------------------------------------------------------------------------
 
 function requestData() {
+
+	// Load older data
+	getHistoric(getApi.postfill, function(obj) {
+		postfillArray = []
+		for(i = 0; i < obj.length; i++) {  
+			postfillArray.push([Date.parse(obj[i].Timestamp), obj[i].Value]);
+		}
+		chart.series[0].setData(postfillArray)
+	});
+		
     $.ajax({
 		cache: true,
-		url: getApi.actual,
+		url: getApi.update,
 		type: 'GET',
 
 		// If GET request is successful, add data to the chart
-        success: function(point) {
-			// @timeseries points to the first chart's series.
-			// @shift restricts the number of displayed points.
-			var timeseries = chart.series[0],
-				shift = timeseries.data.length > maxPoints;
+        success: function(points) {
+
+			console.log("success")
+			
+			// Get the actual value
+			if(points.length > 1) {
+				var point = points[points.length-1];
+			} else {
+				var point = points;
+			}
 			
 			// convert time (string) to Unix time for plotting
-			var date = Date.parse(point.EffectiveDate);
+			var date = Date.parse(point.Timestamp);
             console.log(point)
             
 			// Append a data point to the chart's series if the timestamp is new
-            L = chart.series[0].xData.length;
-            
+			L = chart.series[0].xData.length;
 			if(L == 0) {
-				chart.series[0].addPoint([date, point.Value], true, shift);
-                console.log("Initial fill: " + point.EffectiveDate)                
+				chart.series[0].addPoint([date, point.Value]);
+                console.log("Initial fill: " + point.Timestamp)                
 			} else if(L > 0 && date != chart.series[0].xData[L-1]){
-				chart.series[0].addPoint([date, point.Value], true, shift);
-				console.log("Updated point at: " + point.EffectiveDate)
+				chart.series[0].addPoint([date, point.Value]);
+				console.log("Updated point at: " + point.Timestamp)
 			}
 
 			// Check for new data after @timeUpdate milliseconds
-			setTimeout(requestData, RateInfo.timeUpdate); 
+			setTimeout(requestData, IndexInfo.timeUpdate); 
         },
 	});
 }
@@ -111,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chart: {
             type: 'spline',
             events: {
-				load: requestData
+				load: requestData,
 			}
 		},
 		credits: {
@@ -119,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			href: 'https://diadata.org'
 		},
         title: {
-            text: RateInfo.name,
+            text: IndexInfo.name,
         },
         xAxis: {
             tickPixelInterval: 150,
@@ -139,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         series: [
 			{
-				name: RateInfo.symbol,
+				name: IndexInfo.symbol,
 				data: []
 			},
 		]

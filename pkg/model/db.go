@@ -54,7 +54,8 @@ type Datastore interface {
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
-	GetCompoundedRate(symbol string, date time.Time, daysPerYear int) (compRate float64, err error)
+	GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (compRate float64, err error)
+	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (float64, error)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
