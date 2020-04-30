@@ -18,6 +18,6 @@
     * [API](documentation/api-1/api.md)
     * [Oracles in DIA](documentation/api-1/oracles.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
-* [Licence Agreement](licence-agreement.md)
+* [CC Licence Agreement](licence-agreement.md)
 * [Disclaimer](disclaimer.md)
 

@@ -1,4 +1,8 @@
-# Licence Agreement
+---
+description: For the usage of our data and services
+---
+
+# CC Licence Agreement
 
 ![Attribution-ShareAlike 4.0 International \(CC BY-SA 4.0\)](.gitbook/assets/bildschirmfoto-2020-03-03-um-10.54.30.png)
 
