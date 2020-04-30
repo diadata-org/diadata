@@ -12,7 +12,7 @@ description: 'Our Mission: Wikipedia for Financial Data'
 
 ## Get started right away
 
-{% page-ref page="documentation/index/tutorials/" %}
+{% page-ref page="documentation/tutorials/" %}
 
 {% page-ref page="documentation/api-1/" %}
 
