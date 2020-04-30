@@ -4,7 +4,7 @@ description: >-
   from one another in the overnight market.
 ---
 
-# Overnight Rates
+# Interbank overnight interest rates
 
 ## Secured Overnight Financing Rate \(SOFR\)
 
