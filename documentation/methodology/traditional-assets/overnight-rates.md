@@ -31,7 +31,7 @@ Source:
 Example for API call:  
 [https://api.diadata.org/v1/interestrate/SAFR/2020-04-16](https://api.diadata.org/v1/interestrate/SAFR/2020-04-16)
 
-### SAFR30, SAFR90 and SAFR180
+### SOFR30, SOFR90 and SOFR180
 
 These rates are compounded averages of the SOFR over rolling 30-, 90-, and 180-calendar day periods.
 
@@ -39,7 +39,7 @@ Source:
 [https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind\#Chart12](https://apps.newyorkfed.org/markets/autorates/sofr-avg-ind#Chart12)
 
 Example for API call:  
-[https://api.diadata.org/v1/interestrate/SAFR90/2020-04-16](https://api.diadata.org/v1/interestrate/SAFR90/2020-04-16)
+[https://api.diadata.org/v1/interestrate/SOFR90/2020-04-16](https://api.diadata.org/v1/interestrate/SOFR90/2020-04-16)
 
 ## Euro Short-Term Rate \(€STR\)
 
