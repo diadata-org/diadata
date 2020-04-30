@@ -96,6 +96,13 @@ Path Params:
 
 * symbol \[string\]: Some symbol.
 
+### GET /v1/cviIndex
+
+Get all values of the Crypto Volatility Index.  
+Example: [https://api.diadata.org/v1/cviIndex](https://api.diadata.org/v1/cviIndex)
+
+* Parameters: starttime \[int\]: Unix timestamp where the array values should begin, endtime \[int\] Unix timestamp where the array should end
+
 ### GET /v1/coins
 
 Get a list of all available coins.  
