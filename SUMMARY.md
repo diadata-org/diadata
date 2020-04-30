@@ -2,11 +2,11 @@
 
 * [Readme](README.md)
 * [Documentation](documentation/README.md)
+  * [DIA Technical Structure](documentation/dia-technical-structure.md)
   * [Tutorials](documentation/tutorials/README.md)
     * [Write your own rate scraper](documentation/tutorials/write-your-own-rate-scraper.md)
     * [Write your own blockchain scraper](documentation/tutorials/blockchainscraper.md)
     * [Write your own exchange scraper](documentation/tutorials/exchangescrapers.md)
-  * [DIA Technical Structure](documentation/dia-technical-structure.md)
   * [Methodology](documentation/methodology/README.md)
     * [Digital Assets](documentation/methodology/digital-assets/README.md)
       * [Pricing Methodology of Crypto Exchange Quotations](documentation/methodology/digital-assets/exchangeprices.md)
