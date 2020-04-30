@@ -6,17 +6,6 @@ Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem
 
 All DIA data points can be used in Ethereum Smart Contracts. We provide oracle solutions to use this financial information in any smart contract. The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
-## Immutable Oracle Feeds
-
-The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price, and supply data. By using `getParameters(asset_index)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
-
-Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract. In the event view, the latest updates can be seen. The event fields show the values in the following locations:
-
-* Price in Cent is in the second field \(display as `number`\)
-* Supply is in the third field \(display as `number`\)
-* UNIX Timestamp of last update is displayed in the fourth field \(display as `number`\)
-* Name is displayed in the sixth and last field \(display as `text`\).
-
 ## API Access
 
 You can find documnentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/documentation/api.md). Several endpoints exist that show the different kind of data we collect:
