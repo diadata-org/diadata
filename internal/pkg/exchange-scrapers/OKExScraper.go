@@ -20,7 +20,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var _OKExSocketurl = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
+var _OKExSocketURL = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
 
 type Response struct {
 	Channel string     `json:"channel"`
@@ -64,7 +64,7 @@ func NewOKExScraper(exchangeName string) *OKExScraper {
 		chanTrades:   make(chan *dia.Trade),
 	}
 
-	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketurl.String(), nil)
+	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketURL.String(), nil)
 
 	if err != nil {
 		log.Error("dial:", err)
@@ -78,19 +78,19 @@ func NewOKExScraper(exchangeName string) *OKExScraper {
 // Useful to reconnect to ws when the connection is down
 func (s *OKExScraper) reconnectToWS() {
 
-	SwConn_new, _, err := ws.DefaultDialer.Dial(_OKExSocketurl.String(), nil)
+	SwConnNew, _, err := ws.DefaultDialer.Dial(_OKExSocketURL.String(), nil)
 
 	if err != nil {
 		log.Error("dial:", err)
 	}
 
-	s.wsClient = SwConn_new
+	s.wsClient = SwConnNew
 }
 
 // Subscribe again to all channels
 func (s *OKExScraper) subscribeToALL() {
 
-	for key, _ := range s.pairScrapers {
+	for key := range s.pairScrapers {
 		a := &Subscribe{
 			Event:   "addChannel",
 			Channel: "ok_sub_spot_" + strings.ToLower(key) + "_deals",
@@ -124,7 +124,11 @@ func (s *OKExScraper) mainLoop() {
 					log.Error("err", err)
 					return
 				}
-				json.Unmarshal(text, &message)
+				err = json.Unmarshal(text, &message)
+				if err != nil {
+					log.Error("err", err)
+					return
+				}
 
 				//skip subscribe channel confirm data
 				if message[0].Binary == 0 {
@@ -135,13 +139,13 @@ func (s *OKExScraper) mainLoop() {
 
 					if ok {
 
-						f64Price_string := message[0].Data[0][1]
-						f64Price, err := strconv.ParseFloat(f64Price_string, 64)
+						f64PriceString := message[0].Data[0][1]
+						f64Price, err := strconv.ParseFloat(f64PriceString, 64)
 
 						if err == nil {
 
-							f64Volume_string := message[0].Data[0][2]
-							f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
+							f64VolumeString := message[0].Data[0][2]
+							f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
 
 							if err == nil {
 
@@ -162,18 +166,18 @@ func (s *OKExScraper) mainLoop() {
 								ps.parent.chanTrades <- t
 
 							} else {
-								log.Errorf("parsing volume %v", f64Volume_string)
+								log.Errorf("parsing volume %v", f64VolumeString)
 							}
 
 						} else {
-							log.Errorf("parsing price %v", f64Price_string)
+							log.Errorf("parsing price %v", f64PriceString)
 						}
 					}
 				}
 			}
 		}
 	}
-	s.cleanup(errors.New("Main loop terminated by Close()"))
+	s.cleanup(errors.New("main loop terminated by Close()"))
 }
 
 func GzipDecode(in []byte) ([]byte, error) {
@@ -181,7 +185,6 @@ func GzipDecode(in []byte) ([]byte, error) {
 	defer reader.Close()
 
 	return ioutil.ReadAll(reader)
-
 }
 
 func (s *OKExScraper) cleanup(err error) {
@@ -207,7 +210,10 @@ func (s *OKExScraper) Close() error {
 	close(s.shutdown)
 	// Set false first to prevent reconnect
 	s.run = false
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -312,8 +318,8 @@ func (ps *OKExPairScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *OKExScraper) Channel() chan *dia.Trade {
-	return ps.chanTrades
+func (s *OKExScraper) Channel() chan *dia.Trade {
+	return s.chanTrades
 }
 
 // Error returns an error when the channel Channel() is closed
