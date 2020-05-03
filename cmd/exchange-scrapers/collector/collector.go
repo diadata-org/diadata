@@ -18,6 +18,7 @@ const (
 	watchdogDelay = 60.0 * 3.5
 )
 
+// nazariyv: TODO: this package redeclares the same functions as in collectRates
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 	lastTradeTime := time.Now()

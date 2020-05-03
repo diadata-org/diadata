@@ -172,15 +172,14 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 	}()
 }
 
-// ScrapeMarkets - scrapes all the optiosn markets
+// ScrapeMarkets - scrapes all the options markets
 func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
-	// 1. authenticate
 	err := s.Authenticate(s.WsConnection)
 	if err != nil {
 		log.Errorf("could not authenticate. retrying, err: %s", err)
 		return
 	}
-	log.Info("Authentication done")
+	log.Info("Authentication success")
 	go s.refreshWsToken()
 	go func() {
 		for {

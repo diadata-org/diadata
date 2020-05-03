@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/chromedp/chromedp"
-	"github.com/chromedp/chromedp/runner"
+	// ! nazariyv: after the refactor this is gone. there is a built-in function now
+	//"github.com/chromedp/chromedp/runner" ! https://github.com/chromedp/chromedp/issues/318
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
@@ -48,37 +48,35 @@ func main() {
 	}
 	prevResult := 0.0
 
-	ctxt, cancel := context.WithCancel(context.Background())
+	// create chrome instance
+	var opts = []chromedp.ExecAllocatorOption{
+		chromedp.Flag("headless", true),
+		chromedp.Flag("disable-gpu", true),
+		chromedp.Flag("no-first-run", true),
+		chromedp.Flag("no-default-browser-check", true),
+		chromedp.Flag("no-sandbox", true),
+	}
+	allocContext, _ := chromedp.NewExecAllocator(context.Background(), opts...)
+	ctx, cancel := chromedp.NewContext(allocContext, chromedp.WithLogf(noLog))
+	defer cancel()
+	// create a timeout
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	var options chromedp.Option
-	options = chromedp.WithRunnerOptions(
-		runner.Flag("headless", true),
-		runner.Flag("disable-gpu", true),
-		runner.Flag("no-first-run", true),
-		runner.Flag("no-default-browser-check", true),
-		runner.Flag("no-sandbox", true),
-	)
-
-	c, err := chromedp.New(ctxt, options, chromedp.WithLog(noLog))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var data string
-	err = c.Run(ctxt, firstLoad(&data))
+	err := chromedp.Run(ctx, firstLoad(&data))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for {
-		err = c.Run(ctxt, reload(&data))
+		err = chromedp.Run(ctx, reload(&data))
 		if err != nil {
 			log.Fatal(err)
 		}
 		result, err := strconv.ParseFloat(strings.Replace(strings.Replace(data, ",", "", -1), "$", "", -1), 64)
 		if err == nil {
-			fmt.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
+			log.Printf("Symbol: %s ; circulatingSupply: %f\n", symbol, result)
 			if prevResult != result {
 				client.SendSupply(&dia.Supply{
 					Symbol:            symbol,

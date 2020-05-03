@@ -17,10 +17,7 @@ import (
 	"github.com/tkanos/gonfig"
 )
 
-const (
-	watchdogDelay = 60.0 * 3.5
-)
-
+// TODO: pairsExchange is undefined here
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 	lastTradeTime := time.Now()

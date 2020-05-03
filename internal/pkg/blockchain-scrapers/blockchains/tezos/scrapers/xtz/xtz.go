@@ -1,7 +1,7 @@
 package main
 
 import (
-	goTezos "github.com/DefinitelyNotAGoat/go-Tezos"
+	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"os"
