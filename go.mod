@@ -11,6 +11,7 @@ require (
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200207184043-4d37e8d4be18
 	github.com/blockstatecom/gin-jwt v1.0.1
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
+	github.com/chromedp/cdproto v0.0.0-20200116234248-4da64dd111ac
 	github.com/chromedp/chromedp v0.5.3
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
@@ -23,6 +24,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
 	github.com/jjjjpppp/quoinex-go-client v0.0.0-20190318060220-d8e092fed0b2
+	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
@@ -34,6 +36,7 @@ require (
 	github.com/swaggo/swag v1.6.5
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/urfave/cli v1.22.4
+	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200501053045-e0ff5e5a1de5
 	gonum.org/v1/plot v0.7.0
