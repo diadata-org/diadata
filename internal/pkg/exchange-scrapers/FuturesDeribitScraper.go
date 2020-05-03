@@ -175,7 +175,7 @@ func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, err
 	if err != nil {
 		return nil, err
 	}
-	allMarkets := []string{}
+	var allMarkets []string
 	for _, market := range decodedMsg.Result {
 		switch marketKind {
 		case DeribitFuture:
