@@ -50,17 +50,20 @@ type Datastore interface {
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
 	GetConfigTogglePairDiscovery() (bool, error)
-	SetInterestRate(ir *InterestRate) error
-	GetInterestRate(symbol, date string) (*InterestRate, error)
-	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
-	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
-	GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (compRate float64, err error)
-	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (float64, error)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
+
+	// Interest rates' methods
+	SetInterestRate(ir *InterestRate) error
+	GetInterestRate(symbol, date string) (*InterestRate, error)
+	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
+	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
+	GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (*InterestRate, error)
+	GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int) ([]*InterestRate, error)
+	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (*InterestRate, error)
 }
 
 const (

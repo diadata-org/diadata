@@ -189,12 +189,12 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 
 // GetCompoundedRate returns the compounded rate for the period @dateInit to @date. It computes the rate for all
 // days for which an entry is present in the database. All other days are assumed to be holidays (or weekends).
-func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPerYear int) (compRate float64, err error) {
+func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPerYear int) (*InterestRate, error) {
 
 	// Get initial date for the rate with @symbol
 	firstPublication, err := db.GetFirstDate(symbol)
 	if err != nil {
-		return
+		return &InterestRate{}, err
 	}
 	if utils.AfterDay(firstPublication, dateInit) {
 		log.Error("Initial date cannot be earlier than first publication date.")
@@ -203,7 +203,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	// Get rate data from database
 	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
 	if err != nil {
-		return
+		return &InterestRate{}, err
 	}
 
 	// Determine holidays through missing database entries
@@ -239,29 +239,54 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 		rates = append(rates, ratesAPI[i].Value)
 	}
 	fmt.Println(rates)
-	compRate, err = ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear)
-	return
+
+	compRate, err := ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear)
+	if err != nil {
+		return &InterestRate{}, err
+	}
+
+	// Fill InterestRate type for return
+	ir := &InterestRate{}
+	ir.Symbol = symbol + "_dia_image"
+	ir.Value = compRate
+	ir.EffectiveDate = date
+	ir.Source = ratesAPI[0].Source
+
+	return ir, nil
 }
 
 // GetCompoundedIndex returns the compounded index over the maximal period of existence of @symbol
-func (db *DB) GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (float64, error) {
+func (db *DB) GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (*InterestRate, error) {
 	// Get initial date for the rate with @symbol
 	dateInit, err := db.GetFirstDate(symbol)
 	if err != nil {
-		return 0, err
+		return &InterestRate{}, err
 	}
 	return db.GetCompoundedRate(symbol, dateInit, date, daysPerYear)
 }
 
+// GetCompoundedIndexRange returns a range of compounded index values of @symbol
+func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int) (values []*InterestRate, err error) {
+
+	for utils.AfterDay(dateFinal, dateInit) {
+		val, err := db.GetCompoundedIndex(symbol, dateInit, daysPerYear)
+		if err != nil {
+			log.Error("Error on compounded Index")
+		}
+		values = append(values, val)
+	}
+	return
+}
+
 // GetCompoundedAvg returns the compounded average of the index @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (float64, error) {
+func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (compAvg *InterestRate, err error) {
 	dateInit := date.AddDate(0, 0, -calDays)
 	fmt.Println(dateInit)
 	index, err := db.GetCompoundedRate(symbol, dateInit, date, daysPerYear)
 	if err != nil {
-		return 0, err
+		return
 	}
-	compAvg := 100 * (index - 1) * float64(daysPerYear) / float64(calDays)
+	compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
 	return compAvg, nil
 }
 
