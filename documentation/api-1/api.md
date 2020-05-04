@@ -12,7 +12,7 @@ Get chart points for an exchange.
 Example: [https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS](https://api.diadata.org/v1/chartPoints/MEDIR120/GateIO/EOS)
 
 For a list of available trading places see:  
-[https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M4DjNVf9NcISNyqFK4p/documentation/index](https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M4DjNVf9NcISNyqFK4p/documentation/index)
+[https://docs.diadata.org/documentation/api-1\#api-access](https://docs.diadata.org/documentation/api-1#api-access)
 
 Query Params:
 
