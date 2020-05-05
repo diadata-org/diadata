@@ -26,7 +26,8 @@ $$
 \sigma^2=\frac{2}{T}\sum_{i}\frac{\Delta K_i}{K^2_i}e^{RT}Q(K_i)
 $$
 
-with the sum of deltas being defined as the intervals between strike prices for each strike price. R is the risk-free lending rate and Q\(k\) is used to describe the average of the bid-ask-spread for an option K\_i.
+with the sum of deltas being defined as the intervals between strike prices for each strike price.  
+R is the risk-free lending rate and Q\(k\) is used to describe the average of the bid-ask-spread for an option K\_i.
 
 The CVI starts at a value of 1000.
 
