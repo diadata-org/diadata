@@ -61,9 +61,9 @@ type Datastore interface {
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
-	GetCompoundedIndex(symbol string, date time.Time, daysPerYear int) (*InterestRate, error)
-	GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int) ([]*InterestRate, error)
-	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int) (*InterestRate, error)
+	GetCompoundedIndex(symbol string, date time.Time, daysPerYear int, rounding float64) (*InterestRate, error)
+	GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int, rounding float64) ([]*InterestRate, error)
+	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding float64) (*InterestRate, error)
 }
 
 const (

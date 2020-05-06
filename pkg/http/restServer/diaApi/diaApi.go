@@ -170,8 +170,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 	// Import and cast input from API call
 	symbol := c.Param("symbol")
-	// dpy := c.Param("dpy")
-	dpy := "360"
+	dpy := c.Param("dpy")
 	daysPerYear, err := strconv.Atoi(dpy)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -182,14 +181,22 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 	dateInitstring := c.DefaultQuery("dateInit", "noRange")
 	dateFinalstring := c.Query("dateFinal")
 
+	rounding := 1e-8
+
 	if dateInitstring == "noRange" {
 
-		date, err := time.Parse("2006-01-02", datestring)
+		date := time.Time{}
+		if datestring == "" {
+			// If date is omitted in API call, take most recent date
+			date = time.Now()
+		} else {
+			date, err = time.Parse("2006-01-02", datestring)
+		}
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 
-		q, err := env.DataStore.GetCompoundedIndex(symbol, date, daysPerYear)
+		q, err := env.DataStore.GetCompoundedIndex(symbol, date, daysPerYear, rounding)
 		if err != nil {
 			if err == redis.Nil {
 				restApi.SendError(c, http.StatusNotFound, err)
@@ -210,7 +217,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 
-		q, err := env.DataStore.GetCompoundedIndexRange(symbol, dateInit, dateFinal, daysPerYear)
+		q, err := env.DataStore.GetCompoundedIndexRange(symbol, dateInit, dateFinal, daysPerYear, rounding)
 		if err != nil {
 			if err == redis.Nil {
 				restApi.SendError(c, http.StatusNotFound, err)
@@ -236,8 +243,9 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
+
 	// Compute compunded rate and return if no error
-	q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear)
+	q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, 0)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
