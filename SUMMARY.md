@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Readme](README.md)
+* [Introduction](README.md)
 * [Documentation](documentation/README.md)
   * [DIA Technical Structure](documentation/dia-technical-structure.md)
   * [Tutorials](documentation/tutorials/README.md)

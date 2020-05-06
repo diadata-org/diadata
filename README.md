@@ -2,21 +2,13 @@
 description: 'Our Mission: Wikipedia for Financial Data'
 ---
 
-# Readme
+# Introduction
 
 [![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls) [![Netlify Status](https://api.netlify.com/api/v1/badges/4be89751-9655-472f-9bfe-c8e57b9528b2/deploy-status)](https://coinhub.diadata.org)
 
-## DIA: Introduction
-
 ![](.gitbook/assets/180926_dia_assets-57.png)
 
-## Get started right away
-
-{% page-ref page="documentation/tutorials/" %}
-
-{% page-ref page="documentation/api-1/" %}
-
-## Introduction:
+## What is DIA about?
 
 Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps. 
 
@@ -31,6 +23,12 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 * [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund)
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
+
+## Get started right away
+
+{% page-ref page="documentation/tutorials/" %}
+
+{% page-ref page="documentation/api-1/" %}
 
 ## **Feedback**
 
