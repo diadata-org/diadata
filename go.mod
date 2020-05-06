@@ -8,10 +8,10 @@ require (
 	github.com/adshao/go-binance v0.0.0-20200414012312-338a1df204bf
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/anaskhan96/soup v1.1.1
+	github.com/appleboy/gin-jwt v1.0.1
+	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200207184043-4d37e8d4be18
-	github.com/blockstatecom/gin-jwt v1.0.1
-	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/chromedp/cdproto v0.0.0-20200116234248-4da64dd111ac
 	github.com/chromedp/chromedp v0.5.3
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
