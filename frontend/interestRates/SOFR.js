@@ -55,7 +55,7 @@ getHistoric(getApi.historic, function(obj) {
     // Each entry of obj corresponds to rate information at a specific timestamp.
 	prefillArray = []
     for(i = 0; i < obj.length; i++) {  
-        prefillArray.push([Date.parse(obj[i].Time), obj[i].Value]);
+        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
     }
     // Sort array by date ...
     prefillArray.sort()
@@ -69,6 +69,7 @@ getHistoric(getApi.historic, function(obj) {
 
 function requestData() {
     $.ajax({
+		cache: true,
 		url: getApi.actual,
 		type: 'GET',
 
@@ -80,7 +81,7 @@ function requestData() {
 				shift = timeseries.data.length > maxPoints;
 			
 			// convert time (string) to Unix time for plotting
-			var date = Date.parse(point.Time);
+			var date = Date.parse(point.EffectiveDate);
             console.log(point)
             
 			// Append a data point to the chart's series if the timestamp is new
@@ -88,16 +89,15 @@ function requestData() {
             
 			if(L == 0) {
 				chart.series[0].addPoint([date, point.Value], true, shift);
-                console.log("Initial fill: " + point.Time)                
+                console.log("Initial fill: " + point.EffectiveDate)                
 			} else if(L > 0 && date != chart.series[0].xData[L-1]){
 				chart.series[0].addPoint([date, point.Value], true, shift);
-				console.log("Updated point at: " + point.Time)
+				console.log("Updated point at: " + point.EffectiveDate)
 			}
 
 			// Check for new data after @timeUpdate milliseconds
 			setTimeout(requestData, RateInfo.timeUpdate); 
         },
-		cache: false,
 	});
 }
 

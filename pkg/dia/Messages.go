@@ -2,8 +2,9 @@ package dia
 
 import (
 	"encoding/json"
-	"time"
 	"strings"
+	"time"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,12 +41,12 @@ type Trade struct {
 	Source            string
 }
 
-type InterestRate struct {
-	Symbol string
-	Value  float64
-	Time   time.Time
-	Source string
-}
+// type InterestRate struct {
+// 	Symbol string
+// 	Value  float64
+// 	Time   time.Time
+// 	Source string
+// }
 
 type OptionType int
 
@@ -56,19 +57,19 @@ const (
 )
 
 type OptionOrderbookDatum struct {
-	InstrumentName   string
-	ObservationTime  time.Time
-	AskPrice         float64
-	BidPrice         float64
-	AskSize          float64
-	BidSize          float64
+	InstrumentName  string
+	ObservationTime time.Time
+	AskPrice        float64
+	BidPrice        float64
+	AskSize         float64
+	BidSize         float64
 }
 
 type OptionMeta struct {
 	InstrumentName string
 	BaseCurrency   string
 	ExpirationTime time.Time
-	StrikePrice		 float64
+	StrikePrice    float64
 	OptionType     OptionType
 }
 
@@ -79,10 +80,10 @@ type OptionMetaIndex struct {
 
 type OptionMetaForward struct {
 	GeneralizedInstrumentName string
-	StrikePrice     float64
-	CallPrice       float64
-	PutPrice        float64 // this, as well as the above is defined as the bid price at a given strike price
-	ExpirationTime  time.Time
+	StrikePrice               float64
+	CallPrice                 float64
+	PutPrice                  float64 // this, as well as the above is defined as the bid price at a given strike price
+	ExpirationTime            time.Time
 }
 
 type CviDataPoint struct {
