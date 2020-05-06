@@ -123,6 +123,9 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 	for i := range q {
 		q[i].Value /= 2430.5812295231785
 	}
+	if len(q) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+	}
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
