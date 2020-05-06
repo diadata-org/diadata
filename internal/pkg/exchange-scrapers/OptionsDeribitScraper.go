@@ -10,10 +10,10 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	zap "go.uber.org/zap"
+	"go.uber.org/zap"
 )
 
 // DeribitOptionsScraper - used to maintain the order book and save it every x seconds
@@ -54,23 +54,9 @@ type deribitInstrument struct {
 	BaseCurrency        string  `json:"base_currency"`
 }
 
-type deribitOrderbookDatum struct {
-	Params struct {
-		Data struct {
-			Timestamp      int64         `json:"timestamp"`
-			InstrumentName string        `json:"instrument_name"`
-			ChangeID       int64         `json:"change_id"`
-			Bids           [1][2]float64 `json:"bids"`
-			Asks           [1][2]float64 `json:"asks"`
-		} `json:"data"`
-	} `json:"params"`
-}
-
 type deribitInstruments struct {
 	Result []deribitInstrument `json:"result"`
 }
-
-const deribitOptionsMetaFilename string = "deribit-options-meta.txt"
 
 func NewAllDeribitOptionsScrapers(owg *sync.WaitGroup, markets []string, accessKey string, accessSecret string) AllDeribitOptionsScrapers {
 	result := AllDeribitOptionsScrapers{}
@@ -107,7 +93,7 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 	optionsScraper := DeribitOptionsScraper{}
 	defer logger.Sync()
 
-	var scraper DeribitScraper = DeribitScraper{
+	var scraper = DeribitScraper{
 		WaitGroup: &wg,
 		Markets:   []string{market}, // e.g. []string{"BTC-20DEC19-5750-C", "BTC-20DEC19-7500-P"}
 		Logger:    logger,
@@ -172,15 +158,14 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 	}()
 }
 
-// ScrapeMarkets - scrapes all the optiosn markets
+// ScrapeMarkets - scrapes all the options markets
 func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
-	// 1. authenticate
 	err := s.Authenticate(s.WsConnection)
 	if err != nil {
 		log.Errorf("could not authenticate. retrying, err: %s", err)
 		return
 	}
-	log.Info("Authentication done")
+	log.Info("Authentication success")
 	go s.refreshWsToken()
 	go func() {
 		for {
