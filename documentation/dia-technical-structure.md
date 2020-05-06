@@ -20,5 +20,5 @@ For collecting financial data, we use a centralized backend that runs collectors
 
 * Quotation Scrapers: These are used to collect official quotations from central trusted providers.
 
-  The first quotations in our database are daily exchange rates from the European Central Bank \(ECB\) against various international currencies. Furthermore, we collect several interbank overnight interest rates such as SOFR and €STR.
+  Apart from daily exchange rates from the European Central Bank \(ECB\) against various international currencies we collect several interbank overnight interest rates such as SOFR and €STR.
 

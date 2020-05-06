@@ -2,7 +2,7 @@
 description: Develop applications and sources on top of DIA
 ---
 
-# Tutorials
+# Tutorials for Contributors
 
 {% page-ref page="write-your-own-rate-scraper.md" %}
 

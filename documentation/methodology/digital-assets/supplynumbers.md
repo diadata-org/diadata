@@ -1,10 +1,6 @@
 # Circulating Supply Numbers
 
-Circulating Supply is a metric to determine the actually tradeable volume of an asset. In case of cryptocurrencies, this number is determined in a different way for every coin. Circulating supply is always measured in a unitless dimension, i.e., the number of coins \(or tokens\). In contrast to traditional assets like stocks, numbers of circulating supply are often volatile in crypto markets, because of mechanics like mining that create more coins all the time. In general, supply data is determined as close to the actual source as possible. In most cases, monitoring the blockchain and tracking mining/minting/burning events is necessary as part of the methodology.
-
-## API Access
-
-Our crypto circulating supply data can be retrieved from our API using [https://api.diadata.org/v1/supply/TLA](https://api.diadata.org/v1/supply/TLA), with TLA being the short name of a currency. As an example, the current Bitcoin circulating supply is stored at [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC).
+Circulating Supply is a metric to determine the actually tradable volume of an asset. In case of cryptocurrencies, this number is determined in a different way for every coin. Circulating supply is always measured in a unitless dimension, i.e., the number of coins \(or tokens\). In contrast to traditional assets like stocks, numbers of circulating supply are often volatile in crypto markets, because of mechanics like mining that create more coins all the time. In general, supply data is determined as close to the actual source as possible. In most cases, monitoring the blockchain and tracking mining/minting/burning events is necessary as part of the methodology.
 
 ## Measurement Methodology
 
@@ -38,4 +34,8 @@ For each coin we measure, we have different methodology to determine the circula
 | Zcash | [https://api.diadata.org/v1/supply/ZEC](https://api.diadata.org/v1/supply/ZEC) | Zcash has very similar adoption curve to bitcoin and cap at 21,000,000 coins.  The Block Rewards will issue a total of 50 Zcash \(ZEC\) every 10 mins\([https://explorer.zcha.in/](https://explorer.zcha.in/)\). The block spacing is 2.5 mins, so each block produces 12.5 ZEC. 10% of all coins mined will go to the Founders Reward. Halving of the mining reward every 4 years. | Fixed increase |
 | Zilliqa | [https://api.diadata.org/v1/supply/ZIL](https://api.diadata.org/v1/supply/ZIL) | Circulating supply of Zilliqa is calculated by difference in total max supply \(21 billion coins\) - [reserve fund](https://etherscan.io/token/0x05f4a42e251f2d52b8ed15e9fedaacfcef1fad27?a=0xde5a57b9ba909c332cb7be7133ec29e228fb0286) | Fixed |
 | 0x | [https://api.diadata.org/v1/supply/ZRX](https://api.diadata.org/v1/supply/ZRX) | 50% of total supply is issued at beginning, 10% is locked for founders, 40% is locked rest is locked in 3 wallets for vesting and new developers. Circulating supply equals total supply 1M tokens minus wallets: [founders vesting fund](https://etherscan.io/token/0xe41d2489571d322189246dafa5ebde1f4699f498?a=0xdb63d40c033d35e79cdbb21430f0fe10e9d97303), [development fund](https://etherscan.io/token/0xe41d2489571d322189246dafa5ebde1f4699f498?a=0x206376e8940e42538781cd94ef024df3c1e0fd43) and [internal funds](https://etherscan.io/token/0xe41d2489571d322189246dafa5ebde1f4699f498?a=0x606af0bd4501855914b50e2672c5926b896737ef) | Fixed |
+
+## API Access
+
+Our crypto circulating supply data can be retrieved from our API using [https://api.diadata.org/v1/supply/TLA](https://api.diadata.org/v1/supply/TLA), with TLA being the short name of a currency. As an example, the current Bitcoin circulating supply is stored at [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC).
 

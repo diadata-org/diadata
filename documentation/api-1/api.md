@@ -48,7 +48,7 @@ _Remark:_ Careful! Successful responses can be rather large.
 Get value for a certain rate type.  
 Example: [https://api.diadata.org/v1/interestrate/ESTER/2020-04-20](https://api.diadata.org/v1/interestrate/ESTER/2020-04-20)
 
-Get rate values for a range of timestamps using optinal query parameters.  
+Get rate values for a range of timestamps using optional query parameters.  
 Example: [https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16](https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16)
 
 Path Params:

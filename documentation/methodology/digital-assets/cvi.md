@@ -1,7 +1,5 @@
 # Crypto Volatility Index
 
-## Methodology
-
 The CVI is calculated on top of bid/ask information received from crypto \(BTC\) option markets. First of all, the current level of the orderbook is recorded and placed into a timestamped order. Instruments for each strike price are monitored, both for Call and Put options.
 
 Instruments are named uniquely to identify them. For example, BTC-03JUN2020-6000-C is the name of a Bitcoin call option expiring at 3rd of June 2020 for a strike price of 6000 USD.
