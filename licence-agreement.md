@@ -1,3 +1,7 @@
+---
+description: For the usage of DIA's data and services
+---
+
 # Licence Agreement
 
 ![Attribution-ShareAlike 4.0 International \(CC BY-SA 4.0\)](.gitbook/assets/bildschirmfoto-2020-03-03-um-10.54.30.png)

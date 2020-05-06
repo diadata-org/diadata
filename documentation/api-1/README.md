@@ -1,8 +1,10 @@
-# diadata.org API
+# API Documentation
 
-The world's crowd-driven financial data community has a professional API made for you.  
-Decentral and transparent by design.  
-With our decentral approach to data verification, you can gain a deep insight into current and past pricing, volume and exchange info so you can make the right decisions to stay ahead of the game.
+{% page-ref page="api.md" %}
+
+{% page-ref page="oracles.md" %}
+
+
 
 **Find the right data for your needs**  
 Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.  
@@ -19,7 +21,32 @@ Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).
 
 Version: 1.0
 
-## Base URL
+## API Access
+
+You can find documnentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/documentation/api.md). Several endpoints exist that show the different kind of data we collect:
+
+When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset \(e.g., BTC for Bitcoin\).
+
+* Quotations for prices \(SMA120\) can be found at endpoint [https://api.diadata.org/v1/symbol/BTC](https://api.diadata.org/v1/symbol/BTC).
+* Supply data for crypto assets is located at [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC)
+
+Currently, DIA collects data from several crypto exchanges. To get an overview, the latest information about these exchanges can be found in this table:
+
+| Name | Number of Pairs | API link |
+| :--- | :--- | :--- |
+| Binance | [47](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Binance.json) | [Binance API Documentation](https://github.com/binance-exchange/binance-official-api-docs) |
+| Bitfinex | [25](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Bitfinex.json) | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general) |
+| Coinbase | [3](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/CoinBase.json) | [Coinbase v2 API](https://developers.coinbase.com/api/v2) |
+| GateIO | [42](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/GateIO.json) | [Gate.io API Documentation](https://www.gate.io/api2) |
+| HitBTC | [43](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/HitBTC.json) | [HitBTC API Browser](https://api.hitbtc.com/api/2/explore/) |
+| Huobi | [40](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Huobi.json) | [Huobi API Documentation](https://github.com/huobiapi/API_Docs_en/wiki/Huobi.pro-API) |
+| Kraken | [8](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Kraken.json) | [Kraken Public API Documentation](https://www.kraken.com/help/api#public-market-data) |
+| LBank | [20](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/LBank.json) | [LBank API Documentation \(Chinese\)](https://github.com/LBank-exchange/lbank-official-api-docs) |
+| OKEx | [27](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/OKEx.json) | [OKEx API Documentation \(Chinese\)](https://github.com/okcoin-okex/API-docs-OKEx.com) |
+| Simex | [14](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Simex.json) | [Simex API Documentation](https://simex.global/en/docs/introduction) |
+| ZB.com | [127](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/ZB.json) | [Zb.com API Documentation \(Chinese\)](https://www.zb.com/i/developer) |
+
+Here you can find the introduction to the structure of the system and first steps to contribute.
 
 The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of this base URL.
 
@@ -148,11 +175,11 @@ Example: [https://api.diadata.org/v1/symbols](https://api.diadata.org/v1/symbols
 
 * 404: Symbol not found.
 
-  [restApi.APIError](api.md#restapiapierror)
+  [restApi.APIError](./#restapiapierror)
 
 * 500: error.
 
-  [restApi.APIError](api.md#restapiapierror)
+  [restApi.APIError](./#restapiapierror)
 
 ## Use cases
 

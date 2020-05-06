@@ -17,3 +17,7 @@ go.*
 .vscode/
 bin/
 pkg/mod
+
+
+node_modules/
+package-lock.json

@@ -410,7 +410,7 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
-	err := db.redisClient.ZAdd(key, &redis.Z{
+	err := db.redisClient.ZAdd(key, redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
 	}).Err()
@@ -434,7 +434,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 	result := 0.0
 	max := strconv.FormatInt(atUnixTime, 10)
-	vals, err := db.redisClient.ZRangeByScoreWithScores(key, &redis.ZRangeBy{
+	vals, err := db.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
 		Min: "-inf",
 		Max: max,
 	}).Result()

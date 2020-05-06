@@ -9,9 +9,9 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
-	gdax "github.com/preichenberger/go-gdax"
+	gdax "github.com/preichenberger/go-coinbasepro/v2"
 	log "github.com/sirupsen/logrus"
 )
 
