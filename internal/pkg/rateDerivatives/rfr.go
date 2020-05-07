@@ -13,7 +13,6 @@ import (
 // of (compounded) RFRs.
 func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 	rate := 1
-	// Increment @rate for each holiday/weekend day after date
 	date = date.AddDate(0, 0, 1)
 	for !utils.CheckWeekDay(date) || utils.ContainsDay(holidays, date) {
 		rate++
@@ -23,39 +22,38 @@ func RateFactor(date time.Time, holidays []time.Time) (int, error) {
 }
 
 // CompoundedRate returns the compounded index for the rate values given by the slice @rate.
-// @rate is a slice with daily rates for all business days in the respective period.
+// @rates is a slice with daily rates for all business days in the respective period.
 // @dateInit, @dateFinal determine the period of the loan.
 // @holidays is a slice of strings where each entry corresponds to a special holiday (i.e. not a
 // 			saturday or sunday) in the respective period.
 // @daysPerYear determines the total number of days per business year.
 // @rounding is a float of type 1e-n which rounds the result to n digits. If @rounding == 0 no rounding
-func CompoundedRate(rate []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int, rounding float64) (float64, error) {
+func CompoundedRate(rates []float64, dateInit, dateFinal time.Time, holidays []time.Time, daysPerYear int, rounding float64) (float64, error) {
 
+	// Check feasibility and consistency of input data
 	if !utils.CheckWeekDay(dateFinal) || utils.ContainsDay(holidays, dateFinal) {
-		log.Error("The final date cannot be a holiday or weekend")
-		return float64(0), errors.New("The final date cannot be a holiday or weekend")
+		log.Info("No rate information for holidays or weekends")
+		return float64(0), errors.New("No rate information for holidays or weekends")
 	}
 	if utils.AfterDay(dateInit, dateFinal) {
-		log.Error("The final date cannot be before the initial date.")
+		log.Info("The final date cannot be before the initial date.")
 		return float64(0), errors.New("The final date cannot be before the initial date")
 	}
 	if daysPerYear == 0 {
-		log.Error("Days per year must be a positive integer.")
+		log.Info("Days per year must be a positive integer.")
 		return float64(0), errors.New("Days per year must be a positive integer")
 	}
-
-	// Check consistency of dates, holidays and rates
 	NumBusinessDays, _ := utils.CountDays(dateInit, dateFinal, true)
 	NumBusinessDays -= len(holidays)
 	if !utils.CheckWeekDay(dateInit) || utils.ContainsDay(holidays, dateInit) {
 		// When first day is holiday or weekend, there has to be an additional rate for the
 		// previous working day which does not fall into the loan period.
-		if len(rate) != NumBusinessDays+1 {
+		if len(rates) != NumBusinessDays+1 {
 			log.Error("The given number of rate values and business days is not consistent.")
 			return float64(0), errors.New("date error")
 		}
 	} else {
-		if len(rate) != NumBusinessDays {
+		if len(rates) != NumBusinessDays {
 			log.Error("The given number of rate values and business days is not consistent.")
 			return float64(0), errors.New("date error")
 		}
@@ -63,11 +61,9 @@ func CompoundedRate(rate []float64, dateInit, dateFinal time.Time, holidays []ti
 
 	// Iterate through business days to compute the compounded rate
 	prod := float64(1)
-	summe := 0
-	for i := 0; i < len(rate); i++ {
+	for i := 0; i < len(rates); i++ {
 		n, _ := RateFactor(dateInit, holidays)
-		summe += n
-		factor := 1 + (rate[i]/100)*float64(n)/float64(daysPerYear)
+		factor := 1 + (rates[i]/100)*float64(n)/float64(daysPerYear)
 		prod *= factor
 		dateInit = dateInit.AddDate(0, 0, n)
 	}

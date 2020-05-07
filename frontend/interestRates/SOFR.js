@@ -1,34 +1,12 @@
-var chart;
-// The chart is shifted to the left when reaching @maxPoints
-const maxPoints = 10000;
+// ------------------------------------------------------------------------------------------------
+// General variables and functions
+// ------------------------------------------------------------------------------------------------
+
 let today = new Date().toISOString().slice(0, 10);
 let yesterday = new Date(Date.now() - 864e5).toISOString().slice(0,10);
 
-// ------------------------------------------------------------------------------------------------
-// Only this part is rate specific -> Refactoring?
-// ------------------------------------------------------------------------------------------------
-
-RateInfo = {
-	name: 'Secured Overnight Financing Rate',
-	symbol: 'SOFR',
-	timeUpdate: 10000,
-}
-
-getApi =  {
-	historic: 'https://api.diadata.org/v1/interestrate/SOFR?dateInit=2018-11-01&dateFinal=' + yesterday,
-	actual: 'https://api.diadata.org/v1/interestrate/SOFR/' + today,
-}
-
-// ------------------------------------------------------------------------------------------------
-// The code below is rate independent / can easily be made rate independent
-// ------------------------------------------------------------------------------------------------
-
-// ------------------------------------------------------------------------------------------------
-// Prefill with historic data
-// ------------------------------------------------------------------------------------------------
-
+// getHistoric fetches historic data from our API with address @url
 function getHistoric(url, callback) {
-    // getHistoric fetches historic data from the API
     
 	// Instantiate request object
 	var request = new XMLHttpRequest()
@@ -51,81 +29,64 @@ function getHistoric(url, callback) {
     request.send()
 }
 
-getHistoric(getApi.historic, function(obj) {
-    // Each entry of obj corresponds to rate information at a specific timestamp.
-	prefillArray = []
-    for(i = 0; i < obj.length; i++) {  
-        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
-    }
-    // Sort array by date ...
-    prefillArray.sort()
-    // ... and fill the chart.
-    chart.series[0].setData(prefillArray)
-});
-
-// ------------------------------------------------------------------------------------------------
-// Update asynchronously
-// ------------------------------------------------------------------------------------------------
-
-function requestData() {
+// requestData(rate) asynchrononously loads new data points into the chart.
+function requestData(rate) {
     $.ajax({
 		cache: true,
-		url: getApi.actual,
+		url: rate.urlActual,
 		type: 'GET',
 
 		// If GET request is successful, add data to the chart
         success: function(point) {
-			// @timeseries points to the first chart's series.
-			// @shift restricts the number of displayed points.
-			var timeseries = chart.series[0],
-				shift = timeseries.data.length > maxPoints;
-			
+
 			// convert time (string) to Unix time for plotting
 			var date = Date.parse(point.EffectiveDate);
-            console.log(point)
             
 			// Append a data point to the chart's series if the timestamp is new
-            L = chart.series[0].xData.length;
-            
+			L = window['chart' + rate.symbol].series[0].xData.length;
+			
 			if(L == 0) {
-				chart.series[0].addPoint([date, point.Value], true, shift);
-                console.log("Initial fill: " + point.EffectiveDate)                
-			} else if(L > 0 && date != chart.series[0].xData[L-1]){
-				chart.series[0].addPoint([date, point.Value], true, shift);
-				console.log("Updated point at: " + point.EffectiveDate)
+				window['chart' + rate.symbol].series[0].addPoint([date, point.Value]);
+			} else if(L > 0 && date != window['chart' + rate.symbol].series[0].xData[L-1]){
+				window['chart' + rate.symbol].series[0].addPoint([date, point.Value]);
 			}
-
-			// Check for new data after @timeUpdate milliseconds
-			setTimeout(requestData, RateInfo.timeUpdate); 
+			console.log("Updated " + rate.symbol);
+			window['chart' + rate.symbol].redraw();
+			setTimeout(function(){requestData.call(this, rate)}, rate.timeUpdate); 
         },
 	});
 }
 
-// ------------------------------------------------------------------------------------------------
-// Draw chart
-// ------------------------------------------------------------------------------------------------
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    chart = Highcharts.stockChart('container', {
-        chart: {
+function makechart(rate) {
+	window['chart' + rate.symbol] = Highcharts.stockChart(rate.container, {
+		rangeSelector: {
+			buttonTheme: {
+				   width: 20,
+			},
+			inputBoxWidth: 75,
+	   	}, 
+		chart: {
             type: 'spline',
             events: {
-				load: requestData
+				load: function(){
+					requestData.call(this, rate)
+				}
 			}
 		},
 		credits: {
-			text: 'DIAdata',
+			text: 'DIADATA',
 			href: 'https://diadata.org'
 		},
         title: {
-            text: RateInfo.name,
+			text: rate.name,
+			style: {
+				fontSize: '20px',
+			},
         },
         xAxis: {
             tickPixelInterval: 150,
 			maxZoom: 20 * 1000,
 			title: {
-				text: 'Time',
 				margin: 10,
 			}
 		},
@@ -139,10 +100,69 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         series: [
 			{
-				name: RateInfo.symbol,
+				name: rate.symbol,
 				data: []
 			},
 		]
 	});	
+}
+
+
+
+// ------------------------------------------------------------------------------------------------
+// Rate specific information
+// ------------------------------------------------------------------------------------------------
+
+InfoSOFR = {
+	name: 'Secured Overnight Financing Rate',
+	symbol: 'SOFR',
+	container: 'containerSOFR',
+	timeUpdate: 10000,
+	urlHistoric: 'https://api.diadata.org/v1/interestrate/SOFR?dateInit=2018-11-01&dateFinal=' + yesterday,
+	urlActual: 'https://api.diadata.org/v1/interestrate/SOFR/' + today,
+}
+
+
+getHistoric(InfoSOFR.urlHistoric, function(obj) {
+    // Each entry of obj corresponds to rate information at a specific timestamp.
+	prefillArray = []
+    for(i = 0; i < obj.length; i++) {  
+        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
+    }
+    // Sort array by date ...
+    prefillArray.sort()
+    // ... and fill the chart.
+	window['chart' + InfoSOFR.symbol].series[0].setData(prefillArray)
+	// Redraw for correct display of boxes
+	window['chart' + InfoSOFR.symbol].redraw();
 });
 
+document.addEventListener('DOMContentLoaded', makechart(InfoSOFR));
+
+
+
+
+InfoESTR = {
+	name: 'Euro Short-Term Rate',
+	symbol: '€STR',
+	container: 'containerESTR',
+	timeUpdate: 10000,
+	urlHistoric: 'https://api.diadata.org/v1/interestrate/ESTER?dateInit=2018-10-01&dateFinal=' + yesterday,
+	urlActual: 'https://api.diadata.org/v1/interestrate/ESTER/' + today,
+}
+
+
+getHistoric(InfoESTR.urlHistoric, function(obj) {
+    // Each entry of obj corresponds to rate information at a specific timestamp.
+	prefillArray = []
+    for(i = 0; i < obj.length; i++) {  
+        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
+    }
+    // Sort array by date ...
+    prefillArray.sort()
+    // ... and fill the chart.
+	window['chart' + InfoESTR.symbol].series[0].setData(prefillArray)
+	window['chart' + InfoESTR.symbol].redraw();
+});
+
+document.addEventListener('DOMContentLoaded', makechart(InfoESTR));

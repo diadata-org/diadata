@@ -33,7 +33,7 @@ func TestRateFactor(t *testing.T) {
 	}
 }
 
-func TestCumulativeRate(t *testing.T) {
+func TestCompoundedRate(t *testing.T) {
 	tol := 10e-8
 	rates1 := []float64{0, 0, 0}
 	rates2 := []float64{1.1, 1.2, 1.5}
@@ -49,17 +49,18 @@ func TestCumulativeRate(t *testing.T) {
 		dateFinal   time.Time
 		holidays    []time.Time
 		daysPerYear int
+		rounding    float64
 		cumRate     float64
 		err         error
 	}{
-		{rates1[:2], date1, date3, []time.Time{}, daysPerYear, 0, nil},
-		{rates2[:2], date1, date3, []time.Time{}, daysPerYear, 1.151808219, nil},
-		{rates2, date1, date4, []time.Time{}, daysPerYear, 1.366403438, nil},
-		{rates2[:2], date1, date4, []time.Time{date2}, daysPerYear, 1.164339726, nil},
-		{rates2[0:1], date1, date2, []time.Time{}, daysPerYear, rates2[0], nil},
+		{rates1[:2], date1, date3, []time.Time{}, daysPerYear, 0, 0, nil},
+		{rates2[:2], date1, date3, []time.Time{}, daysPerYear, 0, 1.151808219, nil},
+		{rates2, date1, date4, []time.Time{}, daysPerYear, 0, 1.366403438, nil},
+		{rates2[:2], date1, date4, []time.Time{date2}, daysPerYear, 0, 1.164339726, nil},
+		{rates2[0:1], date1, date2, []time.Time{}, daysPerYear, 0, rates2[0], nil},
 	}
 	for _, table := range tables {
-		value, err := CumulativeRate(table.rates, table.dateInit, table.dateFinal, table.holidays, table.daysPerYear)
+		value, err := CompoundedRate(table.rates, table.dateInit, table.dateFinal, table.holidays, table.daysPerYear, table.rounding)
 		if math.Abs(value-table.cumRate) > tol {
 			t.Errorf("Rate factor is %v but should be %v.", value, table.cumRate)
 		}

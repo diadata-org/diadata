@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"time"
@@ -226,6 +227,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	// Remove holiday if after @date
 	for i, day := range holidays {
 		if day.After(date) {
+			fmt.Println("removed holiday at the end")
 			holidays = holidays[:i]
 			break
 		}
@@ -238,7 +240,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	}
 
 	// Check, whether first day is a holiday or weekend. If so, prepend rate of
-	// last business day (outside the considered time range).
+	// preceding business day (outside the considered time range!).
 	if utils.ContainsDay(holidays, dateInit) || !utils.CheckWeekDay(dateInit) {
 		firstRate, err := db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
 		if err != nil {
@@ -279,10 +281,11 @@ func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Ti
 	for utils.AfterDay(dateFinal, dateInit) {
 		val, err := db.GetCompoundedIndex(symbol, dateInit, daysPerYear, rounding)
 		if err != nil {
-			log.Error("Error on compounded Index")
+			dateInit = dateInit.AddDate(0, 0, 1)
+		} else {
+			values = append(values, val)
+			dateInit = dateInit.AddDate(0, 0, 1)
 		}
-		values = append(values, val)
-		dateInit = dateInit.AddDate(0, 0, 1)
 	}
 	return
 }
@@ -314,19 +317,20 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 		dateStart := dateInit.AddDate(0, 0, -calDays)
 		index, err := db.GetCompoundedRate(symbol, dateStart, dateInit, daysPerYear, rounding)
 		if err != nil {
-			return []*InterestRate{}, err
+			dateInit = dateInit.AddDate(0, 0, 1)
+		} else {
+
+			// Fill return struct
+			compAvg := &InterestRate{}
+			compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_by_DIA"
+			compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
+			compAvg.EffectiveDate = dateInit
+			compAvg.Source = index.Source
+
+			// Append data and increment initial date
+			values = append(values, compAvg)
+			dateInit = dateInit.AddDate(0, 0, 1)
 		}
-
-		// Fill return struct
-		compAvg := &InterestRate{}
-		compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_by_DIA"
-		compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
-		compAvg.EffectiveDate = dateInit
-		compAvg.Source = index.Source
-
-		values = append(values, compAvg)
-
-		dateInit = dateInit.AddDate(0, 0, 1)
 	}
 	return values, nil
 }
