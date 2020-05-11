@@ -98,6 +98,10 @@ func (s *RateScraper) UpdateESTER() error {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	if address == "" {
+		log.Info("ESTER is not published right now. Please wait.")
+		return nil
+	}
 
 	// Get response from ESTER feed
 	XMLdata, err := utils.GetRequest(address)
