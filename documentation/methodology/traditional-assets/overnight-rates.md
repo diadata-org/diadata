@@ -6,6 +6,16 @@ description: >-
 
 # Interbank overnight interest rates
 
+## Sterling Overnight Index Average \(SONIA\)
+
+SONIA is is a risk-free rate based on actual transactions. It reflects the average of the interest rates that banks pay to borrow sterling overnight from other financial institutions. SONIA is the Working Group on Sterling Risk Free Reference Rates’ preferred benchmark for the transition to sterling risk-free rates from Libor. It is published every London business day by the Bank of England.
+
+Source:  
+[https://www.bankofengland.co.uk/markets/sonia-benchmark](https://www.bankofengland.co.uk/markets/sonia-benchmark)
+
+Example for API call:  
+[https://api.diadata.org/v1/interestrate/SONIA/2020-03-14](https://api.diadata.org/v1/interestrate/SONIA/2020-03-14)
+
 ## Secured Overnight Financing Rate \(SOFR\)
 
 SOFR is a rate product produced by the Federal Reserve Bank of New York for the public good. It is a broad measure of the cost of borrowing cash overnight collateralized by Treasury securities.
@@ -58,7 +68,6 @@ The rate is published on every [TARGET2](https://en.wikipedia.org/wiki/TARGET2) 
 
 Sources:  
 [https://www.ecb.europa.eu/paym/initiatives/interest\_rate\_benchmarks/shared/pdf/ecb.ESTER\_methodology\_and\_policies.en.pdf](https://www.ecb.europa.eu/paym/initiatives/interest_rate_benchmarks/shared/pdf/ecb.ESTER_methodology_and_policies.en.pdf)  
-  
 [https://en.wikipedia.org/wiki/%E2%82%ACSTR](https://en.wikipedia.org/wiki/%E2%82%ACSTR)
 
 **Remark:**  
