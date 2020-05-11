@@ -302,7 +302,7 @@ func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYe
 
 	// Fill return struct
 	compAvg := &InterestRate{}
-	compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_by_DIA"
+	compAvg.Symbol = symbol + strconv.Itoa(calDays) + "compounded_by_DIA"
 	compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
 	compAvg.EffectiveDate = date
 	compAvg.Source = index.Source
@@ -316,13 +316,14 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 
 		dateStart := dateInit.AddDate(0, 0, -calDays)
 		index, err := db.GetCompoundedRate(symbol, dateStart, dateInit, daysPerYear, rounding)
+		fmt.Println("index: ", index.Value)
 		if err != nil {
 			dateInit = dateInit.AddDate(0, 0, 1)
 		} else {
 
 			// Fill return struct
 			compAvg := &InterestRate{}
-			compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_by_DIA"
+			compAvg.Symbol = symbol + strconv.Itoa(calDays) + "compounded_by_DIA"
 			compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
 			compAvg.EffectiveDate = dateInit
 			compAvg.Source = index.Source

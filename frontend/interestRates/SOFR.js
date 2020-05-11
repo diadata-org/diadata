@@ -153,14 +153,11 @@ InfoESTR = {
 
 
 getHistoric(InfoESTR.urlHistoric, function(obj) {
-    // Each entry of obj corresponds to rate information at a specific timestamp.
 	prefillArray = []
     for(i = 0; i < obj.length; i++) {  
         prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
     }
-    // Sort array by date ...
     prefillArray.sort()
-    // ... and fill the chart.
 	window['chart' + InfoESTR.symbol].series[0].setData(prefillArray)
 	window['chart' + InfoESTR.symbol].redraw();
 });

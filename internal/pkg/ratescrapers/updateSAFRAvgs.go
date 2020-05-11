@@ -107,12 +107,16 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 	} else {
 		dateTime = dateTime.Round(time.Second).UTC()
 	}
+	effDate, err := time.Parse("2006-01-02", ActData.CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
+	if err != nil {
+		log.Error("Error parsing effective date for SOFRXXX", err)
+	}
 
 	t1 := &models.InterestRate{
 		Symbol:          "SOFR30",
 		Value:           rate1,
 		PublicationTime: dateTime,
-		EffectiveDate:   dateTime,
+		EffectiveDate:   effDate,
 		Source:          "FED",
 	}
 
@@ -120,7 +124,7 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 		Symbol:          "SOFR90",
 		Value:           rate2,
 		PublicationTime: dateTime,
-		EffectiveDate:   dateTime,
+		EffectiveDate:   effDate,
 		Source:          "FED",
 	}
 
@@ -128,7 +132,7 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 		Symbol:          "SOFR180",
 		Value:           rate3,
 		PublicationTime: dateTime,
-		EffectiveDate:   dateTime,
+		EffectiveDate:   effDate,
 		Source:          "FED",
 	}
 

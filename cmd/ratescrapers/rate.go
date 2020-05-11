@@ -29,7 +29,7 @@ func main() {
 
 	// Parse the option for the type of interest rate. The available values
 	// for the flags can be found in the Update() method in RateScraper.go.
-	rateType := flag.String("type", "SOFR", "Type of interest rate")
+	rateType := flag.String("type", "SAFR", "Type of interest rate")
 	flag.Parse()
 
 	wg := sync.WaitGroup{}

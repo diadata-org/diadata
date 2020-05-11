@@ -250,10 +250,12 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 	dateInitstring := c.DefaultQuery("dateInit", "noRange")
 	dateFinalstring := c.Query("dateFinal")
 
+	rounding := float64(0)
+
 	if dateInitstring == "noRange" {
 
 		// Compute compunded rate and return if no error
-		q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, 0)
+		q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, rounding)
 		if err != nil {
 			if err == redis.Nil {
 				restApi.SendError(c, http.StatusNotFound, err)
@@ -275,7 +277,7 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 
-		q, err := env.DataStore.GetCompoundedAvgRange(symbol, dateInit, dateFinal, calDays, daysPerYear, 0)
+		q, err := env.DataStore.GetCompoundedAvgRange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
 		if err != nil {
 			if err == redis.Nil {
 				restApi.SendError(c, http.StatusNotFound, err)
