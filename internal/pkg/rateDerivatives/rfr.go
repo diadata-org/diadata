@@ -32,7 +32,7 @@ func CompoundedRate(rates []float64, dateInit, dateFinal time.Time, holidays []t
 
 	// Check feasibility and consistency of input data
 	if !utils.CheckWeekDay(dateFinal) || utils.ContainsDay(holidays, dateFinal) {
-		log.Info("No rate information for holidays or weekends")
+		// log.Info("No rate information for holidays or weekends")
 		return float64(0), errors.New("No rate information for holidays or weekends")
 	}
 	if utils.AfterDay(dateInit, dateFinal) {

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/data.js"></script>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
+	<title>Create Your Own Index</title>
+</head>
+
+<body>
+
+	<table>
+		<tbody>
+			<tr><td><label for="symbol">Symbol for rate: </label></td><td><input id="symbol" type="text"></td></tr>
+			<tr><td><label for="lenPeriod">Number of days in interest period: </label></td><td><input id="lenPeriod" type="text"></td></tr>
+			<tr><td><label for="dpy">Number of days per year: </label></td><td><input id="dpy" type = "text"></td></tr>
+		</tbody>
+	</table>
+
+	<br>
+	
+	<input type='button' onclick='updateChart()' value='Compute chart'/>
+	<div id="yourOwnContainer"></div>
+	<script src="ownChart_v2.js"></script>
+
+</body>
+</html>
