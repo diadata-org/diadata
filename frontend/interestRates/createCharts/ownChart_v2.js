@@ -3,7 +3,7 @@
 // ------------------------------------------------------------------------------------------------
 
 // // Load meta information on rates
-dateUrl = 'http://localhost:8081/v1/interestrates';
+var dateUrl = 'http://localhost:8081/v1/interestrates';
 $.holdReady(true);
 var firstPublications = null;
 $.getJSON(dateUrl, function(data) {
@@ -87,7 +87,11 @@ function makechart(rate) {
 			{
 				name: rate.name,
 				data: []
-			},
+            },
+            // {
+            //     name: 'ESTER',
+			// 	data: [[1, 1], [2,10], [3, 10], [4, 20], [5, 1]]
+			// }
 		]
 	});	
 }
@@ -134,18 +138,36 @@ function updateChart() {
     RateInfo.firstPublication = found.FirstDate.slice(0,10);
     // Increase initial date according to observation period
     dateInit = addDays(RateInfo.firstPublication, lenPeriod).slice(0,10);            
-    RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
+    // RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
    
+
+    // SONIA special case:
+    console.log(symbol);
+    RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=2000-05-02&dateFinal=' + today;
+    // console.log(RateInfo.url);
+    console.log(RateInfo);
+    
     // Fill the chart with updated information
     getData(RateInfo.url, function(obj) {
-        prefillArray = []
+        var prefillArray = [];
         for(i = 0; i < obj.length; i++) {  
             prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
         }
-        prefillArray.sort()
-        yourOwnChart.series[0].setData(prefillArray)
-                   
+        prefillArray.sort();
+        yourOwnChart.series[0].setData(prefillArray);               
     });
+
+    //  // Fill the chart with reference rate
+    //  getData('http://localhost:8081/v1/interestrate/' + symbol + '/' + '?dateInit=' + dateInit + '&dateFinal=' + today, function(obj) {
+    //     var prefillArray = [];
+    //     for(i = 0; i < obj.length; i++) {  
+    //         prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
+    //     }
+    //     prefillArray.sort();
+    //     yourOwnChart.series[1].setData(prefillArray);
+                   
+    // });
+
     makechart(RateInfo);
 
 };

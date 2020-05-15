@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -82,33 +83,55 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 // @dateInit and @dateFinal are strings in the format yyyy-mm-dd.
 func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error) {
 
-	// dateInit = utils.GetTomorrow(dateInit, "2006-01-02")
-
-	// Fetch all available keys for @symbol
-	patt := "dia_quotation_" + symbol + "_*"
-	// Comment: This could be improved. Should be when the database gets larger.
-	allKeys := db.redisClient.Keys(patt).Val()
-
-	// Set bounds on database's keys for the requested time range
-	stampInit := "dia_quotation_" + symbol + "_" + dateInit + " 00:00:00 +0000 UTC"
-	stampFinal := "dia_quotation_" + symbol + "_" + dateFinal + " 23:59:59 +0000 UTC"
-
-	// Get value for each key
+	// Collect all possible keys in time range
+	keys := []string{}
+	auxDate := dateInit
+	for dateFinal >= auxDate {
+		keys = append(keys, "dia_quotation_"+symbol+"_"+auxDate+" 00:00:00 +0000 UTC")
+		auxDate = utils.GetTomorrow(auxDate, "2006-01-02")
+	}
+	// Retrieve corresponding values from database
+	result := db.redisClient.MGet(keys...).Val()
 	allValues := []*InterestRate{}
-	for _, key := range allKeys {
-		if stampInit <= key && key <= stampFinal {
-			// Run database querie with key
+	for _, val := range result {
+		if val != nil {
 			ir := &InterestRate{}
-			err := db.redisClient.Get(key).Scan(ir)
+			err := json.Unmarshal([]byte(fmt.Sprint(val)), ir)
 			if err != nil {
-				if err != redis.Nil {
-					log.Errorf("Error: %v on Symbol %v in redis database\n", err, symbol)
-				}
-				return allValues, err
+				log.Error("error parsing json")
+				return []*InterestRate{}, err
 			}
 			allValues = append(allValues, ir)
 		}
 	}
+
+	// Old version with keys - slower than MGet
+	// // Fetch all available keys for @symbol
+	// patt := "dia_quotation_" + symbol + "_*"
+	// // Comment: This could be improved. Should be when the database gets larger.
+	// allKeys := db.redisClient.Keys(patt).Val()
+
+	// // Set bounds on database's keys for the requested time range
+	// stampInit := "dia_quotation_" + symbol + "_" + dateInit + " 00:00:00 +0000 UTC"
+	// stampFinal := "dia_quotation_" + symbol + "_" + dateFinal + " 23:59:59 +0000 UTC"
+
+	// // Get value for each key
+	// allValues := []*InterestRate{}
+	// for _, key := range allKeys {
+	// 	if stampInit <= key && key <= stampFinal {
+	// 		// Run database query with key
+	// 		ir := &InterestRate{}
+	// 		err := db.redisClient.Get(key).Scan(ir)
+	// 		if err != nil {
+	// 			if err != redis.Nil {
+	// 				log.Errorf("Error: %v on Symbol %v in redis database\n", err, symbol)
+	// 			}
+	// 			return allValues, err
+	// 		}
+	// 		allValues = append(allValues, ir)
+	// 	}
+	// }
+
 	// Sort entries with respect to effective date
 	sort.Slice(allValues, func(i, j int) bool {
 		return (allValues[i].EffectiveDate).Before(allValues[j].EffectiveDate)
@@ -211,6 +234,10 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	if err != nil {
 		return &InterestRate{}, err
 	}
+	if len(ratesAPI) == 0 {
+		err = errors.New("no rate information for this period")
+		return &InterestRate{}, err
+	}
 
 	// Determine holidays through missing database entries
 	existDates := []time.Time{}
@@ -308,13 +335,19 @@ func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYe
 	compAvg.Value = 100 * (index.Value - 1) * float64(daysPerYear) / float64(calDays)
 	compAvg.EffectiveDate = date
 	compAvg.Source = index.Source
+
 	return compAvg, nil
 }
 
 // GetCompoundedAvgRange returns the compounded average of the index @symbol over rolling @calDays calendar days.
 func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding float64) (values []*InterestRate, err error) {
 
+	count := 0
+	var timesum time.Duration
+
 	for utils.AfterDay(dateFinal, dateInit) {
+
+		tInit := time.Now()
 
 		dateStart := dateInit.AddDate(0, 0, -calDays)
 		index, err := db.GetCompoundedRate(symbol, dateStart, dateInit, daysPerYear, rounding)
@@ -333,6 +366,17 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 			values = append(values, compAvg)
 			dateInit = dateInit.AddDate(0, 0, 1)
 		}
+		tFinal := time.Now()
+		timesum += tFinal.Sub(tInit)
+
+		if count%100 == 0 {
+			fmt.Println(timesum)
+			fmt.Println("Now is: ", count)
+			fmt.Println(dateStart)
+			count++
+			timesum = 0
+		}
+		count++
 	}
 	return values, nil
 }

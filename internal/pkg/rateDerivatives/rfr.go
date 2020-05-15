@@ -45,6 +45,11 @@ func CompoundedRate(rates []float64, dateInit, dateFinal time.Time, holidays []t
 	}
 	NumBusinessDays, _ := utils.CountDays(dateInit, dateFinal, true)
 	NumBusinessDays -= len(holidays)
+	if NumBusinessDays == 0 {
+		log.Info("No business days in period of interest.")
+		return float64(0), errors.New("No business days in period of interest")
+	}
+
 	if !utils.CheckWeekDay(dateInit) || utils.ContainsDay(holidays, dateInit) {
 		// When first day is holiday or weekend, there has to be an additional rate for the
 		// previous working day which does not fall into the loan period.

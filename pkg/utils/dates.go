@@ -36,6 +36,7 @@ func SameDays(date1, date2 time.Time) bool {
 }
 
 // AfterDay returns true if date1 is a date after date2, irrespective of the daytime.
+// The go method "After" respects daytime.
 func AfterDay(date1, date2 time.Time) bool {
 	date1Str := date1.Format("2006-01-02")
 	date2Str := date2.Format("2006-01-02")
@@ -86,7 +87,7 @@ func GetHolidays(workdays []time.Time, dateInit, date time.Time) []time.Time {
 	auxDate := dateInit
 	holidays := []time.Time{}
 	for !SameDays(auxDate, date.AddDate(0, 0, 1)) {
-		if !ContainsDay(workdays, auxDate) && CheckWeekDay(auxDate) {
+		if CheckWeekDay(auxDate) && !ContainsDay(workdays, auxDate) {
 			holidays = append(holidays, auxDate)
 			auxDate = auxDate.AddDate(0, 0, 1)
 		} else {
@@ -128,6 +129,16 @@ func GetYesterday(date, layout string) string {
 	}
 	yesterday := dateTime.AddDate(0, 0, -1)
 	return yesterday.Format(layout)
+}
+
+// GetTomorrow returns the day before @date in the world of strings, formatted as @layout
+func GetTomorrow(date, layout string) string {
+	dateTime, err := time.Parse(layout, date)
+	if err != nil {
+		log.Printf("Error: %v on date format %s\n", err, date)
+	}
+	tomorrow := dateTime.AddDate(0, 0, 1)
+	return tomorrow.Format(layout)
 }
 
 // LocalCal returns a (pointer to a) calendar in the country/zone given by the string @zone.
