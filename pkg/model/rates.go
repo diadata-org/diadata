@@ -454,7 +454,7 @@ func WeightedRates(intRates []*InterestRate, dateInit, dateFinal time.Time, holi
 		startIndex++
 	}
 
-	for utils.AfterDay(dateFinal, intRates[startIndex].EffectiveDate) {
+	for utils.AfterDay(dateFinal, intRates[startIndex].EffectiveDate) && startIndex < len(intRates)-1 {
 		ratefactor, _ := ratederivatives.RateFactor(intRates[startIndex].EffectiveDate, holidays)
 		rateMap[intRates[startIndex].EffectiveDate] = float64(ratefactor) * intRates[startIndex].Value
 		startIndex++

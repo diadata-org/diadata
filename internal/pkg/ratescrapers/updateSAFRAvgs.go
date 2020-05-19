@@ -112,11 +112,6 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 		log.Error("Error parsing effective date for SOFRXXX", err)
 	}
 
-	effDate, err := time.Parse("2006-01-02", ActData.CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
-	if err != nil {
-		log.Error("Error parsing effective date for SOFRXXX: ", err)
-	}
-
 	t1 := &models.InterestRate{
 		Symbol:          "SOFR30",
 		Value:           rate1,
