@@ -107,7 +107,7 @@ func (s *HuobiFuturesScraper) ScraperClose(market string, connection interface{}
 func (s *HuobiFuturesScraper) Scrape(market string) {
 	s.validateMarket(market)
 
-	// this block is for listening to sigterms and interupts
+	// this block is for listening to sigterms and interrupts
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	userCancelled := make(chan bool, 1)

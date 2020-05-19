@@ -48,7 +48,7 @@ func (t *Task) run() {
 }
 
 func (t *Task) stop() {
-	log.Println("Stoping exchange pair update thread...")
+	log.Println("Stopping exchange pair update thread...")
 	close(t.closed)
 	t.wg.Wait()
 	log.Println("Thread stopped, cleaning...")

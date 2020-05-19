@@ -109,7 +109,7 @@ func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone strin
 func MinutesBetweenTwoDays(t1 time.Time, t2 time.Time) (float64, error) {
 	const nilTime float64 = 0
 	// if the date is the same. not using func (t Time) Before(u Time) bool
-	// because the time can be diffrent but for our purposes this is the same day
+	// because the time can be different but for our purposes this is the same day
 	if t1.Day() == t2.Day() && t1.Year() == t2.Year() && t1.Month() == t2.Month() {
 		return nilTime, nil
 	}
