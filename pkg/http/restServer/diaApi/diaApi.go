@@ -3,6 +3,7 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -209,6 +210,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusOK, q)
 		}
+
 	} else {
 
 		dateInit, err := time.Parse("2006-01-02", dateInitstring)
@@ -230,11 +232,15 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusOK, q)
 		}
+
 	}
 }
 
 // GetCompoundedAvg is the delegate method to fetch averaged compounded rate values for interest rates
 func (env *Env) GetCompoundedAvg(c *gin.Context) {
+
+	tInit := time.Now()
+
 	// Import and cast input from API call
 	symbol := c.Param("symbol")
 	datestring := c.Param("time")
@@ -247,17 +253,52 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
 
-	// Compute compunded rate and return if no error
-	q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, 0)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
+	// Add optional query parameters for requesting a range of values
+	dateInitstring := c.DefaultQuery("dateInit", "noRange")
+	dateFinalstring := c.Query("dateFinal")
+
+	rounding := float64(0)
+
+	if dateInitstring == "noRange" {
+
+		// Compute compunded rate and return if no error
+		q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, rounding)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
 		} else {
+			c.JSON(http.StatusOK, q)
+		}
+
+	} else {
+
+		dateInit, err := time.Parse("2006-01-02", dateInitstring)
+		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
-	} else {
-		c.JSON(http.StatusOK, q)
+		dateFinal, err := time.Parse("2006-01-02", dateFinalstring)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+
+		q, err := env.DataStore.GetCompoundedAvgRange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+
 	}
+
+	tFinal := time.Now()
+	fmt.Println("time elapsed: ", tFinal.Sub(tInit))
 }
 
 // GetRates is the delegate method for fetching all rate types

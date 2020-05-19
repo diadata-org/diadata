@@ -74,7 +74,7 @@ func (s *RateScraper) UpdateSAFR() error {
 
 	effDate, err := time.Parse("2006-01-02", rss.ItemInd.DateInd[:10])
 	if err != nil {
-		log.Error("Error parsing effective date for SOFRXXX: ", err)
+		log.Error("Error parsing effective date for SAFR: ", err)
 	}
 
 	t := &models.InterestRate{

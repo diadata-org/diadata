@@ -107,6 +107,10 @@ func (s *RateScraper) UpdateSAFRAvgs() error {
 	} else {
 		dateTime = dateTime.Round(time.Second).UTC()
 	}
+	effDate, err := time.Parse("2006-01-02", ActData.CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
+	if err != nil {
+		log.Error("Error parsing effective date for SOFRXXX", err)
+	}
 
 	effDate, err := time.Parse("2006-01-02", ActData.CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
 	if err != nil {
