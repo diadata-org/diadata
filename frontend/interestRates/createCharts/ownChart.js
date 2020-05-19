@@ -138,14 +138,7 @@ function updateChart() {
     RateInfo.firstPublication = found.FirstDate.slice(0,10);
     // Increase initial date according to observation period
     dateInit = addDays(RateInfo.firstPublication, lenPeriod).slice(0,10);            
-    // RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
-   
-
-    // SONIA special case:
-    console.log(symbol);
-    RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=2000-05-02&dateFinal=' + today;
-    // console.log(RateInfo.url);
-    console.log(RateInfo);
+    RateInfo.url = 'http://localhost:8081/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
     
     // Fill the chart with updated information
     getData(RateInfo.url, function(obj) {
@@ -153,7 +146,7 @@ function updateChart() {
         for(i = 0; i < obj.length; i++) {  
             prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
         }
-        prefillArray.sort();
+        prefillArray.sort(function(a,b) { return a - b; });
         yourOwnChart.series[0].setData(prefillArray);               
     });
 

@@ -3,6 +3,7 @@ package diaApi
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -234,6 +235,9 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 // GetCompoundedAvg is the delegate method to fetch averaged compounded rate values for interest rates
 func (env *Env) GetCompoundedAvg(c *gin.Context) {
+
+	tInit := time.Now()
+
 	// Import and cast input from API call
 	symbol := c.Param("symbol")
 	datestring := c.Param("time")
@@ -289,6 +293,9 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 		}
 
 	}
+
+	tFinal := time.Now()
+	fmt.Println("time elapsed: ", tFinal.Sub(tInit))
 }
 
 // GetRates is the delegate method for fetching all rate types

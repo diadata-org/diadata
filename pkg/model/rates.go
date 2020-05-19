@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	ratederivatives "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
@@ -229,7 +230,6 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 		return &InterestRate{}, err
 	}
 
-	// Get rate data from database
 	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
 	if err != nil {
 		return &InterestRate{}, err
@@ -280,6 +280,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 
 	// Get compounded rate
 	compRate, err := ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
+	// fmt.Println("compRate: ", compRate)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -340,17 +341,14 @@ func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYe
 }
 
 // GetCompoundedAvgRange returns the compounded average of the index @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding float64) (values []*InterestRate, err error) {
-
-	count := 0
-	var timesum time.Duration
+func (db *DB) GetCompoundedAvgRangeOld(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding float64) (values []*InterestRate, err error) {
 
 	for utils.AfterDay(dateFinal, dateInit) {
 
-		tInit := time.Now()
-
+		// tInit := time.Now()
 		dateStart := dateInit.AddDate(0, 0, -calDays)
 		index, err := db.GetCompoundedRate(symbol, dateStart, dateInit, daysPerYear, rounding)
+		// fmt.Println("index: ", index)
 		if err != nil {
 			dateInit = dateInit.AddDate(0, 0, 1)
 		} else {
@@ -366,17 +364,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 			values = append(values, compAvg)
 			dateInit = dateInit.AddDate(0, 0, 1)
 		}
-		tFinal := time.Now()
-		timesum += tFinal.Sub(tInit)
 
-		if count%100 == 0 {
-			fmt.Println(timesum)
-			fmt.Println("Now is: ", count)
-			fmt.Println(dateStart)
-			count++
-			timesum = 0
-		}
-		count++
 	}
 	return values, nil
 }
@@ -432,4 +420,273 @@ func (db *DB) findLastDay(symbol, date string) (string, error) {
 	// If no entry found in the last @maxDays days return error
 	err := errors.New("No database entry found in the last " + strconv.FormatInt(int64(maxDays), 10) + "days.")
 	return "", err
+}
+
+// --------------------------------------------------------------------------------------------
+// Computation of compounded average range as done by FED and BOE, i.e. neglecting higher order
+// terms accounting for holidays and weekends
+// --------------------------------------------------------------------------------------------
+
+// WeightedRates returns a map which maps a rate to each business day in the time period.
+// Rates are weighted by the rate factor. intRates must be sorted by date in increasing order.
+func WeightedRates(intRates []*InterestRate, dateInit, dateFinal time.Time, holidays []time.Time, startIndex int) (map[time.Time]float64, int) {
+
+	rateMap := make(map[time.Time]float64)
+
+	// Adjust rate if dateInit is not a business day
+	initialFactor := 0
+	auxDate := dateInit
+	for !utils.CheckWeekDay(auxDate) || utils.ContainsDay(holidays, auxDate) {
+		initialFactor++
+		auxDate = auxDate.AddDate(0, 0, 1)
+	}
+
+	// Get index for first date inside global range
+	for utils.AfterDay(dateInit, intRates[startIndex].EffectiveDate) {
+		startIndex++
+	}
+	index := startIndex
+
+	// If first dateInit is non-business day, get previous rate
+	if !utils.CheckWeekDay(dateInit) || utils.ContainsDay(holidays, dateInit) {
+		startIndex = startIndex - 1
+		rateMap[dateInit] = float64(initialFactor) * intRates[startIndex].Value
+		startIndex++
+	}
+
+	for utils.AfterDay(dateFinal, intRates[startIndex].EffectiveDate) {
+		ratefactor, _ := ratederivatives.RateFactor(intRates[startIndex].EffectiveDate, holidays)
+		rateMap[intRates[startIndex].EffectiveDate] = float64(ratefactor) * intRates[startIndex].Value
+		startIndex++
+	}
+
+	return rateMap, index
+}
+
+// GetCompoundedAvgRange returns the compounded average of the index @symbol over rolling @calDays calendar days.
+func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding float64) (values []*InterestRate, err error) {
+
+	dateStart := dateInit.AddDate(0, 0, -calDays)
+	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
+	firstPublication, err := db.GetFirstDate(symbol)
+	if err != nil {
+		return []*InterestRate{}, err
+	}
+	if utils.AfterDay(firstPublication, dateStart) {
+		log.Error("dateStart cannot be earlier than first publication date.")
+		err = errors.New("dateStart cannot be earlier than first publication date")
+		return []*InterestRate{}, err
+	}
+
+	// Get rate data from database
+	ratesAPI, err := db.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
+	if err != nil {
+		return []*InterestRate{}, err
+	}
+	if len(ratesAPI) == 0 {
+		err = errors.New("no rate information for this period")
+		return []*InterestRate{}, err
+	}
+
+	// Check, whether first day is a holiday or weekend. If so, prepend rate of
+	// preceding business day (outside the considered time range!).
+	// Determine holidays through missing database entries
+	existDates := []time.Time{}
+	for _, entry := range ratesAPI {
+		existDates = append(existDates, (*entry).EffectiveDate)
+	}
+	holidays := utils.GetHolidays(existDates, dateStart, dateFinal)
+	if utils.ContainsDay(holidays, dateStart) || !utils.CheckWeekDay(dateStart) {
+		firstRate, err := db.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
+		if err != nil {
+			return []*InterestRate{}, err
+		}
+		ratesAPI = append([]*InterestRate{firstRate}, ratesAPI...)
+	}
+
+	// Consider last business day if last given day is holiday or weekend
+	for utils.ContainsDay(holidays, dateFinal) || !utils.CheckWeekDay(dateFinal) {
+		dateFinal = dateFinal.AddDate(0, 0, -1)
+	}
+
+	// Sort ratesApi (type []*InterestRates) in increasing order according to date
+	// and remove the data for the final date, as only past values are compounded.
+	sort.Slice(ratesAPI, func(i, j int) bool {
+		return (ratesAPI[i].EffectiveDate).Before(ratesAPI[j].EffectiveDate)
+	})
+	ratesAPI = ratesAPI[:len(ratesAPI)-1]
+
+	// Iterate through interest period
+	cursor := 0
+	for utils.AfterDay(dateFinal, dateInit) {
+
+		dateStart := dateInit.AddDate(0, 0, -calDays)
+
+		// get a weighted rate for each business day in period of interest
+		mapRates, index := WeightedRates(ratesAPI, dateStart, dateInit, holidays, cursor)
+		cursor = index
+
+		auxDate := dateStart
+		ratesPeriod := []float64{}
+		for utils.AfterDay(dateInit, auxDate) {
+			val, ok := mapRates[auxDate]
+			if ok {
+				ratesPeriod = append(ratesPeriod, val)
+				auxDate = auxDate.AddDate(0, 0, 1)
+			} else {
+				auxDate = auxDate.AddDate(0, 0, 1)
+			}
+		}
+
+		compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, rounding)
+
+		if err != nil || utils.ContainsDay(holidays, dateInit) {
+			dateInit = dateInit.AddDate(0, 0, 1)
+			dateStart = dateStart.AddDate(0, 0, 1)
+		} else {
+
+			// Fill return struct
+			compAvg := &InterestRate{}
+			compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_compounded_by_DIA"
+			compAvg.Value = 100 * (compRate - 1) * float64(daysPerYear) / float64(calDays)
+			compAvg.EffectiveDate = dateInit
+			compAvg.Source = ratesAPI[0].Source
+
+			// Append data and increment initial date
+			values = append(values, compAvg)
+			dateInit = dateInit.AddDate(0, 0, 1)
+			dateStart = dateStart.AddDate(0, 0, 1)
+		}
+
+	}
+
+	return values, nil
+}
+
+// ---------------------------------------------------------------------------------------------
+// Computation of compounded averages in conservative way, i.e. including higher order terms
+// ---------------------------------------------------------------------------------------------
+
+// StraightRates returns a map which maps a rate to each day in the time period. This includes (artificial)
+// rate values for non-business days. intRates must be sorted by date in increasing order.
+func StraightRates(intRates []*InterestRate) map[time.Time]float64 {
+
+	finalDay := intRates[len(intRates)-1].EffectiveDate
+	count := 0
+	day := intRates[count].EffectiveDate
+
+	rateMap := make(map[time.Time]float64)
+	rateMap[day] = intRates[count].Value
+	day = day.AddDate(0, 0, 1)
+	count++
+	for utils.AfterDay(finalDay, day) {
+		if utils.SameDays(day, intRates[count].EffectiveDate) {
+			// For business day assign rate and increment day
+			rateMap[day] = intRates[count].Value
+			day = day.AddDate(0, 0, 1)
+			count++
+		} else {
+			// holiday or weekend gets the previous rate
+			rateMap[day] = intRates[count-1].Value
+			day = day.AddDate(0, 0, 1)
+		}
+	}
+	return rateMap
+}
+
+// GetCompoundedAvgRangeCons returns the compounded average of the index @symbol over rolling @calDays calendar days.
+func (db *DB) GetCompoundedAvgRangeCons(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding float64) (values []*InterestRate, err error) {
+
+	dateStart := dateInit.AddDate(0, 0, -calDays)
+	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
+	firstPublication, err := db.GetFirstDate(symbol)
+	if err != nil {
+		return []*InterestRate{}, err
+	}
+	if utils.AfterDay(firstPublication, dateStart) {
+		log.Error("dateStart cannot be earlier than first publication date.")
+		err = errors.New("dateStart cannot be earlier than first publication date")
+		return []*InterestRate{}, err
+	}
+
+	// Get rate data from database
+	ratesAPI, err := db.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
+	if err != nil {
+		return []*InterestRate{}, err
+	}
+	if len(ratesAPI) == 0 {
+		err = errors.New("no rate information for this period")
+		return []*InterestRate{}, err
+	}
+
+	// Check, whether first day is a holiday or weekend. If so, prepend rate of
+	// preceding business day (outside the considered time range!).
+	// Determine holidays through missing database entries
+	existDates := []time.Time{}
+	for _, entry := range ratesAPI {
+		existDates = append(existDates, (*entry).EffectiveDate)
+	}
+	holidays := utils.GetHolidays(existDates, dateStart, dateFinal)
+	if utils.ContainsDay(holidays, dateStart) || !utils.CheckWeekDay(dateStart) {
+		firstRate, err := db.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
+		if err != nil {
+			return []*InterestRate{}, err
+		}
+		ratesAPI = append([]*InterestRate{firstRate}, ratesAPI...)
+	}
+
+	// Consider last business day if last given day is holiday or weekend
+	for utils.ContainsDay(holidays, dateFinal) || !utils.CheckWeekDay(dateFinal) {
+		dateFinal = dateFinal.AddDate(0, 0, -1)
+	}
+
+	// Sort ratesApi (type []*InterestRates) in increasing order according to date
+	// and remove the data for the final date, as only past values are compounded.
+	sort.Slice(ratesAPI, func(i, j int) bool {
+		return (ratesAPI[i].EffectiveDate).Before(ratesAPI[j].EffectiveDate)
+	})
+	ratesAPI = ratesAPI[:len(ratesAPI)-1]
+
+	// get a rate for each calendar day in period of interest
+	mapRates := StraightRates(ratesAPI)
+
+	// Iterate through interest period
+	count := 0
+	for utils.AfterDay(dateFinal, dateInit) {
+		// Get compounded rate
+		dateStart := dateInit.AddDate(0, 0, -calDays)
+		auxDate := dateStart
+		ratesPeriod := []float64{}
+		for i := count; i < count+calDays; i++ {
+			ratesPeriod = append(ratesPeriod, mapRates[auxDate])
+			auxDate = auxDate.AddDate(0, 0, 1)
+		}
+		compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, rounding)
+
+		if err != nil {
+			// return []*InterestRate{}, err
+			log.Info("no information for holidays")
+		}
+
+		if err != nil {
+			dateInit = dateInit.AddDate(0, 0, 1)
+			dateStart = dateStart.AddDate(0, 0, 1)
+		} else {
+
+			// Fill return struct
+			compAvg := &InterestRate{}
+			compAvg.Symbol = symbol + strconv.Itoa(calDays) + "_compounded_by_DIA"
+			compAvg.Value = 100 * (compRate - 1) * float64(daysPerYear) / float64(calDays)
+			compAvg.EffectiveDate = dateInit
+			compAvg.Source = ratesAPI[0].Source
+
+			// Append data and increment initial date
+			values = append(values, compAvg)
+			dateInit = dateInit.AddDate(0, 0, 1)
+			dateStart = dateStart.AddDate(0, 0, 1)
+			count++
+		}
+
+	}
+	return values, nil
 }
