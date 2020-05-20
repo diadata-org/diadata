@@ -4,7 +4,7 @@ description: >-
   from one another in the overnight market.
 ---
 
-# Interbank Overnight Interest Rates
+# Interbank overnight interest rates
 
 ## Sterling Overnight Index Average \(SONIA\)
 
