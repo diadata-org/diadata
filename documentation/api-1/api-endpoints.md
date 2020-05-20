@@ -438,5 +438,37 @@ Successful retrieval of available symbols for cryptocurrencies. Shown below is a
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/kafka/tradesBlock" %}
+{% api-method-summary %}
+Raw crypto trades
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all trades that comprised the last block that was used to calculate the latest information on crypto asset pricing.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="offset" type="integer" required=false %}
+Get historical blocks \(use the current offset returned in a response to calculate the offset you want to get\)
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+A list of trades wrapped into a block with additional meta information like the time span of this specific block.
+{% endapi-method-response-example-description %}
+
+```
+{"Result":{"offset":433850,"messages":[[{"BlockHash":"v1_4d7b1e936e7e0808d9ab17a43ec5ef8a","TradesBlockData":{"BeginTime":"2020-05-20T12:24:00Z","EndTime":"2020-05-20T12:26:00Z","TradesNumber":5674,"Trades":[{"Symbol":"EOS","Pair":"EOS_ETH","Price":0.01243882,"Volume":0.0325,"Time":"2020-05-20T12:24:00.050719107Z","ForeignTradeID":"c0d40b32","EstimatedUSDPrice":2.649370741608955,"Source":"LBank"}]}}]]}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 
 
