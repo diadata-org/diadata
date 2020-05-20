@@ -476,7 +476,11 @@ Compounded Average
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get the average value of a given rate compounded over a period of time.
+Get the average value of a given interest rate compounded over a period of time.  
+Example: https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
+  
+Get compounded averages for a range of dates using the query parameters.  
+Example: https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -513,11 +517,11 @@ Final date for range queries. Format: yyyy-mm-dd
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-
+Successful retrieval of a compounded average of the SOFR over an interest period of 30 days.
 {% endapi-method-response-example-description %}
 
 ```
-
+{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667157687857554,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
