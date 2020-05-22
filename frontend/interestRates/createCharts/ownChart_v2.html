@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/data.js"></script>	
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>    
+	
+	<title>Create Your Own Index</title>
+</head>
+
+<style>
+   .input-header {
+  display: inline-block; 
+  width: 100%;
+  border: 1px dashed blue;
+}
+.div-left {
+  float: left;
+}
+.div-right {
+  float: right;
+}
+
+</style>
+
+<body>
+    
+    <div class='input-header'>
+        <div class='div-left'>
+    <table>
+    <tbody>
+    
+        <tr><td>
+    	   Interest rate type: 
+        </td>
+        <td>
+            <select id='symbol' style="width: 70px;">
+                <option value='SONIA'>SONIA</option>
+		        <option value='SOFR'>SOFR</option>
+		        <option value='ESTER'>€STR</option>
+            </select>
+        </td>
+        </tr>
+
+        <tr><td>
+            Business Day Convention: 
+        </td>
+        <td>
+            <select id='dpy' style="width: 70px;">
+                <option value='360'>360</option>
+                <option value='365'>365</option>
+            </select>
+        </td>
+        </tr>
+
+        <tr><td>
+            Interest Determination Date: 
+        </td>
+        <td><input id='lenPeriod' type='text' style='width: 66px;'></td>
+        </tr>
+
+        <tr><td>
+            Rounding to decimals: 
+        </td>
+        <td><input id='rounding' type='number' value=4 style='width: 66px;'></td>
+        <td>
+            <input type='button' onclick='updateChart()' value='Compute chart'/>
+        </td>
+        </tr>
+    
+        </tbody>
+    </table>
+    </div>
+   
+    <div class='div-right'>
+        <table>
+            <tbody>
+                <tr><td> &nbsp </td></tr>
+                <tr><td>  &nbsp</td></tr>
+                <tr><td> &nbsp </td></tr>
+                <tr><td><input type='button' value='button right'/></td></tr>
+
+                </tbody>
+        </table>
+        </div>
+    
+
+    </div>
+
+    <br>
+    
+    <div id='yourOwnContainer'></div>
+    
+     <script src='ownChart_v2.js'></script>
+
+</body>
+</html>

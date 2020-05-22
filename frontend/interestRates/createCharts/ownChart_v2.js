@@ -88,10 +88,6 @@ function makechart(rate) {
 				name: rate.name,
 				data: []
             },
-            // {
-            //     name: 'ESTER',
-			// 	data: [[1, 1], [2,10], [3, 10], [4, 20], [5, 1]]
-			// }
 		]
 	});	
 }
@@ -111,8 +107,10 @@ var RateInfo = {
 // Initial fill
 getData(RateInfo.url, function(obj) {
     prefillArray = []
-    for(i = 0; i < obj.length; i++) {  
-        prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
+    for(i = 0; i < obj.length; i++) {
+        var value = obj[i].Value;
+        // prefillArray.push([Date.parse(obj[i].EffectiveDate), +value.toFixed(document.getElementById('rounding').value)]);
+        prefillArray.push([Date.parse(obj[i].EffectiveDate), +value.toFixed(4)]);
     }
     prefillArray.sort()
     yourOwnChart.series[0].setData(prefillArray)
@@ -126,10 +124,10 @@ makechart(RateInfo);
 function updateChart() {
 
     // Retrieve user data --------------------------------------------------------------------
-    var lenPeriod = document.getElementById("lenPeriod").value;
-    var dpy = document.getElementById("dpy").value;
-    var symbol = document.getElementById("symbol").value;
-    
+    var lenPeriod = document.getElementById('lenPeriod').value;
+    var dpy = document.getElementById('dpy').value;
+    var symbol = document.getElementById('symbol').value;
+    var rounding = document.getElementById('rounding').value;
 
     // update rate information ---------------------------------------------------------------
     RateInfo.name = symbol + lenPeriod;
@@ -143,23 +141,14 @@ function updateChart() {
     // Fill the chart with updated information
     getData(RateInfo.url, function(obj) {
         var prefillArray = [];
-        for(i = 0; i < obj.length; i++) {  
-            prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
+        for(i = 0; i < obj.length; i++) {
+            var value = obj[i].Value;
+            prefillArray.push([Date.parse(obj[i].EffectiveDate), +value.toFixed(rounding)]);
+            // prefillArray.push([Date.parse(obj[i].EffectiveDate), parseFloat(value.toFixed(rounding))]);
         }
         prefillArray.sort(function(a,b) { return a - b; });
         yourOwnChart.series[0].setData(prefillArray);               
     });
-
-    //  // Fill the chart with reference rate
-    //  getData('http://localhost:8081/v1/interestrate/' + symbol + '/' + '?dateInit=' + dateInit + '&dateFinal=' + today, function(obj) {
-    //     var prefillArray = [];
-    //     for(i = 0; i < obj.length; i++) {  
-    //         prefillArray.push([Date.parse(obj[i].EffectiveDate), obj[i].Value]);
-    //     }
-    //     prefillArray.sort();
-    //     yourOwnChart.series[1].setData(prefillArray);
-                   
-    // });
 
     makechart(RateInfo);
 
