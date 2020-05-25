@@ -2,7 +2,5 @@
 
 {% page-ref page="digital-assets/" %}
 
-{% page-ref page="./" %}
-
-
+{% page-ref page="traditional-assets/" %}
 
