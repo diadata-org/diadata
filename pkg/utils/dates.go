@@ -16,8 +16,8 @@ func CheckWeekDay(date time.Time) bool {
 	return true
 }
 
-// ContainsDay returns true if day @e is contained in slice @s, independent of the daytime.
-// As a consequence, be cautious when comparing times in different timezones.
+// ContainsDay returns true if day @date is contained in slice @s, independent of the daytime.
+// As a consequence, be cautious when comparing days in different timezones.
 func ContainsDay(s []time.Time, date time.Time) bool {
 	for _, a := range s {
 		if SameDays(a, date) {
@@ -78,15 +78,15 @@ func CountDays(dateInit, dateFinal time.Time, business bool) (days int, err erro
 }
 
 // GetHolidays returns "holidays" as non-weekend complement of given days @workdays
-func GetHolidays(workdays []time.Time, dateInit, date time.Time) []time.Time {
+func GetHolidays(workdays []time.Time, dateInit, dateFinal time.Time) []time.Time {
 
-	if AfterDay(dateInit, date) {
+	if AfterDay(dateInit, dateFinal) {
 		log.Error("The initial date must not be after the final date.")
 		return []time.Time{}
 	}
 	auxDate := dateInit
 	holidays := []time.Time{}
-	for !SameDays(auxDate, date.AddDate(0, 0, 1)) {
+	for !SameDays(auxDate, dateFinal.AddDate(0, 0, 1)) {
 		if CheckWeekDay(auxDate) && !ContainsDay(workdays, auxDate) {
 			holidays = append(holidays, auxDate)
 			auxDate = auxDate.AddDate(0, 0, 1)

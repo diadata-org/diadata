@@ -43,6 +43,7 @@ type InterestRate struct {
 type InterestRateMeta struct {
 	Symbol    string
 	FirstDate time.Time
+	Decimals  int
 	Issuer    string
 }
 

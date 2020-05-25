@@ -82,17 +82,13 @@ func CompoundedRate(rates []float64, dateInit, dateFinal time.Time, holidays []t
 }
 
 // CompoundedRateSimple returns the compounded index for the rate values given by the slice @rate.
-// @rates is a slice with daily rates for all business days in the respective period.
+// @rates is a slice with daily rates for all calendar days in the respective period.
 // @dateInit, @dateFinal determine the period of the loan.
 // @daysPerYear determines the total number of days per business year.
 // @rounding is a float of type 1e-n which rounds the result to n digits. If @rounding == 0 no rounding
 func CompoundedRateSimple(rates []float64, dateInit, dateFinal time.Time, daysPerYear int, rounding float64) (float64, error) {
 
 	// Check feasibility and consistency of input data
-	if !utils.CheckWeekDay(dateFinal) {
-		// log.Info("No rate information for holidays or weekends")
-		return float64(0), errors.New("No rate information for holidays or weekends")
-	}
 	if utils.AfterDay(dateInit, dateFinal) {
 		log.Info("The final date cannot be before the initial date.")
 		return float64(0), errors.New("The final date cannot be before the initial date")

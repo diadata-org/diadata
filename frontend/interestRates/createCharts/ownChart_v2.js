@@ -2,7 +2,7 @@
 // General variables and functions
 // ------------------------------------------------------------------------------------------------
 
-// // Load meta information on rates
+// // Load meta information on rates before page loads
 var dateUrl = 'https://api.diadata.org/v1/interestrates';
 $.holdReady(true);
 var firstPublications = null;
@@ -46,7 +46,8 @@ function getData(url, callback) {
     request.send()
 }
 
-function makechart(rate) {
+function makechart(rate, loading) {
+    
 	yourOwnChart = Highcharts.stockChart(rate.container, {
 		rangeSelector: {
 			buttonTheme: {
@@ -56,7 +57,6 @@ function makechart(rate) {
 	   	}, 
 		chart: {
             type: 'spline',
-        
 		},
 		credits: {
 			text: 'DIADATA',
@@ -89,7 +89,10 @@ function makechart(rate) {
 				data: []
             },
 		]
-	});	
+    });
+    if(loading) {
+        yourOwnChart.showLoading();
+    }
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -116,7 +119,7 @@ getData(RateInfo.url, function(obj) {
     yourOwnChart.series[0].setData(prefillArray)
     // yourOwnChartSOFR.redraw();               
 });
-makechart(RateInfo);
+makechart(RateInfo, false);
 
 // ------------------------------------------------------------------------------------------------
 // Update upon clicking button
@@ -128,28 +131,36 @@ function updateChart() {
     var dpy = document.getElementById('dpy').value;
     var symbol = document.getElementById('symbol').value;
     var rounding = document.getElementById('rounding').value;
+    var dia = document.getElementById('DIA').checked;
 
-    // update rate information ---------------------------------------------------------------
-    RateInfo.name = symbol + lenPeriod;
+    // update rate information ---------------------------------------------------------------     
     // retrieve first publication date
     const found = Object.values(firstPublications).find(element => element.Symbol == symbol);
     RateInfo.firstPublication = found.FirstDate.slice(0,10);
     // Increase initial date according to observation period
-    dateInit = addDays(RateInfo.firstPublication, lenPeriod).slice(0,10);            
-    RateInfo.url = 'https://api.diadata.org/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
-    
-    // Fill the chart with updated information
+    dateInit = addDays(RateInfo.firstPublication, lenPeriod).slice(0,10);       
+    // Check which Index should be displayed 
+    if(dia) {
+        RateInfo.name = symbol + lenPeriod + '_by_DIA';
+        RateInfo.url = 'http://localhost:8081/v1/compoundedAvgDIA/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
+    } else {
+        RateInfo.name = symbol + lenPeriod;
+        RateInfo.url = 'https://api.diadata.org/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
+    }
+
+    // update rate information ---------------------------------------------------------------
     getData(RateInfo.url, function(obj) {
+
         var prefillArray = [];
         for(i = 0; i < obj.length; i++) {
             var value = obj[i].Value;
             prefillArray.push([Date.parse(obj[i].EffectiveDate), +value.toFixed(rounding)]);
             // prefillArray.push([Date.parse(obj[i].EffectiveDate), parseFloat(value.toFixed(rounding))]);
         }
-        prefillArray.sort(function(a,b) { return a - b; });
-        yourOwnChart.series[0].setData(prefillArray);               
+        yourOwnChart.series[0].setData(prefillArray);
+        yourOwnChart.hideLoading();
     });
 
-    makechart(RateInfo);
+    makechart(RateInfo, true);
 
 };
