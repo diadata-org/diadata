@@ -2,7 +2,7 @@
 
 In order to reduce the impact of outliers in daily fluctuations of financial markets, many financial products use simple or compounded averages of a given reference rate. For instance, on every business day the New York Federal Reserve Bank publishes the average rate of the Secured Overnight Financing Rate, compounded over the last 30 calendar days under the name of SOFR30.
 
-## Compounded Rates Standard Methodology
+## Standard Methodology
 
 Here, we present the methodology of compounded rates that is used by large banks such as the New York Federal Reserve Bank \(compounded SOFR\) and the Bank of England \(compounded SONIA\).
 
@@ -23,7 +23,16 @@ Sources:
   
 [https://www.bankofengland.co.uk/paper/2020/supporting-risk-free-rate-transition-through-the-provision-of-compounded-sonia](https://www.bankofengland.co.uk/paper/2020/supporting-risk-free-rate-transition-through-the-provision-of-compounded-sonia)
 
-## Compounded Rates DIA Methodology
+Link to API documentation:  
+[https://docs.diadata.org/documentation/api-1/api-endpoints\#compounded-average](https://docs.diadata.org/documentation/api-1/api-endpoints#compounded-average)
+
+## DIA Methodology
+
+The methodology from the previous section has a special feature in that it mixes compounded and non-compounded rates. More precisely, investments are not compounded for weekends and holidays. This behaviour is reflected in the rate factor $$n_i$$. In the Index $$I_{DIA}$$ presented below,  investments are compounded over all calendar days in the respective interest period.
+
+Consider a unit investment over a time period of $$d_c$$ calendar days. Let $$r_i$$ be an interest rate that is published once every business day and assume that the business day convention is such that the year has $$N$$ days. We define an interest rate $$\tilde{r}_i$$ such that $$\tilde{r}_i$$ coincides with $$r_i$$ on business days and is set to the rate of the previous business day if $$i$$ is a holiday or a weekend. In this straightforward manner we obtain an interest rate for all _calendar days_ and can now set
+
+$$I_{DIA}=\frac{N}{dc}\left[\prod_{j=1}^{d_c}\left( 1 + \frac{\tilde{r}_j}{N} \right) -1\right].$$
 
 
 
