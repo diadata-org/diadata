@@ -1,6 +1,10 @@
 # Compounded Rates
 
-In order to reduce the impact of outliers in daily fluctuations of financial markets, many financial products use simple or compounded averages of a given reference rate. Here, we present the methodology of compounded rates that is used by large banks such as the New York Federal Reserve Bank \(compounded SOFR\) and the Bank of England \(compounded SONIA\).
+In order to reduce the impact of outliers in daily fluctuations of financial markets, many financial products use simple or compounded averages of a given reference rate. For instance, on every business day the New York Federal Reserve Bank publishes the average rate of the Secured Overnight Financing Rate, compounded over the last 30 calendar days under the name of SOFR30.
+
+## Compounded Rates Standard Methodology
+
+Here, we present the methodology of compounded rates that is used by large banks such as the New York Federal Reserve Bank \(compounded SOFR\) and the Bank of England \(compounded SONIA\).
 
 Consider a unit investment over a time period of $$d_c$$ calendar days containing $$d_b\leq d_c$$ business days. Let $$r_i$$ be an interest rate that is published once every business day and assume that the business day convention is such that the year has $$N$$ days. Then, the compounded gain $$G$$ over the whole interest period results to
 
@@ -18,4 +22,8 @@ Sources:
 [https://www.newyorkfed.org/medialibrary/Microsites/arrc/files/2019/Users\_Guide\_to\_SOFR.pdf](https://www.newyorkfed.org/medialibrary/Microsites/arrc/files/2019/Users_Guide_to_SOFR.pdf)  
   
 [https://www.bankofengland.co.uk/paper/2020/supporting-risk-free-rate-transition-through-the-provision-of-compounded-sonia](https://www.bankofengland.co.uk/paper/2020/supporting-risk-free-rate-transition-through-the-provision-of-compounded-sonia)
+
+## Compounded Rates DIA Methodology
+
+
 

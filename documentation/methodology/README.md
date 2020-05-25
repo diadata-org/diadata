@@ -2,7 +2,5 @@
 
 {% page-ref page="digital-assets/" %}
 
-{% page-ref page="./" %}
-
-
+[https://docs.diadata.org/documentation/methodology/traditional-assets](https://docs.diadata.org/documentation/methodology/traditional-assets)
 
