@@ -34,5 +34,8 @@ Consider a unit investment over a time period of $$d_c$$ calendar days. Let $$r_
 
 $$I_{DIA}=\frac{N}{dc}\left[\prod_{j=1}^{d_c}\left( 1 + \frac{\tilde{r}_j}{N} \right) -1\right].$$
 
+Link to API documentation:  
+Coming soon!
+
 
 
