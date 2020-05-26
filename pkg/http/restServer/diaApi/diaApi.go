@@ -369,7 +369,8 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 	dateInitstring := c.DefaultQuery("dateInit", "noRange")
 	dateFinalstring := c.Query("dateFinal")
 
-	rounding := 1e-8
+	// Retrieve rounding convention for @symbol
+	rounding := 0
 
 	if dateInitstring == "noRange" {
 
@@ -441,7 +442,7 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 	dateInitstring := c.DefaultQuery("dateInit", "noRange")
 	dateFinalstring := c.Query("dateFinal")
 
-	rounding := float64(0)
+	rounding := 0
 
 	if dateInitstring == "noRange" {
 
@@ -506,7 +507,7 @@ func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
 	dateInitstring := c.DefaultQuery("dateInit", "noRange")
 	dateFinalstring := c.Query("dateFinal")
 
-	rounding := float64(0)
+	rounding := 0
 
 	if dateInitstring == "noRange" {
 
