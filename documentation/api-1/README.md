@@ -1,5 +1,7 @@
 # API Documentation
 
+{% page-ref page="api-endpoints.md" %}
+
 {% page-ref page="oracles.md" %}
 
 

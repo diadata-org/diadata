@@ -18,7 +18,7 @@ https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC
 For a list of available trading places see:  
 https://docs.diadata.org/documentation/api-1\#api-access  
 or:  
-https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M8LfI-6lFYf6amdZXd0/v/master/documentation/api-1/api-endpoints\#exchanges  
+https://docs.diadata.org/documentation/api-1/api-endpoints\#exchanges  
   
   
   
