@@ -15,7 +15,7 @@ Chart Points
 Get chart points for an exchange.  
 https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC  
   
-For a list of available trading places see:  
+For a list of available exchanges see:  
 https://docs.diadata.org/documentation/api-1\#api-access  
 or:  
 https://docs.diadata.org/documentation/api-1/api-endpoints\#exchanges  
