@@ -21,6 +21,7 @@ or:
 https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M8LfI-6lFYf6amdZXd0/v/master/documentation/api-1/api-endpoints\#exchanges  
   
   
+  
 _Remark_: Successful responses can be rather large.
 {% endapi-method-description %}
 
