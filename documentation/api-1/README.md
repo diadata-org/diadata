@@ -23,7 +23,7 @@ Version: 1.0
 
 ## API Access
 
-You can find documnentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/documentation/api.md). Several endpoints exist that show the different kind of data we collect:
+You can find documentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M8P9ubQSN0F_1lhb7M0/v/master/documentation/api-1/api-endpoints). Several endpoints exist that show the different kind of data we collect:
 
 When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset \(e.g., BTC for Bitcoin\).
 
