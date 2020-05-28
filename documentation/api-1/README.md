@@ -1,5 +1,7 @@
 # API Documentation
 
+{% page-ref page="api-endpoints.md" %}
+
 {% page-ref page="oracles.md" %}
 
 
@@ -42,7 +44,7 @@ Currently, DIA collects data from several crypto exchanges. To get an overview, 
 | LBank | [20](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/LBank.json) | [LBank API Documentation \(Chinese\)](https://github.com/LBank-exchange/lbank-official-api-docs) |
 | OKEx | [27](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/OKEx.json) | [OKEx API Documentation \(Chinese\)](https://github.com/okcoin-okex/API-docs-OKEx.com) |
 | Simex | [14](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Simex.json) | [Simex API Documentation](https://simex.global/en/docs/introduction) |
-| ZB.com | [127](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/ZB.json) | [Zb.com API Documentation \(Chinese\)](https://www.zb.com/i/developer) |
+| ZB.com | [127](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/ZB.json) | [Zb.com API Documentation](https://www.zb.com/api) |
 
 Here you can find the introduction to the structure of the system and first steps to contribute.
 

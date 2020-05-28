@@ -13,14 +13,10 @@ Chart Points
 
 {% api-method-description %}
 Get chart points for an exchange.  
-https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC  
+Example: https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS  
   
-For a list of available exchanges see:  
+For a list of available trading places see:  
 https://docs.diadata.org/documentation/api-1\#api-access  
-or:  
-https://docs.diadata.org/documentation/api-1/api-endpoints\#exchanges  
-  
-  
   
 _Remark_: Successful responses can be rather large.
 {% endapi-method-description %}
@@ -487,7 +483,7 @@ Get compounded averages for a range of dates using the query parameters.
 Example: https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
 For the methodology see:  
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology
+https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -535,35 +531,5 @@ Successful retrieval of a compounded average of the SOFR over an interest period
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedAvgDIA/:rateType/:period/:dpy/:date" %}
-{% api-method-summary %}
-Compounded Average by DIA
-{% endapi-method-summary %}
 
-{% api-method-description %}
-Coming soon!
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
-
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
 
