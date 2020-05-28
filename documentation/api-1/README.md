@@ -38,8 +38,8 @@ Currently, DIA collects data from several crypto exchanges. To get an overview, 
 | Bitfinex | [25](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Bitfinex.json) | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general) |
 | Coinbase | [3](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/CoinBase.json) | [Coinbase v2 API](https://developers.coinbase.com/api/v2) |
 | GateIO | [42](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/GateIO.json) | [Gate.io API Documentation](https://www.gate.io/api2) |
-| HitBTC | [43](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/HitBTC.json) | [HitBTC API Browser](https://api.hitbtc.com/api/2/explore/) |
-| Huobi | [40](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Huobi.json) | [Huobi API Documentation](https://github.com/huobiapi/API_Docs_en/wiki/Huobi.pro-API) |
+| HitBTC | [43](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/HitBTC.json) | [HitBTC API Browser](https://api.hitbtc.com/) |
+| Huobi | [40](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Huobi.json) | [Huobi API Documentation](https://huobiapi.github.io/docs/spot/v1/en/#introduction) |
 | Kraken | [8](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Kraken.json) | [Kraken Public API Documentation](https://www.kraken.com/features/api#public-market-data) |
 | LBank | [20](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/LBank.json) | [LBank API Documentation](https://docs.lbkex.net/en/#introduction) |
 | OKEx | [27](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/OKEx.json) | [OKEx API Documentation](https://www.okex.com/docs/en/) |
