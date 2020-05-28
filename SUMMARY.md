@@ -16,7 +16,7 @@
       * [Interbank Overnight Interest Rates](documentation/methodology/traditional-assets/overnight-rates.md)
       * [Compounded Rates](documentation/methodology/traditional-assets/compounded-rates.md)
   * [API Documentation](documentation/api-1/README.md)
-    * [API](documentation/api-1/api-endpoints.md)
+    * [API Endpoints](documentation/api-1/api-endpoints.md)
     * [Oracles in DIA](documentation/api-1/oracles.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
 * [Licence Agreement](licence-agreement.md)
