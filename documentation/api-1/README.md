@@ -23,7 +23,7 @@ Version: 1.0
 
 ## API Access
 
-The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of this base URL. You can find specific documentation for the endpoints of our API on the [API documentation site](https://docs.diadata.org/documentation/api-1/api-endpoints). 
+The DIA base url is `https://api.diadata.org/v1`. All API paths are sub-paths of this base URL. You can find specific documentation for the endpoints of our API on the [API documentation site](https://docs.diadata.org/documentation/api-1/api-endpoints). 
 
 Currently, DIA collects reference rates from traditional financial markets and data from several cryptocurrency exchanges \(see the table below\).
 
