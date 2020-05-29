@@ -602,7 +602,7 @@ Successful retrieval of a compounded average of the SOFR over an interest period
 
 {% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedAvgDIA/:rateType/:period/:dpy/:date" %}
 {% api-method-summary %}
-Compounded Average by DIA
+Compounded Average using DIA Method
 {% endapi-method-summary %}
 
 {% api-method-description %}
