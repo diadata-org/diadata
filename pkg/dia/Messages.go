@@ -41,13 +41,6 @@ type Trade struct {
 	Source            string
 }
 
-// type InterestRate struct {
-// 	Symbol string
-// 	Value  float64
-// 	Time   time.Time
-// 	Source string
-// }
-
 type OptionType int
 
 // signals if the option is call or a put
