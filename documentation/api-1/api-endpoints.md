@@ -476,7 +476,7 @@ A list of trades wrapped into a block with additional meta information like the 
 
 {% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedRate/:rateType/:dpy/:date" %}
 {% api-method-summary %}
-Get Compounded Index
+Compounded Index
 {% endapi-method-summary %}
 
 {% api-method-description %}
