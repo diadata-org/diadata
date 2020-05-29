@@ -544,7 +544,7 @@ Get the average value of a given interest rate compounded over a period of time.
 Example:  
 https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
   
-Get compounded averages for a range of dates using the query parameters.  
+Get the compounded averages for a range of dates using the query parameters.  
 Example:  
 https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
