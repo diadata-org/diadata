@@ -22,18 +22,9 @@ type APIScraper interface {
 
 From the `MySourceScraper` type you derive a `MySourcePairScraper` type which restricts the scraper to a specific pair and is returned by the `ScrapePair` method. Next, you should write a function with signature  `NewMySourceScraper(exchangeName string) *MySourceScraper`. We recommend that this function calls a method `mainLoop()`  in a go routine, constantly receiving trade information through the trade channel of `MySourceScraper`  as long as the channel is open.
 
-The other methods are mainly for Error handling, maintenance and shutdown. Our system is running the data scraper on our premises as an example. Of course, it is also possible to host your own data provider but in this simple example we assume that MyScraper is hosted on DIA servers.
+Finally, please take care of proper error handling and cleanup. More precisely, you should include a method `Error()` which returns an error as soon as the scraper's channel closes, and methods `Close()` and `cleanup()` handling the closing/shutting down of channels.
 
-For testing your scraper, you should create a config file for your api inside the `config/secrets` directory. Its name must be MySource.json and its format should be:
-
-```javascript
-{
-  "ApiKey": "xx",
-  "SecretKey": "yy"
-}
-```
-
-Furthermore, add a reference to your scraper in `Config.go`  in the dia package and to the switch statement in `APIScraper.go`  in the scrapers package:
+Furthermore, in order for our system to see your scraper, add a reference to it in `Config.go`  in the dia package, and to the switch statement in `APIScraper.go`  in the scrapers package:
 
 ```go
 func NewAPIScraper(exchange string, key string, secret string) APIScraper {
@@ -44,7 +35,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 }
 ```
 
-Before running the scraper execute the `main.go` from `cmd/services/pairDiscoveryServices`. Then, `collector.go`  in the  `cmd` folder will try to create a scraper for each exchange and collect the data pairs present in `config/exchange-scrapers.json` written by the method `fetchAvailablePairs()`.
+Before running the scraper execute the `main.go` from `cmd/services/pairDiscoveryServices`. Then, `collector.go`  in the folder  `cmd/exchange-scrapers/collector` will try to create a scraper for each exchange and collect the data pairs present in `config/exchange-scrapers.json` written by the method `fetchAvailablePairs()`.
 
 Finally, run the scraping executable flagged as follows:
 
