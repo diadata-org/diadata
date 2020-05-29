@@ -474,6 +474,66 @@ A list of trades wrapped into a block with additional meta information like the 
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedRate/:rateType/:dpy/:date" %}
+{% api-method-summary %}
+Get Compounded Index
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get the value of an index compounded since its first publication date.  
+  
+Example:  
+https://api.diadata.org/v1/compoundedRate/SOFR/360/2020-05-14  
+  
+Get the compounded index for a range of dates using the query parameters.  
+Example:  
+https://api.diadata.org/v1/compoundedRate/SOFR/360?dateInit=2020-04-24&dateFinal=2020-05-14  
+  
+For the methodology of compounded rates see:  
+https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="rateType" type="string" required=true %}
+Symbol for a rate name
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dpy" type="integer" required=true %}
+Business day convention for the number of days per year
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="date" type="string" required=true %}
+Return the compounded index for the date specified in the format yyyy-mm-dd
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+Initial date for range queries. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="" type="string" required=false %}
+Final date for range queries. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of the SOFR Index.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"SOFR_compounded_by_DIA","Value":1.0414032009923273,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedAvg/:rateType/:period/:dpy/:date" %}
 {% api-method-summary %}
 Compounded Average
@@ -481,13 +541,18 @@ Compounded Average
 
 {% api-method-description %}
 Get the average value of a given interest rate compounded over a period of time.  
-Example: https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
+Example:  
+https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
   
 Get compounded averages for a range of dates using the query parameters.  
-Example: https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
+Example:  
+https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
 For the methodology see:  
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology
+https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology  
+  
+Remark: This Get method requires an API key. Please contact us for more information:  
+https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw\_6F2xAR607FKACsn7ew/viewform  
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -501,7 +566,7 @@ Symbol for a rate name
 Rate is compounded over period days
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="dpy" type="string" required=true %}
+{% api-method-parameter name="dpy" type="integer" required=true %}
 Business day convention for the number of days per year
 {% endapi-method-parameter %}
 
@@ -524,7 +589,7 @@ Final date for range queries. Format: yyyy-mm-dd
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-Successful retrieval of a compounded average of the SOFR over an interest period of 30 days.
+Successful retrieval of a compounded average of the SOFR over an interest period of 30 calendar days.
 {% endapi-method-response-example-description %}
 
 ```
@@ -541,58 +606,59 @@ Compounded Average by DIA
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Coming soon!
+Get the average value of an interest rate compounded over a period of time. Here, we use the DIA methodology for compounding the rate, i.e. interest is compounded for non-business days as well. For details see:  
+https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#dia-methodology  
+  
+Example:  
+https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360/2020-05-14  
+  
+Get the compounded average for a range of dates using the query parameters.   
+Example:  
+https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
+  
+_Remark_: This Get method requires an API key. Please contact us for more information:  
+https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw\_6F2xAR607FKACsn7ew/viewform  
 {% endapi-method-description %}
 
 {% api-method-spec %}
 {% api-method-request %}
 {% api-method-path-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
+{% api-method-parameter name="rateType" type="string" required=true %}
+Symbol for a rate name
+{% endapi-method-parameter %}
 
+{% api-method-parameter name="period" type="integer" required=true %}
+Rate is compounded over period days
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dpy" type="integer" required=true %}
+Business convention for the number of days per year
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="date" type="string" required=true %}
+Return the compounded rate for the date specified in the format yyyy-mm-dd
 {% endapi-method-parameter %}
 {% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="string" required=false %}
+Initial date for range queries. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="string" required=false %}
+Final date for range queries. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
 {% endapi-method-request %}
 
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-
+Successful retrieval of the compounded average of SOFR over an interest period of 30 calendar days.
 {% endapi-method-response-example-description %}
 
 ```
-
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedRate/:symbol/:dpy/:date" %}
-{% api-method-summary %}
-Get Compounded Index
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Coming soon!
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
-
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-
+[{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
