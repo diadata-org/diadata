@@ -15,8 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type binancePairScraperSet map[*BinancePairScraper]nothing
-
 // BinanceScraper is a Scraper for collecting trades from the Binance websocket API
 type BinanceScraper struct {
 	client *binance.Client
@@ -38,6 +36,15 @@ type BinanceScraper struct {
 	chanTrades        chan *dia.Trade
 }
 
+// BinancePairScraper implements PairScraper for Binance
+type BinancePairScraper struct {
+	parent *BinanceScraper
+	pair   dia.Pair
+	closed bool
+}
+
+type binancePairScraperSet map[*BinancePairScraper]nothing
+
 // NewBinanceScraper returns a new BinanceScraper for the given pair
 func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *BinanceScraper {
 
@@ -52,62 +59,9 @@ func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *Bi
 	}
 
 	// establish connection in the background
+
 	go s.mainLoop()
 	return s
-}
-
-func eventHandler(event *binance.WsAggTradeEvent) {
-	fmt.Println(event)
-
-}
-
-func errorHandler(err error) {
-	fmt.Println(err)
-
-}
-
-// runs in a goroutine until s is closed
-func (s *BinanceScraper) mainLoop() {
-	close(s.initDone)
-	for {
-		select {
-		case <-s.shutdown: // user requested shutdown
-			log.Println("BinanceScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
-	}
-}
-
-// closes all connected PairScrapers
-// must only be called from mainLoop
-func (s *BinanceScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	// close all channels of PairScraper children
-	s.pairScrapers.Range(func(k, v interface{}) bool {
-		for ps := range v.(binancePairScraperSet) {
-			ps.closed = true
-		}
-		s.pairScrapers.Delete(k)
-		return true
-	})
-
-	s.closed = true
-	close(s.shutdownDone) // signal that shutdown is complete
-}
-
-// Close closes any existing API connections, as well as channels of
-// PairScrapers from calls to ScrapePair
-func (s *BinanceScraper) Close() error {
-	if s.closed {
-		return errors.New("BinanceScraper: Already closed")
-	}
-	close(s.shutdown)
-	<-s.shutdownDone
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
@@ -155,6 +109,102 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, err
 }
+
+// runs in a goroutine until s is closed
+func (s *BinanceScraper) mainLoop() {
+	close(s.initDone)
+	for {
+		select {
+		case <-s.shutdown: // user requested shutdown
+			log.Println("BinanceScraper shutting down")
+			s.cleanup(nil)
+			return
+		}
+	}
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+
+	data, err := utils.GetRequest("https://api.binance.com//api/v1/exchangeInfo")
+
+	if err != nil {
+		return
+	}
+	var ar binance.ExchangeInfo
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar.Symbols {
+			symbol, serr := s.normalizeSymbol(p.Symbol, p.BaseAsset, p.Status)
+			if serr == nil {
+				pairs = append(pairs, dia.Pair{
+					Symbol:      symbol,
+					ForeignName: p.Symbol,
+					Exchange:    s.exchangeName,
+				})
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
+}
+
+func eventHandler(event *binance.WsAggTradeEvent) {
+	fmt.Println(event)
+}
+
+// closes all connected PairScrapers
+// must only be called from mainLoop
+func (s *BinanceScraper) cleanup(err error) {
+	s.errorLock.Lock()
+	defer s.errorLock.Unlock()
+	// close all channels of PairScraper children
+	s.pairScrapers.Range(func(k, v interface{}) bool {
+		for ps := range v.(binancePairScraperSet) {
+			ps.closed = true
+		}
+		s.pairScrapers.Delete(k)
+		return true
+	})
+
+	s.closed = true
+	close(s.shutdownDone) // signal that shutdown is complete
+}
+
+// Close closes any existing API connections, as well as channels of
+// PairScrapers from calls to ScrapePair
+func (s *BinanceScraper) Close() error {
+	if s.closed {
+		return errors.New("BinanceScraper: Already closed")
+	}
+	close(s.shutdown)
+	<-s.shutdownDone
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	return s.error
+}
+
+// Close stops listening for trades of the pair associated with s
+func (ps *BinancePairScraper) Close() error {
+	var err error
+	s := ps.parent
+	// if parent already errored, return early
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	if s.error != nil {
+		return s.error
+	}
+	if ps.closed {
+		return errors.New("BinancePairScraper: Already closed")
+	}
+
+	// TODO stop collection for the pair
+
+	ps.closed = true
+	return err
+}
+
 func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
 	symbol = params[0]
 	status := params[1]
@@ -188,60 +238,6 @@ func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (
 	return symbol, nil
 }
 
-// FetchAvailablePairs returns a list with all available trade pairs
-func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-
-	data, err := utils.GetRequest("https://api.binance.com//api/v1/exchangeInfo")
-
-	if err != nil {
-		return
-	}
-	var ar binance.ExchangeInfo
-	err = json.Unmarshal(data, &ar)
-	if err == nil {
-		for _, p := range ar.Symbols {
-			symbol, serr := s.normalizeSymbol(p.Symbol, p.BaseAsset, p.Status)
-			if serr == nil {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      symbol,
-					ForeignName: p.Symbol,
-					Exchange:    s.exchangeName,
-				})
-			} else {
-				log.Error(serr)
-			}
-		}
-	}
-	return
-}
-
-// BinancePairScraper implements PairScraper for Binance
-type BinancePairScraper struct {
-	parent *BinanceScraper
-	pair   dia.Pair
-	closed bool
-}
-
-// Close stops listening for trades of the pair associated with s
-func (ps *BinancePairScraper) Close() error {
-	var err error
-	s := ps.parent
-	// if parent already errored, return early
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	if s.error != nil {
-		return s.error
-	}
-	if ps.closed {
-		return errors.New("BinancePairScraper: Already closed")
-	}
-
-	// TODO stop collection for the pair
-
-	ps.closed = true
-	return err
-}
-
 // Channel returns a channel that can be used to receive trades
 func (ps *BinanceScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
@@ -254,6 +250,10 @@ func (ps *BinancePairScraper) Error() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
+}
+
+func errorHandler(err error) {
+	fmt.Println(err)
 }
 
 // Pair returns the pair this scraper is subscribed to

@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// handleInterestRate delegates rate information to Kafka
+// handleInterestRate delegates rate information to Redis
 func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds models.Datastore) {
 	defer wg.Done()
 	// Pull from channel as long as not empty

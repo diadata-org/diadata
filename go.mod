@@ -21,6 +21,7 @@ require (
 	github.com/gin-contrib/cache v1.1.0
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
 	github.com/gin-gonic/gin v1.6.2
+	github.com/go-co-op/gocron v0.2.0
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
@@ -30,6 +31,8 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/rickar/cal v1.0.5
+	github.com/robfig/cron v1.2.0 // indirect
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/segmentio/kafka-go v0.3.6
 	github.com/shengdoushi/base58 v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.6.0

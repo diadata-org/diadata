@@ -62,7 +62,7 @@ func (s *BittrexScraper) mainLoop() {
 	s.run = true
 	for s.run {
 		if len(s.pairScrapers) == 0 {
-			s.error = errors.New("BittrexScraper: No pairs to scrap provided")
+			s.error = errors.New("BittrexScraper: No pairs to scrape provided")
 			log.Error(s.error.Error())
 			break
 		}
@@ -125,7 +125,9 @@ func (s *BittrexScraper) mainLoop() {
 
 func getAPICallBittrex(params ...string) []interface{} {
 
+	fmt.Println("API call starts...")
 	body, err := utils.GetRequest(_bittrexapiurl + params[0])
+	fmt.Println("API call done with: ", _bittrexapiurl+params[0])
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -16,7 +16,7 @@
         </b-col>
         <b-col cols="12" md="3" class="subheading-wrap">
           <div class="w-100 subheading">
-            <b-navbar-brand href="https://docs.diadata.org/documentation/api-1/api#get-v-1-chartpointsallexchanges" target="_blank">API Documentation</b-navbar-brand>
+            <b-navbar-brand href="https://docs.diadata.org/documentation/api-1/api-endpoints#chart-points-for-all-exchanges" target="_blank">API Documentation</b-navbar-brand>
           </div>
         </b-col>
         <b-col cols="12" md="4" class="subheading-wrap">

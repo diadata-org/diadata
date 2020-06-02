@@ -37,7 +37,7 @@
 			        	<br>
 			        	<div class="text-methodology w-100">
 				        	<p class="font-weight-bold"> Methodology to the price collection can be found
-				        		<b-link target="_blank" href="https://github.com/diadata-org/diadata/tree/master/documentation/methodology/exchangeprices.md">
+				        		<b-link target="_blank" href="https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices">
 				        			here
 				        		</b-link>
 				        	</p>
@@ -50,7 +50,7 @@
 			        	<br>
 			        	<div class="w-100 text-left">
 				        	<h3> Supply:
-				        		<b-link target="_blank" href="https://github.com/diadata-org/diadata/tree/master/documentation/methodology/supplynumbers.md">
+				        		<b-link target="_blank" href="https://docs.diadata.org/documentation/methodology/digital-assets/supplynumbers">
 				        			{{ coinDetails.circulatingSupplyFormattedWithoutSymbol }}
 				        	    </b-link>
 				        	</h3>
