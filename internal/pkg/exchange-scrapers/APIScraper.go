@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"io"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 // empty type used for signaling
@@ -15,7 +16,8 @@ type APIScraper interface {
 	// ScrapePair returns a PairScraper that continuously scrapes trades for a
 	// single pair from this APIScraper
 	ScrapePair(pair dia.Pair) (PairScraper, error)
-	// FetchAvailablePairs returns a list with all available trade pairs
+	// FetchAvailablePairs returns a list with all available trade pairs (usually
+	// fetched from an exchange's API)
 	FetchAvailablePairs() (pairs []dia.Pair, err error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade

@@ -1,21 +1,24 @@
 package configCollectors
 
 import (
+	"os"
+	"os/user"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
-	"os"
-	"os/user"
 )
 
-func (c *ConfigCollectors) Exchanges() []string {
-	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
-}
+// // Can be deleted -> Exchanges() exists as function in dia package
+// func (c *ConfigCollectors) Exchanges() []string {
+// 	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
+// }
 
 type ConfigCollectors struct {
 	Coins []dia.Pair
 }
 
+// AllPairs returns all available trading pairs at the exchange given by @c
 func (c *ConfigCollectors) AllPairs() []dia.Pair {
 	founds := map[string]bool{}
 	result := []dia.Pair{}

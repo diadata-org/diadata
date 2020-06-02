@@ -16,7 +16,8 @@ import (
 )
 
 var (
-	db models.Datastore
+	db         models.Datastore
+	updateTime = time.Second * 60 * 60
 )
 
 type Pairs struct {
@@ -24,7 +25,13 @@ type Pairs struct {
 }
 
 func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
-	configFileAPI := "config/" + exchange + ".json"
+	configFileAPI := ""
+	executionMode := os.Getenv("EXEC_MODE")
+	if executionMode == "production" {
+		configFileAPI = "config/" + exchange + ".json"
+	} else {
+		configFileAPI = "../../../config/" + exchange + ".json"
+	}
 	var coins Pairs
 	err := gonfig.GetConf(configFileAPI, &coins)
 	return coins.Coins, err
@@ -68,15 +75,14 @@ func savePairsToFile(exchange string, pairs []dia.Pair) {
 }
 
 func updateExchangePairs() {
-	t, err := db.GetConfigTogglePairDiscovery()
-	if err != nil {
-		log.Error("updateExchangePairs GetConfigTogglePairDiscovery", err.Error())
-		return
-	}
+	t := db.GetConfigTogglePairDiscovery(updateTime)
+	t = true
 	if t == false {
 		log.Info("GetConfigTogglePairDiscovery = false, using default values")
+		// Get exchange pairs from the config files exchange.json
 		getInitialExchangePairs()
 	} else {
+		log.Info("GetConfigTogglePairDiscovery = true, update list of trading pairs")
 		for _, e := range dia.Exchanges() {
 			if e == "CoinBase" || e == "Huobi" || e == "Unknown" {
 				continue
@@ -106,11 +112,11 @@ func updateExchangePairs() {
 				}
 				go func(s scrapers.APIScraper, e string) {
 					time.Sleep(5 * time.Second)
-					log.Error("Closing scrapper: " + e)
+					log.Error("Closing scraper: " + e)
 					s.Close()
 				}(s, e)
 			} else {
-				log.Error("Error creating APIScraper forexchange:" + e)
+				log.Error("Error creating APIScraper for exchange:" + e)
 			}
 		}
 		log.Println("Update complete.")
@@ -167,8 +173,8 @@ func getInitialExchangePairs() {
 func main() {
 	task := &Task{
 		closed: make(chan struct{}),
-		/// Retrieve every hour
-		ticker: time.NewTicker(time.Second * 60 * 60),
+		/// Retrieve every @updateTime
+		ticker: time.NewTicker(updateTime),
 	}
 	var e error
 	db, e = models.NewDataStore()
@@ -179,7 +185,11 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run() }()
+	go func() {
+		defer task.wg.Done()
+		task.run()
+
+	}()
 	select {
 	case <-c:
 		log.Println("Got signal.")

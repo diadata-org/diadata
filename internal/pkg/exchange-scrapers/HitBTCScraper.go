@@ -181,6 +181,7 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
+
 func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
 	symbol = strings.ToUpper(baseCurrency)
 	if helpers.NameForSymbol(symbol) == symbol {
