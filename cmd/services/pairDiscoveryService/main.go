@@ -76,7 +76,6 @@ func savePairsToFile(exchange string, pairs []dia.Pair) {
 
 func updateExchangePairs() {
 	t := db.GetConfigTogglePairDiscovery(updateTime)
-	t = true
 	if t == false {
 		log.Info("GetConfigTogglePairDiscovery = false, using default values")
 		// Get exchange pairs from the config files exchange.json
