@@ -503,11 +503,11 @@ Which symbol to retrieve the volume of \(e.g. BTC\)
 
 {% api-method-query-parameters %}
 {% api-method-parameter name="starttime" type="integer" required=true %}
-Start of the timespan
+Start of the timespan \(Unix time in seconds\)
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="endtime" type="integer" required=true %}
-End of the timespan
+End of the timespan \(Unix time in seconds\)
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
 {% endapi-method-request %}
