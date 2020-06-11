@@ -196,7 +196,7 @@ Supply
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get the circulating supply for the currency corresponding to symbol.  
+Get the current circulating supply for the currency corresponding to symbol.  
 Example: https://api.diadata.org/v1/supply/BTC
 {% endapi-method-description %}
 
@@ -217,6 +217,48 @@ Successful retrieval of BTC supply.
 
 ```
 {"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":17655550,"Source":"diadata.org","Time":"2019-04-20T08:44:25.748170404Z","Block":0}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/supplies/" %}
+{% api-method-summary %}
+Supplies
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get multiple supply values using time parameters for the currency corresponding to symbol.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="symbol" type="string" required=true %}
+Which symbol to get the supply fot, e.g., BTC
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="starttime" type="integer" required=true %}
+Unix timestamp setting the start of the return array
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="endtime" type="integer" required=true %}
+Unix timestamp setting the end of the return array
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of two supply values for Bitcoin \(BTC\) between timestamps 1591700000 and 1591883936.
+{% endapi-method-response-example-description %}
+
+```
+[{"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":18399687,"Source":"diadata.org","Time":"2020-06-09T23:59:59Z","Block":0},{"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":18400712,"Source":"diadata.org","Time":"2020-06-10T23:59:59Z","Block":0}]
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
@@ -244,7 +286,7 @@ Which symbol to get the details on, e.g., BTC
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-Information on the cryptocurrency organized by "Change", "Coin", "Rank", "Exchanges" and "Gfx1"  \(filtered data\). Shown below is an exerpt of a succesful response of symbol = BTC.
+Information on the cryptocurrency organized by "Change", "Coin", "Rank", "Exchanges" and "Gfx1"  \(filtered data\). Shown below is an excerpt of a successful response of symbol = BTC.
 {% endapi-method-response-example-description %}
 
 ```
@@ -292,7 +334,7 @@ Unix timestamp setting the end of the return array
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-Succesful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000
+Successful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000
 {% endapi-method-response-example-description %}
 
 ```
