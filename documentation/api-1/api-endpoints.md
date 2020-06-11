@@ -442,6 +442,48 @@ Successful retrieval of available symbols for cryptocurrencies. Shown below is a
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/volume" %}
+{% api-method-summary %}
+Trade Volume
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get the trading volume of the specified symbol in a defined time span.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="symbol" type="string" required=true %}
+Which symbol to retrieve the volume of \(e.g. BTC\)
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="starttime" type="integer" required=true %}
+Start of the timespan
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="endtime" type="integer" required=true %}
+End of the timespan
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+An example response when querying a BTC volume for a typical day.
+{% endapi-method-response-example-description %}
+
+```
+1431527525.7309263
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/kafka/tradesBlock" %}
 {% api-method-summary %}
 Raw crypto trades
