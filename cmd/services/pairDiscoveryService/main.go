@@ -87,6 +87,7 @@ func updateExchangePairs() {
 				continue
 			}
 			log.Println("Updating", e)
+			// Fetch secrets for API if there are
 			c, err := dia.GetConfig(e)
 			var s scrapers.APIScraper
 			if err == nil {
@@ -96,8 +97,10 @@ func updateExchangePairs() {
 				s = scrapers.NewAPIScraper(e, "", "")
 			}
 			if s != nil {
+				// This method is implemented for each exchange. It fetches available pairs from the exchange's API.
 				p, err := s.FetchAvailablePairs()
 				if err == nil {
+					// add pairs from local json file
 					addLocalPairs(e, p)
 					err := db.SetAvailablePairsForExchange(e, p)
 					if err == nil {

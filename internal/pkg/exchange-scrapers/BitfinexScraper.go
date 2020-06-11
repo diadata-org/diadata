@@ -3,6 +3,7 @@ package scrapers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -228,6 +229,10 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		return
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
+
+	fmt.Println("length: ", len(ls))
+	fmt.Println("ls: ", ls)
+
 	for _, p := range ls {
 		symbol, serr := s.normalizeSymbol(p)
 		if serr == nil {

@@ -21,10 +21,10 @@ const (
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 	lastTradeTime := time.Now()
-	t := time.NewTicker(watchdogDelay * time.Second)
+	tk := time.NewTicker(watchdogDelay * time.Second)
 	for {
 		select {
-		case <-t.C:
+		case <-tk.C:
 			duration := time.Since(lastTradeTime)
 			if duration.Seconds() > watchdogDelay {
 				log.Error(duration)

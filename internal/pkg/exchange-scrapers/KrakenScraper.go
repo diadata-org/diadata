@@ -3,13 +3,14 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"github.com/beldur/kraken-go-api-client"
-	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
 	"sync"
 	"time"
+
+	krakenapi "github.com/beldur/kraken-go-api-client"
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -32,6 +33,14 @@ type KrakenScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
+// KrakenPairScraper implements PairScraper for Kraken
+type KrakenPairScraper struct {
+	parent     *KrakenScraper
+	pair       dia.Pair
+	closed     bool
+	lastRecord int64
+}
+
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScraper {
@@ -49,8 +58,64 @@ func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScr
 	return s
 }
 
-func Round(x, unit float64) float64 {
-	return math.Round(x/unit) * unit
+// mainLoop runs in a goroutine until channel s is closed.
+func (s *KrakenScraper) mainLoop() {
+	for {
+		select {
+		case <-s.ticker.C:
+			s.Update()
+		case <-s.shutdown: // user requested shutdown
+			log.Printf("KrakenScraper shutting down")
+			s.cleanup(nil)
+			return
+		}
+	}
+}
+
+func (s *KrakenScraper) Update() {
+
+	for _, ps := range s.pairScrapers {
+
+		r, err := s.api.Trades(ps.pair.ForeignName, ps.lastRecord)
+
+		if err != nil {
+			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
+			time.Sleep(1 * time.Minute)
+		} else {
+			if r != nil {
+				ps.lastRecord = r.Last
+				for _, ti := range r.Trades {
+					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
+					ps.parent.chanTrades <- t
+				}
+			} else {
+				log.Printf("r nil")
+			}
+		}
+	}
+}
+
+// ScrapePair returns a PairScraper that can be used to get trades for a single pair from
+// this APIScraper
+func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	if s.error != nil {
+		return nil, s.error
+	}
+	if s.closed {
+		return nil, errors.New("KrakenScraper: Call ScrapePair on closed scraper")
+	}
+	ps := &KrakenPairScraper{
+		parent:     s,
+		pair:       pair,
+		lastRecord: 0, //TODO FIX to figure out the last we got...
+	}
+
+	s.pairScrapers[pair.Symbol] = ps
+
+	return ps, nil
 }
 
 func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
@@ -65,18 +130,8 @@ func FloatToString(input_num float64) string {
 	return strconv.FormatFloat(input_num, 'f', -1, 64)
 }
 
-// mainLoop runs in a goroutine until channel s is closed.
-func (s *KrakenScraper) mainLoop() {
-	for {
-		select {
-		case <-s.ticker.C:
-			s.Update()
-		case <-s.shutdown: // user requested shutdown
-			log.Printf("KrakenScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
-	}
+func Round(x, unit float64) float64 {
+	return math.Round(x/unit) * unit
 }
 
 // closes all connected PairScrapers
@@ -105,37 +160,6 @@ func (s *KrakenScraper) Close() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-// KrakenPairScraper implements PairScraper for Kraken
-type KrakenPairScraper struct {
-	parent     *KrakenScraper
-	pair       dia.Pair
-	closed     bool
-	lastRecord int64
-}
-
-// ScrapePair returns a PairScraper that can be used to get trades for a single pair from
-// this APIScraper
-func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
-
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	if s.error != nil {
-		return nil, s.error
-	}
-	if s.closed {
-		return nil, errors.New("KrakenScraper: Call ScrapePair on closed scraper")
-	}
-	ps := &KrakenPairScraper{
-		parent:     s,
-		pair:       pair,
-		lastRecord: 0, //TODO FIX to figure out the last we got...
-	}
-
-	s.pairScrapers[pair.Symbol] = ps
-
-	return ps, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
@@ -182,27 +206,4 @@ func NewTrade(pair dia.Pair, info krakenapi.TradeInfo, foreignTradeID string) *d
 		Source:         dia.KrakenExchange,
 	}
 	return t
-}
-
-func (s *KrakenScraper) Update() {
-
-	for _, ps := range s.pairScrapers {
-
-		r, err := s.api.Trades(ps.pair.ForeignName, ps.lastRecord)
-
-		if err != nil {
-			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
-			time.Sleep(1 * time.Minute)
-		} else {
-			if r != nil {
-				ps.lastRecord = r.Last
-				for _, ti := range r.Trades {
-					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
-					ps.parent.chanTrades <- t
-				}
-			} else {
-				log.Printf("r nil")
-			}
-		}
-	}
 }

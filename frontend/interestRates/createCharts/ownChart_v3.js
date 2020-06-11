@@ -136,16 +136,16 @@ function makechart2(rate1, rate2, loading) {
             enabled: true
         },
         series: [
-			{
-				name: rate2.name,
-                data: [],
-                color: '#707070',
-                lineWidth: 1
-                // dashStyle: 'DashDot',
-            },
             {
 				name: rate1.name,
                 data: [],    
+            },
+            {
+				name: rate2.name,
+                data: [],
+                color: 'grey',
+                lineWidth: 1
+                // dashStyle: 'DashDot',
             },
 		]
     });
@@ -218,7 +218,7 @@ function updateChart() {
             url: 'https://api.diadata.org/v1/compoundedAvg/' + symbol + '/1/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today,
         };
         
-        getData(RateInfoOriginal.url, function(obj) {
+        getData(RateInfo.url, function(obj) {
             var prefillArray = [];
             for(i = 0; i < obj.length; i++) {
                 var value = obj[i].Value;
@@ -229,7 +229,7 @@ function updateChart() {
             yourOwnChart.hideLoading();
         });
 
-        getData(RateInfo.url, function(obj) {
+        getData(RateInfoOriginal.url, function(obj) {
             var prefillArray = [];
             for(i = 0; i < obj.length; i++) {
                 var value = obj[i].Value;

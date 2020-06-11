@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net"
 	"os"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -50,12 +51,17 @@ func getTopic(topic int) string {
 	}
 	result, ok := topicMap[topic]
 	if !ok {
-		log.Error("getTopic cant fine topic", topic)
+		log.Error("getTopic cant find topic", topic)
 	}
 	return result
 }
 
+// init() initializes the kafka broker(s)
 func init() {
+	executionMode := os.Getenv("EXEC_MODE")
+	if executionMode != "production" {
+		os.Setenv("LOCALHOST_KAFKA", "TRUE")
+	}
 	KafkaConfig.KafkaUrl = []string{}
 	var kafkaCount = 0
 	for {

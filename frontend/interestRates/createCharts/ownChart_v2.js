@@ -142,7 +142,7 @@ function updateChart() {
     // Check which Index should be displayed 
     if(dia) {
         RateInfo.name = symbol + lenPeriod + '_by_DIA';
-        RateInfo.url = 'http://localhost:8081/v1/compoundedAvgDIA/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
+        RateInfo.url = 'https://api.diadata.org/v1/compoundedAvgDIA/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;
     } else {
         RateInfo.name = symbol + lenPeriod;
         RateInfo.url = 'https://api.diadata.org/v1/compoundedAvg/' + symbol + '/' + lenPeriod + '/' + dpy + '?dateInit=' + dateInit + '&dateFinal=' + today;

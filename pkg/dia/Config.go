@@ -59,7 +59,7 @@ func GetConfig(exchange string) (*ConfigApi, error) {
 	var configApi ConfigApi
 	usr, _ := user.Current()
 	dir := usr.HomeDir
-	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
+	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange) + ".json"
 	err := gonfig.GetConf(configFileApi, &configApi)
 	return &configApi, err
 }

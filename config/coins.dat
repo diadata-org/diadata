@@ -1,0 +1,5 @@
+# DDL
+CREATE DATABASE dia
+
+# DML
+# CONTEXT-DATABASE: dia
