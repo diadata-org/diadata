@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,6 +22,19 @@ const (
 	keyAllRates     = "all_rates"
 	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
+
+// MarshalBinary for interest rates
+func (ir *InterestRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(ir)
+}
+
+// UnmarshalBinary for interest rates
+func (ir *InterestRate) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &ir); err != nil {
+		return err
+	}
+	return nil
+}
 
 // ---------------------------------------------------------------------------------------
 // Setter and getter for interest rates
@@ -53,6 +68,30 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	if err != nil {
 		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
 	}
+
+	// Write into kafka -------------------------------------------------------------------------
+	config := kafka.WriterConfig{
+		Brokers: []string{"localhost:9092"},
+		Topic:   "mytopic",
+	}
+
+	writer := kafka.NewWriter(config)
+
+	content, err := ir.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = writer.WriteMessages(context.Background(),
+		kafka.Message{
+			Key:   []byte{},
+			Value: content,
+		},
+	)
+	if err != nil {
+		fmt.Println("error ocurred: ", err)
+	}
+	// ----------------------------------------------------------------------------------------------
 
 	return err
 }

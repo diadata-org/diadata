@@ -12,7 +12,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200207184043-4d37e8d4be18
-	github.com/cbergoon/merkletree v0.2.0 // indirect
+	github.com/cbergoon/merkletree v0.2.0
 	github.com/chromedp/cdproto v0.0.0-20200116234248-4da64dd111ac
 	github.com/chromedp/chromedp v0.5.3
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
@@ -29,6 +29,7 @@ require (
 	github.com/jjjjpppp/quoinex-go-client v0.0.0-20190318060220-d8e092fed0b2
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
+	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/rickar/cal v1.0.5

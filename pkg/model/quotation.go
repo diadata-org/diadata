@@ -23,21 +23,8 @@ func (e *Quotation) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-// MarshalBinary for interest rates
-func (e *InterestRate) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
 // UnmarshalBinary for quotations
 func (e *Quotation) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// UnmarshalBinary for interest rates
-func (e *InterestRate) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}
