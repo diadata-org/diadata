@@ -53,6 +53,19 @@ services:
     environment:
       - EXEC_MODE=production
 
+  sonia-scraper:
+    depends_on: [ratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ratescraper:latest
+    command: /bin/ratescrapers -type SONIA
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
   ratescraper:
     build:
       context: ../../../..
