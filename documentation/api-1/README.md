@@ -8,7 +8,7 @@
 
 **Find the right data for your needs**  
 Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.  
-For Oracle usage see [github](https://github.com/diadata-org/diadata/tree/master/documentation/methodology/oracles.md).
+For Oracle usage see [Oracles in DIA](https://docs.diadata.org/documentation/api-1/oracles).
 
 **Backtest your strategies**  
 Use the most efficient and transparent crypto data to run simulations and backtest your trading or investing strategies. With crowd-aggregated hundreds of exchanges you can be sure that you're getting the right picture every single time.
@@ -17,24 +17,19 @@ Use the most efficient and transparent crypto data to run simulations and backte
 Build your own models with our data, to further your interest or just for fun. With our flexible and powerful API, we provide you with a set of data that will help you draw insights and make conclusions.
 
 **Request your data**  
-Set a bounty on gitcoin.io or drop us [line](mailto:API@diadata.org).
+Set a bounty on gitcoin.io or drop us a [line](mailto:API@diadata.org).
 
 Version: 1.0
 
 ## API Access
 
-You can find documentation for our [live API](https://api.diadata.org/v1) on our [api documentation site](https://app.gitbook.com/@diadata/s/test-space/~/drafts/-M8P9ubQSN0F_1lhb7M0/v/master/documentation/api-1/api-endpoints). Several endpoints exist that show the different kind of data we collect:
+The DIA base url is `https://api.diadata.org/v1`. All API paths are sub-paths of this base URL. You can find specific documentation for the endpoints of our API on the [API documentation site](https://docs.diadata.org/documentation/api-1/api-endpoints). 
 
-When referencing currencies, `{TLA}` has to be replaced by the acronym for an asset \(e.g., BTC for Bitcoin\).
-
-* Quotations for prices \(SMA120\) can be found at endpoint [https://api.diadata.org/v1/symbol/BTC](https://api.diadata.org/v1/symbol/BTC).
-* Supply data for crypto assets is located at [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC)
-
-Currently, DIA collects data from several crypto exchanges. To get an overview, the latest information about these exchanges can be found in this table:
+Currently, DIA collects reference rates from traditional financial markets and data from several cryptocurrency exchanges \(see the table below\).
 
 | Name | Number of Pairs | API link |
 | :--- | :--- | :--- |
-| Binance | [47](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Binance.json) | [Binance API Documentation](https://github.com/binance-exchange/binance-official-api-docs) |
+| Binance | [47](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Binance.json) | [Binance API Documentation](https://binance-docs.github.io/apidocs/spot/en/#introduction) |
 | Bitfinex | [25](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Bitfinex.json) | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general) |
 | Coinbase | [3](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/CoinBase.json) | [Coinbase v2 API](https://developers.coinbase.com/api/v2) |
 | GateIO | [42](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/GateIO.json) | [Gate.io API Documentation](https://www.gate.io/api2) |
@@ -45,10 +40,6 @@ Currently, DIA collects data from several crypto exchanges. To get an overview, 
 | OKEx | [27](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/OKEx.json) | [OKEx API Documentation](https://www.okex.com/docs/en/) |
 | Simex | [14](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Simex.json) | [Simex API Documentation](https://simex.global/en/docs/introduction) |
 | ZB.com | [127](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/ZB.json) | [Zb.com API Documentation](https://www.zb.com/api) |
-
-Here you can find the introduction to the structure of the system and first steps to contribute.
-
-The DIA base url is `https://api.diadata.org/`. All API paths are sub-paths of this base URL.
 
 ## Use cases
 
