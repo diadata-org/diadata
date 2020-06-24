@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
@@ -24,7 +25,8 @@ type Datastore interface {
 	GetQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
 	SetQuotationEUR(quotation *Quotation) error
-	GetSupply(symbol string) (*dia.Supply, error)
+	GetLatestSupply(string) (*dia.Supply, error)
+	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
 	SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error
 	GetChartPoints7Days(symbol string) ([]Point, error)
@@ -55,6 +57,8 @@ type Datastore interface {
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
+	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
+	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
 
 	// Interest rates' methods
 	SetInterestRate(ir *InterestRate) error
@@ -66,6 +70,14 @@ type Datastore interface {
 	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding int) (*InterestRate, error)
 	GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
+
+	// Itin methods
+	SetItinData(token dia.ItinToken) error
+	GetItinBySymbol(symbol string) (dia.ItinToken, error)
+
+	// Defi rates
+	GetDefiLendingRateInflux(time.Time, time.Time, string, string) ([]dia.DefiLendingRate, error)
+	SetDefiLendingRateInflux(*dia.DefiLendingRate) error
 }
 
 const (
@@ -86,6 +98,8 @@ const (
 	influxDbFiltersTable = "filters"
 	influxDbOptionsTable = "options"
 	influxDbCVITable     = "cvi"
+	influxDbSupplyTable  = "supply"
+	influxDbDefiRateTable= "defiLendingRate"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -250,7 +264,6 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
-
 			var result float64
 			v, o := row[1].(json.Number)
 			if o {
@@ -268,6 +281,37 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 		return nil, errors.New(errorString)
 	}
 	return nil, errors.New("couldnt sum in Sum24HoursInflux")
+}
+
+func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.Time) (float64, error) {
+	var retval float64
+	var q string
+	filter := "VOL120"
+	if starttime.IsZero() || endtime.IsZero() {
+		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, filter)
+	} else {
+		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > %d and time < %d", influxDbFiltersTable, symbol, filter, starttime.UnixNano(), endtime.UnixNano())
+	}
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			v, o := row[1].(json.Number)
+			if o {
+				retval, _ = v.Float64()
+				return retval, nil
+			} else {
+				errorString := "error on parsing row 1"
+				log.Errorln(errorString)
+				return retval, errors.New(errorString)
+			}
+		}
+	} else {
+		return retval, errors.New("Error parsing Volume value from Database")
+	}
+	return retval, nil
 }
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
@@ -387,6 +431,146 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 			return retval, err
 		}
 		return retval, nil
+	}
+	return retval, nil
+}
+
+func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
+	fields := map[string]interface{}{
+		"supply": supply.CirculatingSupply,
+		"source": supply.Source,
+	}
+	tags := map[string]string{
+		"symbol": supply.Symbol,
+		"name": supply.Name,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
+	if err != nil {
+		log.Errorln("NewSupplyInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveSupplyInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) SetDefiLendingRateInflux(rate *dia.DefiLendingRate) error {
+	fields := map[string]interface{}{
+		"lendingRate": rate.LendingRate,
+	}
+	tags := map[string]string{
+		"asset": rate.Asset,
+		"protocol": rate.Protocol.Name,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbDefiRateTable, tags, fields, rate.Timestamp)
+	if err != nil {
+		log.Errorln("SetDefiLendingRateInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SetDefiLendingRateInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiLendingRate, error) {
+	retval := []dia.DefiLendingRate{}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			currentRate := dia.DefiLendingRate{}
+			currentRate.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			currentRate.LendingRate, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentRate.Asset, err = res[0].Series[0].Values[i][2].(string)
+			if err != nil {
+				return retval, err
+			}
+			retval = append(retval, currentRate)
+		}
+	} else {
+		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+	}
+	return retval, nil
+}
+
+func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+	retval := []dia.CviDataPoint{}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			currentPoint := dia.CviDataPoint{}
+			currentPoint.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			currentPoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			retval = append(retval, currentPoint)
+		}
+	} else {
+		return retval, errors.New("Error parsing CVI value from Database")
+	}
+	return retval, nil
+}
+
+func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
+	retval := []dia.Supply{}
+	var q string
+	if starttime.IsZero() || endtime.IsZero() {
+		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+	} else {
+		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE time > %d and time < %d and symbol = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	}
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			currentSupply := dia.Supply{}
+			currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			currentSupply.CirculatingSupply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentSupply.Source = res[0].Series[0].Values[i][2].(string)
+			if err != nil {
+				return retval, err
+			}
+			currentSupply.Symbol = symbol
+			currentSupply.Name = helpers.NameForSymbol(symbol)
+			retval = append(retval, currentSupply)
+		}
+	} else {
+		return retval, errors.New("Error parsing Supply value from Database")
 	}
 	return retval, nil
 }

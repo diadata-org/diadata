@@ -41,6 +41,15 @@ type Trade struct {
 	Source            string
 }
 
+type ItinToken struct {
+  Itin               string
+  Symbol             string
+  Label              string
+  Url_website        string
+  Coinmarketcap_url  string
+  Coinmarketcap_slug string
+}
+
 type OptionType int
 
 // signals if the option is call or a put
@@ -82,6 +91,19 @@ type OptionMetaForward struct {
 type CviDataPoint struct {
 	Timestamp time.Time
 	Value     float64
+}
+
+type DefiProtocol struct {
+	Name                 string
+	Address              string
+	UnderlyingBlockchain string
+}
+
+type DefiLendingRate type {
+	Timestamp   time.Time
+	LendingRate float64
+	Asset       string
+	Protocol    DefiProtocol
 }
 
 type TradesBlockData struct {
@@ -175,6 +197,19 @@ func (e *Pairs) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary -
 func (e *Pairs) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary -
+func (e *ItinToken) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *ItinToken) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}
