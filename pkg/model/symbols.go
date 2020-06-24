@@ -114,6 +114,11 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 	if err != nil {
 		return nil, err
 	} else {
+		itin, err := db.GetItinBySymbol(q.Symbol)
+		if err != nil {
+			log.Error("Error retrieving ITIN:", err)
+			itin.Itin = "undefined"
+		}
 		r := &SymbolDetails{
 			Coin: Coin{
 				Symbol:             q.Symbol,
@@ -122,11 +127,12 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
 				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
+				ITIN:               itin.Itin,
 			},
 			Exchanges: []SymbolExchangeDetails{},
 		}
 		r.Change, _ = db.GetCurrencyChange()
-		s, err := db.GetSupply(symbol)
+		s, err := db.GetLatestSupply(symbol)
 		if err == nil {
 			r.Coin.CirculatingSupply = &s.CirculatingSupply
 		}

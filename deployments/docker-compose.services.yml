@@ -15,6 +15,8 @@ services:
         max-size: "50m"
     volumes:
       - /home/srv/config:/config
+    environment:
+      - EXEC_MODE=production
   
   filtersblockservice:
     build:
@@ -25,6 +27,8 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"
@@ -39,6 +43,22 @@ services:
       - influxdb-network
     volumes:
       - /home/srv/restServer/charts:/charts
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  itinservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-itinService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_itinservice:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"
@@ -51,6 +71,8 @@ services:
     networks:
       - redis-network
       - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"
@@ -62,6 +84,8 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_pairdiscoveryservice:latest
     networks:
       - redis-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"

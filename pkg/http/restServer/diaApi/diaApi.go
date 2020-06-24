@@ -42,7 +42,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 		var t dia.Supply
 		err = json.Unmarshal(body, &t)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("Unmarshal"))
+			restApi.SendError(c, http.StatusInternalServerError, err)
 		} else {
 			if t.Symbol == "" || t.CirculatingSupply == 0.0 {
 				log.Errorln("received supply:", t)
@@ -54,7 +54,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 					source = t.Source
 				}
 				s := &dia.Supply{
-					Time:              time.Now(),
+					Time:              t.Time,
 					Name:              helpers.NameForSymbol(t.Symbol),
 					Symbol:            t.Symbol,
 					Source:            source,
@@ -147,7 +147,7 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 // @Router /v1/supply/:symbol: [get]
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
-	s, err := env.DataStore.GetSupply(symbol)
+	s, err := env.DataStore.GetLatestSupply(symbol)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -157,6 +157,82 @@ func (env *Env) GetSupply(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, s)
 	}
+}
+
+// GetSupplies
+func (env *Env) GetSupplies(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" || endtimeStr == "" {
+		starttime = time.Unix(1, 0)
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	s, err := env.DataStore.GetSupplyInflux(symbol, starttime, endtime)
+	if len(s) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+		return
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, s)
+}
+
+// GetVolume
+// if no times are set use the last 24h
+func (env *Env) GetVolume(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" {
+		starttime = time.Unix(1, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	}
+	if endtimeStr == "" {
+		endtime = time.Now()
+	} else {
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	v, err := env.DataStore.GetVolumeInflux(symbol, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, v)
 }
 
 // GetPairs godoc

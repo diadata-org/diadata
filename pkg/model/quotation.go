@@ -107,6 +107,13 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	}
 	v2, err2 := db.GetVolume(symbol)
 	value.VolumeYesterdayUSD = v2
+	itin, err := db.GetItinBySymbol(symbol)
+	if err != nil {
+		value.ITIN = "undefined"
+		log.Error(err)
+	} else {
+		value.ITIN = itin.Itin
+	}
 	return value, err
 }
 

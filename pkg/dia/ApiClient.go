@@ -226,7 +226,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 func (c *Client) SendSupplyWithForceOption(s *Supply, force bool) error {
 	lastUpdate := time.Since(c.lastSupplyUpdateTime)
 	if lastUpdate.Hours() >= 1.0 || c.lastSupplyUpdateValue != s.CirculatingSupply || force {
-		c.lastSupplyUpdateTime = time.Now()
+		c.lastSupplyUpdateTime = s.Time
 		c.lastSupplyUpdateValue = s.CirculatingSupply
 		return c.sendSupply(s)
 	} else {

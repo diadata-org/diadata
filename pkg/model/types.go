@@ -30,6 +30,7 @@ type Quotation struct {
 	VolumeYesterdayUSD *float64
 	Source             string
 	Time               time.Time
+	ITIN               string
 }
 
 type InterestRate struct {
@@ -83,6 +84,7 @@ type Coin struct {
 	VolumeYesterdayUSD *float64
 	Time               time.Time
 	CirculatingSupply  *float64
+	ITIN               string
 }
 
 type Coins struct {

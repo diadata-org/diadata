@@ -29,8 +29,8 @@ func (db *DB) GetCoins() (*Coins, error) {
 
 			var c1 Coin
 			log.Debug("Adding symbol", symbol)
-			supply, _ := db.GetSupply(symbol)
 			price, _ := db.GetQuotation(symbol)
+			itin, itinErr := db.GetItinBySymbol(symbol)
 			if price != nil {
 				volume, _ := db.GetVolume(symbol)
 				if volume != nil {
@@ -46,15 +46,24 @@ func (db *DB) GetCoins() (*Coins, error) {
 					}
 					c1.Time = price.Time
 					c1.VolumeYesterdayUSD = volume
+					supply, err := db.GetLatestSupply(symbol)
+					if err != nil {
+						log.Error(err)
+						supply = nil
+					}
 					if supply != nil {
 						c1.CirculatingSupply = &supply.CirculatingSupply
+					}
+					if itinErr == nil {
+						c1.ITIN = itin.Itin
+					} else {
+						c1.ITIN = "undefined"
 					}
 					coins.Coins = append(coins.Coins, c1)
 				}
 			}
 		}
 		sort.Slice(coins.Coins, func(i, j int) bool {
-
 			if coins.Coins[i].CirculatingSupply == nil {
 				return false
 			}
