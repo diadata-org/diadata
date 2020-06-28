@@ -234,11 +234,19 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	}
 }
 
+// ----------------------------------------------------------------------------------------
+// Merkle Audit Trail Functionality
+// ----------------------------------------------------------------------------------------
+
 /*
 select sum(value) from filters where filter='VOL120' and time > now() - 10m
 select * from filters where  symbol='BTC' and filter='VOL120' and time > now() - 2m
 select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
 */
+
+// ----------------------------------------------------------------------------------------
+// Trades and Crypto-Derivatives
+// ----------------------------------------------------------------------------------------
 
 func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
 	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)

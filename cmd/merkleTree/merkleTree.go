@@ -67,56 +67,215 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 		chanMessage:  make(chan *kafka.Message),
 	}
 
-	log.Info("TopicSwitch is built and triggered")
+	log.Info("KafkaReader is built and triggered")
 	go kc.StartKafkaReader(topic)
 	return kc
 }
 
-func fillBucketPool(bp *models.BucketPool, topic string, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
+// FillPools streams data from the kafka channel into pools and directs
+// them into @poolChannel to be flushed afterwards.
+func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *models.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
 
+	bp := models.NewBucketPool(numBucket, sizeBucket, topic)
 	ok := true
 	bucket, err := bp.Get()
 	if err != nil {
 		log.Error("error with Get bucket: ", err)
 	}
 
+	// Fill pools with messages from kafka channel
 	for {
 		message := <-topicChan
 		if ok {
 			ok = bucket.WriteContent(message.Value)
-			// fmt.Println("bucket content: ", bucket.Content)
+
+			// Check what is written:
+			ir := models.InterestRate{}
+			err := (&ir).UnmarshalBinary(message.Value)
+			if err != nil {
+				log.Error(err)
+			}
+			fmt.Println("new content written: ", ir)
+
 		} else {
 			fmt.Println("bucket full. Return bucket to pool.")
+
+			// TO DO: put the timestamping into the Put() function?
+			bucket.Timestamp = time.Now()
 			bp.Put(bucket)
+
+			// Check, whether there is a fresh bucket in the pool
 			bucket, err = bp.Get()
 			if err != nil {
+				// In this case, the pool is exhausted. Flush it and make a new one...
+				poolChannel <- bp
+				bp = models.NewBucketPool(numBucket, sizeBucket, topic)
 				fmt.Println(err)
-				return
-				// TO DO: Hash the bucket pool and make a new one
 			}
-			fmt.Println("new bucket's content: ", bucket.Content)
+			// ... otherwise go on filling the fresh bucket.
 			ok = bucket.WriteContent(message.Value)
+			fmt.Println("new content written: ", message.Value)
+
 		}
+	}
+}
+
+// FlushPool flushes pools coming through a channel: It stores the pool in a database
+// and makes a merkle Tree.
+func FlushPool(poolChannel chan *models.BucketPool, wg *sync.WaitGroup, ds models.AuditStore) {
+
+	for {
+		// Where do the trees go?
+		bp := <-poolChannel
+		tree, err := models.MakeTree(bp)
+		// // Accessing the content of leafs
+		// cont := tree.Root.Left.Left.C.(models.Bucket)
+		// fmt.Println("leaf content is: ", cont.Content.String())
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		// Once a day, a script fetches all entries with today's date. Ordering of trees can be done
+		// with influx timestamps. Ordering in merkle tree can be done using timestamps of buckets.
+		err = ds.SaveMerkletreeInflux(tree, bp.Topic)
+		if err != nil {
+			log.Error("error saving tree to influx: ", err)
+		}
+		fmt.Println("tree stored")
+
 	}
 }
 
 func main() {
 
-	// preliminary main
-	// One instance of main for each data type
 	dataType := flag.String("type", "mytopic", "Type of data")
 	flag.Parse()
 
-	kc := ActivateKafkaChannel(*dataType)
-	defer kc.Close()
+	ds, err := models.NewInfluxAuditStore()
+	if err != nil {
+		log.Error("NewInfluxDataStore: ", err)
+	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	bp := models.NewBucketPool(32, 2560)
-	go fillBucketPool(bp, *dataType, kc.chanMessage, &wg)
-	fmt.Println(bp)
-	defer wg.Wait()
+	timeInit := time.Now()
+	timeFinal := time.Now().Add(time.Hour * (-1))
+	retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println(retval)
+
+	// // preliminary main
+	// // One instance of main for each data type
+	// dataType := flag.String("type", "mytopic", "Type of data")
+	// flag.Parse()
+
+	// kc := ActivateKafkaChannel(*dataType)
+	// defer kc.Close()
+
+	// ds, err := models.NewInfluxAuditStore()
+	// if err != nil {
+	// 	log.Error("NewInfluxDataStore: ", err)
+	// }
+
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
+	// pChan := make(chan *models.BucketPool)
+	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
+
+	// wg.Add(1)
+	// go FlushPool(pChan, &wg, ds)
+	// defer wg.Wait()
+
+	// -------------------------------------------------------------
+
+	// dataType := flag.String("type", "mytopic", "Type of data")
+	// flag.Parse()
+
+	// kc := ActivateKafkaChannel(*dataType)
+	// defer kc.Close()
+
+	// bp := models.NewBucketPool(2, 256)
+	// fmt.Println("length of newly created bucketpool: ", bp.Len())
+	// full := FillBucketPool(bp, kc.chanMessage)
+	// fmt.Println(bp.Len())
+	// bucket, _ := bp.Get()
+	// fmt.Println(bucket.Content)
+	// bucket, _ = bp.Get()
+	// fmt.Println(bucket.Content)
+
+	// fmt.Println(full)
+
+	// bp := models.NewBucketPool(2, 2)
+	// bucket, err := bp.Get()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// ok := bucket.WriteContent([]byte("hi"))
+	// fmt.Println(ok)
+	// bp.Put(bucket)
+	// bucket, err = bp.Get()
+	// fmt.Println(bucket.Used())
+	// ok = bucket.WriteContent([]byte("ya"))
+	// fmt.Println(bucket.Content)
+	// bp.Put(bucket)
+	// fmt.Println("length of pool: ", bp.Len())
+
+	// filledbucket, err := bp.Get()
+	// fmt.Println(filledbucket.Used())
+	// fmt.Println(filledbucket.Content)
+
+	// filledbucket2, err := bp.Get()
+	// fmt.Println(filledbucket2.Used())
+	// fmt.Println(filledbucket2.Content)
+
+	// filledbucket3, err := bp.Get()
+	// fmt.Println(err)
+	// fmt.Println(filledbucket3.Used())
+	// fmt.Println(filledbucket3.Content)
+
+	// dataType := flag.String("type", "mytopic", "Type of data")
+	// flag.Parse()
+
+	// kc := ActivateKafkaChannel(*dataType)
+	// defer kc.Close()
+
+	// bp := models.NewBucketPool(2, 256)
+	// fmt.Println("length of newly created bucketpool: ", bp.Len())
+
+	// ok := true
+	// bucket, err := bp.Get()
+	// for i := 0; i < 5; i++ {
+	// 	message := <-kc.chanMessage
+	// 	fmt.Printf("message %v: %v \n", i, message.Value)
+	// 	if ok {
+	// 		ok = bucket.WriteContent(message.Value)
+	// 		fmt.Println("if condition")
+	// 		// fmt.Println("bucket content: ", bucket.Content)
+	// 	} else {
+	// 		fmt.Println("bucket full. Return bucket to pool.")
+	// 		bp.Put(bucket)
+	// 		bucket, err = bp.Get()
+	// 		if err != nil {
+	// 			fmt.Println(err)
+	// 			return
+	// 			// TO DO: Hash the bucket pool and make a new one
+	// 		}
+	// 		// fmt.Println("new bucket's content: ", bucket.Content)
+	// 		ok = bucket.WriteContent(message.Value)
+	// 	}
+	// }
+	// fmt.Println("bucket before put: ", bucket)
+	// bp.Put(bucket)
+	// fmt.Println("number of buckets: ", bp.Len())
+	// bucket1, _ := bp.Get()
+	// bucket2, _ := bp.Get()
+	// fmt.Println("bucket1: ", bucket1.Used())
+	// fmt.Println("bucket2: ", bucket2.Used())
+
+	// ir := models.InterestRate{}
+	// err := ir.UnmarshalBinary(val)
+	// fmt.Println(err, ir)
 
 }
 
@@ -131,3 +290,41 @@ func (kc *KafkaChannel) Close() error {
 	defer kc.errorLock.RUnlock()
 	return kc.error
 }
+
+// // FillBucketPool fills a bucket pool of finite size. It returns true when the pool is full.
+// func FillBucketPool(bp *models.BucketPool, topicChan chan *kafka.Message) bool {
+
+// 	used := false
+// 	for !used {
+// 		// Fill pool as long as unused buckets are in the channel
+// 		bucket, err := bp.Get()
+// 		if err != nil {
+// 			log.Error(err)
+// 			return true
+// 		}
+// 		used = bucket.Used()
+// 		ok := true
+// 		for ok {
+// 			// Fill bucket as long as not full
+// 			message := <-topicChan
+// 			ok = bucket.WriteContent(message.Value)
+// 		}
+// 		bp.Put(bucket)
+// 	}
+// 	return used
+// }
+
+// func FillCategory(pools []*models.BucketPool, topic string, wg *sync.WaitGroup) {
+
+// 	defer wg.Done()
+// 	kc := ActivateKafkaChannel(topic)
+// 	defer kc.Close()
+// 	wg.Add(1)
+// 	defer wg.Wait()
+// 	for {
+// 		bp := models.NewBucketPool(8, 2560)
+// 		go FillBucketPool(bp, kc.chanMessage)
+// 		pools = append(pools, bp)
+// 	}
+
+// }

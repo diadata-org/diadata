@@ -54,46 +54,56 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	if db.redisClient == nil {
 		return nil
 	}
-	// Prepare interest rate quantities for database
+	// Set key for Redis entry
 	key := getKeyInterestRate(ir.Symbol, ir.EffectiveDate)
-	// Write interest rate quantities into database
-	log.Debug("setting", key, ir)
-	err := db.redisClient.Set(key, ir, TimeOutRedis).Err()
-	if err != nil {
-		log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
+
+	// Only write if key doesn't exist yet.
+	val := db.redisClient.Get(key)
+	if val.Err() != nil {
+		// In this case, the database entry does not exist yet.
+		// So write into Redis and distribute through kafka.
+
+		// Write interest rate quantities into database
+		log.Debug("setting", key, ir)
+		err := db.redisClient.Set(key, ir, TimeOutRedis).Err()
+		if err != nil {
+			log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
+		}
+
+		// Write rate type into set of available rates
+		err = db.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
+		if err != nil {
+			log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
+		}
+
+		// Send data through kafka for Merkle Audit Trail
+		config := kafka.WriterConfig{
+			Brokers: []string{"localhost:9092"},
+			Topic:   "mytopic",
+		}
+
+		writer := kafka.NewWriter(config)
+
+		content, err := ir.MarshalBinary()
+		if err != nil {
+			log.Error(err)
+		}
+
+		err = writer.WriteMessages(context.Background(),
+			kafka.Message{
+				Key:   []byte{},
+				Value: content,
+			},
+		)
+		if err != nil {
+			fmt.Println("error ocurred: ", err)
+		}
+
+		return err
+
 	}
 
-	// Write rate type into set of available rates
-	err = db.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
-	if err != nil {
-		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
-	}
-
-	// Write into kafka -------------------------------------------------------------------------
-	config := kafka.WriterConfig{
-		Brokers: []string{"localhost:9092"},
-		Topic:   "mytopic",
-	}
-
-	writer := kafka.NewWriter(config)
-
-	content, err := ir.MarshalBinary()
-	if err != nil {
-		log.Error(err)
-	}
-
-	err = writer.WriteMessages(context.Background(),
-		kafka.Message{
-			Key:   []byte{},
-			Value: content,
-		},
-	)
-	if err != nil {
-		fmt.Println("error ocurred: ", err)
-	}
-	// ----------------------------------------------------------------------------------------------
-
-	return err
+	return nil
 }
 
 // GetInterestRate returns the interest rate value for the last time stamp before @date.

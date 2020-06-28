@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+
 	"time"
 
 	"github.com/cbergoon/merkletree"
@@ -20,7 +21,7 @@ type Bucket struct {
 	Content *bytes.Buffer
 	// properties of the bucket
 	size     int
-	Type     string
+	Topic    string
 	HashRate time.Duration
 	// values possibly assigned to the bucket
 	used      bool
@@ -32,26 +33,38 @@ type Bucket struct {
 type BucketPool struct {
 	c     chan Bucket
 	width int
+	Topic string
+}
+
+// Forest is a collection of merkletrees. It represents the collection
+// of merkle trees in one category during a day.
+type Forest struct {
+	Trees []*merkletree.MerkleTree
+	Topic string
+	Day   time.Time
 }
 
 // NewBucket creates a new bucket of size @size.
-func NewBucket(size int) (b *Bucket) {
+// TO DO: Extend to Type of Bucket (and pool below)
+func NewBucket(size int, topic string) (b *Bucket) {
 	return &Bucket{
 		Content: bytes.NewBuffer(make([]byte, 0, size)),
 		size:    size,
+		Topic:   topic,
 	}
 }
 
-// NewBucketPool creates a new BytePool bounded to the given maxSize.
+// NewBucketPool creates a new BucketPool bounded to the given maxSize.
 // It is initialized with empty Buckets sized based on width.
-func NewBucketPool(maxNum int, size int) (bp *BucketPool) {
+func NewBucketPool(maxNum int, size int, topic string) (bp *BucketPool) {
 	bp = &BucketPool{
 		c:     make(chan Bucket, maxNum),
 		width: size,
+		Topic: topic,
 	}
 	// Fill channel with empty buckets
 	for i := 0; i < maxNum; i++ {
-		bucket := NewBucket(size)
+		bucket := NewBucket(size, topic)
 		bp.c <- *bucket
 	}
 	return
@@ -60,6 +73,11 @@ func NewBucketPool(maxNum int, size int) (bp *BucketPool) {
 // Size returns the size of a bucket
 func (b *Bucket) Size() int {
 	return b.size
+}
+
+// Used returns true if the bucket was written to
+func (b *Bucket) Used() bool {
+	return b.used
 }
 
 // Len returns the numbers of elements in the bucket pool
@@ -72,16 +90,18 @@ func (bp *BucketPool) Len() int {
 func (bp *BucketPool) Get() (b Bucket, err error) {
 	select {
 	case b = <-bp.c:
-		fmt.Println("get bucket from pool, if not used yet")
+		// Get bucket from pool
+
 		if b.used {
 			// In this case, all buckets from the pool have been used and a new pool
 			// should be created
 			bp.c <- b
-			return *NewBucket(bp.width), errors.New("size error. pool is exhausted")
+			return *NewBucket(bp.width, bp.Topic), errors.New("size error. pool is exhausted")
 		}
 	default:
-		fmt.Println("make new bucket")
-		b = *NewBucket(bp.width)
+		return *NewBucket(bp.width, bp.Topic), errors.New("size error. pool is exhausted")
+		// fmt.Println("make new bucket")
+		// b = *NewBucket(bp.width)
 	}
 	return
 }
@@ -89,6 +109,10 @@ func (bp *BucketPool) Get() (b Bucket, err error) {
 // Put returns the given Bucket to the BucketPool.
 func (bp *BucketPool) Put(b Bucket) bool {
 	// Check whether Bucket is of the right kind. If not, reject.
+	if bp.Topic != b.Topic {
+		fmt.Println("error with topics")
+		return false
+	}
 
 	select {
 	case bp.c <- b:
@@ -111,6 +135,18 @@ func (b *Bucket) WriteContent(bs []byte) bool {
 	return true
 }
 
+// AddTree adds a tree to a forest
+// TO DO: Check for the right type?
+func (f Forest) AddTree(t *merkletree.MerkleTree) Forest {
+	f.Trees = append(f.Trees, t)
+	return f
+}
+
+// Size returns the number of trees in the forest @f.
+func (f Forest) Size() int {
+	return len(f.Trees)
+}
+
 // CalculateHash calculates the hash of a bucket. Is needed for a bucket in
 // order to implement Content from merkle_tree.
 func (b Bucket) CalculateHash() ([]byte, error) {
@@ -123,43 +159,55 @@ func (b Bucket) CalculateHash() ([]byte, error) {
 
 // Equals is true if buckets are identical. Is needed for a bucket in
 // order to implement Content from merkle_tree.
-// func (b Bucket) Equals(other merkletree.Content) (bool, error) {
+func (b Bucket) Equals(other merkletree.Content) (bool, error) {
+	// Extend for other fields, but which? Do we need all fields?
+	if !EqualBytes(b.Content.Bytes(), other.(Bucket).Content.Bytes()) {
+		return false, nil
+	}
+	if b.size != other.(Bucket).size {
+		return false, nil
+	}
+	if b.ID != other.(Bucket).ID {
+		return false, nil
+	}
+	if b.Topic != other.(Bucket).Topic {
+		return false, nil
+	}
+	if b.HashRate != other.(Bucket).HashRate {
+		return false, nil
+	}
+	return true, nil
+}
+
+// func (b Bucket) Equals(other Bucket) (bool, error) {
 // 	// Extend for other fields, but which? Do we need all fields?
-// 	if !EqualBytes(b.Content.Bytes(), other.(Bucket).Content.Bytes()) {
+// 	if !EqualBytes(b.Content.Bytes(), (other.Content).Bytes()) {
 // 		return false, nil
 // 	}
-// 	if b.size != other.(Bucket).size {
+// 	if b.size != other.size {
 // 		return false, nil
 // 	}
-// 	if b.ID != other.(Bucket).ID {
+// 	if b.ID != other.ID {
 // 		return false, nil
 // 	}
-// 	if b.Type != other.(Bucket).Type {
+// 	if b.Type != other.Type {
 // 		return false, nil
 // 	}
-// 	if b.HashRate != other.(Bucket).HashRate {
+// 	if b.HashRate != other.HashRate {
 // 		return false, nil
 // 	}
 // 	return true, nil
 // }
-func (b Bucket) Equals(other Bucket) (bool, error) {
-	// Extend for other fields, but which? Do we need all fields?
-	if !EqualBytes(b.Content.Bytes(), (other.Content).Bytes()) {
-		return false, nil
+
+// MakeTree returns a Merkle tree built from the Buckets in the pool @bp
+func MakeTree(bp *BucketPool) (*merkletree.MerkleTree, error) {
+	leafs := []merkletree.Content{}
+	L := bp.Len()
+	for i := 0; i < L; i++ {
+		leafs = append(leafs, <-bp.c)
 	}
-	if b.size != other.size {
-		return false, nil
-	}
-	if b.ID != other.ID {
-		return false, nil
-	}
-	if b.Type != other.Type {
-		return false, nil
-	}
-	if b.HashRate != other.HashRate {
-		return false, nil
-	}
-	return true, nil
+	t, err := merkletree.NewTree(leafs)
+	return t, err
 }
 
 // EqualBytes compares two byte slices. Should be put into some helper package.
@@ -179,15 +227,15 @@ func EqualBytes(a, b []byte) bool {
 // Additional merkle tree methods/functions which are not in the package yet
 // -------------------------------------------------------------------------
 
-// numNodes computes the number of nodes in the tree given by the root node @node.
-func numNodes(node *merkletree.Node) int {
+// NumNodes computes the number of nodes in the tree given by the root node @node.
+// Leafs are not counted.
+func NumNodes(node *merkletree.Node) int {
 	count := 1
-	// fmt.Println("content of left node: ", node.Left.C)
 	if node.Left.C == nil {
-		count += numNodes(node.Left)
+		count += NumNodes(node.Left)
 	}
 	if node.Right.C == nil {
-		count += numNodes(node.Right)
+		count += NumNodes(node.Right)
 	}
 	return count
 }
