@@ -49,3 +49,20 @@ GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, asset string, p
 
 It will return a slice of scraped values between starttime and endtime for the asset on the selected protocol.
 
+### Scraping additional protocol quantities
+
+If possible, scrape data for the following structure as well \(structure at pkg/dia/Messages.go \).
+
+```bash
+type DefiProtocolState {
+	TotalUSD  	 		float64
+	TotalETH	   		float64
+	TotalPerDay	    map[string]float64
+	MostLockedAsset	string
+}
+```
+
+Here, `TotalUSD` and `TotalETH` are the total amounts locked in the protocol. `TotalPerDay` is the total value locked in 24H in USD, Ether and Bitcoin. 
+
+
+
