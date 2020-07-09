@@ -30,7 +30,7 @@ func (ir *InterestRate) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary for interest rates
 func (ir *InterestRate) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &ir); err != nil {
+	if err := json.Unmarshal(data, ir); err != nil {
 		return err
 	}
 	return nil

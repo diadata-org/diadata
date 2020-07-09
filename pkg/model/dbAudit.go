@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -15,8 +16,8 @@ import (
 type AuditStore interface {
 	FlushAuditBatch() error
 	// Merkle Audit Trail methods
-	SaveMerkletreeInflux(tree *merkletree.MerkleTree, topic string) error
-	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error)
+	SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error
+	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (merkletree.MerkleTree, error)
 }
 
 const (
@@ -157,11 +158,18 @@ func (db *DB) addAuditPoint(pt *clientInfluxdb.Point) {
 // ----------------------------------------------------------------------------------------
 
 // SaveMerkletreeInflux stores a tree from the merkletree package in Influx
-func (db *DB) SaveMerkletreeInflux(tree *merkletree.MerkleTree, topic string) error {
+func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error {
+
+	// First marshal tree
+	marshTree, err := json.Marshal(tree)
+	if err != nil {
+		log.Error(err)
+	}
+
 	// Create a point and add to batch
 	tags := map[string]string{"topic": topic}
 	fields := map[string]interface{}{
-		"value": tree,
+		"value": string(marshTree),
 	}
 
 	pt, err := clientInfluxdb.NewPoint(influxDBTreeTable, tags, fields, time.Now())
@@ -180,44 +188,21 @@ func (db *DB) SaveMerkletreeInflux(tree *merkletree.MerkleTree, topic string) er
 }
 
 // GetMerkletreeInflux returns a slice of merkletrees of a given topic in a given time range
-func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error) {
-	retval := []merkletree.MerkleTree{}
+func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (merkletree.MerkleTree, error) {
+
+	retval := merkletree.MerkleTree{}
+
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s'", influxDBTreeTable, topic)
 	// q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTreeTable, topic, timeInit.Unix(), timeFinal.Unix())
 	fmt.Println("influx query string: ", q)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
-	fmt.Println("result is: ", len(res[0].Series[0].Values))
-	for i := 0; i < len(res[0].Series[0].Values); i++ {
-		fmt.Printf("%v-th entry is: %v.\n Type is: %T \n", i, res[0].Series[0].Values[i], res[0].Series[0].Values[i].(merkletree.MerkleTree))
-	}
+	// Each res[0].Series[0].Values[i] is of the form [timestamp, tags, value]
+	val := res[0].Series[0].Values[0]
+	fmt.Printf("val is of type %T and has value: \n %v \n", val[2], val[2])
+	// fmt.Println("string conversion of val: ", val[2].(string))
+	err = json.Unmarshal([]byte(val[2].(string)), &retval)
 	return retval, err
 }
-
-// func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
-// 	retval := []dia.CviDataPoint{}
-// 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
-// 	res, err := queryInfluxDB(db.influxClient, q)
-// 	if err != nil {
-// 		return retval, err
-// 	}
-// 	if len(res) > 0 && len(res[0].Series) > 0 {
-// 		for i := 0; i < len(res[0].Series[0].Values); i++ {
-// 			currentPoint := dia.CviDataPoint{}
-// 			currentPoint.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-// 			if err != nil {
-// 				return retval, err
-// 			}
-// 			currentPoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-// 			if err != nil {
-// 				return retval, err
-// 			}
-// 			retval = append(retval, currentPoint)
-// 		}
-// 	} else {
-// 		return retval, errors.New("Error parsing CVI value from Database")
-// 	}
-// 	return retval, nil
-// }

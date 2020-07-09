@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cbergoon/merkletree"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -74,10 +75,10 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 
 // FillPools streams data from the kafka channel into pools and directs
 // them into @poolChannel to be flushed afterwards.
-func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *models.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
+func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	bp := models.NewBucketPool(numBucket, sizeBucket, topic)
+	bp := merkletree.NewBucketPool(numBucket, sizeBucket, topic)
 	ok := true
 	bucket, err := bp.Get()
 	if err != nil {
@@ -110,7 +111,7 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *models
 			if err != nil {
 				// In this case, the pool is exhausted. Flush it and make a new one...
 				poolChannel <- bp
-				bp = models.NewBucketPool(numBucket, sizeBucket, topic)
+				bp = merkletree.NewBucketPool(numBucket, sizeBucket, topic)
 				fmt.Println(err)
 			}
 			// ... otherwise go on filling the fresh bucket.
@@ -123,12 +124,12 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *models
 
 // FlushPool flushes pools coming through a channel: It stores the pool in a database
 // and makes a merkle Tree.
-func FlushPool(poolChannel chan *models.BucketPool, wg *sync.WaitGroup, ds models.AuditStore) {
+func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds models.AuditStore) {
 
 	for {
 		// Where do the trees go?
 		bp := <-poolChannel
-		tree, err := models.MakeTree(bp)
+		tree, err := merkletree.MakeTree(bp)
 		// // Accessing the content of leafs
 		// cont := tree.Root.Left.Left.C.(models.Bucket)
 		// fmt.Println("leaf content is: ", cont.Content.String())
@@ -138,11 +139,10 @@ func FlushPool(poolChannel chan *models.BucketPool, wg *sync.WaitGroup, ds model
 		}
 		// Once a day, a script fetches all entries with today's date. Ordering of trees can be done
 		// with influx timestamps. Ordering in merkle tree can be done using timestamps of buckets.
-		err = ds.SaveMerkletreeInflux(tree, bp.Topic)
+		err = ds.SaveMerkletreeInflux(*tree, bp.Topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
 		}
-		fmt.Println("tree stored")
 
 	}
 }
@@ -156,7 +156,6 @@ func main() {
 	if err != nil {
 		log.Error("NewInfluxDataStore: ", err)
 	}
-
 	timeInit := time.Now()
 	timeFinal := time.Now().Add(time.Hour * (-1))
 	retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
@@ -164,6 +163,8 @@ func main() {
 		log.Error(err)
 	}
 	fmt.Println(retval)
+
+	// -------------------------------------------------------------
 
 	// // preliminary main
 	// // One instance of main for each data type
@@ -180,7 +181,7 @@ func main() {
 
 	// wg := sync.WaitGroup{}
 	// wg.Add(1)
-	// pChan := make(chan *models.BucketPool)
+	// pChan := make(chan *merkletree.BucketPool)
 	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
 
 	// wg.Add(1)

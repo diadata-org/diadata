@@ -51,3 +51,5 @@ require (
 	gopkg.in/dgrijalva/jwt-go.v2 v2.7.0 // indirect
 	gopkg.in/resty.v1 v1.12.0
 )
+
+replace github.com/cbergoon/merkletree v0.2.0 => ../merkletree
