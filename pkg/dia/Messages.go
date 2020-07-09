@@ -99,7 +99,7 @@ type DefiProtocol struct {
 	UnderlyingBlockchain string
 }
 
-type DefiLendingRate type {
+type DefiLendingRate struct {
 	Timestamp   time.Time
 	LendingRate float64
 	Asset       string

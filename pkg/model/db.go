@@ -500,7 +500,7 @@ func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, a
 			if err != nil {
 				return retval, err
 			}
-			currentRate.Asset, err = res[0].Series[0].Values[i][2].(string)
+			currentRate.Asset = res[0].Series[0].Values[i][2].(string)
 			if err != nil {
 				return retval, err
 			}
@@ -508,32 +508,6 @@ func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, a
 		}
 	} else {
 		return retval, errors.New("Error parsing Defi Lending Rate from Database")
-	}
-	return retval, nil
-}
-
-func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
-	retval := []dia.CviDataPoint{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentPoint := dia.CviDataPoint{}
-			currentPoint.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			currentPoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			retval = append(retval, currentPoint)
-		}
-	} else {
-		return retval, errors.New("Error parsing CVI value from Database")
 	}
 	return retval, nil
 }
