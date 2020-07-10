@@ -98,17 +98,19 @@ func (s *RateScraper) Channel() chan *models.InterestRate {
 // Update calls the appropriate function corresponding to the rate type.
 func (s *RateScraper) Update(rateType string) error {
 	switch rateType {
-	case "ESTER":
-		return s.UpdateESTER()
-	case "SOFR":
-		return s.UpdateSOFR()
-	case "SAFR":
-		return s.UpdateSAFR()
-	case "SAFR-AVGS":
-		// This method/flag comprises the rates SAFR30, SAFR90 and SAFR180.
-		return s.UpdateSAFRAvgs()
-	case "SONIA":
-		return s.UpdateSonia()
+	case "DYDX":
+		return s.UpdateDYDX()
+	//case "ESTER":
+	//	return s.UpdateESTER()
+	//case "SOFR":
+	//	return s.UpdateSOFR()
+	//case "SAFR":
+	//	return s.UpdateSAFR()
+	//case "SAFR-AVGS":
+	//	// This method/flag comprises the rates SAFR30, SAFR90 and SAFR180.
+	//	return s.UpdateSAFRAvgs()
+	//case "SONIA":
+	//	return s.UpdateSonia()
 	}
 	return errors.New("Error: " + rateType + " does not exist in database")
 }
