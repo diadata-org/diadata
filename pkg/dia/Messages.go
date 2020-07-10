@@ -100,7 +100,7 @@ type DefiProtocol struct {
 	Token		     string
 }
 
-type DefiProtocolState {
+type DefiProtocolState struct {
 	TotalUSD  	float64
 	TotalETH	float64
 	TotalPerDay	map[string]float64
