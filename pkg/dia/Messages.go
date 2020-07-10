@@ -97,6 +97,14 @@ type DefiProtocol struct {
 	Name                 string
 	Address              string
 	UnderlyingBlockchain string
+	Token		     string
+}
+
+type DefiProtocolState {
+	TotalUSD  	float64
+	TotalETH	float64
+	TotalPerDay	map[string]float64
+	MostLockedAsset	string
 }
 
 type DefiLendingRate struct {

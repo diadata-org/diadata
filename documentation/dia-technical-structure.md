@@ -12,6 +12,7 @@ For collecting financial data, we use a centralized backend that runs collectors
 
   For example, a trade from Bitcoin to US-Dollar is stored under `BTCUSD`.
 
+* Decentralized Finance Scrapers: We collect data on decentralized exchanges, lending platforms, and other forms of DeFi that are publicly available.
 * Blockchain Scrapers: These scrapers are used to determine attributes of blockchains. The most prominent attribute is the circulating supply of a cryptocurrency, for which various scrapers already exist. Depending on the expected update rate of a blockchain, these scrapers update the backend periodically about their data.
 
   Blockchain scrapers are run as docker containers that can be managed independently.
