@@ -4,7 +4,7 @@ Oracles are Smart Contract interfaces that bring data from an external source in
 
 ## Immutable Oracle Feeds
 
-The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price, and supply data. By using `getParameters(asset_index)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
+The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price, and supply data. By using `getCoinInfo(coin_name)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update. The return value consists of the price in US Cents, the circulating supply, the timestamp of the update and the short handle of the asset.
 
 Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract. In the event view, the latest updates can be seen. The event fields show the values in the following locations:
 
