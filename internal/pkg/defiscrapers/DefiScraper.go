@@ -104,8 +104,8 @@ func (s *DefiScraper) Update(defiType string) error {
 		{
 			protocol := dia.DefiProtocol{
 				Name: "dydx",
-				Address: "",
-				UnderlyingBlockchain: "",
+				Address: "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
+				UnderlyingBlockchain: "Ethereum",
 				Token:"",
 			}
 			return s.UpdateDYDX(protocol)
