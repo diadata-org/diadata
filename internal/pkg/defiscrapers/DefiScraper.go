@@ -30,7 +30,7 @@ type DefiScraper struct {
 	closed           bool
 	ticker           *time.Ticker
 	datastore        models.Datastore
-	chanDefiRate chan *dia.DefiLendingRate
+	chanDefiRate chan *dia.DefiRate
 }
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
@@ -42,7 +42,7 @@ func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper 
 		error:            nil,
 		ticker:           time.NewTicker(refreshDelay),
 		datastore:        datastore,
-		chanDefiRate: make(chan *dia.DefiLendingRate),
+		chanDefiRate: make(chan *dia.DefiRate),
 	}
 
 	log.Info("Defi scraper is built and triggered")
@@ -93,7 +93,7 @@ func (s *DefiScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive rate information
-func (s *DefiScraper) Channel() chan *dia.DefiLendingRate {
+func (s *DefiScraper) Channel() chan *dia.DefiRate {
 	return s.chanDefiRate
 }
 

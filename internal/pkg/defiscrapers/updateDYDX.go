@@ -60,15 +60,20 @@ func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 	}
 
 	for _, market := range markets {
-		rate, err := strconv.ParseFloat(market.TotalBorrowAPR, 64)
+		totalSupplyAPR, err := strconv.ParseFloat(market.TotalSupplyAPR, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
-		asset := &dia.DefiLendingRate{
+		totalBorrowAPR, err := strconv.ParseFloat(market.TotalSupplyAPR, 64)
+		if err != nil {
+			fmt.Println(err)
+		}
+		asset := &dia.DefiRate{
   			Timestamp: time.Now(),
   			Asset: market.Symbol,
   			Protocol: protocol,
-			LendingRate: rate,
+			LendingRate: totalSupplyAPR,
+			BorrowingRate: totalBorrowAPR,
 	}
 		log.Printf("writing lending rate for  %#v in %v\n", asset, s.chanDefiRate)
 		s.chanDefiRate <- asset

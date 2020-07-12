@@ -11,7 +11,7 @@ import (
 )
 
 // handleDefiInterestRate delegates rate information to Kafka
-func handleDefiInterestRate(c chan *dia.DefiLendingRate, wg *sync.WaitGroup, ds models.Datastore) {
+func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.Datastore) {
 	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
@@ -20,7 +20,7 @@ func handleDefiInterestRate(c chan *dia.DefiLendingRate, wg *sync.WaitGroup, ds 
 			log.Error("error")
 			return
 		}
-		ds.SetDefiLendingRateInflux(t)
+		ds.SetDefiRateInflux(t)
 	}
 }
 

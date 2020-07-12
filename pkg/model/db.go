@@ -76,8 +76,8 @@ type Datastore interface {
 	GetItinBySymbol(symbol string) (dia.ItinToken, error)
 
 	// Defi rates
-	GetDefiLendingRateInflux(time.Time, time.Time, string, string) ([]dia.DefiLendingRate, error)
-	SetDefiLendingRateInflux(*dia.DefiLendingRate) error
+	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
+	SetDefiRateInflux(rate *dia.DefiRate) error
 }
 
 const (
@@ -99,7 +99,7 @@ const (
 	influxDbOptionsTable = "options"
 	influxDbCVITable     = "cvi"
 	influxDbSupplyTable  = "supply"
-	influxDbDefiRateTable= "defiLendingRate"
+	influxDbDefiRateTable= "defiRate"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -459,9 +459,10 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
-func (db *DB) SetDefiLendingRateInflux(rate *dia.DefiLendingRate) error {
+func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
+		"borrowRate": rate.BorrowingRate,
 	}
 	tags := map[string]string{
 		"asset": rate.Asset,
@@ -469,21 +470,21 @@ func (db *DB) SetDefiLendingRateInflux(rate *dia.DefiLendingRate) error {
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbDefiRateTable, tags, fields, rate.Timestamp)
 	if err != nil {
-		log.Errorln("SetDefiLendingRateInflux:", err)
+		log.Errorln("SetDefiRateInflux:", err)
 	} else {
 		db.addPoint(pt)
 	}
 
 	err = db.WriteBatchInflux()
 	if err != nil {
-		log.Errorln("SetDefiLendingRateInflux", err)
+		log.Errorln("SetDefiRateInflux", err)
 	}
 
 	return err
 }
 
-func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiLendingRate, error) {
-	retval := []dia.DefiLendingRate{}
+func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
+	retval := []dia.DefiRate{}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -491,7 +492,7 @@ func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, a
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentRate := dia.DefiLendingRate{}
+			currentRate := dia.DefiRate{}
 			currentRate.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
 				return retval, err
@@ -500,7 +501,11 @@ func (db *DB) GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, a
 			if err != nil {
 				return retval, err
 			}
-			currentRate.Asset = res[0].Series[0].Values[i][2].(string)
+			currentRate.BorrowingRate, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentRate.Asset = res[0].Series[0].Values[i][3].(string)
 			if err != nil {
 				return retval, err
 			}

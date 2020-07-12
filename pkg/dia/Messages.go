@@ -107,9 +107,10 @@ type DefiProtocolState struct {
 	MostLockedAsset	string
 }
 
-type DefiLendingRate struct {
+type DefiRate struct {
 	Timestamp   time.Time
 	LendingRate float64
+	BorrowingRate float64
 	Asset       string
 	Protocol    DefiProtocol
 }
