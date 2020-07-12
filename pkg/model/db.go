@@ -78,6 +78,11 @@ type Datastore interface {
 	// Defi rates
 	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
 	SetDefiRateInflux(rate *dia.DefiRate) error
+
+	GetDefiStateInflux(time.Time, time.Time, string) ([]dia.DefiProtocolState, error)
+	SetDefiStateInflux(state *dia.DefiProtocolState) error
+
+
 }
 
 const (
@@ -99,7 +104,9 @@ const (
 	influxDbOptionsTable = "options"
 	influxDbCVITable     = "cvi"
 	influxDbSupplyTable  = "supply"
-	influxDbDefiRateTable= "defiRate"
+	influxDbDefiRateTable = "defiRate"
+	influxDbDefiStateTable = "defiState"
+
 )
 
 // queryInfluxDB convenience function to query the database
@@ -459,6 +466,8 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
+
+
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
@@ -517,6 +526,66 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 	return retval, nil
 }
 
+
+
+func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
+	fields := map[string]interface{}{
+		"totalUSD": state.TotalUSD,
+		"totalETH": state.TotalETH,
+	}
+	tags := map[string]string{
+		"protocol": state.Protocol,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbDefiStateTable, tags, fields, state.Timestamp)
+	if err != nil {
+		log.Errorln("SetDefiStateInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SetDefiStateInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protocol string) (retval []dia.DefiProtocolState, err error) {
+	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and protocol = '%s'", influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			defiState := dia.DefiProtocolState{}
+			defiState.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return
+			}
+			defiState.TotalUSD, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+			defiState.TotalETH, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+			defiState.Protocol = res[0].Series[0].Values[i][3].(string)
+			if err != nil {
+				return
+			}
+			retval = append(retval, defiState)
+		}
+	} else {
+		err = errors.New("Error parsing Defi Lending Rate from Database")
+		return
+	}
+	return
+}
+
+
 func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
@@ -570,6 +639,7 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	}
 	return err
 }
+
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
 

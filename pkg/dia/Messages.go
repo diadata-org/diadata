@@ -105,6 +105,8 @@ type DefiProtocolState struct {
 	TotalETH	float64
 	TotalPerDay	map[string]float64
 	MostLockedAsset	string
+	Protocol    string
+	Timestamp   time.Time
 }
 
 type DefiRate struct {

@@ -13,7 +13,9 @@ log "github.com/sirupsen/logrus"
 
 const (
 	// Determine frequency of scraping
-	refreshDelay = time.Second * 10 * 1
+	refrestRateDelay = time.Second * 10 * 1
+	refreshStateDelay = time.Second * 10 * 1
+
 )
 
 type nothing struct{}
@@ -28,9 +30,12 @@ type DefiScraper struct {
 	errorLock        sync.RWMutex
 	error            error
 	closed           bool
-	ticker           *time.Ticker
+	tickerRate           *time.Ticker
+	tickerState           *time.Ticker
 	datastore        models.Datastore
 	chanDefiRate chan *dia.DefiRate
+	chanDefiState chan *dia.DefiProtocolState
+
 }
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
@@ -40,9 +45,12 @@ func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper 
 		shutdown:         make(chan nothing),
 		shutdownDone:     make(chan nothing),
 		error:            nil,
-		ticker:           time.NewTicker(refreshDelay),
+		tickerRate:           time.NewTicker(refrestRateDelay),
+		tickerState:           time.NewTicker(refreshStateDelay),
 		datastore:        datastore,
 		chanDefiRate: make(chan *dia.DefiRate),
+		chanDefiState:  make(chan *dia.DefiProtocolState),
+
 	}
 
 	log.Info("Defi scraper is built and triggered")
@@ -54,8 +62,11 @@ func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper 
 func (s *DefiScraper) mainLoop(rateType string) {
 	for {
 		select {
-		case <-s.ticker.C:
-			s.Update(rateType)
+		case <-s.tickerRate.C:
+			s.UpdateRates(rateType)
+		case <-s.tickerState.C:
+			s.UpdateState(rateType)
+
 		case <-s.shutdown: // user requested shutdown
 			log.Println("DefiScraper shutting down")
 			s.cleanup(nil)
@@ -70,7 +81,9 @@ func (s *DefiScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 
-	s.ticker.Stop()
+	s.tickerRate.Stop()
+	s.tickerState.Stop()
+
 
 	if err != nil {
 		s.error = err
@@ -93,22 +106,37 @@ func (s *DefiScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive rate information
-func (s *DefiScraper) Channel() chan *dia.DefiRate {
+func (s *DefiScraper) RateChannel() chan *dia.DefiRate {
 	return s.chanDefiRate
 }
 
+func (s *DefiScraper) StateChannel() chan *dia.DefiProtocolState {
+	return s.chanDefiState
+}
+
 // Update calls the appropriate function corresponding to the rate type.
-func (s *DefiScraper) Update(defiType string) error {
+func (s *DefiScraper) UpdateRates(defiType string) error {
 	switch defiType {
 	case "DYDX":
 		{
 			protocol := dia.DefiProtocol{
-				Name: "dydx",
+				Name: "DYDX",
 				Address: "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
 				UnderlyingBlockchain: "Ethereum",
 				Token:"",
 			}
 			return s.UpdateDYDX(protocol)
+		}
+
+	}
+	return errors.New("Error: " + defiType + " does not exist in database")
+}
+
+func (s *DefiScraper) UpdateState(defiType string) error {
+	switch defiType {
+	case "DYDX":
+		{
+			return s.UpdateDYDXState("DYDX")
 		}
 
 	}
