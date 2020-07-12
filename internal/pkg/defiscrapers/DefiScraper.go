@@ -119,12 +119,14 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 	switch defiType {
 	case "DYDX":
 		{
+
 			protocol := dia.DefiProtocol{
 				Name: "DYDX",
 				Address: "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
 				UnderlyingBlockchain: "Ethereum",
 				Token:"",
 			}
+			s.datastore.SetDefiProtocol(protocol)
 			return s.UpdateDYDX(protocol)
 		}
 

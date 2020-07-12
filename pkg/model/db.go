@@ -76,6 +76,9 @@ type Datastore interface {
 	GetItinBySymbol(symbol string) (dia.ItinToken, error)
 
 	// Defi rates
+	SetDefiProtocol(dia.DefiProtocol) error
+	GetDefiProtocol(string) (dia.DefiProtocol, error)
+
 	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
 	SetDefiRateInflux(rate *dia.DefiRate) error
 
