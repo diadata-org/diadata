@@ -120,6 +120,7 @@ func (s *DefiScraper)UpdateDYDXState(protocolName string)error{
 		TotalUSD: totalUSDCSupplyPAR,
 		TotalETH: totalETHSupplyPAR,
 		Protocol: protocolName,
+		Timestamp: time.Now(),
 	}
 	s.chanDefiState <- defistate
 	log.Printf("writing DEFI state for  %#v in %v\n", defistate, s.chanDefiRate)
