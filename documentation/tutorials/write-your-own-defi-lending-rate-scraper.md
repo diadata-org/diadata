@@ -27,7 +27,8 @@ For that, you need to get all data that is defined in this structure at pkg/dia/
 ```bash
 type DefiLendingRate type {                                                        
   Timestamp   time.Time                                                            
-  LendingRate float64                                                              
+  LendingRate float64
+  BorrowingRate float64                                                              
   Asset       string                                                               
   Protocol    DefiProtocol                                                         
 }
@@ -38,13 +39,13 @@ The timestamp should be the timestamp of observation \(i.e., now\), the LendingR
 You can add the scraped value using this function in pkg/model/db.go:
 
 ```bash
-SetDefiLendingRateInflux(rate *dia.DefiLendingRate) error
+SetDefiRateInflux(rate *dia.DefiLendingRate) error
 ```
 
 After that, you are done. To test your addition, retrieve your value using this function:
 
 ```bash
-GetDefiLendingRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiLendingRate, error) 
+GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiLendingRate, error) 
 ```
 
 It will return a slice of scraped values between starttime and endtime for the asset on the selected protocol.
