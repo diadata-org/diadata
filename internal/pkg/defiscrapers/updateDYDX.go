@@ -3,11 +3,12 @@ package defiscrapers
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"time"
 )
 
 type DYDXMarket struct {
@@ -45,17 +46,17 @@ type DYDXMarket struct {
 	TotalBorrowWei string `json:"totalBorrowWei"`
 }
 
-func fetchmarkets()(dydxrate[] DYDXMarket,err error){
-	var  response map[string][]DYDXMarket
+func fetchmarkets() (dydxrate []DYDXMarket, err error) {
+	var response map[string][]DYDXMarket
 	jsondata, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
-	err = json.Unmarshal(jsondata,&response)
-	return  response["markets"], err
+	err = json.Unmarshal(jsondata, &response)
+	return response["markets"], err
 }
 
 func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 	log.Printf("DYDXScraper update")
-	markets, err:= fetchmarkets()
-	if err!=nil{
+	markets, err := fetchmarkets()
+	if err != nil {
 		return err
 	}
 
@@ -69,12 +70,12 @@ func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 			return err
 		}
 		asset := &dia.DefiRate{
-  			Timestamp: time.Now(),
-  			Asset: market.Symbol,
-  			Protocol: protocol,
-			LendingRate: totalSupplyAPR,
+			Timestamp:     time.Now(),
+			Asset:         market.Symbol,
+			Protocol:      protocol,
+			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
-	}
+		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
 		s.chanDefiRate <- asset
 	}
@@ -82,29 +83,26 @@ func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 	return nil
 }
 
-func getMarketByID(marketID string)(dydxrate DYDXMarket,err error){
- 		var  response map[string]DYDXMarket
-		var url bytes.Buffer
-		url.WriteString("https://api.dydx.exchange/v1/markets/")
-		url.WriteString(marketID)
-		jsonDATA, err := utils.GetRequest(url.String())
-		err = json.Unmarshal(jsonDATA,&response)
-		return  response["market"], err
-	}
+func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
+	var response map[string]DYDXMarket
+	var url bytes.Buffer
+	url.WriteString("https://api.dydx.exchange/v1/markets/")
+	url.WriteString(marketID)
+	jsonDATA, err := utils.GetRequest(url.String())
+	err = json.Unmarshal(jsonDATA, &response)
+	return response["market"], err
+}
 
-
-
-func (s *DefiScraper)UpdateDYDXState(protocolName string)error{
+func (s *DefiScraper) UpdateDYDXState(protocolName string) error {
 	log.Info("Updating DEFI state .. ")
 	// Get Total USDC
 	// Get Total ETH
-	usdcMarket, err := getMarketByID("0")
-	if err!=nil{
+	usdcMarket, err := getMarketByID("2")
+	if err != nil {
 		return err
 	}
-
 	ethMarket, err := getMarketByID("0")
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupplyPar, 64)
@@ -116,10 +114,10 @@ func (s *DefiScraper)UpdateDYDXState(protocolName string)error{
 		return err
 	}
 
-	defistate :=  &dia.DefiProtocolState{
-		TotalUSD: totalUSDCSupplyPAR,
-		TotalETH: totalETHSupplyPAR,
-		Protocol: protocolName,
+	defistate := &dia.DefiProtocolState{
+		TotalUSD:  totalUSDCSupplyPAR,
+		TotalETH:  totalETHSupplyPAR,
+		Protocol:  protocolName,
 		Timestamp: time.Now(),
 	}
 	s.chanDefiState <- defistate
