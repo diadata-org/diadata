@@ -98,7 +98,7 @@ func (s *DefiScraper)UpdateDYDXState(protocolName string)error{
 	log.Info("Updating DEFI state .. ")
 	// Get Total USDC
 	// Get Total ETH
-	usdcMarket, err := getMarketByID("0")
+	usdcMarket, err := getMarketByID("2")
 	if err!=nil{
 		return err
 	}
