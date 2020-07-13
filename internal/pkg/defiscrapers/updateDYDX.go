@@ -65,7 +65,7 @@ func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 		if err != nil {
 			return err
 		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.TotalSupplyAPR, 64)
+		totalBorrowAPR, err := strconv.ParseFloat(market.TotalBorrowAPR, 64)
 		if err != nil {
 			return err
 		}

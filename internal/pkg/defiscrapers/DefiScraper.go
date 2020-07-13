@@ -1,21 +1,19 @@
 package defiscrapers
 
 import (
-"errors"
-"sync"
-"time"
+	"errors"
+	"sync"
+	"time"
 
-models "github.com/diadata-org/diadata/pkg/model"
-log "github.com/sirupsen/logrus"
-"github.com/diadata-org/diadata/pkg/dia"
-
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
 	// Determine frequency of scraping
-	refrestRateDelay = time.Second * 10 * 1
+	refrestRateDelay  = time.Second * 10 * 1
 	refreshStateDelay = time.Second * 10 * 1
-
 )
 
 type nothing struct{}
@@ -27,30 +25,28 @@ type DefiScraper struct {
 
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock        sync.RWMutex
-	error            error
-	closed           bool
-	tickerRate           *time.Ticker
-	tickerState           *time.Ticker
-	datastore        models.Datastore
-	chanDefiRate chan *dia.DefiRate
+	errorLock     sync.RWMutex
+	error         error
+	closed        bool
+	tickerRate    *time.Ticker
+	tickerState   *time.Ticker
+	datastore     models.Datastore
+	chanDefiRate  chan *dia.DefiRate
 	chanDefiState chan *dia.DefiProtocolState
-
 }
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper {
 	s := &DefiScraper{
-		shutdown:         make(chan nothing),
-		shutdownDone:     make(chan nothing),
-		error:            nil,
-		tickerRate:           time.NewTicker(refrestRateDelay),
-		tickerState:           time.NewTicker(refreshStateDelay),
-		datastore:        datastore,
-		chanDefiRate: make(chan *dia.DefiRate),
-		chanDefiState:  make(chan *dia.DefiProtocolState),
-
+		shutdown:      make(chan nothing),
+		shutdownDone:  make(chan nothing),
+		error:         nil,
+		tickerRate:    time.NewTicker(refrestRateDelay),
+		tickerState:   time.NewTicker(refreshStateDelay),
+		datastore:     datastore,
+		chanDefiRate:  make(chan *dia.DefiRate),
+		chanDefiState: make(chan *dia.DefiProtocolState),
 	}
 
 	log.Info("Defi scraper is built and triggered")
@@ -83,7 +79,6 @@ func (s *DefiScraper) cleanup(err error) {
 
 	s.tickerRate.Stop()
 	s.tickerState.Stop()
-
 
 	if err != nil {
 		s.error = err
@@ -121,13 +116,25 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 		{
 
 			protocol := dia.DefiProtocol{
-				Name: "DYDX",
-				Address: "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
+				Name:                 "DYDX",
+				Address:              "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
 				UnderlyingBlockchain: "Ethereum",
-				Token:"",
+				Token:                "",
 			}
 			s.datastore.SetDefiProtocol(protocol)
 			return s.UpdateDYDX(protocol)
+		}
+	case "AAVE":
+		{
+
+			protocol := dia.DefiProtocol{
+				Name:                 "AAVE",
+				Address:              "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			return s.UpdateAAVE(protocol)
 		}
 
 	}
@@ -139,6 +146,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "DYDX":
 		{
 			return s.UpdateDYDXState("DYDX")
+		}
+	case "AAVE":
+		{
+			return s.UpdateAAVEState("AAVE")
 		}
 
 	}
