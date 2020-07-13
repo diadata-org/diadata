@@ -141,7 +141,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 
 			protocol := dia.DefiProtocol{
 				Name:                 "DHARMA",
-				Address:              "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3",
+				Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
