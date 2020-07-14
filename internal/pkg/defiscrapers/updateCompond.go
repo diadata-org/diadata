@@ -44,8 +44,8 @@ type CompoundProtocol struct {
 	protocol dia.DefiProtocol
 }
 
-func NewCompound(scrapper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
-	return &DYDXProtocol{scrapper: scrapper, protocol: protocol}
+func NewCompound(scrapper *DefiScraper, protocol dia.DefiProtocol) *CompoundProtocol {
+	return &CompoundProtocol{scrapper: scrapper, protocol: protocol}
 }
 
 

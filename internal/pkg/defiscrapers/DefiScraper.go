@@ -167,7 +167,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			s.datastore.SetDefiProtocol(protocol)
 			return s.UpdateDHARMA(protocol)
-]		}
+	}
 
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
@@ -194,7 +194,7 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 		}
 	case "COMPOUND":
 		{
-			helper = NewAAVE(s, protocol)
+			helper = NewCompound(s, protocol)
 		}
 	case "RAY":
 		{
