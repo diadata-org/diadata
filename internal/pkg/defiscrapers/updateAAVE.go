@@ -16,6 +16,15 @@ type AAVEMarket struct {
 	} `json:"data"`
 }
 
+type AAVEProtocol struct {
+	scrapper *DefiScraper
+	protocol dia.DefiProtocol
+}
+
+func NewAAVE(scrapper *DefiScraper, protocol dia.DefiProtocol) *AAVEProtocol {
+	return &AAVEProtocol{scrapper: scrapper, protocol: protocol}
+}
+
 type Reserve struct {
 	ID                  string `json:"id"`
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
@@ -57,7 +66,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 	return
 }
 
-func (s *DefiScraper) UpdateAAVE(protocol dia.DefiProtocol) error {
+func (proto *AAVEProtocol) UpdateRate() error {
 	log.Printf("AAVEScraper update")
 
 	markets, err := fetchAAVEMarkets()
@@ -78,12 +87,12 @@ func (s *DefiScraper) UpdateAAVE(protocol dia.DefiProtocol) error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
-			Protocol:      protocol,
+			Protocol:      proto.protocol,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
-		s.chanDefiRate <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scrapper.RateChannel())
+		proto.scrapper.RateChannel() <- asset
 
 	}
 
@@ -104,8 +113,8 @@ func getAssetByAddress(address string) (reserve Reserve, err error) {
 	return
 }
 
-func (s *DefiScraper) UpdateAAVEState(protocolName string) error {
-	log.Info("Updating DEFI state .. ")
+func (proto *AAVEProtocol) UpdateState() error {
+	log.Print("Updating DEFI state for %+v\\n ", proto.protocol.Name)
 	// Get Total USDC
 	// Get Total ETH
 	usdcMarket, err := getAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
@@ -124,14 +133,14 @@ func (s *DefiScraper) UpdateAAVEState(protocolName string) error {
 	if err != nil {
 		return err
 	}
-	defistate := &dia.DefiProtocolState{
+	deFIState := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  protocolName,
+		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	s.chanDefiState <- defistate
-	log.Printf("writing DEFI state for  %#v in %v\n", defistate, s.chanDefiRate)
+	proto.scrapper.StateChannel() <- deFIState
+	log.Printf("writing DEFI state for  %#v in %v\n", deFIState, proto.scrapper.StateChannel())
 
 	log.Info("Update State complete")
 

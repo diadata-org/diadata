@@ -2,7 +2,6 @@ package defiscrapers
 
 import (
 	"errors"
-	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -17,23 +16,6 @@ const (
 )
 
 type nothing struct{}
-
-type DefiScraper struct {
-	// signaling channels
-	shutdown     chan nothing
-	shutdownDone chan nothing
-
-	// error handling; to read error or closed, first acquire read lock
-	// only cleanup method should hold write lock
-	errorLock     sync.RWMutex
-	error         error
-	closed        bool
-	tickerRate    *time.Ticker
-	tickerState   *time.Ticker
-	datastore     models.Datastore
-	chanDefiRate  chan *dia.DefiRate
-	chanDefiState chan *dia.DefiProtocolState
-}
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
@@ -111,6 +93,8 @@ func (s *DefiScraper) StateChannel() chan *dia.DefiProtocolState {
 
 // Update calls the appropriate function corresponding to the rate type.
 func (s *DefiScraper) UpdateRates(defiType string) error {
+	var helper DeFIHelper
+
 	switch defiType {
 	case "DYDX":
 		{
@@ -122,7 +106,8 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				Token:                "",
 			}
 			s.datastore.SetDefiProtocol(protocol)
-			return s.UpdateDYDX(protocol)
+			helper = NewDYDX(s, protocol)
+
 		}
 	case "AAVE":
 		{
@@ -134,24 +119,35 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				Token:                "",
 			}
 			s.datastore.SetDefiProtocol(protocol)
-			return s.UpdateAAVE(protocol)
+			log.Info("aave")
+			helper = NewAAVE(s, protocol)
 		}
 
+	default:
+		return errors.New("Error: " + defiType + " does not exist in database")
+
 	}
-	return errors.New("Error: " + defiType + " does not exist in database")
+	return helper.UpdateRate()
 }
 
 func (s *DefiScraper) UpdateState(defiType string) error {
+	var helper DeFIHelper
+	protocol, err := s.datastore.GetDefiProtocol(defiType)
+	if err != nil {
+		return err
+	}
+
 	switch defiType {
 	case "DYDX":
 		{
-			return s.UpdateDYDXState("DYDX")
+			helper = NewDYDX(s, protocol)
 		}
 	case "AAVE":
 		{
-			return s.UpdateAAVEState("AAVE")
+			helper = NewAAVE(s, protocol)
 		}
-
+	default:
+		return errors.New("Error: " + defiType + " does not exist in database")
 	}
-	return errors.New("Error: " + defiType + " does not exist in database")
+	return helper.UpdateState()
 }
