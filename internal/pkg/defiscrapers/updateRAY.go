@@ -11,6 +11,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type RAYProtocol struct {
+	scraper  *DefiScraper
+	protocol dia.DefiProtocol
+}
+
+func NewRAY(scraper *DefiScraper, protocol dia.DefiProtocol) *RAYProtocol {
+	return &RAYProtocol{scraper: scraper, protocol: protocol}
+}
+
 type RAYPortfolio struct {
 	Data struct {
 		Portfolios []Portfolio `json:"portfolios"`
@@ -55,8 +64,8 @@ func fetchRAYPortfolios() (rayPortfolio RAYPortfolio, err error) {
 	return
 }
 
-func (s *DefiScraper) updateRAY(protocol dia.DefiProtocol) error {
-	log.Printf("RAYScraper update")
+func (proto *RAYProtocol) UpdateRate() error {
+	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
 
 	markets, err := fetchRAYPortfolios()
 	if err != nil {
@@ -76,12 +85,12 @@ func (s *DefiScraper) updateRAY(protocol dia.DefiProtocol) error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
-			Protocol:      protocol,
+			Protocol:      proto.protocol,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
-		s.chanDefiRate <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
+		proto.scraper.RateChannel() <- asset
 
 	}
 
@@ -102,8 +111,8 @@ func getPortfolioByID(id string) (rayPortfolio Portfolio, err error) {
 	return
 }
 
-func (s *DefiScraper) UpdateRAYState(protocolName string) error {
-	log.Info("Updating DEFI state .. ")
+func (proto *RAYProtocol) UpdateState() error {
+	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
 	// Get Total USDC
 	// Get Total ETH
 	usdcMarket, err := getPortfolioByID("0x1e868d302424cfebaf2b757c06fdd1a32411fd445ebb51ffc433cc15bacfe3e3")
@@ -125,11 +134,11 @@ func (s *DefiScraper) UpdateRAYState(protocolName string) error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  protocolName,
+		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	s.chanDefiState <- defistate
-	log.Printf("writing DEFI state for  %#v in %v\n", defistate, s.chanDefiRate)
+	proto.scraper.StateChannel() <- defistate
+	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
 
 	log.Info("Update State complete")
 
