@@ -46,6 +46,15 @@ type DYDXMarket struct {
 	TotalBorrowWei string `json:"totalBorrowWei"`
 }
 
+type DYDXProtocol struct {
+	scraper  *DefiScraper
+	protocol dia.DefiProtocol
+}
+
+func NewDYDX(scraper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
+	return &DYDXProtocol{scraper: scraper, protocol: protocol}
+}
+
 func fetchmarkets() (dydxrate []DYDXMarket, err error) {
 	var response map[string][]DYDXMarket
 	jsondata, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
@@ -53,8 +62,8 @@ func fetchmarkets() (dydxrate []DYDXMarket, err error) {
 	return response["markets"], err
 }
 
-func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
-	log.Printf("DYDXScraper update")
+func (proto *DYDXProtocol) UpdateRate() error {
+	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
 	markets, err := fetchmarkets()
 	if err != nil {
 		return err
@@ -72,12 +81,13 @@ func (s *DefiScraper) UpdateDYDX(protocol dia.DefiProtocol) error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
-			Protocol:      protocol,
+			Protocol:      proto.protocol,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
-		s.chanDefiRate <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
+		proto.scraper.RateChannel() <- asset
+
 	}
 	log.Info("Update complete")
 	return nil
@@ -93,10 +103,8 @@ func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
 	return response["market"], err
 }
 
-func (s *DefiScraper) UpdateDYDXState(protocolName string) error {
-	log.Info("Updating DEFI state .. ")
-	// Get Total USDC
-	// Get Total ETH
+func (proto *DYDXProtocol) UpdateState() error {
+	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
 	usdcMarket, err := getMarketByID("2")
 	if err != nil {
 		return err
@@ -117,11 +125,11 @@ func (s *DefiScraper) UpdateDYDXState(protocolName string) error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  protocolName,
+		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	s.chanDefiState <- defistate
-	log.Printf("writing DEFI state for  %#v in %v\n", defistate, s.chanDefiRate)
+	proto.scraper.StateChannel() <- defistate
+	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
 
 	log.Info("Update State complete")
 
