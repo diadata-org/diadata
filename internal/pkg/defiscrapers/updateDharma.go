@@ -17,6 +17,15 @@ type DHARMAMArket struct {
 	} `json:"data"`
 }
 
+type DharmaProtocol struct {
+	scrapper *DefiScraper
+	protocol dia.DefiProtocol
+}
+
+func NewDHARMA(scraper *DefiScraper, protocol dia.DefiProtocol) *DharmaProtocol {
+	return &DharmaProtocol{scrapper: scraper, protocol: protocol}
+}
+
 type DDai struct {
 	ID                  string `json:"id"`
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
@@ -54,8 +63,8 @@ func fetchDHARMAMarkets() (dharmaRate DHARMAMArket, err error) {
 	return
 }
 
-func (s *DefiScraper) UpdateDHARMA(protocol dia.DefiProtocol) error {
-	log.Printf("DHARMAScraper update")
+func (proto *DharmaProtocol) UpdateRate() error {
+	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
 
 	markets, err := fetchDHARMAMarkets()
 	if err != nil {
@@ -75,15 +84,20 @@ func (s *DefiScraper) UpdateDHARMA(protocol dia.DefiProtocol) error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         "DHARMA",
-			Protocol:      protocol,
+			Protocol:      proto.protocol,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
-		s.chanDefiRate <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scrapper.RateChannel())
+		proto.scrapper.RateChannel() <- asset
 
 	}
 
 	log.Info("Update complete")
+	return nil
+}
+
+func (proto *DharmaProtocol) UpdateState() error {
+	log.Print("State data Not Available")
 	return nil
 }

@@ -96,17 +96,17 @@ func getCompoundAssetByAddress(address string) (asset CompoundAsset, err error) 
 
 func (proto *CompoundProtocol) UpdateRate() error {
 	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
-	markets, err := fetchmarkets()
+	markets, err := fetchCompoundMarkets()
 	if err != nil {
 		return err
 	}
 
-	for _, market := range markets {
-		totalSupplyAPR, err := strconv.ParseFloat(market.TotalSupplyAPR, 64)
+	for _, market := range markets.Data.Markets {
+		totalSupplyAPR, err := strconv.ParseFloat(market.SupplyRate, 64)
 		if err != nil {
 			return err
 		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.TotalBorrowAPR, 64)
+		totalBorrowAPR, err := strconv.ParseFloat(market.BorrowRate, 64)
 		if err != nil {
 			return err
 		}
