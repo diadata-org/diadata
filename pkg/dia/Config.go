@@ -17,6 +17,7 @@ const (
 	HitBTCExchange   = "HitBTC"
 	SimexExchange    = "Simex"
 	OKExExchange     = "OKEx"
+	FTXExchange      = "FTX"
 	HuobiExchange    = "Huobi"
 	LBankExchange    = "LBank"
 	GateIOExchange   = "GateIO"
@@ -42,6 +43,7 @@ func Exchanges() []string {
 		QuoineExchange,
 		SimexExchange,
 		ZBExchange,
+		FTXExchange,
 		UnknownExchange,
 	}
 }
