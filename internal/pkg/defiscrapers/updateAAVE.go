@@ -67,7 +67,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 }
 
 func (proto *AAVEProtocol) UpdateRate() error {
-	log.Printf("AAVEScraper update")
+	log.Print("Updating DEFI rate for %+v\\n ", proto.protocol)
 
 	markets, err := fetchAAVEMarkets()
 	if err != nil {
