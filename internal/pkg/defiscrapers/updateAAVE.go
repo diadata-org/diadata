@@ -3,11 +3,12 @@ package defiscrapers
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"time"
 )
 
 type AAVEMarket struct {
@@ -17,12 +18,12 @@ type AAVEMarket struct {
 }
 
 type AAVEProtocol struct {
-	scrapper *DefiScraper
+	scraper  *DefiScraper
 	protocol dia.DefiProtocol
 }
 
-func NewAAVE(scrapper *DefiScraper, protocol dia.DefiProtocol) *AAVEProtocol {
-	return &AAVEProtocol{scrapper: scrapper, protocol: protocol}
+func NewAAVE(scraper *DefiScraper, protocol dia.DefiProtocol) *AAVEProtocol {
+	return &AAVEProtocol{scraper: scraper, protocol: protocol}
 }
 
 type Reserve struct {
@@ -67,7 +68,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 }
 
 func (proto *AAVEProtocol) UpdateRate() error {
-	log.Printf("AAVEScraper update")
+	log.Print("Updating DEFI rate for %+v\\n ", proto.protocol)
 
 	markets, err := fetchAAVEMarkets()
 	if err != nil {
@@ -91,8 +92,8 @@ func (proto *AAVEProtocol) UpdateRate() error {
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scrapper.RateChannel())
-		proto.scrapper.RateChannel() <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
+		proto.scraper.RateChannel() <- asset
 
 	}
 
@@ -139,8 +140,8 @@ func (proto *AAVEProtocol) UpdateState() error {
 		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	proto.scrapper.StateChannel() <- deFIState
-	log.Printf("writing DEFI state for  %#v in %v\n", deFIState, proto.scrapper.StateChannel())
+	proto.scraper.StateChannel() <- deFIState
+	log.Printf("writing DEFI state for  %#v in %v\n", deFIState, proto.scraper.StateChannel())
 
 	log.Info("Update State complete")
 
