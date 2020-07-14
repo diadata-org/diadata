@@ -1,10 +1,11 @@
 package defiscrapers
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 type DeFIHelper interface {

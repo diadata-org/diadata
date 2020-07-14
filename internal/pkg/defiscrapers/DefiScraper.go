@@ -91,7 +91,7 @@ func (s *DefiScraper) StateChannel() chan *dia.DefiProtocolState {
 	return s.chanDefiState
 }
 
-// Update calls the appropriate function corresponding to the rate type.
+// UpdateRates calls the appropriate function corresponding to the rate type.
 func (s *DefiScraper) UpdateRates(defiType string) error {
 	var helper DeFIHelper
 
@@ -119,7 +119,18 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				Token:                "",
 			}
 			s.datastore.SetDefiProtocol(protocol)
-			log.Info("aave")
+			helper = NewDDEX(s, protocol)
+		}
+	case "DDEX":
+		{
+
+			protocol := dia.DefiProtocol{
+				Name:                 "DDEX",
+				Address:              "0x241e82C79452F51fbfc89Fac6d912e021dB1a3B7",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
 			helper = NewAAVE(s, protocol)
 		}
 	case "COMPOUND":
@@ -128,12 +139,35 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			protocol := dia.DefiProtocol{
 				Name:                 "COMPOUND",
 				Address:              "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			log.Info("RAY")
+			helper = NewCompound(s, protocol)
+		}
+	case "RAY":
+		{
+			protocol := dia.DefiProtocol{
+				Name:                 "RAY",
+				Address:              "0xE215e8160a5e0A03f2D6c7900b050F2f04eA5Cbb",
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
 			s.datastore.SetDefiProtocol(protocol)
-			helper = NewCompound(s, protocol)
+			log.Info("RAY")
+			helper = NewRAY(s, protocol)
 		}
+	case "DHARMA":
+		{
+
+			protocol := dia.DefiProtocol{
+				Name:                 "DHARMA",
+				Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			return s.UpdateDHARMA(protocol)
+]		}
 
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
@@ -161,6 +195,15 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "COMPOUND":
 		{
 			helper = NewAAVE(s, protocol)
+		}
+	case "RAY":
+		{
+			helper = NewRAY(s, protocol)
+		}
+
+	case "DDEX":
+		{
+			helper = NewDDEX(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")

@@ -47,12 +47,12 @@ type DYDXMarket struct {
 }
 
 type DYDXProtocol struct {
-	scrapper *DefiScraper
+	scraper  *DefiScraper
 	protocol dia.DefiProtocol
 }
 
-func NewDYDX(scrapper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
-	return &DYDXProtocol{scrapper: scrapper, protocol: protocol}
+func NewDYDX(scraper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
+	return &DYDXProtocol{scraper: scraper, protocol: protocol}
 }
 
 func fetchmarkets() (dydxrate []DYDXMarket, err error) {
@@ -85,8 +85,8 @@ func (proto *DYDXProtocol) UpdateRate() error {
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scrapper.RateChannel())
-		proto.scrapper.RateChannel() <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
+		proto.scraper.RateChannel() <- asset
 
 	}
 	log.Info("Update complete")
@@ -128,8 +128,8 @@ func (proto *DYDXProtocol) UpdateState() error {
 		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	proto.scrapper.StateChannel() <- defistate
-	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scrapper.StateChannel())
+	proto.scraper.StateChannel() <- defistate
+	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
 
 	log.Info("Update State complete")
 
