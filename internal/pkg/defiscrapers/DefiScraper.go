@@ -109,7 +109,7 @@ func (s *DefiScraper) StateChannel() chan *dia.DefiProtocolState {
 	return s.chanDefiState
 }
 
-// Update calls the appropriate function corresponding to the rate type.
+// UpdateRates calls the appropriate function corresponding to the rate type.
 func (s *DefiScraper) UpdateRates(defiType string) error {
 	switch defiType {
 	case "DYDX":
@@ -146,6 +146,18 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			s.datastore.SetDefiProtocol(protocol)
 			return s.updateRAY(protocol)
+		}
+	case "DHARMA":
+		{
+
+			protocol := dia.DefiProtocol{
+				Name:                 "DHARMA",
+				Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			return s.UpdateDHARMA(protocol)
 		}
 
 	}
