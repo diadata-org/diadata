@@ -157,6 +157,18 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			s.datastore.SetDefiProtocol(protocol)
 			return s.UpdateDHARMA(protocol)
 		}
+	case "COMPOUND":
+		{
+
+			protocol := dia.DefiProtocol{
+				Name:                 "COMPOUND",
+				Address:              "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			helper = NewCompound(s, protocol)
+		}
 
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
@@ -189,6 +201,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "DDEX":
 		{
 			helper = NewDDEX(s, protocol)
+		}
+	case "COMPOUND":
+		{
+			helper = NewAAVE(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
