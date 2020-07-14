@@ -137,6 +137,18 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			return s.UpdateAAVE(protocol)
 		}
 
+	case "INSTADAPP":
+		{
+			protocol := dia.DefiProtocol{
+				Name:                 "INSTADAPP",
+				Address:              "0x939Daad09fC4A9B8f8A9352A485DAb2df4F4B3F8",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			s.datastore.SetDefiProtocol(protocol)
+			return s.UpdateInstaDAPP(protocol)
+		}
+
 	}
 	return errors.New("Error: " + defiType + " does not exist in database")
 }
