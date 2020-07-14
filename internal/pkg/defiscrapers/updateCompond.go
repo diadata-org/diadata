@@ -17,7 +17,6 @@ type CompoundMarket struct {
 	} `json:"data"`
 }
 
-
 type CompoundAsset struct {
 	BorrowRate               string `json:"borrowRate"`
 	Cash                     string `json:"cash"`
@@ -37,7 +36,7 @@ type CompoundAsset struct {
 	UnderlyingSymbol         string `json:"underlyingSymbol"`
 	ReserveFactor            string `json:"reserveFactor"`
 	UnderlyingPriceUSD       string `json:"underlyingPriceUSD"`
-	}
+}
 
 type CompoundProtocol struct {
 	scrapper *DefiScraper
@@ -47,7 +46,6 @@ type CompoundProtocol struct {
 func NewCompound(scrapper *DefiScraper, protocol dia.DefiProtocol) *CompoundProtocol {
 	return &CompoundProtocol{scrapper: scrapper, protocol: protocol}
 }
-
 
 func fetchCompoundMarkets() (aaverate CompoundMarket, err error) {
 	jsonData := map[string]string{
@@ -96,20 +94,19 @@ func getCompoundAssetByAddress(address string) (asset CompoundAsset, err error) 
 	return
 }
 
-
 func (proto *CompoundProtocol) UpdateRate() error {
 	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
-	markets, err := fetchmarkets()
+	markets, err := fetchCompoundMarkets()
 	if err != nil {
 		return err
 	}
 
-	for _, market := range markets {
-		totalSupplyAPR, err := strconv.ParseFloat(market.TotalSupplyAPR, 64)
+	for _, market := range markets.Data.Markets {
+		totalSupplyAPR, err := strconv.ParseFloat(market.SupplyRate, 64)
 		if err != nil {
 			return err
 		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.TotalBorrowAPR, 64)
+		totalBorrowAPR, err := strconv.ParseFloat(market.BorrowRate, 64)
 		if err != nil {
 			return err
 		}
@@ -127,8 +124,6 @@ func (proto *CompoundProtocol) UpdateRate() error {
 	log.Info("Update complete")
 	return nil
 }
-
-
 
 func (proto *CompoundProtocol) UpdateState() error {
 	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
@@ -163,4 +158,3 @@ func (proto *CompoundProtocol) UpdateState() error {
 	return nil
 
 }
-
