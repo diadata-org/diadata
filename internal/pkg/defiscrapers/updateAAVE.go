@@ -81,7 +81,6 @@ func (proto *AAVEProtocol) UpdateRate() error {
 	// https://docs.aave.com/developers/integrating-aave/using-graphql#common-gotchas
 	// as per the DOc value of rate need to be converted to power of 27
 	for _, market := range markets.Data.Reserves {
-		math.Pow10(18)
 		totalSupplyAPR := new(big.Float)
 		totalSupplyAPR.SetString(market.LiquidityRate)
 		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(27)))

@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
+	"math"
 	"math/big"
 	"strconv"
 	"time"
@@ -87,20 +88,22 @@ func (proto *BZXProtocol) UpdateRate() error {
 	}
 
 	for _, market := range markets {
-		totalSupplyAPR, err := strconv.ParseFloat(market.SupplyRate.String(), 64)
-		if err != nil {
-			return err
-		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.BorrowRate.String(), 64)
-		if err != nil {
-			return err
-		}
+		totalSupplyAPR := new(big.Float)
+		totalSupplyAPR.SetString(market.SupplyRate.String())
+		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
+		totalSupplyAPRPOW27,_ := totalSupplyAPR.Float64()
+
+		totalBorrowAPR := new(big.Float)
+		totalBorrowAPR.SetString(market.BorrowRate.String())
+		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
+		totalBorrowAPRPOW27,_ := totalSupplyAPR.Float64()
+
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
 			Protocol:      proto.protocol,
-			LendingRate:   totalSupplyAPR,
-			BorrowingRate: totalBorrowAPR,
+			LendingRate:   totalSupplyAPRPOW27,
+			BorrowingRate: totalBorrowAPRPOW27,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.connection.Close()
