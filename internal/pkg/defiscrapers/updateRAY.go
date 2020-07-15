@@ -11,22 +11,22 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type AAVEMarket struct {
-	Data struct {
-		Reserves []Reserve `json:"reserves"`
-	} `json:"data"`
-}
-
-type AAVEProtocol struct {
+type RAYProtocol struct {
 	scraper  *DefiScraper
 	protocol dia.DefiProtocol
 }
 
-func NewAAVE(scraper *DefiScraper, protocol dia.DefiProtocol) *AAVEProtocol {
-	return &AAVEProtocol{scraper: scraper, protocol: protocol}
+func NewRAY(scraper *DefiScraper, protocol dia.DefiProtocol) *RAYProtocol {
+	return &RAYProtocol{scraper: scraper, protocol: protocol}
 }
 
-type Reserve struct {
+type RAYPortfolio struct {
+	Data struct {
+		Portfolios []Portfolio `json:"portfolios"`
+	} `json:"data"`
+}
+
+type Portfolio struct {
 	ID                  string `json:"id"`
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
 	LiquidityRate       string `json:"liquidityRate"`
@@ -39,43 +39,40 @@ type Reserve struct {
 	TotalLiquidity     string `json:"totalLiquidity"`
 }
 
-func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
+func fetchRAYPortfolios() (rayPortfolio RAYPortfolio, err error) {
 	jsonData := map[string]string{
 		"query": `
-          {
-			reserves (where: {
-				usageAsCollateralEnabled: true
-			}) {
-			id
-			name
-			price {
-			  id
+		{
+			portfolios {
+				id
+			  asset {
+				name
+			  }
+			  raytokens {
+				value
+			  }
 			}
-			liquidityRate
-			variableBorrowRate
-			stableBorrowRate
-			lastUpdateTimestamp
-			totalLiquidity
 		  }
-		}
+		  
+		  
 `,
 	}
 	jsonValue, _ := json.Marshal(jsonData)
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/aave/protocol-raw", bytes.NewBuffer(jsonValue))
-	err = json.Unmarshal(jsondata, &aaverate)
-	log.Println(aaverate)
+	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/protofire/ray", bytes.NewBuffer(jsonValue))
+	err = json.Unmarshal(jsondata, &rayPortfolio)
+	log.Println(rayPortfolio)
 	return
 }
 
-func (proto *AAVEProtocol) UpdateRate() error {
-	log.Printf("Updating DEFI rate for %+v\n ", proto.protocol)
+func (proto *RAYProtocol) UpdateRate() error {
+	log.Printf("Updating DEFI Rate for %+v \n ", proto.protocol.Name)
 
-	markets, err := fetchAAVEMarkets()
+	markets, err := fetchRAYPortfolios()
 	if err != nil {
 		return err
 	}
 
-	for _, market := range markets.Data.Reserves {
+	for _, market := range markets.Data.Portfolios {
 
 		totalSupplyAPR, err := strconv.ParseFloat(market.LiquidityRate, 64)
 		if err != nil {
@@ -101,28 +98,28 @@ func (proto *AAVEProtocol) UpdateRate() error {
 	return nil
 }
 
-func getAssetByAddress(address string) (reserve Reserve, err error) {
-	markets, err := fetchAAVEMarkets()
+func getPortfolioByID(id string) (rayPortfolio Portfolio, err error) {
+	rayPortfolios, err := fetchRAYPortfolios()
 	if err != nil {
 		return
 	}
-	for _, market := range markets.Data.Reserves {
-		if market.ID == address {
-			reserve = market
+	for _, portfolio := range rayPortfolios.Data.Portfolios {
+		if portfolio.ID == id {
+			rayPortfolio = portfolio
 		}
 	}
 	return
 }
 
-func (proto *AAVEProtocol) UpdateState() error {
-	log.Printf("Updating DEFI state for %+v\n ", proto.protocol.Name)
+func (proto *RAYProtocol) UpdateState() error {
+	log.Printf("Updating DEFI state for %+v \n ", proto.protocol)
 	// Get Total USDC
 	// Get Total ETH
-	usdcMarket, err := getAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+	usdcMarket, err := getPortfolioByID("0x1e868d302424cfebaf2b757c06fdd1a32411fd445ebb51ffc433cc15bacfe3e3")
 	if err != nil {
 		return err
 	}
-	ethMarket, err := getAssetByAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+	ethMarket, err := getPortfolioByID("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 	if err != nil {
 		return err
 	}
@@ -134,14 +131,14 @@ func (proto *AAVEProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	deFIState := &dia.DefiProtocolState{
+	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
 		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
-	proto.scraper.StateChannel() <- deFIState
-	log.Printf("writing DEFI state for  %#v in %v\n", deFIState, proto.scraper.StateChannel())
+	proto.scraper.StateChannel() <- defistate
+	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
 
 	log.Info("Update State complete")
 

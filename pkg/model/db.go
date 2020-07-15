@@ -84,8 +84,6 @@ type Datastore interface {
 
 	GetDefiStateInflux(time.Time, time.Time, string) ([]dia.DefiProtocolState, error)
 	SetDefiStateInflux(state *dia.DefiProtocolState) error
-
-
 }
 
 const (
@@ -101,15 +99,14 @@ type DB struct {
 }
 
 const (
-	influxDbName         = "dia"
-	influxDbTradesTable  = "trades"
-	influxDbFiltersTable = "filters"
-	influxDbOptionsTable = "options"
-	influxDbCVITable     = "cvi"
-	influxDbSupplyTable  = "supply"
-	influxDbDefiRateTable = "defiRate"
+	influxDbName           = "dia"
+	influxDbTradesTable    = "trades"
+	influxDbFiltersTable   = "filters"
+	influxDbOptionsTable   = "options"
+	influxDbCVITable       = "cvi"
+	influxDbSupplyTable    = "supply"
+	influxDbDefiRateTable  = "defiRate"
 	influxDbDefiStateTable = "defiState"
-
 )
 
 // queryInfluxDB convenience function to query the database
@@ -452,7 +449,7 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	}
 	tags := map[string]string{
 		"symbol": supply.Symbol,
-		"name": supply.Name,
+		"name":   supply.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
 	if err != nil {
@@ -469,15 +466,13 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
-
-
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
-		"borrowRate": rate.BorrowingRate,
+		"borrowRate":  rate.BorrowingRate,
 	}
 	tags := map[string]string{
-		"asset": rate.Asset,
+		"asset":    rate.Asset,
 		"protocol": rate.Protocol.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbDefiRateTable, tags, fields, rate.Timestamp)
@@ -497,6 +492,11 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 
 func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
 	retval := []dia.DefiRate{}
+	// Get protocol struct by name
+	diaProtocol, err := db.GetDefiProtocol(protocol)
+	if err != nil {
+		log.Warn("error getting protocol: ", err)
+	}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -509,7 +509,7 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			if err != nil {
 				return retval, err
 			}
-			currentRate.LendingRate, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			currentRate.Asset = res[0].Series[0].Values[i][1].(string)
 			if err != nil {
 				return retval, err
 			}
@@ -517,10 +517,11 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			if err != nil {
 				return retval, err
 			}
-			currentRate.Asset = res[0].Series[0].Values[i][3].(string)
+			currentRate.LendingRate, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
+			currentRate.Protocol = diaProtocol
 			retval = append(retval, currentRate)
 		}
 	} else {
@@ -528,8 +529,6 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 	}
 	return retval, nil
 }
-
-
 
 func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 	fields := map[string]interface{}{
@@ -588,7 +587,6 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 	return
 }
 
-
 func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
@@ -642,7 +640,6 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 	}
 	return err
 }
-
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
 
