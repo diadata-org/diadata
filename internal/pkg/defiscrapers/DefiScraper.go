@@ -2,7 +2,6 @@ package defiscrapers
 
 import (
 	"errors"
-	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -17,23 +16,6 @@ const (
 )
 
 type nothing struct{}
-
-type DefiScraper struct {
-	// signaling channels
-	shutdown     chan nothing
-	shutdownDone chan nothing
-
-	// error handling; to read error or closed, first acquire read lock
-	// only cleanup method should hold write lock
-	errorLock     sync.RWMutex
-	error         error
-	closed        bool
-	tickerRate    *time.Ticker
-	tickerState   *time.Ticker
-	datastore     models.Datastore
-	chanDefiRate  chan *dia.DefiRate
-	chanDefiState chan *dia.DefiProtocolState
-}
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
@@ -109,33 +91,83 @@ func (s *DefiScraper) StateChannel() chan *dia.DefiProtocolState {
 	return s.chanDefiState
 }
 
-// Update calls the appropriate function corresponding to the rate type.
+// UpdateRates calls the appropriate function corresponding to the rate type.
 func (s *DefiScraper) UpdateRates(defiType string) error {
+	var (
+		helper   DeFIHelper
+		protocol dia.DefiProtocol
+	)
+
 	switch defiType {
 	case "DYDX":
 		{
 
-			protocol := dia.DefiProtocol{
+			protocol = dia.DefiProtocol{
 				Name:                 "DYDX",
 				Address:              "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			s.datastore.SetDefiProtocol(protocol)
-			return s.UpdateDYDX(protocol)
+			helper = NewDYDX(s, protocol)
+
 		}
 	case "AAVE":
 		{
 
-			protocol := dia.DefiProtocol{
+			protocol = dia.DefiProtocol{
 				Name:                 "AAVE",
 				Address:              "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3",
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			s.datastore.SetDefiProtocol(protocol)
-			return s.UpdateAAVE(protocol)
+			helper = NewAAVE(s, protocol)
 		}
+	case "DDEX":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "DDEX",
+				Address:              "0x241e82C79452F51fbfc89Fac6d912e021dB1a3B7",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewDDEX(s, protocol)
+		}
+	case "RAY":
+		{
+			protocol = dia.DefiProtocol{
+				Name:                 "RAY",
+				Address:              "0xE215e8160a5e0A03f2D6c7900b050F2f04eA5Cbb",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewRAY(s, protocol)
+		}
+	case "DHARMA":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "DHARMA",
+				Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewDHARMA(s, protocol)
+		}
+	case "COMPOUND":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "COMPOUND",
+				Address:              "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewCompound(s, protocol)
+		}
+
+	default:
+		return errors.New("Error: " + defiType + " does not exist in database")
 
 	case "INSTADAPP":
 		{
@@ -150,20 +182,41 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 		}
 
 	}
-	return errors.New("Error: " + defiType + " does not exist in database")
+
+	s.datastore.SetDefiProtocol(protocol)
+	return helper.UpdateRate()
 }
 
 func (s *DefiScraper) UpdateState(defiType string) error {
+	var helper DeFIHelper
+	protocol, err := s.datastore.GetDefiProtocol(defiType)
+	if err != nil {
+		return err
+	}
+
 	switch defiType {
 	case "DYDX":
 		{
-			return s.UpdateDYDXState("DYDX")
+			helper = NewDYDX(s, protocol)
 		}
 	case "AAVE":
 		{
-			return s.UpdateAAVEState("AAVE")
+			helper = NewAAVE(s, protocol)
 		}
-
+	case "RAY":
+		{
+			helper = NewRAY(s, protocol)
+		}
+	case "DDEX":
+		{
+			helper = NewDDEX(s, protocol)
+		}
+	case "COMPOUND":
+		{
+			helper = NewCompound(s, protocol)
+		}
+	default:
+		return errors.New("Error: " + defiType + " does not exist in database")
 	}
-	return errors.New("Error: " + defiType + " does not exist in database")
+	return helper.UpdateState()
 }

@@ -205,6 +205,8 @@ func main() {
 		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
 		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
 		dia.GET("/cviIndex", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
+		dia.GET("/defiLendingRate/:protocol/:asset", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
+		dia.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
 
 		// Endpoints for interestrates
 		dia.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
