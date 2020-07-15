@@ -80,7 +80,7 @@ func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
 }
 
 func (proto *BZXProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
 		return err
