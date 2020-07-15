@@ -100,16 +100,19 @@ type DefiProtocol struct {
 	Token		     string
 }
 
-type DefiProtocolState {
+type DefiProtocolState struct {
 	TotalUSD  	float64
 	TotalETH	float64
 	TotalPerDay	map[string]float64
 	MostLockedAsset	string
+	Protocol    string
+	Timestamp   time.Time
 }
 
-type DefiLendingRate struct {
+type DefiRate struct {
 	Timestamp   time.Time
 	LendingRate float64
+	BorrowingRate float64
 	Asset       string
 	Protocol    DefiProtocol
 }
