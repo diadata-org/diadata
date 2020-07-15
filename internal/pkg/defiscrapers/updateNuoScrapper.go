@@ -107,37 +107,6 @@ func (proto *NuoProtocol) UpdateRate() error {
 
 	log.Info("Update complete")
 	return nil
-	// log.Printf("NuoScraper update")
-
-	// markets, err := fetchNuoMarkets()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for _, market := range markets.Data.Users {
-
-	// 	totalSupplyAPR, err := strconv.ParseFloat(market.TotalOrdersLiquidated, 64)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	totalBorrowAPR, err := strconv.ParseFloat(market.TotalOrdersSettled, 64)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	asset := &dia.DefiRate{
-	// 		Timestamp:     time.Now(),
-	// 		Asset:         "Nuo",
-	// 		Protocol:      protocol,
-	// 		LendingRate:   totalSupplyAPR,
-	// 		BorrowingRate: totalBorrowAPR,
-	// 	}
-	// 	log.Printf("writing DEFI rate for  %#v in %v\n", asset, s.chanDefiRate)
-	// 	s.chanDefiRate <- asset
-
-	// }
-
-	// log.Info("Update complete")
-	// return nil
 }
 
 func (proto *NuoProtocol) UpdateState() error {
