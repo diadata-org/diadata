@@ -64,7 +64,7 @@ func fetchDHARMAMarkets() (dharmaRate DHARMAMArket, err error) {
 }
 
 func (proto *DharmaProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v \n ", proto.protocol.Name)
 
 	markets, err := fetchDHARMAMarkets()
 	if err != nil {

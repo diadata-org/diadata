@@ -57,7 +57,7 @@ func fetchddexmarkets() (ddexMarket DDEXMarket, err error) {
 }
 
 func (proto *DDEXProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v \n ", proto.protocol.Name)
 	markets, err := fetchddexmarkets()
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func getDDEXAssetByAddress(address string) (reserve LendingPool, err error) {
 }
 
 func (proto *DDEXProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	usdcMarket, err := getDDEXAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
 	if err != nil {
 		return err

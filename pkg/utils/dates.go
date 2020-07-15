@@ -2,11 +2,22 @@ package utils
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	cal "github.com/rickar/cal"
 	log "github.com/sirupsen/logrus"
 )
+
+// StrToUnixtime converts a string corresponding to an int to Unix time
+func StrToUnixtime(s string) (t time.Time, err error) {
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return
+	}
+	t = time.Unix(i, 0)
+	return
+}
 
 // CheckWeekDay returns true if @date is not weekend and false otherwise.
 func CheckWeekDay(date time.Time) bool {

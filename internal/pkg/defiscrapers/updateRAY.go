@@ -65,7 +65,7 @@ func fetchRAYPortfolios() (rayPortfolio RAYPortfolio, err error) {
 }
 
 func (proto *RAYProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v \n ", proto.protocol.Name)
 
 	markets, err := fetchRAYPortfolios()
 	if err != nil {
@@ -112,7 +112,7 @@ func getPortfolioByID(id string) (rayPortfolio Portfolio, err error) {
 }
 
 func (proto *RAYProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v \n ", proto.protocol)
 	// Get Total USDC
 	// Get Total ETH
 	usdcMarket, err := getPortfolioByID("0x1e868d302424cfebaf2b757c06fdd1a32411fd445ebb51ffc433cc15bacfe3e3")

@@ -42,12 +42,12 @@ type Trade struct {
 }
 
 type ItinToken struct {
-  Itin               string
-  Symbol             string
-  Label              string
-  Url_website        string
-  Coinmarketcap_url  string
-  Coinmarketcap_slug string
+	Itin               string
+	Symbol             string
+	Label              string
+	Url_website        string
+	Coinmarketcap_url  string
+	Coinmarketcap_slug string
 }
 
 type OptionType int
@@ -97,24 +97,24 @@ type DefiProtocol struct {
 	Name                 string
 	Address              string
 	UnderlyingBlockchain string
-	Token		     string
+	Token                string
 }
 
 type DefiProtocolState struct {
-	TotalUSD  	float64
-	TotalETH	float64
-	TotalPerDay	map[string]float64
-	MostLockedAsset	string
-	Protocol    string
-	Timestamp   time.Time
+	TotalUSD        float64
+	TotalETH        float64
+	TotalPerDay     map[string]float64
+	MostLockedAsset string
+	Protocol        string
+	Timestamp       time.Time
 }
 
 type DefiRate struct {
-	Timestamp   time.Time
-	LendingRate float64
+	Timestamp     time.Time
+	LendingRate   float64
 	BorrowingRate float64
-	Asset       string
-	Protocol    DefiProtocol
+	Asset         string
+	Protocol      DefiProtocol
 }
 
 type TradesBlockData struct {
@@ -147,6 +147,19 @@ type FilterPoint struct {
 	Value  float64
 	Name   string
 	Time   time.Time
+}
+
+// MarshalBinary for DefiProtocol
+func (e *DefiProtocol) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for DefiProtocol
+func (e *DefiProtocol) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
 }
 
 // MarshalBinary -
