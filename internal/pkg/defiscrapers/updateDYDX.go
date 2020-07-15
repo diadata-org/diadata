@@ -63,7 +63,7 @@ func fetchmarkets() (dydxrate []DYDXMarket, err error) {
 }
 
 func (proto *DYDXProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := fetchmarkets()
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
 }
 
 func (proto *DYDXProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	usdcMarket, err := getMarketByID("2")
 	if err != nil {
 		return err

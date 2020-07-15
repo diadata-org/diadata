@@ -120,7 +120,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			helper = NewDDEX(s, protocol)
+			helper = NewAAVE(s, protocol)
 		}
 	case "DDEX":
 		{
@@ -131,7 +131,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			helper = NewAAVE(s, protocol)
+			helper = NewDDEX(s, protocol)
 		}
 	case "RAY":
 		{

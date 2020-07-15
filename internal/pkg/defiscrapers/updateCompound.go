@@ -75,6 +75,7 @@ func fetchCompoundMarkets() (compoundrate CompoundMarket, err error) {
 `,
 	}
 	jsonValue, _ := json.Marshal(jsonData)
+	// jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/compound-finance/compound-v2-rinkeby", bytes.NewBuffer(jsonValue))
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2", bytes.NewBuffer(jsonValue))
 	err = json.Unmarshal(jsondata, &compoundrate)
 	log.Println(compoundrate)
@@ -95,7 +96,7 @@ func getCompoundAssetByAddress(address string) (asset CompoundAsset, err error) 
 }
 
 func (proto *CompoundProtocol) UpdateRate() error {
-	log.Print("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %v \n ", proto.protocol.Name)
 	markets, err := fetchCompoundMarkets()
 	if err != nil {
 		return err

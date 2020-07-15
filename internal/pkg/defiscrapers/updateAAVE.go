@@ -68,7 +68,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 }
 
 func (proto *AAVEProtocol) UpdateRate() error {
-	log.Print("Updating DEFI rate for %+v\\n ", proto.protocol)
+	log.Printf("Updating DEFI rate for %+v\n ", proto.protocol)
 
 	markets, err := fetchAAVEMarkets()
 	if err != nil {
@@ -115,7 +115,7 @@ func getAssetByAddress(address string) (reserve Reserve, err error) {
 }
 
 func (proto *AAVEProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol.Name)
 	// Get Total USDC
 	// Get Total ETH
 	usdcMarket, err := getAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")

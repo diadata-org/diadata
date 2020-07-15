@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
