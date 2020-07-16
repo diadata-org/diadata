@@ -1,124 +1,122 @@
 package defiscrapers
 
 import (
-	"bytes"
-	"encoding/json"
+	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	log "github.com/sirupsen/logrus"
+	"math"
+	"math/big"
 	"strconv"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 )
 
-type CompoundMarket struct {
-	Data struct {
-		Markets []CompoundAsset `json:"markets"`
-	} `json:"data"`
-}
-
-type CompoundAsset struct {
-	BorrowRate               string `json:"borrowRate"`
-	Cash                     string `json:"cash"`
-	CollateralFactor         string `json:"collateralFactor"`
-	ExchangeRate             string `json:"exchangeRate"`
-	InterestRateModelAddress string `json:"interestRateModelAddress"`
-	Name                     string `json:"name"`
-	Reserves                 string `json:"reserves"`
-	SupplyRate               string `json:"supplyRate"`
-	Symbol                   string `json:"symbol"`
-	ID                       string `json:"id"`
-	TotalBorrows             string `json:"totalBorrows"`
-	TotalSupply              string `json:"totalSupply"`
-	UnderlyingAddress        string `json:"underlyingAddress"`
-	UnderlyingName           string `json:"underlyingName"`
-	UnderlyingPrice          string `json:"underlyingPrice"`
-	UnderlyingSymbol         string `json:"underlyingSymbol"`
-	ReserveFactor            string `json:"reserveFactor"`
-	UnderlyingPriceUSD       string `json:"underlyingPriceUSD"`
+type CompoundRate struct {
+	SupplyRate  float64
+	BorrowRate  float64
+	TotalSupply *big.Int
+	Symbol      string
 }
 
 type CompoundProtocol struct {
-	scraper  *DefiScraper
-	protocol dia.DefiProtocol
+	scraper    *DefiScraper
+	protocol   dia.DefiProtocol
+	connection *ethclient.Client
+	assets     map[string]string // assetname and address
 }
 
 func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProtocol {
-	return &CompoundProtocol{scraper: scraper, protocol: protocol}
-}
+	assets := make(map[string]string)
+	//https://compound.finance/docs#networks
+	assets["BAT"] = "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e"
+	assets["DAI"] = "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
+	assets["ETH"] = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
+	assets["REP"] = "0x158079ee67fce2f58472a96584a73c7ab9ac95c1"
+	assets["SAI"] = "0xf5dce57282a584d2746faf1593d3121fcac444dc"
+	assets["USDC"] = "0x39aa39c021dfbae8fac545936693ac917d5e7563"
+	assets["USDT"] = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9"
+	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
+	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
 
-func fetchCompoundMarkets() (compoundrate CompoundMarket, err error) {
-	jsonData := map[string]string{
-		"query": `
-          {
-		  markets(first: 7) {
-			borrowRate
-			cash
-			collateralFactor
-			exchangeRate
-			interestRateModelAddress
-			name
-			reserves
-			supplyRate
-			symbol
-			id
-			totalBorrows
-			totalSupply
-			underlyingAddress
-			underlyingName
-			underlyingPrice
-			underlyingSymbol
-			reserveFactor
-			underlyingPriceUSD
-		  }
-}
-`,
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	if err != nil {
+		log.Error("Error connecting Eth Client")
 	}
-	jsonValue, _ := json.Marshal(jsonData)
-	// jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/compound-finance/compound-v2-rinkeby", bytes.NewBuffer(jsonValue))
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2", bytes.NewBuffer(jsonValue))
-	err = json.Unmarshal(jsondata, &compoundrate)
-	log.Println(compoundrate)
-	return
+
+	return &CompoundProtocol{scraper: scraper, protocol: protocol, assets: assets, connection: connection}
 }
 
-func getCompoundAssetByAddress(address string) (asset CompoundAsset, err error) {
-	markets, err := fetchCompoundMarkets()
+func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error) {
+	var contract *compoundcontract.CTokenCaller
+	contract, err = compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	supplyInterestRate, err := contract.SupplyRatePerBlock(&bind.CallOpts{})
 	if err != nil {
 		return
 	}
-	for _, market := range markets.Data.Markets {
-		if market.ID == address {
-			asset = market
+	borrowInterestRate, err := contract.BorrowRatePerBlock(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	totalSupply, err := contract.TotalSupply(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	rate = CompoundRate{Symbol: asset, BorrowRate: proto.calculateAPY(borrowInterestRate), SupplyRate: proto.calculateAPY(supplyInterestRate), TotalSupply: totalSupply}
+	return
+}
+
+func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
+	// https://compound.finance/docs#protocol-math
+	//Calculate APY
+	var blocksPerDay float64
+	var daysPerYear float64
+	var ethMantissa float64
+	ethMantissa = 1e18
+	blocksPerDay = 4 * 60 * 24
+	daysPerYear = 365
+
+	rateInt, err := strconv.ParseFloat(rate.String(), 64)
+	if err != nil {
+		return 0
+	}
+	rates := math.Pow((rateInt/ethMantissa*blocksPerDay)+1, daysPerYear-1) - 1
+	return rates * 100
+}
+
+
+func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
+	for asset, _ := range proto.assets {
+		bzxrate, err := proto.fetch(asset)
+		if err != nil {
+			continue
 		}
+		rates = append(rates, bzxrate)
 	}
 	return
 }
 
 func (proto *CompoundProtocol) UpdateRate() error {
-	log.Printf("Updating DEFI Rate for %v \n ", proto.protocol.Name)
-	markets, err := fetchCompoundMarkets()
+	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	markets, err := proto.fetchALL()
 	if err != nil {
+		log.Error("error fetching rates %+v\\n ", err)
+
 		return err
 	}
 
-	for _, market := range markets.Data.Markets {
-		totalSupplyAPR, err := strconv.ParseFloat(market.SupplyRate, 64)
-		if err != nil {
-			return err
-		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.BorrowRate, 64)
-		if err != nil {
-			return err
-		}
+	for _, market := range markets {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
 			Protocol:      proto.protocol,
-			LendingRate:   totalSupplyAPR,
-			BorrowingRate: totalBorrowAPR,
+			LendingRate:   market.SupplyRate,
+			BorrowingRate: market.BorrowRate,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
+		proto.connection.Close()
 		proto.scraper.RateChannel() <- asset
 
 	}
@@ -128,26 +126,27 @@ func (proto *CompoundProtocol) UpdateRate() error {
 
 func (proto *CompoundProtocol) UpdateState() error {
 	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
-	usdcMarket, err := getCompoundAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+	usdcMarket, err := proto.fetch("USDC")
 	if err != nil {
 		return err
 	}
-	ethMarket, err := getCompoundAssetByAddress("0x0000000000000000000000000000000000000000")
+	ethMarket, err := proto.fetch("ETH")
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupply, 64)
+	totalSupplyUSDC, err := strconv.ParseFloat(usdcMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupply, 64)
+
+	totalBorrowETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
 
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalUSDCSupplyPAR,
-		TotalETH:  totalETHSupplyPAR,
+		TotalUSD:  totalSupplyUSDC,
+		TotalETH:  totalBorrowETH,
 		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
