@@ -73,18 +73,19 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	//Calculate APY
 	var blocksPerDay float64
 	var daysPerYear float64
-	rateInFloat := new(big.Float).SetInt(rate)
-	ethMantissa := math.Pow(10, 18)
+	var ethMantissa float64
+	ethMantissa = 1e18
 	blocksPerDay = 4 * 60 * 24
 	daysPerYear = 365
-	one := big.NewFloat(1)
-	g := rateInFloat.Quo(rateInFloat, new(big.Float).SetFloat64(blocksPerDay*ethMantissa))
-	h := g.Add(g, one)
-	f, _ := h.Float64()
-	pow := math.Pow(f, daysPerYear-1)
-	k := pow - 1
-	return k
+
+	rateInt, err := strconv.ParseFloat(rate.String(), 64)
+	if err != nil {
+		return 0
+	}
+	rates := math.Pow((rateInt/ethMantissa*blocksPerDay)+1, daysPerYear-1) - 1
+	return rates * 100
 }
+
 
 func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 	for asset, _ := range proto.assets {
@@ -101,6 +102,8 @@ func (proto *CompoundProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
+		log.Error("error fetching rates %+v\\n ", err)
+
 		return err
 	}
 
