@@ -3,6 +3,8 @@ package defiscrapers
 import (
 	"bytes"
 	"encoding/json"
+	"math"
+	"math/big"
 	"strconv"
 	"time"
 
@@ -75,22 +77,27 @@ func (proto *AAVEProtocol) UpdateRate() error {
 		return err
 	}
 
-	for _, market := range markets.Data.Reserves {
 
-		totalSupplyAPR, err := strconv.ParseFloat(market.LiquidityRate, 64)
-		if err != nil {
-			return err
-		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.StableBorrowRate, 64)
-		if err != nil {
-			return err
-		}
+	// https://docs.aave.com/developers/integrating-aave/using-graphql#common-gotchas
+	// as per the DOc value of rate need to be converted to power of 27
+	for _, market := range markets.Data.Reserves {
+		totalSupplyAPR := new(big.Float)
+		totalSupplyAPR.SetString(market.LiquidityRate)
+		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(27)))
+		totalSupplyAPRPOW27,_ := totalSupplyAPR.Float64()
+
+		totalBorrowAPR := new(big.Float)
+		totalBorrowAPR.SetString(market.StableBorrowRate)
+		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(27)))
+		totalBorrowAPRPOW27,_ := totalSupplyAPR.Float64()
+
+
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
 			Protocol:      proto.protocol,
-			LendingRate:   totalSupplyAPR,
-			BorrowingRate: totalBorrowAPR,
+			LendingRate:   totalSupplyAPRPOW27,
+			BorrowingRate: totalBorrowAPRPOW27,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.scraper.RateChannel() <- asset
