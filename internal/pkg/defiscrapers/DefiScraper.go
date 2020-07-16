@@ -166,9 +166,20 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			helper = NewCompound(s, protocol)
 		}
 
+	case "NUO":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "NUO",
+				Address:              "0x37189fb0B76dEA3e1744f7E319aa91d301a9dcDc",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewNuo(s, protocol)
+		}
+
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
-
 	}
 
 	s.datastore.SetDefiProtocol(protocol)
@@ -202,6 +213,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "COMPOUND":
 		{
 			helper = NewCompound(s, protocol)
+		}
+	case "NUO":
+		{
+			helper = NewNuo(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
