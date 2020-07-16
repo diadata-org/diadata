@@ -88,6 +88,20 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	// Bancor data
+	rawBancor, err := getBancorFromDia("USDT")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		return err
+	}
+
+	err = updateBancor(rawBancor, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		return err
+	}
+
+	// Top 15 coins
 	rawCoins, err := getToplistFromDia()
 	if err != nil {
 		log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
@@ -108,9 +122,10 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 
 	err = updateTopCoins(topCoinSlice, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
+		log.Fatalf("Failed to update Coins Oracle: %v", err)
 		return err
 	}
+	time.Sleep(10 * time.Minute)
 	return nil
 }
 
@@ -127,6 +142,21 @@ func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *o
 			return err
 		}
 		time.Sleep(10 * time.Minute)
+	}
+	return nil
+}
+
+func updateBancor(bancorData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(bancorData.DataPoints[0].Series[0].Values[0][3].(string))
+	name := bancorData.DataPoints[0].Series[0].Values[0][1].(string)
+	supply := 0
+	price := bancorData.DataPoints[0].Series[0].Values[0][4].(float64)
+	// Get 5 digits after the comma by multiplying price with 100000
+	// Set supply to 0, as we don't have a supply for one exchange
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(supply))
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
 	}
 	return nil
 }
@@ -239,6 +269,31 @@ func getECBRatesFromDia(symbol string) (*models.Quotation, error) {
 		}
 
 		var b models.Quotation
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
+func getBancorFromDia(symbol string) (*models.Points, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/chartPoints/MAIR120/Bancor/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b models.Points
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b, nil
