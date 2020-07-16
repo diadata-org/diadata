@@ -48,18 +48,17 @@ func fetchNuoMarkets() (nuorate NuoMarket, err error) {
 	jsonData := map[string]string{
 		"query": `
 		{
-			makerToCompounds {
-			  cdpNumber
-			  owner
-			  daiAmount
-			  ethAmount
-			  fees
-			  transactionHash
+			pools(where: {id: "DAI-latest"}) {
+			  id
+			  block
 			  timestamp
+			  symbol
+			  available
+			  reserve
+			  profit
+			  loss
 			}
-		  }
-		  
-`,
+		  }`,
 	}
 	jsonValue, _ := json.Marshal(jsonData)
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/sudeepb02/nuonetwork", bytes.NewBuffer(jsonValue))
