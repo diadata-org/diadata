@@ -13,7 +13,7 @@ import (
 
 type NuoMarket struct {
 	Data struct {
-		Users []User `json:"users"`
+		NuoAssets []NuoAsset `json:"pools"`
 	} `json:"data"`
 }
 
@@ -22,7 +22,7 @@ type NuoProtocol struct {
 	protocol dia.DefiProtocol
 }
 
-type User struct {
+type NuoAsset struct {
 	ID                  string `json:"id"`
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
 	LiquidityRate       string `json:"liquidityRate"`
@@ -30,8 +30,14 @@ type User struct {
 	Price               struct {
 		ID string `json:"id"`
 	} `json:"price"`
-	TotalOrdersLiquidated string `json:"totalOrdersLiquidated"`
-	TotalOrdersSettled    string `json:"totalOrdersSettled"`
+	StableBorrowRate   string `json:"stableBorrowRate"`
+	VariableBorrowRate string `json:"variableBorrowRate"`
+	TotalLiquidity     string `json:"totalLiquidity"`
+	Available          string `json:"available"`
+	Reserve            string `json:"reserve"`
+	Profit             string `json:"profit"`
+	Loss               string `json:"loss"`
+	Block              string `json:"block"`
 }
 
 func NewNuo(scraper *DefiScraper, protocol dia.DefiProtocol) *NuoProtocol {
@@ -62,14 +68,14 @@ func fetchNuoMarkets() (nuorate NuoMarket, err error) {
 	return
 }
 
-func getNuoAssetByAddress(address string) (user User, err error) {
+func getNuoAssetByAddress(address string) (nuoAsset NuoAsset, err error) {
 	markets, err := fetchNuoMarkets()
 	if err != nil {
 		return
 	}
-	for _, market := range markets.Data.Users {
+	for _, market := range markets.Data.NuoAssets {
 		if market.ID == address {
-			user = market
+			nuoAsset = market
 		}
 	}
 	return
@@ -83,13 +89,13 @@ func (proto *NuoProtocol) UpdateRate() error {
 		return err
 	}
 
-	for _, market := range markets.Data.Users {
+	for _, market := range markets.Data.NuoAssets {
 
-		totalSupplyAPR, err := strconv.ParseFloat(market.TotalOrdersLiquidated, 64)
+		totalSupplyAPR, err := strconv.ParseFloat(market.LiquidityRate, 64)
 		if err != nil {
 			return err
 		}
-		totalBorrowAPR, err := strconv.ParseFloat(market.TotalOrdersSettled, 64)
+		totalBorrowAPR, err := strconv.ParseFloat(market.StableBorrowRate, 64)
 		if err != nil {
 			return err
 		}
@@ -119,11 +125,11 @@ func (proto *NuoProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalOrdersLiquidated, 64)
+	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.LiquidityRate, 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalOrdersSettled, 64)
+	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.LiquidityRate, 64)
 	if err != nil {
 		return err
 	}
