@@ -41,7 +41,7 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 func configFileConnectors(exchange string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
-	if dir == "/home" {
+	if dir == "/root" {
 		return "/config/" + exchange + ".json" //hack for docker...
 	}
 	if dir == "/home/travis" {
