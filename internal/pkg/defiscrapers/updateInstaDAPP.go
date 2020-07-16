@@ -44,6 +44,7 @@ func fetchInstaDAPPMarkets() (instadapprate InstaDAPPMarket, err error) {
 		"query": `
 		{
 			makerToCompounds {
+			  id
 			  cdpNumber
 			  owner
 			  daiAmount
@@ -109,11 +110,11 @@ func (proto *InstaDAPPProtocol) UpdateRate() error {
 
 func (proto *InstaDAPPProtocol) UpdateState() error {
 	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
-	usdcMarket, err := getCompoundAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+	usdcMarket, err := getInstaDappAsset("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
 	if err != nil {
 		return err
 	}
-	ethMarket, err := getCompoundAssetByAddress("0x0000000000000000000000000000000000000000")
+	ethMarket, err := getInstaDappAssets("0x0000000000000000000000000000000000000000")
 	if err != nil {
 		return err
 	}
