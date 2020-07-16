@@ -61,7 +61,7 @@ func fetchNuoMarkets() (nuorate NuoMarket, err error) {
 		  }`,
 	}
 	jsonValue, _ := json.Marshal(jsonData)
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/sudeepb02/nuonetwork", bytes.NewBuffer(jsonValue))
+	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/qx133/nuonetwork", bytes.NewBuffer(jsonValue))
 	err = json.Unmarshal(jsondata, &nuorate)
 	log.Println(nuorate)
 	return
