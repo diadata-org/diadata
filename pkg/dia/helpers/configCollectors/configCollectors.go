@@ -1,11 +1,12 @@
 package configCollectors
 
 import (
+	"os"
+	"os/user"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
-	"os"
-	"os/user"
 )
 
 func (c *ConfigCollectors) Exchanges() []string {
