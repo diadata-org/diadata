@@ -114,15 +114,15 @@ func (proto *InstaDAPPProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	ethMarket, err := getInstaDappAssets("0x0000000000000000000000000000000000000000")
+	ethMarket, err := getInstaDappAsset("0x0000000000000000000000000000000000000000")
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupply, 64)
+	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalLiquidity, 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupply, 64)
+	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalLiquidity, 64)
 	if err != nil {
 		return err
 	}
