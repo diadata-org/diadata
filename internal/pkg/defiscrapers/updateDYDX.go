@@ -3,12 +3,20 @@ package defiscrapers
 import (
 	"bytes"
 	"encoding/json"
+	"math"
 	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	decimalsETH  = 18
+	decimalsDAI  = 18
+	decimalsUSDC = 6
+	decimalsPBTC = 8
 )
 
 type DYDXMarket struct {
@@ -117,10 +125,12 @@ func (proto *DYDXProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
+	totalUSDCSupplyPAR *= math.Pow(10, -decimalsUSDC)
 	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupplyPar, 64)
 	if err != nil {
 		return err
 	}
+	totalETHSupplyPAR *= math.Pow(10, -decimalsETH)
 
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
