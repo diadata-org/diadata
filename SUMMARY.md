@@ -14,6 +14,7 @@
       * [Crypto Volatility Index](documentation/methodology/digital-assets/cvi.md)
       * [Circulating Supply Numbers](documentation/methodology/digital-assets/supplynumbers.md)
     * [Traditional Assets](documentation/methodology/traditional-assets/README.md)
+      * [ECB Foriegn Exchange Data](documentation/methodology/traditional-assets/ecb-foriegn-exchange-data.md)
       * [Interbank Overnight Interest Rates](documentation/methodology/traditional-assets/overnight-rates.md)
       * [Compounded Rates](documentation/methodology/traditional-assets/compounded-rates.md)
   * [API Documentation](documentation/api-1/README.md)
