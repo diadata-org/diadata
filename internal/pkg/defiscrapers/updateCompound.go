@@ -18,6 +18,7 @@ type CompoundRate struct {
 	SupplyRate  float64
 	BorrowRate  float64
 	TotalSupply *big.Int
+	Decimal *big.Int
 	Symbol      string
 }
 
@@ -65,7 +66,14 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 		return
 	}
 
-	rate = CompoundRate{Symbol: asset, BorrowRate: proto.calculateAPY(borrowInterestRate), SupplyRate: proto.calculateAPY(supplyInterestRate), TotalSupply: totalSupply}
+	decimals, err := contract.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+
+
+	rate = CompoundRate{Symbol: asset, Decimal:decimals,BorrowRate: proto.calculateAPY(borrowInterestRate), SupplyRate: proto.calculateAPY(supplyInterestRate), TotalSupply: totalSupply}
 	return
 }
 
@@ -138,15 +146,24 @@ func (proto *CompoundProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
+	totalSupplyDecimal, err := strconv.ParseFloat(usdcMarket.Decimal.String(), 64)
+	if err != nil {
+		return err
+	}
 
 	totalBorrowETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
 
+	totalBorrowETHDecimal, err := strconv.ParseFloat(ethMarket.Decimal.String(), 64)
+	if err != nil {
+		return err
+	}
+
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalSupplyUSDC,
-		TotalETH:  totalBorrowETH,
+		TotalUSD:  totalSupplyUSDC/math.Pow(10,totalSupplyDecimal),
+		TotalETH:  totalBorrowETH/math.Pow(10,totalBorrowETHDecimal),
 		Protocol:  proto.protocol.Name,
 		Timestamp: time.Now(),
 	}
