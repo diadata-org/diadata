@@ -1,16 +1,17 @@
 package defiscrapers
 
 import (
+	"math"
+	"math/big"
+	"strconv"
+	"time"
+
 	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
-	"math"
-	"math/big"
-	"strconv"
-	"time"
 )
 
 type CompoundRate struct {
@@ -86,7 +87,6 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	return rates * 100
 }
 
-
 func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 	for asset, _ := range proto.assets {
 		bzxrate, err := proto.fetch(asset)
@@ -99,10 +99,10 @@ func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 }
 
 func (proto *CompoundProtocol) UpdateRate() error {
-	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
-		log.Error("error fetching rates %+v\\n ", err)
+		log.Error("error fetching rates %+v\n ", err)
 
 		return err
 	}
@@ -125,7 +125,7 @@ func (proto *CompoundProtocol) UpdateRate() error {
 }
 
 func (proto *CompoundProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
+	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
 	usdcMarket, err := proto.fetch("USDC")
 	if err != nil {
 		return err

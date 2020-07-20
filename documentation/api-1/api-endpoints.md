@@ -107,6 +107,61 @@ Successful retrieval of a chart point for all exchanges.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset/:time" %}
+{% api-method-summary %}
+Defi Interest Rate
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get information about a Defi protocol's lending and borrowing rates, as well as meta information about the underlying protocol.  
+  
+Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100  
+  
+Example for range query:  
+https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+Name of the protocol, in uppercase
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="asset" type="string" required=true %}
+Asset short name, e.g., ETH for Ether
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="time" type="integer" required=true %}
+Return latest rate relative to the Unix timestamp
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="integer" required=false %}
+Initial Unix timestamp for range queries
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="integer" required=false %}
+Final Unix timestamp for range queries
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of a Defi interest rate.
+{% endapi-method-response-example-description %}
+
+```
+{"Timestamp":"2020-07-20T11:54:56Z","LendingRate":1.250020254710238,"BorrowingRate":4.856778356760549,"Asset":"USDC","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
 {% api-method-summary %}
 Interest Rate
@@ -594,11 +649,11 @@ Return the compounded index for the date specified in the format yyyy-mm-dd
 {% endapi-method-path-parameters %}
 
 {% api-method-query-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
+{% api-method-parameter name="dateInit" type="string" required=false %}
 Initial date for range queries. Format: yyyy-mm-dd
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="" type="string" required=false %}
+{% api-method-parameter name="dateFinal" type="string" required=false %}
 Final date for range queries. Format: yyyy-mm-dd
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
@@ -748,4 +803,6 @@ Successful retrieval of the compounded average of SOFR over an interest period o
 {% endapi-method-response %}
 {% endapi-method-spec %}
 {% endapi-method %}
+
+
 
