@@ -64,6 +64,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewQuoineScraper(dia.QuoineExchange)
 	case dia.BancorExchange:
 		return NewBancorScraper(dia.BancorExchange)
+	case dia.UniSwap:
+		return NewUniSwapScraper(dia.UniSwap)
 	default:
 		return nil
 	}

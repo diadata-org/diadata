@@ -26,6 +26,8 @@ const (
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
 	BancorExchange   = "Bancor"
+	UniSwap   = "UniSwap"
+
 )
 
 func Exchanges() []string {
@@ -44,6 +46,7 @@ func Exchanges() []string {
 		SimexExchange,
 		ZBExchange,
 		BancorExchange,
+		UniSwap,
 		UnknownExchange,
 	}
 }
