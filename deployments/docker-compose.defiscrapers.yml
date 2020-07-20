@@ -1,0 +1,43 @@
+version: '3.2'
+services:
+
+  compoundscraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type COMPOUND
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  genericdefiratescraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericDefiRateScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    restart: "no"
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network

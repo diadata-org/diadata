@@ -88,6 +88,31 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	// Compound Data
+	rawCompound, err := getCompoundRatesFromDia("DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
+		return err
+	}
+	err = updateCompoundRate(rawCompound, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Compound Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+	// ECB Data
+	rawECB, err := getECBRatesFromDia("EUR")
+	if err != nil {
+		log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
+		return err
+	}
+	err = updateECBRate(rawECB, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update ECB Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// Bancor data
 	rawBancor, err := getBancorFromDia("USDT")
 	if err != nil {
@@ -100,6 +125,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err
 	}
+	time.Sleep(10 * time.Minute)
 
 	// Top 15 coins
 	rawCoins, err := getToplistFromDia()
@@ -161,20 +187,33 @@ func updateBancor(bancorData *models.Points, auth *bind.TransactOpts, contract *
 	return nil
 }
 
-func updateECBRates(ecbRates []models.Quotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
-	for _, element := range ecbRates {
-		symbol := strings.ToUpper(element.Symbol)
-		name := element.Name
-		price := element.Price
-		// Get 5 digits after the comma by multiplying price with 100000
-		// Set supply to 0, as we don't have a supply for fiat currencies
-		err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
-		if err != nil {
-			log.Fatalf("Failed to update Oracle: %v", err)
-			return err
-		}
-		time.Sleep(10 * time.Minute)
+func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(ecbRate.Symbol)
+	name := strings.ToUpper(ecbRate.Symbol)
+	price := ecbRate.Rate
+	// Get 5 digits after the comma by multiplying price with 100000
+	// Set supply to 0, as we don't have a supply for fiat currencies
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
 	}
+
+	return nil
+}
+
+func updateCompoundRate(compoundRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(compoundRate.Asset)
+	name := strings.ToUpper(compoundRate.Protocol.Name)
+	price := compoundRate.LendingRate
+	// Get 5 digits after the comma by multiplying price with 100000
+	// Set supply to 0, as we don't have a supply for fiat currencies
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -252,8 +291,8 @@ func getToplistFromDia() (*models.Coins, error) {
 }
 
 // Getting EUR vs XXX rate
-func getECBRatesFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+func getECBRatesFromDia(symbol string) (*models.CurrencyChange, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/coins")
 	if err != nil {
 		return nil, err
 	} else {
@@ -268,7 +307,39 @@ func getECBRatesFromDia(symbol string) (*models.Quotation, error) {
 			return nil, err
 		}
 
-		var b models.Quotation
+		var b models.Coins
+		err = b.UnmarshalBinary(contents)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, change := range b.Change.USD {
+			if strings.ToUpper(change.Symbol) == strings.ToUpper(symbol) {
+				return &change, nil
+			}
+		}
+		return nil, nil
+	}
+}
+
+// Getting compound rate
+func getCompoundRatesFromDia(symbol string) (*dia.DefiRate, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingRate/COMPOUND/" + strings.ToUpper(symbol) + "/" + string(time.Now().Unix()))
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b dia.DefiRate
 		err = b.UnmarshalBinary(contents)
 		if err == nil {
 			return &b, nil

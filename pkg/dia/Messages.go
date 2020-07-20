@@ -147,6 +147,19 @@ type FilterPoint struct {
 	Time   time.Time
 }
 
+// MarshalBinary for DefiRate
+func (e *DefiRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for DefiRate
+func (e *DefiRate) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
 // MarshalBinary for DefiProtocol
 func (e *DefiProtocol) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)

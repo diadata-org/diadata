@@ -115,7 +115,10 @@ Defi Interest Rate
 {% api-method-description %}
 Get information about a Defi protocol's lending and borrowing rates, as well as meta information about the underlying protocol.  
   
-Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100
+Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100  
+  
+Example for range query:  
+https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -130,9 +133,19 @@ Asset short name, e.g., ETH for Ether
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="time" type="integer" required=true %}
-Unix timestamp of the requested data
+Return latest rate relative to the Unix timestamp
 {% endapi-method-parameter %}
 {% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="integer" required=false %}
+Initial Unix timestamp for range queries
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="integer" required=false %}
+Final Unix timestamp for range queries
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
 {% endapi-method-request %}
 
 {% api-method-response %}
@@ -636,11 +649,11 @@ Return the compounded index for the date specified in the format yyyy-mm-dd
 {% endapi-method-path-parameters %}
 
 {% api-method-query-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
+{% api-method-parameter name="dateInit" type="string" required=false %}
 Initial date for range queries. Format: yyyy-mm-dd
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="" type="string" required=false %}
+{% api-method-parameter name="dateFinal" type="string" required=false %}
 Final date for range queries. Format: yyyy-mm-dd
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
