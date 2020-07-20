@@ -107,6 +107,48 @@ Successful retrieval of a chart point for all exchanges.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset/:time" %}
+{% api-method-summary %}
+Defi Interest Rate
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get information about a Defi protocol's lending and borrowing rates, as well as meta information about the underlying protocol.  
+  
+Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+Name of the protocol, in uppercase
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="asset" type="string" required=true %}
+Asset short name, e.g., ETH for Ether
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="time" type="integer" required=true %}
+Unix timestamp of the requested data
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of a Defi interest rate.
+{% endapi-method-response-example-description %}
+
+```
+{"Timestamp":"2020-07-20T11:54:56Z","LendingRate":1.250020254710238,"BorrowingRate":4.856778356760549,"Asset":"USDC","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
 {% api-method-summary %}
 Interest Rate
@@ -748,4 +790,6 @@ Successful retrieval of the compounded average of SOFR over an interest period o
 {% endapi-method-response %}
 {% endapi-method-spec %}
 {% endapi-method %}
+
+
 
