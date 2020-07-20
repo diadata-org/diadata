@@ -34,6 +34,17 @@ services:
       options:
         max-size: "50m"
 
+  bancorcollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Bancor
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+
   genericcollector:
     build:
       context: ../../../..
