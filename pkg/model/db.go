@@ -566,15 +566,15 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			if err != nil {
 				return
 			}
-			defiState.TotalUSD, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			defiState.Protocol = res[0].Series[0].Values[i][1].(string)
 			if err != nil {
 				return
 			}
-			defiState.TotalETH, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+			defiState.TotalUSD, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return
 			}
-			defiState.Protocol = res[0].Series[0].Values[i][3].(string)
+			defiState.TotalETH, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
 			if err != nil {
 				return
 			}

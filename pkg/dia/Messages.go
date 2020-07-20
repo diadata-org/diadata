@@ -101,12 +101,10 @@ type DefiProtocol struct {
 }
 
 type DefiProtocolState struct {
-	TotalUSD        float64
-	TotalETH        float64
-	TotalPerDay     map[string]float64
-	MostLockedAsset string
-	Protocol        string
-	Timestamp       time.Time
+	TotalUSD  float64
+	TotalETH  float64
+	Protocol  string
+	Timestamp time.Time
 }
 
 type DefiRate struct {

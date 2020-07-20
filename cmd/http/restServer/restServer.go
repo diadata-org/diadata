@@ -207,6 +207,8 @@ func main() {
 		dia.GET("/cviIndex", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
 		dia.GET("/defiLendingRate/:protocol/:asset", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
 		dia.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
+		dia.GET("/defiLendingState/:protocol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
+		dia.GET("/defiLendingState/:protocol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
 
 		// Endpoints for interestrates
 		dia.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
