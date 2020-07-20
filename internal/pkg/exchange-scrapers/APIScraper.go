@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"io"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 // empty type used for signaling
@@ -64,8 +65,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewQuoineScraper(dia.QuoineExchange)
 	case dia.BancorExchange:
 		return NewBancorScraper(dia.BancorExchange)
-	case dia.UniSwap:
-		return NewUniSwapScraper(dia.UniSwap)
+	case dia.UniSwapExchange:
+		return NewUniSwapScraper(dia.UniSwapExchange)
 	default:
 		return nil
 	}
