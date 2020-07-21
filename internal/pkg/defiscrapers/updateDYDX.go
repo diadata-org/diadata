@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	// https://docs.dydx.exchange/#amounts
 	decimalsETH  = 18
 	decimalsDAI  = 18
 	decimalsUSDC = 6
@@ -82,10 +83,13 @@ func (proto *DYDXProtocol) UpdateRate() error {
 		if err != nil {
 			return err
 		}
+		// Return value per cent
+		totalSupplyAPR *= 100
 		totalBorrowAPR, err := strconv.ParseFloat(market.TotalBorrowAPR, 64)
 		if err != nil {
 			return err
 		}
+		totalBorrowAPR *= 100
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,

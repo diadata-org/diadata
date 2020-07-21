@@ -65,7 +65,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 	jsonValue, _ := json.Marshal(jsonData)
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/aave/protocol-raw", bytes.NewBuffer(jsonValue))
 	err = json.Unmarshal(jsondata, &aaverate)
-	log.Println(aaverate)
+	// log.Println(aaverate)
 	return
 }
 
@@ -77,27 +77,26 @@ func (proto *AAVEProtocol) UpdateRate() error {
 		return err
 	}
 
-
 	// https://docs.aave.com/developers/integrating-aave/using-graphql#common-gotchas
-	// as per the DOc value of rate need to be converted to power of 27
+	// as per the DOC value of rate need to be converted to power of 27
+	// As we compute rates in per cent and they're given as absolute here, factor is 10^25
 	for _, market := range markets.Data.Reserves {
 		totalSupplyAPR := new(big.Float)
 		totalSupplyAPR.SetString(market.LiquidityRate)
-		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(27)))
-		totalSupplyAPRPOW27,_ := totalSupplyAPR.Float64()
+		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(25)))
+		totalSupplyAPRPOW25, _ := totalSupplyAPR.Float64()
 
 		totalBorrowAPR := new(big.Float)
 		totalBorrowAPR.SetString(market.StableBorrowRate)
-		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(27)))
-		totalBorrowAPRPOW27,_ := totalSupplyAPR.Float64()
-
+		totalBorrowAPR = new(big.Float).Quo(totalBorrowAPR, big.NewFloat(math.Pow10(25)))
+		totalBorrowAPRPOW25, _ := totalBorrowAPR.Float64()
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
 			Protocol:      proto.protocol,
-			LendingRate:   totalSupplyAPRPOW27,
-			BorrowingRate: totalBorrowAPRPOW27,
+			LendingRate:   totalSupplyAPRPOW25,
+			BorrowingRate: totalBorrowAPRPOW25,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.scraper.RateChannel() <- asset
@@ -133,14 +132,16 @@ func (proto *AAVEProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.LiquidityRate, 64)
+	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalLiquidity, 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.LiquidityRate, 64)
+	totalUSDCSupplyPAR /= math.Pow(10, 18)
+	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalLiquidity, 64)
 	if err != nil {
 		return err
 	}
+	totalETHSupplyPAR /= math.Pow(10, 18)
 	deFIState := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
