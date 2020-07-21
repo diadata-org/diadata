@@ -116,7 +116,7 @@ Defi Interest Rate
 Get information about a Defi protocol's lending and borrowing rates.  
 Time parameter is optional. If omitted, the most recent rate is returned.  
   
-Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100  
+Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
   
 Get rates for a range of timestamps using optional query parameters.  
 https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
