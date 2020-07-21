@@ -12,14 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	// https://docs.dydx.exchange/#amounts
-	decimalsETH  = 18
-	decimalsDAI  = 18
-	decimalsUSDC = 6
-	decimalsPBTC = 8
-)
-
 type DYDXMarket struct {
 	ID                        int         `json:"id"`
 	Name                      string      `json:"name"`
@@ -129,12 +121,12 @@ func (proto *DYDXProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR *= math.Pow(10, -decimalsUSDC)
+	totalUSDCSupplyPAR *= math.Pow(10, -float64(usdcMarket.Currency.Decimals))
 	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupplyPar, 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR *= math.Pow(10, -decimalsETH)
+	totalETHSupplyPAR *= math.Pow(10, -float64(ethMarket.Currency.Decimals))
 
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
