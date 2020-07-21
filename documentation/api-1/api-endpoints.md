@@ -113,7 +113,8 @@ Defi Interest Rate
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get information about a Defi protocol's lending and borrowing rates, as well as meta information about the underlying protocol.  
+Get information about a Defi protocol's lending and borrowing rates.  
+Time parameter is optional. If omitted, the most recent rate is returned.  
   
 Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100  
   
@@ -129,11 +130,11 @@ Name of the protocol, in uppercase
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="asset" type="string" required=true %}
-Asset short name, e.g., ETH for Ether
+Asset short name, e.g. ETH for Ether
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="time" type="integer" required=true %}
-Return latest rate relative to the Unix timestamp
+{% api-method-parameter name="time" type="integer" required=false %}
+Unix timestamp. Youngest rate value before time is returned
 {% endapi-method-parameter %}
 {% endapi-method-path-parameters %}
 
