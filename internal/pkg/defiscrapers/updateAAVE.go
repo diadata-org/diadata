@@ -39,6 +39,7 @@ type Reserve struct {
 	StableBorrowRate   string `json:"stableBorrowRate"`
 	VariableBorrowRate string `json:"variableBorrowRate"`
 	TotalLiquidity     string `json:"totalLiquidity"`
+	Decimals           int    `json:decimals`
 }
 
 func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
@@ -58,6 +59,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 			stableBorrowRate
 			lastUpdateTimestamp
 			totalLiquidity
+			decimals
 		  }
 		}
 `,
@@ -136,12 +138,22 @@ func (proto *AAVEProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR /= math.Pow(10, 18)
+	usdcDecimals := float64(usdcMarket.Decimals)
+	if err != nil {
+		return err
+	}
+	totalUSDCSupplyPAR /= math.Pow(10, usdcDecimals)
+
 	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalLiquidity, 64)
 	if err != nil {
 		return err
 	}
-	totalETHSupplyPAR /= math.Pow(10, 18)
+	ethDecimals := float64(ethMarket.Decimals)
+	if err != nil {
+		return err
+	}
+	totalETHSupplyPAR /= math.Pow(10, ethDecimals)
+
 	deFIState := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
