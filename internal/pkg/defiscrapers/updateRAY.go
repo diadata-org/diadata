@@ -85,7 +85,7 @@ func (proto *RAYProtocol) UpdateRate() error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
@@ -134,7 +134,7 @@ func (proto *RAYProtocol) UpdateState() error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate

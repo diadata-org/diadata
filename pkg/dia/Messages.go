@@ -103,8 +103,8 @@ type DefiProtocol struct {
 type DefiProtocolState struct {
 	TotalUSD  float64
 	TotalETH  float64
-	Protocol  string
 	Timestamp time.Time
+	Protocol  DefiProtocol
 }
 
 type DefiRate struct {
@@ -112,7 +112,7 @@ type DefiRate struct {
 	LendingRate   float64
 	BorrowingRate float64
 	Asset         string
-	Protocol      DefiProtocol
+	Protocol      string
 }
 
 type TradesBlockData struct {

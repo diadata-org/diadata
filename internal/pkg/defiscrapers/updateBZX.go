@@ -1,16 +1,17 @@
 package defiscrapers
 
 import (
+	"math"
+	"math/big"
+	"strconv"
+	"time"
+
 	bzxcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/bzx"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
-	"math"
-	"math/big"
-	"strconv"
-	"time"
 )
 
 type BZXRate struct {
@@ -42,7 +43,8 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets["SUSD"] = "0x49f4592e641820e928f9919ef4abd92a719b4b49"
 	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
 
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -81,7 +83,7 @@ func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
 }
 
 func (proto *BZXProtocol) UpdateRate() error {
-	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
 		return err
@@ -91,17 +93,17 @@ func (proto *BZXProtocol) UpdateRate() error {
 		totalSupplyAPR := new(big.Float)
 		totalSupplyAPR.SetString(market.SupplyRate.String())
 		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
-		totalSupplyAPRPOW27,_ := totalSupplyAPR.Float64()
+		totalSupplyAPRPOW27, _ := totalSupplyAPR.Float64()
 
 		totalBorrowAPR := new(big.Float)
 		totalBorrowAPR.SetString(market.BorrowRate.String())
 		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
-		totalBorrowAPRPOW27,_ := totalSupplyAPR.Float64()
+		totalBorrowAPRPOW27, _ := totalSupplyAPR.Float64()
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPRPOW27,
 			BorrowingRate: totalBorrowAPRPOW27,
 		}
@@ -115,7 +117,7 @@ func (proto *BZXProtocol) UpdateRate() error {
 }
 
 func (proto *BZXProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	usdcMarket, err := proto.fetch("USDC")
 	if err != nil {
 		return err
@@ -137,7 +139,7 @@ func (proto *BZXProtocol) UpdateState() error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalSupplyUSDC,
 		TotalETH:  totalBorrowETH,
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate

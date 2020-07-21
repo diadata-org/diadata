@@ -42,7 +42,8 @@ func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProto
 	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
 	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
 
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -95,11 +96,11 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 
 func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 	for asset, _ := range proto.assets {
-		bzxrate, err := proto.fetch(asset)
+		Compoundrate, err := proto.fetch(asset)
 		if err != nil {
-			continue
+			log.Error(err)
 		}
-		rates = append(rates, bzxrate)
+		rates = append(rates, Compoundrate)
 	}
 	return
 }
@@ -109,15 +110,13 @@ func (proto *CompoundProtocol) UpdateRate() error {
 	markets, err := proto.fetchALL()
 	if err != nil {
 		log.Error("error fetching rates %+v\n ", err)
-
 		return err
 	}
-
 	for _, market := range markets {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   market.SupplyRate,
 			BorrowingRate: market.BorrowRate,
 		}
@@ -162,7 +161,7 @@ func (proto *CompoundProtocol) UpdateState() error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalSupplyUSDC / math.Pow(10, totalSupplyDecimal),
 		TotalETH:  totalBorrowETH / math.Pow(10, totalBorrowETHDecimal),
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate

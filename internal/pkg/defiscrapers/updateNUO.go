@@ -3,11 +3,12 @@ package defiscrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 )
 
 type NuoResponse struct {
@@ -134,7 +135,7 @@ func (proto *NuoProtocol) UpdateRate() error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Currency.ShortName,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   market.LendRate,
 			BorrowingRate: market.BorrowRate,
 		}
@@ -157,7 +158,7 @@ func (proto *NuoProtocol) UpdateState() error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  usdcMarket.TotalBalance,
 		TotalETH:  ethMarket.TotalBalance,
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate

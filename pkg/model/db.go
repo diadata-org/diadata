@@ -473,7 +473,7 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	}
 	tags := map[string]string{
 		"asset":    rate.Asset,
-		"protocol": rate.Protocol.Name,
+		"protocol": rate.Protocol,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbDefiRateTable, tags, fields, rate.Timestamp)
 	if err != nil {
@@ -492,11 +492,6 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 
 func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
 	retval := []dia.DefiRate{}
-	// Get protocol struct by name
-	diaProtocol, err := db.GetDefiProtocol(protocol)
-	if err != nil {
-		log.Warn("error getting protocol: ", err)
-	}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -521,7 +516,7 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			if err != nil {
 				return retval, err
 			}
-			currentRate.Protocol = diaProtocol
+			currentRate.Protocol = protocol
 			retval = append(retval, currentRate)
 		}
 	} else {
@@ -536,7 +531,7 @@ func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 		"totalETH": state.TotalETH,
 	}
 	tags := map[string]string{
-		"protocol": state.Protocol,
+		"protocol": state.Protocol.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbDefiStateTable, tags, fields, state.Timestamp)
 	if err != nil {
@@ -566,15 +561,19 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			if err != nil {
 				return
 			}
-			defiState.Protocol = res[0].Series[0].Values[i][1].(string)
-			if err != nil {
-				return
-			}
+			// defiState.Protocol.Name = res[0].Series[0].Values[i][1].(string)
+			// if err != nil {
+			// 	return
+			// }
 			defiState.TotalUSD, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return
 			}
 			defiState.TotalETH, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+			defiState.Protocol, err = db.GetDefiProtocol(protocol)
 			if err != nil {
 				return
 			}

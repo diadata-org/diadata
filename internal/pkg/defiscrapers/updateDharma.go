@@ -84,7 +84,7 @@ func (proto *DharmaProtocol) UpdateRate() error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         "DHARMA",
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}

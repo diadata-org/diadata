@@ -94,7 +94,7 @@ func (proto *AAVEProtocol) UpdateRate() error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Name,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPRPOW25,
 			BorrowingRate: totalBorrowAPRPOW25,
 		}
@@ -145,7 +145,7 @@ func (proto *AAVEProtocol) UpdateState() error {
 	deFIState := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- deFIState

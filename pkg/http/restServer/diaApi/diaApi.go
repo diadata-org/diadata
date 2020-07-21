@@ -408,10 +408,16 @@ func (env *Env) GetDefiRate(c *gin.Context) {
 
 	if dateInit == "noRange" {
 		// Return most recent data point
-		// Convert time int/string to unix time
-		endtime, err := utils.StrToUnixtime(date)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
 		}
 		starttime := endtime.AddDate(0, 0, -1)
 
@@ -459,10 +465,16 @@ func (env *Env) GetDefiState(c *gin.Context) {
 
 	if dateInit == "noRange" {
 		// Return most recent data point
-		// Convert time int/string to unix time
-		endtime, err := utils.StrToUnixtime(date)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
 		}
 		starttime := endtime.AddDate(0, 0, -1)
 

@@ -93,7 +93,7 @@ func (proto *DYDXProtocol) UpdateRate() error {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
-			Protocol:      proto.protocol,
+			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPR,
 			BorrowingRate: totalBorrowAPR,
 		}
@@ -139,7 +139,7 @@ func (proto *DYDXProtocol) UpdateState() error {
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,
 		TotalETH:  totalETHSupplyPAR,
-		Protocol:  proto.protocol.Name,
+		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate
