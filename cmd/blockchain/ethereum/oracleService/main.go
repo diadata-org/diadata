@@ -11,6 +11,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
@@ -89,17 +90,31 @@ func main() {
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
 	// Compound Data
-	rawCompound, err := getCompoundRatesFromDia("DAI")
+	rawCompound, err := getDefiRatesFromDia("COMPOUND", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
 		return err
 	}
-	err = updateCompoundRate(rawCompound, auth, contract)
+	err = updateDefiRate(rawCompound, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Compound Oracle: %v", err)
 		return err
 	}
 	time.Sleep(10 * time.Minute)
+
+	// DYDX Data
+	rawDydx, err := getDefiRatesFromDia("DYDX", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve DYDX data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawDydx, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update DYDX Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// ECB Data
 	rawECB, err := getECBRatesFromDia("EUR")
 	if err != nil {
@@ -202,10 +217,10 @@ func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, cont
 	return nil
 }
 
-func updateCompoundRate(compoundRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
-	symbol := strings.ToUpper(compoundRate.Asset)
-	name := strings.ToUpper(compoundRate.Protocol.Name)
-	price := compoundRate.LendingRate
+func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(defiRate.Asset)
+	name := strings.ToUpper(defiRate.Protocol)
+	price := defiRate.LendingRate
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for fiat currencies
 	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
@@ -322,9 +337,9 @@ func getECBRatesFromDia(symbol string) (*models.CurrencyChange, error) {
 	}
 }
 
-// Getting compound rate
-func getCompoundRatesFromDia(symbol string) (*dia.DefiRate, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingRate/COMPOUND/" + strings.ToUpper(symbol) + "/" + string(time.Now().Unix()))
+// Getting defi rate
+func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingRate/" + strings.ToUpper(protocol) + "/" + strings.ToUpper(symbol) + "/" + strconv.FormatInt(time.Now().Unix(), 10))
 	if err != nil {
 		return nil, err
 	} else {
