@@ -107,7 +107,7 @@ Successful retrieval of a chart point for all exchanges.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset/:time" %}
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset" %}
 {% api-method-summary %}
 Defi Interest Rate
 {% endapi-method-summary %}
