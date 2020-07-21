@@ -118,7 +118,7 @@ Time parameter is optional. If omitted, the most recent rate is returned.
   
 Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC/1595246100  
   
-Example for range query:  
+Get rates for a range of timestamps using optional query parameters.  
 https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
 {% endapi-method-description %}
 
@@ -134,7 +134,7 @@ Asset short name, e.g. ETH for Ether
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="time" type="integer" required=false %}
-Unix timestamp. Youngest rate value before time is returned
+Unix timestamp. Default is the latest available rate
 {% endapi-method-parameter %}
 {% endapi-method-path-parameters %}
 
