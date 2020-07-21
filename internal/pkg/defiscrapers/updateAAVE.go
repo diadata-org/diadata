@@ -32,7 +32,7 @@ type Reserve struct {
 	ID                  string `json:"id"`
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
 	LiquidityRate       string `json:"liquidityRate"`
-	Name                string `json:"name"`
+	Symbol              string `json:"symbol"`
 	Price               struct {
 		ID string `json:"id"`
 	} `json:"price"`
@@ -49,7 +49,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 				usageAsCollateralEnabled: true
 			}) {
 			id
-			name
+			symbol
 			price {
 			  id
 			}
@@ -93,7 +93,7 @@ func (proto *AAVEProtocol) UpdateRate() error {
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
-			Asset:         market.Name,
+			Asset:         market.Symbol,
 			Protocol:      proto.protocol.Name,
 			LendingRate:   totalSupplyAPRPOW25,
 			BorrowingRate: totalBorrowAPRPOW25,

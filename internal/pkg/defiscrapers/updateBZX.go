@@ -18,6 +18,7 @@ type BZXRate struct {
 	SupplyRate  *big.Int
 	BorrowRate  *big.Int
 	TotalSupply *big.Int
+	Decimals    uint8
 	Symbol      string
 }
 
@@ -30,12 +31,11 @@ type BZXProtocol struct {
 
 func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets := make(map[string]string)
-	assets["SAI"] = "0x14094949152EDDBFcd073717200DA82fEd8dC960"
 	assets["DAI"] = "0x493c57c4763932315a328269e1adad09653b9081"
 	assets["ETH"] = "0x77f973FCaF871459aa58cd81881Ce453759281bC"
 	assets["USDC"] = "0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f"
 	assets["WBTC"] = "0xBA9262578EFef8b3aFf7F60Cd629d6CC8859C8b5"
-	assets["BAT"] = "0xA8b65249DE7f85494BC1fe75F525f568aa7dfa39"
+	assets["SAI"] = "0x14094949152EDDBFcd073717200DA82fEd8dC960"
 	assets["KNC"] = "0x1cC9567EA2eB740824a45F8026cCF8e46973234D"
 	assets["REP"] = "0xBd56E9477Fc6997609Cf45F84795eFbDAC642Ff1"
 	assets["ZRX"] = "0xA7Eb2bc82df18013ecC2A6C533fc29446442EDEe"
@@ -44,7 +44,6 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
 
 	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
-	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -67,7 +66,12 @@ func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 	if err != nil {
 		return
 	}
-	bzxrate = BZXRate{Symbol: asset, BorrowRate: borrowInterestRate, SupplyRate: supplyInterestRate, TotalSupply: totalSupply}
+	// Token supply has to be scaled by decimals
+	decimals, err := contract.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	bzxrate = BZXRate{Symbol: asset, BorrowRate: borrowInterestRate, SupplyRate: supplyInterestRate, TotalSupply: totalSupply, Decimals: decimals}
 	return
 }
 
@@ -93,19 +97,19 @@ func (proto *BZXProtocol) UpdateRate() error {
 		totalSupplyAPR := new(big.Float)
 		totalSupplyAPR.SetString(market.SupplyRate.String())
 		totalSupplyAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
-		totalSupplyAPRPOW27, _ := totalSupplyAPR.Float64()
+		totalSupplyAPRPOW18, _ := totalSupplyAPR.Float64()
 
 		totalBorrowAPR := new(big.Float)
 		totalBorrowAPR.SetString(market.BorrowRate.String())
 		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
-		totalBorrowAPRPOW27, _ := totalSupplyAPR.Float64()
+		totalBorrowAPRPOW18, _ := totalSupplyAPR.Float64()
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
 			Protocol:      proto.protocol.Name,
-			LendingRate:   totalSupplyAPRPOW27,
-			BorrowingRate: totalBorrowAPRPOW27,
+			LendingRate:   totalSupplyAPRPOW18,
+			BorrowingRate: totalBorrowAPRPOW18,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.connection.Close()
@@ -126,19 +130,22 @@ func (proto *BZXProtocol) UpdateState() error {
 	if err != nil {
 		return err
 	}
+
 	totalSupplyUSDC, err := strconv.ParseFloat(usdcMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
+	totalSupplyUSDC /= math.Pow(10, float64(usdcMarket.Decimals))
 
-	totalBorrowETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
+	totalSupplyETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
+	totalSupplyETH /= math.Pow(10, float64(ethMarket.Decimals))
 
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalSupplyUSDC,
-		TotalETH:  totalBorrowETH,
+		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
