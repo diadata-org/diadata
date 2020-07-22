@@ -540,7 +540,7 @@ Successful retrieval of available symbols for cryptocurrencies. Shown below is a
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/volume" %}
+{% api-method method="get" host="https://api.diadata.org" path="/v1/volume/:symbol" %}
 {% api-method-summary %}
 Trade Volume
 {% endapi-method-summary %}
@@ -558,11 +558,11 @@ Which symbol to retrieve the volume of \(e.g. BTC\)
 {% endapi-method-path-parameters %}
 
 {% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=true %}
+{% api-method-parameter name="starttime" type="integer" required=false %}
 Start of the timespan \(Unix time in seconds\)
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="endtime" type="integer" required=true %}
+{% api-method-parameter name="endtime" type="integer" required=false %}
 End of the timespan \(Unix time in seconds\)
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
