@@ -43,8 +43,8 @@ func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProto
 	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
 	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
 
-	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
