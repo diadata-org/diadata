@@ -13,6 +13,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	UniswapApiDelay = 60 * 60
+)
+
 type UniSwapTicker struct {
 	Data struct {
 		Name            string  `json:"name"`
@@ -100,7 +104,9 @@ func (scraper *UniSwapScraper) mainLoop() {
 			break
 		}
 		for pair, pairScraper := range scraper.pairScrapers {
-			time.Sleep(BancorApiDelay)
+			// Sleep duration such that each pair is scraped once per hour
+			time.Sleep(time.Duration(UniswapApiDelay/len(scraper.pairScrapers)) * time.Second)
+
 			log.Println(pairScraper.pair.ForeignName)
 			ticker := assetMap[pairScraper.pair.ForeignName]
 
@@ -156,7 +162,7 @@ func (scraper *UniSwapScraper) readAssets() (pair UniSwapAssetPairs, err error) 
 	jsonData := map[string]string{
 		"query": `
          {
-  pairs(first: 200) {
+  pairs(first: 1000) {
     id
     token0{
       symbol
