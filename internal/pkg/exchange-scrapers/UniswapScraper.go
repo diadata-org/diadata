@@ -125,7 +125,7 @@ func (scraper *UniSwapScraper) mainLoop() {
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
-				Price:          price,
+				Price:          1 / price,
 				Volume:         volume,
 				Time:           time.Now(),
 				ForeignTradeID: "",
@@ -170,7 +170,7 @@ func (scraper *UniSwapScraper) readAssets() (pair UniSwapAssetPairs, err error) 
     token1{
       symbol
     }
-    token0Price
+	token0Price
     volumeUSD
     createdAtTimestamp
  
