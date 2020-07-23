@@ -119,6 +119,7 @@ func GetCoinPrice(coin string) (float64, error) {
 	url := "https://api.diadata.org/v1/quotation/" + coin
 	data, err := GetRequest(url)
 	if err != nil {
+		log.Error("error getting price for ", coin)
 		return 0, err
 	}
 	Quot := Quotation{}

@@ -78,7 +78,7 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 }
 
 // getTotalSupply returns the total supply in ETH locked in the protocol
-func getTotalSupply() (float64, error) {
+func getTotalSupplyAAVE() (float64, error) {
 	markets, err := fetchAAVEMarkets()
 	if err != nil {
 		return 0, err
@@ -155,7 +155,7 @@ func getAssetByAddress(address string) (reserve Reserve, err error) {
 
 func (proto *AAVEProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol.Name)
-	totalSupplyETH, err := getTotalSupply()
+	totalSupplyETH, err := getTotalSupplyAAVE()
 	if err != nil {
 		return err
 	}

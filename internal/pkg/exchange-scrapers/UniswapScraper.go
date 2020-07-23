@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -49,7 +51,8 @@ type UniSwapPair struct {
 	Token1      struct {
 		Symbol string `json:"symbol"`
 	} `json:"token1"`
-	VolumeUSD string `json:"volumeUSD"`
+	Token1Price string `json:"token1Price"`
+	VolumeUSD   string `json:"volumeUSD"`
 }
 
 type UniSwapScraper struct {
@@ -116,7 +119,7 @@ func (scraper *UniSwapScraper) mainLoop() {
 				continue
 			}
 
-			price, err := strconv.ParseFloat(ticker.Token0Price, 64)
+			price, err := strconv.ParseFloat(ticker.Token1Price, 64)
 			if err != nil {
 				log.Error("Token0Price isn't parseable float")
 				continue
@@ -125,7 +128,7 @@ func (scraper *UniSwapScraper) mainLoop() {
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
-				Price:          1 / price,
+				Price:          price,
 				Volume:         volume,
 				Time:           time.Now(),
 				ForeignTradeID: "",
@@ -149,11 +152,13 @@ func (scraper *UniSwapScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 	}
 
 	for _, v := range assets.Data.Pairs {
-		pairs = append(pairs, dia.Pair{
-			Symbol:      v.Token0.Symbol,
-			ForeignName: v.Token0.Symbol + "-" + v.Token1.Symbol,
-			Exchange:    scraper.exchangeName,
-		})
+		if !helpers.SymbolIsBlackListed(v.Token0.Symbol) && !helpers.SymbolIsBlackListed(v.Token1.Symbol) {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      v.Token0.Symbol,
+				ForeignName: v.Token0.Symbol + "-" + v.Token1.Symbol,
+				Exchange:    scraper.exchangeName,
+			})
+		}
 	}
 	return
 }
@@ -171,6 +176,7 @@ func (scraper *UniSwapScraper) readAssets() (pair UniSwapAssetPairs, err error) 
       symbol
     }
 	token0Price
+	token1Price
     volumeUSD
     createdAtTimestamp
  

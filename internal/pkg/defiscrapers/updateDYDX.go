@@ -56,16 +56,48 @@ func NewDYDX(scraper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
 	return &DYDXProtocol{scraper: scraper, protocol: protocol}
 }
 
-func fetchmarkets() (dydxrate []DYDXMarket, err error) {
+func fetchDYDXMarkets() (dydxrate []DYDXMarket, err error) {
 	var response map[string][]DYDXMarket
 	jsondata, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
 	err = json.Unmarshal(jsondata, &response)
 	return response["markets"], err
 }
 
+// getTotalSupply returns the total supply in ETH locked in the protocol
+func getDYDXTotalSupplyUSD() (float64, error) {
+	markets, err := fetchDYDXMarkets()
+	if err != nil {
+		return 0, err
+	}
+	sum := float64(0)
+	for _, market := range markets {
+		if market.Symbol == "SAI" {
+			// TO DO! Get price for SAI.
+			// Right now, there is only around 9 SAI locked though, so neglect.
+			continue
+		}
+		marketSupply, err := strconv.ParseFloat(market.TotalSupplyWei, 64)
+		if err != nil {
+			return 0, err
+		}
+		marketBorrow, err := strconv.ParseFloat(market.TotalBorrowWei, 64)
+		if err != nil {
+			return 0, err
+		}
+		marketLiquidity := (marketSupply - marketBorrow) / math.Pow10(market.Currency.Decimals)
+		priceCoin, err := utils.GetCoinPrice(market.Symbol)
+		if err != nil {
+			return 0, err
+		}
+		marketPrice := marketLiquidity * priceCoin
+		sum += marketPrice
+	}
+	return sum, nil
+}
+
 func (proto *DYDXProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
-	markets, err := fetchmarkets()
+	markets, err := fetchDYDXMarkets()
 	if err != nil {
 		return err
 	}
@@ -109,29 +141,18 @@ func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
 
 func (proto *DYDXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
-	ethMarket, err := getMarketByID("0")
+	totalSupplyUSD, err := getDYDXTotalSupplyUSD()
 	if err != nil {
 		return err
 	}
-	usdcMarket, err := getMarketByID("2")
+	priceETH, err := utils.GetCoinPrice("ETH")
 	if err != nil {
 		return err
 	}
-
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupplyPar, 64)
-	if err != nil {
-		return err
-	}
-	totalETHSupplyPAR *= math.Pow(10, -float64(ethMarket.Currency.Decimals))
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupplyPar, 64)
-	if err != nil {
-		return err
-	}
-	totalUSDCSupplyPAR *= math.Pow(10, -float64(usdcMarket.Currency.Decimals))
-
+	totalSupplyETH := totalSupplyUSD / priceETH
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalUSDCSupplyPAR,
-		TotalETH:  totalETHSupplyPAR,
+		TotalUSD:  totalSupplyUSD,
+		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
