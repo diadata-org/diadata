@@ -163,6 +163,40 @@ Successful retrieval of a Defi interest rate.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingState/:protocol" %}
+{% api-method-summary %}
+Defi Lending State
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get meta information about a defi lending protocol such as the underlying blockchain, its name and its currently locked value in USD and ETH.  
+  
+An example request can look like this: https://api.diadata.org/v1/defiLendingState/COMPOUND
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+Name of the protocol, e.g. COMPOUND
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful response containing locking volume, the timestamp of data recording and protocol meta information such as name and the underlying blockchain.
+{% endapi-method-response-example-description %}
+
+```
+{"TotalUSD":13048619504.89947,"TotalETH":52570793.80784482,"Timestamp":"2020-07-22T16:27:31Z","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
 {% api-method-summary %}
 Interest Rate
