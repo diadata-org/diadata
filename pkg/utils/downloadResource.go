@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -100,4 +102,29 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	}
 
 	return XMLdata, err
+}
+
+// GetCoinPrice Gets the price in USD of coin through our API
+func GetCoinPrice(coin string) (float64, error) {
+	type Quotation struct {
+		Symbol             string
+		Name               string
+		Price              float64
+		PriceYesterday     *float64
+		VolumeYesterdayUSD *float64
+		Source             string
+		Time               time.Time
+		ITIN               string
+	}
+	url := "https://api.diadata.org/v1/quotation/" + coin
+	data, err := GetRequest(url)
+	if err != nil {
+		return 0, err
+	}
+	Quot := Quotation{}
+	err = json.Unmarshal(data, &Quot)
+	if err != nil {
+		return 0, err
+	}
+	return Quot.Price, nil
 }

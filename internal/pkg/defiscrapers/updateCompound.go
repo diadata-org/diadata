@@ -148,19 +148,19 @@ func (proto *CompoundProtocol) UpdateState() error {
 		return err
 	}
 
-	totalBorrowETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
+	totalSupplyETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
 	if err != nil {
 		return err
 	}
 
-	totalBorrowETHDecimal, err := strconv.ParseFloat(ethMarket.Decimal.String(), 64)
+	totalSupplyETHDecimal, err := strconv.ParseFloat(ethMarket.Decimal.String(), 64)
 	if err != nil {
 		return err
 	}
 
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalSupplyUSDC / math.Pow(10, totalSupplyDecimal),
-		TotalETH:  totalBorrowETH / math.Pow(10, totalBorrowETHDecimal),
+		TotalETH:  totalSupplyETH / math.Pow(10, totalSupplyETHDecimal),
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}

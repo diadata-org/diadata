@@ -109,24 +109,25 @@ func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
 
 func (proto *DYDXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
-	usdcMarket, err := getMarketByID("2")
-	if err != nil {
-		return err
-	}
 	ethMarket, err := getMarketByID("0")
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupplyPar, 64)
+	usdcMarket, err := getMarketByID("2")
 	if err != nil {
 		return err
 	}
-	totalUSDCSupplyPAR *= math.Pow(10, -float64(usdcMarket.Currency.Decimals))
+
 	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalSupplyPar, 64)
 	if err != nil {
 		return err
 	}
 	totalETHSupplyPAR *= math.Pow(10, -float64(ethMarket.Currency.Decimals))
+	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalSupplyPar, 64)
+	if err != nil {
+		return err
+	}
+	totalUSDCSupplyPAR *= math.Pow(10, -float64(usdcMarket.Currency.Decimals))
 
 	defistate := &dia.DefiProtocolState{
 		TotalUSD:  totalUSDCSupplyPAR,

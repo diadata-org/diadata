@@ -33,8 +33,12 @@ type Reserve struct {
 	LastUpdateTimestamp int    `json:"lastUpdateTimestamp"`
 	LiquidityRate       string `json:"liquidityRate"`
 	Symbol              string `json:"symbol"`
-	Price               struct {
-		ID string `json:"id"`
+	AToken              struct {
+		UnderlyingAssetDecimals int `json:"underlyingAssetDecimals"`
+	}
+	Price struct {
+		ID         string `json:"id"`
+		PriceInEth string `json:"priceInEth"`
 	} `json:"price"`
 	StableBorrowRate   string `json:"stableBorrowRate"`
 	VariableBorrowRate string `json:"variableBorrowRate"`
@@ -46,13 +50,15 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 	jsonData := map[string]string{
 		"query": `
           {
-			reserves (where: {
-				usageAsCollateralEnabled: true
-			}) {
+			reserves {
 			id
 			symbol
+			aToken {
+				underlyingAssetDecimals
+			}
 			price {
 			  id
+			  priceInEth
 			}
 			liquidityRate
 			variableBorrowRate
@@ -69,6 +75,31 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 	err = json.Unmarshal(jsondata, &aaverate)
 	// log.Println(aaverate)
 	return
+}
+
+// getTotalSupply returns the total supply in ETH locked in the protocol
+func getTotalSupply() (float64, error) {
+	markets, err := fetchAAVEMarkets()
+	if err != nil {
+		return 0, err
+	}
+	sum := float64(0)
+	for _, market := range markets.Data.Reserves {
+		marketLiquidity, err := strconv.ParseFloat(market.TotalLiquidity, 64)
+		if err != nil {
+			return 0, err
+		}
+		marketLiquidity /= math.Pow10(market.Decimals)
+		marketPrice, err := strconv.ParseFloat(market.Price.PriceInEth, 64)
+		if err != nil {
+			return 0, err
+		}
+		marketPrice /= math.Pow10(18)
+
+		marketInEth := marketLiquidity * marketPrice
+		sum += marketInEth
+	}
+	return sum, nil
 }
 
 func (proto *AAVEProtocol) UpdateRate() error {
@@ -124,39 +155,22 @@ func getAssetByAddress(address string) (reserve Reserve, err error) {
 
 func (proto *AAVEProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol.Name)
-	// Get Total USDC
-	// Get Total ETH
-	usdcMarket, err := getAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+	totalSupplyETH, err := getTotalSupply()
 	if err != nil {
 		return err
 	}
-	ethMarket, err := getAssetByAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-	if err != nil {
-		return err
-	}
-	totalUSDCSupplyPAR, err := strconv.ParseFloat(usdcMarket.TotalLiquidity, 64)
-	if err != nil {
-		return err
-	}
-	usdcDecimals := float64(usdcMarket.Decimals)
-	if err != nil {
-		return err
-	}
-	totalUSDCSupplyPAR /= math.Pow(10, usdcDecimals)
 
-	totalETHSupplyPAR, err := strconv.ParseFloat(ethMarket.TotalLiquidity, 64)
-	if err != nil {
-		return err
-	}
-	ethDecimals := float64(ethMarket.Decimals)
-	if err != nil {
-		return err
-	}
-	totalETHSupplyPAR /= math.Pow(10, ethDecimals)
+	PriceETH, err := utils.GetCoinPrice("ETH")
+	totalSupplyUSD := totalSupplyETH * PriceETH
+
+	// ethMarket, err := getAssetByAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+	// if err != nil {
+	// 	return err
+	// }
 
 	deFIState := &dia.DefiProtocolState{
-		TotalUSD:  totalUSDCSupplyPAR,
-		TotalETH:  totalETHSupplyPAR,
+		TotalUSD:  totalSupplyUSD,
+		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
