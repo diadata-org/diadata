@@ -1,0 +1,136 @@
+{
+  "Coins": [
+    {
+      "Symbol": "LRC-ETH",
+      "ForeignName": "LRC-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "ETH-DAI",
+      "ForeignName": "ETH-DAI",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "ETH-USDT",
+      "ForeignName": "ETH-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "USDT-DAI",
+      "ForeignName": "USDT-DAI",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "LINK-ETH",
+      "ForeignName": "LINK-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "LRC-USDT",
+      "ForeignName": "LRC-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "KEEP-USDT",
+      "ForeignName": "KEEP-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "USDC-USDT",
+      "ForeignName": "USDC-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "DXD-ETH",
+      "ForeignName": "DXD-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "TRB-ETH",
+      "ForeignName": "TRB-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "AUC-ETH",
+      "ForeignName": "AUC-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "RPL-ETH",
+      "ForeignName": "RPL-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "PBTC-USDT",
+      "ForeignName": "PBTC-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "COMP-USDT",
+      "ForeignName": "COMP-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "PNT-USDT",
+      "ForeignName": "PNT-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "PNK-ETH",
+      "ForeignName": "PNK-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "NEST-ETH",
+      "ForeignName": "NEST-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "BTU-USDT",
+      "ForeignName": "BTU-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "RENBTC-USDT",
+      "ForeignName": "RENBTC-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "BZRX-ETH",
+      "ForeignName": "BZRX-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "LEND-ETH",
+      "ForeignName": "LEND-ETH",
+      "Exchange": "Loopring",
+      "Ignore": true
+    },
+    {
+      "Symbol": "LEND-USDT",
+      "ForeignName": "LEND-USDT",
+      "Exchange": "Loopring",
+      "Ignore": true
+    }
+  ]
+}

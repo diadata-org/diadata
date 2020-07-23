@@ -27,6 +27,8 @@ const (
 	FilterKing       = "MA120"
 	BancorExchange   = "Bancor"
 	UniSwapExchange  = "UniSwap"
+	LoopringExchange   = "Loopring"
+
 )
 
 func Exchanges() []string {
@@ -47,6 +49,7 @@ func Exchanges() []string {
 		BancorExchange,
 		UniSwapExchange,
 		UnknownExchange,
+		LoopringExchange,
 	}
 }
 
