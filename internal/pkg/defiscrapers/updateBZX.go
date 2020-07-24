@@ -1,6 +1,7 @@
 package defiscrapers
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 
 	bzxcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/bzx"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -15,11 +17,13 @@ import (
 )
 
 type BZXRate struct {
-	SupplyRate  *big.Int
-	BorrowRate  *big.Int
-	TotalSupply *big.Int
-	Decimals    uint8
-	Symbol      string
+	SupplyRate       *big.Int
+	BorrowRate       *big.Int
+	TotalSupply      *big.Int
+	TotalSupplyAsset *big.Int
+	TotalBorrowAsset *big.Int
+	Decimals         uint8
+	Symbol           string
 }
 
 type BZXProtocol struct {
@@ -43,8 +47,8 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets["SUSD"] = "0x49f4592e641820e928f9919ef4abd92a719b4b49"
 	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
 
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
-	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -72,7 +76,25 @@ func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 	if err != nil {
 		return
 	}
-	bzxrate = BZXRate{Symbol: asset, BorrowRate: borrowInterestRate, SupplyRate: supplyInterestRate, TotalSupply: totalSupply, Decimals: decimals}
+	totalAssetSupply, err := contract.TotalAssetSupply(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	totalAssetBorrow, err := contract.TotalAssetBorrow(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	// fmt.Printf("total supp and borr for asset %s: %v , %v , %v \n", asset, totalAssetSupply, totalAssetBorrow, decimals)
+
+	bzxrate = BZXRate{
+		Symbol:           asset,
+		BorrowRate:       borrowInterestRate,
+		SupplyRate:       supplyInterestRate,
+		TotalSupply:      totalSupply,
+		TotalSupplyAsset: totalAssetSupply,
+		TotalBorrowAsset: totalAssetBorrow,
+		Decimals:         decimals,
+	}
 	return
 }
 
@@ -87,30 +109,40 @@ func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
 	return
 }
 
-// func (proto *BZXProtocol) getTotalSupply() (float64, error) {
-// 	markets, err := proto.fetchALL()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	sum := float64(0)
-// 	for i := 0; i < len(markets); i++ {
-// 		marketLiquidity := markets[i].TotalSupply
-// 		if err != nil {
-// 			return 0, err
-// 		}
-// 		marketLiquidity /= math.Pow10(int(markets[i].Decimals))
-// 		marketPrice, err := strconv.ParseFloat(market.Price.PriceInEth, 64)
-// 		if err != nil {
-// 			return 0, err
-// 		}
-// 		marketPrice /= math.Pow10(18)
+func (proto *BZXProtocol) getTotalSupply() (float64, error) {
+	markets, err := proto.fetchALL()
+	if err != nil {
+		return 0, err
+	}
+	sum := float64(0)
+	for i := 0; i < len(markets); i++ {
+		fmt.Println("market: ", markets[i].Symbol)
+		// marketLiquidityInt := markets[i].TotalSupply
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// marketLiquidity, err := strconv.ParseFloat(marketLiquidityInt.String(), 64)
+		// marketLiquidity /= math.Pow10(int(markets[i].Decimals))
+		TotalDiff := big.NewInt(0).Sub(markets[i].TotalSupplyAsset, markets[i].TotalBorrowAsset)
+		marketLiquidity, err := strconv.ParseFloat(TotalDiff.String(), 64)
+		if err != nil {
+			return 0, err
+		}
+		marketLiquidity /= math.Pow10(int(markets[i].Decimals))
 
-// 		marketInEth := marketLiquidity * marketPrice
-// 		sum += marketInEth
-// 		fmt.Printf("market %s holds %v worth in ETH \n", market.Symbol, marketInEth)
-// 	}
-// 	return sum, nil
-// }
+		priceAssetUSD, err := utils.GetCoinPrice(markets[i].Symbol)
+		fmt.Println("error is: ", err)
+		if err != nil {
+			return 0, err
+		}
+
+		marketPriceUSD := marketLiquidity * priceAssetUSD
+		fmt.Printf("liquidity for asset %s:  %v \n", markets[i].Symbol, marketLiquidity)
+		sum += marketPriceUSD
+		fmt.Printf("market %s holds %v worth in ETH \n", markets[i].Symbol, marketPriceUSD)
+	}
+	return sum, nil
+}
 
 func (proto *BZXProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
@@ -148,6 +180,8 @@ func (proto *BZXProtocol) UpdateRate() error {
 
 func (proto *BZXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
+	s, _ := proto.getTotalSupply()
+	fmt.Println("usd total value: ", s)
 	usdcMarket, err := proto.fetch("USDC")
 	if err != nil {
 		return err

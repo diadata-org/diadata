@@ -108,7 +108,8 @@ func (scraper *UniSwapScraper) mainLoop() {
 		}
 		for pair, pairScraper := range scraper.pairScrapers {
 			// Sleep duration such that each pair is scraped once per hour
-			time.Sleep(time.Duration(UniswapApiDelay/len(scraper.pairScrapers)) * time.Second)
+			time.Sleep(time.Duration(10 * time.Millisecond))
+			// time.Sleep(time.Duration(UniswapApiDelay/len(scraper.pairScrapers)) * time.Second)
 
 			log.Println(pairScraper.pair.ForeignName)
 			ticker := assetMap[pairScraper.pair.ForeignName]
@@ -167,7 +168,7 @@ func (scraper *UniSwapScraper) readAssets() (pair UniSwapAssetPairs, err error) 
 	jsonData := map[string]string{
 		"query": `
          {
-  pairs(first: 1000) {
+  pairs(first: 1000, orderBy:volumeUSD, orderDirection:desc) {
     id
     token0{
       symbol

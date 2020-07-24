@@ -71,11 +71,6 @@ func getDYDXTotalSupplyUSD() (float64, error) {
 	}
 	sum := float64(0)
 	for _, market := range markets {
-		if market.Symbol == "SAI" {
-			// TO DO! Get price for SAI.
-			// Right now, there is only around 9 SAI locked though, so neglect.
-			continue
-		}
 		marketSupply, err := strconv.ParseFloat(market.TotalSupplyWei, 64)
 		if err != nil {
 			return 0, err

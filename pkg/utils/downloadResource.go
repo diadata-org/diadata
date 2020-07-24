@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -106,6 +107,7 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 
 // GetCoinPrice Gets the price in USD of coin through our API
 func GetCoinPrice(coin string) (float64, error) {
+	log.Info("Get price for ", coin)
 	type Quotation struct {
 		Symbol             string
 		Name               string
@@ -116,16 +118,37 @@ func GetCoinPrice(coin string) (float64, error) {
 		Time               time.Time
 		ITIN               string
 	}
+
+	type QuotationGecko struct {
+		ID struct {
+			Price string `json:"vs_currencies"`
+		} `json:"ids"`
+	}
 	url := "https://api.diadata.org/v1/quotation/" + coin
 	data, err := GetRequest(url)
+
+	if err == nil {
+		Quot := Quotation{}
+		err = json.Unmarshal(data, &Quot)
+		if err != nil {
+			return 0, err
+		}
+		return Quot.Price, nil
+	}
+
+	// Get price from coingecko as long as we don't have it in our API
+	log.Info("price not available on our API: ", coin)
+
+	data, err = GetRequest("https://api.coingecko.com/api/v3/simple/price?ids=" + coin + "&vs_currencies=USD")
 	if err != nil {
-		log.Error("error getting price for ", coin)
 		return 0, err
 	}
-	Quot := Quotation{}
+	Quot := QuotationGecko{}
 	err = json.Unmarshal(data, &Quot)
+	price, err := strconv.ParseFloat(Quot.ID.Price, 64)
 	if err != nil {
 		return 0, err
 	}
-	return Quot.Price, nil
+	return price, nil
+
 }
