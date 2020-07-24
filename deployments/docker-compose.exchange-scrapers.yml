@@ -11,6 +11,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   hitbtccollector:
     depends_on: [genericcollector]
@@ -22,6 +24,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   gateiocollector:
     depends_on: [genericcollector]
@@ -33,6 +37,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   bancorcollector:
     depends_on: [genericcollector]
@@ -44,6 +50,21 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+        #  uniswapcollector:
+        #depends_on: [genericcollector]
+        #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+        #    command: /bin/collector -exchange=UniSwap
+        #    networks:
+        #      - kafka-network
+        #      - redis-network
+        #    logging:
+        #      options:
+        #        max-size: "50m"
+        #    environment:
+        #      - EXEC_MODE=production
 
   genericcollector:
     build:
@@ -57,7 +78,8 @@ services:
     logging:
       options:
         max-size: "50m"
-
+    environment:
+      - EXEC_MODE=production
 
   simexcollector:
     depends_on: [genericcollector]
@@ -69,6 +91,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   bittrexcollector:
     depends_on: [genericcollector]
@@ -80,6 +104,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   lbankcollector:
     depends_on: [genericcollector]
@@ -91,6 +117,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   okexcollector:
     depends_on: [genericcollector]
@@ -102,6 +130,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   huobicollector:
     depends_on: [genericcollector]
@@ -113,6 +143,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   coinbasecollector:
     depends_on: [genericcollector]
@@ -124,6 +156,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   binancecollector:
     depends_on: [genericcollector]
@@ -137,6 +171,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   bitfinexcollector:
     depends_on: [genericcollector]
@@ -150,6 +186,8 @@ services:
         max-size: "50m"
     secrets:
       - api_bitfinex
+    environment:
+      - EXEC_MODE=production
 
   krakencollector:
     depends_on: [genericcollector]
@@ -158,9 +196,13 @@ services:
     networks:
       - kafka-network
       - redis-network
+    secrets:
+      - api_kraken
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   zbcollector:
     depends_on: [genericcollector]
@@ -172,6 +214,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   quoinecollector:
     depends_on: [genericcollector]
@@ -183,6 +227,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   bitbaycollector:
     depends_on: [genericcollector]
@@ -194,6 +240,8 @@ services:
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
 secrets:
   api_binance:

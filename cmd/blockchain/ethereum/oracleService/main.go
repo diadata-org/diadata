@@ -102,6 +102,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(10 * time.Minute)
 
+	// Compound State Data
+	rawCompoundState, err := getDefiStateFromDia("COMPOUND")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Compound state data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiState(rawCompoundState, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Compound state Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// DYDX Data
 	rawDydx, err := getDefiRatesFromDia("DYDX", "DAI")
 	if err != nil {
@@ -111,6 +124,32 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	err = updateDefiRate(rawDydx, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update DYDX Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// DYDX State Data
+	rawDydxState, err := getDefiStateFromDia("DYDX")
+	if err != nil {
+		log.Fatalf("Failed to retrieve DYDX state data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiState(rawDydxState, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update DYDX state Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// Aave Data
+	rawAave, err := getDefiRatesFromDia("AAVE", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Aave data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawAave, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Aave Oracle: %v", err)
 		return err
 	}
 	time.Sleep(10 * time.Minute)
@@ -129,13 +168,13 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	time.Sleep(10 * time.Minute)
 
 	// Bancor data
-	rawBancor, err := getBancorFromDia("USDT")
+	rawBancor, err := getDEXFromDia("Bancor", "USDT")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
 		return err
 	}
 
-	err = updateBancor(rawBancor, auth, contract)
+	err = updateDEX(rawBancor, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err
@@ -187,11 +226,11 @@ func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *o
 	return nil
 }
 
-func updateBancor(bancorData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
-	symbol := strings.ToUpper(bancorData.DataPoints[0].Series[0].Values[0][3].(string))
-	name := bancorData.DataPoints[0].Series[0].Values[0][1].(string)
+func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(dexData.DataPoints[0].Series[0].Values[0][3].(string))
+	name := dexData.DataPoints[0].Series[0].Values[0][1].(string)
 	supply := 0
-	price := bancorData.DataPoints[0].Series[0].Values[0][4].(float64)
+	price := dexData.DataPoints[0].Series[0].Values[0][4].(float64)
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for one exchange
 	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(supply))
@@ -221,6 +260,21 @@ func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *o
 	symbol := strings.ToUpper(defiRate.Asset)
 	name := strings.ToUpper(defiRate.Protocol)
 	price := defiRate.LendingRate
+	// Get 5 digits after the comma by multiplying price with 100000
+	// Set supply to 0, as we don't have a supply for fiat currencies
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := ""
+	name := strings.ToUpper(defiState.Protocol.Name) + "-state"
+	price := defiState.TotalUSD
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for fiat currencies
 	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
@@ -363,8 +417,34 @@ func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) 
 	}
 }
 
-func getBancorFromDia(symbol string) (*models.Points, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/chartPoints/MAIR120/Bancor/" + strings.ToUpper(symbol))
+// Getting defi state
+func getDefiStateFromDia(protocol string) (*dia.DefiProtocolState, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingState/" + strings.ToUpper(protocol))
+	if err != nil {
+		return nil, err
+	} else {
+		defer response.Body.Close()
+
+		if 200 != response.StatusCode {
+			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		}
+
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var b dia.DefiProtocolState
+		err = b.UnmarshalBinary(contents)
+		if err == nil {
+			return &b, nil
+		}
+		return nil, err
+	}
+}
+
+func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/chartPoints/MAIR120/" + dexname + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	} else {
