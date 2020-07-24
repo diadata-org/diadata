@@ -105,7 +105,8 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	return XMLdata, err
 }
 
-// GetCoinPrice Gets the price in USD of coin through our API
+// GetCoinPrice Gets the price in USD of coin through our API.
+// Looks it up on coingecko in case it doesn't find it there.
 func GetCoinPrice(coin string) (float64, error) {
 	log.Info("Get price for ", coin)
 	type Quotation struct {
@@ -136,13 +137,14 @@ func GetCoinPrice(coin string) (float64, error) {
 		return Quot.Price, nil
 	}
 
-	// Get price from coingecko as long as we don't have it in our API
+	// Get price from coingecko in case we don't have it in our API
 	log.Info("price not available on our API: ", coin)
 
 	data, err = GetRequest("https://api.coingecko.com/api/v3/simple/price?ids=" + coin + "&vs_currencies=USD")
 	if err != nil {
 		return 0, err
 	}
+	fmt.Println("len date: ", len(data))
 	Quot := QuotationGecko{}
 	err = json.Unmarshal(data, &Quot)
 	price, err := strconv.ParseFloat(Quot.ID.Price, 64)

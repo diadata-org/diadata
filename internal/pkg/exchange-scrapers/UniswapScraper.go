@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	UniswapApiDelay = 60 * 60
+	UniswapApiDelay = 60 * 60 * 24
 )
 
 type UniSwapTicker struct {
