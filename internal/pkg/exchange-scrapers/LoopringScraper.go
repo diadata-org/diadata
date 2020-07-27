@@ -119,7 +119,7 @@ func (s *LoopringScraper) mainLoop() {
 				//		"0.0008",  //price
 				//		"100"  //fee
 				//]
-				logger.Println("-makemap--", makemap)
+				
 
 				var symbol string
 				asset := strings.Split(makemap.Topic.Market, "-")
@@ -129,13 +129,15 @@ func (s *LoopringScraper) mainLoop() {
 					symbol = asset[1]
 				}
 				f64Price, _ := strconv.ParseFloat(makemap.Data[4], 64)
-				timestamp, _ := strconv.ParseInt(makemap.Data[0], 10, 64)
-
+				timestamp, err := strconv.ParseInt(makemap.Data[1], 10, 64)
+				if err!=nil{
+					logger.Println("Error Parsing time", err)
+				}
 				t := &dia.Trade{
 					Symbol: symbol,
 					Pair:   makemap.Topic.Market,
 					Price:  f64Price,
-					Time:   time.Unix(timestamp, 0),
+					Time:   time.Unix(timestamp/1000, 0),
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- t
