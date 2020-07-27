@@ -102,12 +102,12 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 func (s *LoopringScraper) mainLoop() {
 	for true {
 		var makemap WebSocketResponse
-
 		_, messgae, e := s.wsClient.ReadMessage()
-
 		e = json.Unmarshal(messgae, &makemap)
 		if e != nil {
-			logger.Println("Error Unmarshalling ", e)
+			//Data will not parse if message is ping
+			 s.wsClient.WriteMessage(ws.PongMessage, []byte{})
+			 logger.Println("Sending ping Message ", e)
 		} else {
 			if len(makemap.Data) > 0 {
 
@@ -132,15 +132,13 @@ func (s *LoopringScraper) mainLoop() {
 			//]
 			//	}
 
-
  				asset := strings.Split(makemap.Topic.Market, "-")
-
 				f64Price, _ := strconv.ParseFloat(makemap.Data[7], 64)
 				timestamp, err := strconv.ParseInt(makemap.Data[1], 10, 64)
 				if err!=nil{
 					logger.Println("Error Parsing time", err)
 				}
-				volume, err := strconv.ParseFloat(makemap.Data[1], 64)
+				volume, err := strconv.ParseFloat(makemap.Data[3], 64)
 				if err!=nil{
 					logger.Println("Error Parsing time", err)
 				}
@@ -221,20 +219,6 @@ func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	if err := s.wsClient.WriteJSON(wr); err != nil {
 		logger.Println(err.Error())
 	}
-	tick := time.NewTicker(15 * time.Second)
-	defer tick.Stop()
-	go func() {
-		for {
-			select {
-			case <-tick.C:
-				err := s.wsClient.WriteMessage(ws.PingMessage, []byte{})
-				if err != nil {
-					logger.Errorf("error experienced pinging loopring, err: %s", err)
-					return
-				}
-			}
-		}
-	}()
 
 	return ps, nil
 }
