@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"math"
 	"reflect"
 	"strconv"
 	"sync"
@@ -16,7 +15,9 @@ import (
 )
 
 const (
-	BancorApiDelay = 10*time.Second + 500*time.Millisecond
+	// Set delay to one day and divide by number of pairs. In this way, we can
+	// use 24h volume as averaged trade volume
+	BancorApiDelay = 60 * 60 * 24
 )
 
 type BancorTicker struct {
@@ -212,34 +213,30 @@ func (scraper *BancorScraper) mainLoop() {
 			break
 		}
 		for pair, pairScraper := range scraper.pairScrapers {
-			time.Sleep(BancorApiDelay)
+			time.Sleep(time.Duration(BancorApiDelay/len(scraper.pairScrapers)) * time.Second)
 
 			var ticker BancorTicker
 			tickerData, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/" + pairScraper.pair.Symbol + "/ticker?fromCurrencyCode=BNT")
-
 			if err != nil {
-				log.Error("Error Getting Price", err)
+				log.Error("Error getting ticker: ", err)
 				continue
 			}
-
 			err = json.Unmarshal(tickerData, &ticker)
 			if err != nil {
-				log.Error("Error Getting Price", err)
+				log.Error("Error unmarshalling ticker: ", err)
 				continue
 			}
 
-			volume, err := strconv.ParseFloat(ticker.Data.TotalSupply, 64)
-			volume /= math.Pow10(ticker.Data.Decimals)
+			price, err := strconv.ParseFloat(ticker.Data.Price24H, 64)
 			if err != nil {
-				log.Error("Volume isn't parseable float")
-				continue
+				log.Error("error parsing price24H: ", err)
 			}
 
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
-				Price:          ticker.Data.Price,
-				Volume:         volume,
+				Price:          price,
+				Volume:         ticker.Data.Volume24HD,
 				Time:           time.Now(),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
