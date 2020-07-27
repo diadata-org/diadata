@@ -111,33 +111,45 @@ func (s *LoopringScraper) mainLoop() {
 		} else {
 			if len(makemap.Data) > 0 {
 
-				//	[
-				//		"1584717910000",  //timestamp
-				//		"123456789",  //tradeId
-				//		"buy",  //side
-				//		"500000",  //size
-				//		"0.0008",  //price
-				//		"100"  //fee
-				//]
-				
+			//	{
+			//		"topic": {
+			//		"topic": "ticker",
+			//			"market": "LRC-ETH"
+			//	},
+			//		"ts": 1584717910000,
+			//		"data": [
+			//		"LRC-ETH",  //market
+			//		"1584717910000",  //timestamp
+			//		"5000000",  //size
+			//		"1000",  //volume
+			//		"0.0002",  //open
+			//		"0.00025",  //high
+			//		"0.0002",  //low
+			//		"0.00025",  //close
+			//		"5000",  //count
+			//		"0.00026",  //bid
+			//		"0.00027"  //ask
+			//]
+			//	}
 
-				var symbol string
-				asset := strings.Split(makemap.Topic.Market, "-")
-				if makemap.Data[2] == "sell" {
-					symbol = asset[0]
-				} else {
-					symbol = asset[1]
-				}
-				f64Price, _ := strconv.ParseFloat(makemap.Data[4], 64)
+
+ 				asset := strings.Split(makemap.Topic.Market, "-")
+
+				f64Price, _ := strconv.ParseFloat(makemap.Data[7], 64)
 				timestamp, err := strconv.ParseInt(makemap.Data[1], 10, 64)
 				if err!=nil{
 					logger.Println("Error Parsing time", err)
 				}
+				volume, err := strconv.ParseFloat(makemap.Data[1], 64)
+				if err!=nil{
+					logger.Println("Error Parsing time", err)
+				}
 				t := &dia.Trade{
-					Symbol: symbol,
+					Symbol: asset[0],
 					Pair:   makemap.Topic.Market,
 					Price:  f64Price,
 					Time:   time.Unix(timestamp/1000, 0),
+					Volume:volume,
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- t
