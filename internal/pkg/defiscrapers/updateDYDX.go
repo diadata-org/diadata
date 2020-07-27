@@ -80,20 +80,20 @@ func getDYDXTotalSupplyUSD() (float64, error) {
 			return 0, err
 		}
 		marketLiquidity := (marketSupply - marketBorrow) / math.Pow10(market.Currency.Decimals)
-		// priceCoin, err := utils.GetCoinPrice(market.Symbol)
-		// if err != nil {
-		// 	return 0, err
-		// }
-		priceCoin := float64(0)
-		if market.Symbol == "SAI" {
-			// hotfix because coingecko is down. Change asap
-			priceCoin = float64(1.42)
-		} else {
-			priceCoin, err = utils.GetCoinPrice(market.Symbol)
-			if err != nil {
-				return 0, err
-			}
+		priceCoin, err := utils.GetCoinPrice(market.Symbol)
+		if err != nil {
+			return 0, err
 		}
+		// priceCoin := float64(0)
+		// if market.Symbol == "SAI" {
+		// 	// hotfix because coingecko is down. Impact currently low as total supply around 10. Change asap!
+		// 	priceCoin = float64(1.42)
+		// } else {
+		// 	priceCoin, err = utils.GetCoinPrice(market.Symbol)
+		// 	if err != nil {
+		// 		return 0, err
+		// 	}
+		// }
 
 		marketPrice := marketLiquidity * priceCoin
 		sum += marketPrice

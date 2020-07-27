@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"reflect"
 	"strconv"
 	"sync"
@@ -228,6 +229,7 @@ func (scraper *BancorScraper) mainLoop() {
 			}
 
 			volume, err := strconv.ParseFloat(ticker.Data.TotalSupply, 64)
+			volume /= math.Pow10(ticker.Data.Decimals)
 			if err != nil {
 				log.Error("Volume isn't parseable float")
 				continue
@@ -242,7 +244,7 @@ func (scraper *BancorScraper) mainLoop() {
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
 			}
-			log.Info("Got Trade")
+			log.Info("Got Trade: ", trade)
 
 			pairScraper.parent.chanTrades <- trade
 		}

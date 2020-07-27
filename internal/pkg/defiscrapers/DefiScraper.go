@@ -11,8 +11,8 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refrestRateDelay  = time.Second * 10 * 1
-	refreshStateDelay = time.Second * 10 * 1
+	refreshRateDelay  = time.Second * 60 * 1
+	refreshStateDelay = time.Second * 60 * 1
 )
 
 type nothing struct{}
@@ -24,7 +24,7 @@ func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper 
 		shutdown:      make(chan nothing),
 		shutdownDone:  make(chan nothing),
 		error:         nil,
-		tickerRate:    time.NewTicker(refrestRateDelay),
+		tickerRate:    time.NewTicker(refreshRateDelay),
 		tickerState:   time.NewTicker(refreshStateDelay),
 		datastore:     datastore,
 		chanDefiRate:  make(chan *dia.DefiRate),

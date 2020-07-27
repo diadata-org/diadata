@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"sync"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 
 	defiscraper "github.com/diadata-org/diadata/internal/pkg/defiscrapers"
 	models "github.com/diadata-org/diadata/pkg/model"

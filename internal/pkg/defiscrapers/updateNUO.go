@@ -3,11 +3,13 @@ package defiscrapers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -123,11 +125,41 @@ func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 	return
 }
 
-func (proto *NuoProtocol) UpdateRate() error {
-	log.Printf("Updating DEFI Rate for %+v\\n ", proto.protocol.Name)
+func (proto *NuoProtocol) getTotalSupply() (float64, error) {
 	markets, err := proto.fetchALL()
 	if err != nil {
-		log.Error("error fetching rates %+v\\n ", err)
+		return 0, err
+	}
+
+	sum := float64(0)
+	for _, market := range markets.Data.Reserves {
+		totalSupplyAsset := market.TotalBalance
+		// priceCoin := float64(0)
+		// if market.Currency.ShortName == "fAI" {
+		// 	// hotfix because coingecko is down. Impact currently low as total supply around 10. Change asap!
+		// 	priceCoin = float64(1.62)
+		// } else {
+		// 	priceCoin, err = utils.GetCoinPrice(market.Currency.ShortName)
+		// 	if err != nil {
+		// 		return 0, err
+		// 	}
+		// }
+		priceCoin, err := utils.GetCoinPrice(market.Currency.ShortName)
+		if err != nil {
+			return 0, err
+		}
+		marketPrice := totalSupplyAsset * priceCoin
+		sum += marketPrice
+		fmt.Printf("market %s holds %v worth in USD \n", market.Currency.ShortName, marketPrice)
+	}
+	return sum, nil
+}
+
+func (proto *NuoProtocol) UpdateRate() error {
+	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
+	markets, err := proto.fetchALL()
+	if err != nil {
+		log.Error("error fetching rates %+v\n ", err)
 		return err
 	}
 
@@ -148,16 +180,20 @@ func (proto *NuoProtocol) UpdateRate() error {
 }
 
 func (proto *NuoProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\\n ", proto.protocol)
-	usdcMarket, err := proto.fetch("USDC")
+	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
+	totalSupplyUSD, err := proto.getTotalSupply()
 	if err != nil {
 		return err
 	}
-	ethMarket, err := proto.fetch("ETH")
+	priceETH, err := utils.GetCoinPrice("ETH")
+	if err != nil {
+		return err
+	}
+	totalSupplyETH := totalSupplyUSD / priceETH
 
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  usdcMarket.TotalBalance,
-		TotalETH:  ethMarket.TotalBalance,
+		TotalUSD:  totalSupplyUSD,
+		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}

@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -125,6 +124,10 @@ func GetCoinPrice(coin string) (float64, error) {
 			Price string `json:"vs_currencies"`
 		} `json:"ids"`
 	}
+
+	type QuotationCrptcmp struct {
+		Price float64 `json:"USD"`
+	}
 	url := "https://api.diadata.org/v1/quotation/" + coin
 	data, err := GetRequest(url)
 
@@ -137,20 +140,30 @@ func GetCoinPrice(coin string) (float64, error) {
 		return Quot.Price, nil
 	}
 
-	// Get price from coingecko in case we don't have it in our API
+	// Get price from cryptocompare in case we don't have it in our API
 	log.Info("price not available on our API: ", coin)
-
-	data, err = GetRequest("https://api.coingecko.com/api/v3/simple/price?ids=" + coin + "&vs_currencies=USD")
+	data, err = GetRequest("https://min-api.cryptocompare.com/data/price?fsym=" + coin + "&tsyms=USD")
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println("len date: ", len(data))
-	Quot := QuotationGecko{}
+	Quot := QuotationCrptcmp{}
 	err = json.Unmarshal(data, &Quot)
-	price, err := strconv.ParseFloat(Quot.ID.Price, 64)
 	if err != nil {
 		return 0, err
 	}
+	price := Quot.Price
+
+	// // Retrieval through coingecko. Is down at the moment.
+	// data, err = GetRequest("https://api.coingecko.com/api/v3/simple/price?ids=" + coin + "&vs_currencies=USD")
+	// if err != nil {
+	// 	return 0, err
+	// }
+	// Quot := QuotationGecko{}
+	// err = json.Unmarshal(data, &Quot)
+	// price, err := strconv.ParseFloat(Quot.ID.Price, 64)
+	// if err != nil {
+	// 	return 0, err
+	// }
 	return price, nil
 
 }

@@ -59,6 +59,10 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 	var contract *bzxcontract.LoanTokenLogicV4Caller
 	contract, err = bzxcontract.NewLoanTokenLogicV4Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 	supplyInterestRate, err := contract.SupplyInterestRate(&bind.CallOpts{})
 	if err != nil {
 		return
@@ -116,30 +120,16 @@ func (proto *BZXProtocol) getTotalSupply() (float64, error) {
 	}
 	sum := float64(0)
 	for i := 0; i < len(markets); i++ {
-		fmt.Println("market: ", markets[i].Symbol)
-		// marketLiquidityInt := markets[i].TotalSupply
-		// if err != nil {
-		// 	return 0, err
-		// }
-		// marketLiquidity, err := strconv.ParseFloat(marketLiquidityInt.String(), 64)
-		// marketLiquidity /= math.Pow10(int(markets[i].Decimals))
+
 		TotalDiff := big.NewInt(0).Sub(markets[i].TotalSupplyAsset, markets[i].TotalBorrowAsset)
-		marketLiquidity, err := strconv.ParseFloat(TotalDiff.String(), 64)
+		marketLiquidityUSD, err := strconv.ParseFloat(TotalDiff.String(), 64)
 		if err != nil {
 			return 0, err
 		}
-		marketLiquidity /= math.Pow10(int(markets[i].Decimals))
-
-		priceAssetUSD, err := utils.GetCoinPrice(markets[i].Symbol)
-		fmt.Println("error is: ", err)
-		if err != nil {
-			return 0, err
-		}
-
-		marketPriceUSD := marketLiquidity * priceAssetUSD
-		fmt.Printf("liquidity for asset %s:  %v \n", markets[i].Symbol, marketLiquidity)
-		sum += marketPriceUSD
-		fmt.Printf("market %s holds %v worth in ETH \n", markets[i].Symbol, marketPriceUSD)
+		marketLiquidityUSD /= math.Pow10(int(markets[i].Decimals))
+		fmt.Println("sum is now: ", sum)
+		sum += marketLiquidityUSD
+		// fmt.Printf("market %s holds %v worth in USD \n", markets[i].Symbol, marketLiquidityUSD)
 	}
 	return sum, nil
 }
@@ -180,31 +170,18 @@ func (proto *BZXProtocol) UpdateRate() error {
 
 func (proto *BZXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
-	s, _ := proto.getTotalSupply()
-	fmt.Println("usd total value: ", s)
-	usdcMarket, err := proto.fetch("USDC")
+	totalSupplyUSD, err := proto.getTotalSupply()
 	if err != nil {
 		return err
 	}
-	ethMarket, err := proto.fetch("ETH")
+	priceETH, err := utils.GetCoinPrice("ETH")
+	fmt.Println("error getting price: ", err)
 	if err != nil {
 		return err
 	}
-
-	totalSupplyUSDC, err := strconv.ParseFloat(usdcMarket.TotalSupply.String(), 64)
-	if err != nil {
-		return err
-	}
-	totalSupplyUSDC /= math.Pow(10, float64(usdcMarket.Decimals))
-
-	totalSupplyETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
-	if err != nil {
-		return err
-	}
-	totalSupplyETH /= math.Pow(10, float64(ethMarket.Decimals))
-
+	totalSupplyETH := totalSupplyUSD / priceETH
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalSupplyUSDC,
+		TotalUSD:  totalSupplyUSD,
 		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
