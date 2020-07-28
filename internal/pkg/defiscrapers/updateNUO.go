@@ -134,16 +134,6 @@ func (proto *NuoProtocol) getTotalSupply() (float64, error) {
 	sum := float64(0)
 	for _, market := range markets.Data.Reserves {
 		totalSupplyAsset := market.TotalBalance
-		// priceCoin := float64(0)
-		// if market.Currency.ShortName == "fAI" {
-		// 	// hotfix because coingecko is down. Impact currently low as total supply around 10. Change asap!
-		// 	priceCoin = float64(1.62)
-		// } else {
-		// 	priceCoin, err = utils.GetCoinPrice(market.Currency.ShortName)
-		// 	if err != nil {
-		// 		return 0, err
-		// 	}
-		// }
 		priceCoin, err := utils.GetCoinPrice(market.Currency.ShortName)
 		if err != nil {
 			return 0, err

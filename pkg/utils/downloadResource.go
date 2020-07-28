@@ -107,7 +107,7 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 // GetCoinPrice Gets the price in USD of coin through our API.
 // Looks it up on coingecko in case it doesn't find it there.
 func GetCoinPrice(coin string) (float64, error) {
-	log.Info("Get price for ", coin)
+	// log.Info("Get price for ", coin)
 	type Quotation struct {
 		Symbol             string
 		Name               string

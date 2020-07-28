@@ -76,8 +76,8 @@ func (proto *DDEXProtocol) UpdateRate() error {
 			Timestamp:     time.Now(),
 			Asset:         market.Symbol,
 			Protocol:      proto.protocol.Name,
-			LendingRate:   totalSupplyAPR,
-			BorrowingRate: totalBorrowAPR,
+			LendingRate:   totalSupplyAPR * 100,
+			BorrowingRate: totalBorrowAPR * 100,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.scraper.RateChannel() <- asset
@@ -100,36 +100,41 @@ func getDDEXAssetByAddress(address string) (reserve LendingPool, err error) {
 	return
 }
 
-func (proto *DDEXProtocol) UpdateState() error {
-	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
-	usdcMarket, err := getDDEXAssetByAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+func (proto *DDEXProtocol) getTotalSupply() (sum float64, err error) {
+	markets, err := fetchddexmarkets()
 	if err != nil {
-		return err
-	}
-	ethMarket, err := getDDEXAssetByAddress("0x000000000000000000000000000000000000000e")
-	if err != nil {
-		return err
-	}
-	totalSupplyUSDC, err := strconv.ParseFloat(usdcMarket.TotalSupplyAmount, 64)
-	if err != nil {
-		return err
-	}
-	totalBorrowUSDC, err := strconv.ParseFloat(usdcMarket.TotalBorrowAmount, 64)
-	if err != nil {
-		return err
-	}
-	totalBorrowETH, err := strconv.ParseFloat(ethMarket.TotalBorrowAmount, 64)
-	if err != nil {
-		return err
-	}
-	totalSupplyETH, err := strconv.ParseFloat(ethMarket.TotalSupplyAmount, 64)
-	if err != nil {
-		return err
+		return 0, err
 	}
 
+	for i := 0; i < len(markets.Data.LendingPoolStats); i++ {
+		coinPrice, err := utils.GetCoinPrice(markets.Data.LendingPoolStats[i].Symbol)
+		if err != nil {
+			return 0, err
+		}
+		totalSupplyAsset, err := strconv.ParseFloat(markets.Data.LendingPoolStats[i].TotalSupplyAmount, 64)
+		if err != nil {
+			return 0, err
+		}
+		sum += coinPrice * totalSupplyAsset
+	}
+	return
+}
+
+func (proto *DDEXProtocol) UpdateState() error {
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
+	totalSupplyUSD, err := proto.getTotalSupply()
+	if err != nil {
+		return err
+	}
+	priceETH, err := utils.GetCoinPrice("ETH")
+	if err != nil {
+		return err
+	}
+	totalSupplyETH := totalSupplyUSD / priceETH
+
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalSupplyUSDC + totalBorrowUSDC,
-		TotalETH:  totalBorrowETH + totalSupplyETH,
+		TotalUSD:  totalSupplyUSD,
+		TotalETH:  totalSupplyETH,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
