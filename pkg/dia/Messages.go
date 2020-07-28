@@ -30,11 +30,12 @@ type Pair struct {
 
 type Pairs []Pair
 
+// Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
 	Symbol            string
 	Pair              string
 	Price             float64
-	Volume            float64 // negative if result of Market order Sell
+	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time
 	ForeignTradeID    string
 	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
