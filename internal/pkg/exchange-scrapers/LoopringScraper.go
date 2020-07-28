@@ -98,6 +98,32 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 	return s
 }
 
+
+func (s *LoopringScraper) reconnectToWS() {
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(_LoopringSocketurl, nil)
+
+	if err != nil {
+		println(err.Error())
+	}
+	s.wsClient = SwConn
+ }
+
+func (s *LoopringScraper) subscribeToALL() {
+
+	for key := range s.pairScrapers {
+		lptopic := LoopringTopic{Market: key, Topic: "ticker", Count: 20, Snapshot: true}
+
+		var topics []LoopringTopic
+		topics = append(topics, lptopic)
+		wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
+
+		if err := s.wsClient.WriteJSON(wr); err != nil {
+			logger.Println(err.Error())
+		}
+	}
+}
+
 // runs in a goroutine until s is closed
 func (s *LoopringScraper) mainLoop() {
 	for true {
@@ -106,8 +132,8 @@ func (s *LoopringScraper) mainLoop() {
 		e = json.Unmarshal(messgae, &makemap)
 		if e != nil {
 			//Data will not parse if message is ping
-			 s.wsClient.WriteMessage(ws.PongMessage, []byte{})
-			 logger.Println("Sending ping Message ", e)
+			s.reconnectToWS()
+			s.subscribeToALL()
 		} else {
 			if len(makemap.Data) > 0 {
 
