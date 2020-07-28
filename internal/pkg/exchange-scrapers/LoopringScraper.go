@@ -3,14 +3,15 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia"
-	utils "github.com/diadata-org/diadata/pkg/utils"
-	ws "github.com/gorilla/websocket"
 	"math"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	utils "github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
 )
 
 var _LoopringSocketurl string = "wss://ws.loopring.io/v2/ws"
@@ -27,7 +28,7 @@ type WebSocketResponse struct {
 		Market string `json:"market"`
 	} `json:"topic"`
 	Ts   int64      `json:"ts"`
-	Data []string `json:"data"`
+	Data [][]string `json:"data"`
 }
 type LoopringTopic struct {
 	Topic    string `json:"topic"`
@@ -58,9 +59,8 @@ type LoopringMarket struct {
 	} `json:"data"`
 }
 
-
 type LoopringScraper struct {
-	wsClient *ws.Conn
+	wsClient      *ws.Conn
 	decimalsAsset map[string]float64
 	// signaling channels for session initialization and finishing
 	//TODO: Channel not used. Consider removing or refactoring
@@ -94,7 +94,7 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 	decimalAsset["AUC"] = 18
 	decimalAsset["RPL"] = 18
 	decimalAsset["WBTC"] = 8
-	decimalAsset["renBTC"] = 8
+	decimalAsset["RENBTC"] = 8
 	decimalAsset["PAX"] = 18
 	decimalAsset["MKR"] = 18
 	decimalAsset["BUSD"] = 18
@@ -115,13 +115,13 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 	decimalAsset["GRID"] = 12
 
 	s := &LoopringScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*LoopringPairScraper),
-		exchangeName: exchangeName,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		decimalsAsset:decimalAsset,
+		shutdown:      make(chan nothing),
+		shutdownDone:  make(chan nothing),
+		pairScrapers:  make(map[string]*LoopringPairScraper),
+		exchangeName:  exchangeName,
+		error:         nil,
+		chanTrades:    make(chan *dia.Trade),
+		decimalsAsset: decimalAsset,
 	}
 
 	var wsDialer ws.Dialer
@@ -135,7 +135,6 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 	return s
 }
 
-
 func (s *LoopringScraper) reconnectToWS() {
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_LoopringSocketurl, nil)
@@ -144,12 +143,12 @@ func (s *LoopringScraper) reconnectToWS() {
 		println(err.Error())
 	}
 	s.wsClient = SwConn
- }
+}
 
 func (s *LoopringScraper) subscribeToALL() {
 
 	for key := range s.pairScrapers {
-		lptopic := LoopringTopic{Market: key, Topic: "ticker", Count: 20, Snapshot: true}
+		lptopic := LoopringTopic{Market: key, Topic: "trade", Count: 20, Snapshot: true}
 
 		var topics []LoopringTopic
 		topics = append(topics, lptopic)
@@ -174,51 +173,32 @@ func (s *LoopringScraper) mainLoop() {
 		} else {
 			if len(makemap.Data) > 0 {
 
-			//	{
-			//		"topic": {
-			//		"topic": "ticker",
-			//			"market": "LRC-ETH"
-			//	},
-			//		"ts": 1584717910000,
-			//		"data": [
-			//		"LRC-ETH",  //market
-			//		"1584717910000",  //timestamp
-			//		"5000000",  //size
-			//		"1000",  //volume
-			//		"0.0002",  //open
-			//		"0.00025",  //high
-			//		"0.0002",  //low
-			//		"0.00025",  //close
-			//		"5000",  //count
-			//		"0.00026",  //bid
-			//		"0.00027"  //ask
-			//]
-			//	}
-
- 				asset := strings.Split(makemap.Topic.Market, "-")
-				f64Price, _ := strconv.ParseFloat(makemap.Data[7], 64)
-				timestamp, err := strconv.ParseInt(makemap.Data[1], 10, 64)
-				if err!=nil{
+				asset := strings.Split(makemap.Topic.Market, "-")
+				f64Price, _ := strconv.ParseFloat(makemap.Data[0][4], 64)
+				timestamp, err := strconv.ParseInt(makemap.Data[0][0], 10, 64)
+				if err != nil {
 					logger.Println("Error Parsing time", err)
 				}
-				volume, err := strconv.ParseFloat(makemap.Data[2], 64)
-				if err!=nil{
+				volume, err := strconv.ParseFloat(makemap.Data[0][3], 64)
+				if err != nil {
 					logger.Println("Error Parsing time", err)
 				}
-				
-				volume = volume/math.Pow(10,s.decimalsAsset[asset[0]])
+				volume = volume / math.Pow(10, s.decimalsAsset[asset[0]])
+				if makemap.Data[0][2] == "SELL" {
+					volume = -volume
+				}
 				t := &dia.Trade{
 					Symbol: asset[0],
 					Pair:   makemap.Topic.Market,
 					Price:  f64Price,
 					Time:   time.Unix(timestamp/1000, 0),
-					Volume:volume,
+					Volume: volume,
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- t
 				logger.Println("-Got trade--", t)
 
-			}else{
+			} else {
 				logger.Println("No data is received")
 			}
 		}
