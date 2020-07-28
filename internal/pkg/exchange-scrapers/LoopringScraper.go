@@ -6,6 +6,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+	"math"
 	"strconv"
 	"strings"
 	"sync"
@@ -60,6 +61,7 @@ type LoopringMarket struct {
 
 type LoopringScraper struct {
 	wsClient *ws.Conn
+	decimalsAsset map[string]float64
 	// signaling channels for session initialization and finishing
 	//TODO: Channel not used. Consider removing or refactoring
 	shutdown     chan nothing
@@ -78,6 +80,40 @@ type LoopringScraper struct {
 // NewLoopringScraper returns a new LoopringScraper for the given pair
 func NewLoopringScraper(exchangeName string) *LoopringScraper {
 
+	decimalAsset := make(map[string]float64)
+	decimalAsset["ETH"] = 18
+	decimalAsset["WETH"] = 18
+	decimalAsset["LRC"] = 18
+	decimalAsset["USDT"] = 6
+	decimalAsset["DAI"] = 18
+	decimalAsset["LINK"] = 18
+	decimalAsset["KEEP"] = 18
+	decimalAsset["USDC"] = 6
+	decimalAsset["DXD"] = 18
+	decimalAsset["TRB"] = 18
+	decimalAsset["AUC"] = 18
+	decimalAsset["RPL"] = 18
+	decimalAsset["WBTC"] = 8
+	decimalAsset["renBTC"] = 8
+	decimalAsset["PAX"] = 18
+	decimalAsset["MKR"] = 18
+	decimalAsset["BUSD"] = 18
+	decimalAsset["SNX"] = 18
+	decimalAsset["GNO"] = 18
+	decimalAsset["LEND"] = 18
+	decimalAsset["REN"] = 18
+	decimalAsset["REP"] = 18
+	decimalAsset["BNT"] = 18
+	decimalAsset["PBTC"] = 18
+	decimalAsset["COMP"] = 18
+	decimalAsset["PNT"] = 18
+	decimalAsset["PNK"] = 18
+	decimalAsset["NEST"] = 18
+	decimalAsset["BTU"] = 18
+	decimalAsset["BZRX"] = 18
+	decimalAsset["VBZRX"] = 18
+	decimalAsset["GRID"] = 12
+
 	s := &LoopringScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -85,6 +121,7 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 		exchangeName: exchangeName,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		decimalsAsset:decimalAsset,
 	}
 
 	var wsDialer ws.Dialer
@@ -164,10 +201,12 @@ func (s *LoopringScraper) mainLoop() {
 				if err!=nil{
 					logger.Println("Error Parsing time", err)
 				}
-				volume, err := strconv.ParseFloat(makemap.Data[3], 64)
+				volume, err := strconv.ParseFloat(makemap.Data[2], 64)
 				if err!=nil{
 					logger.Println("Error Parsing time", err)
 				}
+				
+				volume = volume/math.Pow(10,s.decimalsAsset[asset[0]])
 				t := &dia.Trade{
 					Symbol: asset[0],
 					Pair:   makemap.Topic.Market,
