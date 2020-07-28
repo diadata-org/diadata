@@ -15,6 +15,20 @@ services:
       options:
         max-size: "50m"
 
+  bzxcraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type BZX
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   compoundscraper:
     depends_on: [genericdefiratescraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest

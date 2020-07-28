@@ -89,6 +89,19 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	// bZx Data
+	rawBzx, err := getDefiRatesFromDia("BZX", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawBzx, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update bZx Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// Compound Data
 	rawCompound, err := getDefiRatesFromDia("COMPOUND", "DAI")
 	if err != nil {

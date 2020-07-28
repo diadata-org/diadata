@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	watchdogDelay = 60.0 * 3.5
+	watchdogDelay = 60.0 * 20
 )
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
