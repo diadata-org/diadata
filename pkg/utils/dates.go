@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	cal "github.com/rickar/cal"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -108,30 +107,6 @@ func GetHolidays(workdays []time.Time, dateInit, dateFinal time.Time) []time.Tim
 	return holidays
 }
 
-// GetHolidaysZone returns a slice of dates which are holidays in @zone between @dateInit and @dateFinal
-func GetHolidaysZone(zone string, dateInit, dateFinal time.Time) (holidays []time.Time, err error) {
-	c := LocalCal(zone)
-	if SameDays(dateInit, dateFinal) {
-		if c.IsHoliday(dateInit) {
-			holidays = []time.Time{dateInit}
-			return
-		}
-		return []time.Time{}, nil
-	}
-	if dateInit.After(dateFinal) {
-		log.Error("The final date cannot be smaller than the initial date.")
-		err = errors.New("date error")
-		return
-	}
-	for dateFinal.After(dateInit) {
-		if c.IsHoliday(dateInit) {
-			holidays = append(holidays, dateInit)
-		}
-		dateInit = dateInit.Add(time.Hour * 24)
-	}
-	return
-}
-
 // GetYesterday returns the day before @date in the world of strings, formatted as @layout
 func GetYesterday(date, layout string) string {
 	dateTime, err := time.Parse(layout, date)
@@ -150,57 +125,4 @@ func GetTomorrow(date, layout string) string {
 	}
 	tomorrow := dateTime.AddDate(0, 0, 1)
 	return tomorrow.Format(layout)
-}
-
-// LocalCal returns a (pointer to a) calendar in the country/zone given by the string @zone.
-func LocalCal(zone string) *cal.Calendar {
-	c := cal.NewCalendar()
-	switch zone {
-	case "Australia":
-		cal.AddAustralianHolidays(c)
-	case "Austria":
-		cal.AddAustrianHolidays(c)
-	case "Belgium":
-		cal.AddBelgiumHolidays(c)
-	case "Canada":
-		cal.AddCanadianHolidays(c)
-	case "Czech":
-		cal.AddCzechHolidays(c)
-	case "Danmark":
-		cal.AddDanishHolidays(c)
-	case "Ecb":
-		cal.AddEcbHolidays(c)
-	case "France":
-		cal.AddFranceHolidays(c)
-	case "Germany":
-		cal.AddGermanHolidays(c)
-	case "Italy":
-		cal.AddItalianHolidays(c)
-	case "Netherlands":
-		cal.AddDutchHolidays(c)
-	case "NewZealand":
-		cal.AddNewZealandHoliday(c)
-	case "Norway":
-		cal.AddNorwegianHolidays(c)
-	case "Poland":
-		cal.AddPolandHolidays(c)
-	case "Slowakia":
-		cal.AddSlovakHolidays(c)
-	case "SouthAfrica":
-		cal.AddSouthAfricanHolidays(c)
-	case "Spain":
-		cal.AddSpainHolidays(c)
-	case "Sweden":
-		cal.AddSwedishHolidays(c)
-	case "UK":
-		cal.AddBritishHolidays(c)
-	case "US":
-		cal.AddUsHolidays(c)
-	case "Ukrania":
-		cal.AddUkraineHolidays(c)
-	default:
-		cal.AddEcbHolidays(c)
-	}
-
-	return c
 }

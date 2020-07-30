@@ -2,14 +2,15 @@ package scrapers
 
 import (
 	"errors"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/jjjjpppp/quoinex-go-client/v2"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"strconv"
-	"sync"
-	"time"
 )
 
 const (
@@ -113,7 +114,7 @@ func (scraper *QuoineScraper) mainLoop() {
 				Price:          price,
 				Volume:         volume,
 				Time:           time.Unix(int64(executions.Models[0].CreatedAt), 0),
-				ForeignTradeID: strconv.Itoa(executions.Models[0].ID),
+				ForeignTradeID: strconv.Itoa(int(executions.Models[0].ID)),
 				Source:         scraper.exchangeName,
 			}
 
@@ -174,11 +175,7 @@ func (scraper *QuoineScraper) readProductIds() error {
 
 	for _, prod := range products {
 		// create a pair -> id mapping
-		intID, err := strconv.Atoi(prod.ID)
-		if err != nil {
-			continue
-		}
-		scraper.productPairIds[prod.CurrencyPairCode] = intID
+		scraper.productPairIds[prod.CurrencyPairCode] = int(prod.ID)
 	}
 
 	return nil

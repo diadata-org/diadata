@@ -199,7 +199,7 @@ func (s *LoopringScraper) mainLoop() {
 				logger.Println("-Got trade--", t)
 
 			} else {
-				logger.Println("No data is received")
+				// logger.Println("No data is received")
 			}
 		}
 	}
