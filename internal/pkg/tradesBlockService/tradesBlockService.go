@@ -2,13 +2,14 @@ package tradesBlockService
 
 import (
 	"errors"
-	"github.com/cnf/structhash"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/cnf/structhash"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type nothing struct{}

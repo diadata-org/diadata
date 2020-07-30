@@ -38,10 +38,10 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	return false
 }
 
-func configFileConnectors(exchange string) string {
+func ConfigFileConnectors(exchange string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
-	if dir == "/root" {
+	if dir == "/root" || dir == "/home" {
 		return "/config/" + exchange + ".json" //hack for docker...
 	}
 	if dir == "/home/travis" {
@@ -57,7 +57,7 @@ func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 	if exchange == "" {
 		for _, e := range dia.Exchanges() {
 			var c = ConfigCollectors{}
-			file := configFileConnectors(e)
+			file := ConfigFileConnectors(e)
 			err := gonfig.GetConf(file, &c)
 			if err != nil {
 				log.Error("error loading <", file, "> ", err)
@@ -67,7 +67,7 @@ func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 			}
 		}
 	} else {
-		file := configFileConnectors(exchange)
+		file := ConfigFileConnectors(exchange)
 		err := gonfig.GetConf(file, &connectorConfig)
 		if err != nil {
 			log.Error("error loading <", file, "> ", err)

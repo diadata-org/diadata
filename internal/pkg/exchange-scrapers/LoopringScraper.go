@@ -280,8 +280,9 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar.Data {
+			symbols := strings.Split(p.Market, "-")
 			pairs = append(pairs, dia.Pair{
-				Symbol:      p.Market,
+				Symbol:      symbols[0],
 				ForeignName: p.Market,
 				Exchange:    s.exchangeName,
 			})

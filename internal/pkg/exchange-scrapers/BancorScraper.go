@@ -206,6 +206,8 @@ func NewBancorScraper(exchangeName string) *BancorScraper {
 
 func (scraper *BancorScraper) mainLoop() {
 	scraper.run = true
+	pairs, _ := scraper.FetchAvailablePairs()
+	numPairs := len(pairs)
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
 			scraper.error = errors.New("bancor: No pairs to scrap provided")
@@ -213,7 +215,8 @@ func (scraper *BancorScraper) mainLoop() {
 			break
 		}
 		for pair, pairScraper := range scraper.pairScrapers {
-			time.Sleep(time.Duration(BancorApiDelay/len(scraper.pairScrapers)) * time.Second)
+			// Sleep such that each pair is scraped once per day
+			time.Sleep(time.Duration(BancorApiDelay/numPairs) * time.Second)
 
 			var ticker BancorTicker
 			tickerData, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/" + pairScraper.pair.Symbol + "/ticker?fromCurrencyCode=BNT")

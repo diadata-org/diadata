@@ -54,7 +54,7 @@ services:
       - EXEC_MODE=production
 
 
-  bancorcollector:
+  loopringcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Loopring
