@@ -11,6 +11,8 @@ func SymbolIsBlackListed(symbol string) bool {
 		return true
 	case "ALT":
 		return true
+	case "APE":
+		return true
 	case "ARB":
 		return true
 	case "AT":

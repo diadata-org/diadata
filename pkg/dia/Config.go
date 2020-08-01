@@ -27,12 +27,12 @@ const (
 	FilterKing       = "MA120"
 	BancorExchange   = "Bancor"
 	UniSwapExchange  = "UniSwap"
-	LoopringExchange   = "Loopring"
-
+	LoopringExchange = "Loopring"
 )
 
 func Exchanges() []string {
 	return []string{
+		UniSwapExchange,
 		BinanceExchange,
 		BitfinexExchange,
 		BittrexExchange,
@@ -47,7 +47,6 @@ func Exchanges() []string {
 		SimexExchange,
 		ZBExchange,
 		BancorExchange,
-		UniSwapExchange,
 		UnknownExchange,
 		LoopringExchange,
 	}
