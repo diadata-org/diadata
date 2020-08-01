@@ -28,6 +28,8 @@ const (
 	BancorExchange   = "Bancor"
 	UniSwapExchange  = "UniSwap"
 	LoopringExchange   = "Loopring"
+	CurveFIExchange   = "Curvefi"
+
 
 )
 
@@ -50,6 +52,7 @@ func Exchanges() []string {
 		UniSwapExchange,
 		UnknownExchange,
 		LoopringExchange,
+		CurveFIExchange,
 	}
 }
 
