@@ -4,55 +4,52 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
-	UniswapApiDelay = 60 * 60 * 24
+	UniswapApiDelay   = 20
+	UniswapBatchDelay = 60 * 1
 )
 
-type UniSwapTicker struct {
-	Data struct {
-		Name            string  `json:"name"`
-		Symbol          string  `json:"symbol"`
-		Code            string  `json:"code"`
-		Decimals        int     `json:"decimals"`
-		TotalSupply     string  `json:"totalSupply"`
-		TotalSupplyD    string  `json:"totalSupplyD"`
-		Volume24H       string  `json:"volume24h"`
-		Volume24HD      float64 `json:"volume24hD"`
-		DisplayCurrency string  `json:"displayCurrency"`
-		Price24H        string  `json:"price24h"`
-		Price           float64 `json:"price"`
-	} `json:"data"`
-}
-
-type UniSwapAssetPairs struct {
+type UniSwapPairs struct {
 	Data struct {
 		Pairs []UniSwapPair `json:"pairs"`
 	} `json:"data"`
 }
 
 type UniSwapPair struct {
-	CreatedAtTimestamp string `json:"createdAtTimestamp"`
-	ID                 string `json:"id"`
-	Token0             struct {
+	Token0 struct {
 		Symbol string `json:"symbol"`
 	} `json:"token0"`
-	Token0Price string `json:"token0Price"`
-	Token1      struct {
+	Token1 struct {
 		Symbol string `json:"symbol"`
 	} `json:"token1"`
-	Token1Price string `json:"token1Price"`
-	VolumeUSD   string `json:"volumeUSD"`
+}
+
+type SwapList struct {
+	Data struct {
+		Swaps []Swap `json:"swaps"`
+	} `json:"data"`
+}
+
+type Swap struct {
+	ID         string `json:"id"`
+	Timestamp  string `json:"timestamp"`
+	Pair       UniSwapPair
+	Amount0In  string `json:"amount0In"`
+	Amount0Out string `json:"amount0Out"`
+	Amount1In  string `json:"amount1In"`
+	Amount1Out string `json:"amount1Out"`
 }
 
 type UniSwapScraper struct {
@@ -89,40 +86,48 @@ func NewUniSwapScraper(exchangeName string) *UniSwapScraper {
 }
 
 func (scraper *UniSwapScraper) mainLoop() {
-	scraper.run = true
-	assetMap := make(map[string]UniSwapPair)
-	assets, err := scraper.readAssets()
-	if err != nil {
-		log.Error("Couldn't obtain Uniswap product ids:", err)
-	}
 
-	for _, v := range assets.Data.Pairs {
-		assetMap[v.Token0.Symbol+"-"+v.Token1.Symbol] = v
-	}
+	scraper.run = true
+
+	// The scraping is organized in batches, bounded by time range and trade id
+	starttime := time.Now().Add(time.Duration(-UniswapBatchDelay) * time.Second).Unix()
+	startTradeID := ""
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Uniswap: No pairs to scrap provided")
+			scraper.error = errors.New("Uniswap: No pairs to scrape provided")
 			log.Error(scraper.error.Error())
 			break
 		}
+
+		// Determine the next swap batch
+		swapsPre, lastTradeTime, lastTradeID, err := scraper.GetNewSwaps(starttime)
+		if err != nil {
+			log.Error("error getting trades: ", err)
+		}
+		swaps := cutSwapList(swapsPre, startTradeID)
+		starttime = lastTradeTime - int64(1)
+		startTradeID = lastTradeID
+
+		swapsMap := make(map[string]Swap)
+		for _, s := range swaps.Data.Swaps {
+			foreignName, _, _, _ := getSwapData(s)
+			swapsMap[foreignName] = s
+		}
+
 		for pair, pairScraper := range scraper.pairScrapers {
-			// Sleep duration such that each pair is scraped once per hour
-			time.Sleep(time.Duration(UniswapApiDelay/len(scraper.pairScrapers)) * time.Second)
 
-			log.Println(pairScraper.pair.ForeignName)
-			ticker := assetMap[pairScraper.pair.ForeignName]
-
-			volume, err := strconv.ParseFloat(ticker.VolumeUSD, 64)
-			if err != nil {
-				log.Errorln("Volume isn't parseable float", ticker.VolumeUSD)
+			// Check, whether pair of swap is in list of available pairs
+			swap, ok := swapsMap[pair]
+			if !ok {
 				continue
 			}
 
-			price, err := strconv.ParseFloat(ticker.Token1Price, 64)
+			// Get trading data from swap in "classic" format
+			_, volume, price, err := getSwapData(swap)
+			timestamp, err := strconv.ParseInt(swap.Timestamp, 10, 64)
 			if err != nil {
-				log.Error("Token0Price isn't parseable float")
-				continue
+				log.Error("error parsing time: ", err)
 			}
 
 			trade := &dia.Trade{
@@ -130,32 +135,142 @@ func (scraper *UniSwapScraper) mainLoop() {
 				Pair:           pair,
 				Price:          price,
 				Volume:         volume,
-				Time:           time.Now(),
+				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
 			}
-			log.Infoln("Got Trade  ", trade)
-
 			pairScraper.parent.chanTrades <- trade
 		}
+		time.Sleep(time.Duration(UniswapBatchDelay) * time.Second)
 	}
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
 
+// cutSwapList receives a list of swaps ordered by timestamps in descending order.
+// It returns all newest swaps up to the one with id.
+func cutSwapList(swaps SwapList, id string) (cutSwaps SwapList) {
+	if id == "" {
+		return swaps
+	}
+	// Append new swaps until the swap with id is hit
+	for _, swap := range swaps.Data.Swaps {
+		if swap.ID == id {
+			return
+		}
+		cutSwaps.Data.Swaps = append(cutSwaps.Data.Swaps, swap)
+	}
+	return
+}
+
+// getSwapData returns the foreign name, volume and price of a swap
+func getSwapData(s Swap) (foreignName string, volume float64, price float64, err error) {
+	amount0In, err := strconv.ParseFloat(s.Amount0In, 64)
+	if err != nil {
+		return
+	}
+	amount1In, err := strconv.ParseFloat(s.Amount1In, 64)
+	if err != nil {
+		return
+	}
+	amount0Out, err := strconv.ParseFloat(s.Amount0Out, 64)
+	if err != nil {
+		return
+	}
+	amount1Out, err := strconv.ParseFloat(s.Amount1Out, 64)
+	if err != nil {
+		return
+	}
+	if amount0In == float64(0) {
+		volume = amount0Out
+		price = amount1In / amount0Out
+		foreignName = s.Pair.Token0.Symbol + "-" + s.Pair.Token1.Symbol
+		return
+	}
+	volume = amount1Out
+	price = amount0In / amount1Out
+	foreignName = s.Pair.Token1.Symbol + "-" + s.Pair.Token0.Symbol
+	return
+}
+
+// GetNewSwaps returns all swaps with timestamps ranging from @starttime until now
+func (scraper *UniSwapScraper) GetNewSwaps(starttime int64) (swaps SwapList, lastTradeTime int64, lastTradeID string, err error) {
+	jsonData := map[string]string{
+		"query": fmt.Sprintf(`
+			{
+				swaps(
+					orderBy:timestamp, orderDirection:desc
+					where: {
+						timestamp_gt:%d,
+						timestamp_lt: %d
+					})
+				{
+				id
+				pair{
+					token0 {
+						symbol
+					}
+					token1 {
+						symbol
+					}
+				}
+				amount0In
+				amount1In
+				amount0Out
+				amount1Out
+				timestamp
+
+				}
+			}
+		
+			`, starttime, time.Now().Unix()),
+	}
+	jsonValue, _ := json.Marshal(jsonData)
+	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", bytes.NewBuffer(jsonValue))
+	err = json.Unmarshal(jsondata, &swaps)
+	if len(swaps.Data.Swaps) == 0 {
+		return
+	}
+	for i := 0; i < len(swaps.Data.Swaps); i++ {
+		swaps.Data.Swaps[i].Pair.normalizeETH()
+	}
+	lastTradeTime, err = strconv.ParseInt(swaps.Data.Swaps[0].Timestamp, 10, 64)
+	if err != nil {
+		log.Error("error parsing unix time: ", err)
+		return
+	}
+	lastTradeID = swaps.Data.Swaps[0].ID
+	return
+}
+
+// FetchAvailablePairs is the method used by the pairDiscoveryService, returning all available swap pairs
 func (scraper *UniSwapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {
 		log.Error("Couldn't obtain Uniswap product ids:", err)
+		return
 	}
 
+	set := make(map[string]struct{})
 	for _, v := range assets.Data.Pairs {
 		if !helpers.SymbolIsBlackListed(v.Token0.Symbol) && !helpers.SymbolIsBlackListed(v.Token1.Symbol) {
 			pairs = append(pairs, dia.Pair{
-				Symbol:      v.Token0.Symbol,
-				ForeignName: v.Token0.Symbol + "-" + v.Token1.Symbol,
+				Symbol:      v.Token1.Symbol,
+				ForeignName: v.Token1.Symbol + "-" + v.Token0.Symbol,
+				Exchange:    scraper.exchangeName,
+			})
+			set[v.Token1.Symbol+"-"+v.Token0.Symbol] = struct{}{}
+		}
+	}
+	// Add swapped pairs
+	for key := range set {
+		symbols := strings.Split(key, "-")
+		if _, ok := set[symbols[1]+"-"+symbols[0]]; !ok {
+			pairs = append(pairs, dia.Pair{
+				Symbol:      symbols[1],
+				ForeignName: symbols[1] + "-" + symbols[0],
 				Exchange:    scraper.exchangeName,
 			})
 		}
@@ -163,35 +278,68 @@ func (scraper *UniSwapScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 	return
 }
 
-func (scraper *UniSwapScraper) readAssets() (pair UniSwapAssetPairs, err error) {
+// This method is not used any more
+func (scraper *UniSwapScraper) fetchAllTokens() (tokens []string, err error) {
+	assets, err := scraper.readAssets()
+	if err != nil {
+		log.Error("Couldn't obtain Uniswap product ids:", err)
+		return
+	}
+
+	set := make(map[string]struct{})
+	for _, v := range assets.Data.Pairs {
+		if !helpers.SymbolIsBlackListed(v.Token0.Symbol) && !helpers.SymbolIsBlackListed(v.Token1.Symbol) {
+			// Add token symbol to map if not present yet
+			if _, ok := set[v.Token0.Symbol]; !ok {
+				set[v.Token0.Symbol] = struct{}{}
+			}
+			if _, ok := set[v.Token1.Symbol]; !ok {
+				set[v.Token1.Symbol] = struct{}{}
+			}
+		}
+	}
+	for key := range set {
+		tokens = append(tokens, key)
+	}
+	return
+}
+
+// readAssets returns a list of available pairs.
+func (scraper *UniSwapScraper) readAssets() (pair UniSwapPairs, err error) {
 	jsonData := map[string]string{
-		"query": `
+		"query": fmt.Sprintf(`
          {
-  pairs(first: 1000, orderBy:volumeUSD, orderDirection:desc) {
-    id
+  pairs(first: %d, orderBy:volumeUSD, orderDirection:desc) {
     token0{
       symbol
     }
     token1{
       symbol
     }
-	token0Price
-	token1Price
     volumeUSD
-    createdAtTimestamp
- 
   }
- 
 }
-`,
+`, 1000),
 	}
 
 	jsonValue, _ := json.Marshal(jsonData)
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2", bytes.NewBuffer(jsonValue))
+	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", bytes.NewBuffer(jsonValue))
 	err = json.Unmarshal(jsondata, &pair)
 
+	// substitue WETH with ETH as they can be identified
+	for i := 0; i < len(pair.Data.Pairs); i++ {
+		pair.Data.Pairs[i].normalizeETH()
+	}
 	return
+}
 
+func (p *UniSwapPair) normalizeETH() {
+	if p.Token0.Symbol == "WETH" {
+		p.Token0.Symbol = "ETH"
+	}
+	if p.Token1.Symbol == "WETH" {
+		p.Token1.Symbol = "ETH"
+	}
 }
 
 func (scraper *UniSwapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
