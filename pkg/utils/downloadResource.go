@@ -108,6 +108,9 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 // Looks it up on coingecko in case it doesn't find it there.
 func GetCoinPrice(coin string) (float64, error) {
 	// log.Info("Get price for ", coin)
+	if coin == "WETH" {
+		coin = "ETH"
+	}
 	type Quotation struct {
 		Symbol             string
 		Name               string
