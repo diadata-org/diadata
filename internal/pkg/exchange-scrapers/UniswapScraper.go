@@ -52,7 +52,7 @@ type Swap struct {
 	Amount1Out string `json:"amount1Out"`
 }
 
-type UniSwapScraper struct {
+type UniswapScraper struct {
 	exchangeName string
 
 	// channels to signal events
@@ -65,19 +65,19 @@ type UniSwapScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*UniSwapPairScraper
+	pairScrapers   map[string]*UniswapPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 }
 
-func NewUniSwapScraper(exchangeName string) *UniSwapScraper {
-	scraper := &UniSwapScraper{
+func NewUniswapScraper(exchangeName string) *UniswapScraper {
+	scraper := &UniswapScraper{
 		exchangeName:   exchangeName,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*UniSwapPairScraper),
+		pairScrapers:   make(map[string]*UniswapPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 	}
 
@@ -85,7 +85,7 @@ func NewUniSwapScraper(exchangeName string) *UniSwapScraper {
 	return scraper
 }
 
-func (scraper *UniSwapScraper) mainLoop() {
+func (scraper *UniswapScraper) mainLoop() {
 
 	scraper.run = true
 
@@ -196,7 +196,7 @@ func getSwapData(s Swap) (foreignName string, volume float64, price float64, err
 }
 
 // GetNewSwaps returns all swaps with timestamps ranging from @starttime until now
-func (scraper *UniSwapScraper) GetNewSwaps(starttime int64) (swaps SwapList, lastTradeTime int64, lastTradeID string, err error) {
+func (scraper *UniswapScraper) GetNewSwaps(starttime int64) (swaps SwapList, lastTradeTime int64, lastTradeID string, err error) {
 	jsonData := map[string]string{
 		"query": fmt.Sprintf(`
 			{
@@ -246,7 +246,7 @@ func (scraper *UniSwapScraper) GetNewSwaps(starttime int64) (swaps SwapList, las
 }
 
 // FetchAvailablePairs is the method used by the pairDiscoveryService, returning all available swap pairs
-func (scraper *UniSwapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {
 		log.Error("Couldn't obtain Uniswap product ids:", err)
@@ -279,7 +279,7 @@ func (scraper *UniSwapScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 }
 
 // This method is not used any more
-func (scraper *UniSwapScraper) fetchAllTokens() (tokens []string, err error) {
+func (scraper *UniswapScraper) fetchAllTokens() (tokens []string, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {
 		log.Error("Couldn't obtain Uniswap product ids:", err)
@@ -305,7 +305,7 @@ func (scraper *UniSwapScraper) fetchAllTokens() (tokens []string, err error) {
 }
 
 // readAssets returns a list of available pairs.
-func (scraper *UniSwapScraper) readAssets() (pair UniSwapPairs, err error) {
+func (scraper *UniswapScraper) readAssets() (pair UniSwapPairs, err error) {
 	jsonData := map[string]string{
 		"query": fmt.Sprintf(`
          {
@@ -342,7 +342,7 @@ func (p *UniSwapPair) normalizeETH() {
 	}
 }
 
-func (scraper *UniSwapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *UniswapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -354,7 +354,7 @@ func (scraper *UniSwapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		return nil, errors.New("uniswapScraper is closed")
 	}
 
-	pairScraper := &UniSwapPairScraper{
+	pairScraper := &UniswapPairScraper{
 		parent: scraper,
 		pair:   pair,
 	}
@@ -363,7 +363,7 @@ func (scraper *UniSwapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return pairScraper, nil
 }
-func (scraper *UniSwapScraper) cleanup(err error) {
+func (scraper *UniswapScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
 	if err != nil {
@@ -373,7 +373,7 @@ func (scraper *UniSwapScraper) cleanup(err error) {
 	close(scraper.shutdownDone)
 }
 
-func (scraper *UniSwapScraper) Close() error {
+func (scraper *UniswapScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
@@ -385,28 +385,28 @@ func (scraper *UniSwapScraper) Close() error {
 	return nil
 }
 
-type UniSwapPairScraper struct {
-	parent *UniSwapScraper
+type UniswapPairScraper struct {
+	parent *UniswapScraper
 	pair   dia.Pair
 	closed bool
 }
 
-func (pairScraper *UniSwapPairScraper) Pair() dia.Pair {
+func (pairScraper *UniswapPairScraper) Pair() dia.Pair {
 	return pairScraper.pair
 }
 
-func (scraper *UniSwapScraper) Channel() chan *dia.Trade {
+func (scraper *UniswapScraper) Channel() chan *dia.Trade {
 	return scraper.chanTrades
 }
 
-func (pairScraper *UniSwapPairScraper) Error() error {
+func (pairScraper *UniswapPairScraper) Error() error {
 	s := pairScraper.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
 }
 
-func (pairScraper *UniSwapPairScraper) Close() error {
+func (pairScraper *UniswapPairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
 	pairScraper.closed = true
