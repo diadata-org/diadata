@@ -26,13 +26,15 @@ const (
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
 	BancorExchange   = "Bancor"
-	UniSwapExchange  = "UniSwap"
+	UniswapExchange  = "Uniswap"
 	LoopringExchange = "Loopring"
+	CurveFIExchange  = "Curvefi"
 )
 
 func Exchanges() []string {
 	return []string{
-		UniSwapExchange,
+		CurveFIExchange,
+		UniswapExchange,
 		BinanceExchange,
 		BitfinexExchange,
 		BittrexExchange,
