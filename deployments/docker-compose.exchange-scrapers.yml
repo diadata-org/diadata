@@ -71,7 +71,7 @@ services:
   uniswapcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=UniSwap
+    command: /bin/collector -exchange=Uniswap
     networks:
       - kafka-network
       - redis-network
