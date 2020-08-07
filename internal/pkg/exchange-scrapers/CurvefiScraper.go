@@ -128,7 +128,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Uniswap: No pairs to scrape provided")
+			scraper.error = errors.New("Curvefi: No pairs to scrape provided")
 			log.Error(scraper.error.Error())
 			break
 		}

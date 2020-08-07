@@ -71,6 +71,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewLoopringScraper(dia.LoopringExchange)
 	case dia.CurveFIExchange:
 		return NewCurveFIScraper(dia.CurveFIExchange)
+	case dia.GnosisExchange:
+		return NewGnosisScraper(dia.GnosisExchange)
 	default:
 		return nil
 	}

@@ -1,0 +1,340 @@
+{
+    "Coins": [
+        {
+            "Symbol": "TLN",
+            "ForeignName": "TLN-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-TLN",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXD",
+            "ForeignName": "DXD-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-DXD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sETH",
+            "ForeignName": "sETH-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-sETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-DAI",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-DAI",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ANT",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANT",
+            "ForeignName": "ANT-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAI",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAN",
+            "ForeignName": "PAN-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-PAN",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX-sUSD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sUSD",
+            "ForeignName": "sUSD-SNX",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sUSD",
+            "ForeignName": "sUSD-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-sUSD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-GNO",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GNO",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sETH",
+            "ForeignName": "sETH-sUSD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sUSD",
+            "ForeignName": "sUSD-sETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDT",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXD",
+            "ForeignName": "DXD-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DXD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-DXD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXD",
+            "ForeignName": "DXD-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-GRID",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRID",
+            "ForeignName": "GRID-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRID",
+            "ForeignName": "GRID-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GRID",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-DIA",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-ETH",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DIA",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-DAI",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-DIA",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWL",
+            "ForeignName": "OWL-DIA",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-OWL",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DXD",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXD",
+            "ForeignName": "DXD-USDT",
+            "Exchange": "Gnosis",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mUSD",
+            "ForeignName": "mUSD-USDT",
+            "Exchange": "Gnosis",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-mUSD",
+            "Exchange": "Gnosis",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-mUSD",
+            "Exchange": "Gnosis",
+            "Ignore": true
+        },
+        {
+            "Symbol": "mUSD",
+            "ForeignName": "mUSD-USDC",
+            "Exchange": "Gnosis",
+            "Ignore": true
+        }
+    ]
+}
