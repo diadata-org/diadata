@@ -16,19 +16,33 @@ Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem
 
 All DIA data points can be used in Ethereum Smart Contracts. We provide oracle solutions to use this financial information in any smart contract. The correctness of oracle data can always be verified by monitoring our off-chain real-time API and the data published in the oracle.
 
+## Get started right away
+
+[Tutorials for contributors](https://docs.diadata.org/documentation/tutorials)
+
+[API Documentation](https://docs.diadata.org/documentation/api-1)
+
+| Asset Class | Description | API Example | API Documentation | Number of Assets |
+| :--- | :--- | :--- | :--- | :--- |
+| Crypto Price | Actual price of a crypto asset such as Bitcoin \(BTC\) or Ether \(ETH\) | [BTC Price](https://api.diadata.org/v1/quotation/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) for a detailed description. | 414 |
+| Supply | Actual circulating supply of a crypto asset | [BTC Supply](https://api.diadata.org/v1/supply/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) for a detailed description |  |
+| Exchange | Centralized and decentralized crypto exchanges | [List of exchanges](https://api.diadata.org/v1/exchanges) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) for a detailed description | 15 |
+| DeFi Interest Rate | Lending and borrowing rates on decentralized finance protocols | [ETH lending and borrowing rate](https://api.diadata.org/v1/defiLendingRate/DYDX/ETH) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate) for a detailed description | &gt;30 |
+| DeFi Protocol Information | Total locked value and information on lending protocol | [DYDX](https://api.diadata.org/v1/defiLendingState/DYDX) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-state) for a detailed description | 6 |
+| Interest Rate | Interest rate of overnight markets such as SOFR or SONIA incl. historical data | [SOFR](https://api.diadata.org/v1/interestrate/SOFR/2020-08-03) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) for a detailed description | 3 |
+| Fiat Prices | Price of fiat currencies vs USD | [List of currencies](https://api.diadata.org/v1/fiatQuotations) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) for a detailed description | 10 |
+
+The above table is to be understood as an introduction to some of our data supply. A complete list of endpoints can be found in the API Documentation.
+
 ## dApp Registry
+
+
 
 * [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
 * [FINOA](https://finoa.io) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI 
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 * [Swiss ISIN note using DIA data](https://en.bitcoinwiki.org/wiki/Index_Fund)
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
-
-## Get started right away
-
-[Tutorials for contributors](https://docs.diadata.org/documentation/tutorials)
-
-[API Documentation](https://docs.diadata.org/documentation/api-1)
 
 ## **Feedback**
 
