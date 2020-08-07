@@ -1,9 +1,10 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 func (db *DB) GetAllSymbols() []string {
@@ -20,6 +21,25 @@ func (db *DB) GetAllSymbols() []string {
 			log.Error("GetAllSymbols", err)
 		}
 	}
+	s := []string{}
+	for _, value := range r {
+		s = append(s, value)
+	}
+	return s
+}
+
+func (db *DB) GetSymbolsByExchange(e string) []string {
+	r := make(map[string]string)
+
+	p, err := db.GetAvailablePairsForExchange(e)
+	if err == nil {
+		for _, v := range p {
+			r[v.Symbol] = v.Symbol
+		}
+	} else {
+		log.Error("GetAllSymbols", err)
+	}
+
 	s := []string{}
 	for _, value := range r {
 		s = append(s, value)

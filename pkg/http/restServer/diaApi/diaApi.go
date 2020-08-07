@@ -370,30 +370,42 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	}
 }
 
-// GetAllSymbols godoc
-// @Summary Get all symbols list
-// @Description Get all symbols list
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   filter     path    string     true        "Some filter"
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} dia.Symbols "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/symbols [get]
+// GetAllSymbols returns all symbols available in our (redis) database.
+// Optional query parameter exchange returns only symbols available on this exchange.
 func (env *Env) GetAllSymbols(c *gin.Context) {
-	s := env.DataStore.GetAllSymbols()
-	if len(s) == 0 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+	exchange := c.DefaultQuery("exchange", "noRange")
+	if exchange == "noRange" {
+		s := env.DataStore.GetAllSymbols()
+		if len(s) == 0 {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+		} else {
+			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		}
 	} else {
-		c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		s := env.DataStore.GetSymbolsByExchange(exchange)
+		if len(s) == 0 {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+		} else {
+			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		}
 	}
+
 }
 
 // -----------------------------------------------------------------------------
 // DeFi LENDING RATES
 // -----------------------------------------------------------------------------
+
+// GetLendingProtocols returns all symbols available in our (redis) database.
+// Optional query parameter exchange returns only symbols available on this exchange.
+func (env *Env) GetLendingProtocols(c *gin.Context) {
+	q, err := env.DataStore.GetDefiProtocols()
+	fmt.Println("protocols: ", q)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
 
 // GetDefiRate is the delegate method to fetch the value(s) of
 // the defi lending rate of @asset at the exchange with @protocol.
@@ -761,4 +773,22 @@ func (env *Env) GetRates(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
 	c.JSON(http.StatusOK, q)
+}
+
+// -----------------------------------------------------------------------------
+// FIAT CURRENCIES
+// -----------------------------------------------------------------------------
+
+// GetFiatQuotations returns several quotations vs USD as published by the ECB
+func (env *Env) GetFiatQuotations(c *gin.Context) {
+	q, err := env.DataStore.GetCurrencyChange()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
 }

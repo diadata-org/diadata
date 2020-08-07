@@ -48,6 +48,7 @@ type Datastore interface {
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
+	GetSymbolsByExchange(string) []string
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
@@ -78,6 +79,7 @@ type Datastore interface {
 	// Defi rates
 	SetDefiProtocol(dia.DefiProtocol) error
 	GetDefiProtocol(string) (dia.DefiProtocol, error)
+	GetDefiProtocols() ([]dia.DefiProtocol, error)
 
 	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
 	SetDefiRateInflux(rate *dia.DefiRate) error

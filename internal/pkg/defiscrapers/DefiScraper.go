@@ -133,27 +133,27 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			helper = NewDDEX(s, protocol)
 		}
-	case "RAY":
-		{
-			protocol = dia.DefiProtocol{
-				Name:                 "RAY",
-				Address:              "0xE215e8160a5e0A03f2D6c7900b050F2f04eA5Cbb",
-				UnderlyingBlockchain: "Ethereum",
-				Token:                "",
-			}
-			helper = NewRAY(s, protocol)
-		}
-	case "DHARMA":
-		{
+	// case "RAY":
+	// 	{
+	// 		protocol = dia.DefiProtocol{
+	// 			Name:                 "RAY",
+	// 			Address:              "0xE215e8160a5e0A03f2D6c7900b050F2f04eA5Cbb",
+	// 			UnderlyingBlockchain: "Ethereum",
+	// 			Token:                "",
+	// 		}
+	// 		helper = NewRAY(s, protocol)
+	// 	}
+	// case "DHARMA":
+	// 	{
 
-			protocol = dia.DefiProtocol{
-				Name:                 "DHARMA",
-				Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
-				UnderlyingBlockchain: "Ethereum",
-				Token:                "",
-			}
-			helper = NewDHARMA(s, protocol)
-		}
+	// 		protocol = dia.DefiProtocol{
+	// 			Name:                 "DHARMA",
+	// 			Address:              "0x3f320a0B08B93D7562c1f2d008d8154c44147620",
+	// 			UnderlyingBlockchain: "Ethereum",
+	// 			Token:                "",
+	// 		}
+	// 		helper = NewDHARMA(s, protocol)
+	// 	}
 	case "COMPOUND":
 		{
 
