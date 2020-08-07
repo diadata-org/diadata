@@ -472,7 +472,7 @@ Exchanges
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get a list of all available trading places.  
+Get a list of all available crypto exchanges.  
 https://api.diadata.org/v1/exchanges
 {% endapi-method-description %}
 
@@ -554,11 +554,22 @@ Symbols
 
 {% api-method-description %}
 Get a list of all available symbols for cryptocurrencies.  
-https://api.diadata.org/v1/symbols
+Example:  
+https://api.diadata.org/v1/symbols  
+  
+Get symbols restriced to an exchange using the query parameter. \(For the moment only for centralized exchanges\).  
+Example:  
+https://api.diadata.org/v1/symbols?exchange=Kraken  
 {% endapi-method-description %}
 
 {% api-method-spec %}
 {% api-method-request %}
+{% api-method-query-parameters %}
+{% api-method-parameter name="exchange" type="string" required=false %}
+Name of the crypto exchange.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
 
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
@@ -833,6 +844,38 @@ Successful retrieval of the compounded average of SOFR over an interest period o
 
 ```
 [{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/" path="fiatQuotations" %}
+{% api-method-summary %}
+Fiat Currency Exchange Rates
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of exchange rates for several fiat currencies vs US Dollar.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
