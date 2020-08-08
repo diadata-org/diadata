@@ -57,6 +57,34 @@ services:
       options:
         max-size: "50m"
 
+  ddexxscraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type DDEX
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  nuoscraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type NUO
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   genericdefiratescraper:
     build:
       context: ../../../..
