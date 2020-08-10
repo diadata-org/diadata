@@ -29,6 +29,7 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 | Exchange | Centralized and decentralized crypto exchanges | [List of exchanges](https://api.diadata.org/v1/exchanges) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) for a detailed description | 15 |
 | DeFi Interest Rate | Lending and borrowing rates on decentralized finance protocols | [ETH lending and borrowing rate](https://api.diadata.org/v1/defiLendingRate/DYDX/ETH) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate) for a detailed description | &gt;30 |
 | DeFi Protocol Information | Total locked value and information on lending protocol | [DYDX](https://api.diadata.org/v1/defiLendingState/DYDX) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-state) for a detailed description | 6 |
+|  |  |  |  |  |
 | Interest Rate | Interest rate of overnight markets such as SOFR or SONIA incl. historical data | [SOFR](https://api.diadata.org/v1/interestrate/SOFR/2020-08-03) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) for a detailed description | 3 |
 | Fiat Prices | Price of fiat currencies vs USD | [List of currencies](https://api.diadata.org/v1/fiatQuotations) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) for a detailed description | 10 |
 
