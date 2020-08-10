@@ -6,6 +6,68 @@ description: >-
 
 # API Endpoints
 
+## Digital Assets
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/exchanges" %}
+{% api-method-summary %}
+Exchanges
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available crypto exchanges.  
+https://api.diadata.org/v1/exchanges
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of available exchanges.
+{% endapi-method-response-example-description %}
+
+```
+["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/quotation/:symbol" %}
+{% api-method-summary %}
+Quotation
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get most recent information on the currency corresponding to symbol.  
+Example: https://api.diadata.org/v1/quotation/BTC
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="symbol" type="string" required=true %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of the BTC symbol.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" %}
 {% api-method-summary %}
 Chart Points
@@ -247,39 +309,6 @@ Successful retrieval of an interest rate.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/quotation/:symbol" %}
-{% api-method-summary %}
-Quotation
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get most recent information on the currency corresponding to symbol.  
-Example: https://api.diadata.org/v1/quotation/BTC
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Which symbol to get a quotation for, e.g., BTC.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of the BTC symbol.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/supply/:symbol" %}
 {% api-method-summary %}
 Supply
@@ -466,33 +495,6 @@ Successful retrieval of available coins along with actual information on prices.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/exchanges" %}
-{% api-method-summary %}
-Exchanges
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available trading places.  
-https://api.diadata.org/v1/exchanges
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available exchanges.
-{% endapi-method-response-example-description %}
-
-```
-["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/interestrates" %}
 {% api-method-summary %}
 Interest Rates
@@ -520,6 +522,44 @@ Successful retrieval of meta information on available interest rates.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org" path="/v1/symbols" %}
+{% api-method-summary %}
+Symbols
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available symbols for cryptocurrencies.  
+Example:  
+https://api.diadata.org/v1/symbols  
+  
+Get symbols restricted to an exchange using the query parameter. \(For the moment only for centralized exchanges\).  
+Example:  
+https://api.diadata.org/v1/symbols?exchange=Kraken  
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-query-parameters %}
+{% api-method-parameter name="exchange" type="string" required=false %}
+Name of the crypto exchange.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/pairs" %}
 {% api-method-summary %}
 Pairs
@@ -541,33 +581,6 @@ Successful retrieval of trading pairs along with the respective exchange. Shown 
 
 ```
 {"Pairs":[{"Symbol":"BTC","ForeignName":"","Exchange":"Huobi","Ignore":false},{"Symbol":"ETH","ForeignName":"","Exchange":"Binance","Ignore":false},...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/symbols" %}
-{% api-method-summary %}
-Symbols
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available symbols for cryptocurrencies.  
-https://api.diadata.org/v1/symbols
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
@@ -833,6 +846,38 @@ Successful retrieval of the compounded average of SOFR over an interest period o
 
 ```
 [{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/" path="fiatQuotations" %}
+{% api-method-summary %}
+Fiat Currency Exchange Rates
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of exchange rates for several fiat currencies vs US Dollar.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
