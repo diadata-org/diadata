@@ -22,7 +22,7 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 [API Documentation](https://docs.diadata.org/documentation/api-1)
 
-If you want to dive into our API without further ado, feel free to take the below tables as a starting point. They present an exerpt of our API endpoints  a complete list of which can be found in our API Documentation.
+If you want to dive into our API without further ado, feel free to take the below tables as a starting point. They present an excerpt of our API endpoints  a complete list of which can be found in our API Documentation.
 
 ### Digital Assets
 
