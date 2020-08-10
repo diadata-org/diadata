@@ -1,0 +1,28 @@
+.yield-calc {
+    background-color: #1b46c2;
+    width: 540px;
+    height: 552px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.yield-calc .header {
+    background-color: #133aab;
+    height: 60px;
+    font-size: 24px;
+    padding: 15px 0 0 33px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.yield-calc .body {
+
+    margin-left: 33px;
+    margin-right: 33px;
+}
+
+hr {
+    margin-top: 20px;
+    background-color: #10349b;
+}
+
