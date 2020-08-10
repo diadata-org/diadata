@@ -13,6 +13,10 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
+const (
+	MakerBatchDelay = 60 * 1
+)
+
 type MakerPairResponse struct {
 	Data    map[string]MakerPair `json:"data"`
 	Time    time.Time            `json:"time"`
@@ -109,12 +113,11 @@ func (scraper *MakerScraper) mainLoop() {
 			break
 		}
 
+
 		for pair, pairScraper := range scraper.pairScrapers {
 			trades, _ := scraper.GetNewTrades(pair, startTradeID[pair])
 			if len(trades) > 0 {
-				log.Println("Setting trade id ")
 				startTradeID[pair] = strconv.Itoa(trades[0].ID)
-				log.Println("Setting trade id ", startTradeID[pair])
 
 			}
 			for _, v := range trades {
@@ -143,6 +146,7 @@ func (scraper *MakerScraper) mainLoop() {
 			}
 
 		}
+		time.Sleep(time.Duration(MakerBatchDelay) * time.Second)
 
 	}
 
