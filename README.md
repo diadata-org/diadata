@@ -22,7 +22,7 @@ All DIA data points can be used in Ethereum Smart Contracts. We provide oracle s
 
 [API Documentation](https://docs.diadata.org/documentation/api-1)
 
-| Asset Class | Description | API Example | API Documentation | Number of Assets |
+| Class | Description | API Example | API Documentation | Number of Assets |
 | :--- | :--- | :--- | :--- | :--- |
 | Crypto Price | Actual price of a crypto asset such as Bitcoin \(BTC\) or Ether \(ETH\) | [BTC Price](https://api.diadata.org/v1/quotation/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) for a detailed description. | 414 |
 | Supply | Actual circulating supply of a crypto asset | [BTC Supply](https://api.diadata.org/v1/supply/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) for a detailed description |  |
