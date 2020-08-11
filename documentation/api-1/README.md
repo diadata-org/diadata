@@ -1,11 +1,5 @@
 # API Documentation
 
-{% page-ref page="api-endpoints.md" %}
-
-{% page-ref page="oracles.md" %}
-
-
-
 **Find the right data for your needs**  
 Show your users the most transparent data on the market with our API. Whether you're building a financial service, a portfolio management tool, a new media offering, or more, we have the most advanced and updated data on the market for your product.  
 For Oracle usage see [Oracles in DIA](https://docs.diadata.org/documentation/api-1/oracles).
