@@ -6,6 +6,106 @@ description: >-
 
 # API Endpoints
 
+## Digital Assets
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/symbols" %}
+{% api-method-summary %}
+Symbols
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available symbols for cryptocurrencies.  
+Example:  
+https://api.diadata.org/v1/symbols  
+  
+Get symbols restricted to an exchange using the query parameter. \(For the moment only for centralized exchanges\).  
+Example:  
+https://api.diadata.org/v1/symbols?exchange=Kraken  
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-query-parameters %}
+{% api-method-parameter name="exchange" type="string" required=false %}
+Name of the crypto exchange.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/quotation/:symbol" %}
+{% api-method-summary %}
+Quotation
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get most recent information on the currency corresponding to symbol.  
+Example: https://api.diadata.org/v1/quotation/BTC
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="symbol" type="string" required=true %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of the BTC symbol.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/exchanges" %}
+{% api-method-summary %}
+Exchanges
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available crypto exchanges.  
+https://api.diadata.org/v1/exchanges
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of available exchanges.
+{% endapi-method-response-example-description %}
+
+```
+["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" %}
 {% api-method-summary %}
 Chart Points
@@ -101,179 +201,6 @@ Successful retrieval of a chart point for all exchanges.
 
 ```
 {"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:17:59Z",null,"MEDIR120","EOS",2.6236194301032314]]}],"Messages":null}]}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset" %}
-{% api-method-summary %}
-Defi Interest Rate
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get information about a Defi protocol's lending and borrowing rates.  
-Time parameter is optional. If omitted, the most recent rate is returned.  
-  
-Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
-  
-Get rates for a range of timestamps using optional query parameters.  
-https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="protocol" type="string" required=true %}
-Name of the protocol, in uppercase
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="asset" type="string" required=true %}
-Asset short name, e.g. ETH for Ether
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="time" type="integer" required=false %}
-Unix timestamp. Default is the latest available rate
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="integer" required=false %}
-Initial Unix timestamp for range queries
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="integer" required=false %}
-Final Unix timestamp for range queries
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of a Defi interest rate.
-{% endapi-method-response-example-description %}
-
-```
-{"Timestamp":"2020-07-20T11:54:56Z","LendingRate":1.250020254710238,"BorrowingRate":4.856778356760549,"Asset":"USDC","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingState/:protocol" %}
-{% api-method-summary %}
-Defi Lending State
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get meta information about a defi lending protocol such as the underlying blockchain, its name and its currently locked value in USD and ETH.  
-  
-An example request can look like this: https://api.diadata.org/v1/defiLendingState/COMPOUND
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="protocol" type="string" required=true %}
-Name of the protocol, e.g. COMPOUND
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful response containing locking volume, the timestamp of data recording and protocol meta information such as name and the underlying blockchain.
-{% endapi-method-response-example-description %}
-
-```
-{"TotalUSD":13048619504.89947,"TotalETH":52570793.80784482,"Timestamp":"2020-07-22T16:27:31Z","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
-{% api-method-summary %}
-Interest Rate
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get value for a certain rate type.  
-Example: https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​  
-  
-Get rate values for a range of timestamps using optional query parameters.  
-Example: https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="rateType" type="string" required=true %}
-Symbol name for a rate.
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="date" type="string" required=false %}
-Return the rate for the specified date. Default date is the latest available date. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="string" required=false %}
-Initial date for range queries. Format yyyy-mm-dd
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="string" required=false %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of an interest rate.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"ESTER","Value":-0.542,"PublicationTime":"2020-05-19T07:15:07Z","EffectiveDate":"2020-05-18T00:00:00Z","Source":"ECB"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/quotation/:symbol" %}
-{% api-method-summary %}
-Quotation
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get most recent information on the currency corresponding to symbol.  
-Example: https://api.diadata.org/v1/quotation/BTC
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Which symbol to get a quotation for, e.g., BTC.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of the BTC symbol.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
@@ -395,46 +322,6 @@ Information on the cryptocurrency organized by "Change", "Coin", "Rank", "Exchan
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/cviIndex" %}
-{% api-method-summary %}
-CVI Index 
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get all values of the Crypto Volatility Index.  
-Example: https://api.diadata.org/v1/cviIndex  
-  
-Example with query parameters:  
-https://api.diadata.org/v1/cviIndex?starttime=1589829000&endtime=1589830000
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=false %}
-Unix timestamp setting the start of the return array
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="endtime" type="integer" required=false %}
-Unix timestamp setting the end of the return array
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000
-{% endapi-method-response-example-description %}
-
-```
-[{"Timestamp":"2020-05-18T19:12:43Z","Value":142.28101897342574},{"Timestamp":"2020-05-18T19:17:48Z","Value":142.29282246717017},{"Timestamp":"2020-05-18T19:22:51Z","Value":142.3025697159107}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/coins" %}
 {% api-method-summary %}
 Coins
@@ -466,60 +353,6 @@ Successful retrieval of available coins along with actual information on prices.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/exchanges" %}
-{% api-method-summary %}
-Exchanges
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available trading places.  
-https://api.diadata.org/v1/exchanges
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available exchanges.
-{% endapi-method-response-example-description %}
-
-```
-["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrates" %}
-{% api-method-summary %}
-Interest Rates
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available interest rates along with metadata on the rates such as first publication date and issuing entity.  
-https://api.diadata.org/v1/interestrates
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of meta information on available interest rates.
-{% endapi-method-response-example-description %}
-
-```
-[{"Symbol":"ESTER","FirstDate":"2019-10-01T00:00:00Z","Issuer":"ECB"},{"Symbol":"SOFR90","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SONIA","FirstDate":"1997-01-02T00:00:00Z","Issuer":"BOE"},{"Symbol":"SAFR","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR","FirstDate":"2018-04-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR180","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR30","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/pairs" %}
 {% api-method-summary %}
 Pairs
@@ -541,33 +374,6 @@ Successful retrieval of trading pairs along with the respective exchange. Shown 
 
 ```
 {"Pairs":[{"Symbol":"BTC","ForeignName":"","Exchange":"Huobi","Ignore":false},{"Symbol":"ETH","ForeignName":"","Exchange":"Binance","Ignore":false},...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/symbols" %}
-{% api-method-summary %}
-Symbols
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available symbols for cryptocurrencies.  
-https://api.diadata.org/v1/symbols
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
@@ -642,6 +448,215 @@ A list of trades wrapped into a block with additional meta information like the 
 
 ```
 {"Result":{"offset":433850,"messages":[[{"BlockHash":"v1_4d7b1e936e7e0808d9ab17a43ec5ef8a","TradesBlockData":{"BeginTime":"2020-05-20T12:24:00Z","EndTime":"2020-05-20T12:26:00Z","TradesNumber":5674,"Trades":[{"Symbol":"EOS","Pair":"EOS_ETH","Price":0.01243882,"Volume":0.0325,"Time":"2020-05-20T12:24:00.050719107Z","ForeignTradeID":"c0d40b32","EstimatedUSDPrice":2.649370741608955,"Source":"LBank"}]}}]]}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/cviIndex" %}
+{% api-method-summary %}
+CVI Index 
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get all values of the Crypto Volatility Index.  
+Example: https://api.diadata.org/v1/cviIndex  
+  
+Example with query parameters:  
+https://api.diadata.org/v1/cviIndex?starttime=1589829000&endtime=1589830000
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-query-parameters %}
+{% api-method-parameter name="starttime" type="integer" required=false %}
+Unix timestamp setting the start of the return array
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="endtime" type="integer" required=false %}
+Unix timestamp setting the end of the return array
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000
+{% endapi-method-response-example-description %}
+
+```
+[{"Timestamp":"2020-05-18T19:12:43Z","Value":142.28101897342574},{"Timestamp":"2020-05-18T19:17:48Z","Value":142.29282246717017},{"Timestamp":"2020-05-18T19:22:51Z","Value":142.3025697159107}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset" %}
+{% api-method-summary %}
+Defi Interest Rate
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get information about a Defi protocol's lending and borrowing rates.  
+Time parameter is optional. If omitted, the most recent rate is returned.  
+  
+Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
+  
+Get rates for a range of timestamps using optional query parameters.  
+https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+Name of the protocol, in uppercase
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="asset" type="string" required=true %}
+Asset short name, e.g. ETH for Ether
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="time" type="integer" required=false %}
+Unix timestamp. Default is the latest available rate
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="integer" required=false %}
+Initial Unix timestamp for range queries
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="integer" required=false %}
+Final Unix timestamp for range queries
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of a Defi interest rate.
+{% endapi-method-response-example-description %}
+
+```
+{"Timestamp":"2020-07-20T11:54:56Z","LendingRate":1.250020254710238,"BorrowingRate":4.856778356760549,"Asset":"USDC","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingState/:protocol" %}
+{% api-method-summary %}
+Defi Lending State
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get meta information about a defi lending protocol such as the underlying blockchain, its name and its currently locked value in USD and ETH.  
+  
+An example request can look like this: https://api.diadata.org/v1/defiLendingState/COMPOUND
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+Name of the protocol, e.g. COMPOUND
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful response containing locking volume, the timestamp of data recording and protocol meta information such as name and the underlying blockchain.
+{% endapi-method-response-example-description %}
+
+```
+{"TotalUSD":13048619504.89947,"TotalETH":52570793.80784482,"Timestamp":"2020-07-22T16:27:31Z","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+## Traditional Assets
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrates" %}
+{% api-method-summary %}
+Interest Rates
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available interest rates along with metadata on the rates such as first publication date and issuing entity.  
+https://api.diadata.org/v1/interestrates
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of meta information on available interest rates.
+{% endapi-method-response-example-description %}
+
+```
+[{"Symbol":"ESTER","FirstDate":"2019-10-01T00:00:00Z","Issuer":"ECB"},{"Symbol":"SOFR90","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SONIA","FirstDate":"1997-01-02T00:00:00Z","Issuer":"BOE"},{"Symbol":"SAFR","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR","FirstDate":"2018-04-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR180","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR30","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
+{% api-method-summary %}
+Interest Rate
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get value for a certain rate type.  
+Example: https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​  
+  
+Get rate values for a range of timestamps using optional query parameters.  
+Example: https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="rateType" type="string" required=true %}
+Symbol name for a rate.
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="date" type="string" required=false %}
+Return the rate for the specified date. Default date is the latest available date. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="string" required=false %}
+Initial date for range queries. Format yyyy-mm-dd
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="string" required=false %}
+Final date for range queries. Format: yyyy-mm-dd
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of an interest rate.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"ESTER","Value":-0.542,"PublicationTime":"2020-05-19T07:15:07Z","EffectiveDate":"2020-05-18T00:00:00Z","Source":"ECB"}
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
@@ -833,6 +848,38 @@ Successful retrieval of the compounded average of SOFR over an interest period o
 
 ```
 [{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/" path="fiatQuotations" %}
+{% api-method-summary %}
+Fiat Currency Exchange Rates
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of exchange rates for several fiat currencies vs US Dollar.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
