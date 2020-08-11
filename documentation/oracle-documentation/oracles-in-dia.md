@@ -1,7 +1,5 @@
 # Oracles in DIA
 
-Oracles are Smart Contract interfaces that bring data from an external source into a smart contract. By generating verifiable oracle data, any user can use financial data in smart contracts. The first oracle in DIA is the oracle for the biggest cryptocurrencies from Coinhub.
-
 ## Immutable Oracle Feeds
 
 The Coinhub oracles are located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price, and supply data. By using `getCoinInfo(coin_name)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update. The return value consists of the price in US Cents, the circulating supply, the timestamp of the update and the short handle of the asset.

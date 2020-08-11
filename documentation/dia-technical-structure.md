@@ -2,7 +2,7 @@
 
 DIA is setup as a hybrid system with off-chain components for storing and processing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract platform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
 
-### Backend
+### Centralized Backend
 
 For collecting financial data, we use a centralized backend that runs collectors for all kinds of financial data. All collected data is processed by a database setup consisting of a stream-oriented kafka instance and a key-value store for faster access of certain intermediate results. These collectors are separated in different classes:
 
