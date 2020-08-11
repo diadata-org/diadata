@@ -71,7 +71,6 @@ func savePairsToFile(exchange string, pairs []dia.Pair) {
 
 func updateExchangePairs() {
 	t, err := db.GetConfigTogglePairDiscovery()
-	t = true
 	if err != nil {
 		log.Error("updateExchangePairs GetConfigTogglePairDiscovery", err.Error())
 		return
