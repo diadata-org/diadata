@@ -47,8 +47,7 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets["SUSD"] = "0x49f4592e641820e928f9919ef4abd92a719b4b49"
 	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
 
-	// connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/f619e28e13f0428cba6f9243b09d4af0")
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
