@@ -30,12 +30,12 @@ const (
 	UniswapExchange  = "Uniswap"
 	LoopringExchange = "Loopring"
 	CurveFIExchange  = "Curvefi"
-	MakerExchange   = "Maker"
-
+	MakerExchange    = "Maker"
 )
 
 func Exchanges() []string {
 	return []string{
+		MakerExchange,
 		GnosisExchange,
 		CurveFIExchange,
 		UniswapExchange,
@@ -55,7 +55,6 @@ func Exchanges() []string {
 		BancorExchange,
 		UnknownExchange,
 		LoopringExchange,
-		MakerExchange,
 	}
 }
 

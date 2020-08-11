@@ -3,10 +3,12 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"time"
 
 	"sync"
 
@@ -30,7 +32,6 @@ type MakerPair struct {
 	QuotePrecision int    `json:"quotePrecision"`
 	Active         bool   `json:"active"`
 }
-
 
 type MakerScraper struct {
 	exchangeName string
@@ -85,7 +86,8 @@ func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]M
 		bytes              []byte
 		url                string
 	)
-
+	auxPair := strings.Split(pair, "-")
+	pair = auxPair[0] + "/" + auxPair[1]
 	if startTradeID == "" {
 		url = "https://api.oasisdex.com/v2/trades/" + pair
 	} else {
@@ -113,7 +115,6 @@ func (scraper *MakerScraper) mainLoop() {
 			break
 		}
 
-
 		for pair, pairScraper := range scraper.pairScrapers {
 			trades, _ := scraper.GetNewTrades(pair, startTradeID[pair])
 			if len(trades) > 0 {
@@ -122,7 +123,7 @@ func (scraper *MakerScraper) mainLoop() {
 			}
 			for _, v := range trades {
 
-				amountIn, err := strconv.ParseFloat(v.Price, 64)
+				price, err := strconv.ParseFloat(v.Price, 64)
 				if err != nil {
 					return
 				}
@@ -134,7 +135,7 @@ func (scraper *MakerScraper) mainLoop() {
 				trade := &dia.Trade{
 					Symbol:         pairScraper.pair.Symbol,
 					Pair:           pair,
-					Price:          amountIn,
+					Price:          price,
 					Volume:         VolumeIn,
 					Time:           v.Time,
 					ForeignTradeID: strconv.Itoa(v.ID),
@@ -161,10 +162,12 @@ func (scraper *MakerScraper) getPairs() (pairs []dia.Pair, err error) {
 	byte, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
 	err = json.Unmarshal(byte, &response)
 	for i, v := range response.Data {
+		pair := strings.Split(i, "/")
 		pairs = append(pairs, dia.Pair{
 			Symbol:      v.Base,
-			ForeignName: i,
+			ForeignName: pair[0] + "-" + pair[1],
 			Exchange:    scraper.exchangeName,
+			Ignore:      false,
 		})
 
 	}
