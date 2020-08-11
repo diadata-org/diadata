@@ -1,9 +1,15 @@
 import React, { Component} from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
+// css
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-import YieldCalculator from './components/yield'
+// components
+import YieldCalculator from './components/yield';
+
+// web3
+import getWeb3 from './helpers/web3';
+import { getDiaRate } from './helpers/api';
 
 export default class App extends Component {
 
@@ -11,10 +17,9 @@ export default class App extends Component {
 
     return (
       <div className="App">
-        <YieldCalculator/>
+        <YieldCalculator getWeb3={getWeb3} getDiaRate={getDiaRate}/>
       </div>
     );
-
   }
   
 }

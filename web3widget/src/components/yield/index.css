@@ -1,7 +1,7 @@
 .yield-calc {
     background-color: #1b46c2;
-    width: 540px;
-    height: 552px;
+    width: 560px;
+    height: auto;
     border-radius: 5px;
     margin-top: 20px;
 }
@@ -15,14 +15,182 @@
     border-top-right-radius: 5px;
 }
 
-.yield-calc .body {
 
-    margin-left: 33px;
-    margin-right: 33px;
-}
-
-hr {
-    margin-top: 20px;
+#top-line {
     background-color: #10349b;
+    margin-bottom: 25px;
+   
 }
+
+.yield-form-container {
+    padding: 0;
+    margin-top: 25px;
+    margin-left: 40px;
+    margin-right: 40px;
+    width: auto;
+}
+
+.headings {
+    font-size: 14px;
+    color: #c3ccf7;
+}
+
+#user-stake-heading {
+    text-align: left;
+}
+
+#user-returns-heading {
+    text-align: right;
+}
+
+.returns {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#user-stake {
+    text-align: left;
+}
+
+#user-returns {
+    text-align: right;
+}
+
+.rangeslider {
+    background: #10349b;
+    margin-top: 25px;
+    margin-bottom: 0;
+}
+.rangeslider-horizontal .rangeslider__handle:after {
+    content: none;
+}
+
+.rangeslider-horizontal .rangeslider__fill {
+    background-color: #9faed7;
+}
+
+.rangeslider-horizontal .rangeslider__handle {
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    top: 50%;
+    transform: translate3d(-50%,-50%,0);
+    outline:none;
+}
+
+.yield-ranges {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: #012691;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
+.pointer-lines-ranges {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    color: #0f3399;
+}
+
+.pointer-lines {
+    border-left: 1px solid #0f3399;
+    height: 10px;
+}
+
+#first-line-margin {
+    margin-left: -95px;
+}
+
+#second-line-margin {
+    margin-left: 0px;
+}
+
+#third-line-margin {
+    margin-right: -95px;
+}
+
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+.col-4 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#yield-results {
+   margin-top: 30px;
+   margin-left: 15px;
+   margin-right: 15px;
+}
+
+.yield-period {
+    font-size: 14px;
+    color: #c1cbf6;
+    padding-left: 5px;
+}
+
+.yield-amount {
+    font-weight: bold;
+    text-align: right;
+    font-size: 18px;
+}
+
+.yield-dia {
+    margin-left: -20px;
+}
+
+.row-res {
+    padding-top: 5px;
+    padding-bottom: 15px;
+    border-bottom: #10349b 1px solid;
+}
+
+.footer {
+    margin-top: -5px;
+    background-color:  #1b46c2;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+#web3-connect, #staking-btn, #approve-btn, #connected-btn  {
+  
+    outline: none;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    user-select: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#web3-connect, #staking-btn, #approve-btn {
+    background-color: #33353d;
+}
+
+#connected-btn, #web3-connect {
+    float: right;
+    margin-right: 10px;
+}
+
+#staking-btn {
+    margin-bottom: 40px;
+}
+
+
+.form-lbl {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+
 
