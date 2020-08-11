@@ -21,9 +21,9 @@ export const getYieldDetails = async ( web3, abi, contractAddress) => {
 
 		yieldDetails = {};
 		const contract = new web3.eth.Contract(abi, contractAddress);
-		yieldDetails.threeMonthPromille =  await contract.threeMonthPromille.call();
-        yieldDetails.sixMonthPromille = await contract.sixMonthPromille.call();
-        yieldDetails.nineMonthPromille = await contract.nineMonthPromille.call();
+		yieldDetails.threeMonthPromille =  await contract.methods.threeMonthPromille.call().call();
+        yieldDetails.sixMonthPromille = await contract.methods.sixMonthPromille.call().call();
+        yieldDetails.nineMonthPromille = await contract.methods.nineMonthPromille.call().call();
 
 	}
 	catch(error){

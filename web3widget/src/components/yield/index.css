@@ -19,7 +19,6 @@
 #top-line {
     background-color: #10349b;
     margin-bottom: 25px;
-   
 }
 
 .yield-form-container {
@@ -28,6 +27,14 @@
     margin-left: 40px;
     margin-right: 40px;
     width: auto;
+}
+
+.loading-rates {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .headings {
@@ -79,14 +86,14 @@
 }
 
 .yield-ranges {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  color: #012691;
-  font-size: 13px;
-  font-weight: 500;
-  margin: 0;
-  padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: #012691;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
 }
 
 .pointer-lines-ranges {
@@ -155,10 +162,11 @@
 
 .footer {
     margin-top: -5px;
+   
     background-color:  #1b46c2;
     display: flex;
     justify-content: center;
-    padding-top: 20px;
+   
 }
 
 #web3-connect, #staking-btn, #approve-btn, #connected-btn  {
@@ -182,15 +190,11 @@
 }
 
 #staking-btn {
-    margin-bottom: 40px;
+    margin-top: 30px;
+    margin-bottom: 10px;
 }
-
 
 .form-lbl {
     font-size: 16px;
     font-weight: bold;
 }
-
-
-
-

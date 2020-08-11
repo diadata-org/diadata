@@ -1,8 +1,4 @@
 import Web3 from "web3";
-import { config } from "./config.js";
-import { getYieldDetails } from "./dia.js";
-
-const { bytecode, abi } = config;
 
 const getWeb3 = () => {
   return new Promise(async (resolve, reject) => {
@@ -13,7 +9,7 @@ const getWeb3 = () => {
           // Request account access if needed
           await window.ethereum.enable();
           // Acccounts now exposed
-          resolve({web3, bytecode, abi, getYieldDetails });
+          resolve(web3);
         } catch (error) {
           reject(error);
         }
@@ -24,7 +20,7 @@ const getWeb3 = () => {
         const web3 = window.web3
         console.log("Injected web3 detected.")
         // Acccounts now exposed
-        resolve({web3, bytecode, abi});
+        resolve(web3);
       }
       
   });

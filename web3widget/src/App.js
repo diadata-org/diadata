@@ -11,13 +11,17 @@ import YieldCalculator from './components/yield';
 import getWeb3 from './helpers/web3';
 import { getDiaRate } from './helpers/api';
 
+// eth network config
+
+import { networkConfig } from './config'
+
 export default class App extends Component {
 
   render() {
 
     return (
       <div className="App">
-        <YieldCalculator getWeb3={getWeb3} getDiaRate={getDiaRate}/>
+        <YieldCalculator getWeb3={getWeb3} getDiaRate={getDiaRate} networkConfig={networkConfig}/>
       </div>
     );
   }
