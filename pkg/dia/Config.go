@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	BalancerExchange = "Balancer"
 	GnosisExchange   = "Gnosis"
 	KrakenExchange   = "Kraken"
 	BitfinexExchange = "Bitfinex"
@@ -34,6 +35,7 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		BalancerExchange,
 		GnosisExchange,
 		CurveFIExchange,
 		UniswapExchange,
