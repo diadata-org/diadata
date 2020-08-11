@@ -406,7 +406,7 @@ export default class YieldCalculator extends Component {
     getTXLink() {
         const { txHash, currentNetwork } = this.state;
         const etherscanUrl = `https://${currentNetwork}.etherscan.io/tx/${txHash}`;
-        return <a href={etherscanUrl}>View Tx On Etherscan</a>
+        return <a href={etherscanUrl} target="_blank" rel="noopener noreferrer">View Tx On Etherscan</a>
     }
 
     renderStakingForm() {
