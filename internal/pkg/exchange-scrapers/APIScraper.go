@@ -75,6 +75,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewGnosisScraper(dia.GnosisExchange)
 	case dia.BalancerExchange:
 		return NewBalancerScraper(dia.BalancerExchange)
+	case dia.MakerExchange:
+		return NewMakerScraper(dia.MakerExchange)
 	default:
 		return nil
 	}
