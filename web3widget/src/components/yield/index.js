@@ -3,6 +3,7 @@ import React, { Component} from 'react';
 // react
 import { Container, Row, Col, Button, Form, Alert, Spinner } from 'react-bootstrap';
 import Slider from 'react-rangeslider';
+import parse from 'html-react-parser';
 
 // web3
 import { config } from "../../helpers/web3/config.js";
@@ -39,8 +40,8 @@ export default class YieldCalculator extends Component {
             processingTx: false,
             viewTx: false,
             txHash: "",
-            dAppDesc: "Yield calculator is ......",
-            diaBonus:"+2,5%"
+            dAppDesc: "How to participate in the DIA Interest Pool. <br/> Step 1: ",
+            diaBonus: "2,5"
         }
 
         // bind methods
@@ -191,13 +192,13 @@ export default class YieldCalculator extends Component {
         let diaBonus = "";
 
         if (yieldDuration === 3){
-            diaBonus = "+2,5%"
+            diaBonus = "2,5"
         }
         if (yieldDuration === 6){
-            diaBonus = "+5%"
+            diaBonus = "5"
         }
         if (yieldDuration === 9){
-            diaBonus = "+10%"
+            diaBonus = "10"
         }
         vm.setState({ yieldDuration, yieldPercentage: this.state.yieldRates[yieldDuration], diaBonus })
     }
@@ -315,19 +316,22 @@ export default class YieldCalculator extends Component {
 
     renderStakingFormBody() {
 
-        const { yieldDuration, yieldPercentage, 
-            yieldResults, userStake, diaNotApprovedForStaking,
-            userAccount, errorMsg, processingTx, viewTx, dAppDesc, 
-            web3Connected, diaBonus  } = this.state;
+        const { yieldDuration, yieldPercentage, currentNetwork,
+                yieldResults, userStake, diaNotApprovedForStaking,
+                userAccount, errorMsg, processingTx, viewTx, dAppDesc, 
+                web3Connected, diaBonus  } = this.state;
 
         return (
             <Container fluid className="yield-form-container">
-                <Form.Label column sm="6" className="dapp-desc">
-                    {dAppDesc}
-                </Form.Label>
-                <Form.Label column sm="6">
-                    <a class="toc" href="https://diadata.org/" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
-                </Form.Label>
+                <Row>
+                    <Col sm="8" className="dapp-desc">
+                        { parse(dAppDesc) }
+                    </Col>
+                    <Col sm="4" className="web3-connected">
+                        { web3Connected ? `Connected to ${currentNetwork}` : ""}
+                    </Col>
+                </Row>
+               
                 <hr id="top-line"/>
                 { errorMsg !== "" && web3Connected ? this.renderErrorMsg(errorMsg): null }
                
@@ -337,7 +341,7 @@ export default class YieldCalculator extends Component {
                     <Col id="user-returns-heading" className="headings">Return</Col>
                 </Row>
                 <Row>
-                    <Col sm="5">
+                    <Col lg="5">
                          <Form.Control 
                             type="number" 
                             placeholder={userStake}  
@@ -347,7 +351,7 @@ export default class YieldCalculator extends Component {
                             onChange={this.handleOnStakeChange}
                             />
                     </Col>
-                    <Col id="user-returns" className="returns">{diaBonus}</Col>
+                    <Col id="user-returns" className="returns">+{diaBonus}%</Col>
                      <Col id="user-returns" className="returns">+{yieldPercentage}%</Col>
                 </Row>
                 <Row>
@@ -389,7 +393,7 @@ export default class YieldCalculator extends Component {
                             <Row key={res.id} className="row-res row-res-border">
                                 <Col xs={4} className="yield-period">{res.period}</Col>
                                 <Col xs={4} className="yield-amount yield-dia">{res.diaAmount}</Col>
-                                <Col xs={4} className="yield-amount">{res.totalReturn }</Col>
+                                <Col xs={4} className="yield-amount yield-dia">{res.totalReturn }</Col>
                             </Row>
                         )
                     })}
@@ -406,19 +410,26 @@ export default class YieldCalculator extends Component {
                             value={userAccount} 
                             onChange={this.handleOnAccountChange}/>
                     </Col>
-                    { viewTx ? <Col sm="12" className="view-tx">{this.getTXLink()}</Col> : null }
 
-                    {
-                        web3Connected ? 
-                            diaNotApprovedForStaking ? 
-                            processingTx ? 
-                                <Spinner animation="border" className="processing-tx" /> :
-                                <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.approveDia}>PREPARE STAKING</Button> : 
-                            processingTx ? 
-                                <Spinner animation="border" className="processing-tx" /> :
-                                <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.stakeUserDia}>START STAKING</Button>
-                                :  <Button id="web3-connect" onClick={()=> this.connectToWeb3()}>Connect To Metamask</Button>
-                    }
+                    <Form.Label column sm="4">
+                        <a className="toc" href="https://diadata.org/" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+                    </Form.Label>
+                  
+                    <Col sm="8">
+                        {
+                            web3Connected ? 
+                                diaNotApprovedForStaking ? 
+                                processingTx ? 
+                                    <Spinner animation="border" className="processing-tx" /> :
+                                    <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.approveDia}>PREPARE STAKING</Button> : 
+                                processingTx ? 
+                                    <Spinner animation="border" className="processing-tx" /> :
+                                    <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.stakeUserDia}>START STAKING</Button>
+                                    :  <Button id="web3-connect" onClick={()=> this.connectToWeb3()}>Connect To Metamask</Button>
+                        }
+                    </Col>
+
+                    { viewTx ? <Col sm="12" className="view-tx">{this.getTXLink()}</Col> : null }
                 
                 </Row>
             </Container>
