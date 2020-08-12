@@ -1,0 +1,29 @@
+# Overview of Data Points
+
+## Digital assets
+
+| Data Type | Description | Methodology | API Documentation | Oracle Link | Update Period |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Symbol | Symbol for cryptocurrency | Retrieval as part of a trading pair | [Symbols](https://api.diadata.org/v1/symbols) | [Symbol Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 1 day |
+| Quotation | Most recent price of a cryptocurrency in USD | [Pricing Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Quotation](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) | [Price Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 2 min. |
+| Exchange | Cryptocurrency exchange name | - | [Exchanges](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) | - | Depending on assignments or fundings on our platform |
+| Chart Point | Coin Prices as processed by our Pricing backend, organized by exchange and filter | [Pricing Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Chart Points](https://docs.diadata.org/documentation/api-1/api-endpoints#chart-points) | - | 2 min. |
+| Supply | Circulating supply of cryptocurrencies | [Supply Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/supplynumbers) | [Supply](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) | [Supply Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 1 day |
+| Pair | Trading pair on a crypto exchange | Pairs fetched from the exchange's API or the blockchain resp. as listed pairs. See: [Trading Data Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data) | [Pairs](https://docs.diadata.org/documentation/api-1/api-endpoints#pairs) | - | 1 day |
+| Trade Volume | Trading volume of a cryptocurrency | Added volumes of raw trading data after filtering as described [here](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Trade Volumes](https://docs.diadata.org/documentation/api-1/api-endpoints#trade-volume) | - | 1 day |
+| Raw Crypto Trade | Trading data  | [Trading Data Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data) | [Raw Crypto Trades](https://docs.diadata.org/documentation/api-1/api-endpoints#raw-crypto-trades) | - | 2 min. |
+| CVI Index | Crypto volatility index measuring volatility in cryptocurrency markets | [CVI Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cvi) | [CVI Index](https://docs.diadata.org/documentation/api-1/api-endpoints#cvi-index) | _soon_ | 5 min. |
+| DeFi Interest Rate | Lending/Borrowing rates on DeFi protocols |  | [DeFi Lending Rate](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate)  | [DeFi Lending Oracle](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | 1 min. |
+| DeFi Lending Protocol State | Total value locked in a lending/borrowing protocol |  | [DeFi Lending Protocol](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-state) | [DeFi  Lending Oracle](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | 1 min. |
+
+## Traditional Assets
+
+| Data Type | Description | Methodology | API Documentation | Oracle Link | Update Period |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Interest Rates | Interest rate types from  central banks such as ECB  | [Rates methodology](https://docs.diadata.org/documentation/methodology/traditional-assets/overnight-rates) | [Interest Rates](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rates) | _-_ | 1 day |
+| Interest Rate | Particular value of an interest rate at a given time | [Rates methodology](https://docs.diadata.org/documentation/methodology/traditional-assets/overnight-rates) | [Interest Rate](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) | _soon_ | 1 day |
+| Compounded Index | Interest rate compounded since first publication date | [Compounding methodology](https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#standard-methodology) | [Compounded Index](https://docs.diadata.org/documentation/api-1/api-endpoints#compounded-index) | _soon_ | 1 day |
+| Compounded Average | Average interest rate compounded over a variable time range | [Compounding methodology](https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#standard-methodology) | [Compounded Average](https://docs.diadata.org/documentation/api-1/api-endpoints#compounded-average) | - | 1 day |
+| Compounded DIA Average | Average interest rate compounded over a variable time range, using DIA methodology | [DIA Compounding methodology](https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#dia-methodology) | [Compounded DIA Average](https://docs.diadata.org/documentation/api-1/api-endpoints#compounded-average-using-dia-method) | - |  1 day |
+| Fiat Currency Exchange | Exchange rate for fiat currency | Unprocessed retrieval from ECB API | [Fiat currency Exchange](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) | _soon_ | 1 day |
+
