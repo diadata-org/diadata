@@ -23,7 +23,7 @@
   * [Oracle Documentation](documentation/oracle-documentation/README.md)
     * [Crypto Assets](documentation/oracle-documentation/crypto-assets.md)
     * [DeFi Protocol Rates and States](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
-    * [Interest Rates](documentation/oracle-documentation/dex-quotations.md)
+    * [Interest Rates](documentation/oracle-documentation/interest-rates.md)
     * [Fiat Prices](documentation/oracle-documentation/fiat-prices.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)

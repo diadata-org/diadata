@@ -10,11 +10,11 @@ The DIA oracle data is located in a [single smart contract](https://etherscan.io
 
 By using the read function `getCoinInfo(coin_name)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
 
-Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract. Each update also generated an event, so that the latest updates can be seen in the event view on Etherscan.
+Updates are supplied by the DIA Oracle service that periodically supplies updates into the smart contract. Each update also generates an event, so that the latest updates can be seen in the event view on Etherscan.
 
 ## Example DApp: ECB FX Rates for Cryptos
 
 As an example application, we implemented and deployed a [simple smart contract that converts crypto asset prices from our oracle from USD to EUR](https://etherscan.io/address/0xccb30bf12177705d41ac208802a6066482a76eaa). 
 
-Call `getAssetEurRate()` with a crypto asset name as argument \(use the "Read Contract" tab for easy web access\) to request the current crypto asset price from our oracle which is then converted to EUR by using the ECB exchange rate for EUR-USD, which we also publish in the oracle contract. The rate is displayed in a fix comma format with five decimal digits. The source code of that example contract can be found at the "Code" tab. This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address, where the oracle is deployed, afterwards. Ideally, this should be done in a way that allows updates if the oracle address changes at any time in the future.
+Call `getAssetEurRate()` with a crypto asset name as argument in order to request the current crypto asset price from our oracle which is then converted to EUR by using the ECB exchange rate for EUR-USD, also published in the oracle contract.  In the above link, you can use the "Read Contract" tab for easy web access. The rate is displayed in a fix comma format with five decimal digits. The source code of that example contract can be found at the "Code" tab. This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address where the oracle is deployed afterwards. Ideally, this should be done in a way that allows updates if the oracle address changes at any time in the future.
 
