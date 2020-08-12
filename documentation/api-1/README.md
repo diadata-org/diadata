@@ -19,26 +19,6 @@ Version: 1.0
 
 The DIA base url is `https://api.diadata.org/v1`. All API paths are sub-paths of this base URL. You can find specific documentation for the endpoints of our API on the [API documentation site](https://docs.diadata.org/documentation/api-1/api-endpoints). 
 
-Currently, DIA collects reference rates from traditional financial markets and data from several cryptocurrency exchanges \(see the table below\).
-
-| Exchange |  |  |  |
-| :--- | :--- | :--- | :--- |
-| Number of pairs |  |  |  |
-
-| Name | Number of Pairs |
-| :--- | :--- |
-| Binance | [47](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Binance.json) |
-| Bitfinex | [25](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Bitfinex.json) |
-| Coinbase | [3](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/CoinBase.json) |
-| GateIO | [42](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/GateIO.json) |
-| HitBTC | [43](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/HitBTC.json) |
-| Huobi | [40](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Huobi.json) |
-| Kraken | [8](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Kraken.json) |
-| LBank | [20](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/LBank.json) |
-| OKEx | [27](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/OKEx.json) |
-| Simex | [14](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/Simex.json) |
-| ZB.com | [127](https://github.com/diadata-org/diadata/tree/c982072de2ac488c5f0bdf32b677cbac1965583e/documentation/config/ZB.json) |
-
 ## Use cases
 
 ### Bash scripting

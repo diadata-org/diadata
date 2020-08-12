@@ -26,5 +26,20 @@ We remark that by the very nature of a websocket API, there is no retrieval freq
 
 ## Decentralized Cryptocurrency Exchanges \(DEXes\)
 
-In contrast to centralized exchanges, 
+In contrast to centralized exchanges, in decentralized exchanges it is possible to retrieve trading data directly from the respective blockchain.
+
+{% hint style="info" %}
+ In order to supply data to our community as quickly as possible, we retrieved the trading data through different types of APIs for now \(see table below\). However, we remark that we are currently implementing data retrieval through the blockchain directly in order to reduce unnecessary dependencies. This concerns all decentralized exchanges.
+{% endhint %}
+
+| Exchange | Data Retrieval | API Link | Blockchain | Retrieval Period |
+| :--- | :--- | :--- | :--- | :--- |
+| Bancor | Rest API | [Bancor API Documentation](https://support.bancor.network/hc/en-us/articles/360002246912-Price-Discovery-value-API) | Ethereum | - |
+| CurveFi | Thegraph API | [CurveFi API](https://thegraph.com/explorer/subgraph/blocklytics/curve) | Ethereum | 1 min. |
+| Gnosis | Thegraph API | [Gnosis API Documentation](https://github.com/gnosis/dex-subgraph)  | Ethereum | 1 min. |
+| Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | - |
+| Uniswap V2 | Thegraph API | [Uniswap API Documentation](https://github.com/uniswap/uniswap-v2-subgraph) | Ethereum | 1 min. |
+| \_\_ |  | _Coming soon:_ |  |  |
+| Balancer | Thegraph API | [Balancer API Documentation](https://github.com/balancer-labs/balancer-subgraph) | Ethereum | 1 min. |
+| Maker | Rest API | [Maker API Documentation](https://developer.makerdao.com/oasis/api/2/) | Ethereum | 1 min. |
 

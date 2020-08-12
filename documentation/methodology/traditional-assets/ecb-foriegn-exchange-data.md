@@ -1,4 +1,4 @@
-# ECB Foreign Exchange Data
+# ECB Foriegn Exchange Data
 
 Our ECB foreign exchange data scraper provides us with accurate data about exchange rates between the world's most important fiat currencies. Its data source is the data from this table:
 
