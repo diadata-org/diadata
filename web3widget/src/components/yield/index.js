@@ -22,7 +22,7 @@ export default class YieldCalculator extends Component {
         this.state = {
             yieldDuration: 3,
             yieldPercentage: 15,
-            yieldRates:{3:10, 6:15, 9:20},
+            yieldRates:{ 3:10, 6:15, 9:20 },
             yieldResults: [],
             userStake: 100, // default examplee
             web3Connected: false,
@@ -315,7 +315,10 @@ export default class YieldCalculator extends Component {
 
     renderStakingFormBody() {
 
-        const { yieldDuration, yieldPercentage, yieldResults, userStake, diaNotApprovedForStaking, userAccount, errorMsg, processingTx, viewTx, dAppDesc, web3Connected  } = this.state;
+        const { yieldDuration, yieldPercentage, 
+            yieldResults, userStake, diaNotApprovedForStaking,
+            userAccount, errorMsg, processingTx, viewTx, dAppDesc, 
+            web3Connected, diaBonus  } = this.state;
 
         return (
             <Container fluid className="yield-form-container">
@@ -344,7 +347,7 @@ export default class YieldCalculator extends Component {
                             onChange={this.handleOnStakeChange}
                             />
                     </Col>
-                    <Col id="user-returns" className="returns">+{yieldPercentage}%</Col>
+                    <Col id="user-returns" className="returns">+{diaBonus}%</Col>
                      <Col id="user-returns" className="returns">+{yieldPercentage}%</Col>
                 </Row>
                 <Row>
