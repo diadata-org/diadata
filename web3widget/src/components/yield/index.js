@@ -40,7 +40,7 @@ export default class YieldCalculator extends Component {
             viewTx: false,
             txHash: "",
             dAppDesc: "Yield calculator is ......",
-            diaBonus:""
+            diaBonus:"+2,5%"
         }
 
         // bind methods
@@ -329,15 +329,15 @@ export default class YieldCalculator extends Component {
                     <a class="toc" href="https://diadata.org/" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
                 </Form.Label>
                 <hr id="top-line"/>
-                { errorMsg !== "" ? this.renderErrorMsg(errorMsg): null }
+                { errorMsg !== "" && web3Connected ? this.renderErrorMsg(errorMsg): null }
                
                 <Row>
-                    <Col id="user-stake-heading" className="headings">Your Dia Stake</Col>
+                    <Col id="user-stake-heading" className="headings" >Your Dia Stake</Col>
                     <Col id="user-returns-heading" className="headings">Bonus</Col>
                     <Col id="user-returns-heading" className="headings">Return</Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col sm="5">
                          <Form.Control 
                             type="number" 
                             placeholder={userStake}  
@@ -347,7 +347,7 @@ export default class YieldCalculator extends Component {
                             onChange={this.handleOnStakeChange}
                             />
                     </Col>
-                    <Col id="user-returns" className="returns">+{diaBonus}%</Col>
+                    <Col id="user-returns" className="returns">{diaBonus}</Col>
                      <Col id="user-returns" className="returns">+{yieldPercentage}%</Col>
                 </Row>
                 <Row>
