@@ -23,9 +23,8 @@
 
 .yield-form-container {
     padding: 0;
-    margin-top: 25px;
-    margin-left: 40px;
-    margin-right: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
     width: auto;
 }
 
@@ -132,6 +131,12 @@
     padding-right: 0;
 }
 
+.yield-table-header {
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+}
+
 #yield-results {
    margin-top: 30px;
    margin-left: 15px;
@@ -139,9 +144,10 @@
 }
 
 .yield-period {
-    font-size: 14px;
+    font-size: 18px;
     color: #c1cbf6;
     padding-left: 5px;
+    text-align: center;
 }
 
 .yield-amount {
@@ -184,9 +190,9 @@
     background-color: #33353d;
 }
 
-#connected-btn, #web3-connect {
-    float: right;
-    margin-right: 10px;
+#web3-connect {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #staking-btn {
@@ -197,6 +203,10 @@
 .form-lbl {
     font-size: 16px;
     font-weight: bold;
+}
+
+.dapp-desc {
+    font-size: 14px;
 }
 
 .form-control {
@@ -222,4 +232,23 @@
     margin-top: 20px;
     margin-bottom: 5px;
     color: black;
+}
+
+a#duration {
+    color: black;
+    text-decoration: underline;
+}
+
+.app-logo {
+    float: right;
+    height: 40px;
+    pointer-events: none;
+}
+
+.toc {
+    float: right;
+    color: black;
+    text-decoration: underline;
+    font-size: 12px;
+    font-weight: bold;
 }
