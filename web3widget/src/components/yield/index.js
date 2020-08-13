@@ -15,6 +15,9 @@ import './index.css';
 // logo
 import logo from './logo.svg';
 
+// wallet selector
+//import WalletSelector from `../walletselector`;
+
 export default class YieldCalculator extends Component {
 
     constructor(props, context) {
@@ -28,6 +31,7 @@ export default class YieldCalculator extends Component {
             userStake: 100, // default examplee
             web3Connected: false,
             fetchingRates: false,
+            fetchingBalances: false,
             web3: undefined,
             diaRate: {"Price": 3.093472085791579, Symbol: 'DIA'},
             currentNetwork: "",
@@ -49,6 +53,7 @@ export default class YieldCalculator extends Component {
         this.renderCalculator = this.renderCalculator.bind(this);
         this.connectToWeb3 = this.connectToWeb3.bind(this);
         this.fetchYieldRates = this.fetchYieldRates.bind(this);
+        this.fetchUserBalances = this.fetchUserBalances.bind(this);
         this.handleOnStakeChange = this.handleOnStakeChange.bind(this);
         this.handleOnAccountChange = this.handleOnAccountChange.bind(this);
         this.renderStakingFormBody = this.renderStakingFormBody.bind(this);
@@ -61,10 +66,32 @@ export default class YieldCalculator extends Component {
     }
 
     async componentDidMount(){
-       this.setState({ networkConfig: this.props.networkConfig });
+
+      
+       const vm = this;
+       vm.setState({ networkConfig: vm.props.networkConfig });
 
        // set the dummy yield results
-       this.calculateYieldResults()
+       vm.calculateYieldResults()
+
+       // listen for account changes
+       window.ethereum.on('accountsChanged',  (accounts) => {
+         // Time to reload your interface with accounts[0]!
+         console.log(accounts);
+         const { web3Connected } = vm.state;
+         if (web3Connected) {
+            vm.fetchUserBalances();
+         }
+       
+      });
+
+      window.ethereum.on('chainChanged', (chainId) => {
+        // Handle the new chain.
+        // Correctly handling chain changes can be complicated.
+        // We recommend reloading the page unless you have a very good reason not to.
+        console.log(chainId);
+        window.location.reload();
+      });
     }
 
     resetViewTx() {
@@ -216,8 +243,8 @@ export default class YieldCalculator extends Component {
             const userAccount = (await web3.eth.getAccounts())[0];
 
             vm.setState({ web3: web3, web3Connected: true, currentNetwork, userAccount }, ()=> {
-                vm.setState({fetchingRates: true });
                 vm.fetchYieldRates();
+                vm.fetchUserBalances();
             })
         }
         catch(error) {
@@ -225,8 +252,45 @@ export default class YieldCalculator extends Component {
         }
     }
 
+    async fetchUserBalances() {
+        try {
+            this.setState({ fetchingBalances: true});
+          
+            // get the default network
+            const defaultNetwork = this.state.networkConfig.defaultNetwork;
+           
+            const web3 = this.state.web3;
+
+            // get the yield rates
+            const yieldContractAddress = this.state.networkConfig[defaultNetwork].yieldContractAddress;
+          
+
+            // get the user DIA balance
+            const erc20contractAddress = this.state.networkConfig[defaultNetwork].erc20ContractAddress;
+            const erc20contractAbi = JSON.parse(config.erc20Contract.abi);
+            const userDiaBalance = await getDiaBalance(web3, erc20contractAbi, erc20contractAddress);
+            const userDiaAllowance = await getDiaAllowance(web3, erc20contractAbi, erc20contractAddress, yieldContractAddress);
+
+            console.log("user DIA balance is ", userDiaBalance.toLocaleString() );
+            console.log("user DIA balance approved for staking is ", userDiaAllowance.toLocaleString() );
+
+
+            this.setState({ fetchingBalances: false, 
+                            userDiaBalance,
+                            userDiaAllowance  });
+
+        }
+        catch(error){
+            this.setState({ fetchingBalances: false});
+            console.log(error);
+        }
+    }
+
+
     async fetchYieldRates() {
         try {
+
+            this.setState({fetchingRates: true});
             
             const diaRate = await this.props.getDiaRate();
 
@@ -240,15 +304,7 @@ export default class YieldCalculator extends Component {
             const yieldContractAbi = JSON.parse(config.yieldContract.abi);
             const yieldResults = await getYieldDetails(web3, yieldContractAbi, yieldContractAddress);
 
-            // get the user DIA balance
-            const erc20contractAddress = this.state.networkConfig[defaultNetwork].erc20ContractAddress;
-            const erc20contractAbi = JSON.parse(config.erc20Contract.abi);
-            const userDiaBalance = await getDiaBalance(web3, erc20contractAbi, erc20contractAddress);
-            const userDiaAllowance = await getDiaAllowance(web3, erc20contractAbi, erc20contractAddress, yieldContractAddress);
-
-            console.log("user DIA balance is ", userDiaBalance.toLocaleString() );
-            console.log("user DIA balance approved for staking is ", userDiaAllowance.toLocaleString() );
-
+            
 
             // set the yield & api rates
             const yieldRates = {3: Number(yieldResults.threeMonthPromille) / 10, 
@@ -258,9 +314,7 @@ export default class YieldCalculator extends Component {
             this.setState({ fetchingRates: false, 
                             yieldRates: yieldRates, 
                             diaRate:diaRate, 
-                            yieldPercentage: yieldRates[this.state.yieldDuration], 
-                            userDiaBalance,
-                            userDiaAllowance  });
+                            yieldPercentage: yieldRates[this.state.yieldDuration]  });
 
         }
         catch(error){
@@ -425,7 +479,7 @@ export default class YieldCalculator extends Component {
                                 processingTx ? 
                                     <Spinner animation="border" className="processing-tx" /> :
                                     <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.stakeUserDia}>START STAKING</Button>
-                                    :  <Button id="web3-connect" onClick={()=> this.connectToWeb3()}>Connect To Metamask</Button>
+                                    :  <Button id="web3-connect" onClick={ ()=> this.connectToWeb3() }>Connect To Wallet</Button>
                         }
                     </Col>
 
