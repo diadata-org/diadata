@@ -15,7 +15,7 @@ export const createConnector = async (handleWeb3, handleAccountsChange, handleWa
     //  Create Web3
     const web3 = new Web3(provider);
 
-
+    handleWeb3(web3);
 
     // Subscribe to accounts change
     provider.on("accountsChanged", (accounts) => {
@@ -41,7 +41,7 @@ export const createConnector = async (handleWeb3, handleAccountsChange, handleWa
     provider.on("open", () => {
         console.log("open");
 
-        handleWeb3(web3);
+
     });
 
     // Subscribe to session disconnection/close

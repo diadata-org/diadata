@@ -372,7 +372,7 @@ export default class YieldCalculator extends Component {
         }
     }
 
-    async handleWalletConnectWeb3({  web3 }) {
+    async handleWalletConnectWeb3(web3) {
 
         try {
             // set the current network connected to
@@ -417,7 +417,7 @@ export default class YieldCalculator extends Component {
 
         if(type === "wc") {
             // for wallet connect pass functions that will be used to handle the state changes
-            await createConnector(this.handleWalletConnect, this.handleWalletConnectAccounts, this.handleWalletConnectClose);
+            await createConnector(this.handleWalletConnectWeb3, this.handleWalletConnectAccounts, this.handleWalletConnectClose);
         }
     }
 
