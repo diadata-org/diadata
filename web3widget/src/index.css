@@ -10,3 +10,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#walletconnect-qrcode-modal > div.walletconnect-modal__base {
+  max-width: 300px;
+}

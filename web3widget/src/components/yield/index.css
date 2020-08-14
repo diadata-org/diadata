@@ -256,5 +256,47 @@ a#duration {
     text-align: right;
     color:#51ff0d;
     margin-top: 5px;
- 
+}
+
+/* WALLET SELECT MODAL */
+
+.modal {
+    top: 220px;
+}
+
+.wallet-select {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#wallet-select-divider {
+    border-right: 1px solid black;
+}
+
+.wallet-logo {
+    height: 60px;
+}
+
+.wallet-select-header {
+    font-size: 14px;
+    border-bottom: 1px solid black;
+}
+
+.wallet-select-title{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.wallet-name {
+    font-size: 12px;
+    margin-top: 10px;
+    font-weight: bold;
+    color: black;
+}
+
+.wallet-name:hover {
+    color: #1b46c2;
 }

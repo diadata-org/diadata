@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 
 // react
-import { Container, Row, Col, Button, Form, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Alert, Spinner, Modal } from 'react-bootstrap';
 import Slider from 'react-rangeslider';
 import parse from 'html-react-parser';
 
@@ -12,11 +12,13 @@ import { getYieldDetails, getDiaBalance, getDiaAllowance, approveDiaForStaking, 
 // css
 import './index.css';
 
-// logo
+// logos
 import logo from './logo.svg';
+import walletconnect from '../../assets/walletconnect.svg';
+import metamask from '../../assets/metamask.svg';
 
-// wallet selector
-//import WalletSelector from `../walletselector`;
+// wallet connect
+import { createConnector } from '../walletconnect';
 
 export default class YieldCalculator extends Component {
 
@@ -24,6 +26,7 @@ export default class YieldCalculator extends Component {
         super(props, context)
 
         this.state = {
+            showPopup: false,
             yieldDuration: 3,
             yieldPercentage: 15,
             yieldRates:{ 3:10, 6:15, 9:20 },
@@ -46,7 +49,7 @@ export default class YieldCalculator extends Component {
             txHash: "",
             dAppDesc: "How to participate in the DIA Interest Pool. <br/> Step 1: ",
             diaBonus: "2,5"
-        }
+        };
 
         // bind methods
         this.handleOnRangeChange  = this.handleOnRangeChange.bind(this);
@@ -62,12 +65,13 @@ export default class YieldCalculator extends Component {
         this.getTXLink = this.getTXLink.bind(this);
         this.resetViewTx = this.resetViewTx.bind(this);
         this.stakeUserDia = this.stakeUserDia.bind(this);
-    
+        this.renderWalletSelector = this.renderWalletSelector.bind(this);
+        this.handleWalletSelect = this.handleWalletSelect.bind(this);
+        this.handleWalletConnect = this.handleWalletConnect.bind(this);
     }
 
     async componentDidMount(){
 
-      
        const vm = this;
        vm.setState({ networkConfig: vm.props.networkConfig });
 
@@ -252,6 +256,11 @@ export default class YieldCalculator extends Component {
         }
     }
 
+    handleWalletConnect({ web3Connected }) {
+
+        this.setState({ web3Connected });
+    }
+
     async fetchUserBalances() {
         try {
             this.setState({ fetchingBalances: true});
@@ -363,6 +372,52 @@ export default class YieldCalculator extends Component {
         } else{
             this.setState({yieldResults: []});
         }
+    }
+
+    handleWalletSelect(type) {
+        this.setState({ showPopup: false });
+
+        if(type === "metamask") {
+            this.connectToWeb3();
+        }
+
+        if(type === "wc") {
+            createConnector(this.handleWalletConnect());
+        }
+    }
+
+    renderWalletSelector() {
+        return (
+            <Modal
+              size="sm"
+              show={this.state.showPopup}
+              onHide={() => this.setState({ showPopup : false })}
+              backdrop="static"
+              keyboard={false}
+            >
+                <Modal.Header closeButton className="wallet-select-header">
+                    <Modal.Title className="wallet-select-title">
+                        Please select wallet to continue
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <Col xs="6" className="wallet-select" id="wallet-select-divider" onClick={()=> this.handleWalletSelect("wc")}>
+                            <img src={walletconnect} className="wallet-logo" alt="logo" />
+                            <div className="wallet-name">
+                                Wallet Connect
+                            </div>
+                        </Col>
+                        <Col xs="6" className="wallet-select" onClick={()=> this.handleWalletSelect("metamask")}>
+                            <img src={metamask} className="wallet-logo" alt="logo" />
+                            <div className="wallet-name">
+                                Metamask
+                            </div>
+                        </Col>
+                    </Row>
+                </Modal.Body>
+            </Modal>
+        );
     }
 
 
@@ -479,7 +534,7 @@ export default class YieldCalculator extends Component {
                                 processingTx ? 
                                     <Spinner animation="border" className="processing-tx" /> :
                                     <Button id="staking-btn" disabled={userStake <= 0 || errorMsg !== ""} onClick={this.stakeUserDia}>START STAKING</Button>
-                                    :  <Button id="web3-connect" onClick={ ()=> this.connectToWeb3() }>Connect To Wallet</Button>
+                                    :  <Button id="web3-connect" onClick={() => this.setState({ showPopup: true })}>Connect To Wallet</Button>
                         }
                     </Col>
 
@@ -500,7 +555,6 @@ export default class YieldCalculator extends Component {
   
     renderCalculator() {
     
-
         return(
             <div className="yield-calc">
                 <header className="header">
@@ -508,14 +562,12 @@ export default class YieldCalculator extends Component {
                     <img src={logo} className="app-logo" alt="logo" />
                 </header>
                 
-                
-                { this.renderStakingFormBody()  }
+                { this.renderWalletSelector() }
+                { this.renderStakingFormBody() }
             </div>
         )
 
     }
     
     render = () => this.renderCalculator() 
-    
-
 }
