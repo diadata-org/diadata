@@ -122,7 +122,7 @@ func updateExchangePairs() {
 func addLocalPairs(exchange string, remotePairs []dia.Pair) []dia.Pair {
 	pLocales, _ := getPairsFromConfig(exchange)
 	log.Info(exchange, " nb remote:", len(remotePairs), " nb pLocales:", len(pLocales))
-	for i, _ := range remotePairs {
+	for i := range remotePairs {
 		remotePairs[i].Ignore = true
 	}
 	for i, e := range remotePairs {

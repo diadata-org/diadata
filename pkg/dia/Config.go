@@ -36,11 +36,11 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		UniswapExchange,
 		BalancerExchange,
 		MakerExchange,
 		GnosisExchange,
 		CurveFIExchange,
-		UniswapExchange,
 		BinanceExchange,
 		BitfinexExchange,
 		BittrexExchange,
