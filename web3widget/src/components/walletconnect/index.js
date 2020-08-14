@@ -1,68 +1,54 @@
-import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "@walletconnect/qrcode-modal";
+import Web3 from "web3";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
-export const createConnector = (handleWc) => {
+//  Create WalletConnect Provider
+const provider = new WalletConnectProvider({
+  infuraId: "be1a3f5f45994142bb67759b9fef28c5" // Required
+});
+
+
+export const createConnector = async (handleWeb3, handleAccountsChange, handleWalletClose) => {
+
+    //  Enable session (triggers QR Code modal)
+    await provider.enable();
+
+    //  Create Web3
+    const web3 = new Web3(provider);
+
+
+
+    // Subscribe to accounts change
+    provider.on("accountsChanged", (accounts) => {
+        console.log(accounts);
+
+        handleAccountsChange(accounts);
+    });
     
-    // Create a connector
-    const connector = new WalletConnect({
-        bridge: "https://bridge.walletconnect.org", // Required
-        qrcodeModal: QRCodeModal,
+    // Subscribe to chainId change
+    provider.on("chainChanged", (chainId) => {
+
+        console.log(chainId);
+        window.location.reload();
     });
-  
-    // Check if connection is already established
-    if (!connector.connected) {
-        // create new session
-        connector.createSession();
-    } else {
-        // kill any existing sessions
-        connector.killSession();
 
-        // and create a new one
-        connector.createSession();
-    }
-  
-    // Subscribe to connection events
-    connector.on("connect", (error, payload) => {
-        if (error) {
-            console.log(console.error);
-            throw error;
-        }
-
-        console.log(payload);
-
-        handleWc({ web3Connected: true });
-    
-        // Get provided accounts and chainId
-        const { accounts, chainId } = payload.params[0];
-
-        const userAccount = accounts[0];
+    // Subscribe to networkId change
+    provider.on("networkChanged", (networkId) => {
+        console.log(networkId);
+        window.location.reload();
     });
-  
-    connector.on("session_update", (error, payload) => {
-        if (error) {
-            console.log(console.error);
-            throw error;
-        }
 
+    // Subscribe to session connection/open
+    provider.on("open", () => {
+        console.log("open");
 
-        console.log(payload);
-  
-        // Get updated accounts and chainId
-        const { accounts, chainId } = payload.params[0];
-
-        const userAccount = accounts[0];
+        handleWeb3(web3);
     });
-  
-    connector.on("disconnect", (error, payload) => {
-        if (error) {
-            console.log(console.error);
-            throw error;
-        }
 
-
-        console.log(payload);
-    
-        // Delete connector
+    // Subscribe to session disconnection/close
+    provider.on("close", (code, reason) => {
+        console.log(code, reason);
+        handleWalletClose(true);
     });
-  
-};
+
+}
+

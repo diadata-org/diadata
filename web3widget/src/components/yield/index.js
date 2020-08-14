@@ -54,7 +54,7 @@ export default class YieldCalculator extends Component {
         // bind methods
         this.handleOnRangeChange  = this.handleOnRangeChange.bind(this);
         this.renderCalculator = this.renderCalculator.bind(this);
-        this.connectToWeb3 = this.connectToWeb3.bind(this);
+        this.connectToMetamask = this.connectToMetamask.bind(this);
         this.fetchYieldRates = this.fetchYieldRates.bind(this);
         this.fetchUserBalances = this.fetchUserBalances.bind(this);
         this.handleOnStakeChange = this.handleOnStakeChange.bind(this);
@@ -67,7 +67,11 @@ export default class YieldCalculator extends Component {
         this.stakeUserDia = this.stakeUserDia.bind(this);
         this.renderWalletSelector = this.renderWalletSelector.bind(this);
         this.handleWalletSelect = this.handleWalletSelect.bind(this);
-        this.handleWalletConnect = this.handleWalletConnect.bind(this);
+
+        // wallet connect funcs
+        this.handleWalletConnectWeb3 = this.handleWalletConnectWeb3.bind(this);
+        this.handleWalletConnectAccounts = this.handleWalletConnectAccounts.bind(this);
+        this.handleWalletConnectClose = this.handleWalletConnectClose.bind(this);
     }
 
     async componentDidMount(){
@@ -234,33 +238,6 @@ export default class YieldCalculator extends Component {
         vm.setState({ yieldDuration, yieldPercentage: this.state.yieldRates[yieldDuration], diaBonus })
     }
 
-    async connectToWeb3() {
-
-        try {
-            const web3 = await this.props.getWeb3();
-
-            // set the current network connected to
-            const currentNetwork = await web3.eth.net.getNetworkType();
-          
-            // set the state and also fetch the yield rates from api & contract
-            const vm = this;
-            const userAccount = (await web3.eth.getAccounts())[0];
-
-            vm.setState({ web3: web3, web3Connected: true, currentNetwork, userAccount }, ()=> {
-                vm.fetchYieldRates();
-                vm.fetchUserBalances();
-            })
-        }
-        catch(error) {
-            console.log(error);
-        }
-    }
-
-    handleWalletConnect({ web3Connected }) {
-
-        this.setState({ web3Connected });
-    }
-
     async fetchUserBalances() {
         try {
             this.setState({ fetchingBalances: true});
@@ -272,7 +249,6 @@ export default class YieldCalculator extends Component {
 
             // get the yield rates
             const yieldContractAddress = this.state.networkConfig[defaultNetwork].yieldContractAddress;
-          
 
             // get the user DIA balance
             const erc20contractAddress = this.state.networkConfig[defaultNetwork].erc20ContractAddress;
@@ -374,15 +350,74 @@ export default class YieldCalculator extends Component {
         }
     }
 
-    handleWalletSelect(type) {
+    async connectToMetamask() {
+
+        try {
+            const web3 = await this.props.getWeb3();
+
+            // set the current network connected to
+            const currentNetwork = await web3.eth.net.getNetworkType();
+          
+            // set the state and also fetch the yield rates from api & contract
+            const vm = this;
+            const userAccount = (await web3.eth.getAccounts())[0];
+
+            vm.setState({ web3: web3, web3Connected: true, currentNetwork, userAccount }, ()=> {
+                vm.fetchYieldRates();
+                vm.fetchUserBalances();
+            })
+        }
+        catch(error) {
+            console.log(error);
+        }
+    }
+
+    async handleWalletConnectWeb3({  web3 }) {
+
+        try {
+            // set the current network connected to
+            const currentNetwork = await web3.eth.net.getNetworkType();
+          
+            // set the state and also fetch the yield rates from api & contract
+            const vm = this;
+            const userAccount = (await web3.eth.getAccounts())[0];
+
+            vm.setState({ web3: web3, web3Connected: true, currentNetwork, userAccount }, ()=> {
+                vm.fetchYieldRates();
+                vm.fetchUserBalances();
+            })
+        }
+        catch(error) {
+            console.log(error);
+        }
+    }
+
+    async handleWalletConnectAccounts(accounts){
+
+        console.log(accounts);
+        const { web3Connected } = this.state;
+        if (web3Connected) {
+            this.fetchUserBalances();
+        }
+
+    }
+
+    async handleWalletConnectClose(closed) {
+        if(closed) {
+            this.setState( {web3: undefined, web3Connected: false });
+        }
+    }
+
+    async handleWalletSelect(type) {
         this.setState({ showPopup: false });
 
         if(type === "metamask") {
-            this.connectToWeb3();
+            this.connectToMetamask();
         }
 
         if(type === "wc") {
-            createConnector(this.handleWalletConnect());
+            // for wallet connect pass functions that will be used to handle the state changes
+            await createConnector(this.handleWalletConnect, this.handleWalletConnectAccounts, this.handleWalletConnectClose);
         }
     }
 
