@@ -552,7 +552,7 @@ Successful retrieval of a Defi interest rate.
 
 {% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingState/:protocol" %}
 {% api-method-summary %}
-Defi Lending State
+Defi Lending Protocol
 {% endapi-method-summary %}
 
 {% api-method-description %}
