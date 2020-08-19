@@ -127,12 +127,9 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkle
 func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds models.AuditStore) {
 
 	for {
-		// Where do the trees go?
+
 		bp := <-poolChannel
 		tree, err := merkletree.MakeTree(bp)
-		// // Accessing the content of leafs
-		// cont := tree.Root.Left.Left.C.(models.Bucket)
-		// fmt.Println("leaf content is: ", cont.Content.String())
 		if err != nil {
 			log.Error(err)
 			return
@@ -162,7 +159,7 @@ func main() {
 	if err != nil {
 		log.Error(err)
 	}
-	fmt.Println(retval)
+	fmt.Println("recovered node: ", retval.Root.Left.C.(merkletree.StorageBucket))
 
 	// -------------------------------------------------------------
 
@@ -182,7 +179,7 @@ func main() {
 	// wg := sync.WaitGroup{}
 	// wg.Add(1)
 	// pChan := make(chan *merkletree.BucketPool)
-	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
+	// go FillPools(*dataType, 2, 512, pChan, kc.chanMessage, &wg)
 
 	// wg.Add(1)
 	// go FlushPool(pChan, &wg, ds)

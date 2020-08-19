@@ -166,6 +166,14 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 		log.Error(err)
 	}
 
+	// Check whether unmarshalling tree works:
+	retrievedTree := merkletree.MerkleTree{}
+	err = json.Unmarshal(marshTree, &retrievedTree)
+	if err != nil {
+		fmt.Println("error retrieving tree: ", err)
+	}
+	fmt.Println("retrieved tree: ", retrievedTree)
+
 	// Create a point and add to batch
 	tags := map[string]string{"topic": topic}
 	fields := map[string]interface{}{
