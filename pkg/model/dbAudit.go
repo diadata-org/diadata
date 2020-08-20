@@ -202,15 +202,11 @@ func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (
 
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s'", influxDBTreeTable, topic)
 	// q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTreeTable, topic, timeInit.Unix(), timeFinal.Unix())
-	fmt.Println("influx query string: ", q)
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
-	// Each res[0].Series[0].Values[i] is of the form [timestamp, tags, value]
 	val := res[0].Series[0].Values[0]
-	fmt.Printf("val is of type %T and has value: \n %v \n", val[2], val[2])
-	// fmt.Println("string conversion of val: ", val[2].(string))
 	err = json.Unmarshal([]byte(val[2].(string)), &retval)
 	return retval, err
 }

@@ -159,7 +159,12 @@ func main() {
 	if err != nil {
 		log.Error(err)
 	}
-	fmt.Println("recovered node: ", retval.Root.Left.C.(merkletree.StorageBucket))
+	bucket := retval.Root.Left.Left.C.(merkletree.StorageBucket)
+	data, err := bucket.ReadContent()
+	fmt.Println("recovered bucket: ", len(data), err)
+	for i := 0; i < len(data); i++ {
+		fmt.Println(string(data[i]))
+	}
 
 	// -------------------------------------------------------------
 
@@ -179,7 +184,7 @@ func main() {
 	// wg := sync.WaitGroup{}
 	// wg.Add(1)
 	// pChan := make(chan *merkletree.BucketPool)
-	// go FillPools(*dataType, 2, 512, pChan, kc.chanMessage, &wg)
+	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
 
 	// wg.Add(1)
 	// go FlushPool(pChan, &wg, ds)

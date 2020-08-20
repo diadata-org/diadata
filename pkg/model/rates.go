@@ -76,19 +76,16 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 			log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
 		}
 
-		// Send data through kafka for Merkle Audit Trail
+		// Send data through kafka for Merkle Audit Trail ---------------------
 		config := kafka.WriterConfig{
 			Brokers: []string{"localhost:9092"},
 			Topic:   "mytopic",
 		}
-
 		writer := kafka.NewWriter(config)
-
 		content, err := ir.MarshalBinary()
 		if err != nil {
 			log.Error(err)
 		}
-
 		err = writer.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   []byte{},
@@ -98,6 +95,7 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 		if err != nil {
 			fmt.Println("error ocurred: ", err)
 		}
+		// --------------------------------------------------------------------
 
 		return err
 
