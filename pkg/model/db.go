@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -235,16 +237,6 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 }
 
 // ----------------------------------------------------------------------------------------
-// Merkle Audit Trail Functionality
-// ----------------------------------------------------------------------------------------
-
-/*
-select sum(value) from filters where filter='VOL120' and time > now() - 10m
-select * from filters where  symbol='BTC' and filter='VOL120' and time > now() - 2m
-select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
-*/
-
-// ----------------------------------------------------------------------------------------
 // Trades and Crypto-Derivatives
 // ----------------------------------------------------------------------------------------
 
@@ -279,6 +271,28 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 }
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	config := kafka.WriterConfig{
+		Brokers: []string{"localhost:9092"},
+		Topic:   "hash-trades",
+	}
+	writer := kafka.NewWriter(config)
+	content, err := t.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = writer.WriteMessages(context.Background(),
+		kafka.Message{
+			Key:   []byte{},
+			Value: content,
+		},
+	)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	// Create a point and add to batch
 	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
 	fields := map[string]interface{}{

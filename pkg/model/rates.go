@@ -93,7 +93,7 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 			},
 		)
 		if err != nil {
-			fmt.Println("error ocurred: ", err)
+			fmt.Println("error: ", err)
 		}
 		// --------------------------------------------------------------------
 

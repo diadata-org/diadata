@@ -3,9 +3,10 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 func parseTrade(row []interface{}) *dia.Trade {

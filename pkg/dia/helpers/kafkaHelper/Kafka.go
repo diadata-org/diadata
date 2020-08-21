@@ -33,6 +33,10 @@ const (
 	retryDelay        = 2 * time.Second
 )
 
+const (
+	kafkaPort = "9092"
+)
+
 type Config struct {
 	KafkaUrl []string
 }
@@ -72,7 +76,7 @@ func init() {
 			break
 		} else {
 			log.Println(kafkaName, " -> ", ip)
-			kafkaName = fmt.Sprintf("kafka%d:9094", kafkaCount)
+			kafkaName = fmt.Sprintf("kafka%d:"+kafkaPort, kafkaCount)
 			KafkaConfig.KafkaUrl = append(KafkaConfig.KafkaUrl, kafkaName)
 			kafkaCount++
 		}
@@ -81,10 +85,10 @@ func init() {
 		l := os.Getenv("LOCALHOST_KAFKA")
 		if l == "" {
 			log.Warning("could not find the kafka0 names, using kafka0")
-			KafkaConfig.KafkaUrl = []string{"kafka0:9094"}
+			KafkaConfig.KafkaUrl = []string{"kafka0:" + kafkaPort}
 		} else {
 			log.Println("LOCALHOST_KAFKA is set, Adding localhost, probably runned outside of kafka")
-			KafkaConfig.KafkaUrl = []string{"localhost:9094"}
+			KafkaConfig.KafkaUrl = []string{"localhost:" + kafkaPort}
 		}
 	}
 	log.Printf("brokers: %v", KafkaConfig.KafkaUrl)
