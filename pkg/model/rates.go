@@ -1,7 +1,6 @@
 package models
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,7 +13,6 @@ import (
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
-	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -77,21 +75,11 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 		}
 
 		// Send data through kafka for Merkle Audit Trail ---------------------
-		config := kafka.WriterConfig{
-			Brokers: []string{"localhost:9092"},
-			Topic:   "mytopic",
-		}
-		writer := kafka.NewWriter(config)
 		content, err := ir.MarshalBinary()
 		if err != nil {
 			log.Error(err)
 		}
-		err = writer.WriteMessages(context.Background(),
-			kafka.Message{
-				Key:   []byte{},
-				Value: content,
-			},
-		)
+		err = HashingLayer("mytopic", content)
 		if err != nil {
 			fmt.Println("error: ", err)
 		}

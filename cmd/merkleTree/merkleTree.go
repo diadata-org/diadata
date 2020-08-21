@@ -91,13 +91,13 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkle
 		if ok {
 			ok = bucket.WriteContent(message.Value)
 
-			// Check what is written:
-			ir := models.InterestRate{}
-			err := (&ir).UnmarshalBinary(message.Value)
-			if err != nil {
-				log.Error(err)
-			}
-			fmt.Println("new content written: ", ir)
+			// // Check what is written:
+			// ir := models.InterestRate{}
+			// err := (&ir).UnmarshalBinary(message.Value)
+			// if err != nil {
+			// 	log.Error(err)
+			// }
+			// fmt.Println("new content written: ", ir)
 
 		} else {
 			fmt.Println("bucket full. Return bucket to pool.")
@@ -146,7 +146,7 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 func main() {
 
-	dataType := flag.String("type", "mytopic", "Type of data")
+	dataType := flag.String("type", "hash-trades", "Type of data")
 	flag.Parse()
 
 	ds, err := models.NewInfluxAuditStore()
@@ -170,7 +170,7 @@ func main() {
 
 	// // preliminary main
 	// // One instance of main for each data type
-	// dataType := flag.String("type", "mytopic", "Type of data")
+	// dataType := flag.String("type", "hash-trades", "Type of data")
 	// flag.Parse()
 
 	// kc := ActivateKafkaChannel(*dataType)

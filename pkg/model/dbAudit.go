@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/cbergoon/merkletree"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -156,6 +158,28 @@ func (db *DB) addAuditPoint(pt *clientInfluxdb.Point) {
 // ----------------------------------------------------------------------------------------
 // Merkle Audit Trail Functionality
 // ----------------------------------------------------------------------------------------
+
+// HashingLayer activates a kafka writer content is written to.
+// @topic is the category of hashed data in the merkle tree
+// @content is a marshalled data point of the corresponding category
+func HashingLayer(topic string, content []byte) error {
+	config := kafka.WriterConfig{
+		Brokers: []string{"localhost:9092"},
+		Topic:   topic,
+	}
+	writer := kafka.NewWriter(config)
+	err := writer.WriteMessages(context.Background(),
+		kafka.Message{
+			Key:   []byte{},
+			Value: content,
+		},
+	)
+	if err != nil {
+		fmt.Println("error: ", err)
+		return err
+	}
+	return nil
+}
 
 // SaveMerkletreeInflux stores a tree from the merkletree package in Influx
 func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error {
