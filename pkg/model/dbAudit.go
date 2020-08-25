@@ -19,12 +19,15 @@ type AuditStore interface {
 	FlushAuditBatch() error
 	// Merkle Audit Trail methods
 	SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error
-	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (merkletree.MerkleTree, error)
+	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error)
+	GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error)
+	SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id string) error
 }
 
 const (
-	auditDBName       = "audit"
-	influxDBTreeTable = "merkle"
+	auditDBName         = "audit"
+	influxDBTopicsTable = "hash"
+	influxDBMerkleTable = "merkle"
 )
 
 // queryAuditDB convenience function to query the audit database
@@ -127,6 +130,7 @@ func createAuditBatchInflux() (clientInfluxdb.BatchPoints, error) {
 	return bp, err
 }
 
+// FlushAuditBatch flushes a batch and writes it to influx
 func (db *DB) FlushAuditBatch() error {
 	var err error
 	if db.influxBatchPoints != nil {
@@ -135,6 +139,7 @@ func (db *DB) FlushAuditBatch() error {
 	return err
 }
 
+// WriteAuditBatchInflux writes a batch to influx
 func (db *DB) WriteAuditBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
@@ -190,21 +195,13 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 		log.Error(err)
 	}
 
-	// Check whether unmarshalling tree works:
-	retrievedTree := merkletree.MerkleTree{}
-	err = json.Unmarshal(marshTree, &retrievedTree)
-	if err != nil {
-		fmt.Println("error retrieving tree: ", err)
-	}
-	fmt.Println("retrieved tree: ", retrievedTree)
-
 	// Create a point and add to batch
 	tags := map[string]string{"topic": topic}
 	fields := map[string]interface{}{
 		"value": string(marshTree),
 	}
 
-	pt, err := clientInfluxdb.NewPoint(influxDBTreeTable, tags, fields, time.Now())
+	pt, err := clientInfluxdb.NewPoint(influxDBTopicsTable, tags, fields, time.Now())
 	if err != nil {
 		log.Errorln("NewRateInflux:", err)
 	} else {
@@ -220,17 +217,83 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 }
 
 // GetMerkletreeInflux returns a slice of merkletrees of a given topic in a given time range
-func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (merkletree.MerkleTree, error) {
+func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error) {
 
 	retval := merkletree.MerkleTree{}
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s'", influxDBTreeTable, topic)
-	// q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTreeTable, topic, timeInit.Unix(), timeFinal.Unix())
+	// q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s'", influxDBTreeTable, topic)
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
-		return retval, err
+		return []merkletree.MerkleTree{}, err
 	}
+	// val is organized as: val[0]:(influx-)timestamp, val[1]:topic, val[2]:data
+	val := res[0].Series[0].Values[0]
+	fmt.Println(val[1])
+	err = json.Unmarshal([]byte(val[2].(string)), &retval)
+	return []merkletree.MerkleTree{retval}, err
+}
+
+// GetMerkletreesInflux returns a slice of merkletrees of a given topic in a given time range.
+// More precisely, the two-dimensional interface val is returned. It has length 3 and can be cast as follows:
+// val[0]:(influx-)timestamp, val[1]:topic, val[2]:MerkleTree
+func (db *DB) GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error) {
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return [][]interface{}{}, err
+	}
+	val := res[0].Series[0].Values
+	return val, err
+}
+
+// SaveDailyTreeInflux stores the trees which are produced on a daily basis in order to publish
+// the master root hash.
+// @topic only concerns level 2 and should be empty for level 1 and 0
+// @level is an int corresponding to the level in the merkle documentation (currently 0<level<3)
+// @id is a uint, unique for each fixed topic/level. It identifies the corresponding tree
+func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id string) error {
+
+	// First marshal tree
+	marshTree, err := json.Marshal(tree)
+	if err != nil {
+		log.Error(err)
+	}
+
+	// Create a point and add to batch
+	tags := map[string]string{"topic": topic, "level": level, "id": id}
+	fields := map[string]interface{}{
+		"value": string(marshTree),
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDBMerkleTable, tags, fields, time.Now())
+	if err != nil {
+		log.Errorln("NewRateInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteAuditBatchInflux()
+	if err != nil {
+		log.Errorln("SaveRate: ", err)
+	}
+	log.Info("Daily tree written")
+	return err
+}
+
+// GetLastID retrieves the highest current id for @topic (if given) and @level
+func (db *DB) GetLastID(topic, level string) (string, error) {
+
+	// TO DO!...
+	retval := merkletree.MerkleTree{}
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s'", influxDBMerkleTable, topic, level)
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return "", err
+	}
+
 	val := res[0].Series[0].Values[0]
 	err = json.Unmarshal([]byte(val[2].(string)), &retval)
-	return retval, err
+	return "", err
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -91,14 +92,6 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkle
 		if ok {
 			ok = bucket.WriteContent(message.Value)
 
-			// // Check what is written:
-			// ir := models.InterestRate{}
-			// err := (&ir).UnmarshalBinary(message.Value)
-			// if err != nil {
-			// 	log.Error(err)
-			// }
-			// fmt.Println("new content written: ", ir)
-
 		} else {
 			fmt.Println("bucket full. Return bucket to pool.")
 
@@ -153,18 +146,28 @@ func main() {
 	if err != nil {
 		log.Error("NewInfluxDataStore: ", err)
 	}
-	timeInit := time.Now()
-	timeFinal := time.Now().Add(time.Hour * (-1))
+	timeInit := time.Now().Add(time.Hour * (-800))
+	timeFinal := time.Now()
 	retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
 	if err != nil {
-		log.Error(err)
+		log.Error("error getting merkle tree from influx: ", err)
 	}
-	bucket := retval.Root.Left.Left.C.(merkletree.StorageBucket)
+	bucket := retval[0].Root.Left.Left.C.(merkletree.StorageBucket)
 	data, err := bucket.ReadContent()
-	fmt.Println("recovered bucket: ", len(data), err)
 	for i := 0; i < len(data); i++ {
 		fmt.Println(string(data[i]))
 	}
+
+	vals, err := ds.GetMerkletreesInflux(*dataType, timeInit, timeFinal)
+	if err != nil {
+		log.Error(err)
+	}
+	myTree := merkletree.MerkleTree{}
+	json.Unmarshal([]byte(vals[0][2].(string)), &myTree)
+
+	ds.SaveDailyTreeInflux(myTree, "", "1", "0")
+	ds.SaveDailyTreeInflux(myTree, "", "1", "1")
+	ds.SaveDailyTreeInflux(myTree, "", "1", "2")
 
 	// -------------------------------------------------------------
 

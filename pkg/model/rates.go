@@ -79,7 +79,7 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 		if err != nil {
 			log.Error(err)
 		}
-		err = HashingLayer("mytopic", content)
+		err = HashingLayer("hash-interestrates", content)
 		if err != nil {
 			fmt.Println("error: ", err)
 		}
