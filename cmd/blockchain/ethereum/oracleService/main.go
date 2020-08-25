@@ -89,10 +89,35 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	// ddex Data
+	rawDdex, err := getDefiRatesFromDia("DDEX", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve ddex data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawDdex, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update ddex Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+	// nuo Data
+	rawNuo, err := getDefiRatesFromDia("NUO", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Nuo data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawNuo, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Nuo Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// bZx Data
 	rawBzx, err := getDefiRatesFromDia("BZX", "DAI")
 	if err != nil {
-		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
+		log.Fatalf("Failed to retrieve bZx data from DIA: %v", err)
 		return err
 	}
 	err = updateDefiRate(rawBzx, auth, contract)
@@ -176,6 +201,62 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	err = updateECBRate(rawECB, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update ECB Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// Curvefi DEX data
+	rawCurvefi, err := getDEXFromDia("Curvefi", "DIA")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Curvefi from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawCurvefi, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Curvefi Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// Gnosis DEX data
+	rawGnosis, err := getDEXFromDia("Gnosis", "DIA")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Gnosis from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawGnosis, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Gnosis Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// Uniswap data
+	rawUniswap, err := getDEXFromDia("Uniswap", "DIA")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Uniswap from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawUniswap, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Uniswap Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
+	// Loopring  data
+	rawLoopring, err := getDEXFromDia("Loopring", "LRC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawLoopring, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Loopring Oracle: %v", err)
 		return err
 	}
 	time.Sleep(10 * time.Minute)
