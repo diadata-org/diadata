@@ -1,16 +1,15 @@
 package defiscrapers
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"math/big"
-	"os"
 	"strconv"
 	"time"
 
 	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -63,19 +62,9 @@ func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProto
 	decimals["WBTC"] = 8
 	decimals["ZRX"] = 18
 
-	executionMode := os.Getenv("EXEC_MODE")
-	var connection *ethclient.Client
-	err := errors.New("")
-	if executionMode == "production" {
-		connection, err = ethclient.Dial("http://159.69.120.42:8545/")
-		if err != nil {
-			log.Error("Error connecting Eth Client")
-		}
-	} else {
-		connection, err = ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
-		if err != nil {
-			log.Error("Error connecting Eth Client")
-		}
+	connection, err := ethhelper.NewETHClient()
+	if err != nil {
+		log.Error("Error connecting Eth Client")
 	}
 
 	return &CompoundProtocol{scraper: scraper, protocol: protocol, assets: assets, decimals: decimals, connection: connection}

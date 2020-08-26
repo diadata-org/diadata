@@ -1,0 +1,2812 @@
+{
+    "Coins": [
+        {
+            "Symbol": "REQ-ETH",
+            "ForeignName": "REQ-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "REQ-BTC",
+            "ForeignName": "REQ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NULS-ETH",
+            "ForeignName": "NULS-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NULS-BTC",
+            "ForeignName": "NULS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CVC-BTC",
+            "ForeignName": "CVC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NEBL-BTC",
+            "ForeignName": "NEBL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNT-ETH",
+            "ForeignName": "SNT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNT-BTC",
+            "ForeignName": "SNT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PPT-ETH",
+            "ForeignName": "PPT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PPT-BTC",
+            "ForeignName": "PPT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "HC-BTC",
+            "ForeignName": "HC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "HC-ETH",
+            "ForeignName": "HC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHSV-BTC",
+            "ForeignName": "BCHSV-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "POWR-BTC",
+            "ForeignName": "POWR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "POWR-ETH",
+            "ForeignName": "POWR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCD-BTC",
+            "ForeignName": "BCD-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCD-ETH",
+            "ForeignName": "BCD-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KNC-ETH",
+            "ForeignName": "KNC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KNC-BTC",
+            "ForeignName": "KNC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DACC-BTC",
+            "ForeignName": "DACC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OMG-ETH",
+            "ForeignName": "OMG-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TFL-BTC",
+            "ForeignName": "TFL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OMG-BTC",
+            "ForeignName": "OMG-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TFL-ETH",
+            "ForeignName": "TFL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHSB-BTC",
+            "ForeignName": "CHSB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHSB-ETH",
+            "ForeignName": "CHSB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MANA-BTC",
+            "ForeignName": "MANA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTM-BTC",
+            "ForeignName": "BTM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMB-ETH",
+            "ForeignName": "AMB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MANA-ETH",
+            "ForeignName": "MANA-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMB-BTC",
+            "ForeignName": "AMB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTM-ETH",
+            "ForeignName": "BTM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETN-BTC",
+            "ForeignName": "ETN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DGB-BTC",
+            "ForeignName": "DGB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DGB-ETH",
+            "ForeignName": "DGB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "QTUM-BTC",
+            "ForeignName": "QTUM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AION-ETH",
+            "ForeignName": "AION-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AION-BTC",
+            "ForeignName": "AION-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WTC-BTC",
+            "ForeignName": "WTC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ENJ-BTC",
+            "ForeignName": "ENJ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ENJ-ETH",
+            "ForeignName": "ENJ-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNX-ETH",
+            "ForeignName": "SNX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OPEN-ETH",
+            "ForeignName": "OPEN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CAG-ETH",
+            "ForeignName": "CAG-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TIME-ETH",
+            "ForeignName": "TIME-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNX-USDT",
+            "ForeignName": "SNX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CAG-BTC",
+            "ForeignName": "CAG-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OPEN-BTC",
+            "ForeignName": "OPEN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNX-BTC",
+            "ForeignName": "SNX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TIME-BTC",
+            "ForeignName": "TIME-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XLM-USDT",
+            "ForeignName": "XLM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VET-USDT",
+            "ForeignName": "VET-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHP-ETH",
+            "ForeignName": "CHP-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FOTA-ETH",
+            "ForeignName": "FOTA-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DASH-ETH",
+            "ForeignName": "DASH-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "UTK-BTC",
+            "ForeignName": "UTK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "UTK-ETH",
+            "ForeignName": "UTK-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FOTA-BTC",
+            "ForeignName": "FOTA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DASH-BTC",
+            "ForeignName": "DASH-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHP-BTC",
+            "ForeignName": "CHP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GO-USDT",
+            "ForeignName": "GO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AXPR-ETH",
+            "ForeignName": "AXPR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AXPR-BTC",
+            "ForeignName": "AXPR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ACT-ETH",
+            "ForeignName": "ACT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOS-NEO",
+            "ForeignName": "EOS-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ACT-BTC",
+            "ForeignName": "ACT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOS-KCS",
+            "ForeignName": "EOS-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETC-ETH",
+            "ForeignName": "ETC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOS-BTC",
+            "ForeignName": "EOS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PLAY-BTC",
+            "ForeignName": "PLAY-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETC-BTC",
+            "ForeignName": "ETC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOS-USDT",
+            "ForeignName": "EOS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOS-ETH",
+            "ForeignName": "EOS-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GAS-BTC",
+            "ForeignName": "GAS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PLAY-ETH",
+            "ForeignName": "PLAY-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETC-USDT",
+            "ForeignName": "ETC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DENT-ETH",
+            "ForeignName": "DENT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DENT-BTC",
+            "ForeignName": "DENT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AGI-BTC",
+            "ForeignName": "AGI-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MWAT-BTC",
+            "ForeignName": "MWAT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MWAT-ETH",
+            "ForeignName": "MWAT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EXY-BTC",
+            "ForeignName": "EXY-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AGI-ETH",
+            "ForeignName": "AGI-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ITC-USDT",
+            "ForeignName": "ITC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ITC-BTC",
+            "ForeignName": "ITC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ITC-ETH",
+            "ForeignName": "ITC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DRGN-BTC",
+            "ForeignName": "DRGN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DRGN-ETH",
+            "ForeignName": "DRGN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LTC-USDT",
+            "ForeignName": "LTC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CV-BTC",
+            "ForeignName": "CV-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "R-BTC",
+            "ForeignName": "R-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ACAT-BTC",
+            "ForeignName": "ACAT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DRGN-NEO",
+            "ForeignName": "DRGN-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LTC-ETH",
+            "ForeignName": "LTC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CV-ETH",
+            "ForeignName": "CV-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ACAT-ETH",
+            "ForeignName": "ACAT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LTC-BTC",
+            "ForeignName": "LTC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DBC-NEO",
+            "ForeignName": "DBC-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DBC-ETH",
+            "ForeignName": "DBC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DBC-BTC",
+            "ForeignName": "DBC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KEY-BTC",
+            "ForeignName": "KEY-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KEY-ETH",
+            "ForeignName": "KEY-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "IOST-ETH",
+            "ForeignName": "IOST-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ADB-ETH",
+            "ForeignName": "ADB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ADB-BTC",
+            "ForeignName": "ADB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "HPB-BTC",
+            "ForeignName": "HPB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "HPB-ETH",
+            "ForeignName": "HPB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "IOST-BTC",
+            "ForeignName": "IOST-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TEL-BTC",
+            "ForeignName": "TEL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CXO-BTC",
+            "ForeignName": "CXO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAX-BTC",
+            "ForeignName": "WAX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTN-BTC",
+            "ForeignName": "MTN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COFI-BTC",
+            "ForeignName": "COFI-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CS-KCS",
+            "ForeignName": "CS-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TEL-ETH",
+            "ForeignName": "TEL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAX-ETH",
+            "ForeignName": "WAX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COFI-ETH",
+            "ForeignName": "COFI-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CXO-ETH",
+            "ForeignName": "CXO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GGC-USDT",
+            "ForeignName": "GGC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CAPP-ETH",
+            "ForeignName": "CAPP-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NANO-USDT",
+            "ForeignName": "NANO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BPT-BTC",
+            "ForeignName": "BPT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TKY-NEO",
+            "ForeignName": "TKY-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GGC-BTC",
+            "ForeignName": "GGC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TKY-BTC",
+            "ForeignName": "TKY-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CAPP-BTC",
+            "ForeignName": "CAPP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NANO-BTC",
+            "ForeignName": "NANO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NANO-ETH",
+            "ForeignName": "NANO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TKY-ETH",
+            "ForeignName": "TKY-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ELF-ETH",
+            "ForeignName": "ELF-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COV-ETH",
+            "ForeignName": "COV-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZIL-BTC",
+            "ForeignName": "ZIL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ELF-BTC",
+            "ForeignName": "ELF-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MAN-ETH",
+            "ForeignName": "MAN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LTC-KCS",
+            "ForeignName": "LTC-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MAN-BTC",
+            "ForeignName": "MAN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COV-BTC",
+            "ForeignName": "COV-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZIL-ETH",
+            "ForeignName": "ZIL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TOMO-ETH",
+            "ForeignName": "TOMO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ONT-BTC",
+            "ForeignName": "ONT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GO-BTC",
+            "ForeignName": "GO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TOMO-BTC",
+            "ForeignName": "TOMO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BAX-ETH",
+            "ForeignName": "BAX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LYM-ETH",
+            "ForeignName": "LYM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRAC-ETH",
+            "ForeignName": "TRAC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "IOTX-ETH",
+            "ForeignName": "IOTX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SOUL-BTC",
+            "ForeignName": "SOUL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ONT-ETH",
+            "ForeignName": "ONT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOOM-ETH",
+            "ForeignName": "LOOM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRAC-BTC",
+            "ForeignName": "TRAC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DATX-BTC",
+            "ForeignName": "DATX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DATX-ETH",
+            "ForeignName": "DATX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "QKC-BTC",
+            "ForeignName": "QKC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "IOTX-BTC",
+            "ForeignName": "IOTX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LYM-USDT",
+            "ForeignName": "LYM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GO-ETH",
+            "ForeignName": "GO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "QKC-ETH",
+            "ForeignName": "QKC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TKY-USDT",
+            "ForeignName": "TKY-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ONT-USDT",
+            "ForeignName": "ONT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BAX-BTC",
+            "ForeignName": "BAX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOOM-BTC",
+            "ForeignName": "LOOM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SOUL-ETH",
+            "ForeignName": "SOUL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LYM-BTC",
+            "ForeignName": "LYM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CS-BTC",
+            "ForeignName": "CS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAN-ETH",
+            "ForeignName": "WAN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAN-BTC",
+            "ForeignName": "WAN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KICK-BTC",
+            "ForeignName": "KICK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DOCK-BTC",
+            "ForeignName": "DOCK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETN-ETH",
+            "ForeignName": "ETN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AOA-USDT",
+            "ForeignName": "AOA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DOCK-ETH",
+            "ForeignName": "DOCK-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DACC-ETH",
+            "ForeignName": "DACC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CS-ETH",
+            "ForeignName": "CS-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AOA-BTC",
+            "ForeignName": "AOA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KICK-ETH",
+            "ForeignName": "KICK-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOC-ETH",
+            "ForeignName": "LOC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DAG-ETH",
+            "ForeignName": "DAG-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUSD-USDT",
+            "ForeignName": "SUSD-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOC-BTC",
+            "ForeignName": "LOC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EGT-BTC",
+            "ForeignName": "EGT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ELA-BTC",
+            "ForeignName": "ELA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CBC-BTC",
+            "ForeignName": "CBC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRX-BTC",
+            "ForeignName": "TRX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZRX-BTC",
+            "ForeignName": "ZRX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XLM-ETH",
+            "ForeignName": "XLM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRX-ETH",
+            "ForeignName": "TRX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XLM-BTC",
+            "ForeignName": "XLM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CBC-ETH",
+            "ForeignName": "CBC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUSD-ETH",
+            "ForeignName": "SUSD-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DAG-BTC",
+            "ForeignName": "DAG-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CPC-ETH",
+            "ForeignName": "CPC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRX-USDT",
+            "ForeignName": "TRX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUSD-BTC",
+            "ForeignName": "SUSD-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MVP-BTC",
+            "ForeignName": "MVP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CPC-BTC",
+            "ForeignName": "CPC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZRX-ETH",
+            "ForeignName": "ZRX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MVP-ETH",
+            "ForeignName": "MVP-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ELA-ETH",
+            "ForeignName": "ELA-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EGT-ETH",
+            "ForeignName": "EGT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CRPT-ETH",
+            "ForeignName": "CRPT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTC-BTC",
+            "ForeignName": "MTC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TFD-BTC",
+            "ForeignName": "TFD-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OLT-ETH",
+            "ForeignName": "OLT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OLT-BTC",
+            "ForeignName": "OLT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TFD-ETH",
+            "ForeignName": "TFD-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTC-ETH",
+            "ForeignName": "MTC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CRPT-BTC",
+            "ForeignName": "CRPT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EDN-ETH",
+            "ForeignName": "EDN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EDN-BTC",
+            "ForeignName": "EDN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHSV-USDT",
+            "ForeignName": "BCHSV-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHSV-ETH",
+            "ForeignName": "BCHSV-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHABC-BTC",
+            "ForeignName": "BCHABC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DCR-ETH",
+            "ForeignName": "DCR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHABC-ETH",
+            "ForeignName": "BCHABC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DCR-BTC",
+            "ForeignName": "DCR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BCHABC-USDT",
+            "ForeignName": "BCHABC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KCS-USDT",
+            "ForeignName": "KCS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KCS-ETH",
+            "ForeignName": "KCS-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KCS-BTC",
+            "ForeignName": "KCS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VET-BTC",
+            "ForeignName": "VET-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VET-ETH",
+            "ForeignName": "VET-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BU-BTC",
+            "ForeignName": "BU-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NEO-ETH",
+            "ForeignName": "NEO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NEO-BTC",
+            "ForeignName": "NEO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BU-ETH",
+            "ForeignName": "BU-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NEO-USDT",
+            "ForeignName": "NEO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDT-PAX",
+            "ForeignName": "USDT-PAX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDT-TUSD",
+            "ForeignName": "USDT-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NEO-KCS",
+            "ForeignName": "NEO-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDT-USDC",
+            "ForeignName": "USDT-USDC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GAS-NEO",
+            "ForeignName": "GAS-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-PAX",
+            "ForeignName": "ETH-PAX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-USDC",
+            "ForeignName": "ETH-USDC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-TUSD",
+            "ForeignName": "ETH-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTC-TUSD",
+            "ForeignName": "BTC-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-USDT",
+            "ForeignName": "ETH-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTC-USDT",
+            "ForeignName": "BTC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTC-PAX",
+            "ForeignName": "BTC-PAX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-BTC",
+            "ForeignName": "ETH-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTC-USDC",
+            "ForeignName": "BTC-USDC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MHC-ETH",
+            "ForeignName": "MHC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MHC-BTC",
+            "ForeignName": "MHC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CSP-BTC",
+            "ForeignName": "CSP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CSP-ETH",
+            "ForeignName": "CSP-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOKI-BTC",
+            "ForeignName": "LOKI-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LOKI-ETH",
+            "ForeignName": "LOKI-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NRG-BTC",
+            "ForeignName": "NRG-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AVA-USDT",
+            "ForeignName": "AVA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FET-BTC",
+            "ForeignName": "FET-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FET-ETH",
+            "ForeignName": "FET-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ANKR-BTC",
+            "ForeignName": "ANKR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DX-BTC",
+            "ForeignName": "DX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DX-ETH",
+            "ForeignName": "DX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MHC-USDT",
+            "ForeignName": "MHC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XMR-BTC",
+            "ForeignName": "XMR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XMR-ETH",
+            "ForeignName": "XMR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "RBTC-BTC",
+            "ForeignName": "RBTC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "RIF-BTC",
+            "ForeignName": "RIF-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRTL-BTC",
+            "ForeignName": "TRTL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRTL-ETH",
+            "ForeignName": "TRTL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTV-BTC",
+            "ForeignName": "MTV-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTV-ETH",
+            "ForeignName": "MTV-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTV-KCS",
+            "ForeignName": "MTV-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CRO-BTC",
+            "ForeignName": "CRO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MTV-USDT",
+            "ForeignName": "MTV-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NPXS-BTC",
+            "ForeignName": "NPXS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NPXS-ETH",
+            "ForeignName": "NPXS-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SPND-BTC",
+            "ForeignName": "SPND-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SPND-ETH",
+            "ForeignName": "SPND-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AVA-NEO",
+            "ForeignName": "AVA-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TEL-USDT",
+            "ForeignName": "TEL-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRY-BTC",
+            "ForeignName": "TRY-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TRY-USDT",
+            "ForeignName": "TRY-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NIX-BTC",
+            "ForeignName": "NIX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NIX-ETH",
+            "ForeignName": "NIX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ATOM-BTC",
+            "ForeignName": "ATOM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ATOM-ETH",
+            "ForeignName": "ATOM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ATOM-USDT",
+            "ForeignName": "ATOM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETN-USDT",
+            "ForeignName": "ETN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TOMO-USDT",
+            "ForeignName": "TOMO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VSYS-USDT",
+            "ForeignName": "VSYS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SNTR-ETH",
+            "ForeignName": "SNTR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OCEAN-BTC",
+            "ForeignName": "OCEAN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OCEAN-ETH",
+            "ForeignName": "OCEAN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHR-BTC",
+            "ForeignName": "CHR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHR-USDT",
+            "ForeignName": "CHR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FX-BTC",
+            "ForeignName": "FX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FX-ETH",
+            "ForeignName": "FX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NIM-BTC",
+            "ForeignName": "NIM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NIM-ETH",
+            "ForeignName": "NIM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COTI-BTC",
+            "ForeignName": "COTI-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COTI-USDT",
+            "ForeignName": "COTI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NRG-ETH",
+            "ForeignName": "NRG-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PIVX-BTC",
+            "ForeignName": "PIVX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PIVX-ETH",
+            "ForeignName": "PIVX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BNB-BTC",
+            "ForeignName": "BNB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BNB-USDT",
+            "ForeignName": "BNB-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "JAR-BTC",
+            "ForeignName": "JAR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "JAR-USDT",
+            "ForeignName": "JAR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ALGO-BTC",
+            "ForeignName": "ALGO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ALGO-ETH",
+            "ForeignName": "ALGO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ALGO-USDT",
+            "ForeignName": "ALGO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XEM-BTC",
+            "ForeignName": "XEM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XEM-USDT",
+            "ForeignName": "XEM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CIX100-USDT",
+            "ForeignName": "CIX100-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XTZ-BTC",
+            "ForeignName": "XTZ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XTZ-USDT",
+            "ForeignName": "XTZ-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZEC-BTC",
+            "ForeignName": "ZEC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZEC-USDT",
+            "ForeignName": "ZEC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ADA-BTC",
+            "ForeignName": "ADA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ADA-USDT",
+            "ForeignName": "ADA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "R-USDT",
+            "ForeignName": "R-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WXT-BTC",
+            "ForeignName": "WXT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WXT-USDT",
+            "ForeignName": "WXT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FORESTPLUS-BTC",
+            "ForeignName": "FORESTPLUS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FORESTPLUS-USDT",
+            "ForeignName": "FORESTPLUS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BOLT-BTC",
+            "ForeignName": "BOLT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BOLT-USDT",
+            "ForeignName": "BOLT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ARPA-USDT",
+            "ForeignName": "ARPA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CHZ-BTC",
+            "ForeignName": "CHZ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DAPPT-BTC",
+            "ForeignName": "DAPPT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DAPPT-USDT",
+            "ForeignName": "DAPPT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "META-BTC",
+            "ForeignName": "META-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NOIA-BTC",
+            "ForeignName": "NOIA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NOIA-USDT",
+            "ForeignName": "NOIA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BLOC-USDT",
+            "ForeignName": "BLOC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WIN-BTC",
+            "ForeignName": "WIN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WIN-USDT",
+            "ForeignName": "WIN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DERO-BTC",
+            "ForeignName": "DERO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DERO-USDT",
+            "ForeignName": "DERO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTT-USDT",
+            "ForeignName": "BTT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EOSC-USDT",
+            "ForeignName": "EOSC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FKX-BTC",
+            "ForeignName": "FKX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FKX-ETH",
+            "ForeignName": "FKX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ENQ-BTC",
+            "ForeignName": "ENQ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ENQ-USDT",
+            "ForeignName": "ENQ-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ONE-BTC",
+            "ForeignName": "ONE-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ONE-USDT",
+            "ForeignName": "ONE-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TOKO-BTC",
+            "ForeignName": "TOKO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "TOKO-USDT",
+            "ForeignName": "TOKO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VID-BTC",
+            "ForeignName": "VID-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VID-USDT",
+            "ForeignName": "VID-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LUNA-BTC",
+            "ForeignName": "LUNA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LUNA-USDT",
+            "ForeignName": "LUNA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SDT-USDT",
+            "ForeignName": "SDT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMIO-USDT",
+            "ForeignName": "AMIO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MXW-USDT",
+            "ForeignName": "MXW-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SXP-BTC",
+            "ForeignName": "SXP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SXP-USDT",
+            "ForeignName": "SXP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VIDT-BTC",
+            "ForeignName": "VIDT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AKRO-BTC",
+            "ForeignName": "AKRO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AKRO-USDT",
+            "ForeignName": "AKRO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ROOBEE-BTC",
+            "ForeignName": "ROOBEE-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTT-TRX",
+            "ForeignName": "BTT-TRX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WIN-TRX",
+            "ForeignName": "WIN-TRX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MAP-BTC",
+            "ForeignName": "MAP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MAP-USDT",
+            "ForeignName": "MAP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMPL-BTC",
+            "ForeignName": "AMPL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMPL-USDT",
+            "ForeignName": "AMPL-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DAG-USDT",
+            "ForeignName": "DAG-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "POL-USDT",
+            "ForeignName": "POL-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ARX-USDT",
+            "ForeignName": "ARX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NWC-BTC",
+            "ForeignName": "NWC-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "NWC-USDT",
+            "ForeignName": "NWC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BEPRO-BTC",
+            "ForeignName": "BEPRO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BEPRO-USDT",
+            "ForeignName": "BEPRO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VRA-BTC",
+            "ForeignName": "VRA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VRA-USDT",
+            "ForeignName": "VRA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KSM-BTC",
+            "ForeignName": "KSM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KSM-USDT",
+            "ForeignName": "KSM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XNS-BTC",
+            "ForeignName": "XNS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XNS-USDT",
+            "ForeignName": "XNS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DASH-USDT",
+            "ForeignName": "DASH-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ROAD-USDT",
+            "ForeignName": "ROAD-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PMGT-USDT",
+            "ForeignName": "PMGT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUTER-USDT",
+            "ForeignName": "SUTER-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PMGT-BTC",
+            "ForeignName": "PMGT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VI-USDT",
+            "ForeignName": "VI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ACOIN-USDT",
+            "ForeignName": "ACOIN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUTER-BTC",
+            "ForeignName": "SUTER-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SENSO-USDT",
+            "ForeignName": "SENSO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ZEL-BTC",
+            "ForeignName": "ZEL-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PRE-BTC",
+            "ForeignName": "PRE-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XDB-USDT",
+            "ForeignName": "XDB-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SYLO-USDT",
+            "ForeignName": "SYLO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SYLO-BTC",
+            "ForeignName": "SYLO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WOM-USDT",
+            "ForeignName": "WOM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SENSO-BTC",
+            "ForeignName": "SENSO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DGB-USDT",
+            "ForeignName": "DGB-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LYXE-USDT",
+            "ForeignName": "LYXE-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LYXE-ETH",
+            "ForeignName": "LYXE-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XDB-BTC",
+            "ForeignName": "XDB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "STX-BTC",
+            "ForeignName": "STX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "STX-USDT",
+            "ForeignName": "STX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDN-USDT",
+            "ForeignName": "USDN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XSR-USDT",
+            "ForeignName": "XSR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PAZZI-USDT",
+            "ForeignName": "PAZZI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "COMP-USDT",
+            "ForeignName": "COMP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "CRO-USDT",
+            "ForeignName": "CRO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DGTX-ETH",
+            "ForeignName": "DGTX-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DGTX-BTC",
+            "ForeignName": "DGTX-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KAI-USDT",
+            "ForeignName": "KAI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KAI-BTC",
+            "ForeignName": "KAI-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WEST-BTC",
+            "ForeignName": "WEST-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WEST-USDT",
+            "ForeignName": "WEST-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EWT-BTC",
+            "ForeignName": "EWT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAVES-USDT",
+            "ForeignName": "WAVES-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "WAVES-BTC",
+            "ForeignName": "WAVES-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ORN-USDT",
+            "ForeignName": "ORN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PLT-USDT",
+            "ForeignName": "PLT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "PLT-ETH",
+            "ForeignName": "PLT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AMPL-ETH",
+            "ForeignName": "AMPL-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BNS-USDT",
+            "ForeignName": "BNS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BNS-BTC",
+            "ForeignName": "BNS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MKR-USDT",
+            "ForeignName": "MKR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUKU-BTC",
+            "ForeignName": "SUKU-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MLK-BTC",
+            "ForeignName": "MLK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MLK-USDT",
+            "ForeignName": "MLK-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "JST-USDT",
+            "ForeignName": "JST-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KAI-ETH",
+            "ForeignName": "KAI-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SUKU-USDT",
+            "ForeignName": "SUKU-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DIA-USDT",
+            "ForeignName": "DIA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DIA-BTC",
+            "ForeignName": "DIA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LINK-BTC",
+            "ForeignName": "LINK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LINK-USDT",
+            "ForeignName": "LINK-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DMG-USDT",
+            "ForeignName": "DMG-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DOT-USDT",
+            "ForeignName": "DOT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "DOT-BTC",
+            "ForeignName": "DOT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SHA-BTC",
+            "ForeignName": "SHA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SHA-USDT",
+            "ForeignName": "SHA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "EWT-USDT",
+            "ForeignName": "EWT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AERGO-BTC",
+            "ForeignName": "AERGO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AERGO-ETH",
+            "ForeignName": "AERGO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XYO-ETH",
+            "ForeignName": "XYO-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-TUSD",
+            "ForeignName": "XRP-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "ETH-DAI",
+            "ForeignName": "ETH-DAI",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LSK-BTC",
+            "ForeignName": "LSK-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GMB-ETH",
+            "ForeignName": "GMB-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GMB-BTC",
+            "ForeignName": "GMB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KAT-USDT",
+            "ForeignName": "KAT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MKR-BTC",
+            "ForeignName": "MKR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "KAT-BTC",
+            "ForeignName": "KAT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XYO-BTC",
+            "ForeignName": "XYO-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OPQ-ETH",
+            "ForeignName": "OPQ-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-NEO",
+            "ForeignName": "XRP-NEO",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "LSK-ETH",
+            "ForeignName": "LSK-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-BTC",
+            "ForeignName": "XRP-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-KCS",
+            "ForeignName": "XRP-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AVA-BTC",
+            "ForeignName": "AVA-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-PAX",
+            "ForeignName": "XRP-PAX",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "OPQ-BTC",
+            "ForeignName": "OPQ-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-USDT",
+            "ForeignName": "XRP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FTM-BTC",
+            "ForeignName": "FTM-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "USDT-DAI",
+            "ForeignName": "USDT-DAI",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTC-DAI",
+            "ForeignName": "BTC-DAI",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "AVA-ETH",
+            "ForeignName": "AVA-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MKR-ETH",
+            "ForeignName": "MKR-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "XRP-ETH",
+            "ForeignName": "XRP-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "FTM-ETH",
+            "ForeignName": "FTM-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GO-KCS",
+            "ForeignName": "GO-KCS",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "VSYS-BTC",
+            "ForeignName": "VSYS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "MKR-DAI",
+            "ForeignName": "MKR-DAI",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTT-BTC",
+            "ForeignName": "BTT-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "BTT-ETH",
+            "ForeignName": "BTT-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "SOLVE-BTC",
+            "ForeignName": "SOLVE-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GRIN-BTC",
+            "ForeignName": "GRIN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GRIN-ETH",
+            "ForeignName": "GRIN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
+            "Symbol": "GRIN-USDT",
+            "ForeignName": "GRIN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        }
+    ]
+}
