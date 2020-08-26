@@ -95,7 +95,6 @@ func (s *KuCoinScraper) mainLoop() {
 		logger.Println("Error Reading data", err)
 
 	}
-	logger.Println("subscribe")
 
 	ch1 := kucoin.NewSubscribeMessage("/market/ticker:all", false)
 	if err := c.Subscribe(ch1); err != nil {
@@ -114,13 +113,13 @@ func (s *KuCoinScraper) mainLoop() {
 				}
 				asset := strings.Split(msg.Subject, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
-
+				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
 				trade := &dia.Trade{
 					Symbol: asset[0],
 					Pair:   msg.Subject,
 					Price:  f64Price,
 					Time:   time.Unix(t.Time/1000, 0),
-					//Volume: volume,
+					Volume: f64Volume,
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- trade
