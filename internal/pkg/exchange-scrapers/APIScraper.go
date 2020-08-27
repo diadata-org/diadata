@@ -77,6 +77,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewBalancerScraper(dia.BalancerExchange)
 	case dia.MakerExchange:
 		return NewMakerScraper(dia.MakerExchange)
+	case dia.KuCoinExchange:
+ 		return NewKuCoinScraper(key,secret,dia.KuCoinExchange)
 	default:
 		return nil
 	}
