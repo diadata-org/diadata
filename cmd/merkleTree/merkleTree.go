@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -78,7 +77,6 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 // them into @poolChannel to be flushed afterwards.
 func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
-
 	bp := merkletree.NewBucketPool(numBucket, sizeBucket, topic)
 	ok := true
 	bucket, err := bp.Get()
@@ -139,59 +137,60 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 func main() {
 
-	dataType := flag.String("type", "hash-trades", "Type of data")
-	flag.Parse()
-
-	ds, err := models.NewInfluxAuditStore()
-	if err != nil {
-		log.Error("NewInfluxDataStore: ", err)
-	}
-	timeInit := time.Now().Add(time.Hour * (-800))
-	timeFinal := time.Now()
-	retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
-	if err != nil {
-		log.Error("error getting merkle tree from influx: ", err)
-	}
-	bucket := retval[0].Root.Left.Left.C.(merkletree.StorageBucket)
-	data, err := bucket.ReadContent()
-	for i := 0; i < len(data); i++ {
-		fmt.Println(string(data[i]))
-	}
-
-	vals, err := ds.GetMerkletreesInflux(*dataType, timeInit, timeFinal)
-	if err != nil {
-		log.Error(err)
-	}
-	myTree := merkletree.MerkleTree{}
-	json.Unmarshal([]byte(vals[0][2].(string)), &myTree)
-
-	ds.SaveDailyTreeInflux(myTree, "", "1", "0")
-	ds.SaveDailyTreeInflux(myTree, "", "1", "1")
-	ds.SaveDailyTreeInflux(myTree, "", "1", "2")
-
-	// -------------------------------------------------------------
-
-	// // preliminary main
-	// // One instance of main for each data type
 	// dataType := flag.String("type", "hash-trades", "Type of data")
 	// flag.Parse()
-
-	// kc := ActivateKafkaChannel(*dataType)
-	// defer kc.Close()
 
 	// ds, err := models.NewInfluxAuditStore()
 	// if err != nil {
 	// 	log.Error("NewInfluxDataStore: ", err)
 	// }
+	// timeInit := time.Now().Add(time.Hour * (-800))
+	// timeFinal := time.Now()
+	// retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
+	// if err != nil {
+	// 	log.Error("error getting merkle tree from influx: ", err)
+	// }
+	// bucket := retval[0].Root.Left.Left.C.(merkletree.StorageBucket)
+	// data, err := bucket.ReadContent()
+	// for i := 0; i < len(data); i++ {
+	// 	fmt.Println(string(data[i]))
+	// }
 
-	// wg := sync.WaitGroup{}
-	// wg.Add(1)
-	// pChan := make(chan *merkletree.BucketPool)
-	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
+	// vals, err := ds.GetMerkletreesInflux(*dataType, timeInit, timeFinal)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("vals are: ", vals[0][1])
+	// myTree := merkletree.MerkleTree{}
+	// json.Unmarshal([]byte(vals[0][2].(string)), &myTree)
 
-	// wg.Add(1)
-	// go FlushPool(pChan, &wg, ds)
-	// defer wg.Wait()
+	// ds.SaveDailyTreeInflux(myTree, "", "1")
+	// ds.SaveDailyTreeInflux(myTree, "", "1")
+	// ds.SaveDailyTreeInflux(myTree, "", "1")
+
+	// -------------------------------------------------------------
+
+	// preliminary main
+	// One instance of main for each data type
+	dataType := flag.String("type", "hash-interestrates", "Type of data")
+	flag.Parse()
+
+	kc := ActivateKafkaChannel(*dataType)
+	defer kc.Close()
+
+	ds, err := models.NewInfluxAuditStore()
+	if err != nil {
+		log.Error("NewInfluxDataStore: ", err)
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	pChan := make(chan *merkletree.BucketPool)
+	go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
+
+	wg.Add(1)
+	go FlushPool(pChan, &wg, ds)
+	defer wg.Wait()
 
 	// -------------------------------------------------------------
 

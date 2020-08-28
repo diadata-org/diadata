@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/cbergoon/merkletree"
@@ -21,7 +22,9 @@ type AuditStore interface {
 	SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error
 	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error)
 	GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error)
-	SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id string) error
+	SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, lastTimestamp time.Time) error
+	GetLastTimestamp(topic, level string) (time.Time, error)
+	GetLastID(topic, level string) (int64, error)
 }
 
 const (
@@ -186,6 +189,8 @@ func HashingLayer(topic string, content []byte) error {
 	return nil
 }
 
+// Saving and retrieving from Topics Table (hashed data) ----------------------------------
+
 // SaveMerkletreeInflux stores a tree from the merkletree package in Influx
 func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error {
 
@@ -222,14 +227,13 @@ func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (
 	retval := merkletree.MerkleTree{}
 
 	// q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s'", influxDBTreeTable, topic)
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time <= %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return []merkletree.MerkleTree{}, err
 	}
 	// val is organized as: val[0]:(influx-)timestamp, val[1]:topic, val[2]:data
 	val := res[0].Series[0].Values[0]
-	fmt.Println(val[1])
 	err = json.Unmarshal([]byte(val[2].(string)), &retval)
 	return []merkletree.MerkleTree{retval}, err
 }
@@ -239,7 +243,7 @@ func (db *DB) GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) (
 // val[0]:(influx-)timestamp, val[1]:topic, val[2]:MerkleTree
 func (db *DB) GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error) {
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time < %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time <= %d", influxDBTopicsTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return [][]interface{}{}, err
@@ -248,21 +252,28 @@ func (db *DB) GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) 
 	return val, err
 }
 
+// Saving and retrieving from Merkle Table (hashed trees) ----------------------------------
+
 // SaveDailyTreeInflux stores the trees which are produced on a daily basis in order to publish
 // the master root hash.
-// @topic only concerns level 2 and should be empty for level 1 and 0
+// @topic only concerns level 2 and should be the empty string for level 1 and 0
 // @level is an int corresponding to the level in the merkle documentation (currently 0<level<3)
-// @id is a uint, unique for each fixed topic/level. It identifies the corresponding tree
-func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id string) error {
+// @lastTimestamp is the last timestamp of hashed trees from the data layer. Only applies to level 2
+func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, lastTimestamp time.Time) error {
 
-	// First marshal tree
+	// Marshal tree
 	marshTree, err := json.Marshal(tree)
 	if err != nil {
 		log.Error(err)
 	}
-
+	// Get last id and increment it
+	lastID, err := db.GetLastID(topic, level)
+	if err != nil {
+		return err
+	}
+	id := strconv.FormatInt(lastID+1, 10)
 	// Create a point and add to batch
-	tags := map[string]string{"topic": topic, "level": level, "id": id}
+	tags := map[string]string{"topic": topic, "level": level, "id": id, "lastTimestamp": strconv.Itoa(int(lastTimestamp.Unix()))}
 	fields := map[string]interface{}{
 		"value": string(marshTree),
 	}
@@ -272,7 +283,6 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id s
 	} else {
 		db.addPoint(pt)
 	}
-
 	err = db.WriteAuditBatchInflux()
 	if err != nil {
 		log.Errorln("SaveRate: ", err)
@@ -281,19 +291,36 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level, id s
 	return err
 }
 
-// GetLastID retrieves the highest current id for @topic (if given) and @level
-func (db *DB) GetLastID(topic, level string) (string, error) {
+// GetLastTimestamp retrieves the last timestamp for @topic (if given) and @level from the merkle table
+func (db *DB) GetLastTimestamp(topic, level string) (time.Time, error) {
 
-	// TO DO!...
-	retval := merkletree.MerkleTree{}
-
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s'", influxDBMerkleTable, topic, level)
+	q := fmt.Sprintf("SELECT id FROM (SELECT * FROM %s GROUP BY id) ORDER BY DESC LIMIT 1", influxDBMerkleTable)
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
-		return "", err
+		return time.Time{}, err
 	}
-
+	if len(res[0].Series) == 0 {
+		// In this case, database is still empty, so set last timestamp to now-x
+		return time.Now().AddDate(0, 0, -2), nil
+	}
 	val := res[0].Series[0].Values[0]
-	err = json.Unmarshal([]byte(val[2].(string)), &retval)
-	return "", err
+	return time.Parse(time.RFC3339, val[4].(string))
+}
+
+// GetLastID retrieves the highest current id for @topic (if given) and @level from the merkle table
+func (db *DB) GetLastID(topic, level string) (int64, error) {
+
+	q := fmt.Sprintf("SELECT id FROM (SELECT * FROM %s GROUP BY id) ORDER BY DESC LIMIT 1", influxDBMerkleTable)
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return 0, err
+	}
+	if len(res[0].Series) == 0 {
+		// In this case, database is still empty, so begin with id=0
+		return -1, nil
+	}
+	val := res[0].Series[0].Values[0]
+	// We could also return last timestamp (in merkle table): val[0].(time.Time))
+	lastID, err := strconv.ParseInt(val[1].(string), 10, 64)
+	return lastID, err
 }

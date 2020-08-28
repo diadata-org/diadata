@@ -19,8 +19,8 @@ const (
 	refreshDelay = time.Second * 10 * 1
 )
 
-// GetHashTopic returns a map listing all hashing topics
-func GetHashTopic() map[int]string {
+// GetHashTopics returns a map listing all hashing topics
+func GetHashTopics() map[int]string {
 	topicMap := map[int]string{
 		0: "hash-interestrates",
 		1: "hash-trades",
@@ -30,7 +30,7 @@ func GetHashTopic() map[int]string {
 
 // GetNumTopics returns the number of hashing topics
 func GetNumTopics() int {
-	return len(GetHashTopic())
+	return len(GetHashTopics())
 }
 
 type nothing struct{}
@@ -150,9 +150,9 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 	}
 }
 
-// HashTopicLoop opens a kafka channel for data of type @topic and fills and saves bucketpools with
+// HashPoolLoop opens a kafka channel for data of type @topic and fills and saves bucketpools with
 // the corresponding marshalled data in influx.
-func HashTopicLoop(topic string) {
+func HashPoolLoop(topic string) {
 
 	ds, err := models.NewInfluxAuditStore()
 	if err != nil {
@@ -172,11 +172,20 @@ func HashTopicLoop(topic string) {
 }
 
 // DailyTreeTopic retrieves all merkle trees corresponding to @topic from influx and
-// hashes them in a merkle tree. The tree's (influx-)timestamps are ranging from @timeInit until at most @timeFinal.
+// hashes them in a merkle tree. The tree's (influx-)timestamps are ranging until at most @timeFinal.
 // The root hash of the resulting merkle tree is returned.
 // This functionality implements Level2 from the Merkle Documentation.
-func DailyTreeTopic(topic string, timeInit, timeFinal time.Time) (DailyTopicTree *merkletree.MerkleTree, lastTimestamp time.Time, err error) {
+func DailyTreeTopic(topic string, timeFinal time.Time) (DailyTopicTree *merkletree.MerkleTree, lastTimestamp time.Time, err error) {
+	level := "2"
 	ds, err := models.NewInfluxAuditStore()
+	if err != nil {
+		log.Fatal("NewInfluxDataStore: ", err)
+	}
+
+	// Get last timestamp of trees from storage table
+	timeInit, err := ds.GetLastTimestamp(topic, level)
+
+	// Get merkle trees from the data storage table
 	vals, err := ds.GetMerkletreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
 		log.Error(err)
@@ -191,7 +200,7 @@ func DailyTreeTopic(topic string, timeInit, timeFinal time.Time) (DailyTopicTree
 			return
 		}
 		merkleTrees = append(merkleTrees, auxTree)
-		// Find last timestamp
+		// Find last timestamp. It will be the initial time for the next iteration.
 		tstamp, _ := time.Parse(time.RFC3339, vals[i][0].(string))
 		if tstamp.After(lastTimestamp) {
 			lastTimestamp = tstamp
@@ -203,24 +212,37 @@ func DailyTreeTopic(topic string, timeInit, timeFinal time.Time) (DailyTopicTree
 		return
 	}
 
-	// Retrieve current id
-	id := "0"
-	err = ds.SaveDailyTreeInflux(*DailyTopicTree, topic, "2", id)
+	err = ds.SaveDailyTreeInflux(*DailyTopicTree, topic, level, lastTimestamp)
 	return
 }
 
 // DailyTree returns a merkle tree which is constructed from the root hashes of the DailyTopicTrees.
+// It includes all Level2 trees which have not been hashed into a Level1 tree yet, up to timeFinal.
 // This functionality implements Level1 from the Merkle Documentation
-func DailyTree(timeInit, timeFinal time.Time) (DailyTree *merkletree.MerkleTree, err error) {
+func DailyTree(timeFinal time.Time) (DailyTree *merkletree.MerkleTree, err error) {
+	level := "1"
 	var dailyTrees []merkletree.MerkleTree
+
+	// Retrieve daily trees for all topics
 	numTopics := GetNumTopics()
-	topicMap := GetHashTopic()
+	topicMap := GetHashTopics()
 	for i := 0; i < numTopics; i++ {
 		topic := topicMap[i]
-		dailyTopicTree, _, _ := DailyTreeTopic(topic, timeInit, timeFinal)
+		dailyTopicTree, _, _ := DailyTreeTopic(topic, timeFinal)
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
-	return merkletree.TreesToTree(dailyTrees)
+	dailyTree, err := merkletree.TreesToTree(dailyTrees)
+	if err != nil {
+		return
+	}
+
+	ds, err := models.NewInfluxAuditStore()
+	if err != nil {
+		log.Fatal("NewInfluxDataStore: ", err)
+	}
+	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, time.Time{})
+
+	return
 
 }
 
