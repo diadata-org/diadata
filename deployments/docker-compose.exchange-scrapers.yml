@@ -67,7 +67,6 @@ services:
     environment:
       - EXEC_MODE=production
 
-
   uniswapcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
@@ -98,6 +97,19 @@ services:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Curvefi
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  makercollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Maker
     networks:
       - kafka-network
       - redis-network
