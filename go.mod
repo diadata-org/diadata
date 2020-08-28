@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/DefinitelyNotAGoat/go-tezos v1.0.9
+	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/OneOfOne/xxhash v1.2.5 // indirect
 	github.com/PaddyMc/go-tron v0.0.0-20181127165653-0f1071546155
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
