@@ -15,7 +15,7 @@ services:
       options:
         max-size: "50m"
 
-  bzxcraper:
+  bzxscraper:
     depends_on: [genericdefiratescraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
     command: /bin/defiscraper -type BZX

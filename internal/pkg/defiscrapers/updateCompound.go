@@ -9,18 +9,27 @@ import (
 
 	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	cTokenDecimals = 8
+)
+
 type CompoundRate struct {
-	SupplyRate  float64
-	BorrowRate  float64
-	TotalSupply *big.Int
-	Decimal     *big.Int
-	Symbol      string
+	SupplyRate    float64
+	BorrowRate    float64
+	TotalSupply   *big.Int
+	TotalBorrow   *big.Int
+	TotalReserves *big.Int
+	Cash          *big.Int
+	Decimal       int
+	Symbol        string
 }
 
 type CompoundProtocol struct {
@@ -28,32 +37,47 @@ type CompoundProtocol struct {
 	protocol   dia.DefiProtocol
 	connection *ethclient.Client
 	assets     map[string]string // assetname and address
+	decimals   map[string]int
 }
 
 func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProtocol {
 	assets := make(map[string]string)
 	//https://compound.finance/docs#networks
+	assets["ETH"] = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
 	assets["BAT"] = "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e"
 	assets["DAI"] = "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
-	assets["ETH"] = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
 	assets["REP"] = "0x158079ee67fce2f58472a96584a73c7ab9ac95c1"
-	assets["SAI"] = "0xf5dce57282a584d2746faf1593d3121fcac444dc"
 	assets["USDC"] = "0x39aa39c021dfbae8fac545936693ac917d5e7563"
 	assets["USDT"] = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9"
 	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
 	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
 
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	decimals := make(map[string]int)
+	decimals["ETH"] = 18
+	decimals["BAT"] = 18
+	decimals["DAI"] = 18
+	decimals["REP"] = 18
+	decimals["USDC"] = 6
+	decimals["USDT"] = 6
+	decimals["WBTC"] = 8
+	decimals["ZRX"] = 18
+
+	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
 
-	return &CompoundProtocol{scraper: scraper, protocol: protocol, assets: assets, connection: connection}
+	return &CompoundProtocol{scraper: scraper, protocol: protocol, assets: assets, decimals: decimals, connection: connection}
 }
 
 func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error) {
 	var contract *compoundcontract.CTokenCaller
 	contract, err = compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+
+	// var underlyingContract *compoundcontract.CErc20Caller
+	// underlyingContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	// address, _ := underlyingContract.Underlying(&bind.CallOpts{})
+
 	supplyInterestRate, err := contract.SupplyRatePerBlock(&bind.CallOpts{})
 	if err != nil {
 		return
@@ -66,11 +90,28 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 	if err != nil {
 		return
 	}
-	decimals, err := contract.Decimals(&bind.CallOpts{})
+	totalBorrow, err := contract.TotalBorrows(&bind.CallOpts{})
 	if err != nil {
 		return
 	}
-	rate = CompoundRate{Symbol: asset, Decimal: decimals, BorrowRate: proto.calculateAPY(borrowInterestRate), SupplyRate: proto.calculateAPY(supplyInterestRate), TotalSupply: totalSupply}
+	totalReserves, err := contract.TotalReserves(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	cash, err := contract.GetCash(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	rate = CompoundRate{
+		Symbol:        asset,
+		Decimal:       proto.decimals[asset],
+		BorrowRate:    proto.calculateAPY(borrowInterestRate),
+		SupplyRate:    proto.calculateAPY(supplyInterestRate),
+		TotalSupply:   totalSupply,
+		TotalBorrow:   totalBorrow,
+		TotalReserves: totalReserves,
+		Cash:          cash,
+	}
 	return
 }
 
@@ -93,10 +134,10 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 }
 
 func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
-	for asset, _ := range proto.assets {
+	for asset := range proto.assets {
 		Compoundrate, err := proto.fetch(asset)
 		if err != nil {
-			log.Error(err)
+			log.Error("error fetching asset: ", err)
 		}
 		rates = append(rates, Compoundrate)
 	}
@@ -121,51 +162,52 @@ func (proto *CompoundProtocol) UpdateRate() error {
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.connection.Close()
 		proto.scraper.RateChannel() <- asset
-
 	}
 	log.Info("Update complete")
 	return nil
 }
 
+func (proto *CompoundProtocol) getTotalSupply() (float64, error) {
+	// total supply for a market is explained here:
+	// https://compound.finance/docs/ctokens#get-cash
+	markets, err := proto.fetchALL()
+	if err != nil {
+		return 0, err
+	}
+	sum := float64(0)
+	for i := 0; i < len(markets); i++ {
+		supply, err := strconv.ParseFloat(markets[i].Cash.String(), 64)
+		if err != nil {
+			return 0, err
+		}
+		normalizedSupply := supply / math.Pow10(int(markets[i].Decimal))
+		price, err := utils.GetCoinPrice(markets[i].Symbol)
+		if err != nil {
+			fmt.Println("error getting prices: ", err)
+		}
+		sum += normalizedSupply * price
+	}
+	return sum, nil
+}
+
 func (proto *CompoundProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
-	usdcMarket, err := proto.fetch("USDC")
+	totalValueLocked, err := proto.getTotalSupply()
+	if err != nil {
+		log.Error(err)
+	}
+	ETHPrice, err := utils.GetCoinPrice("ETH")
 	if err != nil {
 		return err
 	}
-	ethMarket, err := proto.fetch("ETH")
-	if err != nil {
-		return err
-	}
-	totalSupplyUSDC, err := strconv.ParseFloat(usdcMarket.TotalSupply.String(), 64)
-	fmt.Println("usdcMarket: ", usdcMarket)
-	if err != nil {
-		return err
-	}
-	totalSupplyDecimal, err := strconv.ParseFloat(usdcMarket.Decimal.String(), 64)
-	if err != nil {
-		return err
-	}
-
-	totalSupplyETH, err := strconv.ParseFloat(ethMarket.TotalSupply.String(), 64)
-	if err != nil {
-		return err
-	}
-
-	totalSupplyETHDecimal, err := strconv.ParseFloat(ethMarket.Decimal.String(), 64)
-	if err != nil {
-		return err
-	}
-
 	defistate := &dia.DefiProtocolState{
-		TotalUSD:  totalSupplyUSDC / math.Pow(10, totalSupplyDecimal),
-		TotalETH:  totalSupplyETH / math.Pow(10, totalSupplyETHDecimal),
+		TotalUSD:  totalValueLocked,
+		TotalETH:  totalValueLocked / ETHPrice,
 		Protocol:  proto.protocol,
 		Timestamp: time.Now(),
 	}
 	proto.scraper.StateChannel() <- defistate
 	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
-
 	log.Info("Update State complete")
 
 	return nil

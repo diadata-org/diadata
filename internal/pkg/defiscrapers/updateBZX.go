@@ -47,7 +47,7 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets["SUSD"] = "0x49f4592e641820e928f9919ef4abd92a719b4b49"
 	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
 
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	connection, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -112,27 +112,6 @@ func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
 	return
 }
 
-func (proto *BZXProtocol) getTotalSupply() (float64, error) {
-	markets, err := proto.fetchALL()
-	if err != nil {
-		return 0, err
-	}
-	sum := float64(0)
-	for i := 0; i < len(markets); i++ {
-
-		TotalDiff := big.NewInt(0).Sub(markets[i].TotalSupplyAsset, markets[i].TotalBorrowAsset)
-		marketLiquidityUSD, err := strconv.ParseFloat(TotalDiff.String(), 64)
-		if err != nil {
-			return 0, err
-		}
-		marketLiquidityUSD /= math.Pow10(int(markets[i].Decimals))
-		fmt.Println("sum is now: ", sum)
-		sum += marketLiquidityUSD
-		// fmt.Printf("market %s holds %v worth in USD \n", markets[i].Symbol, marketLiquidityUSD)
-	}
-	return sum, nil
-}
-
 func (proto *BZXProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
@@ -167,6 +146,26 @@ func (proto *BZXProtocol) UpdateRate() error {
 	return nil
 }
 
+func (proto *BZXProtocol) getTotalSupply() (float64, error) {
+	markets, err := proto.fetchALL()
+	if err != nil {
+		return 0, err
+	}
+	sum := float64(0)
+	for i := 0; i < len(markets); i++ {
+
+		TotalDiff := big.NewInt(0).Sub(markets[i].TotalSupplyAsset, markets[i].TotalBorrowAsset)
+		marketLiquidityUSD, err := strconv.ParseFloat(TotalDiff.String(), 64)
+		if err != nil {
+			return 0, err
+		}
+		marketLiquidityUSD /= math.Pow10(int(markets[i].Decimals))
+		sum += marketLiquidityUSD
+		// fmt.Printf("market %s holds %v worth in USD \n", markets[i].Symbol, marketLiquidityUSD)
+	}
+	return sum, nil
+}
+
 func (proto *BZXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	totalSupplyUSD, err := proto.getTotalSupply()
@@ -174,8 +173,8 @@ func (proto *BZXProtocol) UpdateState() error {
 		return err
 	}
 	priceETH, err := utils.GetCoinPrice("ETH")
-	fmt.Println("error getting price: ", err)
 	if err != nil {
+		fmt.Println("error getting price: ", err)
 		return err
 	}
 	totalSupplyETH := totalSupplyUSD / priceETH
