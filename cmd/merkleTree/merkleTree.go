@@ -172,7 +172,7 @@ func main() {
 
 	// preliminary main
 	// One instance of main for each data type
-	dataType := flag.String("type", "hash-interestrates", "Type of data")
+	dataType := flag.String("type", "hash-trades", "Type of data")
 	flag.Parse()
 
 	kc := ActivateKafkaChannel(*dataType)
