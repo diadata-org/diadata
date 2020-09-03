@@ -2,7 +2,6 @@ package merklehashing
 
 import (
 	"context"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -194,10 +193,10 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 		log.Error(err)
 	}
 	var merkleTrees []merkletree.MerkleTree
-	var auxTree merkletree.MerkleTree
 	var lastTimestamp time.Time
 	for i := range vals {
 		// Collect merkle trees
+		var auxTree merkletree.MerkleTree
 		err = json.Unmarshal([]byte(vals[i][2].(string)), &auxTree)
 		if err != nil {
 			log.Error(err)
@@ -239,8 +238,6 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
 	dailyTree, err = merkletree.TreesToTree(dailyTrees)
-	leafs := dailyTree.Leafs
-	fmt.Println("dailyTree: ", hex.EncodeToString(leafs[0].C.(merkletree.ByteContent)))
 	if err != nil {
 		return
 	}
@@ -269,7 +266,7 @@ func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 		log.Error(err)
 		return
 	}
-	dailyRootHash := dailyTree.MerkleRoot()
+	dailyRootHash := dailyTree.MerkleRoot
 
 	// Get last master tree
 	lastID, err := ds.GetLastID("", level)

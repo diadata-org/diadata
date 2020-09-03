@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/cbergoon/merkletree"
@@ -17,7 +17,17 @@ func main() {
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	level := "0"
+	// level := "0"
+
+	// // Initialize process by setting the genesis master node
+	// genesisMessage := merkletree.ByteContent([]byte("hashing starts here"))
+	// genesisTree, err := merkletree.NewTree([]merkletree.Content{genesisMessage})
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// // Save genesis tree
+	// fmt.Println("tree before encoding: ", genesisTree.Root)
+	// ds.SaveDailyTreeInflux(*genesisTree, "", level, time.Time{})
 
 	// Get today's merkle root
 	timestamp := time.Now()
@@ -25,24 +35,63 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dailyRootHash := dailyTree.MerkleRoot()
+	dailyRootHash := dailyTree.MerkleRoot
 	fmt.Println("daily root hash: ", hex.EncodeToString(dailyRootHash))
-	// Get last master tree
-	lastID, err := ds.GetLastID("", level)
+
+	vals, err := ds.GetDailyTreesInflux("", "1", time.Now().AddDate(0, 0, -2), time.Now())
 	if err != nil {
 		log.Error(err)
 	}
-	ID := strconv.Itoa(int(lastID))
-	masterTree, err := ds.GetDailyTreeByID("", level, ID)
+	var auxTree merkletree.MerkleTree
+	// fmt.Println(vals[0][5].(string))
+	fmt.Println("unmarshal daily tree..")
+	err = json.Unmarshal([]byte(vals[0][5].(string)), &auxTree)
 	if err != nil {
 		log.Error(err)
 	}
-	// Extend tree by today's merkle root
-	newHash := merkletree.ByteContent(dailyRootHash)
-	err = masterTree.ExtendTree([]merkletree.Content{newHash})
+	// err = (&auxTree).RebuildTree()
+	cont := auxTree.Leafs[0].C.(merkletree.StorageBucket)
+	fmt.Println("leaf 0 before modif.: ", cont)
+	cont.Content[0] = 100
+	fmt.Println("leaf 0: ", auxTree.Leafs[0].C.(merkletree.StorageBucket))
+	fmt.Println("leaf 1: ", auxTree.Leafs[1].C.(merkletree.StorageBucket))
+	ver, err := auxTree.VerifyContent(cont)
 	if err != nil {
 		log.Error(err)
 	}
-	// Save newMasterTree
-	ds.SaveDailyTreeInflux(masterTree, "", level, time.Time{})
+	fmt.Println("verification of tree: ", ver)
+
+	// // Get last master tree
+	// var masterTree merkletree.MerkleTree
+	// lastID, err := ds.GetLastID("", level)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// ID := strconv.Itoa(int(lastID))
+	// if ID != "0" {
+	// 	masterTree, err = ds.GetDailyTreeByID("", level, ID)
+	// 	if err != nil {
+	// 		log.Error(err)
+	// 	}
+	// }
+
+	// // Extend tree by today's merkle root
+	// newHash := merkletree.ByteContent(dailyRootHash)
+	// err = masterTree.ExtendTree([]merkletree.Content{newHash})
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// // Save newMasterTree
+	// ds.SaveDailyTreeInflux(masterTree, "", level, time.Time{})
+
+	// vals, err := ds.GetMerkletreesInflux("hash-interestrates", time.Now().AddDate(0, 0, -2), time.Now())
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// var testTree merkletree.MerkleTree
+	// err = json.Unmarshal([]byte(vals[0][2].(string)), &testTree)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("testtree: ", testTree.Root.Left)
 }

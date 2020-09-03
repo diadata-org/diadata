@@ -23,6 +23,8 @@ type AuditStore interface {
 	GetMerkletreeInflux(topic string, timeInit, timeFinal time.Time) ([]merkletree.MerkleTree, error)
 	GetMerkletreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error)
 	SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, lastTimestamp time.Time) error
+	GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) ([][]interface{}, error)
+	GetDailyTreeByID(topic, level, ID string) (merkletree.MerkleTree, error)
 	GetLastTimestamp(topic, level string) (time.Time, error)
 	GetLastID(topic, level string) (int64, error)
 }
@@ -268,6 +270,7 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level strin
 	if err != nil {
 		log.Error(err)
 	}
+
 	// Get last id and increment it
 	lastID, err := db.GetLastID(topic, level)
 	if err != nil {
@@ -297,6 +300,23 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level strin
 	return err
 }
 
+// GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
+// More precisely, the two-dimensional interface val is returned. It has length 3 and can be cast as follows:
+// val[0]:(influx-)timestamp, val[1]:topic, val[2]:MerkleTree
+func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and time > %d and time <= %d", influxDBMerkleTable, topic, level, timeInit.UnixNano(), timeFinal.UnixNano())
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return [][]interface{}{}, err
+	}
+	if len(res[0].Series) == 0 {
+		return
+	}
+	val = res[0].Series[0].Values
+	return
+}
+
 // GetDailyTreeByID returns the daily merkletree of a given topic, level and ID.
 func (db *DB) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleTree, err error) {
 
@@ -309,7 +329,7 @@ func (db *DB) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleT
 		return
 	}
 	val := res[0].Series[0].Values[0]
-	err = json.Unmarshal([]byte(val[2].(string)), &tree)
+	err = json.Unmarshal([]byte(val[4].(string)), &tree)
 	return
 }
 
@@ -323,7 +343,7 @@ func (db *DB) GetLastTimestamp(topic, level string) (time.Time, error) {
 	}
 	if len(res[0].Series) == 0 {
 		// In this case, database is still empty, so set last timestamp to now-x
-		return time.Now().AddDate(0, 0, -2), nil
+		return time.Now().AddDate(0, 0, -3), nil
 	}
 	val := res[0].Series[0].Values[0]
 	i, err := strconv.ParseInt(val[1].(string), 10, 64)
@@ -347,7 +367,6 @@ func (db *DB) GetLastID(topic, level string) (int64, error) {
 		return -1, nil
 	}
 	val := res[0].Series[0].Values[0]
-	// We could also return last timestamp (in merkle table): val[0].(time.Time))
 	lastID, err := strconv.ParseInt(val[1].(string), 10, 64)
 	return lastID, err
 }
