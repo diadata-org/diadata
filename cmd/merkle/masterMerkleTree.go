@@ -97,7 +97,7 @@ func main() {
 	// 	log.Error(err)
 	// }
 	// var testTree merkletree.MerkleTree
-	// err = json.Unmarshal([]byte(vals[0][2].(string)), &testTree)
+	// err = json.Unmarshal([]byte(vals[0][3].(string)), &testTree)
 	// if err != nil {
 	// 	log.Error(err)
 	// }

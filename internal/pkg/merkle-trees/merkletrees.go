@@ -56,6 +56,7 @@ type KafkaChannel struct {
 // sends the messages to the channel of KafkaChannel
 func (kc *KafkaChannel) StartKafkaReader(topic string) {
 	config := kafka.ReaderConfig{
+		// TO DO: Production switch
 		Brokers:  []string{"localhost:9092"},
 		Topic:    topic,
 		MaxBytes: 10,
@@ -90,7 +91,7 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 
 // FillPools streams data from the kafka channel into pools and directs
 // them into @poolChannel to be flushed afterwards.
-func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
+func FillPools(topic string, numBucket, sizeBucket uint64, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	bp := merkletree.NewBucketPool(numBucket, sizeBucket, topic)
@@ -129,8 +130,8 @@ func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkle
 	}
 }
 
-// FlushPool flushes pools coming through a channel: It stores the pool in a database
-// and makes a merkle Tree.
+// FlushPool flushes pools coming through a channel: It turns the pool into a merkle Tree
+// and stores the tree in influx.
 func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds models.AuditStore) {
 
 	for {
@@ -235,6 +236,7 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		if err != nil {
 			log.Error(err)
 		}
+		fmt.Println("daily topic tree: ", dailyTopicTree)
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
 	dailyTree, err = merkletree.TreesToTree(dailyTrees)
@@ -269,7 +271,7 @@ func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 	dailyRootHash := dailyTree.MerkleRoot
 
 	// Get last master tree
-	lastID, err := ds.GetLastID("", level)
+	lastID, err := ds.GetLastIDMerkle("", level)
 	if err != nil {
 		log.Error(err)
 		return

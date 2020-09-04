@@ -75,7 +75,7 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 
 // FillPools streams data from the kafka channel into pools and directs
 // them into @poolChannel to be flushed afterwards.
-func FillPools(topic string, numBucket, sizeBucket int, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
+func FillPools(topic string, numBucket, sizeBucket uint64, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
 	bp := merkletree.NewBucketPool(numBucket, sizeBucket, topic)
 	ok := true
@@ -172,7 +172,7 @@ func main() {
 
 	// preliminary main
 	// One instance of main for each data type
-	dataType := flag.String("type", "hash-trades", "Type of data")
+	dataType := flag.String("type", "hash-interestrates", "Type of data")
 	flag.Parse()
 
 	kc := ActivateKafkaChannel(*dataType)
