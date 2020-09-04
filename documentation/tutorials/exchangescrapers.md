@@ -35,7 +35,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 }
 ```
 
-Before running the scraper execute the `main.go` from `cmd/services/pairDiscoveryServices`. Then, `collector.go`  in the folder  `cmd/exchange-scrapers/collector` will try to create a scraper for each exchange and collect the data pairs present in `config/exchange-scrapers.json` written by the method `fetchAvailablePairs()`.
+Before running the scraper install the redis database on localhost and execute `main.go` from `cmd/services/pairDiscoveryServices`. Then, `collector.go`  in the folder  `cmd/exchange-scrapers/collector` will try to create a scraper for each exchange and collect the data pairs present in `config/exchange-scrapers.json` written by the method `fetchAvailablePairs()`.
 
 Finally, run the scraping executable flagged as follows:
 
