@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/Kucoin/kucoin-go-sdk"
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"
@@ -13,6 +12,18 @@ import (
 
 type KuExchangePairs []KuExchangePair
 
+type KucoinMarketMatch struct {
+	Symbol       string `json:"symbol"`
+	Sequence     string `json:"sequence"`
+	Side         string `json:"side"`
+	Size         string `json:"size"`
+	Price        string `json:"price"`
+	TakerOrderID string `json:"takerOrderId"`
+	Time         string `json:"time"`
+	Type         string `json:"type"`
+	MakerOrderID string `json:"makerOrderId"`
+	TradeID      string `json:"tradeId"`
+}
 type KuExchangePair struct {
 	Symbol          string `json:"symbol"`
 	Name            string `json:"name"`
@@ -66,6 +77,7 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchangeName string) *KuC
 		apiService:   apiService,
 	}
 
+
 	// establish connection in the background
 	go s.mainLoop()
 	return s
@@ -88,25 +100,33 @@ func (s *KuCoinScraper) mainLoop() {
 	}
 
 	c := s.apiService.NewWebSocketClient(tk)
-
 	mc, _, err := c.Connect()
 	if err != nil {
 		// Handle error
 		logger.Println("Error Reading data", err)
 
 	}
+	pairs, _ := s.FetchAvailablePairs()
+	var channels []*kucoin.WebSocketSubscribeMessage
+	for count, pair := range pairs {
+		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.Symbol, false)
+		channels = append(channels, ch1)
+		if count>290{
+			break
+		}
+	}
 
-	ch1 := kucoin.NewSubscribeMessage("/market/ticker:all", false)
-	if err := c.Subscribe(ch1); err != nil {
+	if err := c.Subscribe(channels...); err != nil {
 		// Handle error
-		logger.Println("Error while subscribe", err)
+		logger.Error("Error while subscribing",err)
 	}
 
 	go func() {
 		for {
 			select {
 			case msg := <-mc:
-				t := &kucoin.TickerLevel1Model{}
+				logger.Println(string(msg.RawData))
+				t := &KucoinMarketMatch{}
 				if err := msg.ReadData(t); err != nil {
 					logger.Printf("Failure to read: %s", err.Error())
 					return
@@ -114,19 +134,25 @@ func (s *KuCoinScraper) mainLoop() {
 				asset := strings.Split(msg.Subject, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
+				timeOrder,_:= strconv.ParseInt(t.Time,10,64)
+				logger.Println(timeOrder)
+
+				if t.Side == "sell" {
+					f64Volume = -f64Volume
+				}
 				trade := &dia.Trade{
 					Symbol: asset[0],
 					Pair:   msg.Subject,
 					Price:  f64Price,
-					Time:   time.Unix(t.Time/1000, 0),
+					Time:   time.Unix(0, timeOrder),
 					Volume: f64Volume,
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- trade
-				logger.Println("-Got trade--", trade)
+				logger.Println("Got trade", trade)
 
 			case <-s.shutdown: // user requested shutdown
-				log.Println("KuCoin shutting down")
+				logger.Println("KuCoin shutting down")
 				s.cleanup(nil)
 				return
 			}
@@ -166,8 +192,6 @@ func (s *KuCoinScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
-
-	logger.Println("-----ScrapePair--")
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 
@@ -186,30 +210,19 @@ func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	s.pairScrapers[pair.ForeignName] = ps
 
-	//lptopic := LoopringTopic{Market: pair.ForeignName, Topic: "ticker", Count: 20, Snapshot: true}
-	//
-	//var topics []LoopringTopic
-	//topics = append(topics, lptopic)
-	//wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
-	//
-	//if err := s.wsClient.WriteJSON(wr); err != nil {
-	//	logger.Println(err.Error())
-	//}
-
 	return ps, nil
 }
 
 func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	logger.Println("====")
 	response, err := s.apiService.Symbols("")
 	if err != nil {
-		log.Println("Error Getting  Symbols for KuCoin Exchange", err)
+		logger.Println("Error Getting  Symbols for KuCoin Exchange", err)
 	}
 
 	var kep KuExchangePairs
 	err = response.ReadData(&kep)
 	if err != nil {
-		log.Println("Error Reading  Symbols for KuCoin Exchange", err)
+		logger.Println("Error Reading  Symbols for KuCoin Exchange", err)
 	}
 	for _, p := range kep {
 		pairs = append(pairs, dia.Pair{
