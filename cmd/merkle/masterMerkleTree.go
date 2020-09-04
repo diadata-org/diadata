@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -49,13 +50,20 @@ func main() {
 	if err != nil {
 		log.Error(err)
 	}
-	// err = (&auxTree).RebuildTree()
-	cont := auxTree.Leafs[0].C.(merkletree.StorageBucket)
+	contents := []merkletree.Content{auxTree.Leafs[0].C.(merkletree.StorageBucket), auxTree.Leafs[1].C.(merkletree.StorageBucket)}
+	rebuiltAuxTree, err := merkletree.NewTreeWithHashStrategy(contents, sha256.New)
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println("rr: ", rebuiltAuxTree.MerkleRoot)
+	fmt.Println("rebuilt leafs: ", rebuiltAuxTree.Leafs[0].C)
+
+	cont := rebuiltAuxTree.Leafs[0].C.(merkletree.StorageBucket)
 	fmt.Println("leaf 0 before modif.: ", cont)
-	cont.Content[0] = 100
-	fmt.Println("leaf 0: ", auxTree.Leafs[0].C.(merkletree.StorageBucket))
-	fmt.Println("leaf 1: ", auxTree.Leafs[1].C.(merkletree.StorageBucket))
-	ver, err := auxTree.VerifyContent(cont)
+	cont.Content[0] = 221
+	fmt.Println("leaf 0: ", rebuiltAuxTree.Leafs[0].C.(merkletree.StorageBucket))
+	fmt.Println("leaf 1: ", rebuiltAuxTree.Leafs[1].C.(merkletree.StorageBucket))
+	ver, err := rebuiltAuxTree.VerifyContent(cont)
 	if err != nil {
 		log.Error(err)
 	}
