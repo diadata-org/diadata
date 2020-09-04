@@ -109,7 +109,9 @@ func (s *CoinflexFuturesScraper) send(message *map[string]interface{}, market st
 }
 
 // Authenticate - placeholder here, since we do not need to authneticate the connection.
-func (s *CoinflexFuturesScraper) Authenticate(market string, connection interface{}) error { return nil }
+func (s *CoinflexFuturesScraper) Authenticate(market string, connection interface{}) error {
+	return nil
+}
 
 // ScraperClose - safely closes the scraper; We pass the interface connection as the second argument
 // primarily for the reason that Huobi scraper does not use the gorilla websocket; It uses golang's x websocket;

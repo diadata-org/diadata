@@ -3,13 +3,14 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"github.com/beldur/kraken-go-api-client"
-	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
 	"sync"
 	"time"
+
+	krakenapi "github.com/beldur/kraken-go-api-client"
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -72,7 +73,7 @@ func (s *KrakenScraper) mainLoop() {
 		case <-s.ticker.C:
 			s.Update()
 		case <-s.shutdown: // user requested shutdown
-			log.Printf("KrakenScraper shutting down")
+			log.Println("KrakenScraper shutting down")
 			s.cleanup(nil)
 			return
 		}

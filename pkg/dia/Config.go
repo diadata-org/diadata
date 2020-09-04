@@ -16,6 +16,7 @@ const (
 	BitBayExchange   = "BitBay"
 	BittrexExchange  = "Bittrex"
 	CoinBaseExchange = "CoinBase"
+	CoinflexExchange = "Coinflex"
 	HitBTCExchange   = "HitBTC"
 	SimexExchange    = "Simex"
 	OKExExchange     = "OKEx"
