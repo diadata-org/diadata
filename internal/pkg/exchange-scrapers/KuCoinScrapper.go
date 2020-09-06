@@ -77,7 +77,6 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchangeName string) *KuC
 		apiService:   apiService,
 	}
 
-
 	// establish connection in the background
 	go s.mainLoop()
 	return s
@@ -85,6 +84,8 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchangeName string) *KuC
 
 // runs in a goroutine until s is closed
 func (s *KuCoinScraper) mainLoop() {
+	var channelsForClient1, channelsForClient2 []*kucoin.WebSocketSubscribeMessage
+
 	close(s.initDone)
 
 	rsp, err := s.apiService.WebSocketPublicToken()
@@ -99,33 +100,47 @@ func (s *KuCoinScraper) mainLoop() {
 
 	}
 
-	c := s.apiService.NewWebSocketClient(tk)
-	mc, _, err := c.Connect()
+	client1 := s.apiService.NewWebSocketClient(tk)
+	client2 := s.apiService.NewWebSocketClient(tk)
+
+	client1DownStream, _, err := client1.Connect()
+	if err != nil {
+		// Handle error
+		logger.Println("Error Reading data", err)
+
+	}
+	client2DownStream, _, err := client2.Connect()
 	if err != nil {
 		// Handle error
 		logger.Println("Error Reading data", err)
 
 	}
 	pairs, _ := s.FetchAvailablePairs()
-	var channels []*kucoin.WebSocketSubscribeMessage
+
 	for count, pair := range pairs {
 		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.Symbol, false)
-		channels = append(channels, ch1)
-		if count>=299{
-			break
+		if count >= 299 {
+			channelsForClient2 = append(channelsForClient2, ch1)
+		} else {
+			channelsForClient1 = append(channelsForClient1, ch1)
 		}
 	}
 
-	if err := c.Subscribe(channels...); err != nil {
+	if err := client1.Subscribe(channelsForClient1...); err != nil {
 		// Handle error
-		logger.Error("Error while subscribing",err)
+		logger.Error("Error while subscribing client1 ", err)
+	}
+	if err := client2.Subscribe(channelsForClient2...); err != nil {
+		// Handle error
+		logger.Error("Error while subscribing client2 ", err)
 	}
 
 	go func() {
+		var msg *kucoin.WebSocketDownstreamMessage
 		for {
 			select {
-			case msg := <-mc:
-				logger.Println(string(msg.RawData))
+			case msg = <-client2DownStream:
+			case msg = <-client1DownStream:
 				t := &KucoinMarketMatch{}
 				if err := msg.ReadData(t); err != nil {
 					logger.Printf("Failure to read: %s", err.Error())
@@ -134,8 +149,7 @@ func (s *KuCoinScraper) mainLoop() {
 				asset := strings.Split(msg.Subject, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
-				timeOrder,_:= strconv.ParseInt(t.Time,10,64)
-				logger.Println(timeOrder)
+				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
 
 				if t.Side == "sell" {
 					f64Volume = -f64Volume
