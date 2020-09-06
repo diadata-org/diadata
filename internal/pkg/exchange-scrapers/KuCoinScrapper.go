@@ -111,7 +111,7 @@ func (s *KuCoinScraper) mainLoop() {
 	for count, pair := range pairs {
 		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.Symbol, false)
 		channels = append(channels, ch1)
-		if count>=300{
+		if count>=299{
 			break
 		}
 	}
