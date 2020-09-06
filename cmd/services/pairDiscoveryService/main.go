@@ -12,11 +12,12 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	 "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
 
 var (
+	log *logrus.Logger
 	db models.Datastore
 )
 
@@ -187,4 +188,7 @@ func main() {
 		log.Println("Got signal.")
 		task.stop()
 	}
+}
+func init(){
+	log =logrus.New()
 }
