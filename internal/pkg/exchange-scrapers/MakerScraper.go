@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 
 	"sync"
 

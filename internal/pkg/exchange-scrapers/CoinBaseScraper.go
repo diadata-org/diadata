@@ -12,7 +12,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	gdax "github.com/preichenberger/go-coinbasepro/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 type CoinBaseScraper struct {

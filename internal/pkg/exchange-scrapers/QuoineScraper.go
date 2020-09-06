@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/jjjjpppp/quoinex-go-client/v2"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
 

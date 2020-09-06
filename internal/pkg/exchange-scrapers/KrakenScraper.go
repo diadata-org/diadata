@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
 	"sync"

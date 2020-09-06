@@ -14,7 +14,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type pairScraperSet map[*BitfinexPairScraper]nothing

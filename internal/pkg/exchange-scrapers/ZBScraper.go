@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
 	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"sync"

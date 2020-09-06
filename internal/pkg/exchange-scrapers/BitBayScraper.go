@@ -9,7 +9,6 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	utils "github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // API base url
