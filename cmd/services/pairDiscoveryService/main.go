@@ -12,13 +12,13 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
-	 "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
 
 var (
 	log *logrus.Logger
-	db models.Datastore
+	db  models.Datastore
 )
 
 type Pairs struct {
@@ -189,6 +189,6 @@ func main() {
 		task.stop()
 	}
 }
-func init(){
-	log =logrus.New()
+func init() {
+	log = logrus.New()
 }

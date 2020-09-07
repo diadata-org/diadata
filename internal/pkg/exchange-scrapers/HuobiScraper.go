@@ -143,6 +143,7 @@ func (s *HuobiScraper) mainLoop() {
 								Source:         s.exchangeName,
 							}
 							ps.parent.chanTrades <- t
+							log.Info("got trade: ", t)
 						}
 					} else {
 						log.Printf("Unknown Pair %v", forName)

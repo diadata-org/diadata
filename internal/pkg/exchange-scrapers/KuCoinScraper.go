@@ -2,12 +2,13 @@ package scrapers
 
 import (
 	"errors"
-	"github.com/Kucoin/kucoin-go-sdk"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Kucoin/kucoin-go-sdk"
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 type KuExchangePairs []KuExchangePair
@@ -118,7 +119,7 @@ func (s *KuCoinScraper) mainLoop() {
 	pairs, _ := s.FetchAvailablePairs()
 
 	for count, pair := range pairs {
-		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.Symbol, false)
+		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.ForeignName, false)
 		if count >= 299 {
 			channelsForClient2 = append(channelsForClient2, ch1)
 		} else {
@@ -146,7 +147,7 @@ func (s *KuCoinScraper) mainLoop() {
 					logger.Printf("Failure to read: %s", err.Error())
 					return
 				}
-				asset := strings.Split(msg.Subject, "-")
+				asset := strings.Split(t.Symbol, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
 				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
@@ -156,14 +157,14 @@ func (s *KuCoinScraper) mainLoop() {
 				}
 				trade := &dia.Trade{
 					Symbol: asset[0],
-					Pair:   msg.Subject,
+					Pair:   t.Symbol,
 					Price:  f64Price,
 					Time:   time.Unix(0, timeOrder),
 					Volume: f64Volume,
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- trade
-				logger.Println("Got trade", trade)
+				logger.Println("Got trade: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
 				logger.Println("KuCoin shutting down")
@@ -240,7 +241,7 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	for _, p := range kep {
 		pairs = append(pairs, dia.Pair{
-			Symbol:      p.Symbol,
+			Symbol:      strings.Split(p.Symbol, "-")[0],
 			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
 		})
