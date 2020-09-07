@@ -353,33 +353,6 @@ Successful retrieval of available coins along with actual information on prices.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/pairs" %}
-{% api-method-summary %}
-Pairs
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available trading pairs organized by exchanges.  
-https://api.diadata.org/v1/pairs
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of trading pairs along with the respective exchange. Shown below is an exerpt of the full response.
-{% endapi-method-response-example-description %}
-
-```
-{"Pairs":[{"Symbol":"BTC","ForeignName":"","Exchange":"Huobi","Ignore":false},{"Symbol":"ETH","ForeignName":"","Exchange":"Binance","Ignore":false},...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/volume/:symbol" %}
 {% api-method-summary %}
 Trade Volume
