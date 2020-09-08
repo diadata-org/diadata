@@ -65,8 +65,10 @@ type BalancerScraper struct {
 	productPairIds    map[string]int
 	chanTrades        chan *dia.Trade
 
-	WsClient   *ethclient.Client
-	RestClient *ethclient.Client
+	WsClient    *ethclient.Client
+	RestClient  *ethclient.Client
+	resubscribe chan string
+	pools       map[string]struct{}
 }
 
 func NewBalancerScraper(exchangeName string) *BalancerScraper {
@@ -79,6 +81,8 @@ func NewBalancerScraper(exchangeName string) *BalancerScraper {
 		pairScrapers:      make(map[string]*BalancerPairScraper),
 		chanTrades:        make(chan *dia.Trade),
 		balancerTokensMap: make(map[string]*BalancerToken),
+		resubscribe:       make(chan string),
+		pools:             make(map[string]struct{}),
 	}
 
 	wsClient, err := ethclient.Dial(balancerWsDial)
@@ -108,12 +112,26 @@ func (scraper *BalancerScraper) mainLoop() {
 	if err != nil {
 		log.Error(err)
 	}
-
 	for pools.Next() {
-		scraper.subscribeToNewSwaps(pools.Event)
+		scraper.pools[pools.Event.Pool.Hex()] = struct{}{}
 	}
+	scraper.performSubscriptions()
 
-	scraper.subscribeToNewPools()
+	go func() {
+		for scraper.run {
+			pool := <-scraper.resubscribe
+
+			if scraper.run {
+				if pool == "NEW_POOLS" {
+					log.Info("resubscribe to new pools")
+					scraper.subscribeToNewPools()
+				} else {
+					log.Info("resubscribe to pool: " + pool)
+					scraper.subscribeToNewSwaps(pool)
+				}
+			}
+		}
+	}()
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
@@ -129,6 +147,15 @@ func (scraper *BalancerScraper) mainLoop() {
 	scraper.cleanup(nil)
 
 }
+
+func (scraper *BalancerScraper) performSubscriptions() {
+	for pool, _ := range scraper.pools {
+		scraper.subscribeToNewSwaps(pool)
+	}
+
+	scraper.subscribeToNewPools()
+}
+
 func (scraper *BalancerScraper) subscribeToNewPools() error {
 	sinkPool, subPool, err := scraper.getNewPoolLogChannel()
 	if err != nil {
@@ -138,36 +165,53 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 		fmt.Println("subscribed to NewPools")
 		defer fmt.Println("Unsubscribed to NewPools")
 		defer subPool.Unsubscribe()
+		subscribed := true
 
-		select {
-		case err := <-subPool.Err():
-			if err != nil {
-				log.Error(err)
+		for scraper.run && subscribed {
+
+			select {
+			case err := <-subPool.Err():
+				if err != nil {
+					log.Error(err)
+				}
+				subscribed = false
+				if scraper.run {
+					scraper.resubscribe <- "NEW_POOLS"
+				}
+			case vLog := <-sinkPool:
+				if _, ok := scraper.pools[vLog.Pool.Hex()]; !ok {
+					scraper.pools[vLog.Pool.Hex()] = struct{}{}
+					scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+				}
 			}
-		case vLog := <-sinkPool:
-			scraper.subscribeToNewSwaps(vLog)
 		}
 	}()
 
 	return err
 }
 
-func (scraper *BalancerScraper) subscribeToNewSwaps(vLog *factory.BalancerfactoryLOGNEWPOOL) error {
-	sink, sub, err := scraper.getLogSwapsChannel(vLog.Pool)
+func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
+	sink, sub, err := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
 	if err != nil {
 		log.Error(err)
 	}
 
 	go func() {
-		fmt.Println("subscribed to pool: " + vLog.Pool.Hex())
-		defer fmt.Println("Unsubscribed to pool: " + vLog.Pool.Hex())
+		fmt.Println("subscribed to pool: " + poolToSub)
+		defer fmt.Println("Unsubscribed to pool: " + poolToSub)
 		defer sub.Unsubscribe()
-		for scraper.run {
+		subscribed := true
+
+		for scraper.run && subscribed {
 
 			select {
 			case err := <-sub.Err():
 				if err != nil {
 					log.Error(err)
+				}
+				subscribed = false
+				if scraper.run {
+					scraper.resubscribe <- poolToSub
 				}
 			case vLog := <-sink:
 
