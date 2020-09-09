@@ -205,6 +205,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(10 * time.Minute)
 
+	// Maker DEX data
+	rawMaker, err := getDEXFromDia("Maker", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawMaker, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Maker Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	// Curvefi DEX data
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DIA")
 	if err != nil {

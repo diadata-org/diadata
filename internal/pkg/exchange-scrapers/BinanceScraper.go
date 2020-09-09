@@ -142,6 +142,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				Source:         s.exchangeName,
 			}
 			ps.parent.chanTrades <- t
+			log.Info("got trade: ", t)
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}
