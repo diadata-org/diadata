@@ -12,3 +12,11 @@ type ForeignQuotation struct {
 	Time               time.Time
 	ITIN               string
 }
+
+type DefiScore struct {
+	Protocol        string
+	Symbol          string
+	Score           float64
+	LiquidityIndex  float64
+	CollateralIndex float64
+}
