@@ -1,36 +1,51 @@
 package scrapers
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
+	"math"
+	"math/big"
 	"sync"
 	"time"
 
+	factory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
+	pool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/event"
+
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 const (
 	BalancerApiDelay   = 20
 	BalancerBatchDelay = 60 * 1
+
+	factoryContract = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
+
+	infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
+	infuraKey2 = "251a25bd10b8460fa040bb7202e22571"
+	startBlock = uint64(10780772 - 5250)
+
+	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
+	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey2
 )
 
-type BalancerSwapList struct {
-	Data struct {
-		Swaps []BalancerSwap `json:"swaps"`
-	} `json:"data"`
+type BalancerSwap struct {
+	SellToken  string
+	BuyToken   string
+	SellVolume float64
+	BuyVolume  float64
+	ID         string
+	Timestamp  int64
 }
 
-type BalancerSwap struct {
-	SellToken  string `json:"tokenInSym"`
-	BuyToken   string `json:"tokenOutSym"`
-	SellVolume string `json:"tokenAmountIn"`
-	BuyVolume  string `json:"tokenAmountOut"`
-	ID         string `json:"id"`
-	Timestamp  int64  `json:"timestamp"`
+type BalancerToken struct {
+	Symbol   string
+	Decimals uint8
 }
 
 type BalancerScraper struct {
@@ -46,21 +61,41 @@ type BalancerScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*BalancerPairScraper
-	productPairIds map[string]int
-	chanTrades     chan *dia.Trade
+	balancerTokensMap map[string]*BalancerToken
+	pairScrapers      map[string]*BalancerPairScraper
+	productPairIds    map[string]int
+	chanTrades        chan *dia.Trade
+
+	WsClient    *ethclient.Client
+	RestClient  *ethclient.Client
+	resubscribe chan string
+	pools       map[string]struct{}
 }
 
 func NewBalancerScraper(exchangeName string) *BalancerScraper {
 	scraper := &BalancerScraper{
-		exchangeName:   exchangeName,
-		initDone:       make(chan nothing),
-		shutdown:       make(chan nothing),
-		shutdownDone:   make(chan nothing),
-		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*BalancerPairScraper),
-		chanTrades:     make(chan *dia.Trade),
+		exchangeName:      exchangeName,
+		initDone:          make(chan nothing),
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		productPairIds:    make(map[string]int),
+		pairScrapers:      make(map[string]*BalancerPairScraper),
+		chanTrades:        make(chan *dia.Trade),
+		balancerTokensMap: make(map[string]*BalancerToken),
+		resubscribe:       make(chan string),
+		pools:             make(map[string]struct{}),
 	}
+
+	wsClient, err := ethclient.Dial(balancerWsDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scraper.WsClient = wsClient
+	restClient, err := ethclient.Dial(balancerRestDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scraper.RestClient = restClient
 
 	go scraper.mainLoop()
 	return scraper
@@ -68,196 +103,336 @@ func NewBalancerScraper(exchangeName string) *BalancerScraper {
 
 func (scraper *BalancerScraper) mainLoop() {
 
+	time.Sleep(5 * time.Second)
+
 	scraper.run = true
 
-	// The scraping is organized in batches, bounded by time range and trade id
-	starttime := time.Now().Add(time.Duration(-60*2) * time.Second).Unix()
-	startTradeID := ""
+	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
+
+	pools, err := scraper.getAllLogNewPool()
+	if err != nil {
+		log.Error(err)
+	}
+	for pools.Next() {
+		scraper.pools[pools.Event.Pool.Hex()] = struct{}{}
+	}
+	scraper.performSubscriptions()
+
+	go func() {
+		for scraper.run {
+			pool := <-scraper.resubscribe
+
+			if scraper.run {
+				if pool == "NEW_POOLS" {
+					log.Info("resubscribe to new pools")
+					scraper.subscribeToNewPools()
+				} else {
+					log.Info("resubscribe to pool: " + pool)
+					scraper.subscribeToNewSwaps(pool)
+				}
+			}
+		}
+	}()
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
 			scraper.error = errors.New("Balancer: No pairs to scrape provided")
 			log.Error(scraper.error.Error())
-			break
 		}
-
-		// Determine the next swap batch
-		swapsPre, lastTradeTime, lastTradeID, err := scraper.GetNewSwaps(starttime, time.Now().Unix())
-		if err != nil {
-			log.Error("error getting trades: ", err)
-		}
-		swaps := cutSwapsBalancer(swapsPre, startTradeID)
-		starttime = lastTradeTime - int64(1)
-		startTradeID = lastTradeID
-
-		swapsMap := make(map[string]BalancerSwap)
-		for _, s := range swaps {
-			swapsMap[s.BuyToken+"-"+s.SellToken] = s
-		}
-
-		for pair, pairScraper := range scraper.pairScrapers {
-
-			// Check whether swap has an admissible pair
-			swap, ok := swapsMap[pair]
-			if !ok {
-				continue
-			}
-
-			// Get trading data from swap in "classic" format
-			_, volume, price, err := getSwapDataBalancer(swap)
-			timestamp := swap.Timestamp
-
-			if err != nil {
-				log.Error("error parsing time: ", err)
-			}
-
-			trade := &dia.Trade{
-				Symbol:         pairScraper.pair.Symbol,
-				Pair:           pair,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(timestamp, 0),
-				ForeignTradeID: swap.ID,
-				Source:         scraper.exchangeName,
-			}
-			pairScraper.parent.chanTrades <- trade
-			fmt.Println("got trade: ", trade)
-		}
-		time.Sleep(time.Duration(BalancerBatchDelay) * time.Second)
 	}
+
+	time.Sleep(time.Duration(10) * time.Second)
 	if scraper.error == nil {
 		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
+
 }
 
-// cutSwapList receives a list of swaps ordered by timestamps in descending order.
-// It returns all newest swaps up to the one with id.
-func cutSwapsBalancer(swaps []BalancerSwap, id string) (cutSwaps []BalancerSwap) {
-	if id == "" {
-		return swaps
+func (scraper *BalancerScraper) performSubscriptions() {
+	for pool, _ := range scraper.pools {
+		scraper.subscribeToNewSwaps(pool)
 	}
-	// Append new swaps until the swap with id is hit
-	for _, swap := range swaps {
-		if swap.ID == id {
-			return
+
+	scraper.subscribeToNewPools()
+}
+
+func (scraper *BalancerScraper) subscribeToNewPools() error {
+	sinkPool, subPool, err := scraper.getNewPoolLogChannel()
+	if err != nil {
+		log.Error(err)
+	}
+	go func() {
+		fmt.Println("subscribed to NewPools")
+		defer fmt.Println("Unsubscribed to NewPools")
+		defer subPool.Unsubscribe()
+		subscribed := true
+
+		for scraper.run && subscribed {
+
+			select {
+			case err := <-subPool.Err():
+				if err != nil {
+					log.Error(err)
+				}
+				subscribed = false
+				if scraper.run {
+					scraper.resubscribe <- "NEW_POOLS"
+				}
+			case vLog := <-sinkPool:
+				if _, ok := scraper.pools[vLog.Pool.Hex()]; !ok {
+					scraper.pools[vLog.Pool.Hex()] = struct{}{}
+					scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+				}
+			}
 		}
-		cutSwaps = append(cutSwaps, swap)
+	}()
+
+	return err
+}
+
+func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
+	sink, sub, err := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
+	if err != nil {
+		log.Error(err)
 	}
-	return
+
+	go func() {
+		fmt.Println("subscribed to pool: " + poolToSub)
+		defer fmt.Println("Unsubscribed to pool: " + poolToSub)
+		defer sub.Unsubscribe()
+		subscribed := true
+		for scraper.run && subscribed {
+
+			select {
+			case err := <-sub.Err():
+				if err != nil {
+					log.Error(err)
+				}
+				subscribed = false
+				if scraper.run {
+					scraper.resubscribe <- poolToSub
+				}
+			case vLog := <-sink:
+
+				decimalsIn := int(scraper.balancerTokensMap[vLog.TokenIn.Hex()].Decimals)
+				decimalsOut := int(scraper.balancerTokensMap[vLog.TokenOut.Hex()].Decimals)
+				amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(vLog.TokenAmountIn), new(big.Float).SetFloat64(math.Pow10(decimalsIn))).Float64()
+				amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(vLog.TokenAmountOut), new(big.Float).SetFloat64(math.Pow10(decimalsOut))).Float64()
+				swap := BalancerSwap{
+					SellToken:  scraper.balancerTokensMap[vLog.TokenIn.Hex()].Symbol,
+					BuyToken:   scraper.balancerTokensMap[vLog.TokenOut.Hex()].Symbol,
+					SellVolume: amountIn,
+					BuyVolume:  amountOut,
+					ID:         vLog.Raw.TxHash.String() + "-" + fmt.Sprint(vLog.Raw.Index),
+					Timestamp:  time.Now().Unix(),
+				}
+				swap.normalizeETH()
+				pair := swap.BuyToken + "-" + swap.SellToken
+				pairScraper := scraper.pairScrapers[pair]
+
+				// Get trading data from swap in "classic" format
+				_, volume, price, err := getSwapDataBalancer(swap)
+
+				if err != nil {
+					log.Error("error parsing time: ", err)
+				}
+
+				trade := &dia.Trade{
+					Symbol:         pairScraper.pair.Symbol,
+					Pair:           pair,
+					Price:          price,
+					Volume:         volume,
+					Time:           time.Unix(swap.Timestamp, 0),
+					ForeignTradeID: swap.ID,
+					Source:         scraper.exchangeName,
+				}
+				pairScraper.parent.chanTrades <- trade
+				fmt.Println("got trade: ", trade)
+
+			}
+		}
+	}()
+
+	return err
+
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
 func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, price float64, err error) {
-
-	amountOut, err := strconv.ParseFloat(s.BuyVolume, 64)
-	if err != nil {
-		return
-	}
-	amountIn, err := strconv.ParseFloat(s.SellVolume, 64)
-	if err != nil {
-		return
-	}
-	volume = amountOut
-	price = amountIn / amountOut
+	volume = s.BuyVolume
+	price = s.SellVolume / s.BuyVolume
 	foreignName = s.BuyToken + "-" + s.SellToken
 	return
 }
 
-// GetNewSwaps returns all swaps with timestamps ranging from @starttime until now
-func (scraper *BalancerScraper) GetNewSwaps(starttime, endtime int64) (swaps []BalancerSwap, lastTradeTime int64, lastTradeID string, err error) {
-	swaplist := BalancerSwapList{}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`
-		{
-			swaps(orderBy:timestamp, orderDirection:desc,
-						where: {timestamp_gt:%d, timestamp_lt:%d})
-			{
-				tokenInSym
-				tokenOutSym
-				tokenAmountIn
-				tokenAmountOut
-				id
-				timestamp
-			}
-		  }		  
-			`, starttime, endtime),
-	}
-	jsonValue, _ := json.Marshal(jsonData)
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/balancer-labs/balancer", bytes.NewBuffer(jsonValue))
-	err = json.Unmarshal(jsondata, &swaplist)
-	swaps = swaplist.Data.Swaps
+func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGNEWPOOLIterator, error) {
 
-	if len(swaps) == 0 {
-		return
-	}
-	for i := 0; i < len(swaps); i++ {
-		swaps[i].normalizeETH()
-	}
-
-	lastTradeTime = swaps[0].Timestamp
+	var pairFiltererContract *factory.BalancerfactoryFilterer
+	pairFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.RestClient)
 	if err != nil {
-		log.Error("error parsing unix time: ", err)
-		return
+		log.Fatal(err)
 	}
-	lastTradeID = swaps[0].ID
-	return
+	start := startBlock
+	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: start}, []common.Address{}, []common.Address{})
+	if err != nil {
+		log.Error("error in getAllLogNewPool ", err)
+	}
+	return itr, err
 }
 
-// FetchAvailablePairs fetches pairs by getting trading dates from the last 7 days and exctracting the pairs
-// Unfortunately, pairs are not available on thegraph API and the available tokenlist is incomplete.
+func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error) {
+	it, err := scraper.getAllLogNewPool()
+	if err != nil {
+		log.Error(err)
+	}
+
+	tokenSet := make(map[string]struct{})
+	for it.Next() {
+
+		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+		tokens, err := poolCaller.GetCurrentTokens(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+
+		for _, token := range tokens {
+
+			if _, ok := tokenSet[token.Hex()]; !ok {
+				tokenSet[token.Hex()] = struct{}{}
+			}
+		}
+	}
+
+	return tokenSet, err
+}
+
+func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, error) {
+	tokenAddressSet, err := scraper.getAllTokenAddress()
+	if err != nil {
+		log.Error(err)
+	}
+
+	tokenMap := make(map[string]*BalancerToken)
+
+	for token, _ := range tokenAddressSet {
+
+		tokenCaller, err := balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error("Error: %v", err)
+		}
+		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		if err != nil {
+			log.Error("Error: %v", token, err)
+		}
+		if symbol != "" {
+			tokenMap[token] = &BalancerToken{
+				Symbol:   symbol,
+				Decimals: decimals,
+			}
+		}
+	}
+	return tokenMap, err
+}
+
+// FetchAvailablePairs get pairs by geting all the LOGNEWPOOL contract events, and
+// calling the method getCurrentTokens from each pool contract
 func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
-	endtime := time.Now().Unix()
-	starttime := time.Now().Unix() - 60*60*24*14
-	periodstamps := makeBalancerPeriods(starttime, endtime)
+	tokenMap, err := scraper.getAllTokensMap()
+	if err != nil {
+		log.Error(err)
+	}
 
-	set := make(map[string]struct{})
-	for i := 1; i < len(periodstamps); i++ {
-		swaps, _, _, err := scraper.GetNewSwaps(periodstamps[i-1], periodstamps[i])
-		if err != nil {
-			log.Error("error fetching swaps: ", err)
-		}
-		for _, swap := range swaps {
-			if swap.BuyToken == "" || swap.SellToken == "" {
-				continue
-			}
-			swap.normalizeETH()
+	pairSet := make(map[string]struct{})
+	for _, token1 := range tokenMap {
+		for _, token2 := range tokenMap {
 
-			foreignName := swap.BuyToken + "-" + swap.SellToken
-			if _, ok := set[foreignName]; !ok {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      swap.BuyToken,
-					ForeignName: foreignName,
-					Exchange:    scraper.exchangeName,
-					Ignore:      false,
-				})
-				set[foreignName] = struct{}{}
-			}
-			foreignName = swap.SellToken + "-" + swap.BuyToken
-			if _, ok := set[foreignName]; !ok {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      swap.SellToken,
-					ForeignName: foreignName,
-					Exchange:    scraper.exchangeName,
-					Ignore:      false,
-				})
-				set[foreignName] = struct{}{}
+			if token1 != token2 {
+
+				foreignName := token1.Symbol + "-" + token2.Symbol
+				if _, ok := pairSet[foreignName]; !ok {
+					pairs = append(pairs, dia.Pair{
+						Symbol:      token1.Symbol,
+						ForeignName: foreignName,
+						Exchange:    scraper.exchangeName,
+						Ignore:      false,
+					})
+					pairSet[foreignName] = struct{}{}
+				}
+
+				foreignName = token2.Symbol + "-" + token1.Symbol
+				if _, ok := pairSet[foreignName]; !ok {
+					pairs = append(pairs, dia.Pair{
+						Symbol:      token2.Symbol,
+						ForeignName: foreignName,
+						Exchange:    scraper.exchangeName,
+						Ignore:      false,
+					})
+					pairSet[foreignName] = struct{}{}
+				}
+
 			}
 		}
 	}
+
 	return
+
 }
 
-// makeBalancerPeriods returns unix timestamps between timeInit and timeFinal such that
-// there is Period between two consecutive timestamps
-func makeBalancerPeriods(timeInit, timeFinal int64) (periodstamps []int64) {
-	for timeInit < timeFinal {
-		periodstamps = append(periodstamps, timeInit)
-		auxTime := timeInit + 60*60*12
-		timeInit = auxTime
+func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *pool.BalancerpoolLOGSWAP, error) {
+	sink := make(chan *pool.BalancerpoolLOGSWAP)
+	var pairFiltererContract *pool.BalancerpoolFilterer
+	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
+
+	start := startBlock
+	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: start}, []common.Address{}, []common.Address{}, []common.Address{})
+	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
+	for itr.Next() {
+		// vLog := itr.Event
 	}
-	return
+	return sink, nil
+}
+
+func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription, error) {
+	sink := make(chan *pool.BalancerpoolLOGSWAP)
+	var pairFiltererContract *pool.BalancerpoolFilterer
+	pairFiltererContract, err := pool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	start := startBlock
+
+	sub, _ := pairFiltererContract.WatchLOGSWAP(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	if err != nil {
+		log.Error("error in get swaps channel: ", err)
+	}
+
+	return sink, sub, nil
+}
+
+func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
+	sink := make(chan *factory.BalancerfactoryLOGNEWPOOL)
+	var factoryFiltererContract *factory.BalancerfactoryFilterer
+	factoryFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	start := startBlock
+
+	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &start}, sink, nil, nil)
+	if err != nil {
+		log.Error("error in get pools channel: ", err)
+	}
+
+	return sink, sub, nil
 }
 
 func (bs BalancerSwap) normalizeETH() {
@@ -307,6 +482,8 @@ func (scraper *BalancerScraper) Close() error {
 	for _, pairScraper := range scraper.pairScrapers {
 		pairScraper.closed = true
 	}
+	scraper.WsClient.Close()
+	scraper.RestClient.Close()
 
 	close(scraper.shutdown)
 	<-scraper.shutdownDone
