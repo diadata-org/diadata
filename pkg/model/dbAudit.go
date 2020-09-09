@@ -197,18 +197,25 @@ func HashingLayer(topic string, content []byte) error {
 // SaveMerkletreeInflux stores a tree from the merkletree package in Influx
 func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error {
 
-	// First marshal tree
-	marshTree, err := json.Marshal(tree)
-	if err != nil {
-		log.Error(err)
-	}
-
 	// Get last id and increment it
 	lastID, err := db.GetLastID(topic)
 	if err != nil {
 		return err
 	}
 	id := strconv.FormatInt(lastID+1, 10)
+
+	// // TO DO: Set IDs for buckets. Problem: How to access?
+	// // Minimal example on playground: https://play.golang.org/p/5NcQc_oD8qN
+	// for i := range tree.Leafs {
+	// 	bucket := tree.Leafs[i].C.(merkletree.StorageBucket)
+	// 	bucket.ID = strconv.FormatInt(int64(i), 10) + "." + id
+	// }
+
+	// Marshal tree
+	marshTree, err := json.Marshal(tree)
+	if err != nil {
+		log.Error(err)
+	}
 
 	// Create a point and add to batch
 	tags := map[string]string{"topic": topic, "id": id}

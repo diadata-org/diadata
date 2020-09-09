@@ -89,7 +89,7 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 	return kc
 }
 
-// FillPools streams data from the kafka channel into pools and directs
+// FillPools streams data from the kafka topic channel into buckets/pools and directs
 // them into @poolChannel to be flushed afterwards.
 func FillPools(topic string, numBucket, sizeBucket uint64, poolChannel chan *merkletree.BucketPool, topicChan chan *kafka.Message, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -210,7 +210,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 			lastTimestamp = tstamp
 		}
 	}
-	dailyTopicTree, err = merkletree.TreesToTree(merkleTrees)
+	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {
 		log.Error(err)
 		return
@@ -239,7 +239,7 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		fmt.Println("daily topic tree: ", dailyTopicTree)
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
-	dailyTree, err = merkletree.TreesToTree(dailyTrees)
+	dailyTree, err = merkletree.ForestToTree(dailyTrees)
 	if err != nil {
 		return
 	}
