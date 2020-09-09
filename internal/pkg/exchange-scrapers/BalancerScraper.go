@@ -26,11 +26,12 @@ const (
 
 	factoryContract = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 
-	infuraKey  = "YOUR_INFURA_KEY"
+	infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
+	infuraKey2 = "251a25bd10b8460fa040bb7202e22571"
 	startBlock = uint64(10780772 - 5250)
 
 	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
-	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
+	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey2
 )
 
 type BalancerSwap struct {
@@ -201,7 +202,6 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 		defer fmt.Println("Unsubscribed to pool: " + poolToSub)
 		defer sub.Unsubscribe()
 		subscribed := true
-
 		for scraper.run && subscribed {
 
 			select {
@@ -227,7 +227,6 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 					ID:         vLog.Raw.TxHash.String() + "-" + fmt.Sprint(vLog.Raw.Index),
 					Timestamp:  time.Now().Unix(),
 				}
-
 				swap.normalizeETH()
 				pair := swap.BuyToken + "-" + swap.SellToken
 				pairScraper := scraper.pairScrapers[pair]
@@ -333,10 +332,11 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 		if err != nil {
 			log.Error("Error: %v", token, err)
 		}
-
-		tokenMap[token] = &BalancerToken{
-			Symbol:   symbol,
-			Decimals: decimals,
+		if symbol != "" {
+			tokenMap[token] = &BalancerToken{
+				Symbol:   symbol,
+				Decimals: decimals,
+			}
 		}
 	}
 	return tokenMap, err
