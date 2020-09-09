@@ -194,7 +194,8 @@ func HashingLayer(topic string, content []byte) error {
 
 // Saving and retrieving from storage Table (hashed bucket pools) ------------------------------
 
-// SaveMerkletreeInflux stores a tree from the merkletree package in Influx
+// SaveMerkletreeInflux stores a tree from the merkletree package in Influx.
+// It is mainly used when flushing the bucket pools.
 func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) error {
 
 	// Get last id and increment it
@@ -204,15 +205,21 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 	}
 	id := strconv.FormatInt(lastID+1, 10)
 
-	// // TO DO: Set IDs for buckets. Problem: How to access?
-	// // Minimal example on playground: https://play.golang.org/p/5NcQc_oD8qN
-	// for i := range tree.Leafs {
-	// 	bucket := tree.Leafs[i].C.(merkletree.StorageBucket)
-	// 	bucket.ID = strconv.FormatInt(int64(i), 10) + "." + id
-	// }
+	// Set ID for buckets. IDs have the form i.j where i is the ID of the parent pool
+	// and j is the ID of the bucket.
+	var bucketsWithID []merkletree.Content
+	for i := range tree.Leafs {
+		bucket := tree.Leafs[i].C.(merkletree.StorageBucket)
+		bucket.ID = strconv.FormatInt(int64(i), 10) + "." + id
+		bucketsWithID = append(bucketsWithID, bucket)
+	}
+	treeWithID, err := merkletree.NewTree(bucketsWithID)
+	if err != nil {
+		return err
+	}
 
 	// Marshal tree
-	marshTree, err := json.Marshal(tree)
+	marshTree, err := json.Marshal(treeWithID)
 	if err != nil {
 		log.Error(err)
 	}
