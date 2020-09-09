@@ -259,6 +259,19 @@ func (db *DB) GetMerkletreeInflux(topic string, timeLower time.Time) (merkletree
 	return retval, err
 }
 
+// GetMerkletreeByID returns a merkletree from the storage table with @ID and @topic
+func (db *DB) GetMerkletreeByID(topic, ID string) (merkletree.MerkleTree, error) {
+	retval := merkletree.MerkleTree{}
+	q := fmt.Sprintf("SELECT time, value FROM (SELECT * FROM %s WHERE topic='%s' and id='%s')", influxDBTopicsTable, topic, ID)
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return merkletree.MerkleTree{}, err
+	}
+	val := res[0].Series[0].Values[0]
+	err = json.Unmarshal([]byte(val[1].(string)), &retval)
+	return retval, err
+}
+
 // GetLastID retrieves the highest current id for @topic (if given) and @level from the storage table
 func (db *DB) GetLastID(topic string) (int64, error) {
 

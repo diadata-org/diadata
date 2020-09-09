@@ -2,6 +2,7 @@ package merklehashing
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/cbergoon/merkletree"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -11,13 +12,15 @@ import (
 // VerifyBucket checks whether a given storage bucket is corrupted at the first step, i.e.
 // regarding its containing bucket pool
 func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
-	// TO DO
-	// Get HashedPool/Tree by ID
+
 	ds, err := models.NewInfluxAuditStore()
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	tree, err := ds.GetMerkletreeInflux(sb.Topic, sb.Timestamp)
+	// Get ID of parent pool
+	id := strings.Split(sb.ID, ".")[0]
+	// Get tree corresponding to the pool
+	tree, err := ds.GetMerkletreeByID(sb.Topic, id)
 	if err != nil {
 		return false, err
 	}

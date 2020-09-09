@@ -18,17 +18,17 @@ func main() {
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	// level := "0"
+	level := "0"
 
-	// // Initialize process by setting the genesis master node
-	// genesisMessage := merkletree.ByteContent([]byte("hashing starts here"))
-	// genesisTree, err := merkletree.NewTree([]merkletree.Content{genesisMessage})
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// // Save genesis tree
-	// fmt.Println("tree before encoding: ", genesisTree.Root)
-	// ds.SaveDailyTreeInflux(*genesisTree, "", level, time.Time{})
+	// Initialize process by setting the genesis master node
+	var initialContainer merkletree.StorageBucket
+	initialContainer.Content = []byte("hashing starts here")
+	genesisTree, err := merkletree.NewTree([]merkletree.Content{initialContainer})
+	if err != nil {
+		log.Error(err)
+	}
+	// Save genesis tree
+	ds.SaveDailyTreeInflux(*genesisTree, "", level, time.Time{})
 
 	// Get today's merkle root
 	timestamp := time.Now()
