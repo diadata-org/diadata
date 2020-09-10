@@ -210,7 +210,7 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 	var bucketsWithID []merkletree.Content
 	for i := range tree.Leafs {
 		bucket := tree.Leafs[i].C.(merkletree.StorageBucket)
-		bucket.ID = strconv.FormatInt(int64(i), 10) + "." + id
+		bucket.ID = id + "." + strconv.FormatInt(int64(i), 10)
 		bucketsWithID = append(bucketsWithID, bucket)
 	}
 	treeWithID, err := merkletree.NewTree(bucketsWithID)
@@ -379,7 +379,7 @@ func (db *DB) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleT
 		return
 	}
 	val := res[0].Series[0].Values[0]
-	err = json.Unmarshal([]byte(val[4].(string)), &tree)
+	err = json.Unmarshal([]byte(val[5].(string)), &tree)
 	return
 }
 

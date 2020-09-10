@@ -27,6 +27,7 @@ func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
 	return tree.VerifyContent(sb)
 }
 
+// VerifyPool verifies a topic tree as content of a daily tree
 // // TO DO: Integrate as case into VerifyTree
 func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
 	ds, err := models.NewInfluxAuditStore()

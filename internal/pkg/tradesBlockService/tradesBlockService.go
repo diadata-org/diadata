@@ -104,7 +104,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	} else {
 		t.EstimatedUSDPrice = t.Price
 	}
-	// ignoreTrade = false
+	ignoreTrade = false
 	if ignoreTrade == false {
 		s.datastore.SaveTradeInflux(&t)
 	}

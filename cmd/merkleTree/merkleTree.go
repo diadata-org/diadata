@@ -137,13 +137,34 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 func main() {
 
-	// dataType := flag.String("type", "hash-trades", "Type of data")
+	// dataType := flag.String("type", "hash-interestrates", "Type of data")
 	// flag.Parse()
 
 	// ds, err := models.NewInfluxAuditStore()
 	// if err != nil {
 	// 	log.Error("NewInfluxDataStore: ", err)
 	// }
+
+	// // Test verification
+	// tree, err := ds.GetMerkletreeByID(*dataType, "10")
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// num := 3
+	// fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
+	// verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
+	// fmt.Println("verification: ", verif)
+	// newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
+	// fmt.Println("content before modification: ", newBucket.Content[num])
+	// verifInterm, _ := merklehashing.VerifyBucket(newBucket)
+	// fmt.Println("verification before modification: ", verifInterm)
+	// newBucket.Content[0] = 1
+	// fmt.Println(newBucket.Content)
+	// verifnew, _ := merklehashing.VerifyBucket(newBucket)
+	// fmt.Println("new verification: ", verifnew)
+
+	// verif2, _ := merklehashing.VerifyTree()
+
 	// timeInit := time.Now().Add(time.Hour * (-800))
 	// timeFinal := time.Now()
 	// retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)

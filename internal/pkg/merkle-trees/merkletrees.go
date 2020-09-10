@@ -179,6 +179,7 @@ func HashPoolLoop(topic string) {
 // This functionality implements Level2 from the Merkle Documentation.
 func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletree.MerkleTree, err error) {
 	level := "2"
+	fmt.Printf("begin making daily tree level 2 for topic %s \n", topic)
 	ds, err := models.NewInfluxAuditStore()
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
@@ -188,6 +189,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 	if err != nil {
 		log.Error(err)
 	}
+	fmt.Println("last timestamp retrieved")
 	// Get merkle trees from the data storage table
 	vals, err := ds.GetMerkletreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
@@ -198,7 +200,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 	for i := range vals {
 		// Collect merkle trees
 		var auxTree merkletree.MerkleTree
-		err = json.Unmarshal([]byte(vals[i][2].(string)), &auxTree)
+		err = json.Unmarshal([]byte(vals[i][3].(string)), &auxTree)
 		if err != nil {
 			log.Error(err)
 			return
@@ -215,6 +217,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 		log.Error(err)
 		return
 	}
+	fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
 
 	err = ds.SaveDailyTreeInflux(*dailyTopicTree, topic, level, lastTimestamp)
 	return
@@ -249,6 +252,7 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
 	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, time.Time{})
+	fmt.Println("daily tree built at level 1")
 	return
 }
 
@@ -284,8 +288,9 @@ func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 	}
 
 	// Extend master tree by today's merkle root
-	newHash := merkletree.ByteContent(dailyRootHash)
-	err = masterTree.ExtendTree([]merkletree.Content{newHash})
+	newHash := merkletree.StorageBucket{Content: dailyRootHash}
+	fmt.Println("new Hash: ", newHash)
+	err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
 	if err != nil {
 		log.Error(err)
 		return
