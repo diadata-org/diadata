@@ -184,13 +184,15 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	// Get last timestamp of trees from hashing table
+	// Get last timestamp of trees from storage table
 	timeInit, err := ds.GetLastTimestamp(topic, level)
 	if err != nil {
 		log.Error(err)
 	}
 	fmt.Println("last timestamp retrieved")
-	// Get merkle trees from the data storage table
+	// Get merkle trees from storage table
+	// Comment: Alternatively we can fetch the trees by id.
+	// Write method GetLastID of pool. Look for last ID of level 2 tree and pick highest pool id from there.
 	vals, err := ds.GetMerkletreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
 		log.Error(err)
