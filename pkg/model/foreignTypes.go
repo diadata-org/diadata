@@ -2,6 +2,11 @@ package models
 
 import "time"
 
+type Quotation struct {
+	Foreign []ForeignQuotation
+}
+
+
 type ForeignQuotation struct {
 	Symbol             string
 	Name               string
