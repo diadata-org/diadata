@@ -37,13 +37,14 @@ If you want to dive into our API without further ado, feel free to take the belo
 | Interest Rate | Interest rate of overnight markets such as SOFR or SONIA incl. historical data | [SOFR](https://api.diadata.org/v1/interestrate/SOFR/2020-08-03) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) for a detailed description | _Coming soon_: Oracle for [interest rates](https://docs.diadata.org/documentation/methodology/traditional-assets/overnight-rates) | 3 |
 | Fiat Prices | Price of fiat currencies vs USD | [List of currencies](https://api.diadata.org/v1/fiatQuotations) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) for a detailed description | Oracle for [fiat prices](https://docs.diadata.org/documentation/oracle-documentation/fiat-prices) | 10 |
 
-## Other Financial Products
+## Financial Products
 
 Based on the data we collect at DIA we build products an excerpt of which can be found below.
 
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
 * [CVI](https://diadata.org/crypto-volatility-index/) - An interactive chart of the Crypto Volatility Index
 * [Rates Calculator](https://diadata.org/compounded-rates-calculator/) - An interactive chart for the calculation of customized indices
+* [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
 
 ## **Feedback**
 
