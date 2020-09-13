@@ -83,3 +83,13 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return nil
 	}
 }
+
+func NewHistoryAPIScraper(exchange string, key string, secret string) APIScraper {
+	switch exchange {
+	case dia.MakerExchange:
+		return NewMakerHistoryScraper(dia.BalancerExchange)
+	default:
+		return nil
+	}
+
+}

@@ -78,6 +78,95 @@ func NewMakerScraper(exchangeName string) *MakerScraper {
 	return scraper
 }
 
+func NewMakerHistoryScraper(exchangeName string) *MakerScraper {
+	scraper := &MakerScraper{
+		exchangeName:   exchangeName,
+		initDone:       make(chan nothing),
+		shutdown:       make(chan nothing),
+		shutdownDone:   make(chan nothing),
+		productPairIds: make(map[string]int),
+		pairScrapers:   make(map[string]*MakerPairScraper),
+		chanTrades:     make(chan *dia.Trade),
+	}
+
+	// Last scrapped traded id of maker
+	go scraper.historyLoop(10)
+	return scraper
+}
+
+func (scraper *MakerScraper) historyLoop(lastTradeID int) {
+	log.Println("Running Histrory scrapper")
+	scraper.run = true
+	startTradeID := make(map[string]string)
+	historyFinished := make(map[string]bool)
+
+
+	for scraper.run {
+		if len(scraper.pairScrapers) == 0 {
+			scraper.error = errors.New("Maker: No pairs to scrape provided")
+			log.Error(scraper.error.Error())
+			break
+		}
+
+
+		for pair, pairScraper := range scraper.pairScrapers {
+
+			_, k := startTradeID[pair]
+			if !k {
+				startTradeID[pair] = "0"
+			}
+			_, k = historyFinished[pair]
+			if !k {
+				historyFinished[pair] = false
+			}
+			if historyFinished[pair]{
+				log.Info("Already scraped history of this pair",pair)
+				continue
+			}
+			trades, _ := scraper.GetNewTrades(pair, startTradeID[pair])
+			if len(trades) > 0 {
+				startTradeID[pair] = strconv.Itoa(trades[0].ID)
+				if trades[0].ID >= lastTradeID {
+					historyFinished[pair] = true
+					}
+			}
+
+			for _, v := range trades {
+
+				price, err := strconv.ParseFloat(v.Price, 64)
+				if err != nil {
+					return
+				}
+				VolumeIn, err := strconv.ParseFloat(v.Volume, 64)
+				if err != nil {
+					return
+				}
+
+				trade := &dia.Trade{
+					Symbol:         pairScraper.pair.Symbol,
+					Pair:           pair,
+					Price:          price,
+					Volume:         VolumeIn,
+					Time:           v.Time,
+					ForeignTradeID: strconv.Itoa(v.ID),
+					Source:         scraper.exchangeName,
+				}
+				log.Infoln("Got Trade  ", trade)
+				scraper.chanTrades <- trade
+
+			}
+
+		}
+		time.Sleep(time.Duration(MakerBatchDelay) * time.Second)
+
+	}
+
+	if scraper.error == nil {
+		scraper.error = errors.New("Main loop terminated by Close().")
+	}
+	scraper.cleanup(nil)
+}
+
 func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]MakerTrade, error) {
 	var (
 		makertraderesponse MakerTradeResponse
@@ -87,13 +176,25 @@ func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]M
 	)
 	auxPair := strings.Split(pair, "-")
 	pair = auxPair[0] + "/" + auxPair[1]
-	if startTradeID == "" {
-		url = "https://api.oasisdex.com/v2/trades/" + pair
-	} else {
+	switch startTradeID {
+	case "":
+		{
+			url = "https://api.oasisdex.com/v2/trades/" + pair
+		}
+		break
+	case "0":
+		{
+			url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId=0"
+		}
+		break
+
+	default:
 		tradeId, _ := strconv.Atoi(startTradeID)
 		next := tradeId + 100
-		url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId+" + strconv.Itoa(next)
+		url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId=" + strconv.Itoa(next)
 	}
+
+	log.Println(url)
 
 	bytes, err = utils.GetRequest(url)
 	if err != nil {

@@ -11,12 +11,13 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
+	logrus "github.com/sirupsen/logrus"
 )
 
 const (
 	watchdogDelay = 60.0 * 20
 )
+var log = logrus.New()
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 	lastTradeTime := time.Now()
@@ -44,6 +45,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 var (
 	exchange         = flag.String("exchange", "", "which exchange")
 	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
+	history          = flag.Bool("history", false, "Scrap History")
 )
 
 func init() {
@@ -57,6 +59,9 @@ func init() {
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
+	var (
+		exchangeScrapper scrapers.APIScraper
+	)
 
 	ds, err := models.NewRedisDataStore()
 	if err != nil {
@@ -76,7 +81,14 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
+
+	if *history {
+		log.Info("Running History Scrapper ")
+		exchangeScrapper = scrapers.NewHistoryAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
+	} else {
+		log.Info("Running Live Scrapper ")
+		exchangeScrapper = scrapers.NewAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
+	}
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	defer w.Close()
@@ -95,7 +107,7 @@ func main() {
 			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 		} else {
 			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-			_, err := es.ScrapePair(dia.Pair{
+			_, err := exchangeScrapper.ScrapePair(dia.Pair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {
@@ -106,5 +118,5 @@ func main() {
 		}
 		defer wg.Wait()
 	}
-	go handleTrades(es.Channel(), &wg, w)
+	go handleTrades(exchangeScrapper.Channel(), &wg, w)
 }
