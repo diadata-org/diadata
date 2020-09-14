@@ -229,8 +229,8 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 				}
 				swap.normalizeETH()
 				pair := swap.BuyToken + "-" + swap.SellToken
-				pairScraper,ok := scraper.pairScrapers[pair]
-				if !ok{
+				pairScraper, ok := scraper.pairScrapers[pair]
+				if !ok {
 					return
 				}
 
