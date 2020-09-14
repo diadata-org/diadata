@@ -199,6 +199,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 	}
 	var merkleTrees []merkletree.MerkleTree
 	var lastTimestamp time.Time
+	var IDs []string
 	for i := range vals {
 		// Collect merkle trees
 		var auxTree merkletree.MerkleTree
@@ -213,6 +214,8 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 		if tstamp.After(lastTimestamp) {
 			lastTimestamp = tstamp
 		}
+		// Get IDs of storage trees
+		IDs = append(IDs, vals[i][1].(string))
 	}
 	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {
@@ -221,7 +224,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 	}
 	fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
 
-	err = ds.SaveDailyTreeInflux(*dailyTopicTree, topic, level, lastTimestamp)
+	err = ds.SaveDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
 	return
 }
 
@@ -253,7 +256,7 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, time.Time{})
+	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
 	fmt.Println("daily tree built at level 1")
 	return
 }
@@ -298,7 +301,7 @@ func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 		return
 	}
 	// Save newMasterTree
-	ds.SaveDailyTreeInflux(masterTree, "", level, time.Time{})
+	ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 
 	return
 }

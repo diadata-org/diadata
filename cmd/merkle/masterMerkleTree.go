@@ -26,7 +26,7 @@ func main() {
 		log.Error(err)
 	}
 	// Save genesis tree
-	ds.SaveDailyTreeInflux(*genesisTree, "", level, time.Time{})
+	ds.SaveDailyTreeInflux(*genesisTree, "", level, []string{}, time.Time{})
 
 	// // Get today's merkle root
 	// timestamp := time.Now()
@@ -42,6 +42,12 @@ func main() {
 		log.Error(err)
 	}
 	fmt.Println("root of master tree: ", hex.EncodeToString(masterTree.MerkleRoot))
+
+	db, err := models.NewRedisAuditStore()
+	if err != nil {
+		log.Fatal("NewInfluxDataStore: ", err)
+	}
+	db.GetPoolID("12", "hash-trades")
 
 	// // Get last master tree
 	// var masterTree merkletree.MerkleTree
