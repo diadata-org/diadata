@@ -12,10 +12,13 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-)
 
+)
+var (
+	exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+
+)
 const (
-	uniswapContract = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 
 	uniswapsocketurl = "wss://mainnet.infura.io/ws/v3"
 	//uniswapresturl = "https://mainnet.infura.io/v3"
@@ -71,6 +74,15 @@ type UniswapScraper struct {
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchangeName string) *UniswapScraper {
 
+	switch exchangeName{
+	case dia.UniswapExchange:
+		exchangeFactoryContractAddress="0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"
+
+		break
+	case dia.SushiSwapExchange:
+		exchangeFactoryContractAddress="0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"
+	}
+
 	s := &UniswapScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -85,7 +97,7 @@ func NewUniswapScraper(exchangeName string) *UniswapScraper {
 		log.Fatal(err)
 	}
 	s.WsClient = wsClient
-	restClient, err := ethclient.Dial(restDial)
+	restClient, err := ethclient.Dial(wsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -232,7 +244,7 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	connection := s.RestClient
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(uniswapContract), connection)
+	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -274,7 +286,7 @@ func (up *UniswapPair) normalizeUniPair() {
 // GetPairByID returns the UniswapPair with the integer id @num
 func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(uniswapContract), s.RestClient)
+	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -363,7 +375,7 @@ func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint
 func (s *UniswapScraper) getNumPairs() (int, error) {
 
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(uniswapContract), s.RestClient)
+	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
