@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"net/http"
@@ -38,7 +37,7 @@ type CoinIs struct{
 }
 
 
-var _coingeckourl string = "https://api.coingecko.com/api/v3"
+//var _coingeckourl string = "https://api.coingecko.com/api/v3"
 
 type CoingeckoScraper struct {
 	exchangeName string
@@ -54,7 +53,6 @@ type CoingeckoScraper struct {
     datastore    models.Datastore
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*CoingeckoPairScraper
-	chanTrades   chan *dia.Trade
 }
 
 func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
@@ -65,7 +63,6 @@ func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
 		ticker:       time.NewTicker(refreshDelay),
 		datastore:    datastore,
 		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
 	}
 
 	go s.mainLoop()
@@ -90,11 +87,7 @@ func (scraper  *CoingeckoScraper) mainLoop() {
 func (scraper *CoingeckoScraper) Update() error {
 	log.Printf("Executing CoingeckoScraper update")
 	scraper.run = true
-	layout := "2006-01-02T15:04:05"
-
-	quotation := &models.Quotation{
-		[]models.ForeignQuotation{},
-	}
+	layout := "2006-01-02T15:04:05.000Z"
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
@@ -105,53 +98,64 @@ func (scraper *CoingeckoScraper) Update() error {
 	
 		for key, pairScraper := range scraper.pairScrapers {
 	
-			pairs := pair.split()
-			sPairs := strings.Split(key, "--")
-			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", sPair[1])
+			fakePair := strings.Split(key, "--")
+			
+			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", fakePair [1])
 			coinsTemp := CoinIs{}
 			bodyData, err := readCoingeckoCoins(url)
-			err = json.Unmarshal(bodyData, &scoinsTemp)
-	
 			if err != nil {
 				log.Println(err)
 				return err
 			}
 	
-			currentPrices := confirmTemp1.Market["current_price"].(map[string]interface{})
-			usdPrice, err := strconv.ParseFloat(currentPrices["usd"], 64)
+			err = json.Unmarshal(bodyData, &coinsTemp)
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+
+
+			currentPrices := coinsTemp.Market["current_price"].(map[string]interface{})
+			usdPrice := currentPrices["usd"].(float64)
 			if err != nil {
 				return fmt.Errorf("error parsing rate %$ %v", "Price", err)
 			}
-			time, _ := time.Parse(layout, confirmTemp1.LastUpdated)
-			
-			t := &dia.Trade{
-				Pair:   pair,
-				Symbol: pair,
-				Price:  usdPrice,
-				Volume: 0,
-				Time:   time,
-				Source: "Coingecko",
-			}
+			timeStamp, _ := time.Parse(layout, coinsTemp.LastUpdated)
+	
 
-			scraper.chanTrades <- t
-	
-			for _, ticker := range coinsTemp.Tickers{
-	
-				timeStamp, _ := time.Parse(layout, tricker["TimeStamp"])
-				f := models.ForeignQuotation{
-					Symbol: ticker["base"]
-					Name               string
-					Price: ticker["last"].(float64)
-					PriceYesterday: ticker["last"].(float64)
-					VolumeYesterdayUSD: ticker["volume"].(float64)
-					Source: ticker["trade_url"]
-					Time: timeStamp
-					ITIN: ""
-				}
-				
-				quotation.Foreign = append(quotation.Foreign, f)	
+			// Yesterday data
+			t := time.Now().AddDate(0, 0, -1)
+			
+			url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/arweave/history?date=%02d-%02d-%d",
+			t.Day(), t.Month(), t.Year())
+			yesterdayData, err := readCoingeckoCoins(url2)
+			if err != nil {
+				log.Println(err)
+				return err
 			}
-			s.datastore.SetCurrencyChange(quotation)
+			yesterdayHistory := CoinIs{}
+			err = json.Unmarshal(yesterdayData, &yesterdayHistory)
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+            tradePrices := yesterdayHistory.Market["current_price"].(map[string]interface{})
+			yesterdayPriceUSD := tradePrices["usd"].(float64)
+			tradeVolumes := yesterdayHistory.Market["total_volume"].(map[string]interface{})
+			yesterdayvolumeUSD := tradeVolumes["usd"].(float64)
+
+
+			quotation := &models.ForeignQuotation{
+				Symbol: coinsTemp.Symbol
+				Name: coinsTemp.Name
+				Price: usdPrice
+				PriceYesterday: yesterdayPriceUSD
+				VolumeYesterdayUSD: yesterdayvolumeUSD
+				Source: "Coingecko"
+				Time: timeStamp
+				ITIN: ""
+			}
+			s.datastore.SetQuotation(quotation)
 	}
 	
 }
