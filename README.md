@@ -45,6 +45,8 @@ Based on the data we collect at DIA we build products an excerpt of which can be
 * [CVI](https://diadata.org/crypto-volatility-index/) - An interactive chart of the Crypto Volatility Index
 * [Rates Calculator](https://diadata.org/compounded-rates-calculator/) - An interactive chart for the calculation of customized indices
 * [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
+* [FINOA](https://finoa.io/) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI
+* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 
 ## **Feedback**
 
