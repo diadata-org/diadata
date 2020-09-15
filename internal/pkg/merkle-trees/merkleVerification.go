@@ -13,9 +13,9 @@ import (
 // regarding its containing bucket pool
 func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
 
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 	}
 	// Get ID of parent pool
 	id := strings.Split(sb.ID, ".")[0]
@@ -29,18 +29,18 @@ func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
 
 // VerifyPool verifies a topic tree as content of a daily tree
 func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 	}
 
-	// // Get ID of parent pool
-	// db, err := models.NewRedisAuditStore()
-	// if err != nil {
-	// 	return false, err
-	// }
+	// Get ID of pool's parent tree
+	parentID, err := ds.GetPoolID(ID, topic)
+	if err != nil {
+		return false, err
+	}
 
-	parentTree, err := ds.GetDailyTreeByID(topic, "2", ID)
+	parentTree, err := ds.GetDailyTreeByID(topic, "2", parentID)
 	if err != nil {
 		return false, err
 	}
@@ -49,11 +49,11 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
 }
 
 // VerifyTree verifies a tree in the hashing hierarchy with respect to the tree one level down
-func VerifyTree(tree merkletree.MerkleTree, topic, level, ID string) (bool, error) {
+func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
 	// TO DO: Add case if level=0
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 	}
 	levelInt, err := strconv.ParseInt(level, 10, 64)
 	if err != nil {
@@ -62,7 +62,7 @@ func VerifyTree(tree merkletree.MerkleTree, topic, level, ID string) (bool, erro
 	levelInt--
 	levelBelow := strconv.Itoa(int(levelInt))
 	// Get parent tree by ID
-	parentTree, err := ds.GetDailyTreeByID(topic, levelBelow, ID)
+	parentTree, err := ds.GetDailyTreeByID("", levelBelow, ID)
 	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
 	return parentTree.VerifyContent(cont)
 }

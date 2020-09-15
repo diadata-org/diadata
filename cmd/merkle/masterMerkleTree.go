@@ -12,9 +12,9 @@ import (
 )
 
 func main() {
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 	}
 	level := "0"
 
@@ -42,12 +42,16 @@ func main() {
 		log.Error(err)
 	}
 	fmt.Println("root of master tree: ", hex.EncodeToString(masterTree.MerkleRoot))
-
-	db, err := models.NewRedisAuditStore()
-	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+	fmt.Println("master hash strategy: ", masterTree.HashStrategy)
+	// ds, err := models.NewRedisAuditStore()
+	// if err != nil {
+	// 	log.Fatal("NewInfluxDataStore: ", err)
+	// }
+	val, err := ds.GetPoolID("12", "hash-trades")
+	if err == nil {
+		fmt.Println("val: ", val)
 	}
-	db.GetPoolID("12", "hash-trades")
+	fmt.Println("error: ", err)
 
 	// // Get last master tree
 	// var masterTree merkletree.MerkleTree

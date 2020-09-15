@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/cbergoon/merkletree"
+	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -137,33 +138,58 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 func main() {
 
-	// dataType := flag.String("type", "hash-interestrates", "Type of data")
-	// flag.Parse()
+	// Test verification ----------------------------------------------
+	dataType := flag.String("type", "hash-interestrates", "Type of data")
+	flag.Parse()
 
-	// ds, err := models.NewInfluxAuditStore()
-	// if err != nil {
-	// 	log.Error("NewInfluxDataStore: ", err)
-	// }
+	ds, err := models.NewAuditStore()
+	if err != nil {
+		log.Error("NewAuditStore: ", err)
+	}
 
-	// // Test verification
-	// poolNum := "10"
-	// tree, err := ds.GetMerkletreeByID(*dataType, poolNum)
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// num := 3
-	// fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
-	// verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
-	// fmt.Println("verification: ", verif)
-	// newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
-	// verifInterm, _ := merklehashing.VerifyBucket(newBucket)
-	// fmt.Println("verification before modification: ", verifInterm)
-	// newBucket.Content[0] = 1
-	// verifnew, _ := merklehashing.VerifyBucket(newBucket)
-	// fmt.Println("new verification: ", verifnew)
+	poolNum := "10"
+	tree, err := ds.GetMerkletreeByID(*dataType, poolNum)
+	if err != nil {
+		log.Error(err)
+	}
+	num := 3
+	fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
+	verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
+	fmt.Println("verification: ", verif)
+	newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
+	verifInterm, _ := merklehashing.VerifyBucket(newBucket)
+	fmt.Println("verification before modification: ", verifInterm)
+	newBucket.Content[0] = 1
+	verifnew, _ := merklehashing.VerifyBucket(newBucket)
+	fmt.Println("new verification: ", verifnew)
 
-	// verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0")
-	// fmt.Println("verification of pool: ", verif2)
+	verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0")
+	fmt.Println("verification of pool: ", verif2)
+
+	level2Tree, err := ds.GetDailyTreeByID(*dataType, "2", "0")
+	if err != nil {
+		log.Error(err)
+	}
+	verif3, err := merklehashing.VerifyTree(level2Tree, "2", "0")
+	fmt.Println(verif3, err)
+
+	level1Tree, err := ds.GetDailyTreeByID("", "1", "0")
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println("level1tree root: ", level1Tree.MerkleRoot)
+	verif4, err := merklehashing.VerifyTree(level1Tree, "1", "1")
+	fmt.Println(verif4, err)
+
+	level0Tree, err := ds.GetDailyTreeByID("", "0", "0")
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println("leaf 1 duplicated: ", level0Tree.Leafs[0])
+	fmt.Println("leaf 2 duplicated: ", level0Tree.Leafs[1])
+	// ---------------------------------------------------------------
+
+	// level0Tree, _ := ds.GetDailyTreeByID("", "0", "0")
 
 	// timeInit := time.Now().Add(time.Hour * (-800))
 	// timeFinal := time.Now()
@@ -191,27 +217,27 @@ func main() {
 
 	// -------------------------------------------------------------
 
-	// preliminary main
-	// One instance of main for each data type
-	dataType := flag.String("type", "hash-trades", "Type of data")
-	flag.Parse()
+	// // Run this section for data storage in hashing tables
+	// // One instance of main for each data type
+	// dataType := flag.String("type", "hash-trades", "Type of data")
+	// flag.Parse()
 
-	kc := ActivateKafkaChannel(*dataType)
-	defer kc.Close()
+	// kc := ActivateKafkaChannel(*dataType)
+	// defer kc.Close()
 
-	ds, err := models.NewInfluxAuditStore()
-	if err != nil {
-		log.Error("NewInfluxDataStore: ", err)
-	}
+	// ds, err := models.NewInfluxAuditStore()
+	// if err != nil {
+	// 	log.Error("NewInfluxDataStore: ", err)
+	// }
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	pChan := make(chan *merkletree.BucketPool)
-	go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
+	// pChan := make(chan *merkletree.BucketPool)
+	// go FillPools(*dataType, 4, 512, pChan, kc.chanMessage, &wg)
 
-	wg.Add(1)
-	go FlushPool(pChan, &wg, ds)
-	defer wg.Wait()
+	// wg.Add(1)
+	// go FlushPool(pChan, &wg, ds)
+	// defer wg.Wait()
 
 	// -------------------------------------------------------------
 

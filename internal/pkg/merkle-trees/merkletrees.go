@@ -180,9 +180,9 @@ func HashPoolLoop(topic string) {
 func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletree.MerkleTree, err error) {
 	level := "2"
 	fmt.Printf("begin making daily tree level 2 for topic %s \n", topic)
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewDataStore: ", err)
 	}
 	// Get last timestamp of trees from storage table
 	timeInit, err := ds.GetLastTimestamp(topic, level)
@@ -222,7 +222,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 		log.Error(err)
 		return
 	}
-	fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
+	// fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
 
 	err = ds.SaveDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
 	return
@@ -244,7 +244,7 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		if err != nil {
 			log.Error(err)
 		}
-		fmt.Println("daily topic tree: ", dailyTopicTree)
+		// fmt.Println("daily topic tree: ", dailyTopicTree)
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
 	dailyTree, err = merkletree.ForestToTree(dailyTrees)
@@ -252,9 +252,9 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		return
 	}
 
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 	}
 	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
 	fmt.Println("daily tree built at level 1")
@@ -264,13 +264,14 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 // MasterTree returns the master merkle tree resulting from the (daily) hashing procedure
 func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 	level := "0"
-	ds, err := models.NewInfluxAuditStore()
+	ds, err := models.NewAuditStore()
 	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
+		log.Fatal("NewAuditStore: ", err)
 		return
 	}
 
-	// Get today's merkle root from the level 1 tree
+	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
+	// collected from last timestamp until now
 	timestamp := time.Now()
 	dailyTree, err := DailyTree(timestamp)
 	if err != nil {

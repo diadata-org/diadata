@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -29,7 +30,7 @@ type AuditStore interface {
 	GetLastTimestamp(topic, level string) (time.Time, error)
 	GetLastIDMerkle(topic, level string) (int64, error)
 	SetPoolID(topic string, children []string, ID int64) error
-	GetPoolID(id, topic string) string
+	GetPoolID(id, topic string) (string, error)
 }
 
 const (
@@ -377,11 +378,13 @@ func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
 }
 
 // GetPoolID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-func (db *DB) GetPoolID(id, topic string) string {
+func (db *DB) GetPoolID(id, topic string) (string, error) {
 	key := getKeyPoolIDs(topic)
 	res := db.redisClient.HMGet(key, id)
-	fmt.Println(res.Val())
-	return ""
+	if res.Val()[0] != nil {
+		return res.Val()[0].(string), nil
+	}
+	return "", errors.New("no database entry for pool ID")
 }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
