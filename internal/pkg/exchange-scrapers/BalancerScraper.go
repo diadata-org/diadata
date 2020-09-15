@@ -30,7 +30,8 @@ const (
 	startBlock = uint64(10780772 - 5250)
 
 	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
-	balancerRestDial = "http://159.69.120.42:8545/"
+	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
+	// balancerRestDial = "http://159.69.120.42:8545/"
 )
 
 type BalancerSwap struct {
@@ -359,6 +360,12 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err err
 		for _, token2 := range tokenMap {
 
 			if token1 != token2 {
+				if token1.Symbol == "WETH" {
+					token1.Symbol = "ETH"
+				}
+				if token2.Symbol == "WETH" {
+					token2.Symbol = "ETH"
+				}
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
@@ -438,7 +445,7 @@ func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.Balancerfa
 	return sink, sub, nil
 }
 
-func (bs BalancerSwap) normalizeETH() {
+func (bs *BalancerSwap) normalizeETH() {
 	if bs.SellToken == "WETH" {
 		bs.SellToken = "ETH"
 	}
