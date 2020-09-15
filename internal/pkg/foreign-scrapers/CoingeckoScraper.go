@@ -145,7 +145,7 @@ func (scraper *CoingeckoScraper) Update() error {
 			yesterdayvolumeUSD := tradeVolumes["usd"].(float64)
 
 
-			quotation := &models.ForeignQuotation{
+			foreignQuotation := &models.ForeignQuotation{
 				Symbol: coinsTemp.Symbol
 				Name: coinsTemp.Name
 				Price: usdPrice
@@ -155,7 +155,7 @@ func (scraper *CoingeckoScraper) Update() error {
 				Time: timeStamp
 				ITIN: ""
 			}
-			s.datastore.SetQuotation(quotation)
+			s.datastore.SaveForeignQuotationInflux(foreignQuotation)
 	}
 	
 }
