@@ -76,7 +76,7 @@ func NewUniswapScraper(exchangeName string) *UniswapScraper {
 
 	switch exchangeName{
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress="0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"
+		exchangeFactoryContractAddress="0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 
 		break
 	case dia.SushiSwapExchange:
