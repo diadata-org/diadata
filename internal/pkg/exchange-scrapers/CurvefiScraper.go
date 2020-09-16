@@ -20,7 +20,7 @@ import (
 
 const (
 	curveFiContract = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
-	curveInfuraKey  = "infura_key"
+	curveInfuraKey  = "251a25bd10b8460fa040bb7202e22571"
 	curveStartBlock = uint64(10780772 - 5250)
 
 	curveWsDial   = "wss://mainnet.infura.io/ws/v3/" + curveInfuraKey
@@ -411,7 +411,7 @@ func (scraper *CurveFIScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	if scraper.closed {
-		return nil, errors.New("uniswapScraper is closed")
+		return nil, errors.New("CurveFIScraper is closed")
 	}
 
 	pairScraper := &CurveFIPairScraper{
