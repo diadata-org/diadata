@@ -97,7 +97,7 @@ func NewUniswapScraper(exchangeName string) *UniswapScraper {
 		log.Fatal(err)
 	}
 	s.WsClient = wsClient
-	restClient, err := ethclient.Dial(wsDial)
+	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
 	}
