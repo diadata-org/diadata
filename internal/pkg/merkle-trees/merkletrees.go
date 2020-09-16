@@ -177,13 +177,10 @@ func HashPoolLoop(topic string) {
 // hashes them in a merkle tree. The tree's (influx-)timestamps are ranging until at most @timeFinal.
 // The root hash of the resulting merkle tree is returned.
 // This functionality implements Level2 from the Merkle Documentation.
-func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletree.MerkleTree, err error) {
+func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (dailyTopicTree *merkletree.MerkleTree, err error) {
 	level := "2"
 	fmt.Printf("begin making daily tree level 2 for topic %s \n", topic)
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewDataStore: ", err)
-	}
+
 	// Get last timestamp of trees from storage table
 	timeInit, err := ds.GetLastTimestamp(topic, level)
 	if err != nil {
@@ -231,7 +228,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time) (dailyTopicTree *merkletr
 // DailyTree returns a merkle tree which is constructed from the root hashes of the DailyTopicTrees.
 // It includes all Level2 trees which have not been hashed into a Level1 tree yet, up to timeFinal.
 // This functionality implements Level1 from the Merkle Documentation
-func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error) {
+func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree.MerkleTree, err error) {
 	level := "1"
 	var dailyTrees []merkletree.MerkleTree
 
@@ -240,11 +237,10 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 	topicMap := GetHashTopics()
 	for i := 0; i < numTopics; i++ {
 		topic := topicMap[i]
-		dailyTopicTree, err := DailyTreeTopic(topic, timeFinal)
+		dailyTopicTree, err := DailyTreeTopic(topic, timeFinal, ds)
 		if err != nil {
 			log.Error(err)
 		}
-		// fmt.Println("daily topic tree: ", dailyTopicTree)
 		dailyTrees = append(dailyTrees, *dailyTopicTree)
 	}
 	dailyTree, err = merkletree.ForestToTree(dailyTrees)
@@ -252,28 +248,19 @@ func DailyTree(timeFinal time.Time) (dailyTree *merkletree.MerkleTree, err error
 		return
 	}
 
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-	}
 	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
 	fmt.Println("daily tree built at level 1")
 	return
 }
 
 // MasterTree returns the master merkle tree resulting from the (daily) hashing procedure
-func MasterTree() (masterTree merkletree.MerkleTree, err error) {
+func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err error) {
 	level := "0"
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-		return
-	}
 
 	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
 	// collected from last timestamp until now
 	timestamp := time.Now()
-	dailyTree, err := DailyTree(timestamp)
+	dailyTree, err := DailyTree(timestamp, ds)
 	if err != nil {
 		log.Error(err)
 		return
@@ -301,7 +288,7 @@ func MasterTree() (masterTree merkletree.MerkleTree, err error) {
 		log.Error(err)
 		return
 	}
-	// Save newMasterTree
+	// Save new Master Tree
 	ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 
 	return

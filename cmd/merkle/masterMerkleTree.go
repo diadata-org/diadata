@@ -37,7 +37,7 @@ func main() {
 	// dailyRootHash := dailyTree.MerkleRoot
 	// fmt.Println("daily root hash: ", hex.EncodeToString(dailyRootHash))
 
-	masterTree, err := merklehashing.MasterTree()
+	masterTree, err := merklehashing.MasterTree(ds)
 	if err != nil {
 		log.Error(err)
 	}
