@@ -55,7 +55,6 @@ func GetRequest(url string) ([]byte, error) {
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
-		log.Error("HTTP Response Error: ", response.StatusCode)
 		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
 	}
 
@@ -108,9 +107,13 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 // Looks it up on coingecko in case it doesn't find it there.
 func GetCoinPrice(coin string) (float64, error) {
 	// log.Info("Get price for ", coin)
-	if coin == "WETH" {
+	switch coin {
+	case "WETH":
 		coin = "ETH"
+	case "HBTC":
+		coin = "BTC"
 	}
+
 	type Quotation struct {
 		Symbol             string
 		Name               string
@@ -133,7 +136,6 @@ func GetCoinPrice(coin string) (float64, error) {
 	}
 	url := "https://api.diadata.org/v1/quotation/" + coin
 	data, err := GetRequest(url)
-
 	if err == nil {
 		Quot := Quotation{}
 		err = json.Unmarshal(data, &Quot)
@@ -142,11 +144,10 @@ func GetCoinPrice(coin string) (float64, error) {
 		}
 		return Quot.Price, nil
 	}
-
-	// Get price from cryptocompare in case we don't have it in our API
-	log.Info("price not available on our API: ", coin)
+	// Try to get price from cryptocompare in case we don't have it in our API yet.
 	data, err = GetRequest("https://min-api.cryptocompare.com/data/price?fsym=" + coin + "&tsyms=USD")
 	if err != nil {
+		log.Error("Could not get price")
 		return 0, err
 	}
 	Quot := QuotationCrptcmp{}
