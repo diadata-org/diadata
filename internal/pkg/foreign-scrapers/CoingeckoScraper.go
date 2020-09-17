@@ -65,42 +65,21 @@ func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
 		error:        nil,
 	}
 
-	go s.mainLoop()
 	return s
 }
 
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper  *CoingeckoScraper) mainLoop() {
-	for {
-		select {
-		case <-s.ticker.C:
-			s.Update()
-		case <-s.shutdown: // user requested shutdown
-			log.Println("CoingeckoScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
-	}
-}
 
 func (scraper *CoingeckoScraper) Update() error {
 	log.Printf("Executing CoingeckoScraper update")
-	scraper.run = true
 	layout := "2006-01-02T15:04:05.000Z"
 
-	for scraper.run {
-		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Coingecko: No data to scrape")
-			log.Error(scraper.error.Error())
-			break
-		}
-	
-		for key, pairScraper := range scraper.pairScrapers {
-	
-			fakePair := strings.Split(key, "--")
+	tokenList := tokens.scraper.FetchAvailableSymbols()
+
+	for _, tokenSet := range tokenList {
 			
-			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", fakePair [1])
+			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", tokenSet.ID)
 			coinsTemp := CoinIs{}
 			bodyData, err := readCoingeckoCoins(url)
 			if err != nil {
@@ -126,8 +105,8 @@ func (scraper *CoingeckoScraper) Update() error {
 			// Yesterday data
 			t := time.Now().AddDate(0, 0, -1)
 			
-			url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/arweave/history?date=%02d-%02d-%d",
-			t.Day(), t.Month(), t.Year())
+			url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
+			tokenSet.ID, t.Day(), t.Month(), t.Year())
 			yesterdayData, err := readCoingeckoCoins(url2)
 			if err != nil {
 				log.Println(err)
@@ -159,14 +138,7 @@ func (scraper *CoingeckoScraper) Update() error {
 	}
 	
 }
-// Channel returns a channel that can be used to receive trades/pricing information
-func (scraper  *CoingeckoScraper) Channel() chan *dia.Trade {
-	return scraper.chanTrades
-}
 
-func (scraper  *CoingeckoScraper) Close() error {
-	return nil
-}
 
 func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) {
 
@@ -197,110 +169,18 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 }
 
 
-func (scraper *CoingeckoScraper) createPairs() (pairs map[string]string) {
+func (scraper *CoingeckoScraper) FetchAvailableSymbols() (tokens []string) {
 	pairs = make(map[string]string)
 	url := "https://api.coingecko.com/api/v3/coins/list"
 	coins, _ := scraper.readCoingeckoCoins(url)
-	coinsIdTemp := CoinIds{}
+	tokens := CoinIds{}
 	err = json.Unmarshal(coins, &scoinsIdTemp)
 
 	if err != nil {
 		log.Println(err)
-		return pairs
+		return tokens
 	}
-	for _, token1 := range tokens {
-		
-		pair := token1.ID
-		pairs[pair] = token1.Symbol + "--" token1.ID
-	
-	}
-	return pairs
+	return tokens
 }
 
-func (scraper *CoingeckoScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	pairmap := scraper.createPairs()
-	for k, v := range pairmap {
-		idSymbol := String.Split(v , "--")
-		pairs = append(pairs, dia.Pair{
-			Symbol:     idSymbol[0] ,
-			ForeignName: v,
-			Exchange:    "",
-		})
-
-	}
-	return
-}
-
-
-func (scraper *CoingeckoScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
-	scraper.errorLock.RLock()
-	defer scraper.errorLock.RUnlock()
-
-	if scraper.error != nil {
-		return nil, scraper.error
-	}
-
-	if scraper.closed {
-		return nil, errors.New("coingeckoScraper is closed")
-	}
-
-	pairScraper := &CoingeckoPairScraper{
-		parent: scraper,
-		pair:   pair,
-	}
-
-	scraper.pairScrapers[pair.ForeignName] = pairScraper
-
-	return pairScraper, nil
-}
-
-func (scraper *CoingeckoScraper) cleanup(err error) {
-	scraper.errorLock.Lock()
-	defer scraper.errorLock.Unlock()
-	if err != nil {
-		scraper.error = err
-	}
-	scraper.closed = true
-	close(scraper.shutdownDone)
-}
-
-func (scraper *CoingeckoScraper) Close() error {
-	// close the pair scraper channels
-	scraper.run = false
-	for _, pairScraper := range scraper.pairScrapers {
-		pairScraper.closed = true
-	}
-
-	close(scraper.shutdown)
-	<-scraper.shutdownDone
-	return nil
-}
-
-type CoingeckoPairScraper struct {
-	parent *CoingeckoScraper
-	pair   dia.Pair
-	closed bool
-}
-
-func (pairScraper *CoingeckoPairScraper) Pair() dia.Pair {
-	return pairScraper.pair
-}
-
-func (scraper *CoingeckoPairScraper) Channel() chan *dia.Trade {
-	return scraper.chanTrades
-}
-
-func (pairScraper *CoingeckoPairScraper) Error() error {
-	s := pairScraper.parent
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
-}
-
-func (pairScraper *CoingeckoPairScraper) Close() error {
-	pairScraper.parent.errorLock.RLock()
-	defer pairScraper.parent.errorLock.RUnlock()
-	pairScraper.closed = true
-	return nil
-}
 
