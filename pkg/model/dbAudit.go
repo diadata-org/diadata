@@ -248,7 +248,7 @@ func (db *DB) SaveMerkletreeInflux(tree merkletree.MerkleTree, topic string) err
 	if err != nil {
 		log.Errorln("SaveRate: ", err)
 	}
-	log.Info("Batch written")
+	log.Infof("Batch written for topic: %s\n", topic)
 	return err
 }
 

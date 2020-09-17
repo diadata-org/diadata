@@ -108,7 +108,7 @@ func FillPools(topic string, numBucket, sizeBucket uint64, poolChannel chan *mer
 			ok = bucket.WriteContent(message.Value)
 
 		} else {
-			fmt.Println("bucket full. Return bucket to pool.")
+			fmt.Printf("topic %s. bucket full. Return bucket to pool.\n", topic)
 
 			// TO DO: put the timestamping into the Put() function?
 			bucket.Timestamp = time.Now()
@@ -124,7 +124,7 @@ func FillPools(topic string, numBucket, sizeBucket uint64, poolChannel chan *mer
 			}
 			// ... otherwise go on filling the fresh bucket.
 			ok = bucket.WriteContent(message.Value)
-			fmt.Println("new content written: ", message.Value)
+			// fmt.Println("new content written: ", message.Value)
 
 		}
 	}
@@ -233,11 +233,9 @@ func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree
 	var dailyTrees []merkletree.MerkleTree
 
 	// Retrieve daily trees for all topics
-	numTopics := GetNumTopics()
 	topicMap := GetHashTopics()
-	for i := 0; i < numTopics; i++ {
-		topic := topicMap[i]
-		dailyTopicTree, err := DailyTreeTopic(topic, timeFinal, ds)
+	for key := range topicMap {
+		dailyTopicTree, err := DailyTreeTopic(topicMap[key], timeFinal, ds)
 		if err != nil {
 			log.Error(err)
 		}

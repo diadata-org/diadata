@@ -16,26 +16,16 @@ func main() {
 	if err != nil {
 		log.Fatal("NewAuditStore: ", err)
 	}
-	level := "0"
 
 	// Initialize process by setting the genesis master node
 	var initialContainer merkletree.StorageBucket
-	initialContainer.Content = []byte("hashing starts here")
+	initialContainer.Content = []byte("audit trail starts here")
 	genesisTree, err := merkletree.NewTree([]merkletree.Content{initialContainer})
 	if err != nil {
 		log.Error(err)
 	}
 	// Save genesis tree
-	ds.SaveDailyTreeInflux(*genesisTree, "", level, []string{}, time.Time{})
-
-	// // Get today's merkle root
-	// timestamp := time.Now()
-	// dailyTree, err := merklehashing.DailyTree(timestamp)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// dailyRootHash := dailyTree.MerkleRoot
-	// fmt.Println("daily root hash: ", hex.EncodeToString(dailyRootHash))
+	ds.SaveDailyTreeInflux(*genesisTree, "", "0", []string{}, time.Time{})
 
 	masterTree, err := merklehashing.MasterTree(ds)
 	if err != nil {
@@ -53,37 +43,4 @@ func main() {
 	}
 	fmt.Println("error: ", err)
 
-	// // Get last master tree
-	// var masterTree merkletree.MerkleTree
-	// lastID, err := ds.GetLastID("", level)
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// ID := strconv.Itoa(int(lastID))
-	// if ID != "0" {
-	// 	masterTree, err = ds.GetDailyTreeByID("", level, ID)
-	// 	if err != nil {
-	// 		log.Error(err)
-	// 	}
-	// }
-
-	// // Extend tree by today's merkle root
-	// newHash := merkletree.ByteContent(dailyRootHash)
-	// err = masterTree.ExtendTree([]merkletree.Content{newHash})
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// // Save newMasterTree
-	// ds.SaveDailyTreeInflux(masterTree, "", level, time.Time{})
-
-	// vals, err := ds.GetMerkletreesInflux("hash-interestrates", time.Now().AddDate(0, 0, -2), time.Now())
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// var testTree merkletree.MerkleTree
-	// err = json.Unmarshal([]byte(vals[0][3].(string)), &testTree)
-	// if err != nil {
-	// 	log.Error(err)
-	// }
-	// fmt.Println("testtree: ", testTree.Root.Left)
 }
