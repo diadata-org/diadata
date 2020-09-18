@@ -89,6 +89,18 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	// fortube Data
+	rawFortube, err := getDefiRatesFromDia("FORTUBE", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve forTube data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawFortube, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Fortube Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
 	// ddex Data
 	rawDdex, err := getDefiRatesFromDia("DDEX", "DAI")
 	if err != nil {

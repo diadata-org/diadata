@@ -63,6 +63,7 @@ func (t *Trade) SecondPair() string {
 	return strings.TrimPrefix(pair, t.Symbol)
 }
 
+// TODO: Check if we can delete this function
 func (t *Trade) NormalizedSymbol() string {
 	symbol := strings.ToUpper(t.Symbol)
 
