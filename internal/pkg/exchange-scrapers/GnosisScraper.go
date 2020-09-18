@@ -20,7 +20,7 @@ import (
 
 const (
 	gnosisContract   = "0x6F400810b62df8E13fded51bE75fF5393eaa841F"
-	gnosisInfuraKey  = "ab3bb18ed305450ebbc7683751803de2"
+	gnosisInfuraKey  = "infuraKey"
 	gnosisStartBlock = uint64(10780772 - 5250)
 
 	gnosisWsDial   = "wss://mainnet.infura.io/ws/v3/" + gnosisInfuraKey
@@ -170,20 +170,21 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
-	}
-	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
+	} else {
+		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-		trade := &dia.Trade{
-			Symbol:         symbol,
-			Pair:           pairScraper.pair.ForeignName,
-			Price:          price,
-			Volume:         volume,
-			Time:           time.Unix(timestamp, 0),
-			ForeignTradeID: "",
-			Source:         scraper.exchangeName,
+			trade := &dia.Trade{
+				Symbol:         symbol,
+				Pair:           pairScraper.pair.ForeignName,
+				Price:          price,
+				Volume:         volume,
+				Time:           time.Unix(timestamp, 0),
+				ForeignTradeID: "",
+				Source:         scraper.exchangeName,
+			}
+			pairScraper.parent.chanTrades <- trade
+			fmt.Println("got trade: ", trade)
 		}
-		pairScraper.parent.chanTrades <- trade
-		fmt.Println("got trade: ", trade)
 	}
 
 }
