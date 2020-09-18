@@ -1,53 +1,35 @@
 package scrapers
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
-	"strconv"
+	"math/big"
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
+
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/utils"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
-	GnosisApiDelay   = 20
-	GnosisBatchDelay = 60 * 1
+	gnosisContract   = "0x6F400810b62df8E13fded51bE75fF5393eaa841F"
+	gnosisInfuraKey  = "ab3bb18ed305450ebbc7683751803de2"
+	gnosisStartBlock = uint64(10780772 - 5250)
+
+	gnosisWsDial   = "wss://mainnet.infura.io/ws/v3/" + gnosisInfuraKey
+	gnosisRestDial = "http://159.69.120.42:8545/"
 )
 
-type GnosisPair struct {
-	SellToken GnosisToken `json:"sellToken"`
-	BuyToken  GnosisToken `json:"buyToken"`
-}
-
-type GnosisTokenList struct {
-	Data struct {
-		Tokens []GnosisToken `json:"tokens"`
-	} `json:"data"`
-}
-
 type GnosisToken struct {
-	Symbol   string `json:"symbol"`
-	Decimals string `json:"decimals"`
-}
-
-type GnosisSwapList struct {
-	Data struct {
-		Swaps []GnosisSwap `json:"trades"`
-	} `json:"data"`
-}
-
-type GnosisSwap struct {
-	Timestamp  string `json:"createEpoch"`
-	BuyToken   GnosisToken
-	SellToken  GnosisToken
-	SellVolume string `json:"sellVolume"`
-	BuyVolume  string `json:"buyVolume"`
-	ID         string `json:"id"`
+	Symbol   string
+	Decimals uint8
 }
 
 type GnosisScraper struct {
@@ -66,6 +48,11 @@ type GnosisScraper struct {
 	pairScrapers   map[string]*GnosisPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
+
+	WsClient    *ethclient.Client
+	RestClient  *ethclient.Client
+	resubscribe chan nothing
+	tokens      map[uint16]*GnosisToken
 }
 
 func NewGnosisScraper(exchangeName string) *GnosisScraper {
@@ -77,19 +64,144 @@ func NewGnosisScraper(exchangeName string) *GnosisScraper {
 		productPairIds: make(map[string]int),
 		pairScrapers:   make(map[string]*GnosisPairScraper),
 		chanTrades:     make(chan *dia.Trade),
+		resubscribe:    make(chan nothing),
+		tokens:         make(map[uint16]*GnosisToken),
 	}
+
+	wsClient, err := ethclient.Dial(gnosisWsDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scraper.WsClient = wsClient
+	restClient, err := ethclient.Dial(gnosisRestDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scraper.RestClient = restClient
+
+	scraper.loadTokens()
 
 	go scraper.mainLoop()
 	return scraper
+}
+func (scraper *GnosisScraper) loadTokens() {
+
+	contract, err := gnosis.NewGnosisCaller(common.HexToAddress(gnosisContract), scraper.RestClient)
+	if err != nil {
+		log.Error(err)
+	}
+	numTokens, err := contract.NumTokens(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
+	}
+
+	for i := uint16(0); i < numTokens; i++ {
+		tokenAddress, err := contract.TokenIdToAddressMap(&bind.CallOpts{}, i)
+
+		if err != nil {
+			log.Error(err)
+		}
+		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		scraper.tokens[i] = &GnosisToken{
+			Symbol:   symbol,
+			Decimals: decimals,
+		}
+
+		scraper.tokens[i].normalizeETH()
+
+		fmt.Println(i, tokenAddress.Hex(), symbol, decimals)
+	}
+	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
+}
+
+func (scraper *GnosisScraper) subscribeToTrades() error {
+	filterer, err := gnosis.NewGnosisFilterer(common.HexToAddress(gnosisContract), scraper.WsClient)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	start := startBlock
+	sink := make(chan *gnosis.GnosisTrade)
+	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	go func() {
+		fmt.Println("Subscribed to trades")
+		defer fmt.Println("Unsubscribed to trades")
+		defer sub.Unsubscribe()
+		subscribed := true
+
+		for scraper.run && subscribed {
+
+			select {
+			case err := <-sub.Err():
+				if err != nil {
+					log.Error(err)
+				}
+				subscribed = false
+				if scraper.run {
+					scraper.resubscribe <- nothing{}
+				}
+			case trade := <-sink:
+				scraper.processTrade(trade)
+			}
+		}
+	}()
+
+	return err
+}
+
+func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
+	symbol, foreignName, volume, price, err := scraper.getSwapDataGnosis(trade)
+	timestamp := time.Now().Unix()
+	if err != nil {
+		log.Error(err)
+	}
+	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
+
+		trade := &dia.Trade{
+			Symbol:         symbol,
+			Pair:           pairScraper.pair.ForeignName,
+			Price:          price,
+			Volume:         volume,
+			Time:           time.Unix(timestamp, 0),
+			ForeignTradeID: "",
+			Source:         scraper.exchangeName,
+		}
+		pairScraper.parent.chanTrades <- trade
+		fmt.Println("got trade: ", trade)
+	}
+
 }
 
 func (scraper *GnosisScraper) mainLoop() {
 
 	scraper.run = true
 
-	// The scraping is organized in batches, bounded by time range and trade id
-	starttime := time.Now().Add(time.Duration(-60*60*24) * time.Second).Unix()
-	startTradeID := ""
+	scraper.subscribeToTrades()
+	go func() {
+		for scraper.run {
+			_ = <-scraper.resubscribe
+			if scraper.run {
+				fmt.Println("resubscribe...")
+				scraper.subscribeToTrades()
+			}
+		}
+	}()
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
@@ -98,194 +210,65 @@ func (scraper *GnosisScraper) mainLoop() {
 			break
 		}
 
-		// Determine the next swap batch
-		swapsPre, lastTradeTime, lastTradeID, err := scraper.GetNewSwaps(starttime, time.Now().Unix())
-		if err != nil {
-			log.Error("error getting trades: ", err)
-		}
-		swaps := cutSwapsGnosis(swapsPre, startTradeID)
-		starttime = lastTradeTime - int64(1)
-		startTradeID = lastTradeID
-
-		swapsMap := make(map[string]GnosisSwap)
-		for _, s := range swaps {
-			foreignName, _, _, _ := getSwapDataGnosis(s)
-			swapsMap[foreignName] = s
-		}
-
-		for pair, pairScraper := range scraper.pairScrapers {
-
-			// Check whether swap has an admissible pair
-			swap, ok := swapsMap[pair]
-			if !ok {
-				continue
-			}
-
-			// Get trading data from swap in "classic" format
-			_, volume, price, err := getSwapDataGnosis(swap)
-			timestamp, err := strconv.ParseInt(swap.Timestamp, 10, 64)
-			if err != nil {
-				log.Error("error parsing time: ", err)
-			}
-
-			trade := &dia.Trade{
-				Symbol:         pairScraper.pair.Symbol,
-				Pair:           pair,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(timestamp, 0),
-				ForeignTradeID: "",
-				Source:         scraper.exchangeName,
-			}
-			pairScraper.parent.chanTrades <- trade
-			fmt.Println("got trade: ", trade)
-		}
-		time.Sleep(time.Duration(GnosisBatchDelay) * time.Second)
 	}
+	time.Sleep(time.Duration(10) * time.Second)
 	if scraper.error == nil {
 		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
 
-// cutSwapList receives a list of swaps ordered by timestamps in descending order.
-// It returns all newest swaps up to the one with id.
-func cutSwapsGnosis(swaps []GnosisSwap, id string) (cutSwaps []GnosisSwap) {
-	if id == "" {
-		return swaps
-	}
-	// Append new swaps until the swap with id is hit
-	for _, swap := range swaps {
-		if swap.ID == id {
-			return
-		}
-		cutSwaps = append(cutSwaps, swap)
-	}
-	return
-}
-
 // getSwapData returns the foreign name, volume and price of a swap
-func getSwapDataGnosis(s GnosisSwap) (foreignName string, volume float64, price float64, err error) {
-	buyDecimals, err := strconv.Atoi(s.BuyToken.Decimals)
-	if err != nil {
-		log.Error("error parsing decimals: ", err)
-	}
-	sellDecimals, err := strconv.Atoi(s.SellToken.Decimals)
-	if err != nil {
-		log.Error("error parsing decimals: ", err)
-	}
-	amountOut, err := strconv.ParseFloat(s.BuyVolume, 64)
-	if err != nil {
-		return
-	}
-	amountIn, err := strconv.ParseFloat(s.SellVolume, 64)
-	if err != nil {
-		return
-	}
-	amountOut /= math.Pow10(buyDecimals)
-	amountIn /= math.Pow10(sellDecimals)
+func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
+	buyToken := scraper.tokens[s.BuyToken]
+	sellToken := scraper.tokens[s.SellToken]
+	buyDecimals := buyToken.Decimals
+	sellDecimals := sellToken.Decimals
+
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedBuyAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedSellAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+
 	volume = amountOut
 	price = amountIn / amountOut
-	foreignName = s.BuyToken.Symbol + "-" + s.SellToken.Symbol
+	foreignName = buyToken.Symbol + "-" + sellToken.Symbol
+	symbol = buyToken.Symbol
 	return
 }
 
-// GetNewSwaps returns all swaps with timestamps ranging from @starttime until now
-func (scraper *GnosisScraper) GetNewSwaps(starttime, endtime int64) (swaps []GnosisSwap, lastTradeTime int64, lastTradeID string, err error) {
-	swaplist := GnosisSwapList{}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`
-		{
-			trades(orderBy:createEpoch, orderDirection:desc,
-						where: {createEpoch_gt:%d, createEpoch_lt:%d})
-			{
-			  sellToken {
-				symbol
-				decimals
-			  }
-			  buyToken{
-				symbol
-				decimals
-			  }
-			  sellVolume
-			  buyVolume
-			  createEpoch
-			  id
-			}
-		  }		  
-			`, starttime, endtime),
-	}
-	jsonValue, _ := json.Marshal(jsonData)
-	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/gnosis/protocol", bytes.NewBuffer(jsonValue))
-	err = json.Unmarshal(jsondata, &swaplist)
-	swaps = swaplist.Data.Swaps
-	if len(swaps) == 0 {
-		return
-	}
-	for i := 0; i < len(swaps); i++ {
-		swaps[i].BuyToken.normalizeETH()
-		swaps[i].SellToken.normalizeETH()
-	}
-	lastTradeTime, err = strconv.ParseInt(swaps[0].Timestamp, 10, 64)
-	if err != nil {
-		log.Error("error parsing unix time: ", err)
-		return
-	}
-	lastTradeID = swaps[0].ID
-	return
-}
-
-// FetchAvailablePairs fetches pairs by getting trading dates from the last 7 days and exctracting the pairs
-// Unfortunately, pairs are not available on thegraph API and the available tokenlist is incomplete.
 func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
-	endtime := time.Now().Unix()
-	starttime := time.Now().Unix() - 60*60*24*14
-	periodstamps := makePeriods(starttime, endtime)
+	pairSet := make(map[string]struct{})
+	for _, p1 := range scraper.tokens {
+		for _, p2 := range scraper.tokens {
+			token1 := p1
+			token2 := p2
+			if token1 != token2 {
 
-	set := make(map[string]struct{})
-	for i := 1; i < len(periodstamps); i++ {
-		swaps, _, _, err := scraper.GetNewSwaps(periodstamps[i-1], periodstamps[i])
-		if err != nil {
-			log.Error("error fetching swaps: ", err)
-		}
-		for _, swap := range swaps {
-			if swap.BuyToken.Symbol == "" || swap.SellToken.Symbol == "" {
-				continue
-			}
-			swap.BuyToken.normalizeETH()
-			swap.SellToken.normalizeETH()
+				foreignName := token1.Symbol + "-" + token2.Symbol
+				if _, ok := pairSet[foreignName]; !ok {
+					pairs = append(pairs, dia.Pair{
+						Symbol:      token1.Symbol,
+						ForeignName: foreignName,
+						Exchange:    scraper.exchangeName,
+						Ignore:      false,
+					})
+					pairSet[foreignName] = struct{}{}
+				}
 
-			foreignName := swap.BuyToken.Symbol + "-" + swap.SellToken.Symbol
-			if _, ok := set[foreignName]; !ok {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      swap.BuyToken.Symbol,
-					ForeignName: foreignName,
-					Exchange:    scraper.exchangeName,
-				})
-				set[foreignName] = struct{}{}
-			}
-			foreignName = swap.SellToken.Symbol + "-" + swap.BuyToken.Symbol
-			if _, ok := set[foreignName]; !ok {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      swap.SellToken.Symbol,
-					ForeignName: foreignName,
-					Exchange:    scraper.exchangeName,
-				})
-				set[foreignName] = struct{}{}
+				foreignName = token2.Symbol + "-" + token1.Symbol
+				if _, ok := pairSet[foreignName]; !ok {
+					pairs = append(pairs, dia.Pair{
+						Symbol:      token2.Symbol,
+						ForeignName: foreignName,
+						Exchange:    scraper.exchangeName,
+						Ignore:      false,
+					})
+					pairSet[foreignName] = struct{}{}
+				}
+
 			}
 		}
-	}
-	return
-}
-
-// makePeriods returns unix timestamps between timeInit and timeFinal such that
-// there is Period between two consecutive timestamps
-func makePeriods(timeInit, timeFinal int64) (periodstamps []int64) {
-	for timeInit < timeFinal {
-		periodstamps = append(periodstamps, timeInit)
-		auxTime := timeInit + 60*60*12
-		timeInit = auxTime
 	}
 	return
 }
@@ -333,6 +316,8 @@ func (scraper *GnosisScraper) Close() error {
 	for _, pairScraper := range scraper.pairScrapers {
 		pairScraper.closed = true
 	}
+	scraper.WsClient.Close()
+	scraper.RestClient.Close()
 
 	close(scraper.shutdown)
 	<-scraper.shutdownDone
