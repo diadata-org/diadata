@@ -132,7 +132,7 @@ func (scraper *MakerScraper) mainLoop() {
 				}
 
 				trade := &dia.Trade{
-					Symbol:         strings.Split(pair, "-")[1],
+					Symbol:         strings.Split(pair, "-")[0],
 					Pair:           pair,
 					Price:          price,
 					Volume:         VolumeIn,
