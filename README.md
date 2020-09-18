@@ -37,13 +37,23 @@ If you want to dive into our API without further ado, feel free to take the belo
 | Interest Rate | Interest rate of overnight markets such as SOFR or SONIA incl. historical data | [SOFR](https://api.diadata.org/v1/interestrate/SOFR/2020-08-03) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) for a detailed description | _Coming soon_: Oracle for [interest rates](https://docs.diadata.org/documentation/methodology/traditional-assets/overnight-rates) | 3 |
 | Fiat Prices | Price of fiat currencies vs USD | [List of currencies](https://api.diadata.org/v1/fiatQuotations) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) for a detailed description | Oracle for [fiat prices](https://docs.diadata.org/documentation/oracle-documentation/fiat-prices) | 10 |
 
-## Financial Products
+## Applications
+
+### Product use Cases
 
 Based on the data we collect at DIA we build products an excerpt of which can be found below.
 
 * [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
 * [CVI](https://diadata.org/crypto-volatility-index/) - An interactive chart of the Crypto Volatility Index
 * [Rates Calculator](https://diadata.org/compounded-rates-calculator/) - An interactive chart for the calculation of customized indices
+
+### Partner Integrations
+
+DIA's data feeds are being used by a range of market actors in the DeFi and CeFi space. Below is an excerpt of partners. A number of additional users are in testing phase. This list will be periodically updated.
+
+* [Elrond](https://elrond.com/) - A blockchain architecture, designed to bring a 1000-fold cumulative improvement in throughput and execution speed. DIA oracles supply off-chain & cross-chain information.
+* [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.
+* [Hedget](https://www.hedget.com/) - Designed to be a DeFi option trading platform. DIA supplies price feeds to value Hedget’s derivative products.
 * [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
 * [FINOA](https://finoa.io/) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
