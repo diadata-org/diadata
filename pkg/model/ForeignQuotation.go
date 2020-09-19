@@ -2,10 +2,10 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
+	//"errors"
 	"fmt"
-	"os"
-	"strconv"
+	//"os"
+	//"strconv"
 	"time"
 
 
@@ -15,7 +15,7 @@ import (
 
 const influxDbForeignQuotationTable = "foreignquotation"
 
-func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
+func (db *DB) SaveForeignQuotationInflux(fq *ForeignQuotation) error {
 	tags := map[string]string{"Name": fq.Name}
 	fields := map[string]interface{}{
 		"symbol": fq.Symbol,
@@ -34,14 +34,15 @@ func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 
 	err = db.WriteBatchInflux()
 	if err != nil {
-		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+		log.Errorln("SaveForeignQuotationInflux", err)
 	}
+	log.Println("Coingecko: Foreign Quotation saved")
 
 	return err
 }
 
 
-func (db *DB) GetForeignQuotationInflux(name String, time time.Time) (ForeignQuotation, error) {
+func (db *DB) GetForeignQuotationInflux(name string, t time.Time) (ForeignQuotation, error) {
 	retval := ForeignQuotation{}
 	q := fmt.Sprintf("SELECT LAST(price), priceYesterday, volumeYesterdayUSD, source, symbol, Time FROM %s WHERE Name ='%s'", influxDbForeignQuotationTable, name)
 	res, err := queryInfluxDB(db.influxClient, q)
@@ -58,19 +59,21 @@ func (db *DB) GetForeignQuotationInflux(name String, time time.Time) (ForeignQuo
 		if err != nil {
 			return retval, err
 		}
-		retval.PriceYesterday, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
+		//retval.Price = price
+
+		*retval.PriceYesterday, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
 		if err != nil {
 			return retval, err
 		}
-		retval.VolumeYesterdayUSD, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
+		*retval.VolumeYesterdayUSD, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
 		if err != nil {
 			return retval, err
 		}
-		retval.Source, err = res[0].Series[0].Values[0][4].(string)
+		retval.Source = res[0].Series[0].Values[0][4].(string)
 		if err != nil {
 			return retval, err
 		}
-		retval.Symbol, err = res[0].Series[0].Values[0][5].(string)
+		retval.Symbol = res[0].Series[0].Values[0][5].(string)
 		if err != nil {
 			return retval, err
 		}

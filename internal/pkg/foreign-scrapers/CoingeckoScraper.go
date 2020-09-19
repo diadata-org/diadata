@@ -4,141 +4,155 @@ package foreignscrapers
 
 import (
 	"encoding/json"
-	"errors"
+	//"errors"
 	"fmt"
-	"strings"
-	"sync"
-	"net/http"
+	//"strings"
+	//"sync"
 	"io/ioutil"
+	"net/http"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/models"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	utils "github.com/diadata-org/diadata/pkg/utils"
+	models "github.com/diadata-org/diadata/pkg/model"
+	//"github.com/diadata-org/diadata/pkg/dia"
+	//"github.com/diadata-org/diadata/pkg/dia/helpers"
+	//utils "github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
-
-
 type CoinIds []struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Symbol   string `json:"symbol"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
 }
 
-type CoinIs struct{
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Symbol   string `json:"symbol"`
-	LastUpdated string `json: "last_updated"`
-	Tickers  []map[string]interface{} `json:"tickers"`
-	Market  map[string]interface{} `json:"market_data"`
+type CoinIs struct {
+	ID          string                   `json:"id"`
+	Name        string                   `json:"name"`
+	Symbol      string                   `json:"symbol"`
+	LastUpdated string                   `json: "last_updated"`
+	Tickers     []map[string]interface{} `json:"tickers"`
+	Market      map[string]interface{}   `json:"market_data"`
 }
-
 
 //var _coingeckourl string = "https://api.coingecko.com/api/v3"
 
 type CoingeckoScraper struct {
-	exchangeName string
-	// signaling channels for session initialization and finishing
-	run          bool
-	shutdown     chan nothing
-	shutdownDone chan nothing
-	// error handling; to read error or closed, first acquire read lock
-	// only cleanup method should hold write lock
-	errorLock sync.RWMutex
 	error     error
-	closed    bool
-    datastore    models.Datastore
-	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*CoingeckoPairScraper
+	datastore *models.DB
 }
 
-func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
+func NewCoingeckoScraper(datastore *models.DB) *CoingeckoScraper {
 	s := &CoingeckoScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*CoingeckoPairScraper),
-		ticker:       time.NewTicker(refreshDelay),
-		datastore:    datastore,
-		error:        nil,
+		datastore: datastore,
+		error:     nil,
 	}
 
+	go s.mainLoop()
 	return s
 }
 
-
 // mainLoop runs in a goroutine until channel s is closed.
+func (scraper *CoingeckoScraper) mainLoop() {
+	err := scraper.Update()
+	if err != nil {
+		log.Errorln("Failed to scrape Coingecko:", err)
+	}
+
+}
 
 func (scraper *CoingeckoScraper) Update() error {
 	log.Printf("Executing CoingeckoScraper update")
 	layout := "2006-01-02T15:04:05.000Z"
 
-	tokenList := tokens.scraper.FetchAvailableSymbols()
+	tokenList := scraper.FetchAvailableSymbols()
+	//err := nil
 
 	for _, tokenSet := range tokenList {
-			
-			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", tokenSet.ID)
-			coinsTemp := CoinIs{}
-			bodyData, err := readCoingeckoCoins(url)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-	
-			err = json.Unmarshal(bodyData, &coinsTemp)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
+		id := tokenSet.ID
+		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", id)
+		coinsTemp := CoinIs{}
+		bodyData, err := scraper.readCoingeckoCoins(url)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
 
+		err = json.Unmarshal(bodyData, &coinsTemp)
+		if err != nil {
+			log.Errorln("Failed to unmarshal bodyData:", err)
+			continue
+		}
 
-			currentPrices := coinsTemp.Market["current_price"].(map[string]interface{})
-			usdPrice := currentPrices["usd"].(float64)
-			if err != nil {
-				return fmt.Errorf("error parsing rate %$ %v", "Price", err)
-			}
-			timeStamp, _ := time.Parse(layout, coinsTemp.LastUpdated)
-	
+		if coinsTemp.Market["current_price"] == nil {
+			continue
+		}
 
-			// Yesterday data
-			t := time.Now().AddDate(0, 0, -1)
-			
-			url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
+		currentPrices := coinsTemp.Market["current_price"].(map[string]interface{})
+		if currentPrices["usd"] == nil {
+			fmt.Errorf("error parsing rate Current Price Map empty  for Token (%s): %v", id, err)
+			continue
+		}
+
+		usdPrice := currentPrices["usd"].(float64)
+
+		timeStamp, _ := time.Parse(layout, coinsTemp.LastUpdated)
+
+		// Yesterday data
+		t := time.Now().AddDate(0, 0, -1)
+
+		url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
 			tokenSet.ID, t.Day(), t.Month(), t.Year())
-			yesterdayData, err := readCoingeckoCoins(url2)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-			yesterdayHistory := CoinIs{}
-			err = json.Unmarshal(yesterdayData, &yesterdayHistory)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-            tradePrices := yesterdayHistory.Market["current_price"].(map[string]interface{})
-			yesterdayPriceUSD := tradePrices["usd"].(float64)
-			tradeVolumes := yesterdayHistory.Market["total_volume"].(map[string]interface{})
-			yesterdayvolumeUSD := tradeVolumes["usd"].(float64)
+		yesterdayData, err := scraper.readCoingeckoCoins(url2)
+		if err != nil {
+			log.Errorln("Failed to  scrape yesterdayData:", err)
+			continue
+		}
+		yesterdayHistory := CoinIs{}
+		err = json.Unmarshal(yesterdayData, &yesterdayHistory)
+		if err != nil {
+			log.Errorln("Failed to unmarshal yesterdayHistory :", tokenSet.ID, err)
+			continue
+		}
+		if yesterdayHistory.Market["current_price"] == nil {
+			log.Errorln("Current_price Map empty for yesterdayHistory  Token: ", tokenSet.ID)
+			continue
+		}
 
+		tradePrices := yesterdayHistory.Market["current_price"].(map[string]interface{})
+		if tradePrices["usd"] == nil {
+			log.Errorln("Yesterday current_price Map empty Token:", tokenSet.ID)
+			continue
+		}
+		yesterdayPriceUSD := tradePrices["usd"].(float64)
+		tradeVolumes := yesterdayHistory.Market["total_volume"].(map[string]interface{})
+		if tradeVolumes["usd"] == nil {
+			log.Errorln("Yesterday Volume Map empty Token:", tokenSet.ID)
+			continue
+		}
+		yesterdayvolumeUSD := tradeVolumes["usd"].(float64)
 
-			foreignQuotation := &models.ForeignQuotation{
-				Symbol: coinsTemp.Symbol
-				Name: coinsTemp.Name
-				Price: usdPrice
-				PriceYesterday: yesterdayPriceUSD
-				VolumeYesterdayUSD: yesterdayvolumeUSD
-				Source: "Coingecko"
-				Time: timeStamp
-				ITIN: ""
-			}
-			s.datastore.SaveForeignQuotationInflux(foreignQuotation)
+		foreignQuotation := &models.ForeignQuotation{
+			Symbol:             coinsTemp.Symbol,
+			Name:               coinsTemp.Name,
+			Price:              usdPrice,
+			PriceYesterday:     &yesterdayPriceUSD,
+			VolumeYesterdayUSD: &yesterdayvolumeUSD,
+			Source:             "Coingecko",
+			Time:               timeStamp,
+			ITIN:               "",
+		}
+		log.Println(yesterdayvolumeUSD)
+		log.Println(yesterdayPriceUSD)
+		log.Println(usdPrice)
+		log.Println(coinsTemp.Name)
+		log.Println(coinsTemp.Symbol)
+
+		scraper.datastore.SaveForeignQuotationInflux(foreignQuotation)
 	}
-	
-}
 
+	return nil
+
+}
 
 func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) {
 
@@ -147,11 +161,11 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 	if err != nil {
 		return []byte{}, err
 	}
-	
+
 	defer response.Body.Close()
-	
+
 	if response.StatusCode != 200 {
-		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)	
+		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
 	}
 
 	// Read the response body
@@ -161,20 +175,18 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 		log.Error(err)
 		return []byte{}, err
 	}
-	
+
 	//we dont have list of pairs, to get poairs we will get all aavailable assets and create pairs
 	// Get available assets
 	return Bodydata, nil
 
 }
 
-
-func (scraper *CoingeckoScraper) FetchAvailableSymbols() (tokens []string) {
-	pairs = make(map[string]string)
+func (scraper *CoingeckoScraper) FetchAvailableSymbols() CoinIds {
 	url := "https://api.coingecko.com/api/v3/coins/list"
 	coins, _ := scraper.readCoingeckoCoins(url)
 	tokens := CoinIds{}
-	err = json.Unmarshal(coins, &scoinsIdTemp)
+	err := json.Unmarshal(coins, &tokens)
 
 	if err != nil {
 		log.Println(err)
@@ -182,5 +194,3 @@ func (scraper *CoingeckoScraper) FetchAvailableSymbols() (tokens []string) {
 	}
 	return tokens
 }
-
-

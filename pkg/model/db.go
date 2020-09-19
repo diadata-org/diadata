@@ -183,8 +183,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		}
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
 			Addr:     address,
-			Username: "",
-			Password: "",
+			Username: "telegraf",
+			Password: "secretpassword",
 		})
 		if err != nil {
 			log.Error("NewDataStore influxdb", err)
@@ -194,7 +194,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		if err != nil {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
-	}
+	}    
 	return &DB{r, ci, bp, 0}, nil
 }
 

@@ -2,28 +2,29 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/"
+	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
+	//   "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
-
-var foreignQuotation  = flag.String("foreign", "", "which foreignQuotation")
-
+const Coingecko = "Coingecko"
 
 func main() {
 	// TO DO
+	foreignQuotation := flag.String("foreign", "", "which foreignQuotation")
+	flag.Parse()
+
 	ds, err := models.NewInfluxDataStore()
 	if err != nil {
 		log.Errorln("NewInfluxDataStore:", err)
 	} else {
-		if *foreignQuotation == "Coingecko" {
+
+		if *foreignQuotation == Coingecko {
 			log.Println("Foreign Scraper: Start scrapping data from Coingecko")
-			s := scrapers.foreign-scrapers.NewCoingeckoScraper(ds)
-			go s.Update()
+			scrapers.NewCoingeckoScraper(ds)
 		}
 	}
-	log.Println("Done Foreign scrapping")	
+	log.Println("Done Foreign scrapping")
 }
