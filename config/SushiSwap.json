@@ -1,0 +1,676 @@
+{
+    "Coins": [
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-CRV",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YAMv2",
+            "ForeignName": "YAMv2-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SRM",
+            "ForeignName": "SRM-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NYAN",
+            "ForeignName": "NYAN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAND",
+            "ForeignName": "BAND-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LEND",
+            "ForeignName": "LEND-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sUSD",
+            "ForeignName": "sUSD-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-AMPL",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-NYAN",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sUSD",
+            "ForeignName": "sUSD-$BASED",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NYAN",
+            "ForeignName": "NYAN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NYAN",
+            "ForeignName": "NYAN-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XIOT",
+            "ForeignName": "XIOT-bXIOT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bXIOT",
+            "ForeignName": "bXIOT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KEY",
+            "ForeignName": "KEY-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XIOT",
+            "ForeignName": "XIOT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JUICE",
+            "ForeignName": "JUICE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-UNC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SENT",
+            "ForeignName": "SENT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "Morf",
+            "ForeignName": "Morf-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATH",
+            "ForeignName": "MATH-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNK",
+            "ForeignName": "PNK-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIA",
+            "ForeignName": "DIA-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLN",
+            "ForeignName": "CLN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-2KEY",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JUL",
+            "ForeignName": "JUL-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADX",
+            "ForeignName": "ADX-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUNA",
+            "ForeignName": "TUNA-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-MOUTAI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNSD",
+            "ForeignName": "BNSD-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wDGLD",
+            "ForeignName": "wDGLD-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SASHIMI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ELF",
+            "ForeignName": "ELF-SASHIMI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vBZRX",
+            "ForeignName": "vBZRX-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFRB",
+            "ForeignName": "YFRB-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-BENTO",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LBA",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YTC",
+            "ForeignName": "YTC-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOON",
+            "ForeignName": "MOON-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REB2",
+            "ForeignName": "REB2-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EWTB",
+            "ForeignName": "EWTB-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REB2",
+            "ForeignName": "REB2-REB",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-renBTC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-AMPL",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XOR",
+            "ForeignName": "XOR-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRYB",
+            "ForeignName": "TRYB-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WASABI",
+            "ForeignName": "WASABI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAWN",
+            "ForeignName": "DAWN-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-RARI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLT",
+            "ForeignName": "BLT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANT",
+            "ForeignName": "ANT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ULU",
+            "ForeignName": "ULU-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-AMP",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAKE",
+            "ForeignName": "SAKE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KIMCHI",
+            "ForeignName": "KIMCHI-MOUTAI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-WAFL",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ETHV",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CAFE",
+            "ForeignName": "CAFE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZAG",
+            "ForeignName": "ZAG-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MoonGain",
+            "ForeignName": "MoonGain-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WHIVE",
+            "ForeignName": "WHIVE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PERX",
+            "ForeignName": "PERX-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-JRE",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFL",
+            "ForeignName": "YFL-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HGET",
+            "ForeignName": "HGET-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-Dap",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RBT",
+            "ForeignName": "RBT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BOBA",
+            "ForeignName": "BOBA-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BOBA",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ZEON",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "",
+            "ForeignName": "-SUSHI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MSI",
+            "ForeignName": "MSI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BERRY",
+            "ForeignName": "BERRY-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ROOBEE",
+            "ForeignName": "ROOBEE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-TOAST",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTSE",
+            "ForeignName": "BTSE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1913",
+            "ForeignName": "1913-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "  比特币  ",
+            "ForeignName": "  比特币  -ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UBXT",
+            "ForeignName": "UBXT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFMEAT",
+            "ForeignName": "YFMEAT-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-PYLON",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "Yf3L",
+            "ForeignName": "Yf3L-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFII",
+            "ForeignName": "YFII-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HGET",
+            "ForeignName": "HGET-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MYFI",
+            "ForeignName": "MYFI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JRE",
+            "ForeignName": "JRE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-SUSHI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REVV",
+            "ForeignName": "REVV-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KIMCHI",
+            "ForeignName": "KIMCHI-SUSHI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDQ",
+            "ForeignName": "USDQ-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDQ",
+            "ForeignName": "USDQ-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-TST",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QDAO",
+            "ForeignName": "QDAO-USDQ",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        }
+    ]
+}
