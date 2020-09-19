@@ -24,7 +24,7 @@ const (
 	curveStartBlock = uint64(10780772 - 5250)
 
 	curveWsDial   = "wss://mainnet.infura.io/ws/v3/" + curveInfuraKey
-	curveRestDial = "https://mainnet.infura.io/v3/" + curveInfuraKey
+	curveRestDial = "http://159.69.120.42:8545/"
 )
 
 type CurveCoin struct {

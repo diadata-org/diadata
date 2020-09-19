@@ -71,6 +71,20 @@ services:
       options:
         max-size: "50m"
 
+  fortubescraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type FORTUBE
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   nuoscraper:
     depends_on: [genericdefiratescraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest

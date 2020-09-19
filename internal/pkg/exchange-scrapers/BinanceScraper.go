@@ -191,7 +191,7 @@ func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
-	data, err := utils.GetRequest("https://api.binance.com//api/v1/exchangeInfo")
+	data, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
 
 	if err != nil {
 		return

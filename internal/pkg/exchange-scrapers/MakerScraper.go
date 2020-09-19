@@ -114,7 +114,7 @@ func (scraper *MakerScraper) mainLoop() {
 			break
 		}
 
-		for pair, pairScraper := range scraper.pairScrapers {
+		for pair := range scraper.pairScrapers {
 			trades, _ := scraper.GetNewTrades(pair, startTradeID[pair])
 			if len(trades) > 0 {
 				startTradeID[pair] = strconv.Itoa(trades[0].ID)
@@ -132,7 +132,7 @@ func (scraper *MakerScraper) mainLoop() {
 				}
 
 				trade := &dia.Trade{
-					Symbol:         pairScraper.pair.Symbol,
+					Symbol:         strings.Split(pair, "-")[0],
 					Pair:           pair,
 					Price:          price,
 					Volume:         VolumeIn,
