@@ -33,6 +33,8 @@ const (
 	CurveFIExchange  = "Curvefi"
 	MakerExchange    = "Maker"
 	KuCoinExchange   = "KuCoin"
+	SushiSwapExchange   = "SushiSwap"
+
 )
 
 func Exchanges() []string {
@@ -59,6 +61,7 @@ func Exchanges() []string {
 		BancorExchange,
 		UnknownExchange,
 		LoopringExchange,
+		SushiSwapExchange,
 	}
 }
 
