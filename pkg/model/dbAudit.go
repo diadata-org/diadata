@@ -40,7 +40,7 @@ const (
 )
 
 func getKeyPoolIDs(topic string) string {
-	return "HashedPoolsMap__" + topic
+	return "HashedPoolsMap_" + topic
 }
 
 // queryAuditDB convenience function to query the audit database
@@ -335,8 +335,10 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level strin
 	}
 	id := strconv.FormatInt(lastID+1, 10)
 
-	// Extend poolMap in Redis
-	db.SetPoolID(topic, children, lastID+1)
+	// Extend poolMap in Redis if level == 2
+	if level == "2" {
+		db.SetPoolID(topic, children, lastID+1)
+	}
 	// Encode children in order to store in influx
 	childrenData, err := json.Marshal(children)
 	if err != nil {
@@ -367,13 +369,19 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level strin
 
 // SetPoolID sets a key value map for retrieval of parent trees of hashed pools
 func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
-
+	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
 	poolMap := make(map[string]interface{})
 	for _, num := range children {
 		poolMap[num] = int(ID)
 	}
 	key := getKeyPoolIDs(topic)
-	db.redisClient.HMSet(key, poolMap)
+	fmt.Printf("key, map: %s, %v \n", key, poolMap)
+	// TO DO: Switch to HSet. atm HSet does not seem to be this:
+	// https://github.com/go-redis/redis/blob/v8.1.3/commands.go#L1072
+	// Check for go-redis version used here
+	resp := db.redisClient.HMSet(key, poolMap)
+	res, err := resp.Result()
+	fmt.Println("response: ", res, err)
 	return nil
 }
 

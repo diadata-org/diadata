@@ -24,6 +24,7 @@ require (
 	github.com/gin-gonic/gin v1.6.2
 	github.com/go-co-op/gocron v0.2.0
 	github.com/go-redis/redis v6.15.7+incompatible
+	github.com/go-redis/redis/v8 v8.1.3
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
 	github.com/jjjjpppp/quoinex-go-client v0.0.0-20190318060220-d8e092fed0b2
@@ -45,7 +46,7 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	gitlab.com/NebulousLabs/merkletree v0.0.0-20200118113624-07fbf710afc4 // indirect
 	go.uber.org/zap v1.15.0
-	golang.org/x/net v0.0.0-20200501053045-e0ff5e5a1de5
+	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7
 	gonum.org/v1/plot v0.7.0
 	google.golang.org/grpc v1.29.1 // indirect
 	gopkg.in/dgrijalva/jwt-go.v2 v2.7.0 // indirect
