@@ -35,17 +35,17 @@ type BZXProtocol struct {
 
 func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 	assets := make(map[string]string)
-	assets["DAI"] = "0x493c57c4763932315a328269e1adad09653b9081"
-	assets["ETH"] = "0x77f973FCaF871459aa58cd81881Ce453759281bC"
-	assets["USDC"] = "0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f"
-	assets["WBTC"] = "0xBA9262578EFef8b3aFf7F60Cd629d6CC8859C8b5"
-	assets["SAI"] = "0x14094949152EDDBFcd073717200DA82fEd8dC960"
-	assets["KNC"] = "0x1cC9567EA2eB740824a45F8026cCF8e46973234D"
-	assets["REP"] = "0xBd56E9477Fc6997609Cf45F84795eFbDAC642Ff1"
-	assets["ZRX"] = "0xA7Eb2bc82df18013ecC2A6C533fc29446442EDEe"
-	assets["LINK"] = "0x1D496da96caf6b518b133736beca85D5C4F9cBc5"
-	assets["SUSD"] = "0x49f4592e641820e928f9919ef4abd92a719b4b49"
-	assets["USDT"] = "0x8326645f3aa6de6420102fdb7da9e3a91855045b"
+	assets["DAI"]  = "0x6b093998d36f2c7f0cc359441fbb24cc629d5ff0"
+	assets["ETH"]  = "0xb983e01458529665007ff7e0cddecdb74b967eb6"
+	assets["USDC"] = "0x32e4c68b3a4a813b710595aeba7f6b7604ab9c15"
+	assets["WBTC"] = "0x2ffa85f655752fb2acb210287c60b9ef335f5b6e"
+	assets["LEND"] = "0xab45bf58c6482b87da85d6688c4d9640e093be98"
+	assets["KNC"]  = "0x687642347a9282be8fd809d8309910a3f984ac5a"
+	assets["MKR"]  = "0x9189c499727f88f8ecc7dc4eea22c828e6aac015"
+	assets["BZRX"] = "0x18240bd9c07fa6156ce3f3f61921cc82b2619157"
+	assets["LINK"] = "0x463538705e7d22aa7f03ebf8ab09b067e1001b54"
+	assets["YFI"]  = "0x7f3fe9d492a9a60aebb06d82cba23c6f32cad10b"
+	assets["USDT"] = "0x7e9997a38a439b2be7ed9c9c4628391d3e055d48"
 
 	connection, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
