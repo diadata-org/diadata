@@ -1,5 +1,5 @@
 package models
 
 func (db *DB) GetConfigTogglePairDiscovery() (bool, error) {
-	return false, nil //TOFIX
+	return true, nil //TOFIX
 }
