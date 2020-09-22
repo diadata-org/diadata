@@ -19,12 +19,7 @@ var (
 )
 
 const (
-	uniswapsocketurl = "wss://mainnet.infura.io/ws/v3"
-	//uniswapresturl = "https://mainnet.infura.io/v3"
-	apiKeyUniswap = "/a0bfa51a18b24e1fac45a36481bf7f61"
-	//restDial         = uniswapresturl + apiKeyUniswap
-	wsDial = uniswapsocketurl + apiKeyUniswap
-	// wsDial   = "wss://159.69.120.42:8546/"
+	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
 )
 
@@ -112,28 +107,30 @@ func (s *UniswapScraper) mainLoop() {
 	// wait for all pairs have added into s.PairScrapers
 	time.Sleep(4 * time.Second)
 	s.run = true
-	// TODO: Instead of 1000 take the full number of pairs when websocket is not by infura
-	// numPairs, err := s.getNumPairs()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+
+	numPairs, err := s.getNumPairs()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if len(s.pairScrapers) == 0 {
 		s.error = errors.New("bancor: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := 1; i < 1000; i++ {
-		if i == 999 { // Hotfix DIA
-			i = 3599
-		}
+	for i := 0; i < numPairs; i++ {
+
 		pair, err := s.GetPairByID(int64(i))
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
+		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
+			log.Info("skip pair: ", pair.ForeignName)
+			continue
+		}
 		pair.normalizeUniPair()
 		ps, ok := s.pairScrapers[pair.ForeignName]
 		if ok {
-			log.Info(i, ": found pair scraper for:", pair.ForeignName, "with address", pair.Address.Hex())
+			log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
 			sink, err := s.GetSwapsChannel(pair.Address)
 			if err != nil {
 				log.Error("error fetching swaps channel: ", err)
@@ -162,7 +159,7 @@ func (s *UniswapScraper) mainLoop() {
 							Source:         s.exchangeName,
 						}
 						ps.parent.chanTrades <- t
-						log.Info("Got trade", t)
+						log.Info("Got trade: ", t)
 					}
 				}
 			}()
