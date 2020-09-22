@@ -20,10 +20,9 @@ import (
 
 const (
 	gnosisContract   = "0x6F400810b62df8E13fded51bE75fF5393eaa841F"
-	gnosisInfuraKey  = "infuraKey"
 	gnosisStartBlock = uint64(10780772 - 5250)
 
-	gnosisWsDial   = "wss://mainnet.infura.io/ws/v3/" + gnosisInfuraKey
+	gnosisWsDial   = "ws://159.69.120.42:8546/"
 	gnosisRestDial = "http://159.69.120.42:8545/"
 )
 
