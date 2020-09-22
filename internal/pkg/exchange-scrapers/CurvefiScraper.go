@@ -20,10 +20,9 @@ import (
 
 const (
 	curveFiContract = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
-	curveInfuraKey  = "251a25bd10b8460fa040bb7202e22571"
 	curveStartBlock = uint64(10780772 - 5250)
 
-	curveWsDial   = "wss://mainnet.infura.io/ws/v3/" + curveInfuraKey
+	curveWsDial   = "ws://159.69.120.42:8546/"
 	curveRestDial = "http://159.69.120.42:8545/"
 )
 
