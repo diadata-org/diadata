@@ -10,8 +10,10 @@ import (
 
 const Coingecko = "Coingecko"
 
+
 func main() {
 	// TO DO
+	
 	foreignQuotation := flag.String("foreign", "", "which foreignQuotation")
 	flag.Parse()
 
@@ -19,11 +21,11 @@ func main() {
 	if err != nil {
 		log.Errorln("NewInfluxDataStore:", err)
 	} else {
-
 		if *foreignQuotation == Coingecko {
 			log.Println("Foreign Scraper: Start scrapping data from Coingecko")
 			scrapers.NewCoingeckoScraper(ds)
 		}
+		select {} 
 	}
-	log.Println("Done Foreign scrapping")
+	log.Println("Foreign scrapping failed to start")
 }
