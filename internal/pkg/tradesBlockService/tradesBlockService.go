@@ -92,11 +92,11 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 func (s *TradesBlockService) process(t dia.Trade) {
 
 	var ignoreTrade bool
-	secondPair := t.SecondPair()
-	if secondPair != "USD" {
-		val, err := s.datastore.GetPriceUSD(secondPair)
+	baseToken := t.BaseToken()
+	if baseToken != "USD" {
+		val, err := s.datastore.GetPriceUSD(baseToken)
 		if err != nil {
-			log.Error("Cant find second pair", secondPair, "in redis", err, " ignoring ", t)
+			log.Error("Cant find base token ", baseToken, " in redis ", err, " ignoring ", t)
 			ignoreTrade = true
 		} else {
 			t.EstimatedUSDPrice = t.Price * val
