@@ -4,7 +4,6 @@ import (
 	"flag"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
-	//   "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
