@@ -12,17 +12,16 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
 )
+
 var (
 	exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
-
 )
-const (
 
+const (
 	uniswapsocketurl = "wss://mainnet.infura.io/ws/v3"
 	//uniswapresturl = "https://mainnet.infura.io/v3"
-	apiKeyUniswap    = "/a0bfa51a18b24e1fac45a36481bf7f61"
+	apiKeyUniswap = "/a0bfa51a18b24e1fac45a36481bf7f61"
 	//restDial         = uniswapresturl + apiKeyUniswap
 	wsDial = uniswapsocketurl + apiKeyUniswap
 	// wsDial   = "wss://159.69.120.42:8546/"
@@ -74,13 +73,13 @@ type UniswapScraper struct {
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchangeName string) *UniswapScraper {
 
-	switch exchangeName{
+	switch exchangeName {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress="0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+		exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 
 		break
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress="0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"
+		exchangeFactoryContractAddress = "0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"
 	}
 
 	s := &UniswapScraper{
@@ -393,7 +392,7 @@ func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
 		return
 	}
 
-	volume = -swap.Amount1Out
+	volume = -swap.Amount0In
 	price = swap.Amount1Out / swap.Amount0In
 	return
 }
