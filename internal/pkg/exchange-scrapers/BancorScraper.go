@@ -234,6 +234,12 @@ func (scraper *BancorScraper) mainLoop() {
 				log.Error("error parsing price24H: ", err)
 			}
 
+			// Skip pair where price or volume is 0
+			if ticker.Data.Volume24HD == 0 || price == 0 {
+				log.Error("Price or Volume 0")
+				break
+			}
+
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pair,
