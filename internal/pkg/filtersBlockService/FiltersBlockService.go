@@ -2,12 +2,13 @@ package filters
 
 import (
 	"errors"
-	"github.com/cnf/structhash"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
+
+	"github.com/cnf/structhash"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -115,6 +116,7 @@ func (s *FiltersBlockService) createFilters(symbol string, exchange string, Begi
 	_, ok := s.filters[symbol+exchange]
 	if !ok {
 		s.filters[symbol+exchange] = []Filter{
+			// Prices are written into redis in MA filter
 			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterTLT(symbol, exchange),
 			NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
@@ -130,6 +132,8 @@ func (s *FiltersBlockService) computeFilters(t dia.Trade, key string) {
 	}
 }
 
+// processTradesBlock is the 'main' function in the sense that all mathematical
+// computations are done here.
 func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	log.Infoln("processTradesBlock starting")

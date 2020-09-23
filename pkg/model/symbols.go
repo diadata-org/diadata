@@ -18,7 +18,7 @@ func (db *DB) GetAllSymbols() []string {
 				r[v.Symbol] = v.Symbol
 			}
 		} else {
-			log.Error("GetAllSymbols", err)
+			log.Errorf("Error %v in GetAllSymbols for %s\n", err, e)
 		}
 	}
 	s := []string{}
@@ -112,7 +112,7 @@ func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
 		r.Rank = rank
 		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
 		if err != nil {
-			log.Error("UpdateSymbolDetails setting cache\n", err)
+			log.Error("UpdateSymbolDetails setting cache", err)
 		}
 	} else {
 		log.Error("UpdateSymbolDetails", err)
