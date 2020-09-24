@@ -35,7 +35,7 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
 	}
 
 	// Get ID of pool's parent tree
-	parentID, err := ds.GetPoolID(ID, topic)
+	parentID, err := ds.GetPoolsParentID(ID, topic)
 	if err != nil {
 		return false, err
 	}
@@ -65,4 +65,59 @@ func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
 	parentTree, err := ds.GetDailyTreeByID("", levelBelow, ID)
 	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
 	return parentTree.VerifyContent(cont)
+}
+
+// VerifyContent checks whether a content/bucket is not corrupted all the way
+// up to the merkle root
+// Alternatively, we could make the above methods return the containing tree.
+// This would shorten the below code
+func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
+	ds, err := models.NewAuditStore()
+	if err != nil {
+		log.Fatal("NewAuditStore: ", err)
+	}
+
+	// Verify bucket in pool--------------------------------
+	// Get ID of parent pool
+	id := strings.Split(sb.ID, ".")[0]
+	// Get tree corresponding to the pool
+	tree, err := ds.GetMerkletreeByID(sb.Topic, id)
+	if err != nil {
+		return false, err
+	}
+	val, err := tree.VerifyContent(sb)
+	if err != nil {
+		return false, err
+	}
+	if val == false {
+		return false, nil
+	}
+
+	// Verify pool in tree level 2 ------------------------
+	// Get ID of pool's parent tree
+	parentID, err := ds.GetPoolsParentID(id, sb.Topic)
+	if err != nil {
+		return false, err
+	}
+
+	parentTree, err := ds.GetDailyTreeByID(sb.Topic, "2", parentID)
+	if err != nil {
+		return false, err
+	}
+	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
+	val, err = parentTree.VerifyContent(cont)
+	if err != nil {
+		return false, err
+	}
+	if val == false {
+		return false, nil
+	}
+
+	// Verify tree level 2 in tree level 1 -----------------
+	// TO DO
+
+	// Verify tree level 1 in tree level 0------------------
+	// TO DO
+
+	return true, nil
 }

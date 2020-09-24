@@ -30,7 +30,7 @@ type AuditStore interface {
 	GetLastTimestamp(topic, level string) (time.Time, error)
 	GetLastIDMerkle(topic, level string) (int64, error)
 	SetPoolID(topic string, children []string, ID int64) error
-	GetPoolID(id, topic string) (string, error)
+	GetPoolsParentID(id, topic string) (string, error)
 }
 
 const (
@@ -385,8 +385,8 @@ func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
 	return nil
 }
 
-// GetPoolID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-func (db *DB) GetPoolID(id, topic string) (string, error) {
+// GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
+func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
 	key := getKeyPoolIDs(topic)
 	res := db.redisClient.HMGet(key, id)
 	if res.Val()[0] != nil {
