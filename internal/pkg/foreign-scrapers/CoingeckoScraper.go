@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -14,9 +15,12 @@ import (
 )
 
 type CoinIds []struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	Symbol       string  `json:"symbol"`
+	CurrentPrice float64 `json:"current_price"`
+	MarketCap    float64 `json:"market_cap"`
+	LastUpdated  string  `json: "last_updated"`
 }
 
 type CoinIs struct {
@@ -61,52 +65,44 @@ func (scraper *CoingeckoScraper) Update() error {
 	layout := "2006-01-02T15:04:05.000Z"
 	visited := make(map[string]string) // Id and Symbol
 	tommorrow := time.Now().Add(24 * time.Hour)
-
+	setFetchAvailaSymbol := 0
+	var tokenList CoinIds
+	afterThisCountSleep := 98
+	var err error
 	for true {
-		tokenList := scraper.FetchAvailableSymbols()
+
+		if setFetchAvailaSymbol == 0 {
+			tokenList, err = scraper.FetchAvailableSymbols()
+			if err != nil {
+				log.Println(err)
+				time.Sleep(10 * time.Minute)
+			}
+			setFetchAvailaSymbol = 1
+			//time.Sleep(30 * time.Second)
+		}
+
 		//err := nil
 
 		presentTime := time.Now()
 		timeAheadbyAday := tommorrow.Before(presentTime) //To update once a day the historical day.
 		if timeAheadbyAday {
 			tommorrow = presentTime.Add(24 * time.Hour)
+			setFetchAvailaSymbol = 0
 		}
 
-		for _, tokenSet := range tokenList {
-			id := tokenSet.ID
-			url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s?localization=false&developer_data=false", id)
-			coinsTemp := CoinIs{}
-			bodyData, err := scraper.readCoingeckoCoins(url)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-
-			err = json.Unmarshal(bodyData, &coinsTemp)
-			if err != nil {
-				log.Errorln("Failed to unmarshal bodyData:", err)
-				continue
-			}
-
-			if coinsTemp.Market["current_price"] == nil {
-				continue
-			}
-
-			currentPrices := coinsTemp.Market["current_price"].(map[string]interface{})
-			if currentPrices["usd"] == nil {
-				fmt.Errorf("error parsing rate Current Price Map empty  for Token (%s): %v", id, err)
-				continue
-			}
-
-			usdPrice := currentPrices["usd"].(float64)
-
-			timeStamp, _ := time.Parse(layout, coinsTemp.LastUpdated)
-
+		for k, tokenSet := range tokenList {
 			// Yesterday data
+
 			t := time.Now().AddDate(0, 0, -1)
 			seenSymbol, ok := visited[tokenSet.ID]
+			timeStamp, _ := time.Parse(layout, tokenSet.LastUpdated)
 
 			if !ok || timeAheadbyAday {
+				log.Printf("Fetch new data for")
+
+				if (k+1)%afterThisCountSleep == 0 {
+					time.Sleep(1 * time.Minute)
+				}
 				url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
 					tokenSet.ID, t.Day(), t.Month(), t.Year())
 				yesterdayData, err := scraper.readCoingeckoCoins(url2)
@@ -139,9 +135,9 @@ func (scraper *CoingeckoScraper) Update() error {
 				yesterdayvolumeUSD := tradeVolumes["usd"].(float64)
 
 				foreignQuotation := models.ForeignQuotation{
-					Symbol:             coinsTemp.Symbol,
-					Name:               coinsTemp.Name,
-					Price:              usdPrice,
+					Symbol:             tokenSet.Symbol,
+					Name:               tokenSet.Name,
+					Price:              tokenSet.CurrentPrice,
 					PriceYesterday:     &yesterdayPriceUSD,
 					VolumeYesterdayUSD: &yesterdayvolumeUSD,
 					Source:             "Coingecko",
@@ -151,6 +147,7 @@ func (scraper *CoingeckoScraper) Update() error {
 				scraper.datastore.SaveForeignQuotationInflux(foreignQuotation)
 
 			} else {
+				log.Printf("Fetch from DB")
 
 				backVal, err := scraper.datastore.GetForeignQuotationInflux(seenSymbol)
 
@@ -163,9 +160,9 @@ func (scraper *CoingeckoScraper) Update() error {
 				yesterdayvolumeUSD := backVal.VolumeYesterdayUSD
 
 				foreignQuotation := models.ForeignQuotation{
-					Symbol:             coinsTemp.Symbol,
-					Name:               coinsTemp.Name,
-					Price:              usdPrice,
+					Symbol:             tokenSet.Symbol,
+					Name:               tokenSet.Name,
+					Price:              tokenSet.CurrentPrice,
 					PriceYesterday:     yesterdayPriceUSD,
 					VolumeYesterdayUSD: yesterdayvolumeUSD,
 					Source:             "Coingecko",
@@ -213,15 +210,58 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 
 }
 
-func (scraper *CoingeckoScraper) FetchAvailableSymbols() CoinIds {
-	url := "https://api.coingecko.com/api/v3/coins/list"
-	coins, _ := scraper.readCoingeckoCoins(url)
-	tokens := CoinIds{}
-	err := json.Unmarshal(coins, &tokens)
+func (scraper *CoingeckoScraper) FetchAvailableSymbols() (CoinIds, error) {
+	var s CoinIds
+	pageContentLength := 100
+	page := 1
+	layout := "2006-01-02T15:04:05.000Z"
+	for true {
 
-	if err != nil {
-		log.Println(err)
-		return tokens
+		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=%d&sparkline=false", page)
+		page++
+		XMLdata, err := scraper.readCoingeckoCoins(url)
+		if err != nil {
+			fmt.Println("Failed: Downloading data and Read")
+		}
+
+		confirmTemp := CoinIds{}
+		jsonErr := json.Unmarshal(XMLdata, &confirmTemp)
+		if jsonErr != nil {
+			fmt.Println(jsonErr)
+			return s, jsonErr
+		}
+
+		signalTrigger := 0
+		for _, i := range confirmTemp {
+			if i.CurrentPrice == 0 || i.MarketCap == 0 {
+				signalTrigger++
+				continue
+			}
+
+			timeStamp, _ := time.Parse(layout, i.LastUpdated)
+			lastTradeAcceptableRange := time.Now().AddDate(0, -4, 0)
+
+			if lastTradeAcceptableRange.Before(timeStamp) {
+				continue
+			}
+			if strings.Contains(i.ID, "3X-") || strings.Contains(i.ID, "long") {
+				continue
+			}
+			if strings.Contains(i.ID, "futures") || strings.Contains(i.ID, "short") {
+				continue
+			}
+			s = append(s, i)
+			signalTrigger = 0
+
+		}
+		if signalTrigger == 100 {
+			break
+		}
+
+		if len(confirmTemp) < pageContentLength {
+			break
+		}
+
 	}
-	return tokens
+	return s, nil
 }
