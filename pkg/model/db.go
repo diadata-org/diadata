@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"time"
@@ -60,6 +61,8 @@ type Datastore interface {
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
 	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
 	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
+	Get24Volume(symbol string, exchange string) (float64, error)
+	Get24VolumeExchange(exchange string) (float64, error)
 
 	// Interest rates' methods
 	SetInterestRate(ir *InterestRate) error
@@ -257,12 +260,56 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	}
 }
 
+// Get24Volume returns the volume in USD traded in the last 24 hours corresponding to quote token
+// @symbol on exchange @exchange. It uses trades' volumes without filtering.
+func (db *DB) Get24Volume(symbol string, exchange string) (float64, error) {
+	q := fmt.Sprintf("SELECT estimatedUSDPrice, volume FROM %s WHERE symbol='%s' and exchange='%s' and time > now() - 1d", influxDbTradesTable, symbol, exchange)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("Get24HoursVolume: ", err)
+		return float64(0), err
+	}
+	var VolumeUSD float64
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			USDPrice, err := strconv.ParseFloat(row[1].(string), 64)
+			if err != nil {
+				return float64(0), err
+			}
+			volume, err := strconv.ParseFloat(row[2].(string), 64)
+			if err != nil {
+				return 0, err
+			}
+			VolumeUSD += math.Abs(volume) * USDPrice
+		}
+		return VolumeUSD, nil
+	}
+	return float64(0), errors.New("no trades")
+}
+
+// Get24VolumeExchange returns the trade volume in USD traded on exchange @exchange.
+// Uses trades' volumes without filtering.
+func (db *DB) Get24VolumeExchange(exchange string) (float64, error) {
+	allSymbols := db.GetSymbolsByExchange(exchange)
+	var TVL float64
+	for _, symbol := range allSymbols {
+		volumeUSD, err := db.Get24Volume(symbol, exchange)
+		if err != nil {
+			log.Errorf("Error getting 24h trade volume of %s", symbol)
+			continue
+		}
+		TVL += volumeUSD
+	}
+	return TVL, nil
+}
+
 /*
 select sum(value) from filters where filter='VOL120' and time > now() - 10m
 select * from filters where  symbol='BTC' and filter='VOL120' and time > now() - 2m
 select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
 */
 
+// Sum24HoursInflux returns the 24h  volume of @symbol on @exchange using the filter @filter.
 func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
 	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)
 	var errorString string
@@ -292,6 +339,8 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 	return nil, errors.New("couldnt sum in Sum24HoursInflux")
 }
 
+// GetVolumeInflux returns the trade volume of @symbol in the time range @starttime - @endtime.
+// It uses the VOL filter from the filter services.
 func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.Time) (float64, error) {
 	var retval float64
 	var q string
