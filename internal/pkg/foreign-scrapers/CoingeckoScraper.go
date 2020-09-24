@@ -32,8 +32,6 @@ type CoinIs struct {
 	Market      map[string]interface{}   `json:"market_data"`
 }
 
-//var _coingeckourl string = "https://api.coingecko.com/api/v3"
-
 type CoingeckoScraper struct {
 	error     error
 	datastore *models.DB
@@ -70,7 +68,6 @@ func (scraper *CoingeckoScraper) Update() error {
 	afterThisCountSleep := 98
 	var err error
 	for true {
-
 		if setFetchAvailaSymbol == 0 {
 			tokenList, err = scraper.FetchAvailableSymbols()
 			if err != nil {
@@ -78,10 +75,8 @@ func (scraper *CoingeckoScraper) Update() error {
 				time.Sleep(10 * time.Minute)
 			}
 			setFetchAvailaSymbol = 1
-			//time.Sleep(30 * time.Second)
+			time.Sleep(10 * time.Second)
 		}
-
-		//err := nil
 
 		presentTime := time.Now()
 		timeAheadbyAday := tommorrow.Before(presentTime) //To update once a day the historical day.
@@ -91,20 +86,19 @@ func (scraper *CoingeckoScraper) Update() error {
 		}
 
 		for k, tokenSet := range tokenList {
-			// Yesterday data
-
 			t := time.Now().AddDate(0, 0, -1)
 			seenSymbol, ok := visited[tokenSet.ID]
 			timeStamp, _ := time.Parse(layout, tokenSet.LastUpdated)
 
 			if !ok || timeAheadbyAday {
-				log.Printf("Fetch new data for")
+				log.Printf("Fetch new data directly from Coingecko")
 
 				if (k+1)%afterThisCountSleep == 0 {
 					time.Sleep(1 * time.Minute)
 				}
 				url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
 					tokenSet.ID, t.Day(), t.Month(), t.Year())
+
 				yesterdayData, err := scraper.readCoingeckoCoins(url2)
 				if err != nil {
 					log.Errorln("Failed to  scrape yesterdayData:", err)
@@ -215,6 +209,7 @@ func (scraper *CoingeckoScraper) FetchAvailableSymbols() (CoinIds, error) {
 	pageContentLength := 100
 	page := 1
 	layout := "2006-01-02T15:04:05.000Z"
+	added := make(map[string]bool) // Id and Symbol
 	for true {
 
 		url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=%d&sparkline=false", page)
@@ -250,7 +245,11 @@ func (scraper *CoingeckoScraper) FetchAvailableSymbols() (CoinIds, error) {
 			if strings.Contains(i.ID, "futures") || strings.Contains(i.ID, "short") {
 				continue
 			}
-			s = append(s, i)
+			_, ok := added[i.Symbol]
+			if !ok {
+				s = append(s, i)
+				added[i.Symbol] = true
+			}
 			signalTrigger = 0
 
 		}
