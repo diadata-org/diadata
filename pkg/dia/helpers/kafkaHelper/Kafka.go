@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net"
 	"os"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -139,10 +140,11 @@ func NewWriter(topic int) *kafka.Writer {
 
 func NewSyncWriter(topic int) *kafka.Writer {
 	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  KafkaConfig.KafkaUrl,
-		Topic:    getTopic(topic),
-		Balancer: &kafka.LeastBytes{},
-		Async:    false,
+		Brokers:    KafkaConfig.KafkaUrl,
+		Topic:      getTopic(topic),
+		Balancer:   &kafka.LeastBytes{},
+		Async:      false,
+		BatchBytes: 4 * 1048576,
 	})
 }
 
