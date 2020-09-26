@@ -84,6 +84,7 @@ func (scraper *CoingeckoScraper) Update() error {
 			tommorrow = presentTime.Add(24 * time.Hour)
 			setFetchAvailaSymbol = 0
 		}
+		time.Sleep(40 * time.Second)
 
 		for k, tokenSet := range tokenList {
 			t := time.Now().AddDate(0, 0, -1)
@@ -187,7 +188,36 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
+		fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
+		log.Printf("Because of the above error message system would sleep for 1 minute and try again")
+		countWait := 1
+		time.Sleep(1 * time.Minute)
+		for true {
+			fmt.Println("Failed: Downloading data and Read")
+			if countWait == 5 {
+				break
+			}
+			countWait++
+
+			response, err = http.Get(url)
+
+			if err != nil {
+				return []byte{}, err
+			}
+
+			defer response.Body.Close()
+
+			if response.StatusCode == 200 {
+				break
+			}
+			time.Sleep(1 * time.Minute)
+		}
+		if response.StatusCode != 200 {
+			log.Printf("Very serious issue , looks like site is down")
+			return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
+
+		}
+
 	}
 
 	// Read the response body
