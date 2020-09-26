@@ -114,7 +114,7 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	} else {
 		value.ITIN = itin.Itin
 	}
-	return value, err
+	return value, nil
 }
 
 func (db *DB) SetQuotation(quotation *Quotation) error {
