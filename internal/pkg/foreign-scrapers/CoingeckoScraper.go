@@ -65,7 +65,6 @@ func (scraper *CoingeckoScraper) Update() error {
 	tommorrow := time.Now().Add(24 * time.Hour)
 	setFetchAvailaSymbol := 0
 	var tokenList CoinIds
-	afterThisCountSleep := 98
 	var err error
 	for true {
 		if setFetchAvailaSymbol == 0 {
@@ -75,7 +74,6 @@ func (scraper *CoingeckoScraper) Update() error {
 				time.Sleep(10 * time.Minute)
 			}
 			setFetchAvailaSymbol = 1
-			time.Sleep(10 * time.Second)
 		}
 
 		presentTime := time.Now()
@@ -84,9 +82,8 @@ func (scraper *CoingeckoScraper) Update() error {
 			tommorrow = presentTime.Add(24 * time.Hour)
 			setFetchAvailaSymbol = 0
 		}
-		time.Sleep(40 * time.Second)
 
-		for k, tokenSet := range tokenList {
+		for _, tokenSet := range tokenList {
 			t := time.Now().AddDate(0, 0, -1)
 			seenSymbol, ok := visited[tokenSet.ID]
 			timeStamp, _ := time.Parse(layout, tokenSet.LastUpdated)
@@ -94,9 +91,6 @@ func (scraper *CoingeckoScraper) Update() error {
 			if !ok || timeAheadbyAday {
 				log.Printf("Fetch new data directly from Coingecko")
 
-				if (k+1)%afterThisCountSleep == 0 {
-					time.Sleep(1 * time.Minute)
-				}
 				url2 := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%02d-%02d-%d",
 					tokenSet.ID, t.Day(), t.Month(), t.Year())
 
@@ -140,6 +134,7 @@ func (scraper *CoingeckoScraper) Update() error {
 					ITIN:               "",
 				}
 				scraper.datastore.SaveForeignQuotationInflux(foreignQuotation)
+				visited[tokenSet.ID] = tokenSet.Symbol
 
 			} else {
 				log.Printf("Fetch from DB")
@@ -193,7 +188,6 @@ func (scraper *CoingeckoScraper) readCoingeckoCoins(url string) ([]byte, error) 
 		countWait := 1
 		time.Sleep(1 * time.Minute)
 		for true {
-			fmt.Println("Failed: Downloading data and Read")
 			if countWait == 5 {
 				break
 			}
