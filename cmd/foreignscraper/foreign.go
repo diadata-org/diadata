@@ -7,6 +7,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TO DO: write handlequotation method, handling the foreignQuotation channel from
+// Coingecko Scraper. Save to influx.
+
 func main() {
 
 	scraperType := flag.String("foreignType", "", "which foreignQuotation")

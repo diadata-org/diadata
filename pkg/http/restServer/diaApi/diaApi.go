@@ -792,3 +792,38 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 		c.JSON(http.StatusOK, q)
 	}
 }
+
+// -----------------------------------------------------------------------------
+// FOREIGN QUOTATIONS
+// -----------------------------------------------------------------------------
+
+// GetForeignQuotation returns several quotations vs USD as published by the ECB
+func (env *Env) GetForeignQuotation(c *gin.Context) {
+	source := c.Param("source")
+	symbol := c.Param("symbol")
+	date := c.Param("time")
+	var timestamp time.Time
+	if date == "" {
+		timestamp = time.Now()
+	} else {
+		t, err := strconv.Atoi(date)
+		if err != nil {
+			log.Error(err)
+		}
+		timestamp = time.Unix(int64(t), 0)
+	}
+
+	q, err := env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+
+}
+
+// TO DO: make a list of available symbols for quotations

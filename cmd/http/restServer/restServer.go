@@ -224,6 +224,9 @@ func main() {
 
 		// Endpoints for fiat currencies
 		dia.GET("/fiatQuotations", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFiatQuotations))
+
+		// Endpoints for foreign sources
+		dia.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

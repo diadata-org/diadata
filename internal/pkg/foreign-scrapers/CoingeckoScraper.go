@@ -36,6 +36,8 @@ type CoingeckoScraper struct {
 }
 
 func NewCoingeckoScraper() {
+	// TO DO: Add channel for quotations. Instead of saving to influx at the and of Update
+	// send through channel to main foreign.go and save there.
 	s := &CoingeckoScraper{
 		ticker:   time.NewTicker(coingeckoRefreshDelay),
 		shutdown: make(chan nothing),
