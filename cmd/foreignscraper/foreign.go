@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	scraperType := flag.String("type", "", "which foreignQuotation")
+	scraperType := flag.String("foreignType", "", "which foreignQuotation")
 	flag.Parse()
 
 	switch *scraperType {

@@ -30,6 +30,11 @@ func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 	} else {
 		db.addPoint(pt)
 	}
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("Write influx batch: ", err)
+	}
+
 	return err
 }
 
@@ -78,10 +83,10 @@ func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Ti
 // GetForeignPriceYesterday returns the average price of @symbol on @source from yesterday
 func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 
-	// Get time range for yesterday for averaging the price
+	// Get time range for yesterday in order to average the price
 	now := time.Now()
 	secondsFromYesterday := now.Hour()*60*60 + now.Minute()*60 + now.Second()
-	timeFinal := int(now.Unix()) + secondsFromYesterday - 1
+	timeFinal := int(now.Unix()) - secondsFromYesterday - 1
 	timeInit := timeFinal - 24*60*60
 	unixtimeFinal := strconv.Itoa(timeFinal) + "000000000"
 	unixtimeInit := strconv.Itoa(timeInit) + "000000000"
@@ -96,18 +101,22 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 
 	// Simple average over all yesterday's prices
 	var price float64
+	errs := 0
 	if len(res) > 0 && len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 		numPrices := len(res[0].Series[0].Values)
 		for i := range res[0].Series[0].Values {
 			pricepoint, err := res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
 				log.Error(err)
+				errs++
 			} else {
 				price += pricepoint
 			}
 
 		}
-		return price / float64(numPrices), nil
+		if numPrices > errs {
+			return price / float64(numPrices-errs), nil
+		}
 	}
 	return 0, errors.New("No data available from yesterday")
 }
