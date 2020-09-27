@@ -183,8 +183,8 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		}
 		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
 			Addr:     address,
-			Username: "",
-			Password: "",
+			Username: "telegraf",
+			Password: "secretpassword",
 		})
 		if err != nil {
 			log.Error("NewDataStore influxdb", err)
@@ -244,6 +244,7 @@ func (db *DB) WriteBatchInflux() error {
 		db.influxBatchPoints, _ = createBatchInflux()
 	} else {
 		db.influxPointsInBatch = 0
+		db.influxBatchPoints, _ = createBatchInflux()
 	}
 	return err
 }
