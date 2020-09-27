@@ -86,6 +86,11 @@ type Datastore interface {
 
 	GetDefiStateInflux(time.Time, time.Time, string) ([]dia.DefiProtocolState, error)
 	SetDefiStateInflux(state *dia.DefiProtocolState) error
+
+	// Foreign quotation methods
+	SaveForeignQuotationInflux(fq ForeignQuotation) error
+	GetForeignQuotationInflux(symbol string) (ForeignQuotation, error)
+	GetForeignPriceYesterday(symbol, source string) (float64, error)
 }
 
 const (
