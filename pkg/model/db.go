@@ -272,7 +272,7 @@ func (db *DB) Get24Volume(symbol string, exchange string) (float64, error) {
 	q := fmt.Sprintf("SELECT estimatedUSDPrice, volume FROM %s WHERE symbol='%s' and exchange='%s' and time > now() - 1d", influxDbTradesTable, symbol, exchange)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
-		log.Errorln("Get24HoursVolume: ", err)
+		log.Errorf("Get24HoursVolume for %s on %s: %v \n", symbol, exchange, err)
 		return float64(0), err
 	}
 	var VolumeUSD float64
@@ -301,7 +301,7 @@ func (db *DB) Get24VolumeExchange(exchange string) (float64, error) {
 	for _, symbol := range allSymbols {
 		volumeUSD, err := db.Get24Volume(symbol, exchange)
 		if err != nil {
-			log.Errorf("Error getting 24h trade volume of %s", symbol)
+			log.Errorf("Error getting 24h trade volume of %s \n", symbol)
 			continue
 		}
 		TVL += volumeUSD
@@ -321,7 +321,7 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 	var errorString string
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
-		log.Errorln("Sum24HoursInflux", err)
+		log.Errorln("Sum24HoursInflux ", err)
 		return nil, err
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
@@ -331,18 +331,18 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 			if o {
 				result, _ = v.Float64()
 				return &result, nil
-			} else {
-				errorString = "error on parsing row 1"
-				log.Errorln(errorString)
-				return nil, errors.New(errorString)
 			}
+			errorString = "error on parsing row 1"
+			log.Errorln(errorString)
+			return nil, errors.New(errorString)
+
 		}
 	} else {
-		errorString = "Empty res"
+		errorString = "Empty response in Sum24HoursInflux"
 		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 	}
-	return nil, errors.New("couldnt sum in Sum24HoursInflux")
+	return nil, errors.New("couldn't sum in Sum24HoursInflux")
 }
 
 // GetVolumeInflux returns the trade volume of @symbol in the time range @starttime - @endtime.
