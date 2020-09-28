@@ -4,6 +4,7 @@ package foreignscrapers
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 )
 
 const (
-	coingeckoRefreshDelay = time.Second * 60 * 1
+	coingeckoRefreshDelay = time.Second * 10 * 1
 	source                = "Coingecko"
 )
 
@@ -30,30 +31,36 @@ type CoingeckoCoin struct {
 type nothing struct{}
 
 type CoingeckoScraper struct {
-	error    error
-	shutdown chan nothing
 	ticker   *time.Ticker
+	foreignScrapper ForeignScraper
 }
 
-func NewCoingeckoScraper() {
-	// TO DO: Add channel for quotations. Instead of saving to influx at the and of Update
-	// send through channel to main foreign.go and save there.
-	s := &CoingeckoScraper{
-		ticker:   time.NewTicker(coingeckoRefreshDelay),
+func NewCoingeckoScraper(datastore models.Datastore)*CoingeckoScraper {
+
+	foreignScrapper := ForeignScraper{
 		shutdown: make(chan nothing),
 		error:    nil,
+		datastore: datastore,
+		chanQuotation: make(chan *models.ForeignQuotation),
+
 	}
-	s.mainLoop()
+	s := &CoingeckoScraper{
+		ticker:   time.NewTicker(coingeckoRefreshDelay),
+		foreignScrapper:foreignScrapper,
+ 	}
+	  go s.mainLoop()
+
+	return s
 
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CoingeckoScraper) mainLoop() {
-	for {
-		select {
+	for true {
+ 		select {
 		case <-scraper.ticker.C:
-			scraper.Update()
-		case <-scraper.shutdown: // user requested shutdown
+			 scraper.UpdateQuotation()
+		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("Coingeckoscraper shutting down")
 			return
 		}
@@ -61,19 +68,21 @@ func (scraper *CoingeckoScraper) mainLoop() {
 
 }
 
+
+
 // Update retrieves new coin information from the coingecko API and stores it to influx
-func (scraper *CoingeckoScraper) Update() error {
+func (scraper *CoingeckoScraper) UpdateQuotation() error {
 	log.Printf("Executing CoingeckoScraper update")
-	ds, err := models.NewDataStore()
-	if err != nil {
-		log.Fatal("datastore error: ", err)
-	}
+
 	coins, err := getCoingeckoData()
+
 	if err != nil {
+		log.Errorln("Error getting data from coingecko",err)
 		return err
 	}
 
 	for _, coin := range coins {
+
 		// TO DO: normalize symbol instead of all upper
 		coin.Symbol = strings.ToUpper(coin.Symbol)
 
@@ -81,18 +90,18 @@ func (scraper *CoingeckoScraper) Update() error {
 		layout := "2006-01-02T15:04:05.000Z"
 		timestamp, err := time.Parse(layout, coin.LastUpdated)
 		if err != nil {
-			log.Error("error parsing time")
+			log.Errorln("error parsing time")
 		}
 
 		// get ITIN if available in redis
-		itin, err := ds.GetItinBySymbol(coin.Symbol)
+		itin, err := scraper.foreignScrapper.datastore.GetItinBySymbol(coin.Symbol)
 		if err != nil {
 			// log.Errorf("error: no ITIN available for %s \n", coin.Symbol)
 			itin = dia.ItinToken{}
 		}
 
 		// Get yesterday's price from influx if available
-		priceYesterday, err := ds.GetForeignPriceYesterday(coin.Symbol, source)
+		priceYesterday, err := scraper.foreignScrapper.datastore.GetForeignPriceYesterday(coin.Symbol, source)
 		if err != nil {
 			priceYesterday = 0
 		}
@@ -107,10 +116,14 @@ func (scraper *CoingeckoScraper) Update() error {
 			Time:               timestamp,
 			ITIN:               itin.Itin,
 		}
-		ds.SaveForeignQuotationInflux(foreignQuotation)
+		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
 	}
 	return nil
 
+}
+
+func (scraper *CoingeckoScraper) GetQuoteChannel() chan *models.ForeignQuotation {
+	return scraper.foreignScrapper.chanQuotation
 }
 
 func getCoingeckoData() (coins []CoingeckoCoin, err error) {
@@ -123,4 +136,33 @@ func getCoingeckoData() (coins []CoingeckoCoin, err error) {
 		return
 	}
 	return
+}
+
+// closes all connected Scrapers. Must only be called from mainLoop
+func (scraper *CoingeckoScraper) cleanup(err error) {
+
+	scraper.foreignScrapper.errorLock.Lock()
+	defer scraper.foreignScrapper.errorLock.Unlock()
+
+	scraper.foreignScrapper.tickerRate.Stop()
+	scraper.foreignScrapper.tickerState.Stop()
+
+	if err != nil {
+		scraper.foreignScrapper.error = err
+	}
+	scraper.foreignScrapper.closed = true
+
+	close(scraper.foreignScrapper.shutdownDone) // signal that shutdown is complete
+}
+
+// Close closes any existing API connections
+func (scraper *CoingeckoScraper) Close() error {
+	if scraper.foreignScrapper.closed {
+		return errors.New("Scraper: Already closed")
+	}
+	close(scraper.foreignScrapper.shutdown)
+	<-scraper.foreignScrapper.shutdownDone
+	scraper.foreignScrapper.errorLock.RLock()
+	defer scraper.foreignScrapper.errorLock.RUnlock()
+	return scraper.foreignScrapper.error
 }
