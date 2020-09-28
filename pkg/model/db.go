@@ -94,6 +94,7 @@ type Datastore interface {
 	SaveForeignQuotationInflux(fq ForeignQuotation) error
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
+	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 }
 
 const (

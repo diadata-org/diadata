@@ -801,9 +801,10 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 func (env *Env) GetForeignQuotation(c *gin.Context) {
 	source := c.Param("source")
 	symbol := c.Param("symbol")
-	date := c.Param("time")
+	date := c.DefaultQuery("time", "noRange")
 	var timestamp time.Time
-	if date == "" {
+
+	if date == "noRange" {
 		timestamp = time.Now()
 	} else {
 		t, err := strconv.Atoi(date)
@@ -812,8 +813,23 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 		}
 		timestamp = time.Unix(int64(t), 0)
 	}
-
 	q, err := env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+// GetForeignSymbols returns all symbols available for quotation from @source, along with their ITIN
+func (env *Env) GetForeignSymbols(c *gin.Context) {
+	source := c.Param("source")
+
+	q, err := env.DataStore.GetForeignSymbolsInflux(source)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -825,5 +841,3 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	}
 
 }
-
-// TO DO: make a list of available symbols for quotations

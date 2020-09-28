@@ -22,6 +22,11 @@ type SymbolExchangeDetails struct {
 	LastTrades         []dia.Trade
 }
 
+type SymbolShort struct {
+	Symbol string
+	ITIN   string
+}
+
 type Quotation struct {
 	Symbol             string
 	Name               string

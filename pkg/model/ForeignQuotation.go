@@ -42,8 +42,9 @@ func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error) {
 	retval := ForeignQuotation{}
 
-	unixtime := strconv.FormatInt(timestamp.UnixNano(), 10)
-	q := fmt.Sprintf("SELECT * FROM %s WHERE source='%s' and symbol='%s' and time<%s order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
+	unixtime := timestamp.UnixNano()
+	q := fmt.Sprintf("SELECT * FROM %s WHERE source='%s' and symbol='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
+	fmt.Println("query: ", q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
@@ -119,4 +120,38 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 		}
 	}
 	return 0, errors.New("No data available from yesterday")
+}
+
+// GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source,
+// along with their ITIN.
+func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error) {
+
+	q := fmt.Sprintf("SELECT distinct(symbol) FROM %s where source='%s'", influxDbForeignQuotationTable, source)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		fmt.Println("Error querying influx")
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		vals := res[0].Series[0].Values
+		for _, val := range vals {
+			itin, err := db.GetItinBySymbol(val[1].(string))
+			if err != nil {
+				symbol := SymbolShort{
+					Symbol: val[1].(string),
+					ITIN:   "",
+				}
+				symbols = append(symbols, symbol)
+			} else {
+				symbol := SymbolShort{
+					Symbol: val[1].(string),
+					ITIN:   itin.Itin,
+				}
+				symbols = append(symbols, symbol)
+			}
+
+		}
+	}
+	return
 }
