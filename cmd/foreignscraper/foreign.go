@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"sync"
+
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
 	log "github.com/sirupsen/logrus"
@@ -51,5 +52,3 @@ func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup
 	}
 
 }
-
-

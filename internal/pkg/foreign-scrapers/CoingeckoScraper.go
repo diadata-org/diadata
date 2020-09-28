@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	coingeckoRefreshDelay = time.Second * 10 * 1
+	coingeckoRefreshDelay = time.Second * 60 * 2
 	source                = "Coingecko"
 )
 
@@ -31,24 +31,23 @@ type CoingeckoCoin struct {
 type nothing struct{}
 
 type CoingeckoScraper struct {
-	ticker   *time.Ticker
+	ticker          *time.Ticker
 	foreignScrapper ForeignScraper
 }
 
-func NewCoingeckoScraper(datastore models.Datastore)*CoingeckoScraper {
+func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
 
 	foreignScrapper := ForeignScraper{
-		shutdown: make(chan nothing),
-		error:    nil,
-		datastore: datastore,
+		shutdown:      make(chan nothing),
+		error:         nil,
+		datastore:     datastore,
 		chanQuotation: make(chan *models.ForeignQuotation),
-
 	}
 	s := &CoingeckoScraper{
-		ticker:   time.NewTicker(coingeckoRefreshDelay),
-		foreignScrapper:foreignScrapper,
- 	}
-	  go s.mainLoop()
+		ticker:          time.NewTicker(coingeckoRefreshDelay),
+		foreignScrapper: foreignScrapper,
+	}
+	go s.mainLoop()
 
 	return s
 
@@ -57,9 +56,9 @@ func NewCoingeckoScraper(datastore models.Datastore)*CoingeckoScraper {
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CoingeckoScraper) mainLoop() {
 	for true {
- 		select {
+		select {
 		case <-scraper.ticker.C:
-			 scraper.UpdateQuotation()
+			scraper.UpdateQuotation()
 		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("Coingeckoscraper shutting down")
 			return
@@ -68,8 +67,6 @@ func (scraper *CoingeckoScraper) mainLoop() {
 
 }
 
-
-
 // Update retrieves new coin information from the coingecko API and stores it to influx
 func (scraper *CoingeckoScraper) UpdateQuotation() error {
 	log.Printf("Executing CoingeckoScraper update")
@@ -77,7 +74,7 @@ func (scraper *CoingeckoScraper) UpdateQuotation() error {
 	coins, err := getCoingeckoData()
 
 	if err != nil {
-		log.Errorln("Error getting data from coingecko",err)
+		log.Errorln("Error getting data from coingecko", err)
 		return err
 	}
 
