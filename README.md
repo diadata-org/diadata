@@ -51,6 +51,7 @@ Based on the data we collect at DIA we build products an excerpt of which can be
 
 DIA's data feeds are being used by a range of market actors in the DeFi and CeFi space. Below is an excerpt of partners. A number of additional users are in testing phase. This list will be periodically updated.
 
+* [ADD.XYZ](https://add.xyz/) - A full-stack aggregation and management platform der DeFi products. 
 * [Elrond](https://elrond.com/) - A blockchain architecture, designed to bring a 1000-fold cumulative improvement in throughput and execution speed. DIA oracles supply off-chain & cross-chain information.
 * [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.
 * [Hedget](https://www.hedget.com/) - Designed to be a DeFi option trading platform. DIA supplies price feeds to value Hedget’s derivative products.
