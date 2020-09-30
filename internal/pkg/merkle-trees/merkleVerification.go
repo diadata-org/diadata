@@ -67,8 +67,8 @@ func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
 	return parentTree.VerifyContent(cont)
 }
 
-// VerifyContent checks whether a content/bucket is not corrupted all the way
-// up to the merkle root
+// VerifyContent checks whether a content/bucket is uncorrupted all the way
+// up to the merkle root.
 // Alternatively, we could make the above methods return the containing tree.
 // This would shorten the below code
 func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
@@ -77,7 +77,7 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 		log.Fatal("NewAuditStore: ", err)
 	}
 
-	// Verify bucket in pool--------------------------------
+	// Verify bucket in pool
 	// Get ID of parent pool
 	id := strings.Split(sb.ID, ".")[0]
 	// Get tree corresponding to the pool
@@ -85,6 +85,7 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// Verify bucket in pool
 	val, err := tree.VerifyContent(sb)
 	if err != nil {
 		return false, err
@@ -93,19 +94,20 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 		return false, nil
 	}
 
-	// Verify pool in tree level 2 ------------------------
-	// Get ID of pool's parent tree
+	// Verify pool in tree level 2
+	// Get ID of pool's parent tree (all trees with lower level have the same ID by construction)
 	parentID, err := ds.GetPoolsParentID(id, sb.Topic)
 	if err != nil {
 		return false, err
 	}
-
-	parentTree, err := ds.GetDailyTreeByID(sb.Topic, "2", parentID)
+	// Get parent tree (level 2)
+	level2Tree, err := ds.GetDailyTreeByID(sb.Topic, "2", parentID)
 	if err != nil {
 		return false, err
 	}
+	// Verify root hash of pool in level 2 tree
 	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
-	val, err = parentTree.VerifyContent(cont)
+	val, err = level2Tree.VerifyContent(cont)
 	if err != nil {
 		return false, err
 	}
@@ -113,11 +115,27 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 		return false, nil
 	}
 
-	// Verify tree level 2 in tree level 1 -----------------
-	// TO DO
+	// Verify tree level 2 in tree level 1
+	val, err = VerifyTree(level2Tree, "2", parentID)
+	if err != nil {
+		return false, err
+	}
+	if val == false {
+		return false, nil
+	}
 
-	// Verify tree level 1 in tree level 0------------------
-	// TO DO
+	// Verify tree level 1 in tree level 0
+	level1Tree, err := ds.GetDailyTreeByID("", "1", parentID)
+	if err != nil {
+		return false, err
+	}
+	val, err = VerifyTree(level1Tree, "1", parentID)
+	if err != nil {
+		return false, err
+	}
+	if val == false {
+		return false, nil
+	}
 
 	return true, nil
 }
