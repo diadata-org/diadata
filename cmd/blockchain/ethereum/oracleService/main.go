@@ -10,13 +10,13 @@ import (
 	"net/http"
 	"os"
 	"sort"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -56,6 +56,7 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
+	// TO DO: Switch from Infura to our node
 	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/ec6581408f09414b8e4446067cd3ba08")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
@@ -311,7 +312,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	cleanedCoins := []models.Coin{}
 
 	for key := range rawCoins.Coins {
-		if (rawCoins.Coins[key].CirculatingSupply != nil) {
+		if rawCoins.Coins[key].CirculatingSupply != nil {
 			cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
 		}
 	}
@@ -326,6 +327,21 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 	time.Sleep(10 * time.Minute)
+
+	// Coingecko Data
+	// TO DO: Add quotations
+	rawQuot, err := getForeignQuotationFromDia("Coingecko", "BTC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
+		return err
+	}
+	err = updateForeignQuotation(rawQuot, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
+		return err
+	}
+	time.Sleep(10 * time.Minute)
+
 	return nil
 }
 
@@ -397,6 +413,19 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 	price := defiState.TotalUSD
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for fiat currencies
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	name := foreignQuotation.Source + "-" + foreignQuotation.Name
+	symbol := foreignQuotation.Symbol
+	price := foreignQuotation.Price
 	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
@@ -586,6 +615,28 @@ func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
 		}
 		return nil, err
 	}
+}
+
+func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var quotation models.ForeignQuotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &quotation, nil
 }
 
 func updateOracle(

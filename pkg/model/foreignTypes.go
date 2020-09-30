@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type ForeignQuotation struct {
 	Symbol             string
@@ -19,4 +22,17 @@ type DefiScore struct {
 	Score           float64
 	LiquidityIndex  float64
 	CollateralIndex float64
+}
+
+// MarshalBinary -
+func (fq *ForeignQuotation) MarshalBinary() ([]byte, error) {
+	return json.Marshal(fq)
+}
+
+// UnmarshalBinary -
+func (fq *ForeignQuotation) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &fq); err != nil {
+		return err
+	}
+	return nil
 }
