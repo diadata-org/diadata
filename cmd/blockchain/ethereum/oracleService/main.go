@@ -233,7 +233,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	time.Sleep(5 * time.Minute)
 
 	// Curvefi DEX data
-	rawCurvefi, err := getDEXFromDia("Curvefi", "DIA")
+	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Curvefi from DIA: %v", err)
 		return err
@@ -497,7 +497,6 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 	time.Sleep(5 * time.Minute)
-
 	rawQuotXMR, err := getForeignQuotationFromDia("Coingecko", "XMR")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
