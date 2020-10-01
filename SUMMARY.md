@@ -25,6 +25,7 @@
     * [DeFi Protocol Rates and States](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
     * [Interest Rates](documentation/oracle-documentation/interest-rates.md)
     * [Fiat Prices](documentation/oracle-documentation/fiat-prices.md)
+    * [Guest Quotations](documentation/oracle-documentation/guest-quotations.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
 * [Licence Agreement](licence-agreement.md)
