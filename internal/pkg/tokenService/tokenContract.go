@@ -1,9 +1,12 @@
 package tokenService
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/big"
+	"os"
 	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -13,15 +16,36 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore) {
-	client, err := ethclient.Dial("https://mainnet.infura.io/v3/your-key-here")
+//getWalletsTokenBalances
+func getWalletsTokenBalances(address string) (map[string]interface{}, error) {
+
+	fileName := fmt.Sprintf("../../../config/%s.json", address) // I used address to represent file name
+	jsonFile, err := os.Open(fileName)
+	var result map[string]interface{} // This may become a struct to properly parse JSON
+
+	if err != nil {
+		log.Errorln("Error opening file", err)
+		return result, err
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	json.Unmarshal([]byte(byteValue), &result) //If result becomes struct the coversion with byte array is no more needed
+
+	return result, nil
+
+}
+
+func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore) float64 {
+	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/your-key-here")
 	if err != nil {
 		log.Error(err)
 	}
 
 	// Address "0xa74476443119A942dE498590Fe1f2454d7D4aC0d"
 	tokenAddressInHex := common.HexToAddress(tokenAddress)
-	instance, err := NewERC20(tokenAddressInHex, client)
+	instance, err := NewERC20(tokenAddressInHex, conn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,31 +69,13 @@ func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore) 
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("client3")
 
-	fmt.Printf("name: %s\n", name)         // "name: Golem Network"
-	fmt.Printf("symbol: %s\n", symbol)     // "symbol: GNT"
-	fmt.Printf("decimals: %v\n", decimals) // "decimals: 18"
-
-	// "wei: 74605500647408739782407023"
-	fmt.Printf("wei: %s\n", totalSupply) // "wei: 74605500647408739782407023"
-	fmt.Println("")
 	fbal := new(big.Float)
 
 	fbal.SetString(totalSupply.String())
 	valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
 	totalSup, _ := valuei.Float64()
-	fmt.Printf("balance: %f", totalSup) // "balance: 74605500.647409"
-	fmt.Println("")
 	timeNow := time.Now()
-	// Parse last updated timestamp
-	//layout := "2006-01-02T15:04:05.000Z"
-	//timestamp, err := time.Parse(layout, timeNow)
-	//ndecimals := decimals.(int)
-	//reflect.ValueOf(ndecimals ).Int64()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	token := models.Token{
 		Symbol:      symbol,
@@ -79,12 +85,37 @@ func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore) 
 		Source:      "Ethereum Mainnet",
 		Time:        timeNow,
 	}
-	fmt.Println("")
-	fmt.Printf("Token %v", token)
+
 	datastore.SaveTokenDetailInflux(token)
 
-	time.Sleep(2 * time.Second)
-	tk, err := datastore.GetTokenDetailInflux(symbol, "Ethereum Mainnet", time.Now())
+	walletBalances, err := getWalletsTokenBalances(tokenAddress)
+	if err != nil {
+		return 0
+	}
 
-	fmt.Printf("Token %v", tk)
+	for _, val := range walletBalances {
+		// This option is used if we have to use balance value from wallet.
+		/*totalSup = totalSup - val["Value"] */
+		fmt.Println("val", val) // dummy  to be removed
+		//if getting balanceOf from mainnet, val would the wallet address.
+
+		/*
+			stringToHex := common.HexToAddress(val["value"])
+			ownerBal, err := instance.BalanceOf(&bind.CallOpts{}, stringToHex)
+			if err != nil {
+				log.Fatalf("Failed to retrieve token owner balance: %v", err)
+			}
+
+			fbal := new(big.Float)
+
+			fbal.SetString(ownerBal.String())
+			valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
+			accountBal, _ := valuei.Float64()
+
+			totalSup = totalSup - accountBal
+		*/
+
+	}
+
+	return totalSup
 }
