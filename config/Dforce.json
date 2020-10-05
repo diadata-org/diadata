@@ -1,0 +1,436 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-USDT",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAX",
+            "ForeignName": "PAX-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-PAX",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-TUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSD-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-BUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUSD",
+            "ForeignName": "HUSD-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-HUSD",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GOLDx",
+            "ForeignName": "GOLDx-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-GOLDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDx",
+            "ForeignName": "USDx-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDx",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-DAI",
+            "Exchange": "Dforce",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDC",
+            "Exchange": "Dforce",
+            "Ignore": false
+        }
+    ]
+}
