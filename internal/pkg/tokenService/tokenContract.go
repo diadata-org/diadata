@@ -7,7 +7,6 @@ import (
 	"math"
 	"math/big"
 	"os"
-	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -16,106 +15,95 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//getWalletsTokenBalances
-func getWalletsTokenBalances(address string) (map[string]interface{}, error) {
+// getWalletsFromConfig returns wallet addresses from config file
+func getWalletsFromConfig(filename string) ([]string, error) {
 
-	fileName := fmt.Sprintf("../../../config/%s.json", address) // I used address to represent file name
+	fileName := fmt.Sprintf("../../../config/token_supply/%s.json", filename)
 	jsonFile, err := os.Open(fileName)
-	var result map[string]interface{} // This may become a struct to properly parse JSON
-
 	if err != nil {
 		log.Errorln("Error opening file", err)
-		return result, err
+		return []string{}, err
 	}
-
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal([]byte(byteValue), &result) //If result becomes struct the coversion with byte array is no more needed
-
-	return result, nil
-
-}
-
-func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore) float64 {
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/your-key-here")
+	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		log.Error(err)
 	}
 
-	// Address "0xa74476443119A942dE498590Fe1f2454d7D4aC0d"
-	tokenAddressInHex := common.HexToAddress(tokenAddress)
-	instance, err := NewERC20(tokenAddressInHex, conn)
+	var result map[string][]string
+	json.Unmarshal(byteData, &result) //If result becomes struct the coversion with byte array is no more needed
+
+	return result["wallets"], nil
+}
+
+// GetWalletBalance returns balance of token with address @tokenAddr in wallet with address @walletAddr
+func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) (balance float64, err error) {
+	instance, err := NewERC20(common.HexToAddress(tokenAddr), c)
 	if err != nil {
 		log.Fatal(err)
+		return
+	}
+	decimals, err := instance.Decimals(&bind.CallOpts{})
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
 
+	walletBal, err := instance.BalanceOf(&bind.CallOpts{}, common.HexToAddress(walletAddr))
+	if err != nil {
+		log.Fatalf("Failed to retrieve token owner balance: %v", err)
+		return
+	}
+
+	fbal := new(big.Float)
+	fbal.SetString(walletBal.String())
+
+	balance, _ = new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals)))).Float64()
+	return
+}
+
+// GetTotalSupplyfromMainNet return total supply minus wallets' balances from config file
+func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore, client *ethclient.Client) (totalSupp, circulatingSupply float64, err error) {
+
+	instance, err := NewERC20(common.HexToAddress(tokenAddress), client)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 	totalSupply, err := instance.TotalSupply(&bind.CallOpts{})
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	name, err := instance.Name(&bind.CallOpts{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	symbol, err := instance.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	decimals, err := instance.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	fbal := new(big.Float)
-
 	fbal.SetString(totalSupply.String())
+
 	valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
-	totalSup, _ := valuei.Float64()
-	timeNow := time.Now()
+	totalSupp, _ = valuei.Float64()
 
-	token := models.Token{
-		Symbol:      symbol,
-		Name:        name,
-		TotalSupply: totalSup,
-		Decimals:    int(decimals),
-		Source:      "Ethereum Mainnet",
-		Time:        timeNow,
-	}
-
-	datastore.SaveTokenDetailInflux(token)
-
-	walletBalances, err := getWalletsTokenBalances(tokenAddress)
+	wallets, err := getWalletsFromConfig("wallets")
 	if err != nil {
-		return 0
+		return
 	}
 
-	for _, val := range walletBalances {
-		// This option is used if we have to use balance value from wallet.
-		/*totalSup = totalSup - val["Value"] */
-		fmt.Println("val", val) // dummy  to be removed
-		//if getting balanceOf from mainnet, val would the wallet address.
+	circulatingSupply = totalSupp
+	for _, walletAddress := range wallets {
 
-		/*
-			stringToHex := common.HexToAddress(val["value"])
-			ownerBal, err := instance.BalanceOf(&bind.CallOpts{}, stringToHex)
-			if err != nil {
-				log.Fatalf("Failed to retrieve token owner balance: %v", err)
-			}
-
-			fbal := new(big.Float)
-
-			fbal.SetString(ownerBal.String())
-			valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
-			accountBal, _ := valuei.Float64()
-
-			totalSup = totalSup - accountBal
-		*/
+		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
+		if err != nil {
+			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)
+		}
+		circulatingSupply = circulatingSupply - balance
 
 	}
 
-	return totalSup
+	return
 }
