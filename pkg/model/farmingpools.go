@@ -11,4 +11,6 @@ type PoolRate struct {
  	PoolID string // hold pool id respective to protocol
  	TimeStamp time.Time
  	OutputAsset string
- }
+	InputAsset []string //some pools have more than 2 input assets
+
+}

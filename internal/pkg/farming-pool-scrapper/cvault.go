@@ -15,8 +15,8 @@ import (
 var log = logrus.New()
 
 const (
-	restDial = "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
-	wsDial   = "wss://mainnet.infura.io/ws/v3/2883d1b22e0e4d62b535592dd8075fee"
+	restDial      = "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
+	wsDial        = "wss://mainnet.infura.io/ws/v3/2883d1b22e0e4d62b535592dd8075fee"
 	cvaultAddress = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
 )
 
@@ -67,20 +67,17 @@ func (cv *Cvault) mainLoop() {
 	log.Info("Subscribed to WithDraw events")
 
 	go func() {
+		// Pool rates change per deposit and withdraw
 		for {
 			select {
 			case deposit := <-cv.DepositEvent:
 				{
-
 					cv.getPool(deposit.Pid)
-
 				}
 			case withdraw := <-cv.WithDrawEvent:
 				{
-
 					cv.getPool(withdraw.Pid)
 				}
-
 			}
 
 		}
@@ -90,8 +87,15 @@ func (cv *Cvault) mainLoop() {
 }
 
 func (cv *Cvault) getPool(poolID *big.Int) {
-	cvg, _ := cvaultcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
-	pi, _ := cvg.PoolInfo(&bind.CallOpts{}, poolID)
+	cvg, err := cvaultcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
+	if err!=nil{
+		log.Errorln("Error initialising cvault caller ",err)
+	}
+	pi, err := cvg.PoolInfo(&bind.CallOpts{}, poolID)
+	if err!=nil{
+		log.Errorln("Error getting poolInfo ",err)
+	}
+
 
 	var pr models.PoolRate
 	pr.TimeStamp = time.Now()
@@ -102,6 +106,6 @@ func (cv *Cvault) getPool(poolID *big.Int) {
 	cv.scrapper.chanPoolInfo <- &pr
 
 }
-func (cv *Cvault) UpdateRate()error {
+func (cv *Cvault) UpdateRate() error {
 	return errors.New("")
 }
