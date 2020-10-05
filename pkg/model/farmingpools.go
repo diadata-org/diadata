@@ -6,7 +6,7 @@ import (
 )
 
 type PoolRate struct {
- 	Rate  *big.Int
+ 	Rate  *big.Float
  	ProtocolName string
  	PoolID string // hold pool id respective to protocol
  	TimeStamp time.Time

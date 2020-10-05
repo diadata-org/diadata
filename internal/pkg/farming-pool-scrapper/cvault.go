@@ -96,10 +96,11 @@ func (cv *Cvault) getPool(poolID *big.Int) {
 		log.Errorln("Error getting poolInfo ",err)
 	}
 
+	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
 
 	var pr models.PoolRate
 	pr.TimeStamp = time.Now()
-	pr.Rate = pi.AccCorePerShare.Div(pi.AccCorePerShare, big.NewInt(1).Exp(big.NewInt(10), big.NewInt(12), nil))
+	pr.Rate = AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12))
 	pr.ProtocolName = cv.scrapper.poolName
 	pr.PoolID = poolID.String()
 	pr.OutputAsset = "CORE"
