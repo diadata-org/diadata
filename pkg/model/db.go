@@ -95,6 +95,11 @@ type Datastore interface {
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
+
+	// Token methods
+	// SaveTokenDetailInflux(tk Token) error
+	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
+	// GetCurentTotalSupply(symbol, source string) (float64, error)
 }
 
 const (
