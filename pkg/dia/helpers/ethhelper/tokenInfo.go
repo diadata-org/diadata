@@ -1,6 +1,8 @@
 package ethhelper
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"math/big"
 	"os"
 	"strings"
@@ -73,4 +75,35 @@ func GetDecimals(address common.Address) (int, error) {
 	}
 	return int((*decimals).Int64()), nil
 
+}
+
+// GetAddressesFromFile fetches token addresses from a config file available here:
+// https://etherscan.io/exportData?type=open-source-contract-codes
+func GetAddressesFromFile() (addresses []string, err error) {
+	jsonFile, err := os.Open("../../../config/token_supply/tokens_list.json")
+	if err != nil {
+		log.Errorln("Error opening file", err)
+		return
+	}
+	defer jsonFile.Close()
+
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	// For now we only return token address. Name can be retrieved through contract.
+	type token struct {
+		Address string
+		Name    string
+	}
+	type TokenInfo struct {
+		Tokens []token
+	}
+	var tokeninfo TokenInfo
+	json.Unmarshal(byteData, &tokeninfo)
+	for _, token := range tokeninfo.Tokens {
+		addresses = append(addresses, token.Address)
+	}
+	return
 }

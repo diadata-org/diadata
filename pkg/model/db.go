@@ -506,8 +506,9 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 
 func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	fields := map[string]interface{}{
-		"supply": supply.CirculatingSupply,
-		"source": supply.Source,
+		"supply":             supply.Supply,
+		"circulating-supply": supply.CirculatingSupply,
+		"source":             supply.Source,
 	}
 	tags := map[string]string{
 		"symbol": supply.Symbol,

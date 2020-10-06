@@ -15,6 +15,7 @@ const (
 type Supply struct {
 	Symbol            string
 	Name              string
+	Supply            float64
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
@@ -160,6 +161,7 @@ func (e *DefiProtocolState) UnmarshalBinary(data []byte) error {
 	}
 	return nil
 }
+
 // MarshalBinary for DefiRate
 func (e *DefiRate) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)

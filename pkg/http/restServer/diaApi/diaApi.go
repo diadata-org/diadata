@@ -135,17 +135,7 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetSupply godoc
-// @Summary Get supply
-// @Description GetSupply
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} dia.Supply "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/supply/:symbol: [get]
+// GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
 	s, err := env.DataStore.GetLatestSupply(symbol)
@@ -160,7 +150,7 @@ func (env *Env) GetSupply(c *gin.Context) {
 	}
 }
 
-// GetSupplies
+// GetSupplies returns a time range of supplies of token with @symbol
 func (env *Env) GetSupplies(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.DefaultQuery("starttime", "noRange")

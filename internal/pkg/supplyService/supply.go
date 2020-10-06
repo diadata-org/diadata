@@ -1,13 +1,16 @@
-package tokenService
+package supplyservice
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math"
 	"math/big"
 	"os"
+	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -64,45 +67,63 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 }
 
 // GetTotalSupplyfromMainNet return total supply minus wallets' balances from config file
-func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore, client *ethclient.Client) (totalSupp, circulatingSupply float64, err error) {
+func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore, client *ethclient.Client) (supply dia.Supply, err error) {
 
 	instance, err := NewERC20(common.HexToAddress(tokenAddress), client)
 	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	totalSupply, err := instance.TotalSupply(&bind.CallOpts{})
-	if err != nil {
-		log.Fatal(err)
+		log.Error("error getting token contract: ", err)
 		return
 	}
 
+	totalSupply, err := instance.TotalSupply(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	symbol, err := instance.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	name, err := instance.Name(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
 	decimals, err := instance.Decimals(&bind.CallOpts{})
 	if err != nil {
-		log.Fatal(err)
 		return
 	}
 
 	fbal := new(big.Float)
 	fbal.SetString(totalSupply.String())
-
 	valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
-	totalSupp, _ = valuei.Float64()
+	totalSupp, _ := valuei.Float64()
 
 	wallets, err := getWalletsFromConfig("wallets")
 	if err != nil {
 		return
 	}
 
-	circulatingSupply = totalSupp
+	circulatingSupply := totalSupp
 	for _, walletAddress := range wallets {
-
 		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
 		if err != nil {
 			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)
 		}
 		circulatingSupply = circulatingSupply - balance
+	}
 
+	header, err := client.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	supply = dia.Supply{
+		Symbol:            symbol,
+		Name:              name,
+		Supply:            totalSupp,
+		CirculatingSupply: circulatingSupply,
+		Source:            "DIAdata",
+		Time:              time.Unix(int64(header.Time), 0),
+		Block:             header.Number.Int64(),
 	}
 
 	return
