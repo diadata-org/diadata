@@ -1,6 +1,6 @@
 pragma solidity 0.7.0;
 
-contract DIACoingecoOracle {
+contract DIACoingeckoOracle {
     mapping (string => uint256) public values;
     address oracleUpdater;
     
