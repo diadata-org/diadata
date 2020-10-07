@@ -165,6 +165,17 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			helper = NewCompound(s, protocol)
 		}
+	case "CREAM":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "CREAM",
+				Address:              "",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewCreamFinance(s, protocol)
+		}
 	case "BZX":
 		{
 
@@ -247,6 +258,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "FORTUBE":
 		{
 			helper = NewForTube(s, protocol)
+		}
+	case "CREAM":
+		{
+			helper = NewCompound(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
