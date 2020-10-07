@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
@@ -504,31 +503,6 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	return retval, nil
 }
 
-func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
-	fields := map[string]interface{}{
-		"supply":             supply.Supply,
-		"circulating-supply": supply.CirculatingSupply,
-		"source":             supply.Source,
-	}
-	tags := map[string]string{
-		"symbol": supply.Symbol,
-		"name":   supply.Name,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
-	if err != nil {
-		log.Errorln("NewSupplyInflux:", err)
-	} else {
-		db.addPoint(pt)
-	}
-
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SaveSupplyInflux", err)
-	}
-
-	return err
-}
-
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
@@ -649,13 +623,38 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 	return
 }
 
+func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
+	fields := map[string]interface{}{
+		"supply":            supply.Supply,
+		"circulatingsupply": supply.CirculatingSupply,
+		"symbol":            supply.Symbol,
+		"fullname":          supply.Name,
+	}
+	tags := map[string]string{
+		"source": supply.Source,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
+	if err != nil {
+		log.Errorln("NewSupplyInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveSupplyInflux", err)
+	}
+
+	return err
+}
+
 func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,fullname FROM %s WHERE symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
 	} else {
-		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE time > %d and time < %d and symbol = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,fullname FROM %s WHERE time > %d and time < %d and symbol = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -668,16 +667,24 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.CirculatingSupply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			currentSupply.Supply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.Source = res[0].Series[0].Values[i][2].(string)
+			currentSupply.CirculatingSupply, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
+			currentSupply.Source = res[0].Series[0].Values[i][3].(string)
+			if err != nil {
+				return retval, err
+			}
+			currentSupply.Name = res[0].Series[0].Values[i][4].(string)
+			if err != nil {
+				log.Error("error getting symbol name from influx: ", err)
+			}
+
 			currentSupply.Symbol = symbol
-			currentSupply.Name = helpers.NameForSymbol(symbol)
 			retval = append(retval, currentSupply)
 		}
 	} else {
