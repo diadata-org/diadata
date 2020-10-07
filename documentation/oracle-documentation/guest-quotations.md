@@ -9,11 +9,6 @@ The oracle contains information about price quotations of crypto assets, accumul
 1.  Access our [Coingecko oracle smart contract](https://etherscan.io/address/0x07e4120dd7411a49e091a20fa0be33a183c35d60).
 2. Call `getValue(key)` where `key` is the symbol for the asset in capital letters, for instance `BTC` for Bitcoin. You can use the "Read" section on Etherscan to execute this call.
 3. The response of the call contains two values:
-
    1. The current asset price in USD with a fix-comma notation of five decimals.
    2. The [UNIX timestamp](https://www.unixtimestamp.com/) of the last oracle update.
-
-Currently available are the following 20 largest quotations by market cap from [Coingecko](https://www.coingecko.com/en):
-
-Bitcoin, Ethereum, Tether, XRP, Binance Coin, Bitcoin Cash, Polkadot, Chainlink, Bitcoin SV, Cardano, Crypto.com Coin, Litecoin, USD Coin, EOS, Monero, TRON, OKB, Tezos, Stellar, NEO
 
