@@ -26,12 +26,13 @@ const (
 
 	factoryContract = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 
-	infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
+	// infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
 	startBlock = uint64(10780772 - 5250)
 
-	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
-	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
-	// balancerRestDial = "http://159.69.120.42:8545/"
+	// balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
+	// balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
+	balancerRestDial = "http://159.69.120.42:8545/"
+	balancerWsDial   = "ws://159.69.120.42:8546/"
 )
 
 type BalancerSwap struct {

@@ -56,8 +56,8 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
-	// TO DO: Switch from Infura to our node
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/ec6581408f09414b8e4446067cd3ba08")
+
+	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
@@ -72,7 +72,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-
 	periodicOracleUpdateHelper(numCoins, auth, contract)
 	/*
 	 * Update Oracle periodically with top coins
@@ -114,10 +113,10 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 }
 
 func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingecoOracle) error {
-	// name := foreignQuotation.Source + "-" + foreignQuotation.Name
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
-	err := updateOracle(contract, auth, symbol, int64(price*100000), 0)
+	timestamp := foreignQuotation.Time.Unix()
+	err := updateOracle(contract, auth, symbol, int64(price*100000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err

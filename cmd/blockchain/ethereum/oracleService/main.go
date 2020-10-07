@@ -56,8 +56,7 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
-	// TO DO: Switch from Infura to our node
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/ec6581408f09414b8e4446067cd3ba08")
+	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
