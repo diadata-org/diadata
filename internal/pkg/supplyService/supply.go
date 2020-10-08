@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -67,7 +66,7 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 }
 
 // GetTotalSupplyfromMainNet return total supply minus wallets' balances from config file
-func GetTotalSupplyfromMainNet(tokenAddress string, datastore models.Datastore, client *ethclient.Client) (supply dia.Supply, err error) {
+func GetTotalSupplyfromMainNet(tokenAddress string, client *ethclient.Client) (supply dia.Supply, err error) {
 
 	instance, err := NewERC20(common.HexToAddress(tokenAddress), client)
 	if err != nil {

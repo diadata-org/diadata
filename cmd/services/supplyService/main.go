@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	for {
 		timeInit := time.Now()
 		for _, address := range adds {
-			supp, err := supplyservice.GetTotalSupplyfromMainNet(address, ds, conn)
+			supp, err := supplyservice.GetTotalSupplyfromMainNet(address, conn)
 			if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
 				continue
 			}
