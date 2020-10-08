@@ -54,6 +54,20 @@ services:
     secrets:
       - oracle_keys
 
+  diacoingeckooracleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x07E4120dD7411a49e091a20FA0be33a183C35d60 --numCoins=100
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys
+
   eth:
     build:
       context: $GOPATH
