@@ -34,6 +34,7 @@ func main() {
 				continue
 			}
 			ds.SetSupply(&supp)
+			log.Info("set supply: ", supp)
 		}
 		timeFinal := time.Now()
 		timeElapsed := timeFinal.Sub(timeInit)

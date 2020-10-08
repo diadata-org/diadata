@@ -48,13 +48,13 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 	}
 	decimals, err := instance.Decimals(&bind.CallOpts{})
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		return
 	}
 
 	walletBal, err := instance.BalanceOf(&bind.CallOpts{}, common.HexToAddress(walletAddr))
 	if err != nil {
-		log.Fatalf("Failed to retrieve token owner balance: %v", err)
+		log.Errorf("Failed to retrieve token owner balance from wallet %s: %v \n", walletAddr, err)
 		return
 	}
 
