@@ -18,6 +18,18 @@ go.*
 bin/
 pkg/mod
 
-
 node_modules/
 package-lock.json
+
+cmd/blockchain/ethereum/diaCoingeckoOracleService/diaCoingeckoOracleService
+cmd/blockchain/ethereum/oracleService/oracleService
+cmd/defiscraper/defiscraper
+cmd/exchange-scrapers/collector/collector
+cmd/exchange-scrapers/ecb/ecb
+cmd/http/restServer/restServer
+cmd/ratescrapers/ratescrapers
+cmd/services/cviService/cviService
+cmd/services/graphService/graphService
+cmd/services/itinService/itinService
+cmd/services/pairDiscoveryService/pairDiscoveryService
+cmd/services/supplyService/supplyService
