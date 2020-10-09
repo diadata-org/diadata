@@ -120,7 +120,7 @@ func GetTotalSupplyfromMainNet(tokenAddress string, client *ethclient.Client) (s
 		Name:              name,
 		Supply:            totalSupp,
 		CirculatingSupply: circulatingSupply,
-		Source:            "DIAdata",
+		Source:            "diadata.org",
 		Time:              time.Unix(int64(header.Time), 0),
 		Block:             header.Number.Int64(),
 	}

@@ -119,7 +119,8 @@ const (
 	influxDbFiltersTable   = "filters"
 	influxDbOptionsTable   = "options"
 	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supply"
+	influxDbSupplyTable    = "supplies"
+	influxDbSupplyTableOld = "supply"
 	influxDbDefiRateTable  = "defiRate"
 	influxDbDefiStateTable = "defiState"
 )
@@ -627,11 +628,11 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	fields := map[string]interface{}{
 		"supply":            supply.Supply,
 		"circulatingsupply": supply.CirculatingSupply,
-		"symbol":            supply.Symbol,
-		"fullname":          supply.Name,
+		"source":            supply.Source,
 	}
 	tags := map[string]string{
-		"source": supply.Source,
+		"symbol": supply.Symbol,
+		"name":   supply.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
 	if err != nil {
@@ -652,9 +653,10 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,fullname FROM %s WHERE symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		fmt.Println("influx query: ", q)
 	} else {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,fullname FROM %s WHERE time > %d and time < %d and symbol = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
