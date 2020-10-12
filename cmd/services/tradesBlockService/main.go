@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/diadata-org/diadata/internal/pkg/tradesBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
@@ -28,11 +27,6 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 }
 
 func main() {
-
-	cc := configCollectors.NewConfigCollectorsIfExists("vip")
-	if cc == nil {
-		log.Warning("no vip.json: accepting all trades.")
-	}
 
 	w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
 	defer w.Close()
@@ -60,11 +54,6 @@ func main() {
 			var t dia.Trade
 			err := t.UnmarshalBinary(m.Value)
 			if err == nil {
-				if cc != nil {
-					if cc.IsSymbolInConfig(t.Symbol) == false {
-						continue
-					}
-				}
 				tradesBlockService.ProcessTrade(&t)
 			} else {
 				log.Printf("ignored message at offset %d: %s = %s\n", m.Offset, string(m.Key), string(m.Value))
