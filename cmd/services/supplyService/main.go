@@ -33,6 +33,17 @@ func main() {
 			if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
 				continue
 			}
+			// Hotfix for some supplies:
+			if supp.Symbol == "YAM" {
+				supp.CirculatingSupply = float64(13907678)
+			}
+			if supp.Symbol == "CRO" {
+				supp.CirculatingSupply = float64(20631963470)
+			}
+			if supp.Symbol == "CRO" {
+				supp.CirculatingSupply = float64(209994599)
+			}
+
 			ds.SetSupply(&supp)
 			log.Info("set supply: ", supp)
 		}
