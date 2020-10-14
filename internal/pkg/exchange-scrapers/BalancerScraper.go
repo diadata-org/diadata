@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 )
 
 const (
@@ -151,7 +152,7 @@ func (scraper *BalancerScraper) mainLoop() {
 }
 
 func (scraper *BalancerScraper) performSubscriptions() {
-	for pool, _ := range scraper.pools {
+	for pool := range scraper.pools {
 		scraper.subscribeToNewSwaps(pool)
 	}
 
@@ -332,6 +333,9 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error("Error: %v", err)
+		}
+		if helpers.SymbolIsBlackListed(symbol) {
+			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
