@@ -90,7 +90,6 @@ func ConfigFilePath(filename string) string {
 	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/token_supply/" + filename + ".json"
 }
 
-
 // GetAddressesFromFile fetches token addresses from a config file available here:
 // https://etherscan.io/exportData?type=open-source-contract-codes
 func GetAddressesFromFile() (addresses []string, err error) {
@@ -113,7 +112,7 @@ func GetAddressesFromFile() (addresses []string, err error) {
 		Name    string
 	}
 	type TokenInfo struct {
-		Tokens []token
+		Tokens []token `json:"Tokens"`
 	}
 	var tokeninfo TokenInfo
 	json.Unmarshal(byteData, &tokeninfo)
