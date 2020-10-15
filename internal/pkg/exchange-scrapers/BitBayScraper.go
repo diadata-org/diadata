@@ -21,7 +21,7 @@ const apiRequest string = "/trades.json"
 const apiDelay = time.Second
 
 // Seconds to wait for scrappers to be ready
-const waitForScrappers = 10
+const waitForScrapers = 10
 
 //TradeInfo as received from API response
 type TradeInfo struct {
@@ -69,31 +69,31 @@ func NewBitBayScraper(exchangeName string) *BitBayScraper {
 
 // runs in a goroutine until s is closed
 func (s *BitBayScraper) mainLoop() {
-	// wait up to 10 [s] for scrappers
-	waitForScrappers := 10
+	// wait up to 10 [s] for scrapers
+	waitForScrapers := 10
 	s.run = false
 	s.error = errors.New(s.exchangeName + "Scraper: No pair to scrap provided")
 	log.Info("Waiting for pairs")
-	for waitForScrappers > 0 {
+	for waitForScrapers > 0 {
 		log.Info(".")
 		if len(s.pairScrapers) > 0 {
-			// If at least one scrapper is ready we can start querying the API
+			// If at least one scraper is ready we can start querying the API
 			log.Info("Pair availables")
 			s.error = nil
 			s.run = true
 			break
 		}
 		time.Sleep(time.Second)
-		waitForScrappers--
+		waitForScrapers--
 	}
 	for s.run {
 		for _, pair := range s.pairScrapers {
-			time.Sleep(apiDelay)
-			trades, err := fetchPairs(pair.apiEndPoint)
+			// time.Sleep(apiDelay)
+			trades, err := fetchTrades(pair.apiEndPoint, strconv.Itoa(pair.latestTrade))
 			if err == nil {
 				for _, trade := range trades {
-					i, e := strconv.Atoi(trade.Tid)
-					if e == nil {
+					i, err := strconv.Atoi(trade.Tid)
+					if err == nil {
 						if i > pair.latestTrade {
 							pair.latestTrade = i
 							t := &dia.Trade{
@@ -105,6 +105,7 @@ func (s *BitBayScraper) mainLoop() {
 								ForeignTradeID: trade.Tid,
 								Source:         s.exchangeName,
 							}
+							log.Info("got trade: ", t)
 							pair.parent.chanTrades <- t
 						}
 					} else {
@@ -115,6 +116,7 @@ func (s *BitBayScraper) mainLoop() {
 				log.Error("Error fetching pairs:", err)
 			}
 		}
+		time.Sleep(1 * time.Second)
 	}
 	if s.error == nil {
 		s.error = errors.New(s.exchangeName + "Scraper: terminated by Close()")
@@ -123,10 +125,11 @@ func (s *BitBayScraper) mainLoop() {
 }
 
 // retrieve pair data
-func fetchPairs(pairs string) ([]TradeInfo, error) {
-	log.Info("requesting:" + apiURL + pairs + apiRequest)
+func fetchTrades(pairs string, latestTrade string) ([]TradeInfo, error) {
 
-	body, err := utils.GetRequest(apiURL + pairs + apiRequest)
+	log.Info("requesting:" + apiURL + pairs + apiRequest + "?since=" + latestTrade)
+
+	body, err := utils.GetRequest(apiURL + pairs + apiRequest + "?since=" + latestTrade)
 	type APIResponse []TradeInfo
 	var ar APIResponse
 
