@@ -200,7 +200,7 @@ services:
       - EXEC_MODE=production
 
   dforcecollector:
-  depends_on: [genericcollector]
+    depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=Dforce
     networks:
