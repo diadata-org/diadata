@@ -267,7 +267,13 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
+		if p1.Symbol == "" {
+			continue
+		}
 		for _, p2 := range scraper.tokens {
+			if p2.Symbol == "" {
+				continue
+			}
 			token1 := p1
 			token2 := p2
 			if token1 != token2 {
