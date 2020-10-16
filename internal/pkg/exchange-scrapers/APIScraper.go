@@ -80,9 +80,11 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	case dia.MakerExchange:
 		return NewMakerScraper(dia.MakerExchange)
 	case dia.KuCoinExchange:
- 		return NewKuCoinScraper(key,secret,dia.KuCoinExchange)
+		return NewKuCoinScraper(key, secret, dia.KuCoinExchange)
 	case dia.DforceExchange:
 		return NewDforceScraper(dia.DforceExchange)
+	case dia.ZeroxExchange:
+		return NewZeroxScraper(dia.ZeroxExchange)
 	default:
 		return nil
 	}
