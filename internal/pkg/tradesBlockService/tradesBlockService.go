@@ -96,7 +96,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	if baseToken != "USD" {
 		val, err := s.datastore.GetPriceUSD(baseToken, t.Time)
 		if err != nil {
-			log.Error("Cant find base token ", baseToken, " in redis ", err, " ignoring ", t)
+			log.Error("Cannot find matching price for ", baseToken, " in redis or influx: ", err, ". ignoring ", t)
 			ignoreTrade = true
 		} else {
 			t.EstimatedUSDPrice = t.Price * val

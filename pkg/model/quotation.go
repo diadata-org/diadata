@@ -86,7 +86,6 @@ func (db *DB) GetPriceUSD(symbol string, timestamp time.Time) (float64, error) {
 	// (Remark that redis quotation is always at least as actual as influx price)
 	price := float64(0)
 	if redisMemory.Before(timestamp) {
-		log.Infof("call redis on %s \n", symbol)
 		key := getKeyQuotation(symbol)
 		value := &Quotation{}
 		err := db.redisClient.Get(key).Scan(value)
@@ -99,14 +98,14 @@ func (db *DB) GetPriceUSD(symbol string, timestamp time.Time) (float64, error) {
 		return value.Price, nil
 	}
 	// Get price from MA120 filter in case timestamp is older than TimeOutRedis
+	// Only take into account price not older than TimeOutRedis before timestamp.
+	// Remark: The more data we collect, the bigger we can make this time window as it is getting more reliable that
+	// this is indeed the last called price of the asset under consideration, and not a lack of data on our side.
 	log.Infof("call influx price on %s", symbol)
-	price, influxTime, err := db.GetAssetPriceInflux("", symbol, timestamp.Add(-TimeOutRedis), timestamp)
+	price, _, err := db.GetAssetPriceInflux("", symbol, timestamp.Add(-TimeOutRedis), timestamp)
 	if err != nil {
 		return price, err
 	}
-	log.Infof("historic price for %s:  %v", symbol, price)
-	log.Info("time of above info: ", influxTime)
-	log.Info("error value: ", err)
 	return price, nil
 }
 

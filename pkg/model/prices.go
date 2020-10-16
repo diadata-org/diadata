@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -34,15 +35,14 @@ func (db *DB) GetAssetPriceInflux(exchange, symbol string, timeInit, timeFinal t
 	unixTimeFinal := timeFinal.UnixNano()
 	q := fmt.Sprintf("SELECT value FROM filters WHERE filter='MA120' and exchange='%s' and symbol='%s' and time>%d and time<=%d ORDER BY DESC limit 1", exchange, symbol, unixTimeInit, unixTimeFinal)
 	log.Info("influx query: ", q)
-
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorf("Influx query %s error: %s", q, err)
 		return float64(0), time.Time{}, err
 	}
+
 	if len(res) > 0 && len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 		val := res[0].Series[0].Values[0]
-		log.Info("val in GetAssetPriceInflux: ", val)
 
 		price, err := val[1].(json.Number).Float64()
 		if err != nil {
@@ -55,5 +55,6 @@ func (db *DB) GetAssetPriceInflux(exchange, symbol string, timeInit, timeFinal t
 		}
 		return price, timestamp, nil
 	}
-	return float64(0), time.Time{}, err
+
+	return float64(0), time.Time{}, errors.New("influx: empty response")
 }
