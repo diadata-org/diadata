@@ -4,7 +4,7 @@ description: How do I access DeFi protocol information using the DIA oracle syst
 
 # DeFi Protocol Lending and Borrowing Rates
 
-The oracle contains information about DeFi protocols. You can access a quotation of the current interest rate and the currently locked tokens as well as the timestamp of the last update.
+The oracle contains information about DeFi protocols. You can access a quotation of the current lending and borrowing rates and the  as well as the timestamp of the last update.
 
 1.  Access our [oracle smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef).
 2. Call `getCoinInfo(protocol_name)` with `protocol_name` being the full protocol name in capital letters, such as `COMPOUND`. You can use the "Read" section on Etherscan to execute this call.
