@@ -94,7 +94,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	var ignoreTrade bool
 	baseToken := t.BaseToken()
 	if baseToken != "USD" {
-		val, err := s.datastore.GetPriceUSD(baseToken)
+		val, err := s.datastore.GetPriceUSD(baseToken, t.Time)
 		if err != nil {
 			log.Error("Cant find base token ", baseToken, " in redis ", err, " ignoring ", t)
 			ignoreTrade = true

@@ -12,9 +12,8 @@ import (
 
 const (
 	WindowYesterday = 24 * 60 * 60
-	Window2         = 24 * 60 * 60 * 8
 	BufferTTL       = 60 * 60
-	BiggestWindow   = Window2
+	BiggestWindow   = 24 * 60 * 60 * 8
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
 )
 
@@ -77,17 +76,38 @@ func (a *DB) SetPriceEUR(symbol string, price float64) error {
 	})
 }
 
-func (db *DB) GetPriceUSD(symbol string) (float64, error) {
-	key := getKeyQuotation(symbol)
-	value := &Quotation{}
-	err := db.redisClient.Get(key).Scan(value)
-	if err != nil {
-		if err != redis.Nil {
-			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
+// GetPriceUSD returns the price of asset with @symbol. Retrieved from redis for actual
+// timestamps and influx MA120 filter for historic data.
+func (db *DB) GetPriceUSD(symbol string, timestamp time.Time) (float64, error) {
+
+	redisMemory := time.Now().Add(-TimeOutRedis)
+
+	// Get quotation from redis if timestamp is not older than TimeOutRedis.
+	// (Remark that redis quotation is always at least as actual as influx price)
+	price := float64(0)
+	if redisMemory.Before(timestamp) {
+		log.Infof("call redis on %s \n", symbol)
+		key := getKeyQuotation(symbol)
+		value := &Quotation{}
+		err := db.redisClient.Get(key).Scan(value)
+		if err != nil {
+			if err != redis.Nil {
+				log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
+			}
+			return 0.0, err
 		}
-		return 0.0, err
+		return value.Price, nil
 	}
-	return value.Price, nil
+	// Get price from MA120 filter in case timestamp is older than TimeOutRedis
+	log.Infof("call influx price on %s", symbol)
+	price, influxTime, err := db.GetAssetPriceInflux("", symbol, timestamp.Add(-TimeOutRedis), timestamp)
+	if err != nil {
+		return price, err
+	}
+	log.Infof("historic price for %s:  %v", symbol, price)
+	log.Info("time of above info: ", influxTime)
+	log.Info("error value: ", err)
+	return price, nil
 }
 
 func (db *DB) GetQuotation(symbol string) (*Quotation, error) {

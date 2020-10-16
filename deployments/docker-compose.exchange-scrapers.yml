@@ -132,18 +132,32 @@ services:
     environment:
       - EXEC_MODE=production
 
-  # makercollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=Maker
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  makercollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Maker
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  makerhistoriccollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Maker -history=true
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+    
 
   genericcollector:
     build:
@@ -335,18 +349,18 @@ services:
     environment:
       - EXEC_MODE=production
 
-  # bitbaycollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=BitBay
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  bitbaycollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=BitBay
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
 secrets:
   api_binance:

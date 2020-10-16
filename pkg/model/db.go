@@ -20,7 +20,7 @@ type Datastore interface {
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
 	SetPriceEUR(symbol string, price float64) error
-	GetPriceUSD(symbol string) (float64, error)
+	GetPriceUSD(symbol string, timestamp time.Time) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
 	SetQuotationEUR(quotation *Quotation) error
