@@ -2,7 +2,7 @@
 description: How do I access DeFi protocol information using the DIA oracle system?
 ---
 
-# DeFi Protocol Rates and States
+# DeFi Protocol Lending and Borrowing Rates
 
 The oracle contains information about DeFi protocols. You can access a quotation of the current interest rate and the currently locked tokens as well as the timestamp of the last update.
 
