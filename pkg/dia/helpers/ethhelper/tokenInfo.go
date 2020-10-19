@@ -92,8 +92,8 @@ func ConfigFilePath(filename string) string {
 
 // GetAddressesFromFile fetches token addresses from a config file available here:
 // https://etherscan.io/exportData?type=open-source-contract-codes
-func GetAddressesFromFile() (addresses []string, err error) {
-	configPath := ConfigFilePath("tokens_list")
+func GetAddressesFromFile(filename string) (addresses []string, err error) {
+	configPath := ConfigFilePath(filename)
 	jsonFile, err := os.Open(configPath)
 	if err != nil {
 		log.Errorln("Error opening file", err)

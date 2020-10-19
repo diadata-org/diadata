@@ -11,32 +11,53 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 )
 
-// getWalletsFromConfig returns wallet addresses from config file
-func getWalletsFromConfig(filename string) ([]string, error) {
+// GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
+func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 
 	fileName := fmt.Sprintf("../../../config/token_supply/%s.json", filename)
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
-		return []string{}, err
+		return map[string][]string{}, err
 	}
 	defer jsonFile.Close()
 
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		log.Error(err)
+		return map[string][]string{}, err
 	}
 
-	var result map[string][]string
-	json.Unmarshal(byteData, &result) //If result becomes struct the coversion with byte array is no more needed
+	type lockedAsset struct {
+		Address       string   `json:"asset"`
+		LockedWallets []string `json:"wallets"`
+	}
+	type lockedAssetList struct {
+		AllAssets []lockedAsset `json:"lockedWallets"`
+	}
+	var allAssets lockedAssetList
+	json.Unmarshal(byteData, &allAssets)
+	// make map[string][]string from allAssets. This accounts for erroneous addition of new entry
+	// for already existing asset in config file.
+	allAssetsMap := make(map[string][]string)
+	var diff []string
+	for _, asset := range allAssets.AllAssets {
+		if _, ok := allAssetsMap[asset.Address]; !ok {
+			allAssetsMap[asset.Address] = asset.LockedWallets
+		} else {
+			diff = utils.SliceDifference(asset.LockedWallets, allAssetsMap[asset.Address])
+			allAssetsMap[asset.Address] = append(allAssetsMap[asset.Address], diff...)
+		}
+	}
 
-	return result["wallets"], nil
+	return allAssetsMap, nil
 }
 
 // GetWalletBalance returns balance of token with address @tokenAddr in wallet with address @walletAddr
@@ -65,8 +86,8 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 	return
 }
 
-// GetTotalSupplyfromMainNet return total supply minus wallets' balances from config file
-func GetTotalSupplyfromMainNet(tokenAddress string, client *ethclient.Client) (supply dia.Supply, err error) {
+// GetTotalSupplyfromMainNet returns total supply minus wallets' balances from list of wallets
+func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, client *ethclient.Client) (supply dia.Supply, err error) {
 
 	instance, err := NewERC20(common.HexToAddress(tokenAddress), client)
 	if err != nil {
@@ -91,18 +112,15 @@ func GetTotalSupplyfromMainNet(tokenAddress string, client *ethclient.Client) (s
 		return
 	}
 
+	// Get total supply
 	fbal := new(big.Float)
 	fbal.SetString(totalSupply.String())
 	valuei := new(big.Float).Quo(fbal, big.NewFloat(math.Pow10(int(decimals))))
 	totalSupp, _ := valuei.Float64()
 
-	wallets, err := getWalletsFromConfig("wallets")
-	if err != nil {
-		return
-	}
-
+	// Subtract locked wallets' balances from total supply for circulating supply
 	circulatingSupply := totalSupp
-	for _, walletAddress := range wallets {
+	for _, walletAddress := range lockedWallets {
 		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
 		if err != nil {
 			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)

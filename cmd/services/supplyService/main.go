@@ -10,6 +10,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	tokensListFilename    = "tokens_list"
+	lockedWalletsFilename = "wallets"
+)
+
 func main() {
 
 	ds, err := models.NewDataStore()
@@ -21,32 +26,43 @@ func main() {
 		log.Fatal(err)
 	}
 	// Fetch token contract addresses from json file
-	adds, err := ethhelper.GetAddressesFromFile()
+	tokenAddresses, err := ethhelper.GetAddressesFromFile(tokensListFilename)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Continuously update supplies once every 24h
-	for {
-		timeInit := time.Now()
-		for _, address := range adds {
-			supp, err := supplyservice.GetTotalSupplyfromMainNet(address, conn)
-			if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
-				continue
-			}
-			// Hotfix for some supplies:
-			if supp.Symbol == "YAM" {
-				supp.CirculatingSupply = float64(13907678)
-			}
-			if supp.Symbol == "CRO" {
-				supp.CirculatingSupply = float64(20631963470)
-			}
 
-			ds.SetSupply(&supp)
-			log.Info("set supply: ", supp)
-		}
-		timeFinal := time.Now()
-		timeElapsed := timeFinal.Sub(timeInit)
-		time.Sleep(24*60*60*time.Second - timeElapsed)
+	// Get map for locked wallets per asset
+	lockedWalletsMap, err := supplyservice.GetLockedWalletsFromConfig(lockedWalletsFilename)
+	if err != nil {
+		log.Error(err)
 	}
+
+	// Continuously update supplies once every 24h
+	ticker := time.NewTicker(24 * time.Hour)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				for _, address := range tokenAddresses {
+					supp, err := supplyservice.GetTotalSupplyfromMainNet(address, lockedWalletsMap[address], conn)
+					if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
+						continue
+					}
+					// Hardcoded hotfix for some supplies:
+					if supp.Symbol == "YAM" {
+						supp.CirculatingSupply = float64(13907678)
+					}
+					if supp.Symbol == "CRO" {
+						supp.CirculatingSupply = float64(20631963470)
+					}
+
+					ds.SetSupply(&supp)
+					log.Info("set supply: ", supp)
+				}
+
+			}
+		}
+	}()
+	select {}
 
 }
