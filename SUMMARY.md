@@ -24,6 +24,7 @@
     * [Crypto Assets](documentation/oracle-documentation/crypto-assets.md)
     * [DeFi Protocol Lending and Borrowing Rates](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
     * [Interest Rates](documentation/oracle-documentation/interest-rates.md)
+    * [Chart Points](documentation/oracle-documentation/chart-points.md)
     * [Fiat Prices](documentation/oracle-documentation/fiat-prices.md)
     * [Coingecko Quotations](documentation/oracle-documentation/guest-quotations.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
