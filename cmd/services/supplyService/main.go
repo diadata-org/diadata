@@ -58,6 +58,9 @@ func main() {
 					if supp.Symbol == "DTA" {
 						supp.CirculatingSupply = float64(21000000)
 					}
+					if supp.Symbol == "REL" {
+						supp.CirculatingSupply = float64(27777044.6297438)
+					}
 
 					ds.SetSupply(&supp)
 					log.Info("set supply: ", supp)
