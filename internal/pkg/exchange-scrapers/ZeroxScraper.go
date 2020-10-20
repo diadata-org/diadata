@@ -20,8 +20,8 @@ import (
 
 const (
 	zeroxContract              = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxStartBlock            = uint64(11062549 - 5250)
-	zeroxStartBlockToFindPairs = uint64(11062549 - 5250)
+	zeroxStartBlock            = uint64(11082549 - 5250)
+	zeroxStartBlockToFindPairs = uint64(11082549 - 5250)
 
 	zeroxWsDial   = "ws://159.69.120.42:8546/"
 	zeroxRestDial = "http://159.69.120.42:8545/"
@@ -67,7 +67,6 @@ func NewZeroxScraper(exchangeName string) *ZeroxScraper {
 		resubscribe:    make(chan nothing),
 		tokens:         make(map[string]*ZeroxToken),
 	}
-
 	wsClient, err := ethclient.Dial(zeroxWsDial)
 	if err != nil {
 		log.Fatal(err)
@@ -138,6 +137,7 @@ func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxT
 			Symbol:   symbol,
 			Decimals: decimals,
 		}
+		dfToken.normalizeETH()
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
 	}
@@ -267,11 +267,11 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
-		if p1.Symbol == "" {
+		if p1.Symbol == "" || p1.Symbol == "BPT" {
 			continue
 		}
 		for _, p2 := range scraper.tokens {
-			if p2.Symbol == "" {
+			if p2.Symbol == "" || p2.Symbol == "BPT" {
 				continue
 			}
 			token1 := p1

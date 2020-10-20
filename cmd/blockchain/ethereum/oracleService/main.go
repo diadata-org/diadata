@@ -242,10 +242,10 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	time.Sleep(5 * time.Minute)
 
 	// --------------------------------------------------------
-	// Exchanges
+	// EXCHANGE CHART POINTS
 	// --------------------------------------------------------
 
-	// ECB Data
+	// ECB Chart Point
 	rawECB, err := getECBRatesFromDia("EUR")
 	if err != nil {
 		log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
@@ -258,8 +258,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Maker DEX data
-	rawMaker, err := getDEXFromDia("Maker", "DAI")
+	// Maker DEX Chart Point
+	rawMaker, err := getDEXFromDia("Maker", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
 		return err
@@ -272,7 +272,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Curvefi DEX data
+	// Curvefi DEX Chart Point
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Curvefi from DIA: %v", err)
@@ -286,8 +286,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Gnosis DEX data
-	rawGnosis, err := getDEXFromDia("Gnosis", "DIA")
+	// Gnosis DEX Chart Point
+	rawGnosis, err := getDEXFromDia("Gnosis", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Gnosis from DIA: %v", err)
 		return err
@@ -300,8 +300,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Uniswap data
-	rawUniswap, err := getDEXFromDia("Uniswap", "DIA")
+	// Uniswap Chart Point
+	rawUniswap, err := getDEXFromDia("Uniswap", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Uniswap from DIA: %v", err)
 		return err
@@ -314,8 +314,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Loopring  data
-	rawLoopring, err := getDEXFromDia("Loopring", "LRC")
+	// Loopring Chart Point
+	rawLoopring, err := getDEXFromDia("Loopring", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
 		return err
@@ -328,14 +328,28 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Bancor data
-	rawBancor, err := getDEXFromDia("Bancor", "USDT")
+	// Bancor Chart Point
+	rawBancor, err := getDEXFromDia("Bancor", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
 		return err
 	}
 
 	err = updateDEX(rawBancor, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// 0x Chart Point
+	raw0x, err := getDEXFromDia("0x", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(raw0x, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err

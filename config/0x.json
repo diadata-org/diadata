@@ -518,13 +518,13 @@
         },
         {
             "Symbol": "MKR",
-            "ForeignName": "MKR-WETH",
+            "ForeignName": "MKR-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-MKR",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MKR",
             "Exchange": "0x",
             "Ignore": false
         },
@@ -613,602 +613,602 @@
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-GU:S1:RT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-GU:S1:RT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "GU:S1:RT",
-            "ForeignName": "GU:S1:RT-WETH",
+            "ForeignName": "GU:S1:RT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-QNT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-QNT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "QNT",
-            "ForeignName": "QNT-WETH",
+            "ForeignName": "QNT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-UNI",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-UNI",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "UNI",
-            "ForeignName": "UNI-WETH",
+            "ForeignName": "UNI-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-LINK",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LINK",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "LINK",
-            "ForeignName": "LINK-WETH",
+            "ForeignName": "LINK-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-WBTC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-WBTC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "WBTC",
-            "ForeignName": "WBTC-WETH",
+            "ForeignName": "WBTC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-Go9tro",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-Go9tro",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "Go9tro",
-            "ForeignName": "Go9tro-WETH",
+            "ForeignName": "Go9tro-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-PLOT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-PLOT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "PLOT",
-            "ForeignName": "PLOT-WETH",
+            "ForeignName": "PLOT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-MOON-V1-ETH-LEND",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MOON-V1-ETH-LEND",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "MOON-V1-ETH-LEND",
-            "ForeignName": "MOON-V1-ETH-LEND-WETH",
+            "ForeignName": "MOON-V1-ETH-LEND-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-LEND",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LEND",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "LEND",
-            "ForeignName": "LEND-WETH",
+            "ForeignName": "LEND-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-CEL",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-CEL",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "CEL",
-            "ForeignName": "CEL-WETH",
+            "ForeignName": "CEL-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-HRMS",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-HRMS",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "HRMS",
-            "ForeignName": "HRMS-WETH",
+            "ForeignName": "HRMS-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-RCORE",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-RCORE",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "RCORE",
-            "ForeignName": "RCORE-WETH",
+            "ForeignName": "RCORE-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-HGET",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-HGET",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "HGET",
-            "ForeignName": "HGET-WETH",
+            "ForeignName": "HGET-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-REN",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-REN",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "REN",
-            "ForeignName": "REN-WETH",
+            "ForeignName": "REN-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-sUSD",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-sUSD",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "sUSD",
-            "ForeignName": "sUSD-WETH",
+            "ForeignName": "sUSD-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-GRG",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-GRG",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "GRG",
-            "ForeignName": "GRG-WETH",
+            "ForeignName": "GRG-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-BPT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BPT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "BPT",
-            "ForeignName": "BPT-WETH",
+            "ForeignName": "BPT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-BAT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BAT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "BAT",
-            "ForeignName": "BAT-WETH",
+            "ForeignName": "BAT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-UFT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-UFT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "UFT",
-            "ForeignName": "UFT-WETH",
+            "ForeignName": "UFT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-NU",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-NU",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "NU",
-            "ForeignName": "NU-WETH",
+            "ForeignName": "NU-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-USDC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-USDC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "USDC",
-            "ForeignName": "USDC-WETH",
+            "ForeignName": "USDC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-DAI",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAI",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "DAI",
-            "ForeignName": "DAI-WETH",
+            "ForeignName": "DAI-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-AMPL",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-AMPL",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "AMPL",
-            "ForeignName": "AMPL-WETH",
+            "ForeignName": "AMPL-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-GHOST",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-GHOST",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "GHOST",
-            "ForeignName": "GHOST-WETH",
+            "ForeignName": "GHOST-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-MOON-V1-ETH-DAI",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MOON-V1-ETH-DAI",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "MOON-V1-ETH-DAI",
-            "ForeignName": "MOON-V1-ETH-DAI-WETH",
+            "ForeignName": "MOON-V1-ETH-DAI-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-KNC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-KNC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "KNC",
-            "ForeignName": "KNC-WETH",
+            "ForeignName": "KNC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-TUSD",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-TUSD",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "TUSD",
-            "ForeignName": "TUSD-WETH",
+            "ForeignName": "TUSD-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-YFI",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-YFI",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "YFI",
-            "ForeignName": "YFI-WETH",
+            "ForeignName": "YFI-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-USDT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-USDT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "USDT",
-            "ForeignName": "USDT-WETH",
+            "ForeignName": "USDT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-DPI",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DPI",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "DPI",
-            "ForeignName": "DPI-WETH",
+            "ForeignName": "DPI-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-CRV",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-CRV",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "CRV",
-            "ForeignName": "CRV-WETH",
+            "ForeignName": "CRV-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-BUSD",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BUSD",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "BUSD",
-            "ForeignName": "BUSD-WETH",
+            "ForeignName": "BUSD-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-ZRX",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ZRX",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "ZRX",
-            "ForeignName": "ZRX-WETH",
+            "ForeignName": "ZRX-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-DEV",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DEV",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "DEV",
-            "ForeignName": "DEV-WETH",
+            "ForeignName": "DEV-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-WWX",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-WWX",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "WWX",
-            "ForeignName": "WWX-WETH",
+            "ForeignName": "WWX-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-QCORE",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-QCORE",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "QCORE",
-            "ForeignName": "QCORE-WETH",
+            "ForeignName": "QCORE-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-LRC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LRC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "LRC",
-            "ForeignName": "LRC-WETH",
+            "ForeignName": "LRC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-COMP",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-COMP",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "COMP",
-            "ForeignName": "COMP-WETH",
+            "ForeignName": "COMP-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-ENJ",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ENJ",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "ENJ",
-            "ForeignName": "ENJ-WETH",
+            "ForeignName": "ENJ-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-SNX",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SNX",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "SNX",
-            "ForeignName": "SNX-WETH",
+            "ForeignName": "SNX-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-ACO ETH-390USDC-C-23OCT20-0800UTC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ACO ETH-390USDC-C-23OCT20-0800UTC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "ACO ETH-390USDC-C-23OCT20-0800UTC",
-            "ForeignName": "ACO ETH-390USDC-C-23OCT20-0800UTC-WETH",
+            "ForeignName": "ACO ETH-390USDC-C-23OCT20-0800UTC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-DXD",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DXD",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "DXD",
-            "ForeignName": "DXD-WETH",
+            "ForeignName": "DXD-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-PPBLZ",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-PPBLZ",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "PPBLZ",
-            "ForeignName": "PPBLZ-WETH",
+            "ForeignName": "PPBLZ-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-XCORE",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-XCORE",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "XCORE",
-            "ForeignName": "XCORE-WETH",
+            "ForeignName": "XCORE-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-TBTC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-TBTC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "TBTC",
-            "ForeignName": "TBTC-WETH",
+            "ForeignName": "TBTC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-MOON-V1-ETH-WBTC",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MOON-V1-ETH-WBTC",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "MOON-V1-ETH-WBTC",
-            "ForeignName": "MOON-V1-ETH-WBTC-WETH",
+            "ForeignName": "MOON-V1-ETH-WBTC-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-LIEN",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LIEN",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "LIEN",
-            "ForeignName": "LIEN-WETH",
+            "ForeignName": "LIEN-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-DAM",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAM",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "DAM",
-            "ForeignName": "DAM-WETH",
+            "ForeignName": "DAM-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-XRT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-XRT",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "XRT",
-            "ForeignName": "XRT-WETH",
+            "ForeignName": "XRT-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
         {
-            "Symbol": "WETH",
-            "ForeignName": "WETH-REPv2",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-REPv2",
             "Exchange": "0x",
             "Ignore": false
         },
         {
             "Symbol": "REPv2",
-            "ForeignName": "REPv2-WETH",
+            "ForeignName": "REPv2-ETH",
             "Exchange": "0x",
             "Ignore": false
         },
