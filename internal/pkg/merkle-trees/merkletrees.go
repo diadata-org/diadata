@@ -251,7 +251,8 @@ func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree
 	return
 }
 
-// MasterTree returns the master merkle tree resulting from the (daily) hashing procedure
+// MasterTree returns the master merkle tree resulting from the (daily) hashing procedure.
+// In particular, it retrieves daily trees
 func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err error) {
 	level := "0"
 

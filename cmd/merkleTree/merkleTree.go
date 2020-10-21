@@ -1,5 +1,9 @@
 package main
 
+// ----------------------------------------------------------------------------------
+// THIS FILE IS JUST FOR TESTING PURPOSES AND CAN BE DELETED ONCE HASHING IS FINISHED
+// ----------------------------------------------------------------------------------
+
 import (
 	"context"
 	"errors"

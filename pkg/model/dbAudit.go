@@ -34,9 +34,12 @@ type AuditStore interface {
 }
 
 const (
-	auditDBName          = "audit"
+	// @auditDBName is the database for all data connected to the DIA audit trail
+	auditDBName = "audit"
+	// @influxDBStorageTable stores the structures (trees) which are continuously produced by the merkleService
 	influxDBStorageTable = "storage"
-	influxDBMerkleTable  = "merkle"
+	// @influxDBMerkleTable stores all trees which result from the hashing of trees from the storage table
+	influxDBMerkleTable = "merkle"
 )
 
 func getKeyPoolIDs(topic string) string {
@@ -367,7 +370,10 @@ func (db *DB) SaveDailyTreeInflux(tree merkletree.MerkleTree, topic, level strin
 	return err
 }
 
-// SetPoolID sets a key value map for retrieval of parent trees of hashed pools
+// SetPoolID sets a key value map for retrieval of parent trees of hashed pools.
+// It is important to notice that this just facilitates the retrieval. The map can be reconstructed
+// by id information stored in influx. Hence, the system does not rely on correct function/constant
+// connection of/to redis.
 func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
 	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
 	poolMap := make(map[string]interface{})

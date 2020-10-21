@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 	"time"
 
@@ -17,7 +16,8 @@ func main() {
 		log.Fatal("NewAuditStore: ", err)
 	}
 
-	// Initialize process by setting the genesis master node
+	// Initialize process by setting the genesis master node.
+	// This should eventually go into an init file or at least be executed only once.
 	var initialContainer merkletree.StorageBucket
 	initialContainer.Content = []byte("audit trail starts here")
 	genesisTree, err := merkletree.NewTree([]merkletree.Content{initialContainer})
@@ -27,20 +27,32 @@ func main() {
 	// Save genesis tree
 	ds.SaveDailyTreeInflux(*genesisTree, "", "0", []string{}, time.Time{})
 
-	masterTree, err := merklehashing.MasterTree(ds)
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println("root of master tree: ", hex.EncodeToString(masterTree.MerkleRoot))
-	fmt.Println("master hash strategy: ", masterTree.HashStrategy)
-	// ds, err := models.NewRedisAuditStore()
-	// if err != nil {
-	// 	log.Fatal("NewInfluxDataStore: ", err)
+	ticker := time.NewTicker(1 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				masterTree, err := merklehashing.MasterTree(ds)
+				if err != nil {
+					log.Error(err)
+				}
+				fmt.Println("master tree saved: ", masterTree)
+
+			}
+		}
+	}()
+	select {}
+
+	// fmt.Println("root of master tree: ", hex.EncodeToString(masterTree.MerkleRoot))
+	// fmt.Println("master hash strategy: ", masterTree.HashStrategy)
+	// // ds, err := models.NewRedisAuditStore()
+	// // if err != nil {
+	// // 	log.Fatal("NewInfluxDataStore: ", err)
+	// // }
+	// val, err := ds.GetPoolsParentID("12", "hash-trades")
+	// if err == nil {
+	// 	fmt.Println("val: ", val)
 	// }
-	val, err := ds.GetPoolID("12", "hash-trades")
-	if err == nil {
-		fmt.Println("val: ", val)
-	}
-	fmt.Println("error: ", err)
+	// fmt.Println("error: ", err)
 
 }
