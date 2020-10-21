@@ -36,6 +36,7 @@ const (
 	SushiSwapExchange   = "SushiSwap"
 	DforceExchange      = "Dforce"
 	ZeroxExchange       = "0x"
+	KyberExchange       = "Kyber"
 
 )
 
@@ -66,6 +67,7 @@ func Exchanges() []string {
 		SushiSwapExchange,
 		DforceExchange,
 		ZeroxExchange,
+		KyberExchange,
 	}
 }
 
