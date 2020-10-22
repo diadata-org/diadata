@@ -456,8 +456,8 @@
         ] 
     },
     {
-      "asset": "0x04abEdA201850aC0124161F037Efd70c74ddC74C",
-      "wallets": [
+        "asset": "0x04abEdA201850aC0124161F037Efd70c74ddC74C",
+        "wallets": [
             "0x2f979c933aef4fcddd27c0fa5c54d8a780555b0a",
             "0x03904f4b9fb54c61aaf96d0acdd2e42a46c99102",
             "0x3c047b9dfa4fd8f812f264f1611b959a4dd980f8",
@@ -469,8 +469,59 @@
         ]
     },
     {
-      "asset": "0x514910771af9ca656af840dff83e8264ecf986ca",
-      "wallets": []
+        "asset": "0x514910771af9ca656af840dff83e8264ecf986ca",
+        "wallets": []
+    },
+    {
+        "asset": "0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83",
+        "wallets": [
+            "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
+            "0xe93381fb4c4f14bda253907b18fad305d799241a",
+            "0xb6c7bf515828c1ebf0d5f34930cda0741ed9263f",
+            "0x6cc5f688a315f3dc28a7781717a9a798a59fda7b",
+            "0x9cbadd5ce7e14742f70414a6dcbd4e7bb8712719",
+            "0xbe23cbb62064b8b1550ae5ada59c39d45b1e2081",
+            "0x3d367c9529f260b0661e1c1e91167c9319ee96ca",
+            "0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88",
+            "0xcce8d59affdd93be338fc77fa0a298c2cb65da59",
+            "0x32be343b94f860124dc4fee278fdcbd38c102d88",
+            "0xb436c96c6de1f50a160ed307317c275424dbe4f2",
+            "0x936e6490ed786fd0e0f0c1b1e4e1540b9d41f9ef",
+            "0xb81d3cb2708530ea990a287142b82d058725c092",
+            "0x9428e55418755b2f902d3b1f898a871ab5634182",
+            "0xaffcd3d45cef58b1dfa773463824c6f6bb0dc13a",
+            "0xa2eab0dff3afb92d5454385aedd0d3b1a21253d1",
+            "0x64d83012d37300b543683b3a5dc597fd48adec50",
+            "0xf2f1050530dcd43859e2f7bfef95b24c1b6880a2",
+            "0x8973be4402bf0a39448f419c2d64bd3591dd2299",
+            "0xfeafe7489c468355ea2dde74006ca791d88150ac",
+            "0x2cc2530c484b87339b0cf9a7a208c6235f9f300d",
+            "0x887f507eaac58add20263c6918538a9bdc882d47",
+            "0x1d1d21b9418ec94d114c69c5d915834cd7fbad07",
+            "0x9b6c54a1760f6606e2cab8ef9a516dce99d86969",
+            "0x274f3c32c90517975e29dfc209a23f315c1e5fc7",
+            "0xeed86b90448c371eab47b7f16e294297c27e4f51",
+            "0x57de02b09919aa02410054978dc7347adff058a0",
+            "0x4630914247bfabf1159cfeae827c9597743661bd",
+            "0xb2cfdc1d0152e8c660aa57cbd323a8ac624f32c5",
+            "0x5590b8221c09cbefdf896eed22076fe35267e9d2",
+            "0xf1750b770485a5d0589a6ba1270d9fc354884d45",
+            "0x3a9e6cf4e3157670a3b991c25d6f4fcbd9419c03",
+            "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+            "0xeaeca92e670e1ea36fbc118d6132d582586cc81f",
+            "0x2413cc12f44330813cd3e1c09f2c68e7683f39fa",
+            "0x6a1c61d4fcfd36ca908c8090418cf2b292951f8a",
+            "0x31a47094c6325d357c7331c621d6768ba041916e",
+            "0x3c02290922a3618a4646e3bbca65853ea45fe7c6",
+            "0xb9ee1e551f538a464e8f8c41e9904498505b49b0",
+            "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+            "0xa1d0e215a23d7030842fc67ce582a6afa3ccab83",
+            "0x6a3eb79e1c4023f1610ff046c5dc30f9790d326f",
+            "0xbd7cc841e4ef36f83f23c9087d57c7b50b71aef6",
+            "0x9cd65466d75ca7d9225758c0c76c5cbf4a4c59ff",
+            "0xfd96bbf9cef379a87af00a4b88151d278e73fac0",
+            "0xa910f92acdaf488fa6ef02174fb86208ad7722ba"
+        ]
     },
     {
         "asset": "0xb8c77482e45f1f44de1745f52c74426c631bdd52",
