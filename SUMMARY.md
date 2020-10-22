@@ -29,6 +29,7 @@
     * [Coingecko Quotations](documentation/oracle-documentation/guest-quotations.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
+* [Security Bounty Program](security-bounty-program.md)
 * [Licence Agreement](licence-agreement.md)
 * [Disclaimer](disclaimer.md)
 
