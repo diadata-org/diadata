@@ -356,6 +356,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// Kyber Chart Point
+	rawKyber, err := getDEXFromDia("Kyber", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawKyber, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Top 15 coins
 	rawCoins, err := getToplistFromDia()
 	if err != nil {
