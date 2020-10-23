@@ -345,13 +345,13 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// 0x Chart Point
 	raw0x, err := getDEXFromDia("0x", "ETH")
 	if err != nil {
-		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		log.Fatalf("Failed to retrieve 0x from DIA: %v", err)
 		return err
 	}
 
 	err = updateDEX(raw0x, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		log.Fatalf("Failed to update 0x Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
@@ -359,13 +359,27 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// Kyber Chart Point
 	rawKyber, err := getDEXFromDia("Kyber", "ETH")
 	if err != nil {
-		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		log.Fatalf("Failed to retrieve Kyber from DIA: %v", err)
 		return err
 	}
 
 	err = updateDEX(rawKyber, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		log.Fatalf("Failed to update Kyber Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// Sushi Chart Point
+	rawSushi, err := getDEXFromDia("SushiSwap", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Sushi from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawSushi, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Sushi Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
