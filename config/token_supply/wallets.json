@@ -865,13 +865,14 @@
     {
         "asset": "0x05ac103f68e05da35e78f6165b9082432fe64b58",
         "wallets": [
-
+            "0x0DDd372f570B2bc8d75d3d2AB0ABB4F9231b2AD6",
+            "0x671cD9031f551206589E7B32Ce1922934a4e08Bd"
         ]
     },
     {
         "asset": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
         "wallets":[
-
+            
         ]
     },
     {
