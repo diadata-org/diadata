@@ -868,6 +868,13 @@
             "0x3605ec11ba7bd208501cbb24cd890bc58d2dba56"
         ]
     },
+    {   
+        "asset": "0xdf574c24545e5ffecb9a659c229253d4111d87e1",
+        "wallets": [
+            "0x4E017F7eDDc86809Bc3067De7077c3599ab284eD",
+            "0xb9176d3b7985c87616F5C624B1A7F31bf8742642"
+        ]
+    },
     {
         "asset": "0x05ac103f68e05da35e78f6165b9082432fe64b58",
         "wallets": [
