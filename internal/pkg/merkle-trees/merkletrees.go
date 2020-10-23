@@ -197,22 +197,33 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	var merkleTrees []merkletree.MerkleTree
 	var lastTimestamp time.Time
 	var IDs []string
-	for i := range vals {
-		// Collect merkle trees
-		var auxTree merkletree.MerkleTree
-		err = json.Unmarshal([]byte(vals[i][3].(string)), &auxTree)
+
+	if len(vals) > 0 {
+		// If new content is available, make daily tree
+		for i := range vals {
+			// Collect merkle trees
+			var auxTree merkletree.MerkleTree
+			err = json.Unmarshal([]byte(vals[i][3].(string)), &auxTree)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+			merkleTrees = append(merkleTrees, auxTree)
+			// Find last timestamp. It will be the initial time for the next iteration.
+			tstamp, _ := time.Parse(time.RFC3339, vals[i][0].(string))
+			if tstamp.After(lastTimestamp) {
+				lastTimestamp = tstamp
+			}
+			// Get IDs of storage trees
+			IDs = append(IDs, vals[i][1].(string))
+		}
+	} else {
+		// If no content is available, make tree from empty bucket
+		nilTree, err := merkletree.NewTree([]merkletree.Content{merkletree.NewBucket(0, topic)})
 		if err != nil {
 			log.Error(err)
-			return
 		}
-		merkleTrees = append(merkleTrees, auxTree)
-		// Find last timestamp. It will be the initial time for the next iteration.
-		tstamp, _ := time.Parse(time.RFC3339, vals[i][0].(string))
-		if tstamp.After(lastTimestamp) {
-			lastTimestamp = tstamp
-		}
-		// Get IDs of storage trees
-		IDs = append(IDs, vals[i][1].(string))
+		merkleTrees = []merkletree.MerkleTree{*nilTree}
 	}
 	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {
@@ -282,15 +293,21 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 	// Extend master tree by today's merkle root
 	newHash := merkletree.StorageBucket{Content: dailyRootHash}
 	fmt.Println("new Hash: ", newHash)
-	err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
-	if err != nil {
-		log.Error(err)
+	if !masterTree.Isempty() {
+		err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		// Save new Master Tree
+		ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 		return
 	}
-	// Save new Master Tree
+	// Root should only be nil when hashing is initiated and there is no master merkle tree yet
+	masterTree = *dailyTree
 	ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
-
 	return
+
 }
 
 // Close closes the channel of KafkaChannel @kc if not done yet

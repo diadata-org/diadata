@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cbergoon/merkletree"
 	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -18,14 +17,14 @@ func main() {
 
 	// Initialize process by setting the genesis master node.
 	// This should eventually go into an init file or at least be executed only once.
-	var initialContainer merkletree.StorageBucket
-	initialContainer.Content = []byte("audit trail starts here")
-	genesisTree, err := merkletree.NewTree([]merkletree.Content{initialContainer})
-	if err != nil {
-		log.Error(err)
-	}
-	// Save genesis tree
-	ds.SaveDailyTreeInflux(*genesisTree, "", "0", []string{}, time.Time{})
+	// var initialContainer merkletree.StorageBucket
+	// initialContainer.Content = []byte("audit trail starts here")
+	// genesisTree, err := merkletree.NewTree([]merkletree.Content{initialContainer})
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// // Save genesis tree
+	// ds.SaveDailyTreeInflux(*genesisTree, "", "0", []string{}, time.Time{})
 
 	ticker := time.NewTicker(1 * time.Minute)
 	go func() {
