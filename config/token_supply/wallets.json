@@ -1157,7 +1157,23 @@
     },
     {
       "asset": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-      "wallets": []
+      "wallets": [
+          "0x4750c43867ef5f89869132eccf19b9b6c4286e1a",
+          "0xe3953d9d317b834592ab58ab2c7a6ad22b54075d",
+          "0x4b4e140d1f131fdad6fb59c13af796fd194e4135",
+          "0x3d30b1ab88d487b0f3061f40de76845bec3f1e94",
+          "0x9f41cecc435101045ea9f41d4ee8c5353f77e5d5",
+          "0x662d905a1795ffdf8cfab0abe670dbff3a9fd247",
+          "0xbac8f2448239f371eb793b83b82945bfac741ae0",
+          "0x9F41cECc435101045Ea9F41D4EE8C5353F77e5D5",
+          "0x090D4613473dEE047c3f2706764f49E0821D256e",
+          "0x5518C31f4A22782E5a7046711FACF985985530c7",
+          "0x35A18000230DA775CAc24873d00Ff85BccdeD550",
+          "0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b",
+          "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+          "0xb2B9335791346E94245DCd316A9C9ED486E6dD7f"
+
+      ]
     },
     {
       "asset": "0xb1a30851e3f7d841b231b086479608e17198363a",
