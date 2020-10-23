@@ -65,7 +65,9 @@ We retrieve and store lending and borrowing rates such as locked volumes from as
 | AAVE | Thegraph API | [AAVE API Documentation](https://github.com/aave/aave-protocol/tree/master/thegraph) | Ethereum | 1 min. |
 | bZx | Smart Contract | [bZx Base Protocol](https://github.com/bZxNetwork/bZx-monorepo/tree/development/packages/contracts/contracts) | Ethereum | 1 min. |
 | Compound | Smart Contract | [Compound Base Protocol](https://github.com/diadata-org/diadata/tree/master/internal/pkg/defiscrapers/compound) | Ethereum | 1 min. |
+| CREAM | Smart Contract | [Compound Base Protocol](https://github.com/diadata-org/diadata/tree/master/internal/pkg/defiscrapers/compound) | Ethereum | 1 min. |
 | DDEX | Rest API | [DDEX API Documentation](https://margin-docs.ddex.io/#get-lending-pool-stats) | Ethereum | 1 min. |
 | DY/DX | Rest API | [DY/DX API Documentation](https://docs.dydx.exchange/#solo-get-v1-markets) | Ethereum | 1 min. |
+| Fortube | Smart Contract |  | Ethereum | 1 min. |
 | NUO | Rest API | - | Ethereum | 1 min. |
 
