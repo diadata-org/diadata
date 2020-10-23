@@ -562,6 +562,12 @@
         ]
     },
     {
+        "asset": "0xf85EF57fCDB36D628D063Fa663e61e44D35AE661",
+        "wallets": [
+            "0x5cD779b6D59840b9BDe35a4Abb6E800bD35737Cb"
+        ]
+    },
+    {
         "asset": "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9",
         "wallets": [
             "0x0a29531a87d82d25766d272ac6e70dc372f83783",
