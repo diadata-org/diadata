@@ -568,6 +568,18 @@
         ]
     },
     {
+        "asset": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
+        "wallets": [ 
+            "0x2775b1c75658Be0F640272CCb8c72ac986009e38",
+            "0xfbe18f066f9583dac19c88444bc2005c99881e56",
+            "0xfa9b5f7fdc8ab34aaf3099889475d47febf830d7",
+            "0x0f50d31b3eaefd65236dd3736b863cffa4c63c4e",
+            "0x5608169973d639649196a84ee4085a708bcbf397",
+            "0x7587caefc8096f5f40acb83a09df031a018c66ec",
+            "0xc89b6f0146642688bb254bf93c28fccf1e182c81"
+        ]
+    },
+    {
         "asset": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
         "wallets": [
             "0x72ac1760daF52986421b1552BdCa04707E78950e",
