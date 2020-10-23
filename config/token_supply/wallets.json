@@ -894,6 +894,15 @@
 
         ]
     },
+    {
+        "asset": "0xdd974D5C2e2928deA5F71b9825b8b646686BD200",
+        "wallets": [
+            "0xECf0bdB7B3F349AbfD68C3563678124c5e8aaea3",
+            "0x3EB01B3391EA15CE752d01Cf3D3F09deC596F650",
+            "0x40b0a1f78a114d311b458c54d616c57e0bcc67c4",
+            "0x9d1167df52328db20d5d77288dce6ae3ef3a3e1f"
+        ]
+    },
     {   
         "asset": "0xdf574c24545e5ffecb9a659c229253d4111d87e1",
         "wallets": [
