@@ -143,6 +143,7 @@ func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (*KyberT
 			Symbol:   symbol,
 			Decimals: decimals,
 		}
+		dfToken.normalizeETH()
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
 	}
