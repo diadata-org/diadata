@@ -36,15 +36,20 @@ In contrast to centralized exchanges, in decentralized exchanges it is possible 
  In order to supply data to our community as quickly as possible, we retrieved the trading data through different types of APIs for now \(see table below\). However, we remark that we are currently implementing data retrieval through the blockchain directly in order to reduce unnecessary dependencies. This concerns _all_ decentralized exchanges.
 {% endhint %}
 
-| Exchange | Data Retrieval | API Link | Blockchain | Retrieval Period |
+| Exchange | Data Retrieval | API Link | Blockchain | Update Period |
 | :--- | :--- | :--- | :--- | :--- |
-| Bancor | Rest API | [Bancor API Documentation](https://support.bancor.network/hc/en-us/articles/360002246912-Price-Discovery-value-API) | Ethereum | - |
-| CurveFi | Thegraph API | [CurveFi API](https://thegraph.com/explorer/subgraph/blocklytics/curve) | Ethereum | 1 min. |
-| Gnosis | Thegraph API | [Gnosis API Documentation](https://github.com/gnosis/dex-subgraph)  | Ethereum | 1 min. |
-| Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | - |
-| Uniswap V2 | Thegraph API | [Uniswap API Documentation](https://github.com/uniswap/uniswap-v2-subgraph) | Ethereum | 1 min. |
+| 0x | Smart Contract |  | Ethereum | 2 min. |
+| Balancer | Smart Contract | - | Ethereum  | 2 min. |
+| Bancor | Rest API | [Bancor API Documentation](https://support.bancor.network/hc/en-us/articles/360002246912-Price-Discovery-value-API) | Ethereum | 2 min. |
+| CurveFi | Smart Contract |  | Ethereum | 2 min. |
+| DForce | Smart Contract |  | Ethereum | 2 min. |
+| Gnosis | Smart Contract |  | Ethereum | 2 min. |
+| KuCoin | Websocket API | [Kucoin API Documentation](https://docs.kucoin.com/#websocket-feed) | Ethereum | 2 min. |
+| Kyber | Smart Contract |  | Ethereum  | 2 min. |
+| Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | 2 min. |
+| SushiSwap | Smart Contract |  | Ethereum | 2 min. |
+| Uniswap V2 | Smart Contract |  | Ethereum | 2 min. |
 | \_\_ |  | _Coming soon:_ |  |  |
-| Balancer | Thegraph API | [Balancer API Documentation](https://github.com/balancer-labs/balancer-subgraph) | Ethereum | 1 min. |
 | Maker | Rest API | [Maker API Documentation](https://developer.makerdao.com/oasis/api/2/) | Ethereum | 1 min. |
 
 ## Lending/Borrowing Data
