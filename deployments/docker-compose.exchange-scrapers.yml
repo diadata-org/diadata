@@ -186,18 +186,31 @@ services:
     environment:
       - EXEC_MODE=production
 
-  # balancercollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=Balancer
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  balancercollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Balancer
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  dforcecollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Dforce
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   lbankcollector:
     depends_on: [genericcollector]
@@ -322,10 +335,36 @@ services:
     environment:
       - EXEC_MODE=production
 
-  bitbaycollector:
+  # bitbaycollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=BitBay
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
+
+  zeroxcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=BitBay
+    command: /bin/collector -exchange=0x
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  kybercollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Kyber
     networks:
       - kafka-network
       - redis-network

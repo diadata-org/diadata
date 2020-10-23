@@ -51,6 +51,9 @@ Based on the data we collect at DIA we build products an excerpt of which can be
 
 DIA's data feeds are being used by a range of market actors in the DeFi and CeFi space. Below is an excerpt of partners. A number of additional users are in testing phase. This list will be periodically updated.
 
+* [Gather](https://gather.network/) - A platform that allows publishers to monetize without ads, provides businesses & developers to access cheap and reliable processing power.
+* [CryptoLocally](https://cryptolocally.com/en) - A gateway for Fastest, cheapest, and easiest way to buy and sell crypto in your local currency
+* [Polkastarter](https://www.polkastarter.com/) - A DEX built for cross-chain token pools and auctions, enabling projects to raise capital on a decentralized, permissionless and interoperable environment based on Polkadot.
 * [ADD.XYZ](https://add.xyz/) - A full-stack aggregation and management platform der DeFi products.  DIA oracles supply off-chain & on-chain information.
 * [Elrond](https://elrond.com/) - A blockchain architecture, designed to bring a 1000-fold cumulative improvement in throughput and execution speed. DIA oracles supply off-chain & cross-chain information.
 * [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.

@@ -90,6 +90,20 @@ services:
       options:
         max-size: "50m"
 
+  supplyservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-supplyService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_supplyservice:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
 networks:
   kafka-network:
     external:

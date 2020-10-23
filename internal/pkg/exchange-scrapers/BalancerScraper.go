@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 )
 
 const (
@@ -26,12 +27,13 @@ const (
 
 	factoryContract = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 
-	infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
+	// infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
 	startBlock = uint64(10780772 - 5250)
 
-	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
-	balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
-	// balancerRestDial = "http://159.69.120.42:8545/"
+	// balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
+	// balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
+	balancerRestDial = "http://159.69.120.42:8545/"
+	balancerWsDial   = "ws://159.69.120.42:8546/"
 )
 
 type BalancerSwap struct {
@@ -150,7 +152,7 @@ func (scraper *BalancerScraper) mainLoop() {
 }
 
 func (scraper *BalancerScraper) performSubscriptions() {
-	for pool, _ := range scraper.pools {
+	for pool := range scraper.pools {
 		scraper.subscribeToNewSwaps(pool)
 	}
 
@@ -331,6 +333,9 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error("Error: %v", err)
+		}
+		if helpers.SymbolIsBlackListed(symbol) {
+			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {

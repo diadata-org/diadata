@@ -23,15 +23,6 @@ func (t *Trade) BaseToken() string {
 				return "USDT"
 			}
 		}
-
-		// If one of these assets is base token, be sure to get price from redis
-		topAssets := []string{"EUR", "USD", "BTC", "ETH", "USDC", "USDT", "BNB"}
-		for _, asset := range topAssets {
-			if pair[len(pair)-len(asset):] == asset {
-				return asset
-			}
-		}
-
 	}
 
 	second := strings.TrimPrefix(pair, t.Symbol+"_")
@@ -47,8 +38,5 @@ func (t *Trade) BaseToken() string {
 		return second
 	}
 
-	if len(pair) == 6 {
-		return pair[len(pair)-3:]
-	}
 	return strings.TrimPrefix(pair, t.Symbol)
 }

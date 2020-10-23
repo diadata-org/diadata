@@ -1,8 +1,11 @@
 package ethhelper
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"math/big"
 	"os"
+	"os/user"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -73,4 +76,48 @@ func GetDecimals(address common.Address) (int, error) {
 	}
 	return int((*decimals).Int64()), nil
 
+}
+
+func ConfigFilePath(filename string) string {
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	if dir == "/root" || dir == "/home" {
+		return "/config/token_supply/" + filename + ".json" //hack for docker...
+	}
+	if dir == "/home/travis" {
+		return "../config/token_supply/" + filename + ".json" //hack for travis
+	}
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/token_supply/" + filename + ".json"
+}
+
+// GetAddressesFromFile fetches token addresses from a config file available here:
+// https://etherscan.io/exportData?type=open-source-contract-codes
+func GetAddressesFromFile(filename string) (addresses []string, err error) {
+	configPath := ConfigFilePath(filename)
+	jsonFile, err := os.Open(configPath)
+	if err != nil {
+		log.Errorln("Error opening file", err)
+		return
+	}
+	defer jsonFile.Close()
+
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	// For now we only return token address. Name can be retrieved through contract.
+	type token struct {
+		Address string
+		Name    string
+	}
+	type TokenInfo struct {
+		Tokens []token `json:"Tokens"`
+	}
+	var tokeninfo TokenInfo
+	json.Unmarshal(byteData, &tokeninfo)
+	for _, token := range tokeninfo.Tokens {
+		addresses = append(addresses, token.Address)
+	}
+	return
 }

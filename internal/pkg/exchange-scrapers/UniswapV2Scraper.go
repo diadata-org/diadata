@@ -9,6 +9,7 @@ import (
 
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -125,6 +126,10 @@ func (s *UniswapScraper) mainLoop() {
 		}
 		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
 			log.Info("skip pair: ", pair.ForeignName)
+			continue
+		}
+		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
+			log.Info("skip pair, symbol is blacklisted")
 			continue
 		}
 		pair.normalizeUniPair()

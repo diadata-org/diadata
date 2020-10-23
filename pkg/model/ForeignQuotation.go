@@ -15,14 +15,16 @@ const influxDbForeignQuotationTable = "foreignquotation"
 
 // SaveForeignQuotationInflux stores a quotation which is not from DIA to an influx batch
 func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
-	tags := map[string]string{"source": fq.Source}
 	fields := map[string]interface{}{
-		"itin":               fq.ITIN,
-		"name":               fq.Name,
 		"price":              fq.Price,
 		"priceYesterday":     fq.PriceYesterday,
-		"symbol":             fq.Symbol,
+		"source":             fq.Source,
 		"volumeYesterdayUSD": fq.VolumeYesterdayUSD,
+	}
+	tags := map[string]string{
+		"symbol": fq.Symbol,
+		"name":   fq.Name,
+		"itin":   fq.ITIN,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbForeignQuotationTable, tags, fields, fq.Time)
 	if err != nil {
@@ -43,7 +45,7 @@ func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Ti
 	retval := ForeignQuotation{}
 
 	unixtime := timestamp.UnixNano()
-	q := fmt.Sprintf("SELECT * FROM %s WHERE source='%s' and symbol='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
+	q := fmt.Sprintf("SELECT price,priceYesterday,volumeYesterdayUSD,\"itin\",\"name\" FROM %s WHERE source='%s' and \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
 	fmt.Println("query: ", q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -59,22 +61,27 @@ func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Ti
 		if err != nil {
 			log.Error(err)
 		}
-		retval.ITIN = vals[1].(string)
-		retval.Name = vals[2].(string)
-		retval.Price, err = vals[3].(json.Number).Float64()
+		retval.Price, err = vals[1].(json.Number).Float64()
 		if err != nil {
 			log.Error(err)
 		}
-		retval.PriceYesterday, err = vals[4].(json.Number).Float64()
+		retval.PriceYesterday, err = vals[2].(json.Number).Float64()
 		if err != nil {
 			log.Error(err)
 		}
-		retval.Source = vals[5].(string)
-		retval.Symbol = vals[6].(string)
-		retval.VolumeYesterdayUSD, err = vals[7].(json.Number).Float64()
+		retval.VolumeYesterdayUSD, err = vals[3].(json.Number).Float64()
 		if err != nil {
 			log.Error(err)
 		}
+		if vals[4] != nil {
+			retval.ITIN = vals[4].(string)
+		} else {
+			retval.ITIN = ""
+		}
+		retval.Name = vals[5].(string)
+		retval.Source = source
+		retval.Symbol = symbol
+
 		return retval, nil
 
 	}

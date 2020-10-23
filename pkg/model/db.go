@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
@@ -61,8 +59,9 @@ type Datastore interface {
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
 	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
 	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
-	Get24Volume(symbol string, exchange string) (float64, error)
-	Get24VolumeExchange(exchange string) (float64, error)
+	// Get24Volume(symbol string, exchange string) (float64, error)
+	// Get24VolumeExchange(exchange string) (float64, error)
+	Sum24HoursExchange(exchange string) (float64, error)
 
 	// Interest rates' methods
 	SetInterestRate(ir *InterestRate) error
@@ -98,6 +97,11 @@ type Datastore interface {
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
+
+	// Token methods
+	// SaveTokenDetailInflux(tk Token) error
+	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
+	// GetCurentTotalSupply(symbol, source string) (float64, error)
 }
 
 const (
@@ -118,8 +122,8 @@ const (
 	influxDbFiltersTable   = "filters"
 	influxDbOptionsTable   = "options"
 	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supply"
-	influxDbPoolRateTable  = "poolRate"
+	influxDbSupplyTable    = "supplies"
+	influxDbSupplyTableOld = "supply"
 	influxDbDefiRateTable  = "defiRate"
 	influxDbDefiStateTable = "defiState"
 )
@@ -270,48 +274,48 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	}
 }
 
-// Get24Volume returns the volume in USD traded in the last 24 hours corresponding to quote token
-// @symbol on exchange @exchange. It uses trades' volumes without filtering.
-func (db *DB) Get24Volume(symbol string, exchange string) (float64, error) {
-	q := fmt.Sprintf("SELECT estimatedUSDPrice, volume FROM %s WHERE symbol='%s' and exchange='%s' and time > now() - 1d", influxDbTradesTable, symbol, exchange)
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		log.Errorf("Get24HoursVolume for %s on %s: %v \n", symbol, exchange, err)
-		return float64(0), err
-	}
-	var VolumeUSD float64
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			USDPrice, err := strconv.ParseFloat(row[1].(string), 64)
-			if err != nil {
-				return float64(0), err
-			}
-			volume, err := strconv.ParseFloat(row[2].(string), 64)
-			if err != nil {
-				return 0, err
-			}
-			VolumeUSD += math.Abs(volume) * USDPrice
-		}
-		return VolumeUSD, nil
-	}
-	return float64(0), errors.New("no trades")
-}
+// // Get24Volume returns the volume in USD traded in the last 24 hours corresponding to quote token
+// // @symbol on exchange @exchange. It uses trades' volumes without filtering.
+// func (db *DB) Get24Volume(symbol string, exchange string) (float64, error) {
+// 	q := fmt.Sprintf("SELECT estimatedUSDPrice, volume FROM %s WHERE symbol='%s' and exchange='%s' and time > now() - 1d", influxDbTradesTable, symbol, exchange)
+// 	res, err := queryInfluxDB(db.influxClient, q)
+// 	if err != nil {
+// 		log.Errorf("Get24HoursVolume for %s on %s: %v \n", symbol, exchange, err)
+// 		return float64(0), err
+// 	}
+// 	var VolumeUSD float64
+// 	if len(res) > 0 && len(res[0].Series) > 0 {
+// 		for _, row := range res[0].Series[0].Values {
+// 			USDPrice, err := strconv.ParseFloat(row[1].(string), 64)
+// 			if err != nil {
+// 				return float64(0), err
+// 			}
+// 			volume, err := strconv.ParseFloat(row[2].(string), 64)
+// 			if err != nil {
+// 				return 0, err
+// 			}
+// 			VolumeUSD += math.Abs(volume) * USDPrice
+// 		}
+// 		return VolumeUSD, nil
+// 	}
+// 	return float64(0), errors.New("no trades")
+// }
 
-// Get24VolumeExchange returns the trade volume in USD traded on exchange @exchange.
-// Uses trades' volumes without filtering.
-func (db *DB) Get24VolumeExchange(exchange string) (float64, error) {
-	allSymbols := db.GetSymbolsByExchange(exchange)
-	var TVL float64
-	for _, symbol := range allSymbols {
-		volumeUSD, err := db.Get24Volume(symbol, exchange)
-		if err != nil {
-			log.Errorf("Error getting 24h trade volume of %s \n", symbol)
-			continue
-		}
-		TVL += volumeUSD
-	}
-	return TVL, nil
-}
+// // Get24VolumeExchange returns the trade volume in USD traded on exchange @exchange.
+// // Uses trades' volumes without filtering.
+// func (db *DB) Get24VolumeExchange(exchange string) (float64, error) {
+// 	allSymbols := db.GetSymbolsByExchange(exchange)
+// 	var TVL float64
+// 	for _, symbol := range allSymbols {
+// 		volumeUSD, err := db.Get24Volume(symbol, exchange)
+// 		if err != nil {
+// 			log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
+// 			continue
+// 		}
+// 		TVL += volumeUSD
+// 	}
+// 	return TVL, nil
+// }
 
 /*
 select sum(value) from filters where filter='VOL120' and time > now() - 10m
@@ -347,6 +351,24 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 		return nil, errors.New(errorString)
 	}
 	return nil, errors.New("couldn't sum in Sum24HoursInflux")
+}
+
+// Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
+// using VOL120 filtered data from influx.
+func (db *DB) Sum24HoursExchange(exchange string) (float64, error) {
+	allSymbols := db.GetSymbolsByExchange(exchange)
+	filter := "VOL120"
+	var TVL float64
+	for _, symbol := range allSymbols {
+		volumeUSD, err := db.Sum24HoursInflux(symbol, exchange, filter)
+		if err != nil {
+			log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
+			continue
+		}
+		TVL += *volumeUSD
+	}
+	return TVL, nil
+
 }
 
 // GetVolumeInflux returns the trade volume of @symbol in the time range @starttime - @endtime.
@@ -503,52 +525,6 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	return retval, nil
 }
 
-func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
-	fields := map[string]interface{}{
-		"supply": supply.CirculatingSupply,
-		"source": supply.Source,
-	}
-	tags := map[string]string{
-		"symbol": supply.Symbol,
-		"name":   supply.Name,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
-	if err != nil {
-		log.Errorln("NewSupplyInflux:", err)
-	} else {
-		db.addPoint(pt)
-	}
-
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SaveSupplyInflux", err)
-	}
-
-	return err
-}
-func (db *DB) SetPoolRate(rate *PoolRate) error {
-	fields := map[string]interface{}{
-		"rate": rate.Rate,
-	}
-	tags := map[string]string{
-		"poolID":   rate.PoolID,
-		"protocol": rate.ProtocolName,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbPoolRateTable, tags, fields, rate.TimeStamp)
-	if err != nil {
-		log.Errorln("SetPoolRate:", err)
-	} else {
-		db.addPoint(pt)
-	}
-
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SetDefiRateInflux", err)
-	}
-
-	return err
-}
-
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
@@ -669,13 +645,39 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 	return
 }
 
+func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
+	fields := map[string]interface{}{
+		"supply":            supply.Supply,
+		"circulatingsupply": supply.CirculatingSupply,
+		"source":            supply.Source,
+	}
+	tags := map[string]string{
+		"symbol": supply.Symbol,
+		"name":   supply.Name,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
+	if err != nil {
+		log.Errorln("NewSupplyInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveSupplyInflux", err)
+	}
+
+	return err
+}
+
 func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		fmt.Println("influx query: ", q)
 	} else {
-		q = fmt.Sprintf("SELECT supply,source FROM %s WHERE time > %d and time < %d and symbol = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -688,16 +690,24 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.CirculatingSupply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			currentSupply.Supply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.Source = res[0].Series[0].Values[i][2].(string)
+			currentSupply.CirculatingSupply, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
+			currentSupply.Source = res[0].Series[0].Values[i][3].(string)
+			if err != nil {
+				return retval, err
+			}
+			currentSupply.Name = res[0].Series[0].Values[i][4].(string)
+			if err != nil {
+				log.Error("error getting symbol name from influx: ", err)
+			}
+
 			currentSupply.Symbol = symbol
-			currentSupply.Name = helpers.NameForSymbol(symbol)
 			retval = append(retval, currentSupply)
 		}
 	} else {

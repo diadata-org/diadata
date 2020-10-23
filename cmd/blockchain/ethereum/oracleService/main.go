@@ -56,8 +56,7 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
-	// TO DO: Switch from Infura to our node
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/ec6581408f09414b8e4446067cd3ba08")
+	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
@@ -90,7 +89,25 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
-	// fortube Data
+
+	// --------------------------------------------------------
+	// LENDING/BORROWING RATES
+	// --------------------------------------------------------
+
+	// CREAM Rates
+	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CREAM data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawCream, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update CREAM Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// fortube Rates
 	rawFortube, err := getDefiRatesFromDia("FORTUBE", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve forTube data from DIA: %v", err)
@@ -102,7 +119,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 	time.Sleep(5 * time.Minute)
-	// ddex Data
+
+	// ddex Rates
 	rawDdex, err := getDefiRatesFromDia("DDEX", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve ddex data from DIA: %v", err)
@@ -114,7 +132,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 	time.Sleep(5 * time.Minute)
-	// nuo Data
+
+	// nuo Rates
 	rawNuo, err := getDefiRatesFromDia("NUO", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Nuo data from DIA: %v", err)
@@ -127,7 +146,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// bZx Data
+	// bZx Rates
 	rawBzx, err := getDefiRatesFromDia("BZX", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve bZx data from DIA: %v", err)
@@ -140,7 +159,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Compound Data
+	// Compound Rates
 	rawCompound, err := getDefiRatesFromDia("COMPOUND", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
@@ -153,20 +172,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Compound State Data
-	rawCompoundState, err := getDefiStateFromDia("COMPOUND")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Compound state data from DIA: %v", err)
-		return err
-	}
-	err = updateDefiState(rawCompoundState, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Compound state Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	// DYDX Data
+	// DYDX Rates
 	rawDydx, err := getDefiRatesFromDia("DYDX", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve DYDX data from DIA: %v", err)
@@ -175,6 +181,36 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	err = updateDefiRate(rawDydx, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update DYDX Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// Aave Rates
+	rawAave, err := getDefiRatesFromDia("AAVE", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Aave data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawAave, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Aave Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// -----------------------------------------------------------------------
+	// LENDING PROTOCOL STATES
+	// -----------------------------------------------------------------------
+
+	// CREAM State Data
+	rawCreamState, err := getDefiStateFromDia("CREAM")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CREAM state data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiState(rawCreamState, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update CREAM state Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
@@ -192,20 +228,24 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Aave Data
-	rawAave, err := getDefiRatesFromDia("AAVE", "DAI")
+	// Compound State Data
+	rawCompoundState, err := getDefiStateFromDia("COMPOUND")
 	if err != nil {
-		log.Fatalf("Failed to retrieve Aave data from DIA: %v", err)
+		log.Fatalf("Failed to retrieve Compound state data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawAave, auth, contract)
+	err = updateDefiState(rawCompoundState, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Aave Oracle: %v", err)
+		log.Fatalf("Failed to update Compound state Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
 
-	// ECB Data
+	// --------------------------------------------------------
+	// EXCHANGE CHART POINTS
+	// --------------------------------------------------------
+
+	// ECB Chart Point
 	rawECB, err := getECBRatesFromDia("EUR")
 	if err != nil {
 		log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
@@ -218,8 +258,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Maker DEX data
-	rawMaker, err := getDEXFromDia("Maker", "DAI")
+	// Maker DEX Chart Point
+	rawMaker, err := getDEXFromDia("Maker", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
 		return err
@@ -232,7 +272,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Curvefi DEX data
+	// Curvefi DEX Chart Point
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Curvefi from DIA: %v", err)
@@ -246,8 +286,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Gnosis DEX data
-	rawGnosis, err := getDEXFromDia("Gnosis", "DIA")
+	// Gnosis DEX Chart Point
+	rawGnosis, err := getDEXFromDia("Gnosis", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Gnosis from DIA: %v", err)
 		return err
@@ -260,8 +300,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Uniswap data
-	rawUniswap, err := getDEXFromDia("Uniswap", "DIA")
+	// Uniswap Chart Point
+	rawUniswap, err := getDEXFromDia("Uniswap", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Uniswap from DIA: %v", err)
 		return err
@@ -274,8 +314,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Loopring  data
-	rawLoopring, err := getDEXFromDia("Loopring", "LRC")
+	// Loopring Chart Point
+	rawLoopring, err := getDEXFromDia("Loopring", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
 		return err
@@ -288,14 +328,42 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Bancor data
-	rawBancor, err := getDEXFromDia("Bancor", "USDT")
+	// Bancor Chart Point
+	rawBancor, err := getDEXFromDia("Bancor", "ETH")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
 		return err
 	}
 
 	err = updateDEX(rawBancor, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// 0x Chart Point
+	raw0x, err := getDEXFromDia("0x", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(raw0x, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bancor Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// Kyber Chart Point
+	rawKyber, err := getDEXFromDia("Kyber", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bancor from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawKyber, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err
@@ -324,247 +392,6 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	err = updateTopCoins(topCoinSlice, auth, contract)
 	if err != nil {
 		log.Fatalf("Failed to update Coins Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	// Coingecko Data
-	// TO DO: Add quotations
-	rawQuotBTC, err := getForeignQuotationFromDia("Coingecko", "BTC")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotBTC, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotETH, err := getForeignQuotationFromDia("Coingecko", "ETH")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotETH, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotUSDT, err := getForeignQuotationFromDia("Coingecko", "USDT")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotUSDT, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotXRP, err := getForeignQuotationFromDia("Coingecko", "XRP")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotXRP, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotBNB, err := getForeignQuotationFromDia("Coingecko", "BNB")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotBNB, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotBCH, err := getForeignQuotationFromDia("Coingecko", "BCH")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotBCH, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotDOT, err := getForeignQuotationFromDia("Coingecko", "DOT")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotDOT, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotLINK, err := getForeignQuotationFromDia("Coingecko", "LINK")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotLINK, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotBSV, err := getForeignQuotationFromDia("Coingecko", "BSV")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotBSV, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotADA, err := getForeignQuotationFromDia("Coingecko", "ADA")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotADA, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotCRO, err := getForeignQuotationFromDia("Coingecko", "CRO")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotCRO, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotLTC, err := getForeignQuotationFromDia("Coingecko", "LTC")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotLTC, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotUSDC, err := getForeignQuotationFromDia("Coingecko", "USDC")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotUSDC, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotEOS, err := getForeignQuotationFromDia("Coingecko", "EOS")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotEOS, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-	rawQuotXMR, err := getForeignQuotationFromDia("Coingecko", "XMR")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotXMR, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotTRX, err := getForeignQuotationFromDia("Coingecko", "TRX")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotTRX, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotOKB, err := getForeignQuotationFromDia("Coingecko", "OKB")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotOKB, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotXTZ, err := getForeignQuotationFromDia("Coingecko", "XTZ")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotXTZ, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotXLM, err := getForeignQuotationFromDia("Coingecko", "XLM")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotXLM, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
-
-	rawQuotNEO, err := getForeignQuotationFromDia("Coingecko", "NEO")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuotNEO, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
@@ -622,10 +449,10 @@ func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, cont
 func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
 	symbol := strings.ToUpper(defiRate.Asset)
 	name := strings.ToUpper(defiRate.Protocol)
-	price := defiRate.LendingRate
+	lendingRate := defiRate.LendingRate
+	borrowingRate := defiRate.BorrowingRate
 	// Get 5 digits after the comma by multiplying price with 100000
-	// Set supply to 0, as we don't have a supply for fiat currencies
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	err := updateOracle(contract, auth, name, symbol, int64(lendingRate*100000), int64(borrowingRate*100000))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -639,7 +466,6 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 	name := strings.ToUpper(defiState.Protocol.Name) + "-state"
 	price := defiState.TotalUSD
 	// Get 5 digits after the comma by multiplying price with 100000
-	// Set supply to 0, as we don't have a supply for fiat currencies
 	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)

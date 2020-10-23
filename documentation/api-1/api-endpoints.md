@@ -213,7 +213,7 @@ Supply
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get the current circulating supply for the currency corresponding to symbol.  
+Get the current circulating supply for the token corresponding to symbol.  
 Example: https://api.diadata.org/v1/supply/BTC
 {% endapi-method-description %}
 
@@ -240,13 +240,19 @@ Successful retrieval of BTC supply.
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/supplies/" %}
+{% api-method method="get" host="https://api.diadata.org" path="/v1/supplies/:symbol" %}
 {% api-method-summary %}
 Supplies
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get multiple supply values using time parameters for the currency corresponding to symbol.
+Get all recorded supply values for the token corresponding to symbol.  
+Example:  
+https://api.diadata.org/v1/supplies/BTC  
+  
+Get supply values for a time range using the query parameters.  
+Example:  
+https://api.diadata.org/v1/supplies/BTC?starttime=1602232273&endtime=1602318673  
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -258,11 +264,11 @@ Which symbol to get the supply fot, e.g., BTC
 {% endapi-method-path-parameters %}
 
 {% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=true %}
+{% api-method-parameter name="starttime" type="integer" required=false %}
 Unix timestamp setting the start of the return array
 {% endapi-method-parameter %}
 
-{% api-method-parameter name="endtime" type="integer" required=true %}
+{% api-method-parameter name="endtime" type="integer" required=false %}
 Unix timestamp setting the end of the return array
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
@@ -551,6 +557,89 @@ Successful response containing locking volume, the timestamp of data recording a
 
 ```
 {"TotalUSD":13048619504.89947,"TotalETH":52570793.80784482,"Timestamp":"2020-07-22T16:27:31Z","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/" path="foreignSymbols/:source" %}
+{% api-method-summary %}
+Guest Symbols
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get the list of available symbols along with their ITIN for guest quotations.  
+Example:  
+https://api.diadata.org/v1/foreignSymbols/Coingecko
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="source" type="string" required=true %}
+source of the quotation
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/foreignQuotation/:source/:symbol" path="" %}
+{% api-method-summary %}
+Guest Quotation
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get the latest quotation for a token from a guest source.  
+Example:  
+https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC  
+  
+Use the query parameter time in order to get the latest quotation before the specified timestamp.  
+Example:  
+https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1601351679  
+  
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="source" type="string" required=true %}
+source of the quotation
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="symbol" type="string" required=true %}
+Which symbol to get a quotation for, e.g. BTC
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="time" type="number" required=false %}
+Unix timestamp.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}

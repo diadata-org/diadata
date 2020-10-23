@@ -135,17 +135,7 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetSupply godoc
-// @Summary Get supply
-// @Description GetSupply
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} dia.Supply "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/supply/:symbol: [get]
+// GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
 	s, err := env.DataStore.GetLatestSupply(symbol)
@@ -160,7 +150,7 @@ func (env *Env) GetSupply(c *gin.Context) {
 	}
 }
 
-// GetSupplies
+// GetSupplies returns a time range of supplies of token with @symbol
 func (env *Env) GetSupplies(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.DefaultQuery("starttime", "noRange")
@@ -236,15 +226,45 @@ func (env *Env) GetVolume(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-// GetPairs godoc
-// @Summary Get pairs
-// @Description Get pairs
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} models.Pairs "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/pairs/ [get]
+// Get24hVolume
+// if no times are set use the last 24h
+func (env *Env) Get24hVolume(c *gin.Context) {
+	exchange := c.Param("exchange")
+	// starttimeStr := c.DefaultQuery("starttime", "noRange")
+	// endtimeStr := c.Query("endtime")
+
+	// var starttime, endtime time.Time
+
+	// if starttimeStr == "noRange" {
+	// 	starttime := time.Now().AddDate(0, 0, -1)
+	// } else {
+	// 	starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+	// 	if err != nil {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 		return
+	// 	}
+	// 	starttime = time.Unix(starttimeInt, 0)
+	// }
+	// if endtimeStr == "" {
+	// 	endtime = time.Now()
+	// } else {
+	// 	endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+	// 	if err != nil {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 		return
+	// 	}
+	// 	endtime = time.Unix(endtimeInt, 0)
+	// }
+
+	v, err := env.DataStore.Sum24HoursExchange(exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, v)
+}
+
+// GetPairs returns all pairs
 func (env *Env) GetPairs(c *gin.Context) {
 	p, err := env.DataStore.GetPairs("")
 	if err != nil {
