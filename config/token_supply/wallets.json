@@ -518,8 +518,12 @@
             "0x41527cc7cc6e63d9d0753d6fdbd4ac16096a029d",
             "0x6186ff3058150604b98af5a8521c96599a1ebfc1",
             "0xc62bf46efa39b93b871f818577e254393f6dbb83"
-
-
+        ]
+    },
+    {
+        "asset": "0x0ba45a8b5d5575935b8158a88c631e9f9c95a2e5",
+        "wallets": [
+            "0x0ba45a8b5d5575935b8158a88c631e9f9c95a2e5"
         ]
     },
     {
