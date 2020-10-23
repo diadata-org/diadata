@@ -6,6 +6,8 @@
 
 {% page-ref page="interest-rates.md" %}
 
+{% page-ref page="chart-points.md" %}
+
 {% page-ref page="fiat-prices.md" %}
 
 {% page-ref page="guest-quotations.md" %}

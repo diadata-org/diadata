@@ -74,6 +74,9 @@ type Datastore interface {
 	GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 
+	// Pool  methods
+	SetPoolRate(pr *PoolRate) error
+
 	// Itin methods
 	SetItinData(token dia.ItinToken) error
 	GetItinBySymbol(symbol string) (dia.ItinToken, error)

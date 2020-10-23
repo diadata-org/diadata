@@ -16,11 +16,11 @@ The oracle contains information about chart points of an ever growing list of ex
    3. The short name of the quoted asset, e.g., `ETH` for Ethereum.
 
 As of now, the following list of exchanges is available in this oracle:  
-- Curvefi \(DAI\)  
-- Uniswap \(ETH\)  
-- Bancor \(ETH\)  
 - 0x \(ETH\)  
+- Bancor \(ETH\)  
+- Curvefi \(DAI\)  
 - Gnosis \(ETH\)  
-- Loopring\(ETH\)  
-
+- Kyber \(ETH\)  
+- Loopring \(ETH\)  
+- Uniswap \(ETH\)
 
