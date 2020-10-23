@@ -20,7 +20,7 @@ As of now, the following list of exchanges is available in this oracle:
 - Bancor \(ETH\)  
 - Curvefi \(DAI\)  
 - Gnosis \(ETH\)  
-- Kyber \(ETH\)  
+- KyberSwap \(ETH\)  
 - Loopring \(ETH\)  
 - Uniswap \(ETH\)
 
