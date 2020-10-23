@@ -23,10 +23,11 @@ We remark that by the very nature of a websocket API, there is no retrieval freq
 | HitBTC | Websocket | [HitBTC Websocket Documentation](https://api.hitbtc.com/#socket-api-reference) | - |
 | Huobi | Websocket | [Huobi Websocket Documentation](https://huobiapi.github.io/docs/spot/v1/en/#websocket-market-data) | - |
 | Kraken | Rest | [Kraken Rest API Documentation](https://www.kraken.com/features/api#public-market-data) | 3 min. |
-| LBank | Websocket | [LBank Websocket Documentation](https://docs.lbkex.net/en/#websocket-api-market-data) | - |
-| OKEx | Websocket | [OKEx Websocket Documentation](https://www.okex.com/docs/en/#ws_swap-README) | - |
-| Quoine | Rest | [Quoine Rest API Documentation](https://developers.liquid.com/) | 1.5 sec.  |
-| ZB | Websocket | [ZB Websocket Documentation](https://www.zb.com/api#WebSocket%20API) | - |
+| KuCoin | Websocket API | [Kucoin API Documentation](https://docs.kucoin.com/#websocket-feed) | - |
+| LBank | Websocket API | [LBank Websocket Documentation](https://docs.lbkex.net/en/#websocket-api-market-data) | - |
+| OKEx | Websocket API | [OKEx Websocket Documentation](https://www.okex.com/docs/en/#ws_swap-README) | - |
+| Quoine | Rest API | [Quoine Rest API Documentation](https://developers.liquid.com/) | 1.5 sec.  |
+| ZB | Websocket API | [ZB Websocket Documentation](https://www.zb.com/api#WebSocket%20API) | - |
 
 ### Decentralized Cryptocurrency Exchanges \(DEXes\)
 
@@ -36,19 +37,18 @@ In contrast to centralized exchanges, in decentralized exchanges it is possible 
  In order to supply data to our community as quickly as possible, we retrieved the trading data through different types of APIs for now \(see table below\). However, we remark that we are currently implementing data retrieval through the blockchain directly in order to reduce unnecessary dependencies. This concerns _all_ decentralized exchanges.
 {% endhint %}
 
-| Exchange | Data Retrieval | API Link | Blockchain | Update Period |
+| Exchange | Data Retrieval | API Link | Blockchain | Retrieval Period |
 | :--- | :--- | :--- | :--- | :--- |
-| 0x | Smart Contract |  | Ethereum | 2 min. |
-| Balancer | Smart Contract | - | Ethereum  | 2 min. |
+| 0x | [Smart Contract](https://etherscan.io/address/0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef) | [Github Repository](https://github.com/0xProject) | Ethereum | - |
+| Balancer | [Smart Contract](https://etherscan.io/address/0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd) | [Github Repository](https://github.com/balancer-labs) | Ethereum  | - |
 | Bancor | Rest API | [Bancor API Documentation](https://support.bancor.network/hc/en-us/articles/360002246912-Price-Discovery-value-API) | Ethereum | 2 min. |
-| CurveFi | Smart Contract |  | Ethereum | 2 min. |
-| DForce | Smart Contract |  | Ethereum | 2 min. |
-| Gnosis | Smart Contract |  | Ethereum | 2 min. |
-| KuCoin | Websocket API | [Kucoin API Documentation](https://docs.kucoin.com/#websocket-feed) | Ethereum | 2 min. |
-| Kyber | Smart Contract |  | Ethereum  | 2 min. |
+| CurveFi | [Smart Contract](https://etherscan.io/address/0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1) | [Github Repository](https://github.com/curvefi/curve-contract) | Ethereum | - |
+| DForce | [Smart Contract](https://etherscan.io/address/0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2) | [Github Repository](https://github.com/dforce-network) | Ethereum | - |
+| Gnosis | [Smart Contract](https://etherscan.io/address/0x6F400810b62df8E13fded51bE75fF5393eaa841F) | [Github Repository](https://github.com/gnosis/dex-contracts) | Ethereum | - |
+| Kyber | [Smart Contract](https://etherscan.io/address/0x9AAb3f75489902f3a48495025729a0AF77d4b11e) | [Github Repository](https://github.com/KyberNetwork/smart-contracts) | Ethereum  | - |
 | Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | 2 min. |
-| SushiSwap | Smart Contract |  | Ethereum | 2 min. |
-| Uniswap V2 | Smart Contract |  | Ethereum | 2 min. |
+| SushiSwap | [Smart Contract](https://etherscan.io/address/0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac) | [Github Repository](https://github.com/sushiswap/sushiswap/tree/master/contracts) | Ethereum | - |
+| Uniswap V2 | [Smart Contract](https://etherscan.io/address/0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f) | [Github Repository](https://github.com/Uniswap/uniswap-v2-core) | Ethereum | - |
 | \_\_ |  | _Coming soon:_ |  |  |
 | Maker | Rest API | [Maker API Documentation](https://developer.makerdao.com/oasis/api/2/) | Ethereum | 1 min. |
 
