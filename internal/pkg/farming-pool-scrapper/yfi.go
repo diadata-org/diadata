@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"context"
 	"errors"
 	strategy "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/yficontracts/strategy"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -56,19 +57,27 @@ func (cv *YFIPool) scrapPools() (err error) {
 		if err != nil {
 			continue
 		}
-		pricePerFullShareFromContract, err := strategy.GetPricePerFullShare(&bind.CallOpts{})
+
+		header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
 		if err != nil {
 			continue
 		}
 
-		pricePerFullShare := new(big.Float).SetInt(pricePerFullShareFromContract)
 
+		pricePerFullShareFromContract, err := strategy.GetPricePerFullShare(&bind.CallOpts{BlockNumber: header.Number})
+		if err != nil {
+			continue
+		}
+		
+
+		pricePerFullShare := new(big.Float).SetInt(pricePerFullShareFromContract)
 		var pr models.PoolRate
 		pr.TimeStamp = time.Now()
 		pr.Rate = pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18))
 		pr.ProtocolName = cv.scrapper.poolName
 		pr.PoolID = poolDetail.PoolID
 		pr.OutputAsset = poolDetail.TokenName
+		pr.BlockNumber = header.Number.Int64()
 		pr.InputAsset = []string{poolDetail.TokenName}
 		cv.scrapper.chanPoolInfo <- &pr
 	}
