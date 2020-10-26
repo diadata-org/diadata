@@ -126,6 +126,8 @@ const (
 	influxDbSupplyTableOld = "supply"
 	influxDbDefiRateTable  = "defiRate"
 	influxDbDefiStateTable = "defiState"
+	influxDbPoolTable = "defiPools"
+
 )
 
 // queryInfluxDB convenience function to query the database
@@ -544,6 +546,30 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	err = db.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SetDefiRateInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) SetPoolRate(rate *PoolRate) error {
+	fields := map[string]interface{}{
+		"rate": rate.Rate,
+	}
+	tags := map[string]string{
+		"inputAsset":    rate.InputAsset[0],
+		"outputAsset":    rate.OutputAsset,
+		"protocol": rate.ProtocolName,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, rate.TimeStamp)
+	if err != nil {
+		log.Errorln("SetPoolRate:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SetPoolRate", err)
 	}
 
 	return err

@@ -3,6 +3,10 @@ package pool
 import (
 	"errors"
 	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault"
+
+	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault/erc"
+	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault/lptoken"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -86,14 +90,48 @@ func (cv *Cvault) mainLoop() {
 	// s.cleanup(err)
 }
 
-func (cv *Cvault) getPool(poolID *big.Int) {
+func (cv *Cvault) getPool(poolID *big.Int) (err error) {
+	//TODO call all pool details at once and save in cache
+	log.Infoln("Getting Pool Info")
 	cvg, err := cvaultcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
-	if err!=nil{
-		log.Errorln("Error initialising cvault caller ",err)
+	if err != nil {
+		return
 	}
+
 	pi, err := cvg.PoolInfo(&bind.CallOpts{}, poolID)
-	if err!=nil{
-		log.Errorln("Error getting poolInfo ",err)
+	if err != nil {
+		return
+	}
+
+	lptokenDetails, err := lptoken.NewLptokenCaller(pi.Token, cv.RestClient)
+	if err != nil {
+		return
+	}
+	token1, err := lptokenDetails.Token1(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	token0, err := lptokenDetails.Token0(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	token1Details, err := erc.NewCvaultcontractCaller(token1, cv.RestClient)
+	if err != nil {
+		return
+	}
+	token0Details, err := erc.NewCvaultcontractCaller(token0, cv.RestClient)
+	if err != nil {
+		return
+	}
+
+	token0Symbol, err := token0Details.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	token1Symbol, err := token1Details.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return
 	}
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
@@ -103,8 +141,11 @@ func (cv *Cvault) getPool(poolID *big.Int) {
 	pr.Rate = AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12))
 	pr.ProtocolName = cv.scrapper.poolName
 	pr.PoolID = poolID.String()
-	pr.OutputAsset = "CORE"
+	pr.InputAsset = []string{token1Symbol}
+	pr.OutputAsset = token0Symbol
 	cv.scrapper.chanPoolInfo <- &pr
+	log.Infoln(pr)
+	return
 
 }
 func (cv *Cvault) UpdateRate() error {
