@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
+	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
 
 	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
 	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
@@ -21,9 +22,10 @@ import (
 var log = logrus.New()
 
 const (
-	restDial      = "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
-	wsDial        = "wss://mainnet.infura.io/ws/v3/2883d1b22e0e4d62b535592dd8075fee"
-	cvaultAddress = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
+	restDial       = "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
+	wsDial         = "wss://mainnet.infura.io/ws/v3/2883d1b22e0e4d62b535592dd8075fee"
+	cvaultAddress  = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
+	lpTokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b"
 )
 
 type Cvault struct {
@@ -132,12 +134,14 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	if err != nil {
 		return
 	}
+	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lpTokenAddress, cv.RestClient)
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
 	rate, _ := AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12)).Float64()
 	var pr models.FarmingPool
 	pr.TimeStamp = time.Now()
 	pr.Rate = rate
+	pr.Balance = balLPToken
 	pr.ProtocolName = cv.scraper.poolName
 	pr.PoolID = poolID.String()
 	pr.InputAsset = []string{token1Symbol}

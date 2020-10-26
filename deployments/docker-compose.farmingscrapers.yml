@@ -1,0 +1,58 @@
+version: '3.2'
+services:
+
+  cvaultscraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingscraper -type=CVAULT
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  yfiscraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingscraper -type=YFI
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+ 
+  genericfarmingscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericFarmingScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    restart: "no"
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
