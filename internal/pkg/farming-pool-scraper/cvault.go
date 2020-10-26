@@ -2,18 +2,20 @@ package pool
 
 import (
 	"errors"
-	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault"
 
-	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault/erc"
-	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scrapper/cvault/lptoken"
+	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
+
+	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
+	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
+
+	"math/big"
+	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	logrus "github.com/sirupsen/logrus"
-	"math/big"
-	"time"
 )
 
 var log = logrus.New()
@@ -25,14 +27,14 @@ const (
 )
 
 type Cvault struct {
-	scrapper      *PoolScraper
+	scraper       *PoolScraper
 	RestClient    *ethclient.Client
 	WsClient      *ethclient.Client
 	DepositEvent  chan *cvaultcontract.CvaultpoolcontractDeposit
 	WithDrawEvent chan *cvaultcontract.CvaultpoolcontractWithdraw
 }
 
-func NewCvaultScrapper(scrapper *PoolScraper) *Cvault {
+func NewCvaultScraper(scraper *PoolScraper) *Cvault {
 
 	deposit := make(chan *cvaultcontract.CvaultpoolcontractDeposit)
 	withdrwa := make(chan *cvaultcontract.CvaultpoolcontractWithdraw)
@@ -44,7 +46,7 @@ func NewCvaultScrapper(scrapper *PoolScraper) *Cvault {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cv := &Cvault{scrapper: scrapper, RestClient: restClient, WsClient: wsClient, DepositEvent: deposit, WithDrawEvent: withdrwa}
+	cv := &Cvault{scraper: scraper, RestClient: restClient, WsClient: wsClient, DepositEvent: deposit, WithDrawEvent: withdrwa}
 	go cv.mainLoop()
 
 	return cv
@@ -53,9 +55,6 @@ func NewCvaultScrapper(scrapper *PoolScraper) *Cvault {
 
 // runs in a goroutine until s is closed
 func (cv *Cvault) mainLoop() {
-
-	// wait for all pairs have added into s.PairScrapers
-	time.Sleep(4 * time.Second)
 
 	fr, _ := cvaultcontract.NewCvaultpoolcontractFilterer(common.HexToAddress(cvaultAddress), cv.WsClient)
 	_, err := fr.WatchDeposit(&bind.WatchOpts{}, cv.DepositEvent, nil, nil)
@@ -135,15 +134,15 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	}
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
-
-	var pr models.PoolRate
+	rate, _ := AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12)).Float64()
+	var pr models.FarmingPool
 	pr.TimeStamp = time.Now()
-	pr.Rate = AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12))
-	pr.ProtocolName = cv.scrapper.poolName
+	pr.Rate = rate
+	pr.ProtocolName = cv.scraper.poolName
 	pr.PoolID = poolID.String()
 	pr.InputAsset = []string{token1Symbol}
 	pr.OutputAsset = token0Symbol
-	cv.scrapper.chanPoolInfo <- &pr
+	cv.scraper.chanPoolInfo <- &pr
 	log.Infoln(pr)
 	return
 

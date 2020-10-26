@@ -75,7 +75,7 @@ type Datastore interface {
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 
 	// Pool  methods
-	SetPoolRate(pr *PoolRate) error
+	SetFarmingPool(pr *FarmingPool) error
 
 	// Itin methods
 	SetItinData(token dia.ItinToken) error
@@ -126,8 +126,7 @@ const (
 	influxDbSupplyTableOld = "supply"
 	influxDbDefiRateTable  = "defiRate"
 	influxDbDefiStateTable = "defiState"
-	influxDbPoolTable = "defiPools"
-
+	influxDbPoolTable      = "defiPools"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -551,25 +550,26 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	return err
 }
 
-func (db *DB) SetPoolRate(rate *PoolRate) error {
+func (db *DB) SetFarmingPool(pool *FarmingPool) error {
 	fields := map[string]interface{}{
-		"rate": rate.Rate,
+		"rate":    pool.Rate,
+		"balance": pool.Balance,
 	}
 	tags := map[string]string{
-		"inputAsset":    rate.InputAsset[0],
-		"outputAsset":    rate.OutputAsset,
-		"protocol": rate.ProtocolName,
+		"inputAsset":  pool.InputAsset[0],
+		"outputAsset": pool.OutputAsset,
+		"protocol":    pool.ProtocolName,
 	}
-	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, rate.TimeStamp)
+	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, pool.TimeStamp)
 	if err != nil {
-		log.Errorln("SetPoolRate:", err)
+		log.Errorln("SetPoolInfo:", err)
 	} else {
 		db.addPoint(pt)
 	}
 
 	err = db.WriteBatchInflux()
 	if err != nil {
-		log.Errorln("SetPoolRate", err)
+		log.Errorln("SetPoolInfo", err)
 	}
 
 	return err
