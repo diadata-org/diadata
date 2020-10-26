@@ -51,6 +51,10 @@ func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProto
 	assets["USDT"] = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9"
 	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
 	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
+	assets["UNI"] = "0xd88b94128ff2b8cf2d7886cd1c1e46757418ca2a"
+
+
+
 
 	decimals := make(map[string]int)
 	decimals["ETH"] = 18
@@ -61,6 +65,8 @@ func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProto
 	decimals["USDT"] = 6
 	decimals["WBTC"] = 8
 	decimals["ZRX"] = 18
+	decimals["UNI"] = 18
+
 
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
