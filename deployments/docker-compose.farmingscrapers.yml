@@ -4,7 +4,7 @@ services:
   cvaultscraper:
     depends_on: [genericfarmingscraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
-    command: /bin/farmingscraper -type=CVAULT
+    command: /bin/farmingpools -type=CVAULT
     networks:
       - kafka-network
       - influxdb-network
@@ -18,7 +18,7 @@ services:
   yfiscraper:
     depends_on: [genericfarmingscraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
-    command: /bin/farmingscraper -type=YFI
+    command: /bin/farmingpools -type=YFI
     networks:
       - kafka-network
       - influxdb-network
@@ -29,7 +29,6 @@ services:
       options:
         max-size: "50m"
 
- 
   genericfarmingscraper:
     build:
       context: ../../../..
