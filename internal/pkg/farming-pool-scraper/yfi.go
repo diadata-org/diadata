@@ -2,7 +2,6 @@ package pool
 
 import (
 	"context"
-	"errors"
 	"math"
 	"math/big"
 	"time"
@@ -92,9 +91,6 @@ func (cv *YFIPool) scrapePools() (err error) {
 	}
 	return
 
-}
-func (cv *YFIPool) UpdateRate() error {
-	return errors.New("")
 }
 
 func (cv *YFIPool) getYFIPools() (pools []*YFIPoolDetail) {

@@ -1,8 +1,6 @@
 package pool
 
 import (
-	"errors"
-
 	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
 	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
 
@@ -151,6 +149,4 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	return
 
 }
-func (cv *Cvault) UpdateRate() error {
-	return errors.New("")
-}
+
