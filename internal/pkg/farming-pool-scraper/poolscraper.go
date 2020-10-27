@@ -40,8 +40,6 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 func (s *PoolScraper) mainLoop(rateType string) {
 	for {
 		select {
-		case <-s.tickerRate.C:
-			s.UpdateRates(rateType)
 
 		case <-s.shutdown: // user requested shutdown
 			log.Println("PoolScraper shutting down")
@@ -83,11 +81,4 @@ func (s *PoolScraper) Close() error {
 // RateChannel returns a channel that can be used to receive rate information
 func (s *PoolScraper) RateChannel() chan *models.FarmingPool {
 	return s.chanPoolInfo
-}
-
-// UpdateRates calls the appropriate function corresponding to the rate type.
-func (s *PoolScraper) UpdateRates(poolName string) error {
-
-	//s.datastore.SetDefiProtocol(protocol)
-	return s.poolHelper.UpdateRate()
 }
