@@ -145,7 +145,7 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	pr.ProtocolName = cv.scraper.poolName
 	pr.PoolID = poolID.String()
 	pr.InputAsset = []string{token1Symbol}
-	pr.OutputAsset = token0Symbol
+	pr.OutputAsset = []string{token0Symbol}
 	cv.scraper.chanPoolInfo <- &pr
 	log.Infoln(pr)
 	return

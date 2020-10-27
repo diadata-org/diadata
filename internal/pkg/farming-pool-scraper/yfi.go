@@ -85,7 +85,7 @@ func (cv *YFIPool) scrapePools() (err error) {
 		pr.Balance = poolBalance
 		pr.ProtocolName = cv.scraper.poolName
 		pr.PoolID = poolDetail.PoolID
-		pr.OutputAsset = poolDetail.TokenName
+		pr.OutputAsset = []string{poolDetail.TokenName}
 		pr.BlockNumber = header.Number.Int64()
 		pr.InputAsset = []string{poolDetail.TokenName}
 		cv.scraper.chanPoolInfo <- &pr

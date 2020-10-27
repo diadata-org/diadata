@@ -557,9 +557,17 @@ func (db *DB) SetFarmingPool(pool *FarmingPool) error {
 		"blockNumber": pool.BlockNumber,
 
 	}
+	inputAssetBytes,err := json.Marshal(pool.InputAsset)
+	if err != nil{
+		return err
+	}
+	outputAssetBytes,err := json.Marshal(pool.OutputAsset)
+	if err != nil{
+		return err
+	}
 	tags := map[string]string{
-		"inputAsset":  pool.InputAsset[0],
-		"outputAsset": pool.OutputAsset,
+		"inputAssets":  string(inputAssetBytes),
+		"outputAssets": string(outputAssetBytes),
 		"protocol":    pool.ProtocolName,
 		"poolID":      pool.PoolID,
 	}
