@@ -37,11 +37,18 @@ func NewYFIPool(scraper *PoolScraper) *YFIPool {
 
 // runs in a goroutine until s is closed
 func (cv *YFIPool) mainLoop() {
+	ticker := time.NewTicker(1 * time.Minute)
 
 	go func() {
 		// Pool rates change per deposit and withdraw
 		for {
-			cv.scrapePools()
+			select {
+			case <-ticker.C:
+				err := cv.scrapePools()
+				if err != nil {
+					log.Errorln("Error while Scrapping", err)
+				}
+			}
 
 		}
 	}()
@@ -53,25 +60,30 @@ func (cv *YFIPool) scrapePools() (err error) {
 	for _, poolDetail := range cv.getYFIPools() {
 		strategy, err := strategy.NewStrategyCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
 		if err != nil {
-			continue
+			return err
 		}
 
 		header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
 		if err != nil {
-			continue
+			return err
+
 		}
 
 		pricePerFullShareFromContract, err := strategy.GetPricePerFullShare(&bind.CallOpts{BlockNumber: header.Number})
 		if err != nil {
-			continue
+			return err
+
 		}
 		bal, err := strategy.Balance(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
+			return err
+
 		}
 		decimals, err := strategy.Decimals(&bind.CallOpts{})
 		if err != nil {
-			log.Error(err)
+			return err
+
 		}
 		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
 
