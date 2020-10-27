@@ -218,10 +218,16 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 			IDs = append(IDs, vals[i][1].(string))
 		}
 	} else {
-		// If no content is available, make tree from empty bucket
+		// If no content is available, make tree from empty bucket and store to storage table for consistency of IDs
 		nilTree, err := merkletree.NewTree([]merkletree.Content{merkletree.NewBucket(0, topic)})
 		if err != nil {
 			log.Error(err)
+		}
+		// !!! TO DO: Question/Problem with timing: how to prevent that a new tree with content is written in between line 193
+		// and this save call?
+		err = ds.SaveMerkletreeInflux(*nilTree, topic)
+		if err != nil {
+			log.Error("error saving tree to influx: ", err)
 		}
 		merkleTrees = []merkletree.MerkleTree{*nilTree}
 	}
@@ -303,7 +309,6 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 		ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 		return
 	}
-	// Root should only be nil when hashing is initiated and there is no master merkle tree yet
 	masterTree = *dailyTree
 	ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 	return
