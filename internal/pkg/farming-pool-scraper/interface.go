@@ -10,7 +10,7 @@ import (
 type nothing struct{}
 
 type PoolHelper interface {
- }
+}
 
 type PoolScraper struct {
 	// signaling channels
@@ -23,7 +23,6 @@ type PoolScraper struct {
 	error        error
 	closed       bool
 	tickerRate   *time.Ticker
-	tickerState  *time.Ticker
 	datastore    models.Datastore
 	chanPoolInfo chan *models.FarmingPool
 	poolHelper   PoolHelper

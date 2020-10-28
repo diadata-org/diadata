@@ -1,6 +1,8 @@
 package pool
 
 import (
+	"context"
+
 	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
 	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
 
@@ -20,8 +22,6 @@ import (
 var log = logrus.New()
 
 const (
-	restDial       = "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
-	wsDial         = "wss://mainnet.infura.io/ws/v3/2883d1b22e0e4d62b535592dd8075fee"
 	cvaultAddress  = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
 	lpTokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b"
 )
@@ -96,6 +96,10 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	if err != nil {
 		return
 	}
+	header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return
+	}
 
 	pi, err := cvg.PoolInfo(&bind.CallOpts{}, poolID)
 	if err != nil {
@@ -135,18 +139,24 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lpTokenAddress, cv.RestClient)
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
-	rate, _ := AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12)).Float64()
 	var pr models.FarmingPool
+	if int(poolID.Int64()) == 0 {
+		rate, _ := AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e12)).Float64()
+		pr.Rate = rate
+	}
+	if int(poolID.Int64()) == 1 {
+		// cBTC pool scales in centimillis (1e-5)
+		rate, _ := AccCorePerShareFloat.Quo(AccCorePerShareFloat, new(big.Float).SetFloat64(1e17)).Float64()
+		pr.Rate = rate
+	}
 	pr.TimeStamp = time.Now()
-	pr.Rate = rate
 	pr.Balance = balLPToken
 	pr.ProtocolName = cv.scraper.poolName
 	pr.PoolID = poolID.String()
+	pr.BlockNumber = header.Number.Int64()
 	pr.InputAsset = []string{token1Symbol}
 	pr.OutputAsset = []string{token0Symbol}
 	cv.scraper.chanPoolInfo <- &pr
-	log.Infoln(pr)
 	return
 
 }
-

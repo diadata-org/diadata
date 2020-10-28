@@ -9,7 +9,9 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refreshRateDelay = time.Second * 1 * 1
+	refreshRateDelay = time.Second * 60
+	restDial         = "http://159.69.120.42:8545/"
+	wsDial           = "ws://159.69.120.42:8546/"
 )
 
 func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper {
@@ -56,7 +58,6 @@ func (s *PoolScraper) cleanup(err error) {
 	defer s.errorLock.Unlock()
 
 	s.tickerRate.Stop()
-	s.tickerState.Stop()
 
 	if err != nil {
 		s.error = err

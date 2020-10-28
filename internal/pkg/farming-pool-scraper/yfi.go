@@ -37,13 +37,12 @@ func NewYFIPool(scraper *PoolScraper) *YFIPool {
 
 // runs in a goroutine until s is closed
 func (cv *YFIPool) mainLoop() {
-	ticker := time.NewTicker(1 * time.Minute)
 
 	go func() {
 		// Pool rates change per deposit and withdraw
 		for {
 			select {
-			case <-ticker.C:
+			case <-cv.scraper.tickerRate.C:
 				err := cv.scrapePools()
 				if err != nil {
 					log.Errorln("Error while Scrapping", err)
@@ -53,7 +52,6 @@ func (cv *YFIPool) mainLoop() {
 		}
 	}()
 
-	// s.cleanup(err)
 }
 
 func (cv *YFIPool) scrapePools() (err error) {
