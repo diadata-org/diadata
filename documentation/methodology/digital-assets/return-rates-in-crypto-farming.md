@@ -1,3 +1,7 @@
+---
+description: A basic introduction to the role of pool rates in crypto asset farming
+---
+
 # Return Rates in Crypto Farming
 
 Decentralized Finance \(DeFi\) has attracted a lot of attention in the recent years. A rather new and hot topic inside the world of DeFi is yield farming, which allows to earn passive income on token holdings using various investment strategies coded into smart contracts.  
