@@ -6,5 +6,7 @@
 
 {% page-ref page="supplynumbers.md" %}
 
+{% page-ref page="return-rates-in-crypto-farming.md" %}
+
 {% page-ref page="cvi.md" %}
 
