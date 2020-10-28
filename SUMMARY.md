@@ -13,6 +13,7 @@
       * [Cryptocurrency Data Collection](documentation/methodology/digital-assets/cryptocurrency-trading-data.md)
       * [Pricing Methodology of Crypto Exchange Quotations](documentation/methodology/digital-assets/exchangeprices.md)
       * [Circulating Supply Numbers](documentation/methodology/digital-assets/supplynumbers.md)
+      * [Return Rates in Crypto Farming](documentation/methodology/digital-assets/return-rates-in-crypto-farming.md)
       * [Crypto Volatility Index](documentation/methodology/digital-assets/cvi.md)
     * [Traditional Assets](documentation/methodology/traditional-assets/README.md)
       * [ECB Foreign Exchange Data](documentation/methodology/traditional-assets/ecb-foriegn-exchange-data.md)
