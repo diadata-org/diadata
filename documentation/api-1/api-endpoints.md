@@ -144,7 +144,8 @@ Farming Pool Data
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get Information on a specific farming pool, such as pool rate and pool balance. Available pools can be found in the FarmingPools endpoint.  
+Get Information on a specific farming pool, such as pool rate and pool balance. Available pools can be found in the FarmingPools endpoint  
+https://docs.diadata.org/documentation/api-1/api-endpoints\#farming-pools  
   
 Example:  
 https://api.diadata.org/v1/FarmingPoolData/YFI/USDT  
