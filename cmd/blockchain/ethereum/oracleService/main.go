@@ -384,6 +384,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// DIA token
+	diaToken, err := getCoinDetailsFromDia("DIA")
+	if err != nil {
+		log.Fatalf("Failed to retrieve token DIA from DIA: %v", err)
+		return err
+	}
+	err = updateCoin(*diaToken, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update DIA Token Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Top 15 coins
 	rawCoins, err := getToplistFromDia()
 	if err != nil {
@@ -410,6 +423,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	return nil
+}
+
+func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	symbol := strings.ToUpper(coin.Symbol)
+	name := coin.Name
+	supply := coin.CirculatingSupply
+	price := coin.Price
+	// Get 5 digits after the comma by multiplying price with 100000
+	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(*supply))
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
 	return nil
 }
 
