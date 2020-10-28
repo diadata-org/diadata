@@ -13,5 +13,10 @@ type FarmingPool struct {
 	TimeStamp    time.Time
 	OutputAsset  []string
 	InputAsset   []string //some pools have more than 2 input assets
+}
 
+type FarmingPoolType struct {
+	ProtocolName string
+	InputAsset   []string
+	PoolID       string
 }

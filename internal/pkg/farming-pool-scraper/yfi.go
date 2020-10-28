@@ -105,7 +105,7 @@ func (cv *YFIPool) scrapePools() (err error) {
 
 func (cv *YFIPool) getYFIPools() (pools []*YFIPoolDetail) {
 
-	pools = append(pools, &YFIPoolDetail{TokenName: "yCRV", VaultAddress: "0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c", PoolID: "curve.fi/y LP"})
+	pools = append(pools, &YFIPoolDetail{TokenName: "yCRV", VaultAddress: "0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c", PoolID: "curve.fi/y_LP"})
 	pools = append(pools, &YFIPoolDetail{TokenName: "USDC", VaultAddress: "0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e", PoolID: "yUSDC"})
 	pools = append(pools, &YFIPoolDetail{TokenName: "TUSD", VaultAddress: "0x37d19d1c4E1fa9DC47bD1eA12f742a0887eDa74a", PoolID: "TUSD"})
 	pools = append(pools, &YFIPoolDetail{TokenName: "DAI", VaultAddress: "0xACd43E627e64355f1861cEC6d3a6688B31a6F952", PoolID: "DAI"})
