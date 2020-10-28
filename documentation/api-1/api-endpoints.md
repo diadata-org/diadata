@@ -185,7 +185,7 @@ Unix timestamp. Final date for range queries.
 {% endapi-method-response-example-description %}
 
 ```
-
+[{"Rate":0.03660467237864349,"Balance":1716667.854526,"ProtocolName":"YFI","BlockNumber":11145033,"PoolID":"USDT","TimeStamp":"2020-10-28T12:11:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]},{"Rate":0.03660460740229476,"Balance":1716667.746922,"ProtocolName":"YFI","BlockNumber":11145029,"PoolID":"USDT","TimeStamp":"2020-10-28T12:10:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]},{"Rate":0.036604532499305786,"Balance":1716667.622879,"ProtocolName":"YFI","BlockNumber":11145024,"PoolID":"USDT","TimeStamp":"2020-10-28T12:09:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]}]
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
