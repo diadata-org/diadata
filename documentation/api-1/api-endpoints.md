@@ -106,6 +106,91 @@ Successful retrieval of available exchanges.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org/v1/FarmingPools" path="" %}
+{% api-method-summary %}
+Farming Pools
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of all available farming pools.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Succesful retrieval of available farming pools.
+{% endapi-method-response-example-description %}
+
+```
+[{"ProtocolName":"YFI","InputAsset":["3crv"],"PoolID":"3crv"},{"ProtocolName":"YFI","InputAsset":["DAI"],"PoolID":"DAI"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/FarmingPoolData/:protocol/:poolID" path="" %}
+{% api-method-summary %}
+Farming Pool Data
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get Information on a specific farming pool, such as pool rate and pool balance. Available pools can be found in the FarmingPools endpoint.  
+  
+Example:  
+https://api.diadata.org/v1/FarmingPoolData/YFI/USDT  
+  
+Get information for a time range using the query parameters.  
+Example:  
+https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="protocol" type="string" required=true %}
+The name of the protocol in capital letters.
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="poolID" type="string" required=true %}
+Unique identifier of the pool.
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="integer" required=false %}
+Unix timestamp. Initial date for range queries.
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="integer" required=false %}
+Unix timestamp. Final date for range queries.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" %}
 {% api-method-summary %}
 Chart Points
