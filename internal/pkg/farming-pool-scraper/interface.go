@@ -10,8 +10,7 @@ import (
 type nothing struct{}
 
 type PoolHelper interface {
-	UpdateRate() error
-}
+ }
 
 type PoolScraper struct {
 	// signaling channels
