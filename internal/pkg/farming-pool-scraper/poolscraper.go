@@ -32,6 +32,8 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 		s.poolHelper = NewCvaultScraper(s)
 	case "YFI":
 		s.poolHelper = NewYFIPool(s)
+	case "BALANCER":
+		s.poolHelper = NewBalancerPoolScrapper(s)
 	}
 
 	go s.mainLoop(poolName)
