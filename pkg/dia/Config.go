@@ -24,6 +24,7 @@ const (
 	GateIOExchange   = "GateIO"
 	ZBExchange       = "ZB"
 	QuoineExchange   = "Quoine"
+	BalancerExchange = "Balancer"
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
@@ -59,6 +60,7 @@ func Exchanges() []string {
 		LBankExchange,
 		OKExExchange,
 		QuoineExchange,
+		BalancerExchange,
 		SimexExchange,
 		ZBExchange,
 		BancorExchange,
