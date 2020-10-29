@@ -20,7 +20,7 @@ func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
 	// Get ID of parent pool
 	id := strings.Split(sb.ID, ".")[0]
 	// Get tree corresponding to the pool
-	tree, err := ds.GetMerkletreeByID(sb.Topic, id)
+	tree, err := ds.GetStorageTreeByID(sb.Topic, id)
 	if err != nil {
 		return false, err
 	}
@@ -50,6 +50,7 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
 
 // VerifyTree verifies a tree in the hashing hierarchy with respect to the tree one level down
 func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
+	// level=1; id=0
 	// TO DO: Add case if level=0
 	ds, err := models.NewAuditStore()
 	if err != nil {
@@ -81,7 +82,7 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 	// Get ID of parent pool
 	id := strings.Split(sb.ID, ".")[0]
 	// Get tree corresponding to the pool
-	tree, err := ds.GetMerkletreeByID(sb.Topic, id)
+	tree, err := ds.GetStorageTreeByID(sb.Topic, id)
 	if err != nil {
 		return false, err
 	}

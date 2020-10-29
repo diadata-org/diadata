@@ -144,7 +144,7 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 		}
 		// Once a day, a script fetches all entries with today's date. Ordering of trees can be done
 		// with influx timestamps. Ordering in merkle tree can be done using timestamps of buckets.
-		err = ds.SaveMerkletreeInflux(*tree, bp.Topic)
+		err = ds.SetStorageTreeInflux(*tree, bp.Topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
 		}
@@ -190,7 +190,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	// Get merkle trees from storage table
 	// Comment: Alternatively we can fetch the trees by id.
 	// Write method GetLastID of pool. Look for last ID of level 2 tree and pick highest pool id from there.
-	vals, err := ds.GetMerkletreesInflux(topic, timeInit, timeFinal)
+	vals, err := ds.GetStorageTreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
 		log.Error(err)
 	}
@@ -219,13 +219,18 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 		}
 	} else {
 		// If no content is available, make tree from empty bucket and store to storage table for consistency of IDs
-		nilTree, err := merkletree.NewTree([]merkletree.Content{merkletree.NewBucket(0, topic)})
+		emptyBucket := merkletree.StorageBucket{
+			Content:   []byte{},
+			Topic:     topic,
+			Timestamp: time.Now(),
+		}
+		nilTree, err := merkletree.NewTree([]merkletree.Content{emptyBucket})
 		if err != nil {
 			log.Error(err)
 		}
 		// !!! TO DO: Question/Problem with timing: how to prevent that a new tree with content is written in between line 193
 		// and this save call?
-		err = ds.SaveMerkletreeInflux(*nilTree, topic)
+		err = ds.SetStorageTreeInflux(*nilTree, topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
 		}
@@ -238,7 +243,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	}
 	// fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
 
-	err = ds.SaveDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
+	err = ds.SetDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
 	return
 }
 
@@ -263,7 +268,7 @@ func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree
 		return
 	}
 
-	err = ds.SaveDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
+	err = ds.SetDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
 	fmt.Println("daily tree built at level 1")
 	return
 }
@@ -306,11 +311,18 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 			return
 		}
 		// Save new Master Tree
-		ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+		ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 		return
 	}
-	masterTree = *dailyTree
-	ds.SaveDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+	// If master tree is empty, make it from the root hash of level 1 tree.
+	// This should only occurr for the very beginning of hashing
+	mT, err := merkletree.NewTree([]merkletree.Content{newHash})
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	masterTree = *mT
+	ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
 	return
 
 }

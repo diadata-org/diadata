@@ -132,7 +132,7 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 		}
 		// Once a day, a script fetches all entries with today's date. Ordering of trees can be done
 		// with influx timestamps. Ordering in merkle tree can be done using timestamps of buckets.
-		err = ds.SaveMerkletreeInflux(*tree, bp.Topic)
+		err = ds.SetStorageTreeInflux(*tree, bp.Topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
 		}
@@ -152,7 +152,7 @@ func main() {
 	}
 
 	poolNum := "10"
-	tree, err := ds.GetMerkletreeByID(*dataType, poolNum)
+	tree, err := ds.GetStorageTreeByID(*dataType, poolNum)
 	if err != nil {
 		log.Error(err)
 	}
@@ -197,7 +197,7 @@ func main() {
 
 	// timeInit := time.Now().Add(time.Hour * (-800))
 	// timeFinal := time.Now()
-	// retval, err := ds.GetMerkletreeInflux(*dataType, timeInit, timeFinal)
+	// retval, err := ds.GetStorageTreeInflux(*dataType, timeInit, timeFinal)
 	// if err != nil {
 	// 	log.Error("error getting merkle tree from influx: ", err)
 	// }
@@ -207,7 +207,7 @@ func main() {
 	// 	fmt.Println(string(data[i]))
 	// }
 
-	// vals, err := ds.GetMerkletreesInflux(*dataType, timeInit, timeFinal)
+	// vals, err := ds.GetStorageTreesInflux(*dataType, timeInit, timeFinal)
 	// if err != nil {
 	// 	log.Error(err)
 	// }
@@ -215,9 +215,9 @@ func main() {
 	// myTree := merkletree.MerkleTree{}
 	// json.Unmarshal([]byte(vals[0][2].(string)), &myTree)
 
-	// ds.SaveDailyTreeInflux(myTree, "", "1")
-	// ds.SaveDailyTreeInflux(myTree, "", "1")
-	// ds.SaveDailyTreeInflux(myTree, "", "1")
+	// ds.SetDailyTreeInflux(myTree, "", "1")
+	// ds.SetDailyTreeInflux(myTree, "", "1")
+	// ds.SetDailyTreeInflux(myTree, "", "1")
 
 	// -------------------------------------------------------------
 
