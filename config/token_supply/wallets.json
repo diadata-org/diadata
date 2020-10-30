@@ -882,6 +882,15 @@
           "wallets":[
             "0x60b47716d3893b06cc43b66d7c8221e0cac63a9b"
             ]
+        },
+        {
+          "asset": "0x1c48f86ae57291f7686349f12601910bd8d470bb",
+          "wallets":[
+            "0xe983845a04c681a295dd9ce1fa8c2c8505932da3",
+            "0xD30b438DF65f4f788563b2b3611Bd6059bFF4ad9",
+            "0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb"
+
+            ]
         }
   ]
 }
