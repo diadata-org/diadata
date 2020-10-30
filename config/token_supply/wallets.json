@@ -891,6 +891,18 @@
             "0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb"
 
             ]
+        },
+        {
+          "asset": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d",
+          "wallets":[
+            "0x67a57535b11445506a9e340662cd0c9755e5b1b4",
+            "0xa5aacd9faab88d345deb55036257913202f40c05",
+            "0x9f26ee541d54b5431d04d6a1501af621832e50db",
+            "0xc257d25152263c24e39c3cebab633a458e24c71c",
+            "0x00b5ade4ac1fe9ccc08addc2c10070642335117f",
+            "0xddd5ce3bdf841ac617f24e673745f5b1acc9f291"
+
+            ]
         }
   ]
 }
