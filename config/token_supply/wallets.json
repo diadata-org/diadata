@@ -802,6 +802,12 @@
           "0xae1887e035385d2f7d3Ff057c6EE053842f30Af6"
 
           ]
+        },
+      {
+        "asset": "0xb1eef147028e9f480dbc5ccaa3277d417d1b85f0",
+        "wallets": [
+          "0xbe26e353a7ee0614aebd159dadcd116b8aa1608d"
+          ]
         }
   ]
 }
