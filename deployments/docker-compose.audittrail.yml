@@ -1,0 +1,54 @@
+version: '3.2'
+services:
+
+  hashingservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-hashingService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_hashingservice:latest
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    logging:
+      options:
+        max-size: "50m"
+    volumes:
+      - /home/srv/config:/config
+  
+  mastermerkle:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-masterMerkle
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_mastermerkle:latest
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    logging:
+      options:
+        max-size: "50m"
+
+  merkleverification:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-merkleVerification
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_merkleverification:latest
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network

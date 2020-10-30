@@ -56,7 +56,7 @@ type KafkaChannel struct {
 // sends the messages to the channel of KafkaChannel
 func (kc *KafkaChannel) StartKafkaReader(topic string) {
 	config := kafka.ReaderConfig{
-		// TO DO: Production switch
+		// TO DO: Production switch -- Also, automatic config as in kafka helper?
 		Brokers:  []string{"localhost:9092"},
 		Topic:    topic,
 		MaxBytes: 10,
@@ -201,7 +201,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	if len(vals) > 0 {
 		// If new content is available, make daily tree
 		for i := range vals {
-			// Collect merkle trees
+			// Collect storage trees
 			var auxTree merkletree.MerkleTree
 			err = json.Unmarshal([]byte(vals[i][3].(string)), &auxTree)
 			if err != nil {
@@ -228,13 +228,21 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 		if err != nil {
 			log.Error(err)
 		}
-		// !!! TO DO: Question/Problem with timing: how to prevent that a new tree with content is written in between line 193
-		// and this save call?
+		// !!! TO DO: Question/Problem with timing: how to prevent that a new tree with content is written in between
+		// line 193 and this save call?
 		err = ds.SetStorageTreeInflux(*nilTree, topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
 		}
 		merkleTrees = []merkletree.MerkleTree{*nilTree}
+		// As we artificially set the empty storage tree here, we have to get the ID of the same tree
+		// as above in the if-condition
+		id, err := ds.GetLastID(topic)
+		if err != nil {
+			log.Error(err)
+		}
+		idString := strconv.Itoa(int(id))
+		IDs = append(IDs, idString)
 	}
 	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {

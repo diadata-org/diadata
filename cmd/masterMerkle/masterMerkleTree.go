@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"encoding/hex"
 	"time"
 
 	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
@@ -24,7 +24,7 @@ func main() {
 				if err != nil {
 					log.Error(err)
 				}
-				fmt.Println("master tree saved: ", masterTree)
+				log.Infof("%v -- master tree saved with root: %s", time.Now(), hex.EncodeToString(masterTree.MerkleRoot))
 
 			}
 		}
