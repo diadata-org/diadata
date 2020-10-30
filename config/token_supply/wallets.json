@@ -945,6 +945,228 @@
             "0x0000000000000000000000000000000000000001",
             "0x43984D578803891dfa9706bDEee6078D80cFC79E"
             ]
+        },
+        {
+          "asset": "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b",
+          "wallets":[
+            "0x97990B693835da58A281636296D2Bf02787DEa17"
+
+            ]
+        },
+        {
+          "asset": "0xf2354f740f31704820f6fcfba70b9da065459b62",
+          "wallets":[
+            "0xe2633edd93e19c946b75d933faedeed72880ba11",
+            "0xf5d05b816400c21a78eb2a262f6768d1b8d468e7",
+            "0x48b39ededc0d7d383fdf2d9d4a1e5f7a3b5aed84",
+            "0xf497c1005beaac5ff083ec9cba2149337d54675a"
+
+            ]
+        },
+        {
+          "asset": "0xc528c28fec0a90c083328bc45f587ee215760a0f",
+          "wallets":[
+            "0xc528c28fec0a90c083328bc45f587ee215760a0f",
+            "0x7da7334d99fdf63f1e1a38331e3b2a86d1ba028c",
+            "0xa38a6b7384c67e598e729fb3c5193e553af6e4c1",
+            "0x7a0b2c518b0bbacbf0d095be089a4da04942adb9",
+            "0x6bd5872474bcb046a57d9780e37a1ee8c8a88e52",
+            "0x08097e6e767afa20469c57c307b75bf9a6e0c580",
+            "0x9c4ba57b94565e381c5c82b8bbb843a94e9f220e",
+            "0xae9a7a5c6d8be950a913ef34cffcd3fa145bcd28"
+
+            ]
+        },
+        {
+          "asset": "0x4575f41308ec1483f3d399aa9a2826d74da13deb",
+          "wallets":[
+            "0x520676fa48e3e8df32eec6f5cdb5e8830b4c7ec5",
+            "0xfe8ba3f24a8287d4d992fe2eed593ca5e5d84781",
+            "0x982f8767c5379853d56364812395d06c27ac5cf5",
+            "0x880ffb323261fecfda01d54c2e0158b0b43dc1fc",
+            "0x3a878e8abe3a07ec38fbbab24da518dfd2a6fc77",
+            "0xBc676e7264d22b8ab1915D23aF83e1c077dC3baB",
+            "0x1aA9B6a7DFa13E034F35fDd7bB99549E427aE941",
+            "0xb80c2E6A8C667824229891b6175F7f88Fc12fe64",
+            "0xa7d7A76d2c4B54919d441CC3e6d6ad046b1C28F7",
+            "0x77A8312001245Cbeb763576d3D9935d0BaefDF0A",
+            "0x931d44dBD1213C27826BEa331A55FEd9F550b294",
+            "0x6a05298a53a3eA9bff1dBfFFa2D09047E724b2F6",
+            "0x3133c167a2DB915cc2009A4976C05a25e94a216A",
+            "0x822BF7f0Bbdf9D62765B51936fA00Bf0b8C2FFC3",
+            "0x8AE2eCF425dE06D2604380Ac91096BcCA753c7aE"
+
+            ]
+        },
+        {
+          "asset": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
+          "wallets":[
+            "0xf348717cfff01edc759a4e0cb198f6360975ee39",
+            "0xbbf0cc1c63f509d48a4674e270d26d80ccaf6022",
+            "0xa646e29877d52b9e2de457eca09c724ff16d0a2b"
+            ]
+        },
+        {
+          "asset": "0x9205c049c231dda51bace0ba569f047e3e1e9979",
+          "wallets":[
+            "0x79ebfd0361cd5067b827bdfd5967e040193634dc",
+            "0x1c467a47ca69c0703b6de0382cabb54f08905a63",
+            "0x76d011918af306b874dbecbd1e2bad18bb787a01",
+            "0x87a1452a5fe6153afc8f7f2f408ec32e6d96a8ba",
+            "0x2ae3d74b0cb45d1a953017a0010e774d257211ab"
+            ]
+        },
+        {
+          "asset": "0xfb444c1f2b718ddfc385cb8fd9f2d1d776b24668",
+          "wallets":[
+            "0x565cf2056230BD825dC849ef49CCfd5740eaCaFA",
+            "0x57C75e3B47329e854ae0E3697b7Ce662e68c4707",
+            "0x497a866d3e3B26ca8515D93Ef588F4D1651fe55d",
+            "0x0e89a1464F7974757081dF12e21F1A9EFeEfbF21"
+            ]
+        },
+        {
+          "asset": "0xfa3118b34522580c35ae27f6cf52da1dbb756288",
+          "wallets":[
+            "0xd73400ca12f94a2c38100a31a5be090704602479",
+            "0x597397290317b379f77d71b33a9e3ca344b6fb09",
+            "0x8e85e4dca7b4a2fd632bb732932aea97d14c6dca"
+            ]
+        },
+        {
+          "asset": "0x488e0369f9bc5c40c002ea7c1fe4fd01a198801c",
+          "wallets":[
+            "0xa1b450670556B69D1b391Dc200b80273e88F0d06",
+            "0x69c33b02939160De26F395e29380e98AdD4F76e5"
+            ]
+        },
+        {
+          "asset": "0x26ddf6cabadcbf4f013841bd8d914830beb0d984",
+          "wallets":[
+            "0x8ef9901A49292E2f0577A2cb60F8e18F4C2393be",
+            "0x8CFffD3136729655F99D59478316b39C23F46fB3",
+            "0x951aB1d8dfd1D22504383AeF9F808f7AAeDdc1F5"
+            ]
+        },
+        {
+          "asset": "0x039b5649a59967e3e936d7471f9c3700100ee1ab",
+          "wallets":[
+            "0x4768b5168a8f2bfdd76de03faa834839ccf75d9f"
+            ]
+        },
+        {
+          "asset": "0x412d397ddca07d753e3e0c61e367fb1b474b3e7d",
+          "wallets":[
+            "0x0bbf8b129e22490553dfa6a2e04b8d1598f7d7df"
+            ]
+        },
+        {
+          "asset": "0xba50933c268f567bdc86e1ac131be072c6b0b71a",
+          "wallets":[
+              "0x168115cf806009f8984f47c90033e9a9705b4f65",
+              "0x158e6b7c111e3c79f43394117cb826a83b38de59",
+              "0xffa297375bb7bd7998c4a8af51fff856090df493",
+              "0xfe403548faec667b56cd594365d97066ae18e9fc"
+            ]
+        },
+        {
+          "asset": "0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063",
+          "wallets":[
+              "0x1ea33abfcbd789c7ec8dd8f74c5de659234d8fce",
+              "0xc98472d8996798fe12c211f1445ba6bbbfcb1424",
+              "0x9a92ab2c680cf1b33364f877c1d8d8dde6409b12",
+              "0x0ebb4060b9f48a1b88376736f33386dbc022f823",
+              "0x650cf244cc00dee5e4c46f22986c3df6a5cb3b16"
+            ]
+        },
+        {
+          "asset": "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671",
+          "wallets":[
+              "0x000000000000000000000000000000000001eE9d",
+              "0x691c73eC45CFBB42d5c926257d5608E2955B18bE"
+            ]
+        },
+        {
+          "asset": "0x2be5e8c109e2197d077d13a82daead6a9b3433c5",
+          "wallets":[
+              "0xf68C26aA86607C64b6a86dC2A987530eFd3ae941",
+              "0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2"
+            ]
+        },
+        {
+          "asset": "0x995de3d961b40ec6cdee0009059d48768ccbdd48",
+          "wallets":[
+              "0xbC467c39D1695C2683Baf615AA8A297B89a5f0c7",
+              "0x38B78904a6B44F63eB81D98937fc6614870cFbB9"
+            ]
+        },
+        {
+          "asset": "0x686c650dbcfeaa75d09b883621ad810f5952bd5d",
+          "wallets":[
+              "0xa4ee5581fdcbaaf52c5edb65c8fbb7d3de78b838",
+              "0x394b2E87fc9775Db677BC34af5DC89Ee1A35be78"
+            ]
+        },
+        {
+          "asset": "0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7",
+          "wallets":[
+              "0x1d44b41A742D2b008A8faF655451aa015a59f248",
+              "0xe422C577FE8dEbBEc1C3B1ae5774C3b259A2EE76",
+              "0x5ddb9fa8d6ec60bba1e8fbc22379f2e7a8e0ff34"
+            ]
+        },
+        {
+          "asset": "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9",
+          "wallets":[
+            "0xF34842d05A1c888Ca02769A633DF37177415C2f8",
+            "0x995a09ed0b24Ee13FbfCFbe60cad2fB6281B479F"
+            ]
+        },
+        {
+          "asset": "0xaba8cac6866b83ae4eec97dd07ed254282f6ad8a",
+          "wallets":[
+            "0x000000000000000000000000000000000000dead"
+            ]
+        },
+        {
+          "asset": "0xaea46a60368a7bd060eec7df8cba43b7ef41ad85",
+          "wallets":[
+            "0x7cd9497b3da5de1eba948fa574c4de771124f1d9",
+            "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"
+            ]
+        },
+        {
+          "asset": "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0",
+          "wallets":[
+            "0x0b5B734F911Dd7506aB4cD735425B21b574d9Fb8",
+            "0x620118Ad98f2f2C02C823Edf96555F8C6494c163",
+            "0x140e2c4B6CdCe682edBacF0f9641B8A5E8670d26"
+            ]
+        },
+        {
+          "asset": "0x0ae055097c6d159879521c384f1d2123d1f195e6",
+          "wallets":[
+            "0x9BC4a93883C522D3C79c81c2999Aab52E2268d03",
+            "0xecbCd6D7264e3c9eAc24C7130Ed3cd2B38F5A7AD",
+            "0x0000000000000000000000000000000000000000",
+            "0x3cfe51b61e25750ab1426b0072e5d0cc5c30aafa"
+            ]
+        },
+        {
+          "asset": "0x6b74dd5d01f8320081247f5cf1f7a48324700db6",
+          "wallets":[
+            "0xa944D366429c8799834236658eB952edEBfB4A5A",
+            "0xC0789Cf48b66E3440E56fa9c3341F67Af8B042d0",
+            "0xcFdf6e2349cf181e99E6d6f3F026115E38F0Ab11",
+            "0xB1Df0aFCD3904021E173dAB0a94A6c8a6D9Eb039"
+            ]
+        },
+        {
+          "asset": "0x6bc1f3a1ae56231dbb64d3e82e070857eae86045",
+          "wallets":[
+            "0xbD6806e7EFdb841E3e92EAD10c30b4CCfB922405",
+            "0xAFf6F35A83A31758898553A218712844F8AE517f"
+            ]
         }
   ]
 }
