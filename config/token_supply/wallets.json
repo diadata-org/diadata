@@ -830,6 +830,24 @@
           "0x8EAd195B15A7C46d954eE290F3FDD966Ee171674"
 
           ]
+        },
+      {
+        "asset": "0xe5dada80aa6477e85d09747f2842f7993d0df71c",
+        "wallets": [
+          "0xd5672add996108d24ac0de32e74ecfc8187bf560",
+          "0xe70830fc342a8dd9e3330eb4997bfaebce0f35a1",
+          "0x17a57a8322558f0d6ea9ac3e15fb962248620df0",
+          "0x1ea51856d62db0f463628cb3f91660c61b59cfdf",
+          "0x65a56d460aa2e1b741acb6ff89d213c89931bbd3",
+          "0x2c08d881c945d973a2abf807c3fccb9a3e7c2035",
+          "0x7a9ee336b80f4c926e210c2d5366255acdb32874",
+          "0xd0daced482543793d8477cb3816e40f40f9d3123",
+          "0x70654dcbe931d1d5ff5f77899100f4929b24cc5b",
+          "0x5359e36556f54eecf97d58a0d0fe38b4cadaadd6",
+          "0x6fa3bcd837cde578f663e9ef7d0301f90f0a6c78",
+          "0x530393b3b16d15448ec494a48877a9b311fe589e"
+
+          ]
         }
   ]
 }
