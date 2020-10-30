@@ -186,7 +186,7 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 	balanceFloat := float64(balance.Int64()) / 10e17
 
 	pr := models.FarmingPool{
-		// Balance is the total supply of pool tokens.
+		// Balance is the total supply of pool token.
 		Balance: balanceFloat,
 
 		TimeStamp:    time.Now(),
