@@ -157,7 +157,6 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 	}
 
 	symbols := []string{}
-	balances := []float64{}
 
 	for _, token := range tokens {
 		tokCaller, err := baltokencontract.NewBALTokenContractCaller(token, bp.restClient)
@@ -170,15 +169,7 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 			return err
 		}
 
-		balanceInt, err := pool.GetBalance(&bind.CallOpts{}, token)
-		if err != nil {
-			return err
-		}
-
-		balance := float64(balanceInt.Int64()) / 10e17
-
 		symbols = append(symbols, symbol)
-		balances = append(balances, balance)
 	}
 
 	swapFee, err := pool.GetSwapFee(&bind.CallOpts{})
@@ -188,9 +179,15 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 
 	swapFeeFloat := float64(swapFee.Int64()) / float64(10e15)
 
-	// TODO: merge token balances into a single balance
+	balance, err := pool.TotalSupply(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	balanceFloat := float64(balance.Int64()) / 10e17
+
 	pr := models.FarmingPool{
-		// Balance      float64
+		// Balance is the total supply of pool tokens.
+		Balance: balanceFloat,
 
 		TimeStamp:    time.Now(),
 		PoolID:       poolAddress.String(),
