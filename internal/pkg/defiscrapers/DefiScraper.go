@@ -209,6 +209,17 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			helper = NewForTube(s, protocol)
 		}
+	case "BITFINEX":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "BITFINEX",
+				Address:              "0x936E6490eD786FD0e0f0C1b1e4E1540b9D41F9eF",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewBitfinex(s, protocol)
+		}
 
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")

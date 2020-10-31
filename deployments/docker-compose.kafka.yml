@@ -7,8 +7,8 @@ services:
 
   zookeeper:
     image: wurstmeister/zookeeper
-#    ports:
-#      - "2181:2181"
+    ports:
+        - "127.0.0.1:2181:2181"
     volumes:
 # TODO figure out how to have this without version number
       - /home/srv/zoo:/opt/zookeeper-3.4.9/data
@@ -21,8 +21,8 @@ services:
         window: 20s
   kafka0:
     image: wurstmeister/kafka:latest
-#    ports:
-#      - "9094:9094"
+    ports:
+        - "127.0.0.1:9094:9094"
     networks:
       - kafka-network
     deploy:

@@ -40,7 +40,7 @@ func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds model
 }
 
 func main() {
-	rateType := flag.String("type", "DYDX", "Type of Defi rate")
+	rateType := flag.String("type", "BITFINEX", "Type of Defi rate")
 	flag.Parse()
 
 	wg := sync.WaitGroup{}
