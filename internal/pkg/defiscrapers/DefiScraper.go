@@ -214,7 +214,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 
 			protocol = dia.DefiProtocol{
 				Name:                 "BITFINEX",
-				Address:              "0x936E6490eD786FD0e0f0C1b1e4E1540b9D41F9eF",
+				Address:              "",
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}

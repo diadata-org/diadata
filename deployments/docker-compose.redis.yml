@@ -9,8 +9,8 @@ services:
     image: redis
     volumes:
       - /home/srv/redis:/data
-    ports:
-      - 127.0.0.1:6379:6379
+    networks:
+      - redis-network
     entrypoint: redis-server --appendonly yes 
     logging:
       options:

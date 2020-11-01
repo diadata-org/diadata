@@ -25,10 +25,12 @@ require (
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.11.0 // indirect
 	github.com/ethereum/go-ethereum v1.9.18
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-contrib/cache v1.1.0
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
 	github.com/gin-gonic/gin v1.6.3
@@ -53,6 +55,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/peterh/liner v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1

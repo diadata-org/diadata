@@ -115,8 +115,8 @@ services:
 
   genericdefiratescraper:
     build:
-      context: ../
-      dockerfile: build/Dockerfile-genericDefiRateScraper
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericDefiRateScraper
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
     restart: "no"
     networks:
