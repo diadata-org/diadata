@@ -129,30 +129,34 @@ func (proto *BitfinexProtocol) fetchingForever() {
 			log.Errorf("BitfinexProtocol: While receive from websocket: %v", err)
 			continue
 		}
-		event := resp[1].([]big.Float)
+		event := resp[1].([]interface{})
 		if len(event) == 0 {
 			continue
 		}
 		log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
-		borrowingRate := event[FRR]
-		lendingRate := new(big.Float).Sub(&borrowingRate, new(big.Float).Mul(&borrowingRate, big.NewFloat(0.15)))
+		borrowingRate, ok := event[FRR].(float64)
+		if !ok {
+			log.Errorf("BitfinexProtocol: While parsing borrowing rate: %v", err)
+			continue
+		}
+		borrowingRateFloat := big.NewFloat(borrowingRate)
+		lendingRate := new(big.Float).Sub(borrowingRateFloat, new(big.Float).Mul(borrowingRateFloat, big.NewFloat(0.15)))
 
-		borrowingRateF64, _ := borrowingRate.Float64()
 		lendingRateF64, _ := lendingRate.Float64()
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
 			Asset:         "USD",
 			Protocol:      proto.protocol.Name,
 			LendingRate:   lendingRateF64,
-			BorrowingRate: borrowingRateF64,
+			BorrowingRate: borrowingRate,
 		}
 		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
 		proto.scraper.RateChannel() <- asset
 		log.Info("Update complete")
 		log.Print("Updating DEFI state for %+v\n ", proto.protocol)
-		totalSupplyUSD := event[VOLUME]
-		if err != nil {
-			log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD,: %v", err)
+		totalSupplyUSD, ok := event[VOLUME].(float64)
+		if !ok {
+			log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD: %v", err)
 			continue
 		}
 		priceETH, err := utils.GetCoinPrice("ETH")
@@ -160,12 +164,10 @@ func (proto *BitfinexProtocol) fetchingForever() {
 			log.Errorf("BitfinexProtocol: While parsing priceETH: %v", err)
 			continue
 		}
-		totalSupplyETH := new(big.Float).Quo(&totalSupplyUSD, big.NewFloat(priceETH))
-		totalSupplyETHF64, _ := totalSupplyETH.Float64()
-		totalSupplyUSDF64, _ := totalSupplyUSD.Float64()
+		totalSupplyETH := totalSupplyUSD / priceETH
 		defistate := &dia.DefiProtocolState{
-			TotalUSD:  totalSupplyUSDF64,
-			TotalETH:  totalSupplyETHF64,
+			TotalUSD:  totalSupplyUSD,
+			TotalETH:  totalSupplyETH,
 			Protocol:  proto.protocol,
 			Timestamp: time.Now(),
 		}
