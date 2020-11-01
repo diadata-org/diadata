@@ -3,8 +3,10 @@ package defiscrapers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -54,71 +56,112 @@ var (
 )
 
 type BitfinexProtocol struct {
-	scraper  *DefiScraper
-	protocol dia.DefiProtocol
-	restart  chan bool
-	// The websocket connection.
-	conn *websocket.Conn
+	scraper        *DefiScraper
+	protocol       dia.DefiProtocol
+	WsConnections  []*BitfinexWSSConnection
+	fundingSymbols []string
 }
 
-type BitfinexEvent struct {
-	Data []interface{}          `json:"-"`
-	X    map[string]interface{} `json:"-"` // Rest of the fields should go here.
+type BitfinexWSSConnection struct {
+	proto   *BitfinexProtocol
+	restart chan bool
+	// The websocket connection.
+	conn   *websocket.Conn
+	symbol string
 }
 
 func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProtocol {
-	log.Info("Hello mothefucker")
 	proto := &BitfinexProtocol{scraper: scraper, protocol: protocol}
-	proto.restart = make(chan bool)
+	// Manually fetch funding symbols
+	fundingSymbols, err := fetchFundingSymbols()
+	if err != nil {
+		panic(err)
+	}
+	proto.fundingSymbols = fundingSymbols
+	// Add a websocket connection for every funding symbol
+	proto.WsConnections = make([]*BitfinexWSSConnection, 0)
+	for _, sym := range proto.fundingSymbols {
+		proto.WsConnections = append(proto.WsConnections,
+			&BitfinexWSSConnection{
+				proto:   proto,
+				symbol:  sym,
+				restart: make(chan bool),
+			})
+	}
 	go func() {
 		for {
-			select {
-			case <-proto.restart:
-				go proto.connectWebsocket()
+			for _, wsConn := range proto.WsConnections {
+				select {
+				case <-wsConn.restart:
+					go wsConn.connectWebsocket()
+				}
 			}
 		}
 	}()
-	proto.restart <- true
+	// Start all connections
+	for _, wsConn := range proto.WsConnections {
+		wsConn.restart <- true
+	}
 	return proto
 }
 
-func (proto *BitfinexProtocol) pingWebsocket() {
-	w, err := proto.conn.NextWriter(websocket.TextMessage)
+func fetchFundingSymbols() (fundingSymbols []string, err error) {
+	fundingSymbols = make([]string, 0)
+	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	log.Debugf("%s", jsondata)
+	resp := make([][]interface{}, 0)
+	err = json.Unmarshal(jsondata, &resp)
+	if err != nil {
+		log.Debug("While getting all symbols")
+		return nil, err
+	}
+	// Filter funding symbols
+	for _, sym := range resp {
+		symName, ok := sym[0].(string)
+		if ok && strings.HasPrefix(symName, "f") {
+			fundingSymbols = append(fundingSymbols, symName[1:])
+		}
+	}
+	return fundingSymbols, nil
+}
+
+func (ws *BitfinexWSSConnection) pingWebsocket() {
+	w, err := ws.conn.NextWriter(websocket.TextMessage)
 	if err != nil {
 		return
 	}
-	w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "fUSD"}`))
+	w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "f` + ws.symbol + `" }`))
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		proto.conn.Close()
+		ws.conn.Close()
 	}()
 	for {
 		select {
 		case <-ticker.C:
-			proto.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := proto.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}
 	}
 }
 
-func (proto *BitfinexProtocol) fetchingForever() {
+func (ws *BitfinexWSSConnection) fetchingForever() {
 	defer func() {
-		proto.conn.Close()
+		ws.conn.Close()
 		// added by me?
-		proto.restart <- true
+		ws.restart <- true
 	}()
-	proto.conn.SetReadLimit(maxMessageSize)
-	proto.conn.SetReadDeadline(time.Now().Add(pongWait))
-	proto.conn.SetPongHandler(func(string) error { proto.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	ws.conn.SetReadLimit(maxMessageSize)
+	ws.conn.SetReadDeadline(time.Now().Add(pongWait))
+	ws.conn.SetPongHandler(func(string) error { ws.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := proto.conn.ReadMessage()
+		_, message, err := ws.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
-				proto.restart <- true
+				ws.restart <- true
 				return
 			}
 		}
@@ -126,77 +169,109 @@ func (proto *BitfinexProtocol) fetchingForever() {
 		resp := make([]interface{}, 0)
 		log.Printf("Arrived: %s", string(message))
 		if err := json.Unmarshal(message, &resp); err != nil {
-			log.Errorf("BitfinexProtocol: While receive from websocket: %v", err)
+			log.Debug("Skiiping on event info message")
 			continue
 		}
-		event := resp[1].([]interface{})
-		if len(event) == 0 {
+		event, ok := resp[1].([]interface{})
+		if !ok || len(event) == 0 {
+			log.Debug("Skiiping on empty message")
 			continue
 		}
-		log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
+		log.Printf("Updating DEFI Rate for %+v\n ", ws.proto.protocol.Name)
 		borrowingRate, ok := event[FRR].(float64)
 		if !ok {
 			log.Errorf("BitfinexProtocol: While parsing borrowing rate: %v", err)
 			continue
 		}
 		borrowingRateFloat := big.NewFloat(borrowingRate)
+		// See https://www.bitfinex.com/fees/#margin-funding
 		lendingRate := new(big.Float).Sub(borrowingRateFloat, new(big.Float).Mul(borrowingRateFloat, big.NewFloat(0.15)))
 
 		lendingRateF64, _ := lendingRate.Float64()
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
-			Asset:         "USD",
-			Protocol:      proto.protocol.Name,
+			Asset:         ws.symbol,
+			Protocol:      ws.proto.protocol.Name,
 			LendingRate:   lendingRateF64,
 			BorrowingRate: borrowingRate,
 		}
-		log.Printf("writing DEFI rate for  %#v in %v\n", asset, proto.scraper.RateChannel())
-		proto.scraper.RateChannel() <- asset
+		log.Printf("writing DEFI rate for  %#v in %v\n", asset, ws.proto.scraper.RateChannel())
+		ws.proto.scraper.RateChannel() <- asset
 		log.Info("Update complete")
-		log.Print("Updating DEFI state for %+v\n ", proto.protocol)
-		totalSupplyUSD, ok := event[VOLUME].(float64)
-		if !ok {
-			log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD: %v", err)
-			continue
-		}
-		priceETH, err := utils.GetCoinPrice("ETH")
-		if err != nil {
-			log.Errorf("BitfinexProtocol: While parsing priceETH: %v", err)
-			continue
-		}
-		totalSupplyETH := totalSupplyUSD / priceETH
-		defistate := &dia.DefiProtocolState{
-			TotalUSD:  totalSupplyUSD,
-			TotalETH:  totalSupplyETH,
-			Protocol:  proto.protocol,
-			Timestamp: time.Now(),
-		}
-		proto.scraper.StateChannel() <- defistate
-		log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
-
-		log.Info("Update State complete")
 	}
 }
-func (proto *BitfinexProtocol) connectWebsocket() {
+func (ws *BitfinexWSSConnection) connectWebsocket() {
 	var err error
 	u := url.URL{Scheme: "wss", Host: "api-pub.bitfinex.com", Path: "/ws/2"}
-	proto.conn, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
+	ws.conn, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
 	log.Printf("connecting to %s", u.String())
 	if err != nil {
 		log.Fatal("dial:", err)
-		proto.restart <- true
+		ws.restart <- true
 	}
-	go proto.pingWebsocket()
-	go proto.fetchingForever()
+	go ws.pingWebsocket()
+	go ws.fetchingForever()
 
 }
-
 func (proto *BitfinexProtocol) UpdateRate() error {
 	//NO OP
 	return nil
 }
 
+func fetchTotalLocked(symbols []string) (amount float64, err error) {
+	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	log.Debugf("%s", jsondata)
+	priceList := make([][]interface{}, 0)
+	err = json.Unmarshal(jsondata, &priceList)
+	if err != nil {
+		log.Debug("While getting all symbols")
+		return 0, err
+	}
+	for _, symbol := range symbols {
+		jsondata, err := utils.GetRequest(fmt.Sprintf("https://api-pub.bitfinex.com/v2/stats1/funding.size:1m:f%s/last", symbol))
+		resp := make([]float64, 0)
+		err = json.Unmarshal(jsondata, &resp)
+		if err != nil {
+			return 0, err
+		}
+		if len(resp) != 2 {
+			return 0, fmt.Errorf("Unexpected response from bitfinex stats api")
+		}
+		symTotal := resp[1]
+		// Find price for funding symbols
+		for _, priceInfo := range priceList {
+			symName, ok := priceInfo[0].(string)
+			if ok && symName == fmt.Sprintf("t%sUSD", symbol) {
+				// Check if we found a valid funding symbol
+				price, ok := priceInfo[1].(float64)
+				if ok {
+					amount += symTotal * price
+				}
+			}
+		}
+	}
+	return
+}
 func (proto *BitfinexProtocol) UpdateState() error {
-	//NO OP
+	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
+	totalSupplyUSD, err := fetchTotalLocked(proto.fundingSymbols)
+	if err != nil {
+		log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD: %v", err)
+	}
+	priceETH, err := utils.GetCoinPrice("ETH")
+	if err != nil {
+		log.Errorf("BitfinexProtocol: While parsing priceETH: %v", err)
+	}
+	totalSupplyETH := totalSupplyUSD / priceETH
+	defistate := &dia.DefiProtocolState{
+		TotalUSD:  totalSupplyUSD,
+		TotalETH:  totalSupplyETH,
+		Protocol:  proto.protocol,
+		Timestamp: time.Now(),
+	}
+	proto.scraper.StateChannel() <- defistate
+	log.Printf("writing DEFI state for  %#v in %v\n", defistate, proto.scraper.StateChannel())
+
+	log.Info("Update State complete")
 	return nil
 }
