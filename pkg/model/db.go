@@ -51,7 +51,7 @@ type Datastore interface {
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
-	GetConfigTogglePairDiscovery(d time.Duration) (bool, error)
+	GetConfigTogglePairDiscovery() (bool, error)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
