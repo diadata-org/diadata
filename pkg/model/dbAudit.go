@@ -269,9 +269,12 @@ func (db *DB) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletre
 	if err != nil {
 		return merkletree.MerkleTree{}, err
 	}
-	val := res[0].Series[0].Values[0]
-	err = json.Unmarshal([]byte(val[1].(string)), &retval)
-	return retval, err
+	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
+		val := res[0].Series[0].Values[0]
+		err = json.Unmarshal([]byte(val[1].(string)), &retval)
+		return retval, err
+	}
+	return merkletree.MerkleTree{}, errors.New("empty response")
 }
 
 // GetStorageTreesInflux returns a slice of merkletrees from the storage table corresponding to a given topic in a given time range.
@@ -285,6 +288,7 @@ func (db *DB) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time)
 		return [][]interface{}{}, err
 	}
 	if len(res[0].Series) == 0 {
+		err = errors.New("empty response")
 		return
 	}
 	val = res[0].Series[0].Values
@@ -299,9 +303,12 @@ func (db *DB) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error
 	if err != nil {
 		return merkletree.MerkleTree{}, err
 	}
-	val := res[0].Series[0].Values[0]
-	err = json.Unmarshal([]byte(val[1].(string)), &retval)
-	return retval, err
+	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
+		val := res[0].Series[0].Values[0]
+		err = json.Unmarshal([]byte(val[1].(string)), &retval)
+		return retval, err
+	}
+	return merkletree.MerkleTree{}, errors.New("empty response")
 }
 
 // GetLastID retrieves the highest current id for @topic (if given) from the storage table
@@ -316,9 +323,12 @@ func (db *DB) GetLastID(topic string) (int64, error) {
 		// In this case, database is still empty, so begin with id=0
 		return -1, nil
 	}
-	val := res[0].Series[0].Values[0]
-	lastID, err := strconv.ParseInt(val[1].(string), 10, 64)
-	return lastID, err
+	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
+		val := res[0].Series[0].Values[0]
+		lastID, err := strconv.ParseInt(val[1].(string), 10, 64)
+		return lastID, err
+	}
+	return int64(0), errors.New("empty response")
 }
 
 // Saving and retrieving from Merkle Table (hashed trees) ----------------------------------

@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/cbergoon/merkletree"
-	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -142,70 +141,76 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 func main() {
 
-	// Test verification ----------------------------------------------
-	dataType := flag.String("type", "hash-interestrates", "Type of data")
-	flag.Parse()
+	// // Test verification ----------------------------------------------
+	// dataType := flag.String("type", "hash-interestrates", "Type of data")
+	// flag.Parse()
 
+	// ds, err := models.NewAuditStore()
+	// if err != nil {
+	// 	log.Error("NewAuditStore: ", err)
+	// }
+
+	// poolNum := "10"
+	// tree, err := ds.GetStorageTreeByID(*dataType, poolNum)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// num := 3
+	// fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
+	// verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
+	// fmt.Println("verification: ", verif)
+	// newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
+	// verifInterm, _ := merklehashing.VerifyBucket(newBucket)
+	// fmt.Println("verification before modification: ", verifInterm)
+	// newBucket.Content[0] = 1
+	// verifnew, _ := merklehashing.VerifyBucket(newBucket)
+	// fmt.Println("new verification: ", verifnew)
+
+	// verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0")
+	// fmt.Println("verification of pool: ", verif2)
+
+	// level2Tree, err := ds.GetDailyTreeByID(*dataType, "2", "0")
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// verif3, err := merklehashing.VerifyTree(level2Tree, "2", "0")
+	// fmt.Println(verif3, err)
+
+	// level1Tree, err := ds.GetDailyTreeByID("", "1", "0")
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("level1tree root: ", level1Tree.MerkleRoot)
+	// verif4, err := merklehashing.VerifyTree(level1Tree, "1", "1")
+	// fmt.Println(verif4, err)
+
+	// level0Tree, err := ds.GetDailyTreeByID("", "0", "0")
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("leaf 1 duplicated: ", level0Tree.Leafs[0])
+	// fmt.Println("leaf 2 duplicated: ", level0Tree.Leafs[1])
+	// ---------------------------------------------------------------
+
+	dataType := flag.String("type", "hash-trades", "Type of data")
+	flag.Parse()
 	ds, err := models.NewAuditStore()
 	if err != nil {
 		log.Error("NewAuditStore: ", err)
 	}
-
-	poolNum := "10"
-	tree, err := ds.GetStorageTreeByID(*dataType, poolNum)
-	if err != nil {
-		log.Error(err)
-	}
-	num := 3
-	fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
-	verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
-	fmt.Println("verification: ", verif)
-	newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
-	verifInterm, _ := merklehashing.VerifyBucket(newBucket)
-	fmt.Println("verification before modification: ", verifInterm)
-	newBucket.Content[0] = 1
-	verifnew, _ := merklehashing.VerifyBucket(newBucket)
-	fmt.Println("new verification: ", verifnew)
-
-	verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0")
-	fmt.Println("verification of pool: ", verif2)
-
-	level2Tree, err := ds.GetDailyTreeByID(*dataType, "2", "0")
-	if err != nil {
-		log.Error(err)
-	}
-	verif3, err := merklehashing.VerifyTree(level2Tree, "2", "0")
-	fmt.Println(verif3, err)
-
-	level1Tree, err := ds.GetDailyTreeByID("", "1", "0")
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println("level1tree root: ", level1Tree.MerkleRoot)
-	verif4, err := merklehashing.VerifyTree(level1Tree, "1", "1")
-	fmt.Println(verif4, err)
-
-	level0Tree, err := ds.GetDailyTreeByID("", "0", "0")
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println("leaf 1 duplicated: ", level0Tree.Leafs[0])
-	fmt.Println("leaf 2 duplicated: ", level0Tree.Leafs[1])
-	// ---------------------------------------------------------------
-
 	// level0Tree, _ := ds.GetDailyTreeByID("", "0", "0")
 
-	// timeInit := time.Now().Add(time.Hour * (-800))
-	// timeFinal := time.Now()
-	// retval, err := ds.GetStorageTreeInflux(*dataType, timeInit, timeFinal)
-	// if err != nil {
-	// 	log.Error("error getting merkle tree from influx: ", err)
-	// }
-	// bucket := retval[0].Root.Left.Left.C.(merkletree.StorageBucket)
-	// data, err := bucket.ReadContent()
-	// for i := 0; i < len(data); i++ {
-	// 	fmt.Println(string(data[i]))
-	// }
+	timeFinal := time.Now().AddDate(0, 0, -1)
+	retval, err := ds.GetStorageTreeInflux(*dataType, timeFinal)
+	if err != nil {
+		log.Error("error getting merkle tree from influx: ", err)
+	}
+
+	bucket := retval.Root.Left.Left.C.(merkletree.StorageBucket)
+	data, err := bucket.ReadContent()
+	for i := 0; i < len(data); i++ {
+		fmt.Println(string(data[i]))
+	}
 
 	// vals, err := ds.GetStorageTreesInflux(*dataType, timeInit, timeFinal)
 	// if err != nil {
