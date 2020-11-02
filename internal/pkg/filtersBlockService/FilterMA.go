@@ -1,11 +1,12 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type FilterMA struct {
@@ -98,6 +99,7 @@ func (s *FilterMA) compute(trade dia.Trade) {
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {
+	log.Infof("save called on symbol %s on exchange %s", s.symbol, s.exchange)
 	if s.modified {
 		s.modified = false
 		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)

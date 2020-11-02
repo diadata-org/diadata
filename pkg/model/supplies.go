@@ -1,11 +1,12 @@
 package models
 
 import (
+	"strings"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
-	"strings"
-	"time"
 )
 
 func getKeySupply(value string) string {
@@ -34,34 +35,48 @@ func (db *DB) SymbolsWithASupply() ([]string, error) {
 	}
 }
 
-func (a *DB) GetSupply(symbol string) (*dia.Supply, error) {
+func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
+	val, err := db.GetSupply(symbol, time.Time{}, time.Time{})
+	if err != nil {
+		log.Error(err)
+		return &dia.Supply{}, err
+	}
+	return &val[0], err
+}
+
+func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supply, error) {
 	switch symbol {
 	case "MIOTA":
-		return &dia.Supply{
+		retArray := []dia.Supply{}
+		s := dia.Supply{
 			Symbol:            "MIOTA",
 			CirculatingSupply: 2779530283.0,
 			Name:              helpers.NameForSymbol("MIOTA"),
 			Time:              time.Now(),
 			Source:            dia.Diadata,
-		}, nil
+		}
+		retArray = append(retArray, s)
+		return retArray, nil
 	default:
-		key := getKeySupply(symbol)
-		value := &dia.Supply{}
-		err := a.redisClient.Get(key).Scan(value)
+		value, err := db.GetSupplyInflux(symbol, starttime, endtime)
 		if err != nil {
 			log.Errorf("Error: %v on GetSupply %v\n", err, symbol)
-			return nil, err
+			return []dia.Supply{}, err
 		}
 		return value, err
 	}
 }
 
-func (a *DB) SetSupply(supply *dia.Supply) error {
+func (db *DB) SetSupply(supply *dia.Supply) error {
 	key := getKeySupply(supply.Symbol)
 	log.Debug("setting ", key, supply)
-	err := a.redisClient.Set(key, supply, 0).Err()
+	err := db.redisClient.Set(key, supply, 0).Err()
 	if err != nil {
-		log.Errorf("Error: %v on SetSupply %v\n", err, supply.Symbol)
+		log.Errorf("Error: %v on SetSupply (redis) %v\n", err, supply.Symbol)
+	}
+	err = db.SaveSupplyInflux(supply)
+	if err != nil {
+		log.Errorf("Error: %v on SetSupply (influx) %v\n", err, supply.Symbol)
 	}
 	return err
 }

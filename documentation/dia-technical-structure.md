@@ -2,7 +2,7 @@
 
 DIA is setup as a hybrid system with off-chain components for storing and processing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract platform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
 
-### Centralized Backend
+### Backend
 
 For collecting financial data, we use a centralized backend that runs collectors for all kinds of financial data. All collected data is processed by a database setup consisting of a stream-oriented kafka instance and a key-value store for faster access of certain intermediate results. These collectors are separated in different classes:
 
@@ -12,6 +12,7 @@ For collecting financial data, we use a centralized backend that runs collectors
 
   For example, a trade from Bitcoin to US-Dollar is stored under `BTCUSD`.
 
+* Decentralized Finance Scrapers: We collect data on decentralized exchanges, lending platforms, and other forms of DeFi that are publicly available.
 * Blockchain Scrapers: These scrapers are used to determine attributes of blockchains. The most prominent attribute is the circulating supply of a cryptocurrency, for which various scrapers already exist. Depending on the expected update rate of a blockchain, these scrapers update the backend periodically about their data.
 
   Blockchain scrapers are run as docker containers that can be managed independently.

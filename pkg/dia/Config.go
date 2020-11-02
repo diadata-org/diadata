@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	BalancerExchange = "Balancer"
+	GnosisExchange   = "Gnosis"
 	KrakenExchange   = "Kraken"
 	BitfinexExchange = "Bitfinex"
 	BinanceExchange  = "Binance"
@@ -25,10 +27,27 @@ const (
 	UnknownExchange  = "Unknown"
 	BlockSizeSeconds = 120
 	FilterKing       = "MA120"
+	BancorExchange   = "Bancor"
+	UniswapExchange  = "Uniswap"
+	LoopringExchange = "Loopring"
+	CurveFIExchange  = "Curvefi"
+	MakerExchange    = "Maker"
+	KuCoinExchange   = "KuCoin"
+	SushiSwapExchange   = "SushiSwap"
+	DforceExchange      = "Dforce"
+	ZeroxExchange       = "0x"
+	KyberExchange       = "Kyber"
+
 )
 
 func Exchanges() []string {
 	return []string{
+		KuCoinExchange,
+		UniswapExchange,
+		BalancerExchange,
+		MakerExchange,
+		GnosisExchange,
+		CurveFIExchange,
 		BinanceExchange,
 		BitfinexExchange,
 		BittrexExchange,
@@ -42,7 +61,13 @@ func Exchanges() []string {
 		QuoineExchange,
 		SimexExchange,
 		ZBExchange,
+		BancorExchange,
 		UnknownExchange,
+		LoopringExchange,
+		SushiSwapExchange,
+		DforceExchange,
+		ZeroxExchange,
+		KyberExchange,
 	}
 }
 

@@ -28,6 +28,17 @@ func StringsliceToInt(sl []string) (sli []int, err error) {
 	return
 }
 
+// SliceDifference returns the elements in @slice1 that aren't in @slice2.
+func SliceDifference(slice1, slice2 []string) []string {
+	var diff []string
+	for _, str := range slice1 {
+		if !Contains(&slice2, str) {
+			diff = append(diff, str)
+		}
+	}
+	return diff
+}
+
 // MaxString return the maximum of a slice of strings along with its index
 func MaxString(sl []string) (string, int64) {
 	if len(sl) < 1 {

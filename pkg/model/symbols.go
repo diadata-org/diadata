@@ -1,9 +1,10 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 func (db *DB) GetAllSymbols() []string {
@@ -17,9 +18,28 @@ func (db *DB) GetAllSymbols() []string {
 				r[v.Symbol] = v.Symbol
 			}
 		} else {
-			log.Error("GetAllSymbols", err)
+			log.Errorf("Error %v in GetAllSymbols for %s\n", err, e)
 		}
 	}
+	s := []string{}
+	for _, value := range r {
+		s = append(s, value)
+	}
+	return s
+}
+
+func (db *DB) GetSymbolsByExchange(e string) []string {
+	r := make(map[string]string)
+
+	p, err := db.GetAvailablePairsForExchange(e)
+	if err == nil {
+		for _, v := range p {
+			r[v.Symbol] = v.Symbol
+		}
+	} else {
+		log.Error("GetAllSymbols", err)
+	}
+
 	s := []string{}
 	for _, value := range r {
 		s = append(s, value)
@@ -92,7 +112,7 @@ func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
 		r.Rank = rank
 		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
 		if err != nil {
-			log.Error("UpdateSymbolDetails setting cache\n", err)
+			log.Error("UpdateSymbolDetails setting cache", err)
 		}
 	} else {
 		log.Error("UpdateSymbolDetails", err)
@@ -114,6 +134,11 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 	if err != nil {
 		return nil, err
 	} else {
+		itin, err := db.GetItinBySymbol(q.Symbol)
+		if err != nil {
+			log.Error("Error retrieving ITIN:", err)
+			itin.Itin = "undefined"
+		}
 		r := &SymbolDetails{
 			Coin: Coin{
 				Symbol:             q.Symbol,
@@ -122,11 +147,12 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
 				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
+				ITIN:               itin.Itin,
 			},
 			Exchanges: []SymbolExchangeDetails{},
 		}
 		r.Change, _ = db.GetCurrencyChange()
-		s, err := db.GetSupply(symbol)
+		s, err := db.GetLatestSupply(symbol)
 		if err == nil {
 			r.Coin.CirculatingSupply = &s.CirculatingSupply
 		}

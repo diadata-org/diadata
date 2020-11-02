@@ -12,7 +12,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 // BinanceScraper is a Scraper for collecting trades from the Binance websocket API
@@ -97,6 +96,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				Source:         s.exchangeName,
 			}
 			ps.parent.chanTrades <- t
+			log.Info("got trade: ", t)
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}

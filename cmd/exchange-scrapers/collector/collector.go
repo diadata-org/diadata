@@ -15,10 +15,9 @@ import (
 )
 
 const (
-	watchdogDelay = 60.0 * 3.5
+	watchdogDelay = 60.0 * 20
 )
 
-// handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
 	lastTradeTime := time.Now()
 	tk := time.NewTicker(watchdogDelay * time.Second)

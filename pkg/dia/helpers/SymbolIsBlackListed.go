@@ -5,11 +5,15 @@ package helpers
 // approach to resolve the conflict
 func SymbolIsBlackListed(symbol string) bool {
 	switch symbol {
+	case "UNI-V2":
+		return true
 	case "VET":
 		return true
 	case "ACC":
 		return true
 	case "ALT":
+		return true
+	case "APE":
 		return true
 	case "ARB":
 		return true

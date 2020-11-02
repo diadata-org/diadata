@@ -1,0 +1,43 @@
+version: '3.2'
+services:
+
+  coingeckoscraper:
+    depends_on: [genericforeignscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericforeignscraper:latest
+    command: /bin/foreignscraper -foreignType Coingecko
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  genericforeignscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericForeignScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericforeignscraper:latest
+    restart: "no"
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network

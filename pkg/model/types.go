@@ -22,6 +22,11 @@ type SymbolExchangeDetails struct {
 	LastTrades         []dia.Trade
 }
 
+type SymbolShort struct {
+	Symbol string
+	ITIN   string
+}
+
 type Quotation struct {
 	Symbol             string
 	Name               string
@@ -30,6 +35,7 @@ type Quotation struct {
 	VolumeYesterdayUSD *float64
 	Source             string
 	Time               time.Time
+	ITIN               string
 }
 
 type InterestRate struct {
@@ -83,6 +89,7 @@ type Coin struct {
 	VolumeYesterdayUSD *float64
 	Time               time.Time
 	CirculatingSupply  *float64
+	ITIN               string
 }
 
 type Coins struct {

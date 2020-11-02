@@ -64,6 +64,31 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewZBScraper(dia.ZBExchange)
 	case dia.QuoineExchange:
 		return NewQuoineScraper(dia.QuoineExchange)
+	case dia.BancorExchange:
+		return NewBancorScraper(dia.BancorExchange)
+	case dia.UniswapExchange:
+		return NewUniswapScraper(dia.UniswapExchange)
+	case dia.SushiSwapExchange:
+		return NewUniswapScraper(dia.SushiSwapExchange)
+	case dia.LoopringExchange:
+		return NewLoopringScraper(dia.LoopringExchange)
+	case dia.CurveFIExchange:
+		return NewCurveFIScraper(dia.CurveFIExchange)
+	case dia.GnosisExchange:
+		return NewGnosisScraper(dia.GnosisExchange)
+	case dia.BalancerExchange:
+		return NewBalancerScraper(dia.BalancerExchange)
+	case dia.MakerExchange:
+		return NewMakerScraper(dia.MakerExchange)
+	case dia.KuCoinExchange:
+		return NewKuCoinScraper(key, secret, dia.KuCoinExchange)
+	case dia.DforceExchange:
+		return NewDforceScraper(dia.DforceExchange)
+	case dia.ZeroxExchange:
+		return NewZeroxScraper(dia.ZeroxExchange)
+	case dia.KyberExchange:
+		return NewKyberScraper(dia.KyberExchange)
+		
 	default:
 		return nil
 	}

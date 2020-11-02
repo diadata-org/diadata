@@ -13,6 +13,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -42,7 +43,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 		var t dia.Supply
 		err = json.Unmarshal(body, &t)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("Unmarshal"))
+			restApi.SendError(c, http.StatusInternalServerError, err)
 		} else {
 			if t.Symbol == "" || t.CirculatingSupply == 0.0 {
 				log.Errorln("received supply:", t)
@@ -54,7 +55,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 					source = t.Source
 				}
 				s := &dia.Supply{
-					Time:              time.Now(),
+					Time:              t.Time,
 					Name:              helpers.NameForSymbol(t.Symbol),
 					Symbol:            t.Symbol,
 					Source:            source,
@@ -134,20 +135,10 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetSupply godoc
-// @Summary Get supply
-// @Description GetSupply
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} dia.Supply "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/supply/:symbol: [get]
+// GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
-	s, err := env.DataStore.GetSupply(symbol)
+	s, err := env.DataStore.GetLatestSupply(symbol)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -159,15 +150,121 @@ func (env *Env) GetSupply(c *gin.Context) {
 	}
 }
 
-// GetPairs godoc
-// @Summary Get pairs
-// @Description Get pairs
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} models.Pairs "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/pairs/ [get]
+// GetSupplies returns a time range of supplies of token with @symbol
+func (env *Env) GetSupplies(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" || endtimeStr == "" {
+		starttime = time.Unix(1, 0)
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	s, err := env.DataStore.GetSupplyInflux(symbol, starttime, endtime)
+	if len(s) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+		return
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, s)
+}
+
+// GetVolume
+// if no times are set use the last 24h
+func (env *Env) GetVolume(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" {
+		starttime = time.Unix(1, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	}
+	if endtimeStr == "" {
+		endtime = time.Now()
+	} else {
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	v, err := env.DataStore.GetVolumeInflux(symbol, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, v)
+}
+
+// Get24hVolume
+// if no times are set use the last 24h
+func (env *Env) Get24hVolume(c *gin.Context) {
+	exchange := c.Param("exchange")
+	// starttimeStr := c.DefaultQuery("starttime", "noRange")
+	// endtimeStr := c.Query("endtime")
+
+	// var starttime, endtime time.Time
+
+	// if starttimeStr == "noRange" {
+	// 	starttime := time.Now().AddDate(0, 0, -1)
+	// } else {
+	// 	starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+	// 	if err != nil {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 		return
+	// 	}
+	// 	starttime = time.Unix(starttimeInt, 0)
+	// }
+	// if endtimeStr == "" {
+	// 	endtime = time.Now()
+	// } else {
+	// 	endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+	// 	if err != nil {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 		return
+	// 	}
+	// 	endtime = time.Unix(endtimeInt, 0)
+	// }
+
+	v, err := env.DataStore.Sum24HoursExchange(exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, v)
+}
+
+// GetPairs returns all pairs
 func (env *Env) GetPairs(c *gin.Context) {
 	p, err := env.DataStore.GetPairs("")
 	if err != nil {
@@ -293,24 +390,233 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	}
 }
 
-// GetAllSymbols godoc
-// @Summary Get all symbols list
-// @Description Get all symbols list
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   filter     path    string     true        "Some filter"
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} dia.Symbols "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/symbols [get]
+// GetAllSymbols returns all symbols available in our (redis) database.
+// Optional query parameter exchange returns only symbols available on this exchange.
 func (env *Env) GetAllSymbols(c *gin.Context) {
-	s := env.DataStore.GetAllSymbols()
-	if len(s) == 0 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+	exchange := c.DefaultQuery("exchange", "noRange")
+	if exchange == "noRange" {
+		s := env.DataStore.GetAllSymbols()
+		if len(s) == 0 {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+		} else {
+			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		}
 	} else {
-		c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		s := env.DataStore.GetSymbolsByExchange(exchange)
+		if len(s) == 0 {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
+		} else {
+			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		}
+	}
+
+}
+
+// -----------------------------------------------------------------------------
+// DeFi LENDING RATES
+// -----------------------------------------------------------------------------
+
+// GetLendingProtocols returns all symbols available in our (redis) database.
+// Optional query parameter exchange returns only symbols available on this exchange.
+func (env *Env) GetLendingProtocols(c *gin.Context) {
+	q, err := env.DataStore.GetDefiProtocols()
+	fmt.Println("protocols: ", q)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetDefiRate is the delegate method to fetch the value(s) of
+// the defi lending rate of @asset at the exchange with @protocol.
+// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
+func (env *Env) GetDefiRate(c *gin.Context) {
+	protocol := c.Param("protocol")
+	asset := c.Param("asset")
+	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
+
+	if dateInit == "noRange" {
+		// Return most recent data point
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
+		}
+		starttime := endtime.AddDate(0, 0, -1)
+
+		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q[len(q)-1])
+		}
+	} else {
+		starttime, err := utils.StrToUnixtime(dateInit)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		endtime, err := utils.StrToUnixtime(dateFinal)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+	}
+}
+
+// GetDefiState is the delegate method to fetch the value(s) of
+// the defi lending rate of @asset at the exchange with @protocol.
+// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
+func (env *Env) GetDefiState(c *gin.Context) {
+	protocol := c.Param("protocol")
+	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
+
+	if dateInit == "noRange" {
+		// Return most recent data point
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
+		}
+		starttime := endtime.AddDate(0, 0, -1)
+
+		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q[len(q)-1])
+		}
+	} else {
+		starttime, err := utils.StrToUnixtime(dateInit)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		endtime, err := utils.StrToUnixtime(dateFinal)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+// FARMING POOLS
+// -----------------------------------------------------------------------------
+
+// GetFarmingPools is the delegate method to fetch the value(s) of
+// the farming pool information of @protocol.
+// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
+func (env *Env) GetFarmingPools(c *gin.Context) {
+	q, err := env.DataStore.GetFarmingPools()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+// GetFarmingPoolData is the delegate method to fetch the value(s) of
+// the farming pool information of @protocol.
+// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
+func (env *Env) GetFarmingPoolData(c *gin.Context) {
+	protocol := c.Param("protocol")
+	poolID := c.Param("poolID")
+	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
+
+	if dateInit == "noRange" {
+		// Return most recent data point
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
+		}
+		starttime := endtime.AddDate(0, 0, -1)
+
+		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q[len(q)-1])
+		}
+	} else {
+		starttime, err := utils.StrToUnixtime(dateInit)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		endtime, err := utils.StrToUnixtime(dateFinal)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
 	}
 }
 
@@ -565,4 +871,71 @@ func (env *Env) GetRates(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	}
 	c.JSON(http.StatusOK, q)
+}
+
+// -----------------------------------------------------------------------------
+// FIAT CURRENCIES
+// -----------------------------------------------------------------------------
+
+// GetFiatQuotations returns several quotations vs USD as published by the ECB
+func (env *Env) GetFiatQuotations(c *gin.Context) {
+	q, err := env.DataStore.GetCurrencyChange()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+// -----------------------------------------------------------------------------
+// FOREIGN QUOTATIONS
+// -----------------------------------------------------------------------------
+
+// GetForeignQuotation returns several quotations vs USD as published by the ECB
+func (env *Env) GetForeignQuotation(c *gin.Context) {
+	source := c.Param("source")
+	symbol := c.Param("symbol")
+	date := c.DefaultQuery("time", "noRange")
+	var timestamp time.Time
+
+	if date == "noRange" {
+		timestamp = time.Now()
+	} else {
+		t, err := strconv.Atoi(date)
+		if err != nil {
+			log.Error(err)
+		}
+		timestamp = time.Unix(int64(t), 0)
+	}
+	q, err := env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+// GetForeignSymbols returns all symbols available for quotation from @source, along with their ITIN
+func (env *Env) GetForeignSymbols(c *gin.Context) {
+	source := c.Param("source")
+
+	q, err := env.DataStore.GetForeignSymbolsInflux(source)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+
 }

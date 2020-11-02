@@ -12,7 +12,6 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 )
 

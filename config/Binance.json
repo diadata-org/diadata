@@ -452,6 +452,18 @@
     },
     {
       "Exchange": "Binance",
+      "ForeignName": "DIABTC",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "Binance",
+      "ForeignName": "DIABNB",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "Binance",
       "ForeignName": "DLTBNB",
       "Ignore": true,
       "Symbol": "DLT"

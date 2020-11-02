@@ -6,7 +6,14 @@ services:
       ethereum/client-go:stable
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast"
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546
+    ports: 
+      - mode: host
+        target: 8545
+        published: 8545
+      - mode: host
+        target: 8546
+        published: 8546
     logging:
       options:
         max-size: "50m"
@@ -41,6 +48,20 @@ services:
     networks:
       - scrapers-network
     command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys
+
+  diacoingeckooracleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x07E4120dD7411a49e091a20FA0be33a183C35d60 --numCoins=100
     logging:
       options:
         max-size: "50m"

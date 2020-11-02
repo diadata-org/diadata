@@ -110,6 +110,8 @@ func NameForSymbolManuallyAdded(symbol string) string {
 }
 func NameForSymbol(symbol string) string {
 	switch symbol {
+	case "DIA":
+		return "DIAData"
 	case "BTC":
 		return "Bitcoin"
 	case "LTC":

@@ -149,10 +149,11 @@ func NewWriter(topic int) *kafka.Writer {
 
 func NewSyncWriter(topic int) *kafka.Writer {
 	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  KafkaConfig.KafkaUrl,
-		Topic:    getTopic(topic),
-		Balancer: &kafka.LeastBytes{},
-		Async:    false,
+		Brokers:    KafkaConfig.KafkaUrl,
+		Topic:      getTopic(topic),
+		Balancer:   &kafka.LeastBytes{},
+		Async:      false,
+		BatchBytes: 4 * 1048576,
 	})
 }
 

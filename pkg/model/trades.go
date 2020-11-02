@@ -68,9 +68,9 @@ func parseTrade(row []interface{}) *dia.Trade {
 				ForeignTradeID:    foreignTradeID,
 			}
 			return &trade
-		} else {
-			log.Errorln("Parsing", t)
 		}
+		log.Errorln("Parsing ", t)
+
 	}
 	return nil
 }
@@ -92,7 +92,7 @@ func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 			}
 		}
 	} else {
-		log.Errorln("Empty res", len(res), res)
+		log.Error("Empty response GetAllTrades")
 	}
 	return r, nil
 }
@@ -114,7 +114,7 @@ func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]di
 			}
 		}
 	} else {
-		log.Errorln("Empty res", len(res), res)
+		log.Errorf("Empty response GetLastTrades for %s on %s \n", symbol, exchange)
 	}
 	return r, nil
 }

@@ -9,7 +9,6 @@ import (
 
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	zap "go.uber.org/zap"
 )
 

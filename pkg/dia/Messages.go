@@ -15,6 +15,7 @@ const (
 type Supply struct {
 	Symbol            string
 	Name              string
+	Supply            float64
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
@@ -30,15 +31,25 @@ type Pair struct {
 
 type Pairs []Pair
 
+// Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
 	Symbol            string
 	Pair              string
 	Price             float64
-	Volume            float64 // negative if result of Market order Sell
+	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time
 	ForeignTradeID    string
 	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
 	Source            string
+}
+
+type ItinToken struct {
+	Itin               string
+	Symbol             string
+	Label              string
+	Url_website        string
+	Coinmarketcap_url  string
+	Coinmarketcap_slug string
 }
 
 type OptionType int
@@ -84,6 +95,28 @@ type CviDataPoint struct {
 	Value     float64
 }
 
+type DefiProtocol struct {
+	Name                 string
+	Address              string
+	UnderlyingBlockchain string
+	Token                string
+}
+
+type DefiProtocolState struct {
+	TotalUSD  float64
+	TotalETH  float64
+	Timestamp time.Time
+	Protocol  DefiProtocol
+}
+
+type DefiRate struct {
+	Timestamp     time.Time
+	LendingRate   float64
+	BorrowingRate float64
+	Asset         string
+	Protocol      string
+}
+
 type TradesBlockData struct {
 	BeginTime    time.Time
 	EndTime      time.Time
@@ -114,6 +147,45 @@ type FilterPoint struct {
 	Value  float64
 	Name   string
 	Time   time.Time
+}
+
+// MarshalBinary for DefiProtocolState
+func (e *DefiProtocolState) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (e *DefiProtocolState) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary for DefiRate
+func (e *DefiRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for DefiRate
+func (e *DefiRate) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary for DefiProtocol
+func (e *DefiProtocol) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for DefiProtocol
+func (e *DefiProtocol) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
 }
 
 // MarshalBinary -
@@ -175,6 +247,19 @@ func (e *Pairs) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary -
 func (e *Pairs) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary -
+func (e *ItinToken) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *ItinToken) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}

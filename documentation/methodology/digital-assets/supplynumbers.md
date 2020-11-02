@@ -1,10 +1,11 @@
 # Circulating Supply Numbers
 
-Circulating Supply is a metric to determine the actually tradable volume of an asset. In case of cryptocurrencies, this number is determined in a different way for every coin. Circulating supply is always measured in a unitless dimension, i.e., the number of coins \(or tokens\). In contrast to traditional assets like stocks, numbers of circulating supply are often volatile in crypto markets, because of mechanics like mining that create more coins all the time. In general, supply data is determined as close to the actual source as possible. In most cases, monitoring the blockchain and tracking mining/minting/burning events is necessary as part of the methodology.
+Circulating Supply is a metric to determine the actually tradeable volume of an asset. In case of cryptocurrencies, this number is determined in a different way for every coin. Circulating supply is always measured in a unitless dimension, i.e., the number of coins \(or tokens\). In contrast to traditional assets like stocks, numbers of circulating supply are often volatile in crypto markets, because of mechanics such as mining which continuously create more coins. In general, supply data is determined as close to the actual source as possible. In most cases, monitoring the blockchain and tracking mining/minting/burning events is necessary as part of the methodology.
 
 ## Measurement Methodology
 
-For each coin we measure, we have different methodology to determine the circulating supply.
+For each coin we measure, we have different methodology to determine the circulating supply, which is shown in the table below.  
+The corresponding Oracle for all below coins can be found [here](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets).
 
 | Name | API Link | Methodology | Type of growth |
 | :--- | :--- | :--- | :--- |

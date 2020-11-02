@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	krakenapi "github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
+
+	krakenapi "github.com/beldur/kraken-go-api-client"
 )
 
 const (

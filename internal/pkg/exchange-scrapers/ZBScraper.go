@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+
 	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 )
 
 var ZBSocketURL string = "wss://api.zb.cn:9999/websocket"

@@ -14,7 +14,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 )
 
 var _HuobiSocketurl string = "wss://api.huobi.pro/ws"
@@ -144,6 +143,7 @@ func (s *HuobiScraper) mainLoop() {
 								Source:         s.exchangeName,
 							}
 							ps.parent.chanTrades <- t
+							log.Info("got trade: ", t)
 						}
 					} else {
 						log.Printf("Unknown Pair %v", forName)

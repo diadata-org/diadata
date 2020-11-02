@@ -1,0 +1,778 @@
+{
+    "Coins": [
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "XRTBNT",
+        "Ignore": false,
+        "Symbol": "XRT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ETHBNT",
+        "Ignore": false,
+        "Symbol": "ETH"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "INVOXBNT",
+        "Ignore": false,
+        "Symbol": "INVOX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "STMBNT",
+        "Ignore": false,
+        "Symbol": "STM"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "JRTBNT",
+        "Ignore": false,
+        "Symbol": "JRT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "PBTCBNT",
+        "Ignore": false,
+        "Symbol": "PBTC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RPLBNT",
+        "Ignore": false,
+        "Symbol": "RPL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "UPTBNT",
+        "Ignore": false,
+        "Symbol": "UPT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "GRIGBNT",
+        "Ignore": false,
+        "Symbol": "GRIG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DAIBNT",
+        "Ignore": false,
+        "Symbol": "DAI"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ANKBNT",
+        "Ignore": false,
+        "Symbol": "ANK"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "UBTBNT",
+        "Ignore": false,
+        "Symbol": "UBT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "NMRBNT",
+        "Ignore": false,
+        "Symbol": "NMR"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "METBNT",
+        "Ignore": false,
+        "Symbol": "MET"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CUSDBNT",
+        "Ignore": false,
+        "Symbol": "CUSD"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ELETBNT",
+        "Ignore": false,
+        "Symbol": "ELET"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AMPLBNT",
+        "Ignore": false,
+        "Symbol": "AMPL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "USDBBNT",
+        "Ignore": false,
+        "Symbol": "USDB"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SENSEBNT",
+        "Ignore": false,
+        "Symbol": "SENSE"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "USDTBNT",
+        "Ignore": false,
+        "Symbol": "USDT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "HEDGBNT",
+        "Ignore": false,
+        "Symbol": "HEDG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "PIXEOSBNT",
+        "Ignore": false,
+        "Symbol": "PIXEOS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CHEXBNT",
+        "Ignore": false,
+        "Symbol": "CHEX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "USDQBNT",
+        "Ignore": false,
+        "Symbol": "USDQ"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "QDAOBNT",
+        "Ignore": false,
+        "Symbol": "QDAO"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EOSDTBNT",
+        "Ignore": false,
+        "Symbol": "EOSDT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "FINXBNT",
+        "Ignore": false,
+        "Symbol": "FINX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EMTBNT",
+        "Ignore": false,
+        "Symbol": "EMT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "NUTBNT",
+        "Ignore": false,
+        "Symbol": "NUT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EFOODBNT",
+        "Ignore": false,
+        "Symbol": "EFOOD"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SXLBNT",
+        "Ignore": false,
+        "Symbol": "SXL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "XBPBNT",
+        "Ignore": false,
+        "Symbol": "XBP"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SANBNT",
+        "Ignore": false,
+        "Symbol": "SAN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DAPPBNT",
+        "Ignore": false,
+        "Symbol": "DAPP"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AGRIBNT",
+        "Ignore": false,
+        "Symbol": "AGRI"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "XNKBNT",
+        "Ignore": false,
+        "Symbol": "XNK"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SPDBNT",
+        "Ignore": false,
+        "Symbol": "SPD"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "X8XBNT",
+        "Ignore": false,
+        "Symbol": "X8X"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "TKNBNT",
+        "Ignore": false,
+        "Symbol": "TKN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MYBBNT",
+        "Ignore": false,
+        "Symbol": "MYB"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CEEKBNT",
+        "Ignore": false,
+        "Symbol": "CEEK"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MEETONEBNT",
+        "Ignore": false,
+        "Symbol": "MEETONE"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MEVBNT",
+        "Ignore": false,
+        "Symbol": "MEV"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AMNBNT",
+        "Ignore": false,
+        "Symbol": "AMN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EPRABNT",
+        "Ignore": false,
+        "Symbol": "EPRA"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "PLRBNT",
+        "Ignore": false,
+        "Symbol": "PLR"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "XPATBNT",
+        "Ignore": false,
+        "Symbol": "XPAT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "XDCEBNT",
+        "Ignore": false,
+        "Symbol": "XDCE"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "KNCBNT",
+        "Ignore": false,
+        "Symbol": "KNC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EMCOBNT",
+        "Ignore": false,
+        "Symbol": "EMCO"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "POWRBNT",
+        "Ignore": false,
+        "Symbol": "POWR"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "HORUSBNT",
+        "Ignore": false,
+        "Symbol": "HORUS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "GTOBNT",
+        "Ignore": false,
+        "Symbol": "GTO"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SNTBNT",
+        "Ignore": false,
+        "Symbol": "SNT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ENJBNT",
+        "Ignore": false,
+        "Symbol": "ENJ"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MKRBNT",
+        "Ignore": false,
+        "Symbol": "MKR"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "LOCBNT",
+        "Ignore": false,
+        "Symbol": "LOC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SRNBNT",
+        "Ignore": false,
+        "Symbol": "SRN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MANABNT",
+        "Ignore": false,
+        "Symbol": "MANA"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "IQBNT",
+        "Ignore": false,
+        "Symbol": "IQ"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BLACKBNT",
+        "Ignore": false,
+        "Symbol": "BLACK"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DICEBNT",
+        "Ignore": false,
+        "Symbol": "DICE"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "OMGBNT",
+        "Ignore": false,
+        "Symbol": "OMG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BATBNT",
+        "Ignore": false,
+        "Symbol": "BAT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BNBBNT",
+        "Ignore": false,
+        "Symbol": "BNB"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "STXBNT",
+        "Ignore": false,
+        "Symbol": "STX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EOSBNT",
+        "Ignore": false,
+        "Symbol": "EOS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "OCTBNT",
+        "Ignore": false,
+        "Symbol": "OCT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DTRCBNT",
+        "Ignore": false,
+        "Symbol": "DTRC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "WANDBNT",
+        "Ignore": false,
+        "Symbol": "WAND"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CANBNT",
+        "Ignore": false,
+        "Symbol": "CAN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ZIPTBNT",
+        "Ignore": false,
+        "Symbol": "ZIPT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ONGBNT",
+        "Ignore": false,
+        "Symbol": "ONG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RBLXBNT",
+        "Ignore": false,
+        "Symbol": "RBLX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "REALBNT",
+        "Ignore": false,
+        "Symbol": "REAL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MTLBNT",
+        "Ignore": false,
+        "Symbol": "MTL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MDTBNT",
+        "Ignore": false,
+        "Symbol": "MDT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MNTPBNT",
+        "Ignore": false,
+        "Symbol": "MNTP"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EQUABNT",
+        "Ignore": false,
+        "Symbol": "EQUA"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "FLIXXBNT",
+        "Ignore": false,
+        "Symbol": "FLIXX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "J8TBNT",
+        "Ignore": false,
+        "Symbol": "J8T"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "REFBNT",
+        "Ignore": false,
+        "Symbol": "REF"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BCSBNT",
+        "Ignore": false,
+        "Symbol": "BCS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ZOSBNT",
+        "Ignore": false,
+        "Symbol": "ZOS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "FTXBNT",
+        "Ignore": false,
+        "Symbol": "FTX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "TBXBNT",
+        "Ignore": false,
+        "Symbol": "TBX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "STACBNT",
+        "Ignore": false,
+        "Symbol": "STAC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ABXBNT",
+        "Ignore": false,
+        "Symbol": "ABX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "COTBNT",
+        "Ignore": false,
+        "Symbol": "COT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "PEOSBNT",
+        "Ignore": false,
+        "Symbol": "PEOS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AIXBNT",
+        "Ignore": false,
+        "Symbol": "AIX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "REMBNT",
+        "Ignore": false,
+        "Symbol": "REM"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SCLBNT",
+        "Ignore": false,
+        "Symbol": "SCL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "VIBBNT",
+        "Ignore": false,
+        "Symbol": "VIB"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CATBNT",
+        "Ignore": false,
+        "Symbol": "CAT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "CATBNT",
+        "Ignore": false,
+        "Symbol": "CAT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "INDBNT",
+        "Ignore": false,
+        "Symbol": "IND"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MRPHBNT",
+        "Ignore": false,
+        "Symbol": "MRPH"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DATABNT",
+        "Ignore": false,
+        "Symbol": "DATA"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RCNBNT",
+        "Ignore": false,
+        "Symbol": "RCN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RLCBNT",
+        "Ignore": false,
+        "Symbol": "RLC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "WLKBNT",
+        "Ignore": false,
+        "Symbol": "WLK"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "DRTBNT",
+        "Ignore": false,
+        "Symbol": "DRT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BOXXBNT",
+        "Ignore": false,
+        "Symbol": "BOXX"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AUCBNT",
+        "Ignore": false,
+        "Symbol": "AUC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MFGBNT",
+        "Ignore": false,
+        "Symbol": "MFG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BNT",
+        "Ignore": false,
+        "Symbol": ""
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "HVTBNT",
+        "Ignore": false,
+        "Symbol": "HVT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "SVDBNT",
+        "Ignore": false,
+        "Symbol": "SVD"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MRGBNT",
+        "Ignore": false,
+        "Symbol": "MRG"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "LOCIBNT",
+        "Ignore": false,
+        "Symbol": "LOCI"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "BETRBNT",
+        "Ignore": false,
+        "Symbol": "BETR"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "LDCBNT",
+        "Ignore": false,
+        "Symbol": "LDC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ZINCBNT",
+        "Ignore": false,
+        "Symbol": "ZINC"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "GRIDBNT",
+        "Ignore": false,
+        "Symbol": "GRID"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "TAELBNT",
+        "Ignore": false,
+        "Symbol": "TAEL"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "TNSBNT",
+        "Ignore": false,
+        "Symbol": "TNS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "AIDBNT",
+        "Ignore": false,
+        "Symbol": "AID"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "GNOBNT",
+        "Ignore": false,
+        "Symbol": "GNO"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "EURSBNT",
+        "Ignore": false,
+        "Symbol": "EURS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "WINGSBNT",
+        "Ignore": false,
+        "Symbol": "WINGS"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ANTBNT",
+        "Ignore": false,
+        "Symbol": "ANT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RDNBNT",
+        "Ignore": false,
+        "Symbol": "RDN"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "ELFBNT",
+        "Ignore": false,
+        "Symbol": "ELF"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "RVTBNT",
+        "Ignore": false,
+        "Symbol": "RVT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "MFTBNT",
+        "Ignore": false,
+        "Symbol": "MFT"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "REQBNT",
+        "Ignore": false,
+        "Symbol": "REQ"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "POA20BNT",
+        "Ignore": false,
+        "Symbol": "POA20"
+      },
+      {
+        "Exchange": "Bancor",
+        "ForeignName": "VEEBNT",
+        "Ignore": false,
+        "Symbol": "VEE"
+      }
+    ]
+  }
