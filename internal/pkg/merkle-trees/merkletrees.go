@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cbergoon/merkletree"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -55,14 +56,13 @@ type KafkaChannel struct {
 // StartKafkaReader starts a kafka reader that listens to @topic and
 // sends the messages to the channel of KafkaChannel
 func (kc *KafkaChannel) StartKafkaReader(topic string) {
-	config := kafka.ReaderConfig{
-		// TO DO: Production switch -- Also, automatic config as in kafka helper?
-		Brokers:  []string{"localhost:9092"},
-		Topic:    topic,
-		MaxBytes: 10,
+	// Determine topic index for kafka writer...
+	topicNumber, err := kafkaHelper.GetTopicNumber(topic)
+	if err != nil {
+		log.Errorf("topic %s not found \n", topic)
 	}
-
-	reader := kafka.NewReader(config)
+	// ...and read from corresponding channel.
+	reader := kafkaHelper.NewReader(topicNumber)
 	for {
 		m, err := reader.ReadMessage(context.Background())
 		if err != nil {

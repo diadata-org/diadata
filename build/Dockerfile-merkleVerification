@@ -9,6 +9,6 @@ RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/masterMerkle /bin/merkleVerification
+COPY --from=build /go/bin/merkleVerification /bin/merkleVerification
 
 CMD ["merkleVerification"]

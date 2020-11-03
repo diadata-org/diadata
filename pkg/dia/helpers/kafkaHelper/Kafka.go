@@ -43,6 +43,7 @@ type Config struct {
 
 var KafkaConfig Config
 
+// GetTopic returns a topic's name. Topics in kafka are indexed by integers.
 func GetTopic(topic int) string {
 	return getTopic(topic)
 }
@@ -52,12 +53,33 @@ func getTopic(topic int) string {
 		1: "filtersBlock",
 		2: "trades",
 		3: "tradesBlock",
+		4: "hash-trades",
+		5: "hash-interestrates",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
 		log.Error("getTopic cant find topic", topic)
 	}
 	return result
+}
+
+// GetTopicNumber returns the integer number kafka uses for @topicName
+// in case @topicName exists.
+func GetTopicNumber(topicName string) (int, error) {
+	index := 1
+	top := true
+	for top {
+		t := GetTopic(index)
+		if t == "" {
+			top = false
+		}
+		if t == topicName {
+			return index, nil
+		}
+		index++
+	}
+	errorstring := fmt.Sprintf("topic %s does not exist \n", topicName)
+	return 0, errors.New(errorstring)
 }
 
 // init() initializes the kafka broker(s)

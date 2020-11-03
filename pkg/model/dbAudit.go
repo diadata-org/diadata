@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cbergoon/merkletree"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
@@ -185,16 +186,19 @@ func (db *DB) addAuditPoint(pt *clientInfluxdb.Point) {
 // Merkle Audit Trail Functionality
 // ----------------------------------------------------------------------------------------
 
-// HashingLayer activates a kafka writer content is written to.
-// @topic is the category of hashed data in the merkle tree
+// HashingLayer activates a kafka writer to which content is written.
+// @topic is the category of hashed data in the merkle tree. This list of contents can be
+// 		  found in Kafka.go
 // @content is a marshalled data point of the corresponding category
 func HashingLayer(topic string, content []byte) error {
-	config := kafka.WriterConfig{
-		Brokers: []string{"localhost:9092"},
-		Topic:   topic,
+	// Determine topic index for kafka writer...
+	topicNumber, err := kafkaHelper.GetTopicNumber(topic)
+	if err != nil {
+		return err
 	}
-	writer := kafka.NewWriter(config)
-	err := writer.WriteMessages(context.Background(),
+	// ...and write into corresponding channel.
+	writer := kafkaHelper.NewWriter(topicNumber)
+	err = writer.WriteMessages(context.Background(),
 		kafka.Message{
 			Key:   []byte{},
 			Value: content,
