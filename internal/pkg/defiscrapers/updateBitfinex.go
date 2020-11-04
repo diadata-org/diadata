@@ -190,6 +190,7 @@ func (ws *BitfinexWSSConnection) fetchingForever() {
 		borrowingRate = 100 * 365 * borrowingRate
 		// LenderRate affects by Bitfinex fees
 		// See https://www.bitfinex.com/fees/#margin-funding
+		// Also compare to values given on https://www.bitfinex.com/funding
 		lendingRate := borrowingRate * 0.85
 
 		asset := &dia.DefiRate{

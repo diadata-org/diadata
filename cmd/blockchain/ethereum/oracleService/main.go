@@ -198,6 +198,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// Aave Rates
+	rawBitfinex, err := getDefiRatesFromDia("BITFINEX", "DAI")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bitfinex data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawBitfinex, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bitfinex Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// -----------------------------------------------------------------------
 	// LENDING PROTOCOL STATES
 	// -----------------------------------------------------------------------
