@@ -23,7 +23,7 @@ func verifyContent(topic string, i int, ds models.AuditStore, wg *sync.WaitGroup
 	// verify each leaf (content) of storage tree
 	for _, leaf := range leafs {
 		cnt := leaf.C.(merkletree.StorageBucket)
-		verif, err := merklehashing.VerifyContent(cnt)
+		verif, err := merklehashing.VerifyContent(cnt, ds)
 		if err != nil {
 			log.Fatal("error verifying content: ", err)
 		}

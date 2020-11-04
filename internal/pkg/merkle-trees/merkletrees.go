@@ -154,12 +154,7 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 // HashPoolLoop opens a kafka channel for data of type @topic and fills and saves bucketpools with
 // the corresponding marshalled data in influx.
-func HashPoolLoop(topic string) {
-
-	ds, err := models.NewInfluxAuditStore()
-	if err != nil {
-		log.Fatal("NewInfluxDataStore: ", err)
-	}
+func HashPoolLoop(topic string, ds models.AuditStore) {
 
 	kc := ActivateKafkaChannel(topic)
 	defer kc.Close()

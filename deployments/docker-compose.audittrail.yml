@@ -10,11 +10,11 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"
-    volumes:
-      - /home/srv/config:/config
   
   mastermerkle:
     build:
@@ -25,6 +25,8 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"
@@ -38,6 +40,8 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+    environment:
+      - EXEC_MODE=production
     logging:
       options:
         max-size: "50m"

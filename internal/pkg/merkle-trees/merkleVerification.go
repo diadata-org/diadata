@@ -6,17 +6,12 @@ import (
 
 	"github.com/cbergoon/merkletree"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 )
 
 // VerifyBucket checks whether a given storage bucket is corrupted at the first step, i.e.
 // regarding its containing bucket pool
-func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
+func VerifyBucket(sb merkletree.StorageBucket, ds models.AuditStore) (bool, error) {
 
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-	}
 	// Get ID of parent pool
 	id := strings.Split(sb.ID, ".")[0]
 	// Get tree corresponding to the pool
@@ -28,11 +23,7 @@ func VerifyBucket(sb merkletree.StorageBucket) (bool, error) {
 }
 
 // VerifyPool verifies a topic tree as content of a daily tree
-func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-	}
+func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditStore) (bool, error) {
 
 	// Get ID of pool's parent tree
 	parentID, err := ds.GetPoolsParentID(ID, topic)
@@ -49,13 +40,10 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string) (bool, error) {
 }
 
 // VerifyTree verifies a tree in the hashing hierarchy with respect to the tree one level down
-func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
+func VerifyTree(tree merkletree.MerkleTree, level, ID string, ds models.AuditStore) (bool, error) {
 	// level=1; id=0
 	// TO DO: Add case if level=0
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-	}
+
 	levelInt, err := strconv.ParseInt(level, 10, 64)
 	if err != nil {
 		return false, err
@@ -72,11 +60,7 @@ func VerifyTree(tree merkletree.MerkleTree, level, ID string) (bool, error) {
 // up to the merkle root.
 // Alternatively, we could make the above methods return the containing tree.
 // This would shorten the below code
-func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Fatal("NewAuditStore: ", err)
-	}
+func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, error) {
 
 	// Verify bucket in pool
 	// Get ID of parent pool
@@ -117,7 +101,7 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 	}
 
 	// Verify tree level 2 in tree level 1
-	val, err = VerifyTree(level2Tree, "2", parentID)
+	val, err = VerifyTree(level2Tree, "2", parentID, ds)
 	if err != nil {
 		return false, err
 	}
@@ -130,7 +114,7 @@ func VerifyContent(sb merkletree.StorageBucket) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	val, err = VerifyTree(level1Tree, "1", parentID)
+	val, err = VerifyTree(level1Tree, "1", parentID, ds)
 	if err != nil {
 		return false, err
 	}
