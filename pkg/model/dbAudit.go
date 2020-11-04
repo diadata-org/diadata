@@ -253,7 +253,7 @@ func (db *DB) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) err
 	if err != nil {
 		log.Errorln("NewRateInflux:", err)
 	} else {
-		db.addPoint(pt)
+		db.addAuditPoint(pt)
 	}
 
 	err = db.WriteAuditBatchInflux()
@@ -381,7 +381,7 @@ func (db *DB) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string
 	if err != nil {
 		log.Errorln("NewRateInflux:", err)
 	} else {
-		db.addPoint(pt)
+		db.addAuditPoint(pt)
 	}
 	err = db.WriteAuditBatchInflux()
 	if err != nil {
