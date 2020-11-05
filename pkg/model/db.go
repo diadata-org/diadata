@@ -632,7 +632,20 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 
 }
 
+// SetDefiRateInflux saves (defi) lending and borrowing rates to influx
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := rate.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-lendingrates", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
 		"borrowRate":  rate.BorrowingRate,
@@ -691,7 +704,20 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 	return retval, nil
 }
 
+// SetDefiStateInflux saves TVL of a lending protocol to influx
 func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := state.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-lendingstates", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"totalUSD": state.TotalUSD,
 		"totalETH": state.TotalETH,

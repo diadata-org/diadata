@@ -248,7 +248,6 @@ func (db *DB) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) err
 	fields := map[string]interface{}{
 		"value": string(marshTree),
 	}
-
 	pt, err := clientInfluxdb.NewPoint(influxDBStorageTable, tags, fields, time.Now())
 	if err != nil {
 		log.Errorln("NewRateInflux:", err)
@@ -423,7 +422,8 @@ func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
 	if res.Val()[0] != nil {
 		return res.Val()[0].(string), nil
 	}
-	return "", errors.New("no database entry for pool ID")
+	errorstring := fmt.Sprintf("no database entry for pool ID %s with topic %s \n", id, topic)
+	return "", errors.New(errorstring)
 }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.

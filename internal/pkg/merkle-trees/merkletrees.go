@@ -26,6 +26,8 @@ func GetHashTopics() map[int]string {
 	topicMap := map[int]string{
 		0: "hash-interestrates",
 		1: "hash-trades",
+		2: "hash-lendingrates",
+		3: "hash-lendingstates",
 	}
 	return topicMap
 }

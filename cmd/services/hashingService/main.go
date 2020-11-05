@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"sync"
 
 	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
 	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -17,7 +16,7 @@ func main() {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
 	for key := range topicMap {
-		fmt.Println("storing ", topicMap[key])
+		log.Info("Beginning hashing for topic " + topicMap[key] + "...")
 		wg.Add(1)
 		go merklehashing.HashPoolLoop(topicMap[key], ds)
 	}

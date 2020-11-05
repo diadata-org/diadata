@@ -55,6 +55,8 @@ func getTopic(topic int) string {
 		3: "tradesBlock",
 		4: "hash-trades",
 		5: "hash-interestrates",
+		6: "hash-lendingrates",
+		7: "hash-lendingstates",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
@@ -116,7 +118,7 @@ func init() {
 	log.Printf("brokers: %v", KafkaConfig.KafkaUrl)
 }
 
-// WithRetryOnError
+// ReadOffset reads from kafka with channel id @topic
 func ReadOffset(topic int) (int64, error) {
 	var err error
 	for _, ip := range KafkaConfig.KafkaUrl {
