@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -11,11 +13,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// verifyContent verifies storage tree with Id @i of @topic.
-func verifyContent(topic string, i int, ds models.AuditStore, wg *sync.WaitGroup) {
+// verifyContent verifies storage tree with Id @id of @topic.
+func verifyContent(topic string, id string, ds models.AuditStore, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
-	tree, err := ds.GetStorageTreeByID(topic, strconv.Itoa(i))
+	tree, err := ds.GetStorageTreeByID(topic, id)
 	if err != nil {
 		log.Fatal("error retrieving storage tree: ", err)
 	}
@@ -28,7 +30,7 @@ func verifyContent(topic string, i int, ds models.AuditStore, wg *sync.WaitGroup
 			log.Fatal("error verifying content: ", err)
 		}
 		if verif == false {
-			log.Errorf("could not verify content with ID %v in tree with ID %v, topic: %s\n", cnt.ID, i, topic)
+			log.Errorf("could not verify content with ID %v in tree with ID %s, topic: %s\n", cnt.ID, id, topic)
 			break
 		}
 	}
@@ -41,7 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatal("NewAuditStore: ", err)
 	}
-	time.Sleep(60 * time.Second)
+	// time.Sleep(60 * time.Second)
 	ticker := time.NewTicker(60 * time.Second)
 	go func() {
 		for {
@@ -58,14 +60,22 @@ func main() {
 					if err != nil {
 						log.Fatal(err)
 					}
-					log.Printf("number of storage trees to check for %s: %v \n", topicMap[key], lastID)
+					fmt.Printf("youngest merkle child for %s: %d\n", topicMap[key], lastID)
 
+					storageTreesToVerify, err := ds.GetStorageTreesInflux(topicMap[key], time.Time{}, time.Unix(0, lastID))
+					if err != nil {
+						log.Fatal(err)
+					}
+					log.Printf("number of storage trees to check for %s: %v \n", topicMap[key], len(storageTreesToVerify))
 					// Iterate over storage trees in go routines
-					for i := 0; i <= int(lastID); i++ {
-						go verifyContent(topicMap[key], i, ds, &wg)
+					for _, val := range storageTreesToVerify {
+						tree := merkletree.MerkleTree{}
+						err = json.Unmarshal([]byte(val[4].(string)), &tree)
+						tstamp, _ := time.Parse(time.RFC3339, val[0].(string))
+						go verifyContent(topicMap[key], strconv.FormatInt(tstamp.UnixNano(), 10), ds, &wg)
 					}
 
-					log.Infof("Successfully verified %v storage trees.", lastID)
+					log.Infof("Successfully verified %v storage trees.", len(storageTreesToVerify))
 				}
 				log.Infof("%s -- All content in storage successfully verified. \n", time.Now().String())
 			}

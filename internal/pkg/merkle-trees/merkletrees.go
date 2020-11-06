@@ -178,15 +178,13 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	level := "2"
 	fmt.Printf("begin making daily tree level 2 for topic %s \n", topic)
 
-	// Get last timestamp of trees from storage table
+	// Get last timestamp of trees from merkle table
 	timeInit, err := ds.GetLastTimestamp(topic, level)
 	if err != nil {
 		log.Error(err)
 	}
 	fmt.Println("last timestamp retrieved")
-	// Get merkle trees from storage table
-	// Comment: Alternatively we can fetch the trees by id.
-	// Write method GetLastID of pool. Look for last ID of level 2 tree and pick highest pool id from there.
+	// Get merkle trees from storage table and build them into a merkle tree.
 	vals, err := ds.GetStorageTreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
 		log.Error(err)
@@ -196,11 +194,12 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	var IDs []string
 
 	if len(vals) > 0 {
+		log.Infof("new content available for topic %s on level 2\n", topic)
 		// If new content is available, make daily tree
 		for i := range vals {
 			// Collect storage trees
 			var auxTree merkletree.MerkleTree
-			err = json.Unmarshal([]byte(vals[i][3].(string)), &auxTree)
+			err = json.Unmarshal([]byte(vals[i][4].(string)), &auxTree)
 			if err != nil {
 				log.Error(err)
 				return
@@ -211,10 +210,11 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 			if tstamp.After(lastTimestamp) {
 				lastTimestamp = tstamp
 			}
-			// Get IDs of storage trees
-			IDs = append(IDs, vals[i][1].(string))
+			// Get IDs of storage trees (we use timestamps in unix nano format as ID)
+			IDs = append(IDs, strconv.FormatInt(tstamp.UnixNano(), 10))
 		}
 	} else {
+		log.Infof("no new content available for topic %s on level 2. store tree with nil content.\n", topic)
 		// If no content is available, make tree from empty bucket and store to storage table for consistency of IDs
 		emptyBucket := merkletree.StorageBucket{
 			Content:   []byte{},
@@ -238,8 +238,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 		if err != nil {
 			log.Error(err)
 		}
-		idString := strconv.Itoa(int(id))
-		IDs = append(IDs, idString)
+		IDs = append(IDs, id)
 	}
 	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {
