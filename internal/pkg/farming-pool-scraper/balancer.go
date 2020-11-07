@@ -2,11 +2,18 @@ package pool
 
 import (
 	"context"
+	"fmt"
+	"math"
+	"math/big"
 	"time"
 
+	"errors"
+
+	"github.com/bep/debounce"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/sirupsen/logrus"
 
 	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/factory"
 	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/pool"
@@ -115,16 +122,82 @@ func (bp *BalancerPool) poolHandler(poolChan chan common.Address) {
 	}
 }
 
+func (bp *BalancerPool) poolWatcher(perceive chan common.Address) {
+	watchedPools := []common.Address{}
+
+	for {
+		pool := <-perceive
+
+		// skip already watched pools
+		found := false
+		for _, watchedPool := range watchedPools {
+			if watchedPool.Hex() == pool.Hex() {
+				found = true
+				break
+			}
+		}
+		if found {
+			continue
+		}
+
+		watchedPools = append(watchedPools, pool)
+
+		// watch unknown pools for transaction events
+		fr, err := balancerpoolcontract.NewBalancerPoolContractFilterer(pool, bp.wsClient)
+		if err != nil {
+			log.WithField("PoolAddress", pool).Debug("error creating an event filterer for pool")
+			continue
+		}
+
+		sink := make(chan *balancerpoolcontract.BalancerPoolContractTransfer)
+		_, err = fr.WatchTransfer(&bind.WatchOpts{}, sink, nil, nil)
+		if err != nil {
+			log.WithField("PoolAddress", pool).Error("error watching for transfers for pool")
+			continue
+		}
+
+		go func() {
+			fetch := func() {
+				if err := bp.getPool(pool); err != nil {
+					log.WithField("PoolAddress", pool).Error("error getting pool informations after transfer event")
+				}
+			}
+
+			// debounce the function in order to avoid rate limit errors
+			debounced := debounce.New(1 * time.Minute)
+
+			for {
+				tx := <-sink
+				log.WithFields(logrus.Fields{
+					"PoolAddress": pool,
+					"Amount":      tx.Amt,
+				}).Debug("new transaction on pool")
+
+				debounced(fetch)
+			}
+		}()
+	}
+}
+
 func (bp *BalancerPool) mainLoop() {
 	// currently:
 	// - watches for new pools
 	// - downloads all pools and gets informations
+	// todo:
+	// - watching for transactions as it updates the pool rate
 
 	newPoolEventChan := make(chan *balfactorycontract.BALFactoryContractLOGNEWPOOL, 16)
 	newPoolChan := make(chan common.Address, 16)
+	poolWatcherPerceiver := make(chan common.Address, 1)
 
-	go bp.watchFactory(newPoolEventChan)
-	go bp.ListAllPools(newPoolEventChan)
+	// go bp.watchFactory(newPoolEventChan)
+	// go bp.ListAllPools(newPoolEventChan)
+	go bp.poolWatcher(poolWatcherPerceiver)
+
+	// https://pools.balancer.exchange/#/pool/0x59a19d8c652fa0284f44113d0ff9aba70bd46fb4/
+	newPoolChan <- common.HexToAddress("0x59a19d8c652fa0284f44113d0ff9aba70bd46fb4")
+	// newPoolChan <- common.HexToAddress("0xd8e9690eff99e21a2de25e0b148ffaf47f47c972")
+	// newPoolChan <- common.HexToAddress("0x9866772a9bdb4dc9d2c5a4753e8658b8b0ca1fc3")
 
 	for i := 0; i < balGoroutinesAmount; i++ {
 		go bp.poolHandler(newPoolChan)
@@ -134,15 +207,46 @@ func (bp *BalancerPool) mainLoop() {
 		select {
 		case event := <-newPoolEventChan:
 			log.Info("got a New Pool event")
+
 			newPoolChan <- event.Pool
+			poolWatcherPerceiver <- event.Pool
 		}
 	}
+}
+
+// https://steemit.com/tutorial/@gopher23/power-and-root-functions-using-big-float-in-golang
+func Zero() *big.Float {
+	r := big.NewFloat(0.0)
+	r.SetPrec(256)
+	return r
+}
+
+func Mul(a, b *big.Float) *big.Float {
+	return Zero().Mul(a, b)
+}
+
+func Pow(a *big.Float, e uint64) *big.Float {
+	result := Zero().Copy(a)
+	for i := uint64(0); i < e-1; i++ {
+		result = Mul(result, a)
+	}
+	return result
 }
 
 func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 	pool, err := balancerpoolcontract.NewBalancerPoolContractCaller(poolAddress, bp.restClient)
 	if err != nil {
 		return
+	}
+
+	// ignore unfinalized pools
+	finalized, err := pool.IsFinalized(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	if !finalized {
+		return errors.New("pool is not finalized")
 	}
 
 	// note(gravi): this represents the latest known block
@@ -158,6 +262,12 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 
 	symbols := []string{}
 
+	// V = (b1^w1)(b2^w2)(b3^w3)
+	// V is the product of each token of the pool.
+	// b1/b2/b3 are the balances of the token
+	// w1/w2/w3 are their respective weights
+	V := big.NewFloat(1)
+
 	for _, token := range tokens {
 		tokCaller, err := baltokencontract.NewBALTokenContractCaller(token, bp.restClient)
 		if err != nil {
@@ -169,25 +279,48 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 			return err
 		}
 
+		// get token weight in pool
+		weight, err := pool.GetNormalizedWeight(&bind.CallOpts{}, token)
+		if err != nil {
+			return err
+		}
+		weightFloat := new(big.Float).SetInt(weight)
+		weightFloat = weightFloat.Quo(weightFloat, big.NewFloat(10e17))
+
+		// get token balance in pool
+		balance, err := pool.GetBalance(&bind.CallOpts{}, token)
+		if err != nil {
+			return err
+		}
+		balanceFloat := new(big.Float).SetInt(balance)
+		balanceFloat = balanceFloat.Quo(balanceFloat, big.NewFloat(10e17))
+
+		fmt.Println(symbol, "balance:", balanceFloat)
+
+		balanceFloatFloat, _ := balanceFloat.Float64()
+		weightFloatFloat, _ := weightFloat.Float64()
+
+		fmt.Println(symbol, "weight:", weightFloatFloat)
+
+		thing := math.Pow(balanceFloatFloat, weightFloatFloat)
+		V.Mul(V, new(big.Float).SetFloat64(thing))
+
 		symbols = append(symbols, symbol)
 	}
-
-	swapFee, err := pool.GetSwapFee(&bind.CallOpts{})
-	if err != nil {
-		return
-	}
-
-	swapFeeFloat := float64(swapFee.Int64()) / float64(10e15)
 
 	balance, err := pool.TotalSupply(&bind.CallOpts{})
 	if err != nil {
 		return
 	}
-	balanceFloat := float64(balance.Int64()) / 10e17
+	balanceFloat := new(big.Float).SetInt(balance)
+	balanceFloatFloat, _ := balanceFloat.Float64()
+	balanceFloatFloat /= 10e17
+
+	VFloat, _ := V.Float64()
 
 	pr := models.FarmingPool{
 		// Balance is the total supply of pool token.
-		Balance: balanceFloat,
+		Balance: balanceFloatFloat,
 
 		TimeStamp:    time.Now(),
 		PoolID:       poolAddress.String(),
@@ -196,7 +329,7 @@ func (bp *BalancerPool) getPool(poolAddress common.Address) (err error) {
 		OutputAsset: symbols,
 		InputAsset:  symbols,
 
-		Rate: swapFeeFloat,
+		Rate: VFloat / balanceFloatFloat, // v = V / num_bpt
 
 		BlockNumber: header.Number.Int64(),
 	}
