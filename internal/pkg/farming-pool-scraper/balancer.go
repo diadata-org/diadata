@@ -91,7 +91,7 @@ func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfac
 		log.Errorln("creating New Pool iterator")
 		return
 	}
-	log.Info("created historic new pool iterator")
+	log.Trace("created historic new pool iterator")
 
 	for it.Next() {
 		ev := it.Event
@@ -146,6 +146,8 @@ func (bp *BalancerPoolScrapper) poolWatcher(perceive chan common.Address, poolTo
 		watchedPools = append(watchedPools, pool)
 		log.WithField("poolAddress", pool.Hex()).Debug("watching pool for transactions")
 
+		// TODO: FIXME: do not watch for log events since they are limited by infura. Watch directly for transactions and check if it involves our pool
+
 		// watch unknown pools for transaction events
 		fr, err := balancerpoolcontract.NewBalancerPoolContractFilterer(pool, bp.wsClient)
 		if err != nil {
@@ -156,7 +158,7 @@ func (bp *BalancerPoolScrapper) poolWatcher(perceive chan common.Address, poolTo
 		sink := make(chan *balancerpoolcontract.BalancerPoolContractTransfer)
 		_, err = fr.WatchTransfer(&bind.WatchOpts{}, sink, nil, nil)
 		if err != nil {
-			log.WithField("PoolAddress", pool.Hex()).Error("error watching for transfers for pool")
+			log.WithField("PoolAddress", pool.Hex()).WithError(err).Error("error watching for transfers for pool")
 			continue
 		}
 
@@ -281,6 +283,8 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 			symbolMap := map[string]string{
 				"0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": "MKR",
 				"0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": "SAI",
+				"0xC011A72400E58ecD99Ee497CF89E3775d4bd732F": "SNX",
+				"0xF1290473E210b2108A85237fbCd7b6eb42Cc654F": "HEDG",
 			}
 
 			var ok bool
@@ -325,6 +329,10 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 	balanceFloatFloat /= 10e17
 
 	VFloat, _ := V.Float64()
+	rate := VFloat / balanceFloatFloat // v = V / num_bpt
+	if math.IsNaN(rate) {
+		rate = 0
+	}
 
 	pr := models.FarmingPool{
 		// Balance is the total supply of pool token.
@@ -337,7 +345,7 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 		OutputAsset: symbols,
 		InputAsset:  symbols,
 
-		Rate: VFloat / balanceFloatFloat, // v = V / num_bpt
+		Rate: rate,
 
 		BlockNumber: header.Number.Int64(),
 
