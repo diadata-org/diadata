@@ -5,7 +5,9 @@ import (
 )
 
 type FarmingPool struct {
-	Rate         float64
+	// Rate is the pool rate. More information: https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming
+	Rate float64
+	// Balance is the total supply of pool token
 	Balance      float64
 	ProtocolName string
 	BlockNumber  int64
