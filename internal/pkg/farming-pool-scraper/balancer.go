@@ -4,21 +4,22 @@ import (
 	"context"
 	"math"
 	"math/big"
+	"sync"
 	"time"
 
-	"github.com/pkg/errors"
-
 	"github.com/bep/debounce"
+	"github.com/pkg/errors"
+	logrus "github.com/sirupsen/logrus"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/sirupsen/logrus"
 
 	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/factory"
 	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/pool"
 	baltokencontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/token"
 
-	// baltokencontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/token"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
@@ -74,7 +75,7 @@ func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontrac
 	if err != nil {
 		log.Errorln("Error subscribing to New Pool events: ", err)
 	} else {
-		log.Info("Subscribed to New Pool events")
+		log.Debug("Subscribed to New Pool events")
 	}
 }
 
@@ -123,67 +124,77 @@ func (bp *BalancerPoolScrapper) poolFetcher(poolChan chan common.Address) {
 // poolWatcher watches the given pools for transactions. Upon transaction, it asks for pool informations refreshal.
 // which updates pool informations.
 func (bp *BalancerPoolScrapper) poolWatcher(perceive chan common.Address, poolToFetch chan common.Address) {
-	watchedPools := []common.Address{}
+	watchedPoolsMu := new(sync.Mutex)
+	watchedPools := make(map[string]func(f func()))
+
+	// watch new blocks for transaction for which destination is a balancer pool
+	go func() {
+		// subsribe for block headers
+		headersChan := make(chan *types.Header)
+		sus, err := bp.wsClient.SubscribeNewHead(context.Background(), headersChan)
+		if err != nil {
+			log.WithError(err).Error("error subscribing to blockchain head")
+			return
+		}
+
+		for {
+			select {
+			case err := <-sus.Err():
+				log.WithError(err).Error("blockchain subscription error")
+			case header := <-headersChan:
+				// on block header, fetch the block
+				block, err := bp.restClient.BlockByHash(context.Background(), header.Hash())
+				if err != nil {
+					log.WithError(err).WithField("block", block.Hash().Hex()).Error("error fetching block by hash")
+					continue
+				}
+
+				// check if the destination of the transaction is a watchedPool.
+				// if so, use it's debouncer and put the pool into the poolToFetch channel
+				watchedPoolsMu.Lock()
+				for _, tx := range block.Transactions() {
+					if tx == nil {
+						continue
+					} else if tx.To() == nil {
+						continue
+					}
+
+					debounced, ok := watchedPools[tx.To().Hex()]
+					if !ok {
+						continue
+					}
+
+					to := *tx.To()
+					debounced(func() {
+						log.Debug("fetching pool info because of transaction")
+						poolToFetch <- to
+					})
+
+					log.WithFields(logrus.Fields{
+						"PoolAddress": tx.To().Hex(),
+						"TxHash":      tx.Hash().Hex(),
+					}).Debug("new transaction on pool")
+				}
+				watchedPoolsMu.Unlock()
+			}
+		}
+	}()
 
 	for {
 		pool := <-perceive
 
 		// skip already watched pools
-		found := false
-		for _, watchedPool := range watchedPools {
-			if watchedPool.Hex() == pool.Hex() {
-				found = true
-				break
-			}
-		}
-		if found {
+		if _, ok := watchedPools[pool.Hex()]; ok {
 			log.WithField("poolAddress", pool.Hex()).Trace("pool already watched")
 			continue
 		}
 
-		log.WithField("poolAddress", pool.Hex()).Trace("watching pool for transactions...")
+		// create a debouncer for each pool in order to avoid hitting rate-limitations on pools with high volume
+		watchedPoolsMu.Lock()
+		watchedPools[pool.Hex()] = debounce.New(30 * time.Second)
+		watchedPoolsMu.Unlock()
 
-		watchedPools = append(watchedPools, pool)
-		log.WithField("poolAddress", pool.Hex()).Debug("watching pool for transactions")
-
-		// TODO: FIXME: do not watch for log events since they are limited by infura. Watch directly for transactions and check if it involves our pool
-
-		// watch unknown pools for transaction events
-		fr, err := balancerpoolcontract.NewBalancerPoolContractFilterer(pool, bp.wsClient)
-		if err != nil {
-			log.WithField("PoolAddress", pool.Hex()).Debug("error creating an event filterer for pool")
-			continue
-		}
-
-		sink := make(chan *balancerpoolcontract.BalancerPoolContractTransfer)
-		_, err = fr.WatchTransfer(&bind.WatchOpts{}, sink, nil, nil)
-		if err != nil {
-			log.WithField("PoolAddress", pool.Hex()).WithError(err).Error("error watching for transfers for pool")
-			continue
-		}
-
-		go func() {
-			fetch := func() {
-				log.Trace("fetching pool info because of transaction")
-				poolToFetch <- pool
-			}
-
-			// debounce the fetch function in order to avoid rate limit errors
-			debounced := debounce.New(30 * time.Second)
-
-			for {
-				tx := <-sink
-				log.WithFields(logrus.Fields{
-					"PoolAddress": pool.Hex(),
-					"Amount":      new(big.Float).Quo(new(big.Float).SetInt(tx.Amt), big.NewFloat(10e17)), // tx.Amt / 10e17
-					"From":        tx.Src.Hex(),
-					"To":          tx.Dst.Hex(),
-					"TxHash":      tx.Raw.TxHash.Hex(),
-				}).Trace("new transaction on pool")
-
-				debounced(fetch)
-			}
-		}()
+		log.WithField("poolAddress", pool.Hex()).Debug("watching pool for transactions...")
 	}
 }
 
@@ -278,13 +289,14 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 		// in case it fails, we'll use a map to associate token addresses with symbol
 		symbol, err := tokCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
-			// TODO: add all ignored tokens on full run
 			// add tokens with buggy symbols here
 			symbolMap := map[string]string{
 				"0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": "MKR",
 				"0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": "SAI",
 				"0xC011A72400E58ecD99Ee497CF89E3775d4bd732F": "SNX",
 				"0xF1290473E210b2108A85237fbCd7b6eb42Cc654F": "HEDG",
+				"0xeb269732ab75A6fD61Ea60b06fE994cD32a83549": "DF-USDx",
+				"0x431ad2ff6a9C365805eBaD47Ee021148d6f7DBe0": "DF",
 			}
 
 			var ok bool
@@ -362,7 +374,8 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 
 func (bp *BalancerPoolScrapper) bootstrapPools(newPoolChan chan common.Address) {
 	// first shared pools from pools.balancer.exchange
-	// not necessary: will be fetched from historical New Pool log events.
+	// not necessary: will be fetched anyway from historical New Pool log events.
+	// useful for testing
 	newPoolChan <- common.HexToAddress("0x548b5c92a5e0006628f69c60e0085373fd5b63d9")
 	newPoolChan <- common.HexToAddress("0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5")
 	newPoolChan <- common.HexToAddress("0x59a19d8c652fa0284f44113d0ff9aba70bd46fb4")
