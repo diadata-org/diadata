@@ -354,7 +354,7 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 		PoolID:       poolAddress.String(),
 		ProtocolName: bp.scraper.poolName,
 
-		OutputAsset: symbols,
+		OutputAsset: []string{"BPT"},
 		InputAsset:  symbols,
 
 		Rate: rate,

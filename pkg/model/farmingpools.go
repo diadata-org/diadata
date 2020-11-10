@@ -13,8 +13,9 @@ type FarmingPool struct {
 	BlockNumber  int64
 	PoolID       string // hold pool id respective to protocol
 	TimeStamp    time.Time
-	OutputAsset  []string
-	InputAsset   []string //some pools have more than 2 input assets
+	// OutputAsset is the list of tokens that you get back for staking.
+	OutputAsset []string
+	InputAsset  []string // some pools have more than 2 input assets
 }
 
 type FarmingPoolType struct {
