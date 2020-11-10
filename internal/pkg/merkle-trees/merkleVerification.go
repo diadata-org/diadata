@@ -1,6 +1,7 @@
 package merklehashing
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 
@@ -22,7 +23,7 @@ func VerifyBucket(sb merkletree.StorageBucket, ds models.AuditStore) (bool, erro
 	return tree.VerifyContent(sb)
 }
 
-// VerifyPool verifies a topic tree as content of a daily tree
+// VerifyPool verifies a storage tree as content of a daily tree
 func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditStore) (bool, error) {
 
 	// Get ID of pool's parent tree
@@ -40,13 +41,15 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditSto
 }
 
 // VerifyTree verifies a tree in the hashing hierarchy with respect to the tree one level down
+// Atm this applies to level==2 and level==1
 func VerifyTree(tree merkletree.MerkleTree, level, ID string, ds models.AuditStore) (bool, error) {
-	// level=1; id=0
-	// TO DO: Add case if level=0
 
 	levelInt, err := strconv.ParseInt(level, 10, 64)
 	if err != nil {
 		return false, err
+	}
+	if levelInt < 1 {
+		return false, errors.New("verification only for level >0")
 	}
 	levelInt--
 	levelBelow := strconv.Itoa(int(levelInt))

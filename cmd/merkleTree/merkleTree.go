@@ -6,8 +6,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
-	"flag"
 	"fmt"
 	"sync"
 	"time"
@@ -139,7 +139,38 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 	}
 }
 
+type TestSHA256Content struct {
+	x string
+}
+
+//CalculateHash hashes the values of a TestSHA256Content
+func (t TestSHA256Content) CalculateHash() ([]byte, error) {
+	h := sha256.New()
+	if _, err := h.Write([]byte(t.x)); err != nil {
+		return nil, err
+	}
+
+	return h.Sum(nil), nil
+}
+
+//Equals tests for equality of two Contents
+func (t TestSHA256Content) Equals(other merkletree.Content) (bool, error) {
+	return t.x == other.(TestSHA256Content).x, nil
+}
+
 func main() {
+
+	bp := merkletree.NewBucketPool(1, 16, "test")
+	p, err := bp.Get()
+	fmt.Println(p, err)
+	fmt.Printf("%T\n", p.Content)
+	p.Content.Write([]byte("hello"))
+	fmt.Printf("%T\n", p.Content)
+
+	p2 := merkletree.Bucket{}
+	fmt.Println("content: ", p2.Content)
+	p2.Content.Write([]byte("bye"))
+	fmt.Println(p2)
 
 	// // Test verification ----------------------------------------------
 	// dataType := flag.String("type", "hash-interestrates", "Type of data")
@@ -192,25 +223,25 @@ func main() {
 	// fmt.Println("leaf 2 duplicated: ", level0Tree.Leafs[1])
 	// ---------------------------------------------------------------
 
-	dataType := flag.String("type", "hash-trades", "Type of data")
-	flag.Parse()
-	ds, err := models.NewAuditStore()
-	if err != nil {
-		log.Error("NewAuditStore: ", err)
-	}
-	// level0Tree, _ := ds.GetDailyTreeByID("", "0", "0")
+	// dataType := flag.String("type", "hash-trades", "Type of data")
+	// flag.Parse()
+	// ds, err := models.NewAuditStore()
+	// if err != nil {
+	// 	log.Error("NewAuditStore: ", err)
+	// }
+	// // level0Tree, _ := ds.GetDailyTreeByID("", "0", "0")
 
-	timeFinal := time.Now().AddDate(0, 0, -1)
-	retval, err := ds.GetStorageTreeInflux(*dataType, timeFinal)
-	if err != nil {
-		log.Error("error getting merkle tree from influx: ", err)
-	}
+	// timeFinal := time.Now().AddDate(0, 0, -1)
+	// retval, err := ds.GetStorageTreeInflux(*dataType, timeFinal)
+	// if err != nil {
+	// 	log.Error("error getting merkle tree from influx: ", err)
+	// }
 
-	bucket := retval.Root.Left.Left.C.(merkletree.StorageBucket)
-	data, err := bucket.ReadContent()
-	for i := 0; i < len(data); i++ {
-		fmt.Println(string(data[i]))
-	}
+	// bucket := retval.Root.Left.Left.C.(merkletree.StorageBucket)
+	// data, err := bucket.ReadContent()
+	// for i := 0; i < len(data); i++ {
+	// 	fmt.Println(string(data[i]))
+	// }
 
 	// vals, err := ds.GetStorageTreesInflux(*dataType, timeInit, timeFinal)
 	// if err != nil {
