@@ -88,7 +88,9 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewZeroxScraper(dia.ZeroxExchange)
 	case dia.KyberExchange:
 		return NewKyberScraper(dia.KyberExchange)
-		
+	case dia.BitMaxExchange:
+		return NewBitMaxScraper(dia.BitMaxExchange)
+
 	default:
 		return nil
 	}
