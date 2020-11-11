@@ -1,6 +1,20 @@
 version: '3.2'
 services:
 
+  balancerscraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingpools -type=BALANCER
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   cvaultscraper:
     depends_on: [genericfarmingscraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
