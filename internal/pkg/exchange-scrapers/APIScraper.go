@@ -18,6 +18,7 @@ type APIScraper interface {
 	ScrapePair(pair dia.Pair) (PairScraper, error)
 	// FetchAvailablePairs returns a list with all available trade pairs
 	FetchAvailablePairs() (pairs []dia.Pair, err error)
+	NormalizePair(pair dia.Pair) (dia.Pair, error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade
 }

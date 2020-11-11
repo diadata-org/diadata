@@ -219,6 +219,26 @@ func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{
 	return symbol, nil
 }
 
+func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	str := strings.Split(pair.ForeignName, "_")
+	symbol := strings.ToUpper(str[0])
+	pair.Symbol = symbol
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			if symbol == "IOTA" {
+				pair.Symbol = "MIOTA"
+			}
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return pair, errors.New("Symbol is black listed:" + symbol)
+	}
+	return pair, nil
+}
+
+
+
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
@@ -227,13 +247,14 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		symbol, serr := s.normalizeSymbol(p)
+		pairToNormalize := dia.Pair{
+			Symbol:      "",
+			ForeignName: p,
+			Exchange:    s.exchangeName,
+		}
+		pair, serr := s.NormalizePair(pairToNormalize)
 		if serr == nil {
-			pairs = append(pairs, dia.Pair{
-				Symbol:      symbol,
-				ForeignName: p,
-				Exchange:    s.exchangeName,
-			})
+			pairs = append(pairs, pair)
 		} else {
 			log.Error(serr)
 		}

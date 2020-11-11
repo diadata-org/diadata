@@ -142,6 +142,10 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
+func (s *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 // Channel returns a channel that can be used to receive trades/pricing information
 func (ps *KrakenScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades

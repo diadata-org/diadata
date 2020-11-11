@@ -356,6 +356,9 @@ func (scraper *ZeroxScraper) Close() error {
 	<-scraper.shutdownDone
 	return nil
 }
+func (s *ZeroxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
 
 type ZeroxPairScraper struct {
 	parent *ZeroxScraper

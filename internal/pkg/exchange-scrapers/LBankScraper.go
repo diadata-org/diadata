@@ -179,18 +179,19 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *LBankScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
-	str := strings.Split(foreignName, "_")
-	symbol = strings.ToUpper(str[0])
+func (s *LBankScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	str := strings.Split(pair.ForeignName, "_")
+	symbol := strings.ToUpper(str[0])
+	pair.Symbol = symbol
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
+		return pair, errors.New("Symbol is black listed:" + symbol)
 	}
-	return symbol, nil
+	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
@@ -202,13 +203,14 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		symbol, serr := s.normalizeSymbol(p)
+		pairToNormalize := dia.Pair{
+			Symbol:      "",
+			ForeignName: strings.ToUpper(p),
+			Exchange:    s.exchangeName,
+		}
+		pair, serr := s.NormalizePair(pairToNormalize)
 		if serr == nil {
-			pairs = append(pairs, dia.Pair{
-				Symbol:      symbol,
-				ForeignName: strings.ToUpper(p),
-				Exchange:    s.exchangeName,
-			})
+			pairs = append(pairs, pair)
 		} else {
 			log.Error(serr)
 		}

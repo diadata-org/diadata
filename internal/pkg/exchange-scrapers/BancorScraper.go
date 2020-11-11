@@ -260,6 +260,10 @@ func (scraper *BancorScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
+func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {

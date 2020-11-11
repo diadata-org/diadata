@@ -222,6 +222,11 @@ func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return
 }
 
+func (s *BittrexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	//Normalise need more fields that Pair struct has
+	return dia.Pair{}, nil
+}
+
 // BittrexPairScraper implements PairScraper for Bittrex
 type BittrexPairScraper struct {
 	parent      *BittrexScraper

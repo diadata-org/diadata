@@ -72,6 +72,8 @@ func NewZBScraper(exchangeName string) *ZBScraper {
 	return s
 }
 
+
+
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 
@@ -119,6 +121,10 @@ func (s *ZBScraper) mainLoop() {
 		}
 	}
 	s.cleanup(s.error)
+}
+
+func (s *ZBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (s *ZBScraper) cleanup(err error) {

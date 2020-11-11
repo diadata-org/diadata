@@ -177,6 +177,10 @@ func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 	return scraper.getPairs()
 }
 
+
+func (scraper *MakerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
 func (scraper *MakerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()

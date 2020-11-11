@@ -279,6 +279,11 @@ func (t *GnosisToken) normalizeETH() {
 	}
 }
 
+func (scraper *GnosisScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
+
 func (scraper *GnosisScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
