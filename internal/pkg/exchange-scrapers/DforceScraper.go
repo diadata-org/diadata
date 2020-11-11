@@ -298,11 +298,10 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	return
 }
 
-func (t *DforceToken) normalizeETH() {
-	if t.Symbol == "WETH" {
-		t.Symbol = "ETH"
-	}
+func (scraper *DforceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
+
 
 func (scraper *DforceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()

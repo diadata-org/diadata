@@ -272,6 +272,10 @@ func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, pr
 	return
 }
 
+func (s *BalancerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGNEWPOOLIterator, error) {
 
 	var pairFiltererContract *factory.BalancerfactoryFilterer

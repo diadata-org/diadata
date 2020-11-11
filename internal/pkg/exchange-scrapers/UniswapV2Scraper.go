@@ -229,12 +229,14 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		return
 	}
 	for _, pair := range uniPairs {
-		pairs = append(pairs, dia.Pair{
+		pairToNormalise := dia.Pair{
 			Symbol:      pair.Token0.Symbol,
 			ForeignName: pair.ForeignName,
 			Exchange:    "UniswapV2",
 			Ignore:      false,
-		})
+		}
+		normalizedPair, _ := s.NormalizePair(pairToNormalise)
+		pairs = append(pairs, normalizedPair)
 	}
 
 	return
@@ -270,6 +272,13 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 		}(i)
 	}
 	return pairs, nil
+}
+
+func (up *UniswapScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	if pair.ForeignName == "WETH" {
+		pair.Symbol = "ETH"
+	}
+	return pair, nil
 }
 
 // Account for WETH is identified with ETH

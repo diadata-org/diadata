@@ -401,6 +401,10 @@ func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 	return
 }
 
+func (scraper *CurveFIScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 func (scraper *CurveFIScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()

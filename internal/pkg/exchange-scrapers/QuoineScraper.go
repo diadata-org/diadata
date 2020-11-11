@@ -126,17 +126,18 @@ func (scraper *QuoineScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
-func (scraper *QuoineScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
-	symbol = params[0]
+func (s *QuoineScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	symbol := pair.Symbol
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
+		return pair, errors.New("Symbol is black listed:" + symbol)
 	}
-	return symbol, nil
+	return pair, nil
+
 }
 
 func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -150,13 +151,14 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	pairs = make([]dia.Pair, len(products))
 
 	for _, prod := range products {
-		symbol, serr := scraper.normalizeSymbol(prod.CurrencyPairCode, prod.BaseCurrency)
+		pairToNormalize := dia.Pair{
+			Symbol:      prod.BaseCurrency,
+			ForeignName: prod.CurrencyPairCode,
+			Exchange:    scraper.exchangeName,
+		}
+		pair, serr := scraper.NormalizePair(pairToNormalize)
 		if serr == nil {
-			pairs = append(pairs, dia.Pair{
-				Symbol:      symbol,
-				ForeignName: prod.CurrencyPairCode,
-				Exchange:    scraper.exchangeName,
-			})
+			pairs = append(pairs, pair)
 		} else {
 			log.Error(serr)
 		}

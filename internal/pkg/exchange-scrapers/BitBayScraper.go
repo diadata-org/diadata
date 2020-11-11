@@ -189,6 +189,9 @@ func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
 	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
 }
+func (s *BitBayScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
 
 //Channel returns the channel to get trades
 func (s *BitBayScraper) Channel() chan *dia.Trade {

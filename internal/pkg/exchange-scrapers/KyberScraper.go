@@ -268,6 +268,10 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	return
 }
 
+func (scraper *KyberScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 	pairSet := make(map[string]struct{})

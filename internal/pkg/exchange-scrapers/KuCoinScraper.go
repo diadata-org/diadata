@@ -177,6 +177,10 @@ func (s *KuCoinScraper) mainLoop() {
 
 }
 
+func (s *KuCoinScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 // closes all connected PairScrapers
 // must only be called from mainLoop
 func (s *KuCoinScraper) cleanup(err error) {

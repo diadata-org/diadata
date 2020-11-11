@@ -5,10 +5,10 @@ import (
 	"os/user"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
+	logrus "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
-
+var log = logrus.New()
 func (c *ConfigCollectors) Exchanges() []string {
 	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
 }

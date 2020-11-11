@@ -37,6 +37,8 @@ const (
 	DforceExchange      = "Dforce"
 	ZeroxExchange       = "0x"
 	KyberExchange       = "Kyber"
+	BitMaxExchange       = "Bitmax"
+
 
 )
 
@@ -68,6 +70,7 @@ func Exchanges() []string {
 		DforceExchange,
 		ZeroxExchange,
 		KyberExchange,
+		BitMaxExchange,
 	}
 }
 

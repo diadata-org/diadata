@@ -192,6 +192,20 @@ func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string)
 	}
 	return symbol, nil
 }
+func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	symbol := strings.ToUpper(pair.Symbol)
+	pair.Symbol = symbol
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return pair, errors.New("Symbol is black listed:" + symbol)
+	}
+	return pair, nil
+
+}
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -214,13 +228,14 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			symbol, serr := s.normalizeSymbol(p.Id, p.BaseCurrency)
+			pairToNormalize := dia.Pair{
+				Symbol:      p.BaseCurrency,
+				ForeignName: p.Id,
+				Exchange:    s.exchangeName,
+			}
+			pair, serr := s.NormalizePair(pairToNormalize)
 			if serr == nil {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      symbol,
-					ForeignName: p.Id,
-					Exchange:    s.exchangeName,
-				})
+				pairs = append(pairs, pair)
 			} else {
 				log.Error(serr)
 			}

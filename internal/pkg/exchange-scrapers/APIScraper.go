@@ -18,6 +18,7 @@ type APIScraper interface {
 	ScrapePair(pair dia.Pair) (PairScraper, error)
 	// FetchAvailablePairs returns a list with all available trade pairs
 	FetchAvailablePairs() (pairs []dia.Pair, err error)
+	NormalizePair(pair dia.Pair) (dia.Pair, error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade
 }
@@ -87,7 +88,9 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewZeroxScraper(dia.ZeroxExchange)
 	case dia.KyberExchange:
 		return NewKyberScraper(dia.KyberExchange)
-		
+	case dia.BitMaxExchange:
+		return NewBitMaxScraper(dia.BitMaxExchange)
+
 	default:
 		return nil
 	}
