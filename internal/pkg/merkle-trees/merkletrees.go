@@ -21,11 +21,49 @@ const (
 	refreshDelay = time.Second * 10 * 1
 )
 
+// TopicInfo stores all necessary information on topics used for hashing
+var TopicInfo = []struct {
+	ID         uint32
+	KafkaID    uint32
+	Name       string
+	SizePool   uint64
+	SizeBucket uint64
+}{
+	{
+		ID:         0,
+		KafkaID:    4,
+		Name:       GetHashTopics()[0],
+		SizePool:   16,
+		SizeBucket: 1024,
+	},
+	{
+		ID:         1,
+		KafkaID:    5,
+		Name:       GetHashTopics()[1],
+		SizePool:   2,
+		SizeBucket: 256,
+	},
+	{
+		ID:         2,
+		KafkaID:    6,
+		Name:       GetHashTopics()[2],
+		SizePool:   8,
+		SizeBucket: 512,
+	},
+	{
+		ID:         3,
+		KafkaID:    7,
+		Name:       GetHashTopics()[3],
+		SizePool:   8,
+		SizeBucket: 512,
+	},
+}
+
 // GetHashTopics returns a map listing all hashing topics
 func GetHashTopics() map[int]string {
 	topicMap := map[int]string{
-		0: "hash-interestrates",
-		1: "hash-trades",
+		0: "hash-trades",
+		1: "hash-interestrates",
 		2: "hash-lendingrates",
 		3: "hash-lendingstates",
 	}
@@ -156,14 +194,14 @@ func FlushPool(poolChannel chan *merkletree.BucketPool, wg *sync.WaitGroup, ds m
 
 // HashPoolLoop opens a kafka channel for data of type @topic and fills and saves bucketpools with
 // the corresponding marshalled data in influx.
-func HashPoolLoop(topic string, ds models.AuditStore) {
+func HashPoolLoop(topic string, lenPool, sizeBucket uint64, ds models.AuditStore) {
 
 	kc := ActivateKafkaChannel(topic)
 	defer kc.Close()
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	pChan := make(chan *merkletree.BucketPool)
-	go FillPools(topic, 4, 512, pChan, kc.chanMessage, &wg)
+	go FillPools(topic, lenPool, sizeBucket, pChan, kc.chanMessage, &wg)
 
 	wg.Add(1)
 	go FlushPool(pChan, &wg, ds)

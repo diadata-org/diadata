@@ -9,16 +9,17 @@ import (
 )
 
 func main() {
-	topicMap := merklehashing.GetHashTopics()
+	// topicMap := merklehashing.GetHashTopics()
+	topics := merklehashing.TopicInfo
 	wg := sync.WaitGroup{}
 	ds, err := models.NewInfluxAuditStore()
 	if err != nil {
 		log.Fatal("NewInfluxDataStore: ", err)
 	}
-	for key := range topicMap {
-		log.Info("Beginning hashing for topic " + topicMap[key] + "...")
+	for key := range topics {
+		log.Info("Beginning hashing for topic " + topics[key].Name + "...")
 		wg.Add(1)
-		go merklehashing.HashPoolLoop(topicMap[key], ds)
+		go merklehashing.HashPoolLoop(topics[key].Name, topics[key].SizePool, topics[key].SizeBucket, ds)
 	}
 	defer wg.Wait()
 }
