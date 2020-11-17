@@ -62,15 +62,12 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 		if symbol == "USD" {
 			log.Println(symbol, t.Symbol)
 			usdFor1Euro = t.Price
-			ds.SetPriceUSD(symbol, 1)
-			ds.SetPriceEUR(symbol, 1/usdFor1Euro)
-			ds.SetPriceUSD("EUR", usdFor1Euro)
-			ds.SetPriceEUR("EUR", 1)
+			ds.SetFiatPriceUSD(symbol, 1)
+			ds.SetFiatPriceUSD("EUR", usdFor1Euro)
 		} else {
 			if usdFor1Euro > 0 {
 				log.Info("setting ", symbol, usdFor1Euro/t.Price)
-				ds.SetPriceUSD(symbol, usdFor1Euro/t.Price)
-				ds.SetPriceEUR(symbol, 1/t.Price)
+				ds.SetFiatPriceUSD(symbol, usdFor1Euro/t.Price)
 			}
 		}
 	}
@@ -80,9 +77,13 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 func main() {
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
+
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
+		// Populate historical prices
+		go scrapers.Populate(ds, pairs)
+
 		sECB := scrapers.SpawnECBScraper(ds)
 		defer sECB.Close()
 

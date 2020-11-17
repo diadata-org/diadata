@@ -33,6 +33,29 @@ type ECBScraper struct {
 }
 
 type (
+	XMLHistoricalEnvelope struct {
+		XMLName xml.Name `xml:"GenericData"`
+		Obs     []XMLObs `xml:"DataSet>Series>Obs"`
+	}
+
+	XMLObs struct {
+		XMLName   xml.Name        `xml:"Obs"`
+		Timestamp XMLObsDimension `xml:"ObsDimension"`
+		Price     XMLObsValue     `xml:"ObsValue"`
+	}
+
+	XMLObsDimension struct {
+		XMLName xml.Name `xml:"ObsDimension"`
+		Value   string   `xml:"value,attr"`
+	}
+
+	XMLObsValue struct {
+		XMLName xml.Name `xml:"ObsValue"`
+		Value   string   `xml:"value,attr"`
+	}
+)
+
+type (
 	// rssDocument defines the fields associated with the rss document.
 
 	XMLCube struct {
@@ -52,6 +75,68 @@ type (
 		CubeTime []XMLCubeTime `xml:"Cube>Cube"`
 	}
 )
+
+func populateCurrency(datastore *models.DB, currency string) {
+	log.Printf("Historical prices population starting", currency)
+
+	// Format url to fetch
+	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
+
+	// Fetch URL
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Errorf("error fetching url %v %v\n", url, err)
+	}
+	defer resp.Body.Close()
+
+	// Parse XML in response
+	var xmlSheet XMLHistoricalEnvelope
+	err = xml.NewDecoder(resp.Body).Decode(&xmlSheet)
+	if err != nil {
+		log.Errorf("error parsing xml %v\n", err)
+	}
+
+	// Format and save each value
+	for _, o := range xmlSheet.Obs {
+		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
+		if err != nil {
+			log.Errorf("error formating timestamp %v\n", err)
+		}
+
+		price, err := strconv.ParseFloat(o.Price.Value, 64)
+		if err != nil {
+			log.Errorf("error parsing price %v %v", o.Price.Value, err)
+		}
+
+		// If other than USD, conversion to EUR to USD is made
+		if currency != "USD" {
+			usdFor1Euro := models.GetCurrencyPrice(datastore, "EUR", timestamp)
+			price = usdFor1Euro / price
+
+			datastore.SetPriorFiatPriceUSD(currency, price, timestamp)
+		} else {
+			datastore.SetPriorFiatPriceUSD("EUR", price, timestamp)
+		}
+
+		log.Printf("%s price at %v successfully populated", currency, o.Timestamp.Value)
+	}
+
+	log.Printf("%s historical prices successfully populated", currency)
+}
+
+// Populate fetches historical daily datas from 1999 until today and saves them on the database
+func Populate(datastore *models.DB, pairs []string) {
+	// Start with USD to have conversion reference
+	populateCurrency(datastore, "USD")
+
+	// Populate every other currency
+	for _, p := range pairs {
+		p = p[3:]
+		if p != "USD" {
+			go populateCurrency(datastore, p)
+		}
+	}
+}
 
 // SpawnECBScraper returns a new ECBScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.

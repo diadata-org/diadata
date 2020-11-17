@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -11,54 +10,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	WindowYesterday = 24 * 60 * 60
-	Window2         = 24 * 60 * 60 * 8
-	BufferTTL       = 60 * 60
-	BiggestWindow   = Window2
-	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
-)
-
-// MarshalBinary for quotations
-func (e *Quotation) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// MarshalBinary for interest rates
-func (e *InterestRate) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary for quotations
-func (e *Quotation) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// UnmarshalBinary for interest rates
-func (e *InterestRate) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-func getKeyQuotation(value string) string {
-	return "dia_quotation_USD_" + value
-}
-
-func getKeyQuotationEUR(value string) string {
-	return "dia_quotation_EUR_" + value
-}
+// WindowYesterday, Window2, BufferTTL, BiggestWindow & TimeOutRedis constants are found in quotation.go
 
 // ------------------------------------------------------------------------------
 // EXCHANGE RATES
 // ------------------------------------------------------------------------------
 
-func (db *DB) SetPriceUSD(symbol string, price float64) error {
-	return db.SetQuotation(&Quotation{
+func (db *DB) SetFiatPriceUSD(symbol string, price float64) error {
+	return db.SetFiatQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
@@ -67,17 +26,17 @@ func (db *DB) SetPriceUSD(symbol string, price float64) error {
 	})
 }
 
-func (a *DB) SetPriceEUR(symbol string, price float64) error {
-	return a.SetQuotationEUR(&Quotation{
+func (db *DB) SetPriorFiatPriceUSD(symbol string, price float64, t time.Time) error {
+	return db.SetFiatQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
 		Source: dia.Diadata,
-		Time:   time.Now(),
+		Time:   t,
 	})
 }
 
-func (db *DB) GetPriceUSD(symbol string) (float64, error) {
+func (db *DB) GetFiatPriceUSD(symbol string) (float64, error) {
 	key := getKeyQuotation(symbol)
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
@@ -90,7 +49,7 @@ func (db *DB) GetPriceUSD(symbol string) (float64, error) {
 	return value.Price, nil
 }
 
-func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
+func (db *DB) GetFiatQuotation(symbol string) (*Quotation, error) {
 	key := getKeyQuotation(symbol)
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
@@ -117,47 +76,8 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	return value, nil
 }
 
-func (db *DB) SetQuotation(quotation *Quotation) error {
+func (db *DB) SetFiatQuotation(quotation *Quotation) error {
 	key := getKeyQuotation(quotation.Symbol)
-	log.Debug("setting ", key, quotation)
-
-	if db.redisClient != nil {
-		err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-		// Commented out to avoid skipping influxDB saving in case of error. Errors are still logged
-		// return err
-	}
-
-	if db.influxClient != nil && db.influxBatchPoints != nil {
-		fields := map[string]interface{}{
-			"quotation": quotation.Price,
-		}
-		tags := map[string]string{
-			"symbol": quotation.Symbol,
-			"name":   quotation.Name,
-			"source": quotation.Source,
-		}
-
-		pt, err := clientInfluxdb.NewPoint(key, tags, fields, quotation.Time)
-		if err != nil {
-			log.Println(err)
-		}
-
-		db.addPoint(pt)
-
-		err = db.WriteBatchInflux()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-	}
-
-	return nil
-}
-
-func (db *DB) SetQuotationEUR(quotation *Quotation) error {
-	key := getKeyQuotationEUR(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
 
 	if db.redisClient != nil {

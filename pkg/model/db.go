@@ -19,10 +19,15 @@ type Datastore interface {
 	GetVolume(symbol string) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
+	SetFiatPriceUSD(symbol string, price float64) error
+	SetPriorFiatPriceUSD(symbol string, price float64, t time.Time) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
+	GetFiatPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
+	GetFiatQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
+	SetFiatQuotation(quotation *Quotation) error
 	SetQuotationEUR(quotation *Quotation) error
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
@@ -195,6 +200,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		}
 		log.Debug("NewDB", pong2)
 	}
+
 	if withInflux {
 		if executionMode == "production" {
 			address = "http://influxdb:8086"
@@ -215,6 +221,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
 	}
+
 	return &DB{r, ci, bp, 0}, nil
 }
 
@@ -955,4 +962,17 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 		}
 	}
 	return value, unixTime, err
+}
+
+// Get currency price at a specific timestamp
+func GetCurrencyPrice(db *DB, currency string, timestamp time.Time) float64 {
+	q := fmt.Sprintf("SELECT quotation FROM dia_quotation_USD_%s WHERE time = '%v'", currency, timestamp.Format(time.RFC3339))
+
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Println(err)
+	}
+
+	f, _ := res[0].Series[0].Values[0][1].(json.Number).Float64()
+	return f
 }
