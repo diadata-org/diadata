@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	lrctokencontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token/LRCTokenContract"
+	stakingpool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
 )
 
 type LRCPool struct {
@@ -57,7 +57,7 @@ func (cv *LRCPool) mainLoop() {
 
 func (cv *LRCPool) scrapePools() (err error) {
 	for _, poolDetail := range cv.getLRCPools() {
-		lc, err := lrctokencontract.NewLRCTokenContractCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
+		lc, err := lrcstakingpool.NewLRCStakingPoolContractCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
@@ -68,18 +68,18 @@ func (cv *LRCPool) scrapePools() (err error) {
 
 		}
 
-		pricePerFullShareFromContract, err := lrctokencontract.GetPricePerFullShare(&bind.CallOpts{BlockNumber: header.Number})
+		pricePerFullShareFromContract, err := lrcstakingpool.GetPricePerFullShare(&bind.CallOpts{BlockNumber: header.Number})
 		if err != nil {
 			return err
 
 		}
-		bal, err := lrctokencontract.Balance(&bind.CallOpts{})
+		bal, err := lrcstakingpool.Balance(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			return err
 
 		}
-		decimals, err := lrctokencontract.Decimals(&bind.CallOpts{})
+		decimals, err := lrcstakingpool.Decimals(&bind.CallOpts{})
 		if err != nil {
 			return err
 
