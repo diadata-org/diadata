@@ -55,13 +55,13 @@ type BitMaxScraper struct {
 	wsClient          *ws.Conn
 }
 
-func NewBitMaxScraper(exchangeName string) *BitMaxScraper {
+func NewBitMaxScraper(exchange dia.Exchange) *BitMaxScraper {
 	var bitmaxSocketURL = "wss://bitmax.io/0/api/pro/v1/stream"
 	s := &BitMaxScraper{
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		pairScrapers: make(map[string]*BitMaxPairScraper),
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),

@@ -55,9 +55,9 @@ type DforceScraper struct {
 	tokens      map[string]*DforceToken
 }
 
-func NewDforceScraper(exchangeName string) *DforceScraper {
+func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 	scraper := &DforceScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

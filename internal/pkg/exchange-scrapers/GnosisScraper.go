@@ -54,9 +54,9 @@ type GnosisScraper struct {
 	tokens      map[uint16]*GnosisToken
 }
 
-func NewGnosisScraper(exchangeName string) *GnosisScraper {
+func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	scraper := &GnosisScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

@@ -55,9 +55,9 @@ type KyberScraper struct {
 	tokens      map[string]*KyberToken
 }
 
-func NewKyberScraper(exchangeName string) *KyberScraper {
+func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 	scraper := &KyberScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

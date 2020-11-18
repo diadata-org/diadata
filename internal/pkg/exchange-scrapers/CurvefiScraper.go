@@ -89,9 +89,9 @@ type CurveFIScraper struct {
 	pools       *Pools
 }
 
-func NewCurveFIScraper(exchangeName string) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 	scraper := &CurveFIScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

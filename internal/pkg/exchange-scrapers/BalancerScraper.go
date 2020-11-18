@@ -74,9 +74,9 @@ type BalancerScraper struct {
 	pools       map[string]struct{}
 }
 
-func NewBalancerScraper(exchangeName string) *BalancerScraper {
+func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
 	scraper := &BalancerScraper{
-		exchangeName:      exchangeName,
+		exchangeName:      exchange.Name,
 		initDone:          make(chan nothing),
 		shutdown:          make(chan nothing),
 		shutdownDone:      make(chan nothing),

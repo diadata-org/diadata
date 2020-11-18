@@ -64,14 +64,14 @@ type KuCoinScraper struct {
 	apiService        *kucoin.ApiService
 }
 
-func NewKuCoinScraper(apiKey string, secretKey string, exchangeName string) *KuCoinScraper {
+func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange) *KuCoinScraper {
 	apiService := kucoin.NewApiService()
 
 	s := &KuCoinScraper{
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		pairScrapers: make(map[string]*KuCoinPairScraper),
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
