@@ -21,7 +21,8 @@ const (
 	refreshDelay = time.Second * 10 * 1
 )
 
-// TopicInfo stores all necessary information on topics used for hashing
+// TopicInfo stores all necessary information on topics used for hashing.
+// Could be stored in json config file as well.
 var TopicInfo = []struct {
 	ID         uint32
 	KafkaID    uint32
@@ -47,15 +48,15 @@ var TopicInfo = []struct {
 		ID:         2,
 		KafkaID:    6,
 		Name:       GetHashTopics()[2],
-		SizePool:   8,
-		SizeBucket: 512,
+		SizePool:   4,
+		SizeBucket: 256,
 	},
 	{
 		ID:         3,
 		KafkaID:    7,
 		Name:       GetHashTopics()[3],
-		SizePool:   8,
-		SizeBucket: 512,
+		SizePool:   4,
+		SizeBucket: 256,
 	},
 }
 

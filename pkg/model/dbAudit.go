@@ -197,7 +197,7 @@ func HashingLayer(topic string, content []byte) error {
 		return err
 	}
 	// ...and write into corresponding channel.
-	writer := kafkaHelper.NewWriter(topicNumber)
+	writer := kafkaHelper.NewSyncWriter(topicNumber)
 	err = writer.WriteMessages(context.Background(),
 		kafka.Message{
 			Key:   []byte{},
@@ -514,7 +514,7 @@ func (db *DB) GetLastIDMerkle(topic, level string) (int64, error) {
 // ID corresponds to a unix nano timestamp.
 func (db *DB) GetYoungestChildMerkle(topic string) (int64, error) {
 	// Get children from level 2 merkle tree with highest id
-	q := fmt.Sprintf("SELECT children FROM (SELECT * FROM %s WHERE topic='%s' AND level='%s' GROUP BY id) ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, "2")
+	q := fmt.Sprintf("SELECT children FROM (SELECT * FROM %s WHERE topic='%s' AND level='%s') ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, "2")
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return 0, err
