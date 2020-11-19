@@ -312,7 +312,7 @@ func (db *DB) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time)
 // We use primary key 'time' for storage trees.
 func (db *DB) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error) {
 	retval := merkletree.MerkleTree{}
-	q := fmt.Sprintf("SELECT value FROM %s WHERE time=%s", influxDBStorageTable, ID)
+	q := fmt.Sprintf("SELECT value FROM %s WHERE topic='%s' and time=%s", influxDBStorageTable, topic, ID)
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return merkletree.MerkleTree{}, err
