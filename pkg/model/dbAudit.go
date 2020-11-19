@@ -218,7 +218,7 @@ func HashingLayer(topic string, content []byte) error {
 func (db *DB) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) error {
 
 	// Set ID for buckets. IDs have the form i.j where i is the ID of the parent pool
-	// and j is the ID of the bucket. IDs i of parent pools are Nanosecond Unix times.
+	// and j is the ID of the bucket. IDs i of parent pools are (nanosecond Unix) times.
 	influxTimeID := time.Now()
 	var bucketsWithID []merkletree.Content
 	firstDate := time.Now()
@@ -327,6 +327,7 @@ func (db *DB) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error
 
 // GetLastID retrieves the highest current id for @topic (if given) from the storage table
 // as a string version of an int64 representing a unix nano time.
+// Only used in DailyTreeTopic so not critical for scaling.
 func (db *DB) GetLastID(topic string) (string, error) {
 
 	// As ID in storage is identified with timestamp, we have the following query
@@ -380,14 +381,14 @@ func (db *DB) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string
 	}
 	// Create a point and add to batch
 	tags := map[string]string{
-		"topic":         topic,
-		"level":         level,
-		"id":            id,
-		"children":      string(childrenData),
-		"lastTimestamp": strconv.Itoa(int(lastTimestamp.Unix())),
+		"topic": topic,
+		"level": level,
+		"id":    id,
 	}
 	fields := map[string]interface{}{
-		"value": string(marshTree),
+		"value":         string(marshTree),
+		"children":      string(childrenData),
+		"lastTimestamp": strconv.Itoa(int(lastTimestamp.Unix())),
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDBMerkleTable, tags, fields, time.Now())
 	if err != nil {
@@ -493,7 +494,6 @@ func (db *DB) GetLastTimestamp(topic, level string) (time.Time, error) {
 }
 
 // GetLastIDMerkle retrieves the highest current id for @topic (if given) and @level from the merkle table
-// TO DO
 func (db *DB) GetLastIDMerkle(topic, level string) (int64, error) {
 
 	q := fmt.Sprintf("SELECT id FROM (SELECT * FROM %s WHERE topic='%s' AND level='%s' GROUP BY id) ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, level)

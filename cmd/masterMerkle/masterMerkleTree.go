@@ -15,7 +15,7 @@ func main() {
 		log.Fatal("NewAuditStore: ", err)
 	}
 
-	ticker := time.NewTicker(4 * time.Minute)
+	ticker := time.NewTicker(1 * time.Minute)
 	go func() {
 		for {
 			select {
