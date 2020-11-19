@@ -38,6 +38,14 @@ type Quotation struct {
 	ITIN               string
 }
 
+type FiatQuotation struct {
+	QuoteCurrency string
+	BaseCurrency  string
+	Price         float64
+	Source        string
+	Time          time.Time
+}
+
 type InterestRate struct {
 	Symbol          string
 	Value           float64

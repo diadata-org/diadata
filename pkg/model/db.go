@@ -23,11 +23,9 @@ type Datastore interface {
 	SetPriorFiatPriceUSD(symbol string, price float64, t time.Time) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
-	GetFiatPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
-	GetFiatQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
-	SetFiatQuotation(quotation *Quotation) error
+	SetFiatQuotation(quotation *FiatQuotation) error
 	SetQuotationEUR(quotation *Quotation) error
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
@@ -124,16 +122,17 @@ type DB struct {
 }
 
 const (
-	influxDbName           = "dia"
-	influxDbTradesTable    = "trades"
-	influxDbFiltersTable   = "filters"
-	influxDbOptionsTable   = "options"
-	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supplies"
-	influxDbSupplyTableOld = "supply"
-	influxDbDefiRateTable  = "defiRate"
-	influxDbDefiStateTable = "defiState"
-	influxDbPoolTable      = "defiPools"
+	influxDbName                = "dia"
+	influxDbTradesTable         = "trades"
+	influxDbFiatQuotationsTable = "fiat"
+	influxDbFiltersTable        = "filters"
+	influxDbOptionsTable        = "options"
+	influxDbCVITable            = "cvi"
+	influxDbSupplyTable         = "supplies"
+	influxDbSupplyTableOld      = "supply"
+	influxDbDefiRateTable       = "defiRate"
+	influxDbDefiStateTable      = "defiState"
+	influxDbPoolTable           = "defiPools"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -964,15 +963,16 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	return value, unixTime, err
 }
 
-// Get currency price at a specific timestamp
-func GetCurrencyPrice(db *DB, currency string, timestamp time.Time) float64 {
-	q := fmt.Sprintf("SELECT quotation FROM dia_quotation_USD_%s WHERE time = '%v'", currency, timestamp.Format(time.RFC3339))
+// Get currency price against USD at a specific timestamp
+func GetCurrencyPrice(db *DB, currency string, timestamp time.Time) (float64, error) {
+	q := fmt.Sprintf("SELECT price FROM fiat WHERE quote_currency = '%s' AND time = '%v'", currency, timestamp.Format(time.RFC3339))
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
-		log.Println(err)
+		return 0, err
 	}
 
-	f, _ := res[0].Series[0].Values[0][1].(json.Number).Float64()
-	return f
+	f, err := res[0].Series[0].Values[0][1].(json.Number).Float64()
+
+	return f, err
 }

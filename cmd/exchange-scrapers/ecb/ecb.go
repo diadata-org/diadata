@@ -45,11 +45,10 @@ var (
 	}
 )
 
-var usdFor1Euro = -1.0
+var usdFor1Euro = -1.0 // EUR/USD
 
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
-
 	for {
 		t, ok := <-c
 
@@ -62,12 +61,11 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 		if symbol == "USD" {
 			log.Println(symbol, t.Symbol)
 			usdFor1Euro = t.Price
-			ds.SetFiatPriceUSD(symbol, 1)
-			ds.SetFiatPriceUSD("EUR", usdFor1Euro)
+			ds.SetFiatPriceUSD("EUR", t.Price)
 		} else {
 			if usdFor1Euro > 0 {
-				log.Info("setting ", symbol, usdFor1Euro/t.Price)
-				ds.SetFiatPriceUSD(symbol, usdFor1Euro/t.Price)
+				log.Info("setting ", symbol, usdFor1Euro/t.Price) // compute Symbol/USD
+				ds.SetFiatPriceUSD(symbol, usdFor1Euro/t.Price)   // compute Symbol/USD
 			}
 		}
 	}

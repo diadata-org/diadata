@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	refreshDelay = time.Second * 60 * 1
+	refreshDelay = time.Second * 60 * 60
 )
 
 type ECBScraper struct {
@@ -77,7 +77,7 @@ type (
 )
 
 func populateCurrency(datastore *models.DB, currency string) {
-	log.Printf("Historical prices population starting", currency)
+	log.Printf("Historical %s prices population starting", currency)
 
 	// Format url to fetch
 	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
@@ -108,19 +108,26 @@ func populateCurrency(datastore *models.DB, currency string) {
 			log.Errorf("error parsing price %v %v", o.Price.Value, err)
 		}
 
-		// If other than USD, conversion to EUR to USD is made
-		if currency != "USD" {
-			usdFor1Euro := models.GetCurrencyPrice(datastore, "EUR", timestamp)
+		if currency == "USD" {
+			err = datastore.SetPriorFiatPriceUSD("EUR", price, timestamp)
+		} else { // If other than USD, conversion from EUR as a quote currency to USD as base currency is made
+			usdFor1Euro, err := models.GetCurrencyPrice(datastore, "EUR", timestamp)
+			if err != nil {
+				log.Println("Error in GetCurrencyPrice: ", err)
+				return
+			}
+
 			price = usdFor1Euro / price
 
-			datastore.SetPriorFiatPriceUSD(currency, price, timestamp)
-		} else {
-			datastore.SetPriorFiatPriceUSD("EUR", price, timestamp)
+			err = datastore.SetPriorFiatPriceUSD(currency, price, timestamp)
+		}
+
+		if err != nil {
+			log.Printf("Error: %s at %v on SetPriorFiatPriceUSD\n", currency, o.Timestamp.Value)
 		}
 
 		log.Printf("%s price at %v successfully populated", currency, o.Timestamp.Value)
 	}
-
 	log.Printf("%s historical prices successfully populated", currency)
 }
 
