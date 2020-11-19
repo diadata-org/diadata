@@ -103,6 +103,12 @@ func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, err
 		return false, nil
 	}
 
+	// TO DO: these trees are checked multiple times as they comprise several buckets.
+	// We can increase speed by making verification n-fold
+	// 1. verify all buckets in their respective pools
+	// 2. verify all pools in their respective level2 tree
+	// 3. and so on
+
 	// Verify tree level 2 in tree level 1
 	val, err = VerifyTree(level2Tree, "2", parentID, ds)
 	if err != nil {
