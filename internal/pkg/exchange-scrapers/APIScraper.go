@@ -15,7 +15,7 @@ var exchanges map[string]dia.Exchange
 func init() {
 	exchanges = make(map[string]dia.Exchange)
 	exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true}
-	exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false}
+	exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false, Contract: common.HexToAddress("0x6F400810b62df8E13fded51bE75fF5393eaa841F")}
 	exchanges[dia.KrakenExchange] = dia.Exchange{Name: dia.KrakenExchange, Centralized: true}
 	exchanges[dia.BitfinexExchange] = dia.Exchange{Name: dia.BitfinexExchange, Centralized: true}
 	exchanges[dia.BitBayExchange] = dia.Exchange{Name: dia.BitBayExchange, Centralized: true}
@@ -31,15 +31,15 @@ func init() {
 	exchanges[dia.QuoineExchange] = dia.Exchange{Name: dia.QuoineExchange, Centralized: true}
 	exchanges[dia.UnknownExchange] = dia.Exchange{Name: dia.UnknownExchange, Centralized: true}
 	exchanges[dia.FilterKing] = dia.Exchange{Name: dia.FilterKing, Centralized: true}
-	exchanges[dia.BancorExchange] = dia.Exchange{Name: dia.BancorExchange, Centralized: false}
+	exchanges[dia.BancorExchange] = dia.Exchange{Name: dia.BancorExchange, Centralized: false} //API is used instead of contracts
 	exchanges[dia.UniswapExchange] = dia.Exchange{Name: dia.UniswapExchange, Centralized: false, Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f")}
-	exchanges[dia.LoopringExchange] = dia.Exchange{Name: dia.LoopringExchange, Centralized: false}
-	exchanges[dia.CurveFIExchange] = dia.Exchange{Name: dia.CurveFIExchange, Centralized: false}
-	exchanges[dia.MakerExchange] = dia.Exchange{Name: dia.MakerExchange, Centralized: false}
+	exchanges[dia.LoopringExchange] = dia.Exchange{Name: dia.LoopringExchange, Centralized: false} //API is used instead of contracts
+	exchanges[dia.CurveFIExchange] = dia.Exchange{Name: dia.CurveFIExchange, Centralized: false, Contract: common.HexToAddress("0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1")}
+	exchanges[dia.MakerExchange] = dia.Exchange{Name: dia.MakerExchange, Centralized: false} //API is used instead of contracts
 	exchanges[dia.KuCoinExchange] = dia.Exchange{Name: dia.KuCoinExchange, Centralized: true}
 	exchanges[dia.SushiSwapExchange] = dia.Exchange{Name: dia.SushiSwapExchange, Centralized: false, Contract: common.HexToAddress("0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac")}
 	exchanges[dia.PanCakeSwap] = dia.Exchange{Name: dia.PanCakeSwap, Centralized: false, Contract: common.HexToAddress("0xbcfccbde45ce874adcb698cc183debcf17952812")}
-	exchanges[dia.DforceExchange] = dia.Exchange{Name: dia.DforceExchange, Centralized: false}
+	exchanges[dia.DforceExchange] = dia.Exchange{Name: dia.DforceExchange, Centralized: false, Contract: common.HexToAddress("0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2")}
 	exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: true}
 	exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true}
 	exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true}
