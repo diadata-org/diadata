@@ -17,6 +17,7 @@ type Exchange struct {
 	Name        string
 	Centralized bool
 	Contract    common.Address
+	BlockChain BlockChain
 }
 
 type Supply struct {

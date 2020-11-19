@@ -3,6 +3,7 @@ package dia
 import (
 	"os/user"
 	"strings"
+	"time"
 
 	"github.com/tkanos/gonfig"
 )
@@ -39,6 +40,11 @@ const (
 	ZeroxExchange     = "0x"
 	KyberExchange     = "Kyber"
 	BitMaxExchange    = "Bitmax"
+)
+
+const (
+	Bitcoin  = "Bitcoin"
+	Ethereum = "Ethereum"
 )
 
 func Exchanges() []string {
@@ -82,6 +88,19 @@ type ConfigApi struct {
 type ConfigConnector struct {
 	Coins []Pair
 }
+
+type BlockChain struct {
+	Name                  string
+	GenesisDate           time.Time
+	NativeToken           string
+	VerificationMechanism VerificationMechanism
+}
+
+type VerificationMechanism string
+
+const (
+	PROOF_OF_STAKE VerificationMechanism = "pos"
+)
 
 func GetConfig(exchange string) (*ConfigApi, error) {
 	var configApi ConfigApi
