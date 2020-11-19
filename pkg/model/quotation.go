@@ -7,7 +7,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
-	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -118,79 +117,27 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 }
 
 func (db *DB) SetQuotation(quotation *Quotation) error {
+	if db.redisClient == nil {
+		return nil
+	}
 	key := getKeyQuotation(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
-
-	if db.redisClient != nil {
-		err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-		// Commented out to avoid skipping influxDB saving in case of error. Errors are still logged
-		// return err
+	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
-
-	if db.influxClient != nil && db.influxBatchPoints != nil {
-		fields := map[string]interface{}{
-			"quotation": quotation.Price,
-		}
-		tags := map[string]string{
-			"symbol": quotation.Symbol,
-			"name":   quotation.Name,
-			"source": quotation.Source,
-		}
-
-		pt, err := clientInfluxdb.NewPoint(key, tags, fields, quotation.Time)
-		if err != nil {
-			log.Println(err)
-		}
-
-		db.addPoint(pt)
-
-		err = db.WriteBatchInflux()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-	}
-
-	return nil
+	return err
 }
 
 func (db *DB) SetQuotationEUR(quotation *Quotation) error {
+	if db.redisClient == nil {
+		return nil
+	}
 	key := getKeyQuotationEUR(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
-
-	if db.redisClient != nil {
-		err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-		// Commented out to avoid skipping influxDB saving in case of error. Errors are still logged
-		// return err
+	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
-
-	if db.influxClient != nil && db.influxBatchPoints != nil {
-		fields := map[string]interface{}{
-			"quotation": quotation.Price,
-		}
-		tags := map[string]string{
-			"symbol": quotation.Symbol,
-			"name":   quotation.Name,
-			"source": quotation.Source,
-		}
-
-		pt, err := clientInfluxdb.NewPoint(key, tags, fields, quotation.Time)
-		if err != nil {
-			log.Println(err)
-		}
-
-		db.addPoint(pt)
-
-		err = db.WriteBatchInflux()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-	}
-
-	return nil
+	return err
 }

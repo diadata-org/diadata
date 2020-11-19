@@ -77,40 +77,32 @@ func (db *DB) GetFiatQuotation(symbol string) (*Quotation, error) {
 }
 
 func (db *DB) SetFiatQuotation(quotation *Quotation) error {
+	if db.influxClient != nil && db.influxBatchPoints != nil {
+		return nil
+	}
 	key := getKeyQuotation(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
 
-	if db.redisClient != nil {
-		err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
-		// Commented out to avoid skipping influxDB saving in case of error. Errors are still logged
-		// return err
+	fields := map[string]interface{}{
+		"quotation": quotation.Price,
+	}
+	tags := map[string]string{
+		"symbol": quotation.Symbol,
+		"name":   quotation.Name,
+		"source": quotation.Source,
 	}
 
-	if db.influxClient != nil && db.influxBatchPoints != nil {
-		fields := map[string]interface{}{
-			"quotation": quotation.Price,
-		}
-		tags := map[string]string{
-			"symbol": quotation.Symbol,
-			"name":   quotation.Name,
-			"source": quotation.Source,
-		}
-
-		pt, err := clientInfluxdb.NewPoint(key, tags, fields, quotation.Time)
-		if err != nil {
-			log.Println(err)
-		}
-
-		db.addPoint(pt)
-
-		err = db.WriteBatchInflux()
-		if err != nil {
-			log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
-		}
+	pt, err := clientInfluxdb.NewPoint(key, tags, fields, quotation.Time)
+	if err != nil {
+		log.Printf("Error: %v on SetFiatQuotation %v\n", err, quotation.Symbol)
 	}
 
-	return nil
+	db.addPoint(pt)
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
+	}
+
+	return err
 }
