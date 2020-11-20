@@ -2,9 +2,10 @@ package dia
 
 import (
 	"encoding/json"
-	"github.com/ethereum/go-ethereum/common"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -17,7 +18,7 @@ type Exchange struct {
 	Name        string
 	Centralized bool
 	Contract    common.Address
-	BlockChain BlockChain
+	BlockChain  BlockChain
 }
 
 type Supply struct {
@@ -28,6 +29,13 @@ type Supply struct {
 	Source            string
 	Time              time.Time
 	Block             int64
+}
+
+type Token struct {
+	Symbol     string
+	Name       string
+	Address    string
+	Blockchain BlockChain
 }
 
 type Pair struct {
@@ -43,11 +51,13 @@ type Pairs []Pair
 type Trade struct {
 	Symbol            string
 	Pair              string
+	QuoteToken        Token
+	BaseToken         Token
 	Price             float64
 	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time
 	ForeignTradeID    string
-	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
+	EstimatedUSDPrice float64 // will be filled by the TradesBlockService
 	Source            string
 }
 

@@ -4,8 +4,9 @@ import (
 	"strings"
 )
 
-// BaseToken returns the base token of a trading pair
-func (t *Trade) BaseToken() string {
+// GetBaseToken returns the base token of a trading pair
+// TO DO (20/11/2020): This method is no longer needed once we switch to new Token/Trade structs
+func (t *Trade) GetBaseToken() string {
 
 	pair := strings.ToUpper(t.Pair)
 	if len(pair) > 3 {

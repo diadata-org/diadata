@@ -8,11 +8,6 @@ import (
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 )
 
-type Point struct {
-	UnixTime int64
-	Value    float64
-}
-
 type SymbolExchangeDetails struct {
 	Name               string
 	Price              float64
@@ -20,11 +15,6 @@ type SymbolExchangeDetails struct {
 	VolumeYesterdayUSD *float64
 	Time               *time.Time
 	LastTrades         []dia.Trade
-}
-
-type SymbolShort struct {
-	Symbol string
-	ITIN   string
 }
 
 type Quotation struct {
@@ -36,49 +26,6 @@ type Quotation struct {
 	Source             string
 	Time               time.Time
 	ITIN               string
-}
-
-type InterestRate struct {
-	Symbol          string
-	Value           float64
-	PublicationTime time.Time
-	EffectiveDate   time.Time
-	Source          string
-}
-
-type InterestRateMeta struct {
-	Symbol    string
-	FirstDate time.Time
-	Decimals  int
-	Issuer    string
-}
-
-type CurrencyChange struct {
-	Symbol        string
-	Rate          float64
-	RateYesterday float64
-}
-
-type Change struct {
-	USD []CurrencyChange
-}
-
-// MarshalBinary -
-func (e *Change) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *Change) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-type CoinSymbolAndName struct {
-	Symbol string
-	Name   string
 }
 
 type Coin struct {
@@ -98,6 +45,60 @@ type Coins struct {
 	Coins            []Coin
 }
 
+type CoinSymbolAndName struct {
+	Symbol string
+	Name   string
+}
+
+// SymbolDetails is used for API return values
+type SymbolDetails struct {
+	Change    *Change
+	Coin      Coin
+	Rank      int
+	Exchanges []SymbolExchangeDetails
+	Gfx1      *Points
+}
+
+type CurrencyChange struct {
+	Symbol        string
+	Rate          float64
+	RateYesterday float64
+}
+
+type Change struct {
+	USD []CurrencyChange
+}
+
+// Point is used exclusively for chart points in the API
+type Point struct {
+	UnixTime int64
+	Value    float64
+}
+
+type Points struct {
+	DataPoints []clientInfluxdb.Result
+}
+
+// SymbolShort is used in ForeignQuotation.
+// TO DO: Switch from ITIN to Address/Identifier
+type SymbolShort struct {
+	Symbol string
+	ITIN   string
+}
+
+// MarshalBinary -
+func (e *Change) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *Change) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
 type Pairs struct {
 	Pairs []dia.Pair
 }
@@ -113,14 +114,6 @@ func (e *Coins) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
-}
-
-type SymbolDetails struct {
-	Change    *Change
-	Coin      Coin
-	Rank      int
-	Exchanges []SymbolExchangeDetails
-	Gfx1      *Points
 }
 
 // MarshalBinary -
@@ -146,10 +139,6 @@ func (e *Coin) UnmarshalBinary(data []byte) error {
 // MarshalBinary -
 func (e *Coin) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
-}
-
-type Points struct {
-	DataPoints []clientInfluxdb.Result
 }
 
 func (e *Points) UnmarshalBinary(data []byte) error {

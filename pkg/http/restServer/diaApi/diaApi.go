@@ -337,19 +337,7 @@ func (env *Env) GetExchanges(c *gin.Context) {
 }
 
 // GetChartPoints godoc
-// @Summary Get chart points for
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   exchange     path    string     true        "Some exchange"
-// @Param   filter     path    string     true        "Some filter"
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} models.Points "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
 func (env *Env) GetChartPoints(c *gin.Context) {
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
@@ -364,19 +352,8 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPointsAllExchange godoc
-// @Summary Get Symbol Details
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   filter     path    string     true        "Some filter"
+// GetChartPointsAllExchanges godoc
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} models.Points "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPointsAllExchanges/:filter:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")

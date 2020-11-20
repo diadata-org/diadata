@@ -92,7 +92,7 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 func (s *TradesBlockService) process(t dia.Trade) {
 
 	var ignoreTrade bool
-	baseToken := t.BaseToken()
+	baseToken := t.GetBaseToken()
 	if baseToken != "USD" {
 		val, err := s.datastore.GetPriceUSD(baseToken)
 		if err != nil {
