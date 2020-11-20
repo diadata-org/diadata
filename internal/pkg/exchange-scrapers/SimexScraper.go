@@ -43,12 +43,12 @@ type SimexScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-func NewSimexScraper(exchangeName string) *SimexScraper {
+func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*SimexPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -219,11 +219,10 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-
 func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
-	pair.ForeignName =  symbol + pair.ForeignName
+	pair.ForeignName = symbol + pair.ForeignName
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {

@@ -52,13 +52,13 @@ type HuobiScraper struct {
 }
 
 // NewHuobiScraper returns a new HuobiScraper for the given pair
-func NewHuobiScraper(exchangeName string) *HuobiScraper {
+func NewHuobiScraper(exchange dia.Exchange) *HuobiScraper {
 
 	s := &HuobiScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*HuobiPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

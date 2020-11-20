@@ -2,6 +2,7 @@ package dia
 
 import (
 	"encoding/json"
+	"github.com/ethereum/go-ethereum/common"
 	"strings"
 	"time"
 
@@ -11,6 +12,13 @@ import (
 const (
 	Diadata = "diadata.org"
 )
+
+type Exchange struct {
+	Name        string
+	Centralized bool
+	Contract    common.Address
+	BlockChain BlockChain
+}
 
 type Supply struct {
 	Symbol            string

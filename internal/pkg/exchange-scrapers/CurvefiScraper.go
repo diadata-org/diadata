@@ -87,11 +87,13 @@ type CurveFIScraper struct {
 	curveCoins  map[string]*CurveCoin
 	resubscribe chan string
 	pools       *Pools
+	contract    common.Address
 }
 
-func NewCurveFIScraper(exchangeName string) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 	scraper := &CurveFIScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
+		contract:       exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -161,7 +163,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 }
 
 func (scraper *CurveFIScraper) watchNewPools() {
-	contract, err := curvefi.NewCurvefiFilterer(common.HexToAddress(curveFiContract), scraper.WsClient)
+	contract, err := curvefi.NewCurvefiFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -203,7 +205,7 @@ func (scraper *CurveFIScraper) watchNewPools() {
 
 // contract.poolList.map(contract.GetPoolCoins(pool).)
 func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
-	contract, err := curvefi.NewCurvefiCaller(common.HexToAddress(curveFiContract), scraper.RestClient)
+	contract, err := curvefi.NewCurvefiCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -224,7 +226,7 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 }
 
 func (scraper *CurveFIScraper) loadPoolData(pool string) error {
-	contract, err := curvefi.NewCurvefiCaller(common.HexToAddress(curveFiContract), scraper.RestClient)
+	contract, err := curvefi.NewCurvefiCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}

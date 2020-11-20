@@ -63,9 +63,9 @@ type MakerTrade struct {
 	Time   time.Time `json:"time"`
 }
 
-func NewMakerScraper(exchangeName string) *MakerScraper {
+func NewMakerScraper(exchange dia.Exchange) *MakerScraper {
 	scraper := &MakerScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

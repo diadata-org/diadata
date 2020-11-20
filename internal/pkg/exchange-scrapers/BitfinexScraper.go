@@ -42,7 +42,7 @@ type BitfinexScraper struct {
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string, exchangeName string) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -58,7 +58,7 @@ func NewBitfinexScraper(key string, secret string, exchangeName string) *Bitfine
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		symbols:      make(map[string]string),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
