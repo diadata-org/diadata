@@ -98,43 +98,6 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	}
 }
 
-func (env *Env) GetCviIndex(c *gin.Context) {
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
-
-	var starttime, endtime time.Time
-
-	if starttimeStr == "noRange" || endtimeStr == "" {
-		starttime = time.Unix(0, 0)
-		endtime = time.Now()
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
-	for i := range q {
-		q[i].Value /= 2430.5812295231785
-	}
-	if len(q) == 0 {
-		c.JSON(http.StatusOK, make([]string, 0))
-	}
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, q)
-}
-
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
@@ -409,6 +372,73 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
 		}
 	}
+
+}
+
+// -----------------------------------------------------------------------------
+// INDICES
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetCviIndex(c *gin.Context) {
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" || endtimeStr == "" {
+		starttime = time.Unix(0, 0)
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
+	for i := range q {
+		q[i].Value /= 2430.5812295231785
+	}
+	if len(q) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetCryptoDerivative returns all information on a given derivative of class
+// @derivativeType and name @name
+func (env *Env) GetCryptoDerivative(c *gin.Context) {
+	derivativeType := c.Param("type")
+	fmt.Println(derivativeType)
+	derivativeName := c.Param("name")
+	fmt.Println(derivativeName)
+	// TO DO
+	// 2-step:
+	// 1. specify class of derivative
+	// 2. get derivative information from derivative given by @derivativeName in class given by item 1.
+
+	// q, err := env.DataStore.GetCryptoIndex(indexType)
+	// if err != nil {
+	// 	if err == redis.Nil {
+	// 		restApi.SendError(c, http.StatusNotFound, err)
+	// 	} else {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 	}
+	// }
+
+	// Depending on return format of GetCryptoIndex, either get additional information
+	// on the constituents or directly fill the new type "CryptoIndex"
 
 }
 
