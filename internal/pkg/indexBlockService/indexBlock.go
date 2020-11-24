@@ -277,13 +277,6 @@ func (s *IndexBlockService) mainLoop() {
 			s.cleanup(nil)
 			return
 
-		/*case vb, ok := <-s.chanVolatilityBlock:
-			if ok == false {
-				log.Println("Error reading channel")
-				break
-			}
-
-			s.volatilityBlock = vb*/
 		case sb, ok := <-s.chanSuppliesBlock:
 			if ok == false {
 				log.Println("Error reading channel")
