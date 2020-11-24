@@ -100,6 +100,9 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
+	// Gold token methods
+	GetPaxgQuotationOunces() (*Quotation, error)
+	GetPaxgQuotationGrams() (*Quotation, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)

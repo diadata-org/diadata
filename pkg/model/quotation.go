@@ -142,3 +142,18 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 	}
 	return err
 }
+
+func (db *DB) GetPaxgQuotationOunces() (*Quotation, error) {
+	return db.GetQuotation("PAXG")
+}
+
+func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
+	q, err := db.GetQuotation("PAXG")
+	if err != nil {
+		return nil, err
+	}
+	q.Symbol = q.Symbol + "-gram"
+	q.Name = q.Name + "-gram"
+	q.Price = q.Price / 31.1034768
+	return q, err
+}
