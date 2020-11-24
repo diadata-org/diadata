@@ -124,43 +124,6 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
-func (env *Env) GetCviIndex(c *gin.Context) {
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
-
-	var starttime, endtime time.Time
-
-	if starttimeStr == "noRange" || endtimeStr == "" {
-		starttime = time.Unix(0, 0)
-		endtime = time.Now()
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
-	for i := range q {
-		q[i].Value /= 2430.5812295231785
-	}
-	if len(q) == 0 {
-		c.JSON(http.StatusOK, make([]string, 0))
-	}
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, q)
-}
-
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
@@ -214,8 +177,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 	c.JSON(http.StatusOK, s)
 }
 
-// GetVolume
-// if no times are set use the last 24h
+// GetVolume if no times are set use the last 24h
 func (env *Env) GetVolume(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.DefaultQuery("starttime", "noRange")
@@ -252,8 +214,7 @@ func (env *Env) GetVolume(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-// Get24hVolume
-// if no times are set use the last 24h
+// Get24hVolume if no times are set use the last 24h
 func (env *Env) Get24hVolume(c *gin.Context) {
 	exchange := c.Param("exchange")
 	// starttimeStr := c.DefaultQuery("starttime", "noRange")
@@ -300,7 +261,7 @@ func (env *Env) GetPairs(c *gin.Context) {
 	}
 }
 
-// GetSymbol godoc
+// GetSymbolDetails godoc
 // @Summary Get Symbol Details
 // @Description Get Symbol Details
 // @Tags dia
@@ -381,8 +342,49 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
 
-	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol, scale)
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol, scale, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -390,25 +392,55 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPointsAllExchange godoc
-// @Summary Get Symbol Details
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   filter     path    string     true        "Some filter"
+// GetChartPointsAllExchanges godoc
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} models.Points "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPointsAllExchanges/:filter:/:symbol: [get]
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
 
-	p, err := env.DataStore.GetFilterPoints(filter, "", symbol, scale)
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	p, err := env.DataStore.GetFilterPoints(filter, "", symbol, scale, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -435,6 +467,73 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
 		}
 	}
+
+}
+
+// -----------------------------------------------------------------------------
+// INDICES
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetCviIndex(c *gin.Context) {
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+
+	if starttimeStr == "noRange" || endtimeStr == "" {
+		starttime = time.Unix(0, 0)
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
+	for i := range q {
+		q[i].Value /= 2430.5812295231785
+	}
+	if len(q) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetCryptoDerivative returns all information on a given derivative of class
+// @derivativeType and name @name
+func (env *Env) GetCryptoDerivative(c *gin.Context) {
+	derivativeType := c.Param("type")
+	fmt.Println(derivativeType)
+	derivativeName := c.Param("name")
+	fmt.Println(derivativeName)
+	// TO DO
+	// 2-step:
+	// 1. specify class of derivative
+	// 2. get derivative information from derivative given by @derivativeName in class given by item 1.
+
+	// q, err := env.DataStore.GetCryptoIndex(indexType)
+	// if err != nil {
+	// 	if err == redis.Nil {
+	// 		restApi.SendError(c, http.StatusNotFound, err)
+	// 	} else {
+	// 		restApi.SendError(c, http.StatusInternalServerError, err)
+	// 	}
+	// }
+
+	// Depending on return format of GetCryptoIndex, either get additional information
+	// on the constituents or directly fill the new type "CryptoIndex"
 
 }
 
