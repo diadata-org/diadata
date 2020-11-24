@@ -30,7 +30,7 @@ type AuditStore interface {
 
 	// merkle tree methods
 	SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, children []string, lastTimestamp time.Time) error
-	GetDailyTreesInflux(topic, level string, timeInit, timeFinal string) ([][]interface{}, error)
+	GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) ([][]interface{}, error)
 	GetDailyTreeByID(topic, level, ID string) (merkletree.MerkleTree, error)
 	GetLastTimestamp(topic, level string) (time.Time, error)
 	GetLastIDMerkle(topic, level string) (int64, error)
@@ -441,10 +441,9 @@ func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
 }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
-func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal string) (val [][]interface{}, err error) {
+func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
 
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and time > %s and time <= %s", influxDBMerkleTable, topic, level, timeInit, timeFinal)
-	fmt.Println("influxquery: ", q)
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and time > %d and time <= %d", influxDBMerkleTable, topic, level, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return [][]interface{}{}, err

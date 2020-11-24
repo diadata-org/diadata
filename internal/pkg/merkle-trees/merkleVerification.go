@@ -23,6 +23,21 @@ func VerifyBucket(sb merkletree.StorageBucket, ds models.AuditStore) (bool, erro
 	return tree.VerifyContent(sb)
 }
 
+// VerifyBuckets verifies all buckets of a hashed pool as nodes of the hashed pool
+func VerifyBuckets(tree merkletree.MerkleTree, topic string, ds models.AuditStore) (bool, error) {
+	// Get all buckets
+	for _, leaf := range tree.Leafs {
+		verif, err := tree.VerifyContent(leaf.C.(merkletree.StorageBucket))
+		if err != nil {
+			return false, err
+		}
+		if verif == false {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
 // VerifyPool verifies a storage tree as content of a daily tree
 func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditStore) (bool, error) {
 
