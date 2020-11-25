@@ -1030,7 +1030,7 @@ Get a list of exchange rates for several fiat currencies vs US Dollar.
 
 {% api-method method="get" host="https://api.diadata.org/v1/" path="goldPaxgGrams" %}
 {% api-method-summary %}
-goldPaxgGrams
+Gold price in Gram
 {% endapi-method-summary %}
 
 {% api-method-description %}
