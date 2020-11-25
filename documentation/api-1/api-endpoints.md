@@ -1028,5 +1028,31 @@ Get a list of exchange rates for several fiat currencies vs US Dollar.
 {% endapi-method-spec %}
 {% endapi-method %}
 
+{% api-method method="get" host="https://api.diadata.org/v1/" path="goldPaxgGrams" %}
+{% api-method-summary %}
+goldPaxgGrams
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Gold price for 1g of Gold measured by the PAXG commodity token.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"PAXG","Name":"PAXG","Price":1856.5738483578984,"PriceYesterday":1801.9952503392435,"VolumeYesterdayUSD":0,"Source":"diadata.org","Time":"2020-11-25T11:22:31.146028646Z","ITIN":"undefined"}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 
 
