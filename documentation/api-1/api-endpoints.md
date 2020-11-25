@@ -1047,7 +1047,7 @@ Gold price for 1g of Gold measured by the PAXG commodity token.
 {% endapi-method-response-example-description %}
 
 ```
-{"Symbol":"PAXG","Name":"PAXG","Price":1856.5738483578984,"PriceYesterday":1801.9952503392435,"VolumeYesterdayUSD":0,"Source":"diadata.org","Time":"2020-11-25T11:22:31.146028646Z","ITIN":"undefined"}
+{"Symbol":"PAXG-gram","Name":"PAXG-gram","Price":59.69023528449715,"PriceYesterday":57.93549261152835,"VolumeYesterdayUSD":0,"Source":"diadata.org","Time":"2020-11-25T11:22:31.146028646Z","ITIN":"undefined"}
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}
