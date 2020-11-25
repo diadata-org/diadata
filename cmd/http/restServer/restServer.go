@@ -236,6 +236,10 @@ func main() {
 		dia.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		dia.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		dia.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
+
+		// Gold asset
+		dia.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
+		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

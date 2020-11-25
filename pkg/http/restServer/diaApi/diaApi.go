@@ -98,6 +98,32 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
+	q, err := env.DataStore.GetPaxgQuotationOunces()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
+func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
+	q, err := env.DataStore.GetPaxgQuotationGrams()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
