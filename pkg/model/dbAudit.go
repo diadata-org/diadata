@@ -412,7 +412,7 @@ func (db *DB) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string
 // It is important to notice that this just facilitates the retrieval. The map can be reconstructed
 // by id information stored in influx. Hence, the system does not rely on correct function/constant
 // connection of/to redis.
-func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
+func (db *DB) SetPoolID_Old(topic string, children []string, ID int64) error {
 	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
 	poolMap := make(map[string]interface{})
 	for _, num := range children {
@@ -429,16 +429,44 @@ func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
 	return nil
 }
 
+func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
+	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
+	poolMap := make(map[string]interface{})
+	for _, num := range children {
+		poolMap[num] = int(ID)
+	}
+	key := getKeyPoolIDs(topic)
+	fmt.Printf("key, map: %s, %v \n", key, poolMap)
+	// TO DO: Switch to HSet. atm HSet does not seem to be this:
+	// https://github.com/go-redis/redis/blob/v8.1.3/commands.go#L1072
+	// Check for go-redis version used here
+	resp := db.redisClient.HSet(key, "", poolMap)
+	res, err := resp.Result()
+	fmt.Println("response: ", res, err)
+	return nil
+}
+
 // GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
+func (db *DB) GetPoolsParentID_Old(id, topic string) (string, error) {
 	key := getKeyPoolIDs(topic)
 	res := db.redisClient.HMGet(key, id)
-	if res.Val()[0] != nil {
+	if len(res.Val()) > 0 && res.Val()[0] != nil {
 		return res.Val()[0].(string), nil
 	}
-	errorstring := fmt.Sprintf("no database entry for pool ID %s with topic %s \n", id, topic)
+	errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
 	return "", errors.New(errorstring)
 }
+
+// // GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
+// func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
+// 	key := getKeyPoolIDs(topic)
+// 	res := db.redisClient.HGet(key, id)
+// 	if len(res.Val()) > 0 && res.Val()[0] != nil {
+// 		return res.Val()[0].(string), nil
+// 	}
+// 	errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
+// 	return "", errors.New(errorstring)
+// }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
 func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {

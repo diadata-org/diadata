@@ -14,6 +14,7 @@ import (
 )
 
 // verifyContent verifies storage tree with Id @id of @topic.
+// Not used atm
 func verifyContent(topic string, id string, ds models.AuditStore, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
@@ -115,6 +116,7 @@ func main() {
 			case <-ticker.C:
 				var wg sync.WaitGroup
 				verificationTime := time.Now()
+				// Verify all data related to topics
 				topicMap := merklehashing.GetHashTopics()
 				for key := range topicMap {
 					log.Infof("verifying topic %s ... \n", topicMap[key])
@@ -149,6 +151,7 @@ func main() {
 
 // main retrieves all (storage) buckets from the storage table and verifies them with
 // the actual master root hash.
+// Not used atm: trees on levels 2 and lower are verified multiple times
 func mainOld() {
 	ds, err := models.NewAuditStore()
 	if err != nil {

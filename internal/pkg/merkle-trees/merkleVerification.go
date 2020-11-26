@@ -7,6 +7,7 @@ import (
 
 	"github.com/cbergoon/merkletree"
 	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // VerifyBucket checks whether a given storage bucket is corrupted at the first step, i.e.
@@ -44,6 +45,7 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditSto
 	// Get ID of pool's parent tree
 	parentID, err := ds.GetPoolsParentID(ID, topic)
 	if err != nil {
+		log.Infof("error at pool ID %s and topic %s.", ID, topic)
 		return false, err
 	}
 
