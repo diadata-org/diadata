@@ -12,7 +12,7 @@ import (
 	"github.com/cbergoon/merkletree"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -48,6 +48,14 @@ const (
 	influxDBMerkleTable = "merkle"
 )
 
+// DBAudit is a datastore for Audit Trail
+type DBAudit struct {
+	redisClient         *redis.Client
+	influxClient        clientInfluxdb.Client
+	influxBatchPoints   clientInfluxdb.BatchPoints
+	influxPointsInBatch int
+}
+
 func getKeyPoolIDs(topic string) string {
 	return "HashedPoolsMap_" + topic
 }
@@ -69,28 +77,28 @@ func queryAuditDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb.
 	return res, nil
 }
 
-func NewAuditStore() (*DB, error) {
+func NewAuditStore() (*DBAudit, error) {
 	return NewAuditStoreWithOptions(true, true)
 }
-func NewInfluxAuditStore() (*DB, error) {
+func NewInfluxAuditStore() (*DBAudit, error) {
 	return NewAuditStoreWithOptions(false, true)
 }
 
-func NewRedisAuditStore() (*DB, error) {
+func NewRedisAuditStore() (*DBAudit, error) {
 	return NewAuditStoreWithOptions(true, false)
 }
 
-func NewAuditStoreWithoutInflux() (*DB, error) {
+func NewAuditStoreWithoutInflux() (*DBAudit, error) {
 	return NewAuditStoreWithOptions(true, false)
 }
 
-func NewAuditStoreWithoutRedis() (*DB, error) {
+func NewAuditStoreWithoutRedis() (*DBAudit, error) {
 	return NewAuditStoreWithOptions(false, true)
 }
 
 // NewAuditStoreWithOptions returns an audit store for either  influx or redis, depending
 // on the boolean inputs
-func NewAuditStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
+func NewAuditStoreWithOptions(withRedis bool, withInflux bool) (*DBAudit, error) {
 	var ci clientInfluxdb.Client
 	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
@@ -112,7 +120,7 @@ func NewAuditStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			DB:       0,  // use default DB
 		})
 
-		pong2, err := r.Ping().Result()
+		pong2, err := r.Ping(context.Background()).Result()
 		if err != nil {
 			log.Error("NewAuditStore redis", err)
 		}
@@ -138,7 +146,7 @@ func NewAuditStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			log.Errorln("queryAuditDB CREATE DATABASE", err)
 		}
 	}
-	return &DB{r, ci, bp, 0}, nil
+	return &DBAudit{r, ci, bp, 0}, nil
 }
 
 func createAuditBatchInflux() (clientInfluxdb.BatchPoints, error) {
@@ -153,7 +161,7 @@ func createAuditBatchInflux() (clientInfluxdb.BatchPoints, error) {
 }
 
 // FlushAuditBatch flushes a batch and writes it to influx
-func (db *DB) FlushAuditBatch() error {
+func (db *DBAudit) FlushAuditBatch() error {
 	var err error
 	if db.influxBatchPoints != nil {
 		err = db.WriteAuditBatchInflux()
@@ -162,7 +170,7 @@ func (db *DB) FlushAuditBatch() error {
 }
 
 // WriteAuditBatchInflux writes a batch to influx
-func (db *DB) WriteAuditBatchInflux() error {
+func (db *DBAudit) WriteAuditBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
@@ -173,7 +181,7 @@ func (db *DB) WriteAuditBatchInflux() error {
 	return err
 }
 
-func (db *DB) addAuditPoint(pt *clientInfluxdb.Point) {
+func (db *DBAudit) addAuditPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
@@ -215,7 +223,7 @@ func HashingLayer(topic string, content []byte) error {
 
 // SetStorageTreeInflux stores a tree from the merkletree package in Influx.
 // It is mainly used when flushing the bucket pools.
-func (db *DB) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) error {
+func (db *DBAudit) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) error {
 
 	// Set ID for buckets. IDs have the form i.j where i is the ID of the parent pool
 	// and j is the ID of the bucket. IDs i of parent pools are (nanosecond Unix) times.
@@ -274,7 +282,7 @@ func (db *DB) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) err
 }
 
 // GetStorageTreeInflux returns the first merkletree of a given topic with timestamp after timeLower
-func (db *DB) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, error) {
+func (db *DBAudit) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, error) {
 
 	retval := merkletree.MerkleTree{}
 	q := fmt.Sprintf("SELECT time, value FROM (SELECT * FROM %s WHERE topic='%s' and time >= %d) ORDER BY ASC LIMIT 1", influxDBStorageTable, topic, timeLower.UnixNano())
@@ -293,7 +301,7 @@ func (db *DB) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletre
 // GetStorageTreesInflux returns a slice of merkletrees from the storage table corresponding to a given topic in a given time range.
 // More precisely, the two-dimensional interface val is returned. It has length 5 and can be cast as follows:
 // val[0]:(influx-)timestamp, val[1]:firstDate, val[2]:lastDate, val[3]:topic, val[4]:Content/MerkleTree
-func (db *DB) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
+func (db *DBAudit) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
 
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time <= %d", influxDBStorageTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
@@ -310,7 +318,7 @@ func (db *DB) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time)
 
 // GetStorageTreeByID returns a merkletree from the storage table with @ID and @topic
 // We use primary key 'time' for storage trees.
-func (db *DB) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error) {
+func (db *DBAudit) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error) {
 	retval := merkletree.MerkleTree{}
 	q := fmt.Sprintf("SELECT value FROM %s WHERE topic='%s' and time=%s", influxDBStorageTable, topic, ID)
 	res, err := queryAuditDB(db.influxClient, q)
@@ -328,7 +336,7 @@ func (db *DB) GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error
 // GetLastID retrieves the highest current id for @topic (if given) from the storage table
 // as a string version of an int64 representing a unix nano time.
 // Only used in DailyTreeTopic so not critical for scaling.
-func (db *DB) GetLastID(topic string) (string, error) {
+func (db *DBAudit) GetLastID(topic string) (string, error) {
 
 	// As ID in storage is identified with timestamp, we have the following query
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' ORDER BY DESC LIMIT 1", influxDBStorageTable, topic)
@@ -355,7 +363,7 @@ func (db *DB) GetLastID(topic string) (string, error) {
 // @topic only concerns level 2 and should be the empty string for level 1 and 0
 // @level is an int corresponding to the level in the merkle documentation (currently 0<level<3)
 // @lastTimestamp is the last timestamp of hashed trees from the data layer. Only applies to level 2
-func (db *DB) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, children []string, lastTimestamp time.Time) error {
+func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, children []string, lastTimestamp time.Time) error {
 
 	// Marshal tree
 	marshTree, err := json.Marshal(tree)
@@ -412,7 +420,27 @@ func (db *DB) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string
 // It is important to notice that this just facilitates the retrieval. The map can be reconstructed
 // by id information stored in influx. Hence, the system does not rely on correct function/constant
 // connection of/to redis.
-func (db *DB) SetPoolID_Old(topic string, children []string, ID int64) error {
+// func (db *DBAudit) SetPoolID_Old(topic string, children []string, ID int64) error {
+// 	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
+// 	poolMap := make(map[string]interface{})
+// 	for _, num := range children {
+// 		poolMap[num] = int(ID)
+// 	}
+// 	key := getKeyPoolIDs(topic)
+// 	fmt.Printf("key, map: %s, %v \n", key, poolMap)
+// 	// TO DO: Switch to HSet. atm HSet does not seem to be this:
+// 	// https://github.com/go-redis/redis/blob/v8.1.3/commands.go#L1072
+// 	// Check for go-redis version used here
+// 	resp := db.redisClient.HMSet(key, poolMap)
+// 	res, err := resp.Result()
+// 	fmt.Println("response: ", res, err)
+// 	return nil
+// }
+
+// SetPoolID sets a key value map for retrieval of parent trees of hashed pools.
+// It is important to notice that this just facilitates the retrieval. The map can be reconstructed
+// by id information stored in influx. Hence, the system does not rely on correct function/constant
+func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
 	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
 	poolMap := make(map[string]interface{})
 	for _, num := range children {
@@ -420,47 +448,16 @@ func (db *DB) SetPoolID_Old(topic string, children []string, ID int64) error {
 	}
 	key := getKeyPoolIDs(topic)
 	fmt.Printf("key, map: %s, %v \n", key, poolMap)
-	// TO DO: Switch to HSet. atm HSet does not seem to be this:
-	// https://github.com/go-redis/redis/blob/v8.1.3/commands.go#L1072
-	// Check for go-redis version used here
-	resp := db.redisClient.HMSet(key, poolMap)
+	resp := db.redisClient.HSet(context.Background(), key, poolMap)
 	res, err := resp.Result()
 	fmt.Println("response: ", res, err)
 	return nil
-}
-
-func (db *DB) SetPoolID(topic string, children []string, ID int64) error {
-	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
-	poolMap := make(map[string]interface{})
-	for _, num := range children {
-		poolMap[num] = int(ID)
-	}
-	key := getKeyPoolIDs(topic)
-	fmt.Printf("key, map: %s, %v \n", key, poolMap)
-	// TO DO: Switch to HSet. atm HSet does not seem to be this:
-	// https://github.com/go-redis/redis/blob/v8.1.3/commands.go#L1072
-	// Check for go-redis version used here
-	resp := db.redisClient.HSet(key, "", poolMap)
-	res, err := resp.Result()
-	fmt.Println("response: ", res, err)
-	return nil
-}
-
-// GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-func (db *DB) GetPoolsParentID_Old(id, topic string) (string, error) {
-	key := getKeyPoolIDs(topic)
-	res := db.redisClient.HMGet(key, id)
-	if len(res.Val()) > 0 && res.Val()[0] != nil {
-		return res.Val()[0].(string), nil
-	}
-	errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
-	return "", errors.New(errorstring)
 }
 
 // // GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-// func (db *DB) GetPoolsParentID(id, topic string) (string, error) {
+// func (db *DBAudit) GetPoolsParentID_Old(id, topic string) (string, error) {
 // 	key := getKeyPoolIDs(topic)
-// 	res := db.redisClient.HGet(key, id)
+// 	res := db.redisClient.HMGet(key, id)
 // 	if len(res.Val()) > 0 && res.Val()[0] != nil {
 // 		return res.Val()[0].(string), nil
 // 	}
@@ -468,8 +465,19 @@ func (db *DB) GetPoolsParentID_Old(id, topic string) (string, error) {
 // 	return "", errors.New(errorstring)
 // }
 
+// GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
+func (db *DBAudit) GetPoolsParentID(id, topic string) (string, error) {
+	key := getKeyPoolIDs(topic)
+	response := db.redisClient.HGet(context.Background(), key, id)
+	if len(response.Val()) > 0 {
+		return response.Val(), nil
+	}
+	errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
+	return "", errors.New(errorstring)
+}
+
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
-func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
+func (db *DBAudit) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
 
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and time > %d and time <= %d", influxDBMerkleTable, topic, level, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
@@ -484,7 +492,7 @@ func (db *DB) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.
 }
 
 // GetDailyTreeByID returns the daily merkletree of a given topic, level and ID.
-func (db *DB) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleTree, err error) {
+func (db *DBAudit) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleTree, err error) {
 
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and id='%s'", influxDBMerkleTable, topic, level, ID)
 	res, err := queryAuditDB(db.influxClient, q)
@@ -500,7 +508,7 @@ func (db *DB) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleT
 }
 
 // GetLastTimestamp retrieves the last timestamp for @topic (if given) and @level from the merkle table
-func (db *DB) GetLastTimestamp(topic, level string) (time.Time, error) {
+func (db *DBAudit) GetLastTimestamp(topic, level string) (time.Time, error) {
 
 	q := fmt.Sprintf("SELECT lastTimestamp FROM (SELECT * FROM %s GROUP BY id) WHERE topic='%s' AND level='%s' ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, level)
 	res, err := queryAuditDB(db.influxClient, q)
@@ -521,7 +529,7 @@ func (db *DB) GetLastTimestamp(topic, level string) (time.Time, error) {
 }
 
 // GetLastIDMerkle retrieves the highest current id for @topic (if given) and @level from the merkle table
-func (db *DB) GetLastIDMerkle(topic, level string) (int64, error) {
+func (db *DBAudit) GetLastIDMerkle(topic, level string) (int64, error) {
 
 	q := fmt.Sprintf("SELECT id FROM (SELECT * FROM %s WHERE topic='%s' AND level='%s' GROUP BY id) ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, level)
 	res, err := queryAuditDB(db.influxClient, q)
@@ -539,7 +547,7 @@ func (db *DB) GetLastIDMerkle(topic, level string) (int64, error) {
 
 // GetYoungestChildMerkle returns the highest ID from all pools hashed to level 2 trees.
 // ID corresponds to a unix nano timestamp.
-func (db *DB) GetYoungestChildMerkle(topic string) (int64, error) {
+func (db *DBAudit) GetYoungestChildMerkle(topic string) (int64, error) {
 	// Get children from level 2 merkle tree with highest id
 	q := fmt.Sprintf("SELECT children FROM (SELECT * FROM %s WHERE topic='%s' AND level='%s') ORDER BY DESC LIMIT 1", influxDBMerkleTable, topic, "2")
 	res, err := queryAuditDB(db.influxClient, q)
