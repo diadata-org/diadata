@@ -108,7 +108,7 @@ func main() {
 		log.Fatal("NewAuditStore: ", err)
 	}
 	time.Sleep(20 * time.Second)
-	ticker := time.NewTicker(60 * 1 * time.Second)
+	ticker := time.NewTicker(60 * 4 * time.Second)
 
 	go func() {
 		for {

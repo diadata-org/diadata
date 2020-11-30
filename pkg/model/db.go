@@ -495,7 +495,20 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	return retval, nil
 }
 
+// SetFarmingPool stores a FarmingPool struct in redis
 func (db *DB) SetFarmingPool(pool *FarmingPool) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := pool.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-farmingpools", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"rate":        pool.Rate,
 		"balance":     pool.Balance,

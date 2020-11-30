@@ -48,13 +48,20 @@ var TopicInfo = []struct {
 		ID:         2,
 		KafkaID:    6,
 		Name:       GetHashTopics()[2],
-		SizePool:   4,
-		SizeBucket: 256,
+		SizePool:   8,
+		SizeBucket: 1024,
 	},
 	{
 		ID:         3,
 		KafkaID:    7,
 		Name:       GetHashTopics()[3],
+		SizePool:   4,
+		SizeBucket: 512,
+	},
+	{
+		ID:         4,
+		KafkaID:    8,
+		Name:       GetHashTopics()[4],
 		SizePool:   4,
 		SizeBucket: 256,
 	},
@@ -67,6 +74,7 @@ func GetHashTopics() map[int]string {
 		1: "hash-interestrates",
 		2: "hash-lendingrates",
 		3: "hash-lendingstates",
+		4: "hash-farmingpools",
 	}
 	return topicMap
 }
