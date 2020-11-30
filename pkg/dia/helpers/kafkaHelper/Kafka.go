@@ -27,10 +27,14 @@ type KafkaMessageWithAHash interface {
 }
 
 const (
-	TopicFiltersBlock = 1
-	TopicTrades       = 2
-	TopicTradesBlock  = 3
-	retryDelay        = 2 * time.Second
+	TopicIndexBlock      = 0
+	TopicFiltersBlock    = 1
+	TopicTrades          = 2
+	TopicTradesBlock     = 3
+	TopicSuppliesBlock   = 7
+  TopicIndexBlock2     = 8
+  TopicIndexBlockDaily = 11
+	retryDelay           = 2 * time.Second
 )
 
 type Config struct {

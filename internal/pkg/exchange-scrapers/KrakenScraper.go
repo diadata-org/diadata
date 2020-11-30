@@ -33,14 +33,14 @@ type KrakenScraper struct {
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScraper {
+func NewKrakenScraper(key string, secret string, exchange dia.Exchange) *KrakenScraper {
 	s := &KrakenScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*KrakenPairScraper),
 		api:          krakenapi.New(key, secret),
 		ticker:       time.NewTicker(krakenRefreshDelay),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

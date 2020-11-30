@@ -36,7 +36,7 @@ type QuoineScraper struct {
 	chanTrades     chan *dia.Trade
 }
 
-func NewQuoineScraper(exchangeName string) *QuoineScraper {
+func NewQuoineScraper(exchange dia.Exchange) *QuoineScraper {
 	qClient, err := quoinex.NewClient("x", "x", nil)
 	if err != nil {
 		log.Error("Couldn't create Quoine client:", err)
@@ -45,7 +45,7 @@ func NewQuoineScraper(exchangeName string) *QuoineScraper {
 
 	scraper := &QuoineScraper{
 		client:         qClient,
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

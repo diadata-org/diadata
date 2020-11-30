@@ -2,6 +2,7 @@ package models
 
 import (
 	"strings"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	log "github.com/sirupsen/logrus"
@@ -169,7 +170,7 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 				}
 			}
 		}
-		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "")
+		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "", time.Time{}, time.Now())
 		if r.Gfx1 == nil || err != nil {
 			log.Error("Couldnt fetch points for ", symbol, err)
 		}

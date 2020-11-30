@@ -45,7 +45,8 @@ func (db *DB) GetChartPoints7Days(symbol string) (r []Point, err error) {
 	return
 }
 
-func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error) {
+// GetFilterPoints returns filter points from either a specific exchange or all exchanges
+func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error) {
 	exchangeQuery := "and exchange='" + exchange + "' "
 	table := ""
 	//	5m 30m 1h 4h 1d 1w
@@ -60,14 +61,15 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 		table = influxDbFiltersTable
 	}
 
-	q := fmt.Sprintf("SELECT time,exchange, filter, symbol, value FROM %s WHERE filter='%s' %sand symbol='%s' ORDER BY DESC", table, filter, exchangeQuery, symbol)
+	q := fmt.Sprintf("SELECT time,exchange, filter, symbol, value FROM %s WHERE filter='%s' %sand symbol='%s' and time>%d and time<%d ORDER BY DESC",
+		table, filter, exchangeQuery, symbol, starttime.UnixNano(), endtime.UnixNano())
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		log.Errorln("GetFilterPoints", err)
 	}
 
-	log.Info("GetFilterPoints query:", q, "returned ", len(res))
+	log.Info("GetFilterPoints query: ", q, " returned ", len(res))
 
 	return &Points{
 		DataPoints: res,

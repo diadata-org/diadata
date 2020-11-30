@@ -38,12 +38,12 @@ type BittrexScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-func NewBittrexScraper(exchangeName string) *BittrexScraper {
+func NewBittrexScraper(exchange dia.Exchange) *BittrexScraper {
 	s := &BittrexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*BittrexPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

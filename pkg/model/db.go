@@ -40,7 +40,7 @@ type Datastore interface {
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	Flush() error
-	GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
@@ -100,6 +100,9 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
+	// Gold token methods
+	GetPaxgQuotationOunces() (*Quotation, error)
+	GetPaxgQuotationGrams() (*Quotation, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)

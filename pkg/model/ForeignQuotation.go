@@ -133,7 +133,7 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 // along with their ITIN.
 func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error) {
 
-	q := fmt.Sprintf("SELECT distinct(symbol) FROM %s where source='%s'", influxDbForeignQuotationTable, source)
+	q := fmt.Sprintf("SELECT symbol,source FROM %s WHERE time>now()-7d and source='%s'", influxDbForeignQuotationTable, source)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
@@ -141,23 +141,29 @@ func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err
 	}
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
+		// make unique list of symbols
 		vals := res[0].Series[0].Values
+		set := make(map[string]struct{})
+		symsUnique := []string{}
 		for _, val := range vals {
-			itin, err := db.GetItinBySymbol(val[1].(string))
+			if _, ok := set[val[1].(string)]; !ok {
+				symsUnique = append(symsUnique, val[1].(string))
+			}
+		}
+
+		// fill return slice
+		for _, sym := range symsUnique {
+			itin, err := db.GetItinBySymbol(sym)
+			symbol := SymbolShort{
+				Symbol: sym,
+			}
 			if err != nil {
-				symbol := SymbolShort{
-					Symbol: val[1].(string),
-					ITIN:   "",
-				}
+				symbol.ITIN = ""
 				symbols = append(symbols, symbol)
 			} else {
-				symbol := SymbolShort{
-					Symbol: val[1].(string),
-					ITIN:   itin.Itin,
-				}
+				symbol.ITIN = itin.Itin
 				symbols = append(symbols, symbol)
 			}
-
 		}
 	}
 	return

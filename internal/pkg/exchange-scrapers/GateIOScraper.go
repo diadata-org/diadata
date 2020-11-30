@@ -45,13 +45,13 @@ type GateIOScraper struct {
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
-func NewGateIOScraper(exchangeName string) *GateIOScraper {
+func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
 
 	s := &GateIOScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*GateIOPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

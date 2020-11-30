@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	dforceContract              = "0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2"
 	dforceStartBlock            = uint64(10080772 - 5250)
 	dforceStartBlockToFindPairs = uint64(10080772 - 5250)
 
@@ -53,11 +52,13 @@ type DforceScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[string]*DforceToken
+	contract    common.Address
 }
 
-func NewDforceScraper(exchangeName string) *DforceScraper {
+func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 	scraper := &DforceScraper{
-		exchangeName:   exchangeName,
+		contract:       exchange.Contract,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -93,7 +94,7 @@ func (scraper *DforceScraper) loadTokens() {
 		Decimals: 18,
 	}
 
-	filterer, err := dforce.NewDforceFilterer(common.HexToAddress(dforceContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 
@@ -144,7 +145,7 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 
 func (scraper *DforceScraper) subscribeToTrades() error {
 
-	filterer, err := dforce.NewDforceFilterer(common.HexToAddress(dforceContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -301,7 +302,6 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 func (scraper *DforceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
-
 
 func (scraper *DforceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()

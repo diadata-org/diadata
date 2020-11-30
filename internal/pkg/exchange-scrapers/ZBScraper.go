@@ -49,13 +49,13 @@ type ZBScraper struct {
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper(exchangeName string) *ZBScraper {
+func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*ZBPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

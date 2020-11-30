@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	gnosisContract   = "0x6F400810b62df8E13fded51bE75fF5393eaa841F"
 	gnosisStartBlock = uint64(10780772 - 5250)
 
 	gnosisWsDial   = "ws://159.69.120.42:8546/"
@@ -52,11 +51,13 @@ type GnosisScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[uint16]*GnosisToken
+	contract common.Address
 }
 
-func NewGnosisScraper(exchangeName string) *GnosisScraper {
+func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	scraper := &GnosisScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
+		contract:   exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -85,7 +86,7 @@ func NewGnosisScraper(exchangeName string) *GnosisScraper {
 }
 func (scraper *GnosisScraper) loadTokens() {
 
-	contract, err := gnosis.NewGnosisCaller(common.HexToAddress(gnosisContract), scraper.RestClient)
+	contract, err := gnosis.NewGnosisCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -125,7 +126,7 @@ func (scraper *GnosisScraper) loadTokens() {
 }
 
 func (scraper *GnosisScraper) subscribeToTrades() error {
-	filterer, err := gnosis.NewGnosisFilterer(common.HexToAddress(gnosisContract), scraper.WsClient)
+	filterer, err := gnosis.NewGnosisFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
