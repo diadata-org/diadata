@@ -7,6 +7,7 @@ import (
 	"time"
 
 	platform "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/platform"
+	special "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/special"
 	standard "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/standard"
 
 	strategy "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/yficontracts/strategy"
@@ -64,11 +65,16 @@ func (cv *CFIPool) scrapePools() (err error) {
 	//var underlyingCoins []string
 	var balances float64
 	var rates float64
-	normalPoolAndSwap := []string{"gusd", "husd", "usdk", "usdn", "3", "sbtc", "hbtc", "ren"}
+	normalPoolAndSwap := []string{"gusd", "husd", "usdk", "usdn", "3", "hbtc"}
 
 	for _, poolDetail := range cv.getCFIPools() {
 
 		platform, err := platform.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
+		if err != nil {
+			return err
+		}
+
+		special, err := special.NewSpecial(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
@@ -79,14 +85,84 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 		}
 
+		if "ren" == poolDetail.PoolName || "sbtc" == poolDetail.PoolName {
+
+			coinsAddress0, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(0))
+
+			strategy0, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress0.Hex()), cv.RestClient)
+
+			if err != nil {
+				return err
+			}
+
+			decimals, err := strategy0.Decimals(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
+
+			balance0, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(0))
+			balance0ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+
+			balances = balance0ToFLoat64
+			coins = append(coins, coinsAddress0.Hex())
+
+			precision := new(big.Float).SetFloat64(math.Pow10(int(decimals)))
+			oneFloat := big.NewFloat(1)
+			rate0, _ := oneFloat.Quo(oneFloat, precision).Float64()
+			rates = rate0
+
+			if poolDetail.PoolName == "3" || poolDetail.PoolName == "sbtc" || poolDetail.PoolName == "hbtc" {
+				coinsAddress1, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(1))
+				balance1, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(1))
+				coins = append(coins, coinsAddress1.Hex())
+
+				strategy1, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress1.Hex()), cv.RestClient)
+
+				if err != nil {
+					return err
+				}
+
+				decimals1, err := strategy1.Decimals(&bind.CallOpts{})
+				if err != nil {
+					return err
+				}
+
+				balance1ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1), new(big.Float).SetFloat64(math.Pow10(int(decimals1)))).Float64()
+				precision1 := new(big.Float).SetFloat64(math.Pow10(int(decimals1)))
+				rate1, _ := oneFloat.Quo(oneFloat, precision1).Float64()
+
+				rates = rate0 + rate1
+				balances = balance0ToFLoat64 + balance1ToFLoat64
+
+				if poolDetail.PoolName == "3" || poolDetail.PoolName == "sbtc" {
+					coinsAddress2, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(2))
+					balance2, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(2))
+					coins = append(coins, coinsAddress2.Hex())
+
+					strategy2, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress2.Hex()), cv.RestClient)
+
+					if err != nil {
+						return err
+					}
+
+					decimals2, err := strategy2.Decimals(&bind.CallOpts{})
+					if err != nil {
+						return err
+					}
+					precision2 := new(big.Float).SetFloat64(math.Pow10(int(decimals2)))
+					rate2, _ := oneFloat.Quo(oneFloat, precision2).Float64()
+
+					balance2ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance2), new(big.Float).SetFloat64(math.Pow10(int(decimals2)))).Float64()
+					balances = balances + balance2ToFLoat64
+					rates = rates + rate2
+				}
+			}
+		}
+
 		for _, name := range normalPoolAndSwap {
 			if name == poolDetail.PoolName {
 
-				coinsAddress0, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(0))
-				balance0, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(0))
-				balance0ToFLoat64, _ := new(big.Float).SetInt(balance0).Float64()
-				balances = balance0ToFLoat64
-				coins = append(coins, coinsAddress0.Hex())
+				coinsAddress0, _ := special.Coins(&bind.CallOpts{}, big.NewInt(0))
 
 				strategy0, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress0.Hex()), cv.RestClient)
 
@@ -98,15 +174,20 @@ func (cv *CFIPool) scrapePools() (err error) {
 				if err != nil {
 					return err
 				}
+
+				balance0, _ := special.Balances(&bind.CallOpts{}, big.NewInt(0))
+				balance0ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+				balances = balance0ToFLoat64
+				coins = append(coins, coinsAddress0.Hex())
+
 				precision := new(big.Float).SetFloat64(math.Pow10(int(decimals)))
 				oneFloat := big.NewFloat(1)
 				rate0, _ := oneFloat.Quo(oneFloat, precision).Float64()
 				rates = rate0
 
-				if poolDetail.PoolName == "3" || poolDetail.PoolName == "sbtc" || poolDetail.PoolName == "hbtc" || poolDetail.PoolName == "ren" {
-					coinsAddress1, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(1))
-					balance1, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(1))
-					balance1ToFLoat64, _ := new(big.Float).SetInt(balance1).Float64()
+				if poolDetail.PoolName == "3" || poolDetail.PoolName == "sbtc" || poolDetail.PoolName == "hbtc" {
+					coinsAddress1, _ := special.Coins(&bind.CallOpts{}, big.NewInt(1))
+
 					coins = append(coins, coinsAddress1.Hex())
 
 					strategy1, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress1.Hex()), cv.RestClient)
@@ -123,12 +204,14 @@ func (cv *CFIPool) scrapePools() (err error) {
 					rate1, _ := oneFloat.Quo(oneFloat, precision1).Float64()
 
 					rates = rate0 + rate1
+					balance1, _ := special.Balances(&bind.CallOpts{}, big.NewInt(1))
+					balance1ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1), new(big.Float).SetFloat64(math.Pow10(int(decimals1)))).Float64()
 					balances = balance0ToFLoat64 + balance1ToFLoat64
 
 					if poolDetail.PoolName == "3" || poolDetail.PoolName == "sbtc" {
-						coinsAddress2, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(2))
-						balance2, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(2))
-						balance2ToFLoat64, _ := new(big.Float).SetInt(balance2).Float64()
+						coinsAddress2, _ := special.Coins(&bind.CallOpts{}, big.NewInt(2))
+						balance2, _ := special.Balances(&bind.CallOpts{}, big.NewInt(2))
+
 						coins = append(coins, coinsAddress2.Hex())
 
 						strategy2, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress2.Hex()), cv.RestClient)
@@ -143,7 +226,7 @@ func (cv *CFIPool) scrapePools() (err error) {
 						}
 						precision2 := new(big.Float).SetFloat64(math.Pow10(int(decimals2)))
 						rate2, _ := oneFloat.Quo(oneFloat, precision2).Float64()
-
+						balance2ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance2), new(big.Float).SetFloat64(math.Pow10(int(decimals2)))).Float64()
 						balances = balances + balance2ToFLoat64
 						rates = rates + rate2
 					}
@@ -153,6 +236,17 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 		if poolDetail.PoolName == "Compound" || poolDetail.PoolName == "USDT" {
 			coinsAddress0, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(0))
+			strategy0, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress0.Hex()), cv.RestClient)
+
+			if err != nil {
+				return err
+			}
+
+			decimals0, err := strategy0.Decimals(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
+
 			balance0, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(0))
 
 			coins = append(coins, coinsAddress0.Hex())
@@ -176,7 +270,7 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 			//c-rate = exchangeRateStored() * (1 + supplyRatePerBlock() * (currentBlock - accrualBlockNumber()) / 1e18)
 
-			blockDifference := header.Number.Sub(header.Number, accrualBlockNumber)
+			blockDifference := accrualBlockNumber.Sub(header.Number, accrualBlockNumber)
 			incrementedSupplyRatePerBlock := supplyRatePerBlock.Mul(blockDifference, supplyRatePerBlock)
 
 			addOneToIncrementedSupplyRatePerBlock := incrementedSupplyRatePerBlock.Add(incrementedSupplyRatePerBlock, big.NewInt(1))
@@ -207,15 +301,16 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 			//c-rate = exchangeRateStored() * (1 + supplyRatePerBlock() * (currentBlock - accrualBlockNumber()) / 1e18)
 
-			incrementedSupplyRatePerBlock1 := supplyRatePerBlock1.Mul(header.Number.Sub(header.Number, accrualBlockNumber1), supplyRatePerBlock)
+			incrementedSupplyRatePerBlock1 := supplyRatePerBlock1.Mul(accrualBlockNumber1.Sub(header.Number, accrualBlockNumber1), supplyRatePerBlock)
 
 			addOneToIncrementedSupplyRatePerBlock1 := incrementedSupplyRatePerBlock1.Add(incrementedSupplyRatePerBlock1, big.NewInt(1))
-			updatedExchangeRateStored1 := exchangeRateStored.Mul(exchangeRateStored1, addOneToIncrementedSupplyRatePerBlock1)
+			updatedExchangeRateStored1 := exchangeRateStored1.Mul(exchangeRateStored1, addOneToIncrementedSupplyRatePerBlock1)
 			updatedExchangeRate1 := new(big.Float).SetInt(updatedExchangeRateStored1)
 			rate1 := updatedExchangeRate1.Quo(updatedExchangeRate1, new(big.Float).SetFloat64(1e18))
 
-			balance0ToFLoat64, _ := new(big.Float).SetInt(balance0).Float64()
-			balance1ToFLoat64, _ := new(big.Float).SetInt(balance1).Float64()
+			balance0ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0), new(big.Float).SetFloat64(math.Pow10(int(decimals0)))).Float64()
+			balance1ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1), new(big.Float).SetFloat64(math.Pow10(int(decimals0)))).Float64()
+
 			balances = balance0ToFLoat64 + balance1ToFLoat64
 
 			rate0ToFLoat64, _ := rate0.Float64()
@@ -226,8 +321,7 @@ func (cv *CFIPool) scrapePools() (err error) {
 			if poolDetail.PoolName == "USDT" {
 				coinsAddress2, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(2))
 				balance2, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(2))
-				balance2ToFLoat64, _ := new(big.Float).SetInt(balance2).Float64()
-				balances = balances + balance2ToFLoat64
+
 				coins = append(coins, coinsAddress2.Hex())
 
 				strategy, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress2.Hex()), cv.RestClient)
@@ -240,6 +334,10 @@ func (cv *CFIPool) scrapePools() (err error) {
 				if err != nil {
 					return err
 				}
+
+				balance2ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance2), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+				balances = balances + balance2ToFLoat64
+
 				precision := new(big.Float).SetFloat64(math.Pow10(int(decimals)))
 				oneFloat := big.NewFloat(1)
 				rate2, _ := oneFloat.Quo(oneFloat, precision).Float64()
@@ -252,7 +350,7 @@ func (cv *CFIPool) scrapePools() (err error) {
 			coinsAddress0, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(0))
 			coins = append(coins, coinsAddress0.Hex())
 			balance0, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(0))
-			balance0ToFLoat64, _ := new(big.Float).SetInt(balance0).Float64()
+
 			strategy0, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress0.Hex()), cv.RestClient)
 
 			if err != nil {
@@ -269,13 +367,14 @@ func (cv *CFIPool) scrapePools() (err error) {
 			if err != nil {
 				return err
 			}
+			balance0ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
 			precision := new(big.Float).SetFloat64(math.Pow10(int(decimals)))
 			rate0, _ := big.NewFloat(1).Quo(pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18)), precision).Float64()
 
 			coinsAddress1, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(1))
 			coins = append(coins, coinsAddress1.Hex())
 			balance1, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(1))
-			balance1ToFLoat64, _ := new(big.Float).SetInt(balance1).Float64()
+
 			strategy1, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress1.Hex()), cv.RestClient)
 
 			if err != nil {
@@ -287,18 +386,21 @@ func (cv *CFIPool) scrapePools() (err error) {
 				return err
 
 			}
-			pricePerFullShare1 := new(big.Float).SetInt(pricePerFullShareFromContract1)
-			decimals1, err := strategy1.Decimals(&bind.CallOpts{})
+
+			decimals1, err := strategy0.Decimals(&bind.CallOpts{})
 			if err != nil {
 				return err
 			}
+
+			balance1ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1), new(big.Float).SetFloat64(math.Pow10(int(decimals1)))).Float64()
+			pricePerFullShare1 := new(big.Float).SetInt(pricePerFullShareFromContract1)
+
 			precision1 := new(big.Float).SetFloat64(math.Pow10(int(decimals1)))
 			rate1, _ := big.NewFloat(1).Quo(pricePerFullShare.Quo(pricePerFullShare1, new(big.Float).SetFloat64(1e18)), precision1).Float64()
 
 			coinsAddress2, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(2))
 			coins = append(coins, coinsAddress2.Hex())
 			balance2, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(2))
-			balance2ToFLoat64, _ := new(big.Float).SetInt(balance2).Float64()
 			strategy2, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress2.Hex()), cv.RestClient)
 			if err != nil {
 				return err
@@ -314,14 +416,15 @@ func (cv *CFIPool) scrapePools() (err error) {
 			if err != nil {
 				return err
 			}
+
+			balance2ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance2), new(big.Float).SetFloat64(math.Pow10(int(decimals2)))).Float64()
 			precision2 := new(big.Float).SetFloat64(math.Pow10(int(decimals2)))
 			rate2, _ := big.NewFloat(1).Quo(pricePerFullShare.Quo(pricePerFullShare2, new(big.Float).SetFloat64(1e18)), precision2).Float64()
 
 			if poolDetail.PoolName == "PAX" {
 				coinsAddress3, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(3))
 				balance3, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(3))
-				balance3ToFLoat64, _ := new(big.Float).SetInt(balance3).Float64()
-				balances = balance3ToFLoat64 + balance2ToFLoat64 + balance0ToFLoat64 + balance1ToFLoat64
+
 				coins = append(coins, coinsAddress3.Hex())
 
 				strategy, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress3.Hex()), cv.RestClient)
@@ -334,18 +437,19 @@ func (cv *CFIPool) scrapePools() (err error) {
 				if err != nil {
 					return err
 				}
+
+				balance3ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance3), new(big.Float).SetFloat64(math.Pow10(int(decimals3)))).Float64()
 				precision3 := new(big.Float).SetFloat64(math.Pow10(int(decimals3)))
 				oneFloat := big.NewFloat(1)
 				rate3, _ := oneFloat.Quo(oneFloat, precision3).Float64()
 
 				rates = rate2 + rate3 + rate1 + rate0
+				balances = balance3ToFLoat64 + balance2ToFLoat64 + balance0ToFLoat64 + balance1ToFLoat64
 
 			} else {
 				coinsAddress3, _ := platform.Coins(&bind.CallOpts{}, big.NewInt(3))
 				coins = append(coins, coinsAddress3.Hex())
 				balance3, _ := platform.Balances(&bind.CallOpts{}, big.NewInt(3))
-				balance3ToFLoat64, _ := new(big.Float).SetInt(balance3).Float64()
-				balances = balance3ToFLoat64 + balance2ToFLoat64 + balance0ToFLoat64 + balance1ToFLoat64
 				strategy3, err := strategy.NewStrategyCaller(common.HexToAddress(coinsAddress3.Hex()), cv.RestClient)
 				if err != nil {
 					return err
@@ -356,15 +460,20 @@ func (cv *CFIPool) scrapePools() (err error) {
 					return err
 
 				}
+
 				pricePerFullShare3 := new(big.Float).SetInt(pricePerFullShareFromContract3)
 				decimals3, err := strategy3.Decimals(&bind.CallOpts{})
 				if err != nil {
 					return err
 				}
+
+				balance3ToFLoat64, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance3), new(big.Float).SetFloat64(math.Pow10(int(decimals3)))).Float64()
 				precision3 := new(big.Float).SetFloat64(math.Pow10(int(decimals3)))
 				rate3, _ := big.NewFloat(1).Quo(pricePerFullShare.Quo(pricePerFullShare3, new(big.Float).SetFloat64(1e18)), precision3).Float64()
 
 				rates = rate2 + rate3 + rate1 + rate0
+
+				balances = balance3ToFLoat64 + balance2ToFLoat64 + balance0ToFLoat64 + balance1ToFLoat64
 
 			}
 
