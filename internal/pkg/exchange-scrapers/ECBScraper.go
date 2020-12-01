@@ -76,7 +76,7 @@ type (
 	}
 )
 
-func populateCurrency(datastore *models.DB, currency string) {
+func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHistoricalEnvelope) *XMLHistoricalEnvelope {
 	log.Printf("Historical %s prices population starting", currency)
 
 	// Format url to fetch
@@ -96,8 +96,14 @@ func populateCurrency(datastore *models.DB, currency string) {
 		log.Errorf("error parsing xml %v\n", err)
 	}
 
+	var fqs []*models.FiatQuotation
+
 	// Format and save each value
 	for _, o := range xmlSheet.Obs {
+		if o.Price.Value == "NaN" {
+			continue
+		}
+
 		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)
@@ -109,38 +115,66 @@ func populateCurrency(datastore *models.DB, currency string) {
 		}
 
 		if currency == "USD" {
-			err = datastore.SetPriorFiatPriceUSD("EUR", price, timestamp)
+			fq := &models.FiatQuotation{
+				QuoteCurrency: "EUR",
+				BaseCurrency:  "USD",
+				Price:         price,
+				Source:        "ECB",
+				Time:          timestamp,
+			}
+
+			fqs = append(fqs, fq)
 		} else { // If other than USD, conversion from EUR as a quote currency to USD as base currency is made
-			usdFor1Euro, err := models.GetCurrencyPrice(datastore, "EUR", timestamp)
-			if err != nil {
-				log.Println("Error in GetCurrencyPrice: ", err)
-				return
+			var usdFor1Euro float64
+
+			for _, eurusdObs := range xmlEurusd.Obs {
+				if eurusdObs.Timestamp.Value == o.Timestamp.Value {
+					usdFor1Euro, err = strconv.ParseFloat(eurusdObs.Price.Value, 64)
+					if err != nil {
+						log.Errorf("error parsing price %v %v", eurusdObs.Price.Value, err)
+					}
+				}
+			}
+
+			if usdFor1Euro == 0 {
+				fmt.Println("YESSS")
+				continue
 			}
 
 			price = usdFor1Euro / price
 
-			err = datastore.SetPriorFiatPriceUSD(currency, price, timestamp)
-		}
+			fq := &models.FiatQuotation{
+				QuoteCurrency: currency,
+				BaseCurrency:  "USD",
+				Price:         price,
+				Source:        "ECB",
+				Time:          timestamp,
+			}
 
-		if err != nil {
-			log.Printf("Error: %s at %v on SetPriorFiatPriceUSD\n", currency, o.Timestamp.Value)
+			fqs = append(fqs, fq)
 		}
-
-		log.Printf("%s price at %v successfully populated", currency, o.Timestamp.Value)
 	}
-	log.Printf("%s historical prices successfully populated", currency)
+
+	err = datastore.SetFiatPriceUSD(fqs)
+	if err != nil {
+		log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+	} else {
+		log.Printf("%s historical prices successfully populated", currency)
+	}
+
+	return &xmlSheet
 }
 
 // Populate fetches historical daily datas from 1999 until today and saves them on the database
 func Populate(datastore *models.DB, pairs []string) {
 	// Start with USD to have conversion reference
-	populateCurrency(datastore, "USD")
+	xmlEurusd := populateCurrency(datastore, "USD", nil)
 
 	// Populate every other currency
 	for _, p := range pairs {
 		p = p[3:]
 		if p != "USD" {
-			go populateCurrency(datastore, p)
+			populateCurrency(datastore, p, xmlEurusd)
 		}
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"time"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -61,11 +62,35 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 		if symbol == "USD" {
 			log.Println(symbol, t.Symbol)
 			usdFor1Euro = t.Price
-			ds.SetFiatPriceUSD("EUR", t.Price)
+
+			fq := []*models.FiatQuotation{{
+				QuoteCurrency: "EUR",
+				BaseCurrency:  "USD",
+				Price:         t.Price,
+				Source:        "ECB",
+				Time:          time.Now(),
+			}}
+
+			err := ds.SetFiatPriceUSD(fq)
+			if err != nil {
+				log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+			}
 		} else {
 			if usdFor1Euro > 0 {
 				log.Info("setting ", symbol, usdFor1Euro/t.Price) // compute Symbol/USD
-				ds.SetFiatPriceUSD(symbol, usdFor1Euro/t.Price)   // compute Symbol/USD
+
+				fq := []*models.FiatQuotation{{
+					QuoteCurrency: symbol,
+					BaseCurrency:  "USD",
+					Price:         usdFor1Euro / t.Price,
+					Source:        "ECB",
+					Time:          time.Now(),
+				}}
+
+				err := ds.SetFiatPriceUSD(fq)
+				if err != nil {
+					log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+				}
 			}
 		}
 	}

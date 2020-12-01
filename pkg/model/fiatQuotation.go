@@ -1,58 +1,34 @@
 package models
 
 import (
-	"time"
-
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	log "github.com/sirupsen/logrus"
 )
 
-func (db *DB) SetFiatPriceUSD(symbol string, price float64) error {
-	return db.SetFiatQuotation(&FiatQuotation{
-		QuoteCurrency: symbol,
-		BaseCurrency:  "USD",
-		Price:         price,
-		Source:        "ECB",
-		Time:          time.Now(),
-	})
-}
+func (db *DB) SetFiatPriceUSD(fqs []*FiatQuotation) error {
+	log.Println("Writing quotation")
 
-func (db *DB) SetPriorFiatPriceUSD(symbol string, price float64, timestamp time.Time) error {
-	return db.SetFiatQuotation(&FiatQuotation{
-		QuoteCurrency: symbol,
-		BaseCurrency:  "USD",
-		Price:         price,
-		Source:        "ECB",
-		Time:          timestamp,
-	})
-}
+	for _, fq := range fqs {
+		tags := map[string]string{
+			"quote_currency": fq.QuoteCurrency,
+			"base_currency":  fq.BaseCurrency,
+			"source":         fq.Source,
+		}
+		fields := map[string]interface{}{
+			"price": fq.Price,
+		}
 
-func (db *DB) SetFiatQuotation(quotation *FiatQuotation) error {
-	if db.influxClient == nil && db.influxBatchPoints == nil {
-		return nil
+		pt, err := clientInfluxdb.NewPoint(influxDbFiatQuotationsTable, tags, fields, fq.Time)
+		if err != nil {
+			log.Printf("Error: %v on NewPoint %v\n", err, fq.BaseCurrency)
+		}
+
+		db.addPoint(pt)
 	}
 
-	log.Debug("setting ", quotation)
-
-	tags := map[string]string{
-		"quote_currency": quotation.QuoteCurrency,
-		"base_currency":  quotation.BaseCurrency,
-		"source":         quotation.Source,
-	}
-	fields := map[string]interface{}{
-		"price": quotation.Price,
-	}
-
-	pt, err := clientInfluxdb.NewPoint(influxDbFiatQuotationsTable, tags, fields, quotation.Time)
+	err := db.WriteBatchInflux()
 	if err != nil {
-		log.Printf("Error: %v on NewPoint %v\n", err, quotation.BaseCurrency)
-	}
-
-	db.addPoint(pt)
-
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Printf("Error: %v on WriteBatchInflux %v\n", err, quotation.BaseCurrency)
+		log.Printf("Error on WriteBatchInflux: %v\n", err)
 	}
 
 	return err

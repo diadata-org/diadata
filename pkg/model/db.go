@@ -19,13 +19,11 @@ type Datastore interface {
 	GetVolume(symbol string) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
-	SetFiatPriceUSD(symbol string, price float64) error
-	SetPriorFiatPriceUSD(symbol string, price float64, t time.Time) error
+	SetFiatPriceUSD(fqs []*FiatQuotation) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
-	SetFiatQuotation(quotation *FiatQuotation) error
 	SetQuotationEUR(quotation *Quotation) error
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
@@ -268,18 +266,23 @@ func (db *DB) WriteBatchInflux() error {
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
 		db.influxBatchPoints, _ = createBatchInflux()
-	} else {
-		db.influxPointsInBatch = 0
 	}
+
+	db.influxPointsInBatch = 0
+
 	return err
 }
 
 func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
+
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Debug("AddPoint forcing write Bash")
-		db.WriteBatchInflux()
+		err := db.WriteBatchInflux()
+		if err != nil {
+			log.Printf("Error on WriteBatchInflux: %v\n", err)
+		}
 	}
 }
 
@@ -961,18 +964,4 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 		}
 	}
 	return value, unixTime, err
-}
-
-// Get currency price against USD at a specific timestamp
-func GetCurrencyPrice(db *DB, currency string, timestamp time.Time) (float64, error) {
-	q := fmt.Sprintf("SELECT price FROM fiat WHERE quote_currency = '%s' AND time = '%v'", currency, timestamp.Format(time.RFC3339))
-
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		return 0, err
-	}
-
-	f, err := res[0].Series[0].Values[0][1].(json.Number).Float64()
-
-	return f, err
 }
