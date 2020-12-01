@@ -15,6 +15,18 @@ const influxDbForeignQuotationTable = "foreignquotation"
 
 // SaveForeignQuotationInflux stores a quotation which is not from DIA to an influx batch
 func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := fq.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-farmingpools", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"price":              fq.Price,
 		"priceYesterday":     fq.PriceYesterday,

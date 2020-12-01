@@ -56,6 +56,7 @@ type DBAudit struct {
 	influxPointsInBatch int
 }
 
+// getKeyPoolIDs returns
 func getKeyPoolIDs(topic string) string {
 	return "HashedPoolsMap_" + topic
 }
@@ -449,8 +450,10 @@ func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
 	key := getKeyPoolIDs(topic)
 	fmt.Printf("key, map: %s, %v \n", key, poolMap)
 	resp := db.redisClient.HSet(context.Background(), key, poolMap)
-	res, err := resp.Result()
-	fmt.Println("response: ", res, err)
+	_, err := resp.Result()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

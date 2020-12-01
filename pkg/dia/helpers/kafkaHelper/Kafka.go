@@ -58,6 +58,7 @@ func getTopic(topic int) string {
 		6: "hash-lendingrates",
 		7: "hash-lendingstates",
 		8: "hash-farmingpools",
+		9: "hash-foreignscraper",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
