@@ -5,9 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Format fiatQuotation structs as influxdb points and write them
 func (db *DB) SetFiatPriceUSD(fqs []*FiatQuotation) error {
-	log.Println("Writing quotation")
-
 	for _, fq := range fqs {
 		tags := map[string]string{
 			"quote_currency": fq.QuoteCurrency,

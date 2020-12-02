@@ -98,7 +98,7 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 
 	var fqs []*models.FiatQuotation
 
-	// Format and save each value
+	// Format each value as a fiatQuotation struct and put them into the fqs slice
 	for _, o := range xmlSheet.Obs {
 		if o.Price.Value == "NaN" {
 			continue
@@ -137,7 +137,6 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 			}
 
 			if usdFor1Euro == 0 {
-				fmt.Println("YESSS")
 				continue
 			}
 
@@ -155,6 +154,7 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 		}
 	}
 
+	// Write quotations on influxdb
 	err = datastore.SetFiatPriceUSD(fqs)
 	if err != nil {
 		log.Printf("Error on SetFiatPriceUSD: %v\n", err)
