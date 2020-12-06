@@ -20,8 +20,8 @@ var (
 )
 
 const (
-	wsDial   = "ws://159.69.120.42:8546/"
-	restDial = "http://159.69.120.42:8545/"
+	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -31,6 +31,7 @@ type UniswapToken struct {
 	Address  common.Address
 	Symbol   string
 	Decimals uint8
+	Name     string
 }
 
 type UniswapPair struct {
@@ -184,11 +185,24 @@ func (s *UniswapScraper) mainLoop() {
 							log.Error("error getting swap data: ", err)
 						}
 
+						token0 := dia.Token{
+							Address: pair.Token0.Address.String(),
+							Symbol:  pair.Token0.Symbol,
+							Name:    pair.Token0.Name,
+						}
+						token1 := dia.Token{
+							Address: pair.Token0.Address.String(),
+							Symbol:  pair.Token0.Symbol,
+							Name:    pair.Token0.Name,
+						}
+
 						t := &dia.Trade{
 							Symbol:         ps.pair.Symbol,
 							Pair:           ps.pair.ForeignName,
 							Price:          price,
 							Volume:         volume,
+							BaseToken:      token0,
+							QuoteToken:     token1,
 							Time:           time.Unix(swap.Timestamp, 0),
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
@@ -377,15 +391,28 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 		log.Error(err)
 		return UniswapPair{}, err
 	}
+
+	name0, err := s.GetName(address0)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
+	name1, err := s.GetName(address1)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
 	token0 := UniswapToken{
 		Address:  address0,
 		Symbol:   symbol0,
 		Decimals: decimals0,
+		Name:     name0,
 	}
 	token1 := UniswapToken{
 		Address:  address1,
 		Symbol:   symbol1,
 		Decimals: decimals1,
+		Name:     name1,
 	}
 	foreignName := symbol0 + "-" + symbol1
 	pair = UniswapPair{
@@ -407,6 +434,19 @@ func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint
 		return
 	}
 	decimals, err = contract.Decimals(&bind.CallOpts{})
+
+	return
+}
+
+func (s *UniswapScraper) GetName(tokenAddress common.Address) (name string, err error) {
+
+	var contract *uniswapcontract.IERC20Caller
+	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, s.RestClient)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	name, err = contract.Name(&bind.CallOpts{})
 
 	return
 }

@@ -28,6 +28,8 @@ const (
 type GnosisToken struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type GnosisScraper struct {
@@ -51,13 +53,13 @@ type GnosisScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[uint16]*GnosisToken
-	contract common.Address
+	contract    common.Address
 }
 
 func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	scraper := &GnosisScraper{
 		exchangeName:   exchange.Name,
-		contract:   exchange.Contract,
+		contract:       exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -113,9 +115,16 @@ func (scraper *GnosisScraper) loadTokens() {
 		if err != nil {
 			log.Error(err)
 		}
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+
 		scraper.tokens[i] = &GnosisToken{
 			Symbol:   symbol,
 			Decimals: decimals,
+			Address:  tokenAddress.String(),
+			Name:     name,
 		}
 
 		scraper.tokens[i].normalizeETH()
@@ -173,10 +182,26 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
 	} else {
 		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
+			buyToken := scraper.tokens[trade.BuyToken]
+			sellToken := scraper.tokens[trade.SellToken]
+
+			token0 := dia.Token{
+				Address: buyToken.Address,
+				Symbol:  buyToken.Symbol,
+				Name:    buyToken.Name,
+			}
+			token1 := dia.Token{
+				Address: sellToken.Address,
+				Symbol:  sellToken.Symbol,
+				Name:    sellToken.Name,
+			}
+
 			trade := &dia.Trade{
 				Symbol:         symbol,
 				Pair:           pairScraper.pair.ForeignName,
 				Price:          price,
+				BaseToken:      token0,
+				QuoteToken:     token1,
 				Volume:         volume,
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
@@ -283,7 +308,6 @@ func (t *GnosisToken) normalizeETH() {
 func (scraper *GnosisScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
-
 
 func (scraper *GnosisScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()

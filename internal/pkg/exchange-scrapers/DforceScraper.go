@@ -29,6 +29,8 @@ const (
 type DforceToken struct {
 	Symbol   string
 	Decimals uint8
+	Address string
+	Name string
 }
 
 type DforceScraper struct {
@@ -134,9 +136,15 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		if err != nil {
 			log.Error(err)
 		}
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		dfToken := &DforceToken{
 			Symbol:   symbol,
 			Decimals: decimals,
+			Address: tokenAddress.String(),
+			Name: name,
 		}
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
