@@ -1151,7 +1151,7 @@ func NameForSymbol(symbol string) string {
 	case "DTB":
 		return "Databits"
 	case "UNI":
-		return "Universe"
+		return "Uniswap"
 	case "XLR":
 		return "Solaris"
 	case "IMX":

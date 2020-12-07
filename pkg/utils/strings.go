@@ -4,6 +4,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// UniqueStrings returns a subslice of @s such that each entry only appears once
+func UniqueStrings(s []string) []string {
+	if len(s) == 0 {
+		return []string{}
+	}
+	set := make(map[string]struct{})
+	sUnique := []string{}
+	for _, val := range s {
+		if _, ok := set[val]; !ok {
+			sUnique = append(sUnique, val)
+		}
+	}
+	return sUnique
+}
+
 // Contains takes a slice of strings and a string and checks if it is contained in the slice.
 func Contains(s *[]string, str string) bool {
 	for _, a := range *s {

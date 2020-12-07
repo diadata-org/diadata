@@ -55,9 +55,9 @@ type ZeroxScraper struct {
 	tokens      map[string]*ZeroxToken
 }
 
-func NewZeroxScraper(exchangeName string) *ZeroxScraper {
+func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
 	scraper := &ZeroxScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

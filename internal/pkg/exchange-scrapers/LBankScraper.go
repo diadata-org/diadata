@@ -47,13 +47,13 @@ type LBankScraper struct {
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper(exchangeName string) *LBankScraper {
+func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*LBankPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

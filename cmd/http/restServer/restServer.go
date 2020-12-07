@@ -216,6 +216,8 @@ func main() {
 		dia.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
 		dia.GET("/FarmingPoolData/:protocol/:poolID/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
 
+		dia.GET("CryptoDerivatives/:type/:name", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
+
 		// Endpoints for interestrates
 		dia.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
 		dia.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
@@ -234,6 +236,10 @@ func main() {
 		dia.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		dia.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		dia.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
+
+		// Gold asset
+		dia.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
+		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

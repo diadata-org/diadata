@@ -40,12 +40,12 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
+func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*CoinBasePairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}

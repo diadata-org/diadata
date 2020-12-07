@@ -52,13 +52,13 @@ type OKExScraper struct {
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper(exchangeName string) *OKExScraper {
+func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*OKExPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
