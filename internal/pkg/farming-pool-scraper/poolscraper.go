@@ -10,8 +10,8 @@ import (
 const (
 	// Determine frequency of scraping
 	refreshRateDelay = time.Second * 60
-	restDial         = "https://mainnet.infura.io/v3/614ccde97fa84d778b2cf1c3a5942d01" //"http://159.69.120.42:8545/"
-	wsDial           = "https://mainnet.infura.io/v3/614ccde97fa84d778b2cf1c3a5942d01" //"ws://159.69.120.42:8546/"
+	restDial         = "http://159.69.120.42:8545/"
+	wsDial           = "ws://159.69.120.42:8546/"
 )
 
 func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper {
