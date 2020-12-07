@@ -20,5 +20,46 @@ func (db *DB) GetPrice(symbol string, exchange string) (float64, error) {
 }
 
 func (db *DB) GetPriceYesterday(symbol string, exchange string) (float64, error) {
-	return db.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange)), time.Now().Unix()-WindowYesterday)
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange)
+		),
+		time.Now().Unix()-WindowYesterday
+	)
+}
+
+func (db *DB) GetPrice1h(symbol string, exchange string) (float64, error) {
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange)
+		),
+		time.Now().Unix()-Window1h
+	)
+}
+
+func (db *DB) GetPrice7d(symbol string, exchange string) (float64, error) {
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange)
+		),
+		time.Now().Unix()-Window7d
+	)
+}
+
+func (db *DB) GetPrice14d(symbol string, exchange string) (float64, error) {
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange)
+		),
+		time.Now().Unix()-Window14d
+	)
+}
+
+func (db *DB) GetPrice30d(symbol string, exchange string) (float64, error) {
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange)
+		),
+		time.Now().Unix()-Window30d
+	)
 }
