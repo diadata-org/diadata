@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,11 +20,9 @@ import (
 )
 
 const (
-	dforceStartBlock            = uint64(10080772 - 5250)
-	dforceStartBlockToFindPairs = uint64(10080772 - 5250)
-
-	dforceWsDial   = "ws://159.69.120.42:8546/"
-	dforceRestDial = "http://159.69.120.42:8545/"
+	dforceWsDial         = "ws://159.69.120.42:8546/"
+	dforceRestDial       = "http://159.69.120.42:8545/"
+	dforceLookBackBlocks = 6 * 60 * 24 * 20
 )
 
 type DforceToken struct {
@@ -100,7 +99,13 @@ func (scraper *DforceScraper) loadTokens() {
 
 	}
 
-	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: dforceStartBlockToFindPairs})
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(dforceLookBackBlocks)
+
+	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: startblock})
 	if err != nil {
 		log.Error(err)
 	}
@@ -150,9 +155,14 @@ func (scraper *DforceScraper) subscribeToTrades() error {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(25250)
+
 	sink := make(chan *dforce.DforceSwap)
-	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &start}, sink)
+	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &startblock}, sink)
 	if err != nil {
 		log.Error(err)
 		return err
