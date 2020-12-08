@@ -271,6 +271,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// Bitmax CEX Chart Point
+	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Bitmax from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawBitmax, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Bitmax Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Maker DEX Chart Point
 	rawMaker, err := getDEXFromDia("Maker", "ETH")
 	if err != nil {
