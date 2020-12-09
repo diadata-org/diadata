@@ -20,7 +20,7 @@ You can execute an oracle call as follows:
    4. Pool ID.
 
 As of now, the following list of pools is available in this oracle:  
-- Balancer: largest WETH/WBTC pool \(by market cap\)  
+- BALANCER: largest WETH/WBTC pool \(by market cap\)  
 - CVAULT: WETH pool  
-- yfi \(yearn.finance\): WETH pool
+- YFI \(yearn.finance\): WETH pool
 
