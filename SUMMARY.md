@@ -29,6 +29,7 @@
     * [Chart Points](documentation/oracle-documentation/chart-points.md)
     * [Fiat Prices](documentation/oracle-documentation/fiat-prices.md)
     * [Coingecko Quotations](documentation/oracle-documentation/guest-quotations.md)
+    * [Farming Pools](documentation/oracle-documentation/farming-pools.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
 * [Security Bounty Program](security-bounty-program.md)
