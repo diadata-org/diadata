@@ -2,164 +2,18 @@
 
 ## Digital assets
 
-<table>
-  <thead>
-    <tr>
-      <th style="text-align:left">Data Type</th>
-      <th style="text-align:left">Description</th>
-      <th style="text-align:left">Methodology</th>
-      <th style="text-align:left">API Documentation</th>
-      <th style="text-align:left">Oracle Link</th>
-      <th style="text-align:left">API Update Period</th>
-      <th style="text-align:left">Oracle Update Period</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align:left">Symbol</td>
-      <td style="text-align:left">Symbol for cryptocurrency</td>
-      <td style="text-align:left">Retrieval as part of a trading pair</td>
-      <td style="text-align:left"><a href="https://api.diadata.org/v1/symbols">Symbols</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/crypto-assets">Symbol Oracle</a>
-      </td>
-      <td style="text-align:left">1 day</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Quotation</td>
-      <td style="text-align:left">Most recent price of a cryptocurrency in USD</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices">Pricing Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#quotation">Quotation</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/crypto-assets">Price Oracle</a>
-      </td>
-      <td style="text-align:left">2 min.</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Exchange</td>
-      <td style="text-align:left">Cryptocurrency exchange name</td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges">Exchanges</a>
-      </td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left">Depending on assignments or fundings on our platform</td>
-      <td style="text-align:left">-</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Chart Point</td>
-      <td style="text-align:left">Coin Prices as processed by our pricing backend, organized by exchange
-        and filter</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices">Pricing Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#chart-points">Chart Points</a>
-      </td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left">2 min.</td>
-      <td style="text-align:left">-</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Supply</td>
-      <td style="text-align:left">Circulating supply of cryptocurrencies</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/supplynumbers">Supply Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#supply">Supply</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/crypto-assets">Supply Oracle</a>
-      </td>
-      <td style="text-align:left">1 day</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Trade Volume</td>
-      <td style="text-align:left">Trading volume of a cryptocurrency</td>
-      <td style="text-align:left">Added volumes of raw trading data after filtering as described <a href="https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices">here</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#trade-volume">Trade Volumes</a>
-      </td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left">1 day</td>
-      <td style="text-align:left"></td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Raw Crypto Trade</td>
-      <td style="text-align:left">Trading data</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data">Trading Data Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#raw-crypto-trades">Raw Crypto Trades</a>
-      </td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left">2 min.</td>
-      <td style="text-align:left"></td>
-    </tr>
-    <tr>
-      <td style="text-align:left">CVI Index</td>
-      <td style="text-align:left">Crypto volatility index measuring volatility in cryptocurrency markets</td>
-      <td
-      style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/cvi">CVI Methodology</a>
-        </td>
-        <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#cvi-index">CVI Index</a>
-        </td>
-        <td style="text-align:left"><em>soon</em>
-        </td>
-        <td style="text-align:left">5 min.</td>
-        <td style="text-align:left"></td>
-    </tr>
-    <tr>
-      <td style="text-align:left">DeFi Interest Rate</td>
-      <td style="text-align:left">Lending/Borrowing rates on DeFi protocols</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data#lending-borrowing-data">Lending Protocol Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate">DeFi Lending Rate</a> 
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states">DeFi Lending Oracle</a>
-      </td>
-      <td style="text-align:left">1 min.</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">DeFi Lending Protocol State</td>
-      <td style="text-align:left">Total value locked in a lending/borrowing protocol</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data#lending-borrowing-data">Lending Protocol Methodology</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-state">DeFi Lending Protocol</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states">DeFi  Lending Oracle</a>
-      </td>
-      <td style="text-align:left">1 min.</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Guest Quotation</td>
-      <td style="text-align:left">Quotations accumulated with methodology of partner sites</td>
-      <td style="text-align:left">-</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#guest-quotation">Guest Quotation</a>
-      </td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/guest-quotations">Coingecko Oracle</a>
-      </td>
-      <td style="text-align:left">2 min.</td>
-      <td style="text-align:left">1 day</td>
-    </tr>
-    <tr>
-      <td style="text-align:left">Farming Pool</td>
-      <td style="text-align:left">Rates and balances of crypto farming pools</td>
-      <td style="text-align:left"><a href="https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming">Pool Rates</a>
-      </td>
-      <td style="text-align:left">
-        <p><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#farming-pools">List of Pools</a>
-          <br
-          />--</p>
-        <p><a href="https://docs.diadata.org/documentation/api-1/api-endpoints#farming-pool-data">Pool Data</a>
-        </p>
-      </td>
-      <td style="text-align:left"></td>
-      <td style="text-align:left">2 min.</td>
-      <td style="text-align:left">1d</td>
-    </tr>
-  </tbody>
-</table>
+| Data Type | Description | Methodology | API Documentation | Oracle Link | Update Period |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Symbol | Symbol for cryptocurrency | Retrieval as part of a trading pair | [Symbols](https://api.diadata.org/v1/symbols) | [Symbol Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 1 day |
+| Quotation | Most recent price of a cryptocurrency in USD | [Pricing Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Quotation](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) | [Price Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 2 min. |
+| Exchange | Cryptocurrency exchange name | - | [Exchanges](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) | - | Depending on assignments or fundings on our platform |
+| Chart Point | Coin Prices as processed by our pricing backend, organized by exchange and filter | [Pricing Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Chart Points](https://docs.diadata.org/documentation/api-1/api-endpoints#chart-points) | - | 2 min. |
+| Supply | Circulating supply of cryptocurrencies | [Supply Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/supplynumbers) | [Supply](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) | [Supply Oracle](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | 1 day |
+| Trade Volume | Trading volume of a cryptocurrency | Added volumes of raw trading data after filtering as described [here](https://docs.diadata.org/documentation/methodology/digital-assets/exchangeprices) | [Trade Volumes](https://docs.diadata.org/documentation/api-1/api-endpoints#trade-volume) | - | 1 day |
+| Raw Crypto Trade | Trading data  | [Trading Data Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data) | [Raw Crypto Trades](https://docs.diadata.org/documentation/api-1/api-endpoints#raw-crypto-trades) | - | 2 min. |
+| CVI Index | Crypto volatility index measuring volatility in cryptocurrency markets | [CVI Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cvi) | [CVI Index](https://docs.diadata.org/documentation/api-1/api-endpoints#cvi-index) | _soon_ | 5 min. |
+| DeFi Interest Rate | Lending/Borrowing rates on DeFi protocols | [Lending Protocol Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data#lending-borrowing-data) | [DeFi Lending Rate](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate)  | [DeFi Lending Oracle](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | 1 min. |
+| DeFi Lending Protocol State | Total value locked in a lending/borrowing protocol | [Lending Protocol Methodology](https://docs.diadata.org/documentation/methodology/digital-assets/cryptocurrency-trading-data#lending-borrowing-data) | [DeFi Lending Protocol](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-state) | [DeFi  Lending Oracle](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | 1 min. |
 
 ## Traditional Assets
 
