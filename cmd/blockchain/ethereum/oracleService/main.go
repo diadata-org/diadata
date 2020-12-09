@@ -94,6 +94,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// LENDING/BORROWING RATES
 	// --------------------------------------------------------
 
+	time.Sleep(2 * time.Minute)
+
 	// CREAM Rates
 	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
 	if err != nil {
