@@ -287,19 +287,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Maker DEX Chart Point
-	rawMaker, err := getDEXFromDia("Maker", "ETH")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
-		return err
-	}
+	// // Maker DEX Chart Point
+	// rawMaker, err := getDEXFromDia("Maker", "ETH")
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
+	// 	return err
+	// }
 
-	err = updateDEX(rawMaker, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Maker Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
+	// err = updateDEX(rawMaker, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update Maker Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	// Curvefi DEX Chart Point
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
@@ -343,19 +343,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Loopring Chart Point
-	rawLoopring, err := getDEXFromDia("Loopring", "ETH")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
-		return err
-	}
+	// // Loopring Chart Point
+	// rawLoopring, err := getDEXFromDia("Loopring", "ETH")
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
+	// 	return err
+	// }
 
-	err = updateDEX(rawLoopring, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Loopring Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
+	// err = updateDEX(rawLoopring, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update Loopring Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	// Bancor Chart Point
 	rawBancor, err := getDEXFromDia("Bancor", "ETH")
