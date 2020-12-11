@@ -94,6 +94,8 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// LENDING/BORROWING RATES
 	// --------------------------------------------------------
 
+	time.Sleep(2 * time.Minute)
+
 	// CREAM Rates
 	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
 	if err != nil {
@@ -271,19 +273,33 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Maker DEX Chart Point
-	rawMaker, err := getDEXFromDia("Maker", "ETH")
+	// Bitmax CEX Chart Point
+	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
 	if err != nil {
-		log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
+		log.Fatalf("Failed to retrieve Bitmax from DIA: %v", err)
 		return err
 	}
 
-	err = updateDEX(rawMaker, auth, contract)
+	err = updateDEX(rawBitmax, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Maker Oracle: %v", err)
+		log.Fatalf("Failed to update Bitmax Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)
+
+	// // Maker DEX Chart Point
+	// rawMaker, err := getDEXFromDia("Maker", "ETH")
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
+	// 	return err
+	// }
+
+	// err = updateDEX(rawMaker, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update Maker Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	// Curvefi DEX Chart Point
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
@@ -327,19 +343,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Loopring Chart Point
-	rawLoopring, err := getDEXFromDia("Loopring", "ETH")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
-		return err
-	}
+	// // Loopring Chart Point
+	// rawLoopring, err := getDEXFromDia("Loopring", "ETH")
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve Loopring from DIA: %v", err)
+	// 	return err
+	// }
 
-	err = updateDEX(rawLoopring, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Loopring Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
+	// err = updateDEX(rawLoopring, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update Loopring Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	// Bancor Chart Point
 	rawBancor, err := getDEXFromDia("Bancor", "ETH")
@@ -410,6 +426,52 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// --------------------------------------------------------
+	// FARMING POOL RATES
+	// --------------------------------------------------------
+
+	// Balancer WETH/WBTC pool rate
+	rawBalancer, err := getFarmingPoolFromDia("Balancer", "0x1efF8aF5D577060BA4ac8A29A13525bb0Ee2A3D5")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Balancer pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawBalancer, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update Balancer Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// CVAULT WETH pool rate
+	rawCvault, err := getFarmingPoolFromDia("Cvault", "0")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CVAULT pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawCvault, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update CVAULT Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// YFI WETH pool rate
+	rawYFI, err := getFarmingPoolFromDia("yfi", "WETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve YFI pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawYFI, auth, contract)
+	if err != nil {
+		log.Fatalf("Failed to update YFI Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Top 15 coins
 	rawCoins, err := getToplistFromDia()
 	if err != nil {
@@ -438,6 +500,10 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 
 	return nil
 }
+
+// ------------------------------------------------------------------------------------------------
+// Update methods
+// ------------------------------------------------------------------------------------------------
 
 func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
 	symbol := strings.ToUpper(coin.Symbol)
@@ -542,6 +608,19 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 	return nil
 }
 
+func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+	protocolName := poolData.ProtocolName
+	poolID := poolData.PoolID
+	rate := poolData.Rate
+	balance := poolData.Balance
+	err := updateOracle(contract, auth, protocolName, poolID, int64(rate*100000), int64(balance*100000))
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+	return nil
+}
+
 func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) error {
 	var err error
 	if deployedContract != "" {
@@ -564,6 +643,10 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	}
 	return nil
 }
+
+// ------------------------------------------------------------------------------------------------
+// Data retrieval from DIA API
+// ------------------------------------------------------------------------------------------------
 
 func getCoinDetailsFromDia(symbol string) (*models.Coin, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/symbol/" + symbol)
@@ -744,6 +827,30 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 		return nil, err
 	}
 	return &quotation, nil
+}
+
+func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool, error) {
+	response, err := http.Get(dia.BaseUrl + "v1/FarmingPoolData/" + strings.ToUpper(protocol) + "/" + poolID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var fp models.FarmingPool
+	err = fp.UnmarshalBinary(contents)
+	if err == nil {
+		return &fp, nil
+	}
+	return nil, err
 }
 
 func updateOracle(

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -22,4 +23,15 @@ type FarmingPoolType struct {
 	ProtocolName string
 	InputAsset   []string
 	PoolID       string
+}
+
+func (fp *FarmingPool) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &fp); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (fp *FarmingPool) MarshalBinary() ([]byte, error) {
+	return json.Marshal(fp)
 }

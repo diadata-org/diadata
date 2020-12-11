@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,11 +20,10 @@ import (
 )
 
 const (
-	curveFiContract = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
-	curveStartBlock = uint64(10780772 - 5250)
-
-	curveWsDial   = "ws://159.69.120.42:8546/"
-	curveRestDial = "http://159.69.120.42:8545/"
+	curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
+	curveFiLookBackBlocks = 6 * 60 * 24 * 20
+	curveWsDial           = "ws://159.69.120.42:8546/"
+	curveRestDial         = "http://159.69.120.42:8545/"
 )
 
 type CurveCoin struct {
@@ -168,8 +168,14 @@ func (scraper *CurveFIScraper) watchNewPools() {
 		log.Error(err)
 	}
 	sink := make(chan *curvefi.CurvefiPoolAdded)
-	start := startBlock
-	sub, err := contract.WatchPoolAdded(&bind.WatchOpts{Start: &start}, sink, nil)
+
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(curveFiLookBackBlocks)
+
+	sub, err := contract.WatchPoolAdded(&bind.WatchOpts{Start: &startblock}, sink, nil)
 	if err != nil {
 		log.Error(err)
 	}
@@ -303,8 +309,14 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 		log.Fatal(err)
 	}
 	sink := make(chan *curvepool.CurvepoolTokenExchange)
-	start := curveStartBlock
-	sub, err := filterer.WatchTokenExchange(&bind.WatchOpts{Start: &start}, sink, nil)
+
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(15250)
+
+	sub, err := filterer.WatchTokenExchange(&bind.WatchOpts{Start: &startblock}, sink, nil)
 
 	if err != nil {
 		log.Error(err)
