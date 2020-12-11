@@ -27,6 +27,9 @@ func main() {
 	case "Coingecko":
 		log.Println("Foreign Scraper: Start scraping data from Coingecko")
 		sc = scrapers.NewCoingeckoScraper(ds)
+	case "CoinMarketCap":
+		log.Println("Foreign Scraper: Start scraping data from CoinMarketCap")
+		sc = scrapers.NewCoinMarketCapScraper(ds)
 	}
 
 	wg.Add(1)

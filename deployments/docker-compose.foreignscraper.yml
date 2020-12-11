@@ -15,6 +15,21 @@ services:
       options:
         max-size: "50m"
 
+  coinmarketcapscraper:
+    depends_on: [genericforeignscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericforeignscraper:latest
+    command: /bin/foreignscraper -foreignType CoinMarketCap
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+      - CMC_API_KEY=${CMC_API_KEY}
+    logging:
+      options:
+        max-size: "50m"
+
   genericforeignscraper:
     build:
       context: ../../../..
