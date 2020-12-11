@@ -155,5 +155,6 @@ func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
 	q.Symbol = q.Symbol + "-gram"
 	q.Name = q.Name + "-gram"
 	q.Price = q.Price / 31.1034768
+	*q.PriceYesterday = *q.PriceYesterday / 31.1034768
 	return q, err
 }
