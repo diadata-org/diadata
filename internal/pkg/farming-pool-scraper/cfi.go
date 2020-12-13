@@ -92,14 +92,22 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 		}
 
-		fmt.Println(poolDetail.PoolName)
-		inflationRate, _ := gauge.InflationRate(&bind.CallOpts{})
-		poolInflationRate := new(big.Float).SetInt(inflationRate)
-		rates, _ := poolInflationRate.Quo(poolInflationRate, new(big.Float).SetFloat64(1e18)).Float64()
+		virtualPrice, _ := platform.GetVirtualPrice(&bind.CallOpts{})
+		virtualPriceRate := new(big.Float).SetInt(virtualPrice)
+		rates, _ := virtualPriceRate.Quo(virtualPriceRate, new(big.Float).SetFloat64(1e18)).Float64()
 
-		totalSupply, _ := gauge.TotalSupply(&bind.CallOpts{})
-		totalSupplyed := new(big.Float).SetInt(totalSupply)
-		balances, _ := totalSupplyed.Quo(totalSupplyed, new(big.Float).SetFloat64(1e18)).Float64()
+		lpTokenAddress, _ := gauge.LpToken(&bind.CallOpts{})
+		fmt.Println(lpTokenAddress.Hex())
+
+		bal, _ := gauge.BalanceOf(&bind.CallOpts{}, lpTokenAddress)
+
+		//inflationRate, _ := gauge.InflationRate(&bind.CallOpts{})
+		balVal := new(big.Float).SetInt(bal)
+		balances, _ := balVal.Quo(balVal, new(big.Float).SetFloat64(1e18)).Float64()
+
+		//totalSupply, _ := gauge.TotalSupply(&bind.CallOpts{})
+		//totalSupplyed := new(big.Float).SetInt(totalSupply)
+		//balances, _ := totalSupplyed.Quo(totalSupplyed, new(big.Float).SetFloat64(1e18)).Float64()
 
 		if poolDetail.PoolName == "sUSD" {
 			susd, err := suds.NewSudsCaller(common.HexToAddress(poolDetail.PoolAddress[0]), cv.RestClient)
@@ -192,13 +200,6 @@ func (cv *CFIPool) scrapePools() (err error) {
 
 			coinsAddress1, _ := special.Coins(&bind.CallOpts{}, big.NewInt(1))
 			coins = append(coins, coinsAddress1.Hex())
-			if poolDetail.PoolName != "hbtc" {
-				coinsAddress2, _ := special.Coins(&bind.CallOpts{}, big.NewInt(2))
-				coins = append(coins, coinsAddress2.Hex())
-
-				coinsAddress3, _ := special.Coins(&bind.CallOpts{}, big.NewInt(3))
-				coins = append(coins, coinsAddress3.Hex())
-			}
 		}
 
 		var pr models.FarmingPool
