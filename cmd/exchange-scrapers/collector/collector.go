@@ -11,8 +11,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
+
+var log *logrus.Logger
+
+func init() {
+	log = logrus.New()
+}
 
 const (
 	watchdogDelay = 60.0 * 20
@@ -57,7 +63,6 @@ func init() {
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
-
 	ds, err := models.NewRedisDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
@@ -65,6 +70,7 @@ func main() {
 
 	}
 	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
+	log.Info("available pairs:", len(pairsExchange))
 
 	if err != nil || len(pairsExchange) == 0 {
 		log.Error("error on GetAvailablePairsForExchange", err)

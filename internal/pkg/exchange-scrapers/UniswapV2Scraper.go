@@ -71,7 +71,7 @@ type UniswapScraper struct {
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
-	log.Infoln("NewUniswapScraper ", exchange.Name)
+	log.Info("NewUniswapScraper ", exchange.Name)
 
 	var wsClient, restClient *ethclient.Client
 	var err error
@@ -143,9 +143,11 @@ func (s *UniswapScraper) mainLoop() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Info("Found ", numPairs, " pairs")
+	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
 
 	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("bancor: No pairs to scrap provided")
+		s.error = errors.New("Uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
 	for i := 0; i < numPairs; i++ {
@@ -159,7 +161,7 @@ func (s *UniswapScraper) mainLoop() {
 			continue
 		}
 		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			log.Info("skip pair, symbol is blacklisted")
+			log.Info("skip pair ", pair.ForeignName, ", symbol is blacklisted")
 			continue
 		}
 		pair.normalizeUniPair()
@@ -198,8 +200,9 @@ func (s *UniswapScraper) mainLoop() {
 					}
 				}
 			}()
+		} else {
+			log.Info("Skipping pair due to no pairScraper being available")
 		}
-
 	}
 
 	// s.cleanup(err)
@@ -325,15 +328,26 @@ func (up *UniswapPair) normalizeUniPair() {
 
 // GetPairByID returns the UniswapPair with the integer id @num
 func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
+	log.Info("Get pair ID: ", num)
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
 	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
+		log.Error(err)
 		return UniswapPair{}, err
 	}
 	numToken := big.NewInt(num)
 	pairAddress, err := contract.AllPairs(&bind.CallOpts{}, numToken)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
 
-	return s.GetPairByAddress(pairAddress)
+	pair, err := s.GetPairByAddress(pairAddress)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
+	return pair, err
 }
 
 // GetPairByAddress returns the UniswapPair with pair address @pairAddress
