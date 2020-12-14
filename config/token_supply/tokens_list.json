@@ -193,6 +193,10 @@
       "Name": "TNC Coin"
     },
     {
+      "Address": "0xaea46a60368a7bd060eec7df8cba43b7ef41ad85",
+      "Name": "Fetch.ai"
+    },
+    {
       "Address": "0x56d811088235f11c8920698a204a5010a788f4b3",
       "Name": "bZx Protocol"
     },
@@ -507,6 +511,10 @@
     {
       "Address": "0x38e4adb44ef08f22f5b5b76a8f0c2d0dcbe7dca1",
       "Name": "PowerPool Concentrated Voting Power"
+    },
+    {
+      "Address": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+      "Name": "Polkastarter"
     },
     {
       "Address": "0xa0246c9032bc3a600820415ae600c6388619a14d",
@@ -2521,6 +2529,10 @@
       "Name": "Exchage Payment Coin"
     },
     {
+      "Address": "0x913d8adf7ce6986a8cbfee5a54725d9eea4f0729",
+      "Name": "EasyFi"
+    },
+    {
       "Address": "0x9d3e0892d11f19f5181d4a4c5d04187a9e0d7032",
       "Name": "Dragonbit"
     },
@@ -2647,6 +2659,14 @@
     {
       "Address": "0x9cb1aeafcc8a9406632c5b084246ea72f62d37b6",
       "Name": "LBK"
+    },
+    {
+      "Address": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48",
+      "Name": "Ocean Protocol"
+    },
+    {
+      "Address": "0xdc9ac3c20d1ed0b540df9b1fedc10039df13f99c",
+      "Name": "Utrust"
     },
     {
       "Address": "0xf84df2db2c87dd650641f8904af71ebfc3dde0ea",
@@ -3431,10 +3451,6 @@
     {
       "Address": "0xaa0bb10cec1fa372eb3abc17c933fc6ba863dd9e",
       "Name": "Hi Mutual Society"
-    },
-    {
-      "Address": "0x61bfc979ea8160ede9b862798b7833a97bafa02a",
-      "Name": "RELEASE"
     },
     {
       "Address": "0xea54c81fe0f72de8e86b6dc78a9271aa3925e3b5",
