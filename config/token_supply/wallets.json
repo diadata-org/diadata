@@ -777,18 +777,17 @@
         },
       {
         "asset": "0x7afebbb46fdb47ed17b22ed075cde2447694fb9e",
-        "wallets": [
-          "0x97eb27f06e21299a8cf544e157607f181304cf7f",
+        "wallets": [       
           "0x7df5273ad9a6fcce64d45c64c1e43cfb6f861725",
           "0xb251892d6855f7f87023fadf07dc57659bfd7bea",
+          "0x8aa8c6b8897665d62d03e4c6dfc823142a4b44d8",
+          "0xb4a098884a5fef077c2c79fec8f85b53292a9366",
+          "0x97eb27f06e21299a8cf544e157607f181304cf7f",
           "0x6e382b32079b1f7d9ea4b6912f49a13c39a0fa92",
           "0x13a6bc0b79fe2071db46affdf547aa22d999db21",
-          "0x8aa8c6b8897665d62d03e4c6dfc823142a4b44d8",
           "0x457029604bf51474307f0add615ffc8e20c967f5",
-          "0xb4a098884a5fef077c2c79fec8f85b53292a9366",
           "0xf6d7ca4cfdc0348485c7d382ea30677c660573c8",
           "0x97eb27f06e21299a8cf544e157607f181304cf7f"
-
           ]
         },
       {
@@ -1167,6 +1166,83 @@
             "0xbD6806e7EFdb841E3e92EAD10c30b4CCfB922405",
             "0xAFf6F35A83A31758898553A218712844F8AE517f"
             ]
+        },
+        {
+          "asset": "0xdc9ac3c20d1ed0b540df9b1fedc10039df13f99c",
+          "wallets":[
+            "0x45d48674714cb89183d668eb16053dcac1993693"
+          ]
+        },
+        {
+          "asset": "0x38e4adb44ef08f22f5b5b76a8f0c2d0dcbe7dca1",
+          "wallets":[
+            "0xb258302c3f209491d604165549079680708581cc"
+          ]
+        },
+        {
+          "asset": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+          "wallets":[
+            "0xa8ff9e209e70ccbde820b75c51ece964ee165e04",
+            "0xdd2aa97fb05ae47d1227faac488ad8678e8ea4f2"
+          ]
+        },
+        {
+          "asset": "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577",
+          "wallets":[
+            "0xd9fdb683feb3efb3ed6fb7daa69dc1728e3d93a1",
+            "0x84C0E19D62941B34d03cFfe43117159d259ca5F3",
+            "0x0000000000000000000000000000000000000000",
+            "0x7e537e8b5028a32166f06c8664cde9d608487428",
+            "0x175d6cbAEFf93734ADa4C5430815F2208a6B040c",
+            "0x5813e4f22d1be8f9eaaaf3e6a480bb4b3a50a24b",
+            "0xFdb317591EC1b11d7FECe49Bfe424525F33FA7fC",
+            "0x26572bf2620108cb5006987e6348c07dc4e14a0f",
+            "0x8d704d4107cbe5ebe8c0236c5506b30bf8bad305",
+            "0x290e5484601986667dc6ca72119f2b85260ca92e",
+            "0xda745ea2e2a5461df62539f07a9eaba6cf36dc41",
+            "0xf29b6cfd7019df58267fbcba3c0915f66baca08e",
+            "0xbeb955a0af41c6553221daec9c9beb9b7ec216d9",
+            "0x81CA3D52a6cBf9f39d62eBb8B801c1E8b3c19beb",
+            "0x75e9f410e8d1d7240b67ec6fe35fa37580b814d9",
+            "0x44d771d0c998f524ff39ab6df64b72bce1d09566"
+          ]
+        },
+        {
+          "asset": "0x913d8adf7ce6986a8cbfee5a54725d9eea4f0729",
+          "wallets":[
+            "0xD200EF2BC40D3Db40FD70F4d03Ec067331bd1295",
+            "0xf59C2E9D4AB5736a1813738e5Aa5C3F5eAF94d9E",
+            "0x59D9fC089d3aeA0bd64fEDe07827D2F27FcF5513",
+            "0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8",
+            "0x8B5252e74C94b61432D1605a2FE71B486c9f5190",
+            "0x0c08D0fE35515f191fC8f0811CAdCfC6B2615b74"
+          ]
+        },
+        {
+          "asset": "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "wallets":[
+            "0x75398564ce69b7498da10a11ab06fd8ff549001c",
+            "0xbe6977e08d4479c0a6777539ae0e8fa27be4e9d6",
+            "0x5560d001f977df5e49ead7ab0bdd437c4ee3a99e",
+            "0x98c63b7b319dfbdf3d811530f2ab9dfe4983af9d",
+            "0xe0362f7445e3203a496f6f8b3d51cbb413b69be2",
+            "0xf37c348b7d19b17b29cd5cfa64cfa48e2d6eb8db",
+            "0xdad22a85ef8310ef582b70e4051e543f3153e11f"
+          ]
+        },
+        {
+          "asset": "0x408e41876cccdc0f92210600ef50372656052a38",
+          "wallets":["0x9a4cd44c1a55cfda565430dee9bfb54f2aacfd6a"]
+        },
+        {
+          "asset": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48",
+          "wallets":[
+            "0x7df5273ad9a6fcce64d45c64c1e43cfb6f861725",
+            "0xb251892d6855f7f87023fadf07dc57659bfd7bea",
+            "0x8aa8c6b8897665d62d03e4c6dfc823142a4b44d8",
+            "0xb4a098884a5fef077c2c79fec8f85b53292a9366"
+          ]
         }
+
   ]
 }

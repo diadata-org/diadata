@@ -22,7 +22,7 @@ import (
 const (
 	gnosisWsDial         = "ws://159.69.120.42:8546/"
 	gnosisRestDial       = "http://159.69.120.42:8545/"
-	gnosisLookBackBlocks = 6 * 60 * 24 * 20
+	gnosisLookBackBlocks = 6 * 60 * 24 * 7
 )
 
 type GnosisToken struct {
