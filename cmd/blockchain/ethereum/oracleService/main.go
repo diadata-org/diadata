@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -71,7 +72,7 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
-	periodicOracleUpdateHelper(topCoins, auth, contract)
+	periodicOracleUpdateHelper(topCoins, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
@@ -80,14 +81,14 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(topCoins, auth, contract)
+				periodicOracleUpdateHelper(topCoins, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 
 	// --------------------------------------------------------
 	// LENDING/BORROWING RATES
@@ -101,7 +102,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve CREAM data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawCream, auth, contract)
+	err = updateDefiRate(rawCream, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update CREAM Oracle: %v", err)
 		return err
@@ -114,7 +115,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve forTube data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawFortube, auth, contract)
+	err = updateDefiRate(rawFortube, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Fortube Oracle: %v", err)
 		return err
@@ -127,7 +128,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve ddex data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawDdex, auth, contract)
+	err = updateDefiRate(rawDdex, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update ddex Oracle: %v", err)
 		return err
@@ -140,7 +141,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve Nuo data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawNuo, auth, contract)
+	err = updateDefiRate(rawNuo, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Nuo Oracle: %v", err)
 		return err
@@ -153,7 +154,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve bZx data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawBzx, auth, contract)
+	err = updateDefiRate(rawBzx, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update bZx Oracle: %v", err)
 		return err
@@ -166,7 +167,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve Compound data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawCompound, auth, contract)
+	err = updateDefiRate(rawCompound, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Compound Oracle: %v", err)
 		return err
@@ -179,7 +180,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve DYDX data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawDydx, auth, contract)
+	err = updateDefiRate(rawDydx, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DYDX Oracle: %v", err)
 		return err
@@ -192,7 +193,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve Aave data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawAave, auth, contract)
+	err = updateDefiRate(rawAave, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Aave Oracle: %v", err)
 		return err
@@ -205,7 +206,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve Bitfinex data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiRate(rawBitfinex, auth, contract)
+	err = updateDefiRate(rawBitfinex, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Bitfinex Oracle: %v", err)
 		return err
@@ -222,7 +223,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve CREAM state data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiState(rawCreamState, auth, contract)
+	err = updateDefiState(rawCreamState, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update CREAM state Oracle: %v", err)
 		return err
@@ -235,7 +236,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve DYDX state data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiState(rawDydxState, auth, contract)
+	err = updateDefiState(rawDydxState, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DYDX state Oracle: %v", err)
 		return err
@@ -248,7 +249,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve Compound state data from DIA: %v", err)
 		return err
 	}
-	err = updateDefiState(rawCompoundState, auth, contract)
+	err = updateDefiState(rawCompoundState, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Compound state Oracle: %v", err)
 		return err
@@ -279,7 +280,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawBitmax, auth, contract)
+	err = updateDEX(rawBitmax, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Bitmax Oracle: %v", err)
 		return err
@@ -307,7 +308,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawCurvefi, auth, contract)
+	err = updateDEX(rawCurvefi, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Curvefi Oracle: %v", err)
 		return err
@@ -321,7 +322,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawGnosis, auth, contract)
+	err = updateDEX(rawGnosis, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Gnosis Oracle: %v", err)
 		return err
@@ -335,7 +336,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawUniswap, auth, contract)
+	err = updateDEX(rawUniswap, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Uniswap Oracle: %v", err)
 		return err
@@ -363,7 +364,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawBancor, auth, contract)
+	err = updateDEX(rawBancor, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err
@@ -377,7 +378,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(raw0x, auth, contract)
+	err = updateDEX(raw0x, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update 0x Oracle: %v", err)
 		return err
@@ -391,7 +392,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawKyber, auth, contract)
+	err = updateDEX(rawKyber, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Kyber Oracle: %v", err)
 		return err
@@ -405,7 +406,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateDEX(rawSushi, auth, contract)
+	err = updateDEX(rawSushi, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Sushi Oracle: %v", err)
 		return err
@@ -418,7 +419,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to retrieve token DIA from DIA: %v", err)
 		return err
 	}
-	err = updateCoin(*diaToken, auth, contract)
+	err = updateCoin(*diaToken, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DIA Token Oracle: %v", err)
 		return err
@@ -436,7 +437,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateFarmingPool(rawBalancer, auth, contract)
+	err = updateFarmingPool(rawBalancer, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Balancer Oracle: %v", err)
 		return err
@@ -450,7 +451,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateFarmingPool(rawCvault, auth, contract)
+	err = updateFarmingPool(rawCvault, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update CVAULT Oracle: %v", err)
 		return err
@@ -464,7 +465,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		return err
 	}
 
-	err = updateFarmingPool(rawYFI, auth, contract)
+	err = updateFarmingPool(rawYFI, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update YFI Oracle: %v", err)
 		return err
@@ -504,13 +505,13 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 // Update methods
 // ------------------------------------------------------------------------------------------------
 
-func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(coin.Symbol)
 	name := coin.Name
 	supply := coin.CirculatingSupply
 	price := coin.Price
 	// Get 5 digits after the comma by multiplying price with 100000
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(*supply))
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), int64(*supply))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -518,14 +519,14 @@ func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleServi
 	return nil
 }
 
-func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	for _, element := range topCoins {
 		symbol := strings.ToUpper(element.Symbol)
 		name := element.Name
 		supply := element.CirculatingSupply
 		price := element.Price
 		// Get 5 digits after the comma by multiplying price with 100000
-		err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(*supply))
+		err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), int64(*supply))
 		if err != nil {
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
@@ -535,14 +536,14 @@ func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *o
 	return nil
 }
 
-func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(dexData.DataPoints[0].Series[0].Values[0][3].(string))
 	name := dexData.DataPoints[0].Series[0].Values[0][1].(string)
 	supply := 0
 	price := dexData.DataPoints[0].Series[0].Values[0][4].(float64)
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for one exchange
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(supply))
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), int64(supply))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -550,13 +551,13 @@ func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracle
 	return nil
 }
 
-func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(ecbRate.Symbol)
 	name := strings.ToUpper(ecbRate.Symbol)
 	price := ecbRate.Rate
 	// Get 5 digits after the comma by multiplying price with 100000
 	// Set supply to 0, as we don't have a supply for fiat currencies
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -565,13 +566,13 @@ func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, cont
 	return nil
 }
 
-func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(defiRate.Asset)
 	name := strings.ToUpper(defiRate.Protocol)
 	lendingRate := defiRate.LendingRate
 	borrowingRate := defiRate.BorrowingRate
 	// Get 5 digits after the comma by multiplying price with 100000
-	err := updateOracle(contract, auth, name, symbol, int64(lendingRate*100000), int64(borrowingRate*100000))
+	err := updateOracle(conn, contract, auth, name, symbol, int64(lendingRate*100000), int64(borrowingRate*100000))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -580,12 +581,12 @@ func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *o
 	return nil
 }
 
-func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := ""
 	name := strings.ToUpper(defiState.Protocol.Name) + "-state"
 	price := defiState.TotalUSD
 	// Get 5 digits after the comma by multiplying price with 100000
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -594,11 +595,11 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	name := foreignQuotation.Source + "-" + foreignQuotation.Name
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), 0)
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -607,12 +608,12 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 	return nil
 }
 
-func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
+func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	protocolName := poolData.ProtocolName
 	poolID := poolData.PoolID
 	rate := poolData.Rate
 	balance := poolData.Balance
-	err := updateOracle(contract, auth, protocolName, poolID, int64(rate*100000), int64(balance*100000))
+	err := updateOracle(conn, contract, auth, protocolName, poolID, int64(rate*100000), int64(balance*100000))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -853,17 +854,31 @@ func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool,
 }
 
 func updateOracle(
+	client *ethclient.Client,
 	contract *oracleService.DiaOracle,
 	auth *bind.TransactOpts,
 	name string,
 	symbol string,
 	price int64,
 	supply int64) error {
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get 110% of the gas price
+	fmt.Println(gasPrice)
+	fGas := new(big.Float).SetInt(gasPrice)
+	fGas.Mul(fGas, big.NewFloat(1.1))
+	gasPrice, _ = fGas.Int(nil)
+	fmt.Println(gasPrice)
 	// Write values to smart contract
 	tx, err := contract.UpdateCoinInfo(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 800725,
+		GasPrice: gasPrice,
 		//	Nonce: big.NewInt(time.Now().Unix()),
 	}, name, symbol, big.NewInt(price), big.NewInt(supply), big.NewInt(time.Now().Unix()))
 	// prices are with 5 digits after the comma
@@ -874,5 +889,6 @@ func updateOracle(
 	log.Printf("Symbol: %s\n", symbol)
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
+	log.Printf("Tx Nonce: %d\n", tx.Nonce())
 	return nil
 }
