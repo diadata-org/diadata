@@ -16,6 +16,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/aristanetworks/goarista v0.0.0-20200728100624-e5e93aaaf53b // indirect
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
+	github.com/bep/debounce v1.2.0
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect

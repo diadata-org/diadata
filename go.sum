@@ -76,6 +76,8 @@ github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e/go.mod
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
+github.com/bep/debounce v1.2.0 h1:wXds8Kq8qRfwAOpAxHrJDbCXgC5aHSzgQb/0gKsHQqo=
+github.com/bep/debounce v1.2.0/go.mod h1:H8yggRPQKLUhUoqrJC1bO2xNya7vanpDl7xR3ISbCJ0=
 github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200207184043-4d37e8d4be18 h1:quTH2zfCrTNG4Tn4qnziHdjQaqw6GYpD/u2zi3oYiFc=
 github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200207184043-4d37e8d4be18/go.mod h1:foUkJI2OXtMQMJY3ga1JBETz5dCCAsvFKEvL6VJHe+U=
 github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25 h1:JDbsMnzxXcjRVulwjftolggnhhoI0itqJ1IlYWmE01M=
