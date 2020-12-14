@@ -37,6 +37,27 @@ func main() {
 		log.Error(err)
 	}
 
+	// Initial run
+	for _, address := range tokenAddresses {
+		supp, err := supplyservice.GetTotalSupplyfromMainNet(address, lockedWalletsMap[address], conn)
+		if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
+			continue
+		}
+		// Hardcoded hotfix for some supplies:
+		if supp.Symbol == "YAM" {
+			supp.CirculatingSupply = float64(13907678)
+		}
+		if supp.Symbol == "CRO" {
+			supp.CirculatingSupply = float64(20631963470)
+		}
+		if supp.Symbol == "DTA" {
+			supp.CirculatingSupply = float64(21000000)
+		}
+
+		ds.SetSupply(&supp)
+		log.Info("set supply: ", supp)
+	}
+
 	// Continuously update supplies once every 24h
 	ticker := time.NewTicker(24 * time.Hour)
 	go func() {
