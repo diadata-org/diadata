@@ -9,7 +9,6 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -260,18 +259,18 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// EXCHANGE CHART POINTS
 	// --------------------------------------------------------
 
-	// ECB Chart Point
-	rawECB, err := getECBRatesFromDia("EUR")
-	if err != nil {
-		log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
-		return err
-	}
-	err = updateECBRate(rawECB, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update ECB Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
+	// // ECB Chart Point
+	// rawECB, err := getECBRatesFromDia("EUR")
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
+	// 	return err
+	// }
+	// err = updateECBRate(rawECB, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update ECB Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	// Bitmax CEX Chart Point
 	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
@@ -472,31 +471,31 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
-	// Top 15 coins
-	rawCoins, err := getToplistFromDia()
-	if err != nil {
-		log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
-		return err
-	}
+	// // Top 15 coins
+	// rawCoins, err := getToplistFromDia()
+	// if err != nil {
+	// 	log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
+	// 	return err
+	// }
 
-	cleanedCoins := []models.Coin{}
+	// cleanedCoins := []models.Coin{}
 
-	for key := range rawCoins.Coins {
-		if rawCoins.Coins[key].CirculatingSupply != nil {
-			cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
-		}
-	}
-	sort.Slice(cleanedCoins, func(i, j int) bool {
-		return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
-	})
-	topCoinSlice := cleanedCoins[:*topCoins]
+	// for key := range rawCoins.Coins {
+	// 	if rawCoins.Coins[key].CirculatingSupply != nil {
+	// 		cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
+	// 	}
+	// }
+	// sort.Slice(cleanedCoins, func(i, j int) bool {
+	// 	return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
+	// })
+	// topCoinSlice := cleanedCoins[:*topCoins]
 
-	err = updateTopCoins(topCoinSlice, auth, contract)
-	if err != nil {
-		log.Fatalf("Failed to update Coins Oracle: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
+	// err = updateTopCoins(topCoinSlice, auth, contract)
+	// if err != nil {
+	// 	log.Fatalf("Failed to update Coins Oracle: %v", err)
+	// 	return err
+	// }
+	// time.Sleep(5 * time.Minute)
 
 	return nil
 }
