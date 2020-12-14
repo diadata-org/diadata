@@ -536,16 +536,24 @@ func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *o
 }
 
 func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle) error {
-	symbol := strings.ToUpper(dexData.DataPoints[0].Series[0].Values[0][3].(string))
-	name := dexData.DataPoints[0].Series[0].Values[0][1].(string)
-	supply := 0
-	price := dexData.DataPoints[0].Series[0].Values[0][4].(float64)
-	// Get 5 digits after the comma by multiplying price with 100000
-	// Set supply to 0, as we don't have a supply for one exchange
-	err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(supply))
-	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
-		return err
+	if len(dexData.DataPoints[0].Series) > 0 && len(dexData.DataPoints[0].Series[0].Values) > 0 {
+		symbol := strings.ToUpper(dexData.DataPoints[0].Series[0].Values[0][3].(string))
+		name := dexData.DataPoints[0].Series[0].Values[0][1].(string)
+		supply := 0
+		price := dexData.DataPoints[0].Series[0].Values[0][4].(float64)
+		// Get 5 digits after the comma by multiplying price with 100000
+		// Set supply to 0, as we don't have a supply for one exchange
+		err := updateOracle(contract, auth, name, symbol, int64(price*100000), int64(supply))
+		if err != nil {
+			log.Fatalf("Failed to update Oracle: %v", err)
+			return err
+		}
+	} else {
+		err := updateOracle(contract, auth, "", "", int64(0), int64(0))
+		if err != nil {
+			log.Fatalf("Failed to update Oracle: %v", err)
+			return err
+		}
 	}
 	return nil
 }
