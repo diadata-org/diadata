@@ -19,7 +19,8 @@ type Datastore interface {
 	GetVolume(symbol string) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
-	SetFiatPriceUSD(fqs []*FiatQuotation) error
+	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
+	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)

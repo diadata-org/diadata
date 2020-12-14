@@ -155,9 +155,9 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 	}
 
 	// Write quotations on influxdb
-	err = datastore.SetFiatPriceUSD(fqs)
+	err = datastore.SetBatchFiatPriceInflux(fqs)
 	if err != nil {
-		log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+		log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
 	} else {
 		log.Printf("%s historical prices successfully populated", currency)
 	}

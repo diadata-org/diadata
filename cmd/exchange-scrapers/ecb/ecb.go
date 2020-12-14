@@ -46,7 +46,7 @@ var (
 	}
 )
 
-var usdFor1Euro = -1.0 // EUR/USD
+var usdFor1Euro = -1.0
 
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
@@ -63,33 +63,43 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 			log.Println(symbol, t.Symbol)
 			usdFor1Euro = t.Price
 
-			fq := []*models.FiatQuotation{{
+			fq := &models.FiatQuotation{
 				QuoteCurrency: "EUR",
 				BaseCurrency:  "USD",
 				Price:         t.Price,
 				Source:        "ECB",
 				Time:          time.Now(),
-			}}
+			}
 
-			err := ds.SetFiatPriceUSD(fq)
+			err := ds.SetSingleFiatPriceRedis(fq)
 			if err != nil {
-				log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+				log.Printf("Error on SetSingleFiatPriceRedis: %v\n", err)
+			}
+
+			err = ds.SetBatchFiatPriceInflux([]*models.FiatQuotation{fq})
+			if err != nil {
+				log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
 			}
 		} else {
 			if usdFor1Euro > 0 {
-				log.Info("setting ", symbol, usdFor1Euro/t.Price) // compute Symbol/USD
+				log.Info("setting ", symbol, usdFor1Euro/t.Price)
 
-				fq := []*models.FiatQuotation{{
+				fq := &models.FiatQuotation{
 					QuoteCurrency: symbol,
 					BaseCurrency:  "USD",
-					Price:         usdFor1Euro / t.Price,
+					Price:         usdFor1Euro / t.Price, // compute Symbol/USD
 					Source:        "ECB",
 					Time:          time.Now(),
-				}}
+				}
 
-				err := ds.SetFiatPriceUSD(fq)
+				err := ds.SetSingleFiatPriceRedis(fq)
 				if err != nil {
-					log.Printf("Error on SetFiatPriceUSD: %v\n", err)
+					log.Printf("Error on SetSingleFiatPriceRedis: %v\n", err)
+				}
+
+				err = ds.SetBatchFiatPriceInflux([]*models.FiatQuotation{fq})
+				if err != nil {
+					log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
 				}
 			}
 		}
