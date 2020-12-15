@@ -68,6 +68,21 @@ services:
     secrets:
       - oracle_keys
 
+  diacoinmarketcaporacleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice
+    networks:
+      - scrapers-network
+    command: --numCoins=50
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys
+      - Coinmarketcap-API.key
+
   eth:
     build:
       context: $GOPATH
@@ -133,6 +148,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
   oracle_keys:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
+  Coinmarketcap-API.key:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
 
 volumes:
   bitcoin:

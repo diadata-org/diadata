@@ -12,6 +12,10 @@ import (
 
 const (
 	WindowYesterday = 24 * 60 * 60
+	Window1h        = 60 * 60
+	Window7d        = 7 * 24 * 60 * 60
+	Window14d       = 7 * 24 * 60 * 60
+	Window30d       = 30 * 24 * 60 * 60
 	Window2         = 24 * 60 * 60 * 8
 	BufferTTL       = 60 * 60
 	BiggestWindow   = Window2
@@ -141,4 +145,20 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
 	return err
+}
+
+func (db *DB) GetPaxgQuotationOunces() (*Quotation, error) {
+	return db.GetQuotation("PAXG")
+}
+
+func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
+	q, err := db.GetQuotation("PAXG")
+	if err != nil {
+		return nil, err
+	}
+	q.Symbol = q.Symbol + "-gram"
+	q.Name = q.Name + "-gram"
+	q.Price = q.Price / 31.1034768
+	*q.PriceYesterday = *q.PriceYesterday / 31.1034768
+	return q, err
 }

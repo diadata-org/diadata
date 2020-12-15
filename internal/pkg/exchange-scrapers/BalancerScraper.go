@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -22,18 +23,12 @@ import (
 )
 
 const (
-	BalancerApiDelay   = 20
-	BalancerBatchDelay = 60 * 1
-
-	factoryContract = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
-
-	// infuraKey  = "9020e59e34ca4cf59cb243ecefb4e39e"
-	startBlock = uint64(10780772 - 5250)
-
-	// balancerWsDial   = "wss://mainnet.infura.io/ws/v3/" + infuraKey
-	// balancerRestDial = "https://mainnet.infura.io/v3/" + infuraKey
-	balancerRestDial = "http://159.69.120.42:8545/"
-	balancerWsDial   = "ws://159.69.120.42:8546/"
+	BalancerApiDelay       = 20
+	BalancerBatchDelay     = 60 * 1
+	BalancerLookBackBlocks = 6 * 60 * 24 * 20
+	factoryContract        = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
+	balancerRestDial       = "http://159.69.120.42:8545/"
+	balancerWsDial         = "ws://159.69.120.42:8546/"
 )
 
 type BalancerSwap struct {
@@ -283,8 +278,13 @@ func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGN
 	if err != nil {
 		log.Fatal(err)
 	}
-	start := startBlock
-	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: start}, []common.Address{}, []common.Address{})
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+
+	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{})
 	if err != nil {
 		log.Error("error in getAllLogNewPool ", err)
 	}
@@ -411,8 +411,13 @@ func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *
 	var pairFiltererContract *pool.BalancerpoolFilterer
 	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
 
-	start := startBlock
-	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: start}, []common.Address{}, []common.Address{}, []common.Address{})
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(5250)
+
+	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{}, []common.Address{})
 	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
 	for itr.Next() {
 		// vLog := itr.Event
@@ -427,9 +432,14 @@ func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (
 	if err != nil {
 		log.Fatal(err)
 	}
-	start := startBlock
 
-	sub, _ := pairFiltererContract.WatchLOGSWAP(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(5250)
+
+	sub, _ := pairFiltererContract.WatchLOGSWAP(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
 	if err != nil {
 		log.Error("error in get swaps channel: ", err)
 	}
@@ -444,9 +454,14 @@ func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.Balancerfa
 	if err != nil {
 		log.Fatal(err)
 	}
-	start := startBlock
 
-	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &start}, sink, nil, nil)
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+
+	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &startblock}, sink, nil, nil)
 	if err != nil {
 		log.Error("error in get pools channel: ", err)
 	}

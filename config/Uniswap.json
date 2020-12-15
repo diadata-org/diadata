@@ -27781,6 +27781,24 @@
             "Ignore": false
         },
         {
+            "Symbol": "POLS",
+            "ForeignName": "POLS-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVP",
+            "ForeignName": "CVP-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-Yf-DAI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "FON",
             "ForeignName": "FON-ETH",
             "Exchange": "UniswapV2",

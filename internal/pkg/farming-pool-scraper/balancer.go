@@ -26,8 +26,9 @@ import (
 var (
 	// Balancer: BFactory
 	// https://etherscan.io/address/0x9424b1412450d0f8fc2255faf6046b98213b76bd
-	balFactoryAddress = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
-	firstFactoryBlock = uint64(9562480)
+	balFactoryAddress      = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
+	firstFactoryBlock      = uint64(9562480)
+	balancerLookBackBlocks = 6 * 60 * 24
 )
 
 var (
@@ -83,8 +84,14 @@ func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontrac
 func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BALFactoryContractLOGNEWPOOL) {
 	fr, _ := balfactorycontract.NewBALFactoryContractFilterer(balFactoryAddress, bp.wsClient)
 
+	header, err := bp.restClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(balancerLookBackBlocks)
+
 	it, err := fr.FilterLOGNEWPOOL(&bind.FilterOpts{
-		Start:   firstFactoryBlock,
+		Start:   startblock,
 		End:     nil,
 		Context: context.Background(),
 	}, nil, nil)

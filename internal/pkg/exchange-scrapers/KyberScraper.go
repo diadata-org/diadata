@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,12 +20,10 @@ import (
 )
 
 const (
-	kyberContract              = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
-	kyberStartBlock            = uint64(11062549 - 5250)
-	kyberStartBlockToFindPairs = uint64(11062549 - 5250)
-
-	kyberWsDial   = "ws://159.69.120.42:8546/"
-	kyberRestDial = "http://159.69.120.42:8545/"
+	kyberContract       = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
+	kyberWsDial         = "ws://159.69.120.42:8546/"
+	kyberRestDial       = "http://159.69.120.42:8545/"
+	kyberLookBackBlocks = 6 * 60 * 24
 )
 
 type KyberToken struct {
@@ -103,8 +102,13 @@ func (scraper *KyberScraper) loadTokens() {
 		log.Error(err)
 
 	}
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(kyberLookBackBlocks)
 
-	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: kyberStartBlockToFindPairs}, nil)
+	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: startblock}, nil)
 	if err != nil {
 		log.Error(err)
 	}
@@ -156,9 +160,14 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(5250)
+
 	sink := make(chan *kyber.KyberExecuteTrade)
-	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &start}, sink, nil)
+	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &startblock}, sink, nil)
 	if err != nil {
 		log.Error(err)
 		return err
