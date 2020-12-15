@@ -23,6 +23,7 @@
   * [API Documentation](documentation/api-1/README.md)
     * [API Endpoints](documentation/api-1/api-endpoints.md)
   * [Oracle Documentation](documentation/oracle-documentation/README.md)
+    * [CoinMarketCap Quotations](documentation/oracle-documentation/coinmarketcap-quotations.md)
     * [Crypto Assets](documentation/oracle-documentation/crypto-assets.md)
     * [DeFi Protocol Lending and Borrowing Rates](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
     * [Interest Rates](documentation/oracle-documentation/interest-rates.md)
