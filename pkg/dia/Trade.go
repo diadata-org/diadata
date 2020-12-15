@@ -49,7 +49,7 @@ func SwapTrade(t Trade) (Trade, error) {
 		return t, errors.New("zero price. cannot swap trade")
 	}
 	symbol := t.Symbol
-	baseToken := (&t).BaseToken()
+	baseToken := (&t).GetBaseToken()
 	t.Symbol = baseToken
 	t.Pair = baseToken + "-" + symbol
 	t.Volume = t.Price * t.Volume

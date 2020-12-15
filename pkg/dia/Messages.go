@@ -31,7 +31,7 @@ type Supply struct {
 	Block             int64
 }
 
-type Token struct {
+type Asset struct {
 	Symbol     string
 	Name       string
 	Address    string
@@ -51,8 +51,8 @@ type Pairs []Pair
 type Trade struct {
 	Symbol            string
 	Pair              string
-	QuoteToken        Token
-	BaseToken         Token
+	QuoteToken        Asset
+	BaseToken         Asset
 	Price             float64
 	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time

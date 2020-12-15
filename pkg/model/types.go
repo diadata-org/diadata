@@ -45,11 +45,6 @@ type Coins struct {
 	Coins            []Coin
 }
 
-type CoinSymbolAndName struct {
-	Symbol string
-	Name   string
-}
-
 // SymbolDetails is used for API return values
 type SymbolDetails struct {
 	Change    *Change
@@ -104,17 +99,6 @@ type CoinSymbolAndName struct {
 	Name   string
 }
 
-type Coin struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     *float64
-	VolumeYesterdayUSD *float64
-	Time               time.Time
-	CirculatingSupply  *float64
-	ITIN               string
-}
-
 // CryptoIndex is the container for API endpoint CryptoIndex
 type CryptoIndex struct {
 	Name              string
@@ -136,12 +120,6 @@ type CryptoIndex struct {
 		Price             float64
 		CirculatingSupply float64
 	}
-}
-
-type Coins struct {
-	CompleteCoinList []CoinSymbolAndName
-	Change           *Change
-	Coins            []Coin
 }
 
 type Pairs struct {

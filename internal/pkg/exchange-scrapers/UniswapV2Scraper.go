@@ -188,12 +188,12 @@ func (s *UniswapScraper) mainLoop() {
 							log.Error("error getting swap data: ", err)
 						}
 
-						token0 := dia.Token{
+						token0 := dia.Asset{
 							Address: pair.Token0.Address.String(),
 							Symbol:  pair.Token0.Symbol,
 							Name:    pair.Token0.Name,
 						}
-						token1 := dia.Token{
+						token1 := dia.Asset{
 							Address: pair.Token0.Address.String(),
 							Symbol:  pair.Token0.Symbol,
 							Name:    pair.Token0.Name,

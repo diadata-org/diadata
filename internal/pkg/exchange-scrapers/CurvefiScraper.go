@@ -361,7 +361,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Token, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
 
 	// fromToken, _ := scraper.curveCoins[s.TokenSold.Hex()]
 	// toToken, _ := scraper.curveCoins[s.TokenBought.Hex()]
@@ -370,7 +370,7 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	if !ok {
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 	}
-	baseToken = dia.Token{
+	baseToken = dia.Asset{
 		Name:    fromToken.Name,
 		Address: fromToken.Address,
 		Symbol:  fromToken.Symbol,
@@ -380,7 +380,7 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 	}
 
-	quoteToken = dia.Token{
+	quoteToken = dia.Asset{
 		Name:    toToken.Name,
 		Address: toToken.Address,
 		Symbol:  toToken.Symbol,

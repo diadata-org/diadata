@@ -191,12 +191,12 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
 			buyToken := scraper.tokens[trade.BuyToken]
 			sellToken := scraper.tokens[trade.SellToken]
 
-			token0 := dia.Token{
+			token0 := dia.Asset{
 				Address: buyToken.Address,
 				Symbol:  buyToken.Symbol,
 				Name:    buyToken.Name,
 			}
-			token1 := dia.Token{
+			token1 := dia.Asset{
 				Address: sellToken.Address,
 				Symbol:  sellToken.Symbol,
 				Name:    sellToken.Name,
