@@ -26,6 +26,8 @@ services:
     environment:
       - EXEC_MODE=production
       - CMC_API_KEY=${CMC_API_KEY}
+    secrets:
+      - Coinmarketcap-API.key
     logging:
       options:
         max-size: "50m"
@@ -45,6 +47,10 @@ services:
     logging:
       options:
         max-size: "50m"
+
+secrets:
+  Coinmarketcap-API.key:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
 
 networks:
   kafka-network:

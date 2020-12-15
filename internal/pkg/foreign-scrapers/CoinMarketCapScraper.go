@@ -1,6 +1,7 @@
 package foreignscrapers
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -155,12 +156,23 @@ func (scraper *CoinMarketCapScraper) GetQuoteChannel() chan *models.ForeignQuota
 
 func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	// There must be a pro coinmarketcap api key for this to work properly
-	var apiKey string
-	var ok bool
-	if apiKey, ok = os.LookupEnv("CMC_API_KEY"); !ok {
-		err = fmt.Errorf("please provide a CoinMarketCap api key env (CMC_API_KEY)")
-		return
+		var lines []string
+	file, err := os.Open("/run/secrets/Coinmarketcap-API.key") // Read in key information
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file for coinmarketcap API key should have exactly one line")
+	}
+	apiKey := lines[0]
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
