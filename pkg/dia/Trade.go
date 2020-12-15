@@ -1,6 +1,7 @@
 package dia
 
 import (
+	"errors"
 	"strings"
 )
 
@@ -39,4 +40,19 @@ func (t *Trade) BaseToken() string {
 	}
 
 	return strings.TrimPrefix(pair, t.Symbol)
+}
+
+// SwapTrade swaps base and quote token of a trade and inverts the price accordingly
+func SwapTrade(t Trade) (Trade, error) {
+	if t.Price == 0 {
+		return t, errors.New("zero price. cannot swap trade")
+	}
+	symbol := t.Symbol
+	baseToken := (&t).BaseToken()
+	t.Symbol = baseToken
+	t.Pair = baseToken + "-" + symbol
+	t.Volume = t.Price * t.Volume
+	t.Price = 1 / t.Price
+
+	return t, nil
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 
@@ -195,8 +196,14 @@ func (s *UniswapScraper) mainLoop() {
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
 						}
-						ps.parent.chanTrades <- t
+						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" {
+							tSwapped, err := dia.SwapTrade(*t)
+							if err == nil {
+								t = &tSwapped
+							}
+						}
 						log.Info("Got trade: ", t)
+						ps.parent.chanTrades <- t
 					}
 				}
 			}()
