@@ -139,7 +139,7 @@ func (scraper *CoinMarketCapScraper) UpdateQuotation() error {
 			Price:              usdQuote.Price,
 			PriceYesterday:     priceYesterday,
 			VolumeYesterdayUSD: usdQuote.Volume24H,
-			Source:             source,
+			Source:             coinMarketCapsource,
 			Time:               timestamp,
 			ITIN:               itin.Itin,
 		}
