@@ -29,7 +29,7 @@ func main() {
 	 * Read in Oracle address
 	 */
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var numCoins = flag.Int("numCoins", 100, "Number of coins to push with the oracle")
+	var numCoins = flag.Int("numCoins", 50, "Number of coins to push with the oracle")
 	flag.Parse()
 
 	/*
@@ -77,7 +77,7 @@ func main() {
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(6 * time.Hour)
 	go func() {
 		for {
 			select {
@@ -97,7 +97,7 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 	}
 	// Get quotation for topCoins and update Oracle
 	for _, symbol := range topCoins {
-		rawQuot, err := getForeignQuotationFromDia("Coinmarketcap", symbol)
+		rawQuot, err := getForeignQuotationFromDia("CoinMarketCap", symbol)
 		if err != nil {
 			log.Fatalf("Failed to retrieve Coinmarketcap data from DIA: %v", err)
 			return err
@@ -183,7 +183,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	}
 	type CoinMarketCapListing struct {
 		Data []struct {
-			Symbol            string           `json:"symbol"`
+			Symbol string `json:"symbol"`
 		} `json:"data"`
 	}
 	var quotations CoinMarketCapListing
@@ -199,7 +199,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}

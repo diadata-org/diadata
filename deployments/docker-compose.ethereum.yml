@@ -75,7 +75,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice
     networks:
       - scrapers-network
-    command: --numCoins=50
+    command: --deployedContract=0x48760771feda4be44a6ed3bff13ecbc445159b1d --numCoins=50
     logging:
       options:
         max-size: "50m"
