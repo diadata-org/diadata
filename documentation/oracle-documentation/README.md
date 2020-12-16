@@ -2,19 +2,19 @@
 
 {% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
 
-{% page-ref page="crypto-assets.md" %}
-
 {% page-ref page="defi-protocol-rates-and-states.md" %}
 
-{% page-ref page="interest-rates.md" %}
+{% page-ref page="farming-pools.md" %}
 
 {% page-ref page="chart-points.md" %}
 
 {% page-ref page="fiat-prices.md" %}
 
-{% page-ref page="guest-quotations/" %}
+{% page-ref page="interest-rates.md" %}
 
-{% page-ref page="farming-pools.md" %}
+{% page-ref page="crypto-assets.md" %}
+
+{% page-ref page="guest-quotations/" %}
 
 
 
