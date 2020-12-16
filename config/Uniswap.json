@@ -27799,6 +27799,30 @@
             "Ignore": false
         },
         {
+            "Symbol":"KP3R",
+            "ForeignName": "KP3R-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-AXS",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PICKLE",
+            "ForeignName": "PICKLE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDLE",
+            "ForeignName": "IDLE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "FON",
             "ForeignName": "FON-ETH",
             "Exchange": "UniswapV2",
