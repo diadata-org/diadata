@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	refreshDelay = time.Second * 60 * 1
+	refreshDelay = time.Second * 60 * 60
 )
 
 type ECBScraper struct {
@@ -31,6 +31,29 @@ type ECBScraper struct {
 	datastore    models.Datastore
 	chanTrades   chan *dia.Trade
 }
+
+type (
+	XMLHistoricalEnvelope struct {
+		XMLName xml.Name `xml:"GenericData"`
+		Obs     []XMLObs `xml:"DataSet>Series>Obs"`
+	}
+
+	XMLObs struct {
+		XMLName   xml.Name        `xml:"Obs"`
+		Timestamp XMLObsDimension `xml:"ObsDimension"`
+		Price     XMLObsValue     `xml:"ObsValue"`
+	}
+
+	XMLObsDimension struct {
+		XMLName xml.Name `xml:"ObsDimension"`
+		Value   string   `xml:"value,attr"`
+	}
+
+	XMLObsValue struct {
+		XMLName xml.Name `xml:"ObsValue"`
+		Value   string   `xml:"value,attr"`
+	}
+)
 
 type (
 	// rssDocument defines the fields associated with the rss document.
@@ -52,6 +75,109 @@ type (
 		CubeTime []XMLCubeTime `xml:"Cube>Cube"`
 	}
 )
+
+func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHistoricalEnvelope) *XMLHistoricalEnvelope {
+	log.Printf("Historical %s prices population starting", currency)
+
+	// Format url to fetch
+	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
+
+	// Fetch URL
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Errorf("error fetching url %v %v\n", url, err)
+	}
+	defer resp.Body.Close()
+
+	// Parse XML in response
+	var xmlSheet XMLHistoricalEnvelope
+	err = xml.NewDecoder(resp.Body).Decode(&xmlSheet)
+	if err != nil {
+		log.Errorf("error parsing xml %v\n", err)
+	}
+
+	var fqs []*models.FiatQuotation
+
+	// Format each value as a fiatQuotation struct and put them into the fqs slice
+	for _, o := range xmlSheet.Obs {
+		if o.Price.Value == "NaN" {
+			continue
+		}
+
+		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
+		if err != nil {
+			log.Errorf("error formating timestamp %v\n", err)
+		}
+
+		price, err := strconv.ParseFloat(o.Price.Value, 64)
+		if err != nil {
+			log.Errorf("error parsing price %v %v", o.Price.Value, err)
+		}
+
+		if currency == "USD" {
+			fq := &models.FiatQuotation{
+				QuoteCurrency: "EUR",
+				BaseCurrency:  "USD",
+				Price:         price,
+				Source:        "ECB",
+				Time:          timestamp,
+			}
+
+			fqs = append(fqs, fq)
+		} else { // If other than USD, conversion from EUR as a quote currency to USD as base currency is made
+			var usdFor1Euro float64
+
+			for _, eurusdObs := range xmlEurusd.Obs {
+				if eurusdObs.Timestamp.Value == o.Timestamp.Value {
+					usdFor1Euro, err = strconv.ParseFloat(eurusdObs.Price.Value, 64)
+					if err != nil {
+						log.Errorf("error parsing price %v %v", eurusdObs.Price.Value, err)
+					}
+				}
+			}
+
+			if usdFor1Euro == 0 {
+				continue
+			}
+
+			price = usdFor1Euro / price
+
+			fq := &models.FiatQuotation{
+				QuoteCurrency: currency,
+				BaseCurrency:  "USD",
+				Price:         price,
+				Source:        "ECB",
+				Time:          timestamp,
+			}
+
+			fqs = append(fqs, fq)
+		}
+	}
+
+	// Write quotations on influxdb
+	err = datastore.SetBatchFiatPriceInflux(fqs)
+	if err != nil {
+		log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
+	} else {
+		log.Printf("%s historical prices successfully populated", currency)
+	}
+
+	return &xmlSheet
+}
+
+// Populate fetches historical daily datas from 1999 until today and saves them on the database
+func Populate(datastore *models.DB, pairs []string) {
+	// Start with USD to have conversion reference
+	xmlEurusd := populateCurrency(datastore, "USD", nil)
+
+	// Populate every other currency
+	for _, p := range pairs {
+		p = p[3:]
+		if p != "USD" {
+			populateCurrency(datastore, p, xmlEurusd)
+		}
+	}
+}
 
 // SpawnECBScraper returns a new ECBScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.

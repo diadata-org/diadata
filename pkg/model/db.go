@@ -19,6 +19,8 @@ type Datastore interface {
 	GetVolume(symbol string) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
 	SetPriceUSD(symbol string, price float64) error
+	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
+	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
@@ -122,16 +124,17 @@ type DB struct {
 }
 
 const (
-	influxDbName           = "dia"
-	influxDbTradesTable    = "trades"
-	influxDbFiltersTable   = "filters"
-	influxDbOptionsTable   = "options"
-	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supplies"
-	influxDbSupplyTableOld = "supply"
-	influxDbDefiRateTable  = "defiRate"
-	influxDbDefiStateTable = "defiState"
-	influxDbPoolTable      = "defiPools"
+	influxDbName                = "dia"
+	influxDbTradesTable         = "trades"
+	influxDbFiatQuotationsTable = "fiat"
+	influxDbFiltersTable        = "filters"
+	influxDbOptionsTable        = "options"
+	influxDbCVITable            = "cvi"
+	influxDbSupplyTable         = "supplies"
+	influxDbSupplyTableOld      = "supply"
+	influxDbDefiRateTable       = "defiRate"
+	influxDbDefiStateTable      = "defiState"
+	influxDbPoolTable           = "defiPools"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -198,6 +201,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		}
 		log.Debug("NewDB", pong2)
 	}
+
 	if withInflux {
 		if executionMode == "production" {
 			address = "http://influxdb:8086"
@@ -218,6 +222,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
 	}
+
 	return &DB{r, ci, bp, 0}, nil
 }
 
@@ -265,18 +270,23 @@ func (db *DB) WriteBatchInflux() error {
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
 		db.influxBatchPoints, _ = createBatchInflux()
-	} else {
-		db.influxPointsInBatch = 0
 	}
+
+	db.influxPointsInBatch = 0
+
 	return err
 }
 
 func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
+
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Debug("AddPoint forcing write Bash")
-		db.WriteBatchInflux()
+		err := db.WriteBatchInflux()
+		if err != nil {
+			log.Printf("Error on WriteBatchInflux: %v\n", err)
+		}
 	}
 }
 

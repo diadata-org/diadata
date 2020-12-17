@@ -61,7 +61,6 @@ func getKeyQuotationEUR(value string) string {
 // ------------------------------------------------------------------------------
 
 func (db *DB) SetPriceUSD(symbol string, price float64) error {
-
 	return db.SetQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),

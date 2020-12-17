@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"time"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -49,7 +50,6 @@ var usdFor1Euro = -1.0
 
 // handleTrades delegates trade information to Kafka
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
-
 	for {
 		t, ok := <-c
 
@@ -62,15 +62,45 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 		if symbol == "USD" {
 			log.Println(symbol, t.Symbol)
 			usdFor1Euro = t.Price
-			ds.SetPriceUSD(symbol, 1)
-			ds.SetPriceEUR(symbol, 1/usdFor1Euro)
-			ds.SetPriceUSD("EUR", usdFor1Euro)
-			ds.SetPriceEUR("EUR", 1)
+
+			fq := &models.FiatQuotation{
+				QuoteCurrency: "EUR",
+				BaseCurrency:  "USD",
+				Price:         t.Price,
+				Source:        "ECB",
+				Time:          time.Now(),
+			}
+
+			err := ds.SetSingleFiatPriceRedis(fq)
+			if err != nil {
+				log.Printf("Error on SetSingleFiatPriceRedis: %v\n", err)
+			}
+
+			err = ds.SetBatchFiatPriceInflux([]*models.FiatQuotation{fq})
+			if err != nil {
+				log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
+			}
 		} else {
 			if usdFor1Euro > 0 {
 				log.Info("setting ", symbol, usdFor1Euro/t.Price)
-				ds.SetPriceUSD(symbol, usdFor1Euro/t.Price)
-				ds.SetPriceEUR(symbol, 1/t.Price)
+
+				fq := &models.FiatQuotation{
+					QuoteCurrency: symbol,
+					BaseCurrency:  "USD",
+					Price:         usdFor1Euro / t.Price, // compute Symbol/USD
+					Source:        "ECB",
+					Time:          time.Now(),
+				}
+
+				err := ds.SetSingleFiatPriceRedis(fq)
+				if err != nil {
+					log.Printf("Error on SetSingleFiatPriceRedis: %v\n", err)
+				}
+
+				err = ds.SetBatchFiatPriceInflux([]*models.FiatQuotation{fq})
+				if err != nil {
+					log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
+				}
 			}
 		}
 	}
@@ -80,9 +110,13 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore) {
 func main() {
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
+
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
+		// Populate historical prices
+		go scrapers.Populate(ds, pairs)
+
 		sECB := scrapers.SpawnECBScraper(ds)
 		defer sECB.Close()
 
