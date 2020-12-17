@@ -27595,6 +27595,13 @@
             "Ignore": false
         },
         {
+            "Symbol":"SPICE",
+            "ForeignName": "SPICE-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+            
+        },
+        {
             "Symbol": "PRY",
             "ForeignName": "PRY-ETH",
             "Exchange": "UniswapV2",
@@ -27820,6 +27827,12 @@
             "Symbol": "IDLE",
             "ForeignName": "IDLE-ETH",
             "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol":"COVER",
+            "ForeignName": "COVER-ETH",
+            "Exchange":"UniswapV2",
             "Ignore": false
         },
         {

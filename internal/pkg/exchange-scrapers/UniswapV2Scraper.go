@@ -162,8 +162,15 @@ func (s *UniswapScraper) mainLoop() {
 			continue
 		}
 		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			log.Info("skip pair ", pair.ForeignName, ", symbol is blacklisted")
+			if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
+				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
+			} else {
+				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
+			}
 			continue
+		}
+		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
+			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		}
 		pair.normalizeUniPair()
 		ps, ok := s.pairScrapers[pair.ForeignName]
