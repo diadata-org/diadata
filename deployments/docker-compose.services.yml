@@ -63,6 +63,20 @@ services:
       options:
         max-size: "50m"
 
+  indexcalculationservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-indexCalculationService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_indexcalculationservice:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   cviservice:
     build:
       context: ../../../..

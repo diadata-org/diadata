@@ -106,13 +106,17 @@ type CryptoIndex struct {
 	Volume24hUSD      float64
 	CirculatingSupply float64
 	Time              time.Time
-	Constituents      []struct {
-		Name              string
-		Symbol            string
-		Address           string
-		Price             float64
-		CirculatingSupply float64
-	}
+	Constituents      []CryptoIndexConstituent
+}
+
+type CryptoIndexConstituent struct {
+	Name              string
+	Symbol            string
+	Address           string
+	Price             float64
+	CirculatingSupply float64
+	Weight            float64
+	CappingFactor     float64
 }
 
 type Coins struct {
