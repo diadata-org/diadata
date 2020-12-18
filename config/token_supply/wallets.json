@@ -3,14 +3,14 @@
     {
       "asset": "0x84ca8bc7997272c7cfb4d0cd3d55cd942b3c9419",
       "wallets": [
-        "0x000000000000000000000000000000000000dead",
         "0x46af96fa8f4587c028675f7bf848a7aca2cabcd2",
-        "0x75dae1eca073cf35ba203e3aca0e21e7d2ab1478",
-        "0x0576577e89485d377de13e76aec99955b8d36eca",
         "0x59490052ea18d4fd974657d0aa7c8424d456d353",
-        "0x72ac1760daf52986421b1552bdca04707e78950e",
+        "0x75c60f6a8ab4e188d022c52f0d2bb8f6838d2695",
         "0x35e812cc3e05336323321d8c11ff1ab62579b90b",
-        "0x75c60f6a8ab4e188d022c52f0d2bb8f6838d2695"
+        "0x75dae1eca073cf35ba203e3aca0e21e7d2ab1478",
+        "0x000000000000000000000000000000000000dead",
+        "0x0576577e89485d377de13e76aec99955b8d36eca",
+        "0x72ac1760daf52986421b1552bdca04707e78950e"
       ]
     },
     {
@@ -339,9 +339,8 @@
     {
         "asset":"0x408e41876cccdc0f92210600ef50372656052a38",
         "wallets": [
-            "0x9a4cd44c1a55cfda565430dee9bfb54f2aacfd6a",  
-    
-            "0x60ab11fe605d2a2c3cf351824816772a131f8782"
+            "0x9a4cd44c1a55cfda565430dee9bfb54f2aacfd6a",
+            "0xf9c29ce6ac889ef5bc4b3ffa057d746e6a9e2828"
         ]
     },
     {
