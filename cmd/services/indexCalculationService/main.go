@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
-	_ "github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
@@ -33,7 +32,7 @@ func main() {
 }
 
 func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
-	symbols := []string{"SUSHI", "REN", "UTK", "DIA", "STAKE", "POLS", "PICKLE", "EASY"}
+	symbols := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "RFI", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
 
 	// Get constituents information
 	constituents, err := indexCalculationService.GetIndexBasket(symbols)

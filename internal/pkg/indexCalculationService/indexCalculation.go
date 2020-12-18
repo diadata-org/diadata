@@ -3,6 +3,7 @@ package indexCalculationService
 import (
 	"math"
 	"sort"
+	"strings"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -23,7 +24,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 
 	for _, symbol := range symbolsList {
 		log.Info("Processing ", symbol)
-		currQuotation, err := db.GetQuotation(symbol)
+		currQuotation, err := db.GetQuotation(strings.ToUpper(symbol))
 		if err != nil {
 			log.Error("Error when retrieveing quotation for ", symbol)
 			return nil, err
