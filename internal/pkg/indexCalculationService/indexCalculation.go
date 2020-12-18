@@ -37,6 +37,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 		}
 		log.Info("Supply: ", currSupply)
 		newConstituent := models.CryptoIndexConstituent{
+			Address:            "-",
 			Name:								currQuotation.Name,
 			Symbol:							currQuotation.Symbol,
 			Price:							currQuotation.Price,

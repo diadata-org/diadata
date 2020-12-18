@@ -104,8 +104,10 @@ type Datastore interface {
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
 	// Crypto Index methods
-	GetCryptoIndex(name string) (*CryptoIndex, error)
+	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
+	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
+	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)

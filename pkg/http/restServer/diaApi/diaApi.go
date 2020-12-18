@@ -1064,3 +1064,55 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 	}
 
 }
+
+func (env *Env) GetCryptoIndex(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}

@@ -1,9 +1,12 @@
 package models
 
 import (
-//	"fmt"
+	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
-	//log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
+	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 )
 
 // CryptoIndex is the container for API endpoint CryptoIndex
@@ -32,14 +35,55 @@ type CryptoIndexConstituent struct {
 	CappingFactor     float64
 }
 
-/*func (db *DB) GetCryptoIndex(name string) (*CryptoIndex, error) {
-	return nil, nil
+func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
+	var retval []CryptoIndex
+	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and \"name\" = '%s'", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	res, err := queryInfluxDB(db.influxClient, q)
+
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			currentIndex := CryptoIndex{}
+			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			constituentsSerial := res[0].Series[0].Values[i][1].(string)
+			currentIndex.Name = res[0].Series[0].Values[i][2].(string)
+			currentIndex.Price, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentIndex.Value, err = res[0].Series[0].Values[i][4].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			var constituents []CryptoIndexConstituent
+			// Get constituents
+			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {
+				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5 * time.Hour), endtime, constituentSymbol)
+				if err != nil {
+					return retval, err
+				}
+				if len(curr) > 0 {
+					constituents = append(constituents, curr[0])
+				}
+			}
+			currentIndex.Constituents = constituents
+			retval = append(retval, currentIndex)
+		}
+	}
+	return retval, nil
 }
 
 func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	constituentsSerial := ""
 	for _, c := range index.Constituents {
-		constituentsSerial += ","
+		if constituentsSerial != "" {
+			constituentsSerial += ","
+		}
 		constituentsSerial += c.Symbol
 	}
 	fields := map[string]interface{}{
@@ -65,7 +109,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	}
 
 	for _, constituent := range index.Constituents {
-		err = db.SetCryptoIndexConstituent(constituent)
+		err = db.SetCryptoIndexConstituent(&constituent)
 		if err != nil {
 			return err
 		}
@@ -74,8 +118,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 
 }
 
-func (db *DB) GetCryptoIndexConstituent(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
-	var retval CryptoIndexConstituent
+func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
+	var retval []CryptoIndexConstituent
 	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s'", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
@@ -85,13 +129,33 @@ func (db *DB) GetCryptoIndexConstituent(starttime time.Time, endtime time.Time, 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			currentConstituent := CryptoIndexConstituent{}
-			currentConstituent.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			/*currentConstituent.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}*/ //TODO: Do we need time?
+			currentConstituent.Address = res[0].Series[0].Values[i][1].(string)
+			currentConstituent.CappingFactor, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
+			currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentConstituent.Name = res[0].Series[0].Values[i][4].(string)
+			currentConstituent.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			currentConstituent.Symbol = res[0].Series[0].Values[i][6].(string)
+			currentConstituent.Weight, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			retval = append(retval, currentConstituent)
 		}
 	}
-	return nil, nil
+	return retval, nil
 }
 
 func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) error {
@@ -119,4 +183,4 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) err
 		log.Error("Writing Crypto Index Constituent to Influx: ", err)
 	}
 	return err
-}*/
+}

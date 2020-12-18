@@ -15,8 +15,12 @@ func init() {
 }
 
 func main() {
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("datastore error: ", err)
+	}
 	currentConstituents := periodicIndexRebalancingCalculation()
-	indexTicker := time.NewTicker(2 * time.Minute)
+	indexTicker := time.NewTicker(20 * time.Second)
 	rebalancingTicker := time.NewTicker(30 * 24 * time.Hour)
 	go func() {
 		for {
@@ -24,7 +28,11 @@ func main() {
 			case <-rebalancingTicker.C:
 				currentConstituents = periodicIndexRebalancingCalculation()
 			case <-indexTicker.C:
-				periodicIndexValueCalculation(currentConstituents)
+				index := periodicIndexValueCalculation(currentConstituents)
+				err := ds.SetCryptoIndex(&index)
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
@@ -52,6 +60,7 @@ func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
 func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent) (models.CryptoIndex) {
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
 	index := models.CryptoIndex{
+		Name:         "spice",
 		Value:        indexValue,
 		CalculationTime: time.Now(),
 		Constituents: currentConstituents,
