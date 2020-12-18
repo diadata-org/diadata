@@ -65,6 +65,10 @@
       "Name": "Aave"
     },
     {
+      "Address":"0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
+      "Name": "Keep3rV1" 
+    },
+    {
       "Address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
       "Name": "Compound"
     },
@@ -115,6 +119,10 @@
     {
       "Address": "0xba100000625a3754423978a60c9317c58a424e3d",
       "Name": "Balancer"
+    },
+    {
+      "Address":"0x5d8d9f5b96f4438195be9b99eee6118ed4304286",
+      "Name":"Cover Protocol"
     },
     {
       "Address": "0x0000000000085d4780b73119b644ae5ecd22b376",
@@ -183,6 +191,10 @@
     {
       "Address": "0x84ca8bc7997272c7cfb4d0cd3d55cd942b3c9419",
       "Name": "DIA"
+    },
+    {
+      "Address":"0xf5d669627376ebd411e34b98f19c868c8aba5ada",
+      "Name":"Axie Infinity Shard"
     },
     {
       "Address": "0xa15c7ebe1f07caf6bff097d8a589fb8ac49ae5b3",
@@ -395,6 +407,10 @@
     {
       "Address": "0x0ae055097c6d159879521c384f1d2123d1f195e6",
       "Name": "xDAI Stake"
+    },
+    {
+      "Address":"0xa1afffe3f4d611d252010e3eaf6f4d77088b0cd7",
+      "Name": "reflect.finance"
     },
     {
       "Address": "0x6b74dd5d01f8320081247f5cf1f7a48324700db6",
@@ -2533,8 +2549,16 @@
       "Name": "EasyFi"
     },
     {
+      "Address":"0x875773784af8135ea0ef43b5a374aad105c5d39e",
+      "Name":"Idle"
+    },
+    {
       "Address": "0x9d3e0892d11f19f5181d4a4c5d04187a9e0d7032",
       "Name": "Dragonbit"
+    },
+    {
+      "Address":"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664",
+      "Name":"Spice"
     },
     {
       "Address": "0x3fd8f39a962efda04956981c31ab89fab5fb8bc8",
