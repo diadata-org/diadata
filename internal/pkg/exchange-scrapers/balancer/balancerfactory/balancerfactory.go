@@ -137,7 +137,7 @@ func bindBalancerfactory(address common.Address, caller bind.ContractCaller, tra
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Balancerfactory *BalancerfactoryRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Balancerfactory *BalancerfactoryRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Balancerfactory.Contract.BalancerfactoryCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Balancerfactory *BalancerfactoryRaw) Transact(opts *bind.TransactOpts, me
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Balancerfactory *BalancerfactoryCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Balancerfactory *BalancerfactoryCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Balancerfactory.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Balancerfactory *BalancerfactoryTransactorRaw) Transact(opts *bind.Transa
 //
 // Solidity: function getBLabs() view returns(address)
 func (_Balancerfactory *BalancerfactoryCaller) GetBLabs(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Balancerfactory.contract.Call(opts, out, "getBLabs")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerfactory.contract.Call(opts, &out, "getBLabs")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetBLabs is a free data retrieval call binding the contract method 0x36ffb167.
@@ -201,12 +206,17 @@ func (_Balancerfactory *BalancerfactoryCallerSession) GetBLabs() (common.Address
 //
 // Solidity: function getColor() view returns(bytes32)
 func (_Balancerfactory *BalancerfactoryCaller) GetColor(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Balancerfactory.contract.Call(opts, out, "getColor")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerfactory.contract.Call(opts, &out, "getColor")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // GetColor is a free data retrieval call binding the contract method 0x9a86139b.
@@ -227,12 +237,17 @@ func (_Balancerfactory *BalancerfactoryCallerSession) GetColor() ([32]byte, erro
 //
 // Solidity: function isBPool(address b) view returns(bool)
 func (_Balancerfactory *BalancerfactoryCaller) IsBPool(opts *bind.CallOpts, b common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Balancerfactory.contract.Call(opts, out, "isBPool", b)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerfactory.contract.Call(opts, &out, "isBPool", b)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsBPool is a free data retrieval call binding the contract method 0xc2bb6dc2.
@@ -461,6 +476,7 @@ func (_Balancerfactory *BalancerfactoryFilterer) ParseLOGBLABS(log types.Log) (*
 	if err := _Balancerfactory.contract.UnpackLog(event, "LOG_BLABS", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -613,6 +629,6 @@ func (_Balancerfactory *BalancerfactoryFilterer) ParseLOGNEWPOOL(log types.Log) 
 	if err := _Balancerfactory.contract.UnpackLog(event, "LOG_NEW_POOL", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-

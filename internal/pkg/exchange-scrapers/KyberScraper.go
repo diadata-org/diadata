@@ -28,7 +28,7 @@ const (
 
 type KyberToken struct {
 	Symbol   string
-	Decimals uint8
+	Decimals *big.Int
 }
 
 type KyberScraper struct {

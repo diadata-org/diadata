@@ -137,7 +137,7 @@ func bindCurvepool(address common.Address, caller bind.ContractCaller, transacto
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Curvepool *CurvepoolRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Curvepool *CurvepoolRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Curvepool.Contract.CurvepoolCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Curvepool *CurvepoolRaw) Transact(opts *bind.TransactOpts, method string,
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Curvepool *CurvepoolCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Curvepool *CurvepoolCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Curvepool.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Curvepool *CurvepoolTransactorRaw) Transact(opts *bind.TransactOpts, meth
 //
 // Solidity: function A() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) A(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "A")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // A is a free data retrieval call binding the contract method 0xf446c1d0.
@@ -201,12 +206,17 @@ func (_Curvepool *CurvepoolCallerSession) A() (*big.Int, error) {
 //
 // Solidity: function admin_actions_deadline() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) AdminActionsDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "admin_actions_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "admin_actions_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminActionsDeadline is a free data retrieval call binding the contract method 0x405e28f8.
@@ -227,12 +237,17 @@ func (_Curvepool *CurvepoolCallerSession) AdminActionsDeadline() (*big.Int, erro
 //
 // Solidity: function admin_fee() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) AdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminFee is a free data retrieval call binding the contract method 0xfee3f7f9.
@@ -253,12 +268,17 @@ func (_Curvepool *CurvepoolCallerSession) AdminFee() (*big.Int, error) {
 //
 // Solidity: function balances(int128 arg0) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) Balances(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "balances", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "balances", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Balances is a free data retrieval call binding the contract method 0x065a80d8.
@@ -279,12 +299,17 @@ func (_Curvepool *CurvepoolCallerSession) Balances(arg0 *big.Int) (*big.Int, err
 //
 // Solidity: function calc_token_amount(uint256[2] amounts, bool deposit) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) CalcTokenAmount(opts *bind.CallOpts, amounts [2]*big.Int, deposit bool) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "calc_token_amount", amounts, deposit)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "calc_token_amount", amounts, deposit)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcTokenAmount is a free data retrieval call binding the contract method 0xed8e84f3.
@@ -305,12 +330,17 @@ func (_Curvepool *CurvepoolCallerSession) CalcTokenAmount(amounts [2]*big.Int, d
 //
 // Solidity: function coins(int128 arg0) returns(address out)
 func (_Curvepool *CurvepoolCaller) Coins(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "coins", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "coins", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Coins is a free data retrieval call binding the contract method 0x23746eb8.
@@ -331,12 +361,17 @@ func (_Curvepool *CurvepoolCallerSession) Coins(arg0 *big.Int) (common.Address, 
 //
 // Solidity: function fee() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Fee is a free data retrieval call binding the contract method 0xddca3f43.
@@ -357,12 +392,17 @@ func (_Curvepool *CurvepoolCallerSession) Fee() (*big.Int, error) {
 //
 // Solidity: function future_A() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) FutureA(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "future_A")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "future_A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureA is a free data retrieval call binding the contract method 0xb4b577ad.
@@ -383,12 +423,17 @@ func (_Curvepool *CurvepoolCallerSession) FutureA() (*big.Int, error) {
 //
 // Solidity: function future_admin_fee() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) FutureAdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "future_admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "future_admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureAdminFee is a free data retrieval call binding the contract method 0xe3824462.
@@ -409,12 +454,17 @@ func (_Curvepool *CurvepoolCallerSession) FutureAdminFee() (*big.Int, error) {
 //
 // Solidity: function future_fee() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) FutureFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "future_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "future_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureFee is a free data retrieval call binding the contract method 0x58680d0b.
@@ -435,12 +485,17 @@ func (_Curvepool *CurvepoolCallerSession) FutureFee() (*big.Int, error) {
 //
 // Solidity: function future_owner() returns(address out)
 func (_Curvepool *CurvepoolCaller) FutureOwner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "future_owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "future_owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FutureOwner is a free data retrieval call binding the contract method 0x1ec0cdc1.
@@ -461,12 +516,17 @@ func (_Curvepool *CurvepoolCallerSession) FutureOwner() (common.Address, error) 
 //
 // Solidity: function get_dx(int128 i, int128 j, uint256 dy) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) GetDx(opts *bind.CallOpts, i *big.Int, j *big.Int, dy *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "get_dx", i, j, dy)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "get_dx", i, j, dy)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDx is a free data retrieval call binding the contract method 0x67df02ca.
@@ -487,12 +547,17 @@ func (_Curvepool *CurvepoolCallerSession) GetDx(i *big.Int, j *big.Int, dy *big.
 //
 // Solidity: function get_dx_underlying(int128 i, int128 j, uint256 dy) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) GetDxUnderlying(opts *bind.CallOpts, i *big.Int, j *big.Int, dy *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "get_dx_underlying", i, j, dy)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "get_dx_underlying", i, j, dy)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDxUnderlying is a free data retrieval call binding the contract method 0x0e71d1b9.
@@ -513,12 +578,17 @@ func (_Curvepool *CurvepoolCallerSession) GetDxUnderlying(i *big.Int, j *big.Int
 //
 // Solidity: function get_dy(int128 i, int128 j, uint256 dx) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) GetDy(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "get_dy", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "get_dy", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDy is a free data retrieval call binding the contract method 0x5e0d443f.
@@ -539,12 +609,17 @@ func (_Curvepool *CurvepoolCallerSession) GetDy(i *big.Int, j *big.Int, dx *big.
 //
 // Solidity: function get_dy_underlying(int128 i, int128 j, uint256 dx) returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) GetDyUnderlying(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "get_dy_underlying", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "get_dy_underlying", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDyUnderlying is a free data retrieval call binding the contract method 0x07211ef7.
@@ -565,12 +640,17 @@ func (_Curvepool *CurvepoolCallerSession) GetDyUnderlying(i *big.Int, j *big.Int
 //
 // Solidity: function get_virtual_price() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) GetVirtualPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "get_virtual_price")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "get_virtual_price")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetVirtualPrice is a free data retrieval call binding the contract method 0xbb7b8b80.
@@ -591,12 +671,17 @@ func (_Curvepool *CurvepoolCallerSession) GetVirtualPrice() (*big.Int, error) {
 //
 // Solidity: function owner() returns(address out)
 func (_Curvepool *CurvepoolCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -617,12 +702,17 @@ func (_Curvepool *CurvepoolCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function transfer_ownership_deadline() returns(uint256 out)
 func (_Curvepool *CurvepoolCaller) TransferOwnershipDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "transfer_ownership_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "transfer_ownership_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TransferOwnershipDeadline is a free data retrieval call binding the contract method 0xe0a0b586.
@@ -643,12 +733,17 @@ func (_Curvepool *CurvepoolCallerSession) TransferOwnershipDeadline() (*big.Int,
 //
 // Solidity: function underlying_coins(int128 arg0) returns(address out)
 func (_Curvepool *CurvepoolCaller) UnderlyingCoins(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvepool.contract.Call(opts, out, "underlying_coins", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvepool.contract.Call(opts, &out, "underlying_coins", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // UnderlyingCoins is a free data retrieval call binding the contract method 0xb739953e.
@@ -1103,6 +1198,7 @@ func (_Curvepool *CurvepoolFilterer) ParseAddLiquidity(log types.Log) (*Curvepoo
 	if err := _Curvepool.contract.UnpackLog(event, "AddLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1255,6 +1351,7 @@ func (_Curvepool *CurvepoolFilterer) ParseCommitNewAdmin(log types.Log) (*Curvep
 	if err := _Curvepool.contract.UnpackLog(event, "CommitNewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1401,6 +1498,7 @@ func (_Curvepool *CurvepoolFilterer) ParseCommitNewParameters(log types.Log) (*C
 	if err := _Curvepool.contract.UnpackLog(event, "CommitNewParameters", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1544,6 +1642,7 @@ func (_Curvepool *CurvepoolFilterer) ParseNewAdmin(log types.Log) (*CurvepoolNew
 	if err := _Curvepool.contract.UnpackLog(event, "NewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1679,6 +1778,7 @@ func (_Curvepool *CurvepoolFilterer) ParseNewParameters(log types.Log) (*Curvepo
 	if err := _Curvepool.contract.UnpackLog(event, "NewParameters", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1825,6 +1925,7 @@ func (_Curvepool *CurvepoolFilterer) ParseRemoveLiquidity(log types.Log) (*Curve
 	if err := _Curvepool.contract.UnpackLog(event, "RemoveLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1972,6 +2073,7 @@ func (_Curvepool *CurvepoolFilterer) ParseRemoveLiquidityImbalance(log types.Log
 	if err := _Curvepool.contract.UnpackLog(event, "RemoveLiquidityImbalance", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2119,6 +2221,7 @@ func (_Curvepool *CurvepoolFilterer) ParseTokenExchange(log types.Log) (*Curvepo
 	if err := _Curvepool.contract.UnpackLog(event, "TokenExchange", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2266,6 +2369,6 @@ func (_Curvepool *CurvepoolFilterer) ParseTokenExchangeUnderlying(log types.Log)
 	if err := _Curvepool.contract.UnpackLog(event, "TokenExchangeUnderlying", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-
