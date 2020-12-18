@@ -103,6 +103,9 @@ type Datastore interface {
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
+	// Crypto Index methods
+	GetCryptoIndex(name string) (*CryptoIndex, error)
+	SetCryptoIndex(index *CryptoIndex) error
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
@@ -122,16 +125,18 @@ type DB struct {
 }
 
 const (
-	influxDbName           = "dia"
-	influxDbTradesTable    = "trades"
-	influxDbFiltersTable   = "filters"
-	influxDbOptionsTable   = "options"
-	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supplies"
-	influxDbSupplyTableOld = "supply"
-	influxDbDefiRateTable  = "defiRate"
-	influxDbDefiStateTable = "defiState"
-	influxDbPoolTable      = "defiPools"
+	influxDbName             = "dia"
+	influxDbTradesTable      = "trades"
+	influxDbFiltersTable     = "filters"
+	influxDbOptionsTable     = "options"
+	influxDbCVITable         = "cvi"
+	influxDbSupplyTable      = "supplies"
+	influxDbSupplyTableOld   = "supply"
+	influxDbDefiRateTable    = "defiRate"
+	influxDbDefiStateTable   = "defiState"
+	influxDbPoolTable        = "defiPools"
+	influxDbCryptoIndexTable = "cryptoindex"
+	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
 )
 
 // queryInfluxDB convenience function to query the database
