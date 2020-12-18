@@ -1,7 +1,9 @@
 package models
 
 import (
-	log "github.com/sirupsen/logrus"
+//	"fmt"
+	"time"
+	//log "github.com/sirupsen/logrus"
 )
 
 // CryptoIndex is the container for API endpoint CryptoIndex
@@ -30,7 +32,7 @@ type CryptoIndexConstituent struct {
 	CappingFactor     float64
 }
 
-func (db *DB) GetCryptoIndex(name string) (*CryptoIndex, error) {
+/*func (db *DB) GetCryptoIndex(name string) (*CryptoIndex, error) {
 	return nil, nil
 }
 
@@ -43,7 +45,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	fields := map[string]interface{}{
 		"price": index.Price,
 		"value": index.Value,
-		"constituents": constituentsSerial
+		"constituents": constituentsSerial,
 	}
 	tags := map[string]string{
 		"name": index.Name,
@@ -63,7 +65,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	}
 
 	for _, constituent := range index.Constituents {
-		err = SetCryptoIndexConstituent(constituent)
+		err = db.SetCryptoIndexConstituent(constituent)
 		if err != nil {
 			return err
 		}
@@ -83,10 +85,13 @@ func (db *DB) GetCryptoIndexConstituent(starttime time.Time, endtime time.Time, 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			currentConstituent := CryptoIndexConstituent{}
-			currentConstituent.Timestamp, err := time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			currentConstituent.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
 				return retval, err
 			}
+		}
+	}
+	return nil, nil
 }
 
 func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) error {
@@ -94,12 +99,12 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) err
 		"price": constituent.Price,
 		"circulatingsupply": constituent.CirculatingSupply,
 		"weight": constituent.Weight,
-		"cappingfactor": constituent.CappingFactor
+		"cappingfactor": constituent.CappingFactor,
 	}
 	tags := map[string]string{
 		"name": constituent.Name,
 		"symbol": constituent.Symbol,
-		"address": constituent.Address
+		"address": constituent.Address,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())
 	if err != nil {
@@ -114,4 +119,4 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) err
 		log.Error("Writing Crypto Index Constituent to Influx: ", err)
 	}
 	return err
-}
+}*/

@@ -53,7 +53,7 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
 	index := models.CryptoIndex{
 		Value:        indexValue,
-		Time:         time.Now(),
+		CalculationTime: time.Now(),
 		Constituents: currentConstituents,
 	}
 	log.Info("Index: ", index)
