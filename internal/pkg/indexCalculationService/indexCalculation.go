@@ -109,6 +109,33 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 		}
 	}
 
+	// 5. Go through everything again and hardcode SPICE to 2.5%
+	spiceIndex := len(*constituents)
+	for i, constituent := range marketCaps {
+		if constituent.Symbol == "SPICE" {
+			spiceIndex = i
+			break
+		}
+	}
+
+	initialSpiceWeight := marketCaps[spiceIndex].RelativeCap
+	correctionFactor := 0.025 / initialSpiceWeight
+	correctionDelta := 0.025 - initialSpiceWeight
+	if correctionDelta > 0 {
+		for i, constituent := range marketCaps {
+			if constituent.Symbol == "SPICE" {
+				marketCaps[i].RelativeCap = 0.025
+				marketCaps[i].CappingFactor = constituent.CappingFactor * correctionFactor
+				continue
+			}
+			// Determine constitute's relative share to "give up"
+			subtractionShare := correctionDelta * constituent.RelativeCap
+			marketCaps[i].RelativeCap = constituent.RelativeCap * (1 - subtractionShare)
+			marketCaps[i].CappingFactor = constituent.CappingFactor * (1 - subtractionShare)
+		}
+	}
+
+	// 6. Final step! Set data in the output struct
 	for i, mc := range marketCaps {
 		for j, constituent := range *constituents {
 			if mc.Symbol == constituent.Symbol {
@@ -117,6 +144,7 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 			}
 		}
 	}
+
 
 	return nil
 }
