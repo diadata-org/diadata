@@ -8323,6 +8323,10 @@
     {
       "Address": "0x2a469a22101f1f672b745d729d13ab8dbd203c9b",
       "Name": "Coinsto"
+    },
+    {
+      "Address": "0x6DbA883991Fce7A31fF70F3048C788abF2864d54",
+      "Name": "ScifiToken"
     }
   ]
 }

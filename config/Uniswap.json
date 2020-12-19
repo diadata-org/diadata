@@ -27840,6 +27840,12 @@
             "ForeignName": "FON-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
+        },
+        {
+            "Symbol": "SCIFI",
+            "ForeignName": "SCIFI-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
         }
     ]
 }
