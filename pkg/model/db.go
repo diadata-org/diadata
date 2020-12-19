@@ -108,6 +108,7 @@ type Datastore interface {
 	SetCryptoIndex(index *CryptoIndex) error
 	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
 	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
+	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
@@ -127,17 +128,17 @@ type DB struct {
 }
 
 const (
-	influxDbName             = "dia"
-	influxDbTradesTable      = "trades"
-	influxDbFiltersTable     = "filters"
-	influxDbOptionsTable     = "options"
-	influxDbCVITable         = "cvi"
-	influxDbSupplyTable      = "supplies"
-	influxDbSupplyTableOld   = "supply"
-	influxDbDefiRateTable    = "defiRate"
-	influxDbDefiStateTable   = "defiState"
-	influxDbPoolTable        = "defiPools"
-	influxDbCryptoIndexTable = "cryptoindex"
+	influxDbName                         = "dia"
+	influxDbTradesTable                  = "trades"
+	influxDbFiltersTable                 = "filters"
+	influxDbOptionsTable                 = "options"
+	influxDbCVITable                     = "cvi"
+	influxDbSupplyTable                  = "supplies"
+	influxDbSupplyTableOld               = "supply"
+	influxDbDefiRateTable                = "defiRate"
+	influxDbDefiStateTable               = "defiState"
+	influxDbPoolTable                    = "defiPools"
+	influxDbCryptoIndexTable             = "cryptoindex"
 	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
 )
 

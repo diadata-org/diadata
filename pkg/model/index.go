@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	log "github.com/sirupsen/logrus"
+
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 // CryptoIndex is the container for API endpoint CryptoIndex
@@ -30,6 +31,7 @@ type CryptoIndexConstituent struct {
 	Symbol            string
 	Address           string
 	Price             float64
+	PriceYesterday    float64
 	CirculatingSupply float64
 	Weight            float64
 	CappingFactor     float64
@@ -63,7 +65,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			var constituents []CryptoIndexConstituent
 			// Get constituents
 			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {
-				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5 * time.Hour), endtime, constituentSymbol)
+				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5*time.Hour), endtime, constituentSymbol)
 				if err != nil {
 					return retval, err
 				}
@@ -87,8 +89,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		constituentsSerial += c.Symbol
 	}
 	fields := map[string]interface{}{
-		"price": index.Price,
-		"value": index.Value,
+		"price":        index.Price,
+		"value":        index.Value,
 		"constituents": constituentsSerial,
 	}
 	tags := map[string]string{
@@ -115,6 +117,21 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		}
 	}
 	return err
+}
+
+func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
+	enddate := date.AddDate(0, 0, 1)
+	q := fmt.Sprintf("SELECT time,price from %s where time >= %d and time < %d and symbol = '%s' ORDER BY TIME ASC LIMIT 1", influxDbCryptoIndexConstituentsTable, date.UnixNano(), enddate.UnixNano(), symbol)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return float64(0), err
+	}
+	var price float64
+	if len(res) > 0 && len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
+		price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
+	}
+	return price, nil
+
 }
 
 func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
@@ -151,6 +168,14 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 			if err != nil {
 				return retval, err
 			}
+			// Get price yesterday
+			priceYesterday, err := db.GetCryptoIndexConstituentPrice(currentConstituent.Symbol, endtime.AddDate(0, 0, -1))
+			if err != nil {
+				currentConstituent.PriceYesterday = float64(0)
+			} else {
+				currentConstituent.PriceYesterday = priceYesterday
+			}
+
 			retval = append(retval, currentConstituent)
 		}
 	}
@@ -159,14 +184,14 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 
 func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) error {
 	fields := map[string]interface{}{
-		"price": constituent.Price,
+		"price":             constituent.Price,
 		"circulatingsupply": constituent.CirculatingSupply,
-		"weight": constituent.Weight,
-		"cappingfactor": constituent.CappingFactor,
+		"weight":            constituent.Weight,
+		"cappingfactor":     constituent.CappingFactor,
 	}
 	tags := map[string]string{
-		"name": constituent.Name,
-		"symbol": constituent.Symbol,
+		"name":    constituent.Name,
+		"symbol":  constituent.Symbol,
 		"address": constituent.Address,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())
