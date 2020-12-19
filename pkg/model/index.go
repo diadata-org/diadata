@@ -10,6 +10,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	indexNormalization = float64(9507172.247746756)
+)
+
 // CryptoIndex is the container for API endpoint CryptoIndex
 type CryptoIndex struct {
 	Name              string
@@ -58,10 +62,12 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			if err != nil {
 				return retval, err
 			}
-			currentIndex.Value, err = res[0].Series[0].Values[i][4].(json.Number).Float64()
+			tmp, err := res[0].Series[0].Values[i][4].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
+			tmp /= indexNormalization
+			currentIndex.Value = tmp
 			var constituents []CryptoIndexConstituent
 			// Get constituents
 			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {

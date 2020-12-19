@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("datastore error: ", err)
 	}
 	currentConstituents := periodicIndexRebalancingCalculation()
-	indexTicker := time.NewTicker(20 * time.Second)
+	indexTicker := time.NewTicker(2 * 60 * time.Second)
 	rebalancingTicker := time.NewTicker(30 * 24 * time.Hour)
 	go func() {
 		for {
