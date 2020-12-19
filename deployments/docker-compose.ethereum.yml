@@ -83,6 +83,20 @@ services:
       - oracle_keys
       - Coinmarketcap-API.key
 
+  diascifioracleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaScifiOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diascifioracleservice
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x814712cc9fa606a4b372b87cd27775959e052d9a
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys
+
   eth:
     build:
       context: $GOPATH

@@ -41,6 +41,19 @@ type CryptoIndexConstituent struct {
 	CappingFactor     float64
 }
 
+// MarshalBinary -
+func (e *CryptoIndex) MarshalBinary() ([]byte, error) {
+  return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
+  if err := json.Unmarshal(data, &e); err != nil {
+    return err
+  }
+  return nil
+}
+
 func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 10", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
