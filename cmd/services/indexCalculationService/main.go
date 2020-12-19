@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
-	"github.com/sirupsen/logrus"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 var log *logrus.Logger
@@ -39,8 +39,8 @@ func main() {
 	select {}
 }
 
-func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
-	symbols := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "RFI", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
+func periodicIndexRebalancingCalculation() []models.CryptoIndexConstituent {
+	symbols := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
 
 	// Get constituents information
 	constituents, err := indexCalculationService.GetIndexBasket(symbols)
@@ -57,7 +57,7 @@ func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
 	return constituents
 }
 
-func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, ds *models.DB) (models.CryptoIndex) {
+func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, ds *models.DB) models.CryptoIndex {
 	symbol := "SCIFI"
 	err := indexCalculationService.UpdateConstituentsMarketData(&currentConstituents)
 	if err != nil {
@@ -77,12 +77,12 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 	}
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
 	index := models.CryptoIndex{
-		Name:         symbol,
-		Price:        quotation,
+		Name:              symbol,
+		Price:             quotation,
 		CirculatingSupply: supply,
-		Value:        indexValue,
-		CalculationTime: time.Now(),
-		Constituents: currentConstituents,
+		Value:             indexValue,
+		CalculationTime:   time.Now(),
+		Constituents:      currentConstituents,
 	}
 	log.Info("Index: ", index)
 	return index
