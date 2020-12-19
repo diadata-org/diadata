@@ -1065,6 +1065,10 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 
 }
 
+// -----------------------------------------------------------------------------
+// CRYPTO INDEX
+// -----------------------------------------------------------------------------
+
 func (env *Env) GetCryptoIndex(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.Query("starttime")
@@ -1112,7 +1116,7 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, q)
+		return
 	}
+	c.JSON(http.StatusOK, q)
 }

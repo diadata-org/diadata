@@ -28,7 +28,7 @@ func main() {
 			case <-rebalancingTicker.C:
 				currentConstituents = periodicIndexRebalancingCalculation()
 			case <-indexTicker.C:
-				index := periodicIndexValueCalculation(currentConstituents)
+				index := periodicIndexValueCalculation(currentConstituents, ds)
 				err := ds.SetCryptoIndex(&index)
 				if err != nil {
 					log.Error(err)
@@ -57,14 +57,29 @@ func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
 	return constituents
 }
 
-func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent) (models.CryptoIndex) {
+func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, ds *models.DB) (models.CryptoIndex) {
+	symbol := "SCIFI"
 	err := indexCalculationService.UpdateConstituentsMarketData(&currentConstituents)
 	if err != nil {
 		log.Error(err)
 	}
+	quotation := 0.0
+	quotationObject, err := ds.GetQuotation(symbol)
+	if err == nil {
+		// Quotation does exist
+		quotation = quotationObject.Price
+	}
+	supply := 0.0
+	supplyObject, err := ds.GetLatestSupply(symbol)
+	if err == nil {
+		// Supply does exist
+		supply = supplyObject.CirculatingSupply
+	}
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
 	index := models.CryptoIndex{
-		Name:         "SCIFI",
+		Name:         symbol,
+		Price:        quotation,
+		CirculatingSupply: supply,
 		Value:        indexValue,
 		CalculationTime: time.Now(),
 		Constituents: currentConstituents,
