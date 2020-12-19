@@ -203,7 +203,7 @@ func (s *UniswapScraper) mainLoop() {
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
 						}
-						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" || strings.ToLower(pair.Token1.Address.Hex()) == "0xf5d669627376ebd411e34b98f19c868c8aba5ada" {
+						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" || strings.ToLower(pair.Token1.Address.Hex()) == "0xf5d669627376ebd411e34b98f19c868c8aba5ada" || strings.ToLower(pair.Token1.Address.Hex()) == "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4" {
 							tSwapped, err := dia.SwapTrade(*t)
 							if err == nil {
 								t = &tSwapped

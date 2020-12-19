@@ -27846,6 +27846,12 @@
             "ForeignName": "SCIFI-USDC",
             "Exchange": "UniswapV2",
             "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-SCIFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
         }
     ]
 }
