@@ -120,8 +120,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 }
 
 func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
-	enddate := date.AddDate(0, 0, 1)
-	q := fmt.Sprintf("SELECT time,price from %s where time >= %d and time < %d and symbol = '%s' ORDER BY TIME ASC LIMIT 1", influxDbCryptoIndexConstituentsTable, date.UnixNano(), enddate.UnixNano(), symbol)
+	startdate := date.AddDate(0, 0, -1)
+	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return float64(0), err
@@ -136,7 +136,7 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 
 func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
-	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY TIME DESC LIMIT 10", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 10", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
 	if err != nil {
