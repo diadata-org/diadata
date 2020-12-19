@@ -39,7 +39,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 		newConstituent := models.CryptoIndexConstituent{
 			Address:            "-",
 			Name:								currQuotation.Name,
-			Symbol:							currQuotation.Symbol,
+			Symbol:							currSupply.Symbol,
 			Price:							currQuotation.Price,
 			CirculatingSupply:	currSupply.CirculatingSupply,
 			Weight:             0.0,
@@ -147,6 +147,30 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 	}
 
 
+	return nil
+}
+
+func UpdateConstituentsMarketData(currentConstituents *[]models.CryptoIndexConstituent) error {
+	db, err := models.NewDataStore()
+	if err != nil {
+		log.Error("Error connecting to datastore")
+		return err
+	}
+	for i, c := range *currentConstituents {
+		currQuotation, err := db.GetQuotation(strings.ToUpper(c.Symbol))
+		if err != nil {
+			log.Error("Error when retrieveing quotation for ", c.Symbol)
+			return err
+		}
+
+		currSupply, err := db.GetLatestSupply(c.Symbol)
+		if err != nil {
+			log.Error("Error when retrieveing supply for ", c.Symbol)
+			return err
+		}
+		(*currentConstituents)[i].Price = currQuotation.Price
+		(*currentConstituents)[i].CirculatingSupply = currSupply.CirculatingSupply
+	}
 	return nil
 }
 

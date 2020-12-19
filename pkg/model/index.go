@@ -37,7 +37,7 @@ type CryptoIndexConstituent struct {
 
 func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
-	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and \"name\" = '%s'", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 10", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(db.influxClient, q)
 
 	if err != nil {
@@ -115,12 +115,11 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		}
 	}
 	return err
-
 }
 
 func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
-	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s'", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY TIME DESC LIMIT 10", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
 	if err != nil {

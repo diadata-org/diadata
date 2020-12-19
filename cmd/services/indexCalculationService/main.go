@@ -58,9 +58,13 @@ func periodicIndexRebalancingCalculation() ([]models.CryptoIndexConstituent) {
 }
 
 func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent) (models.CryptoIndex) {
+	err := indexCalculationService.UpdateConstituentsMarketData(&currentConstituents)
+	if err != nil {
+		log.Error(err)
+	}
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
 	index := models.CryptoIndex{
-		Name:         "spice",
+		Name:         "SCIFI",
 		Value:        indexValue,
 		CalculationTime: time.Now(),
 		Constituents: currentConstituents,
