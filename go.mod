@@ -14,7 +14,7 @@ require (
 	github.com/anaskhan96/soup v1.1.1
 	github.com/appleboy/gin-jwt v1.0.1
 	github.com/appleboy/gin-jwt/v2 v2.6.3
-	github.com/aristanetworks/goarista v0.0.0-20201120222254-94a892eb0c6a // indirect
+	github.com/aristanetworks/goarista v0.0.0-20201218012658-e901e4a75e4f // indirect
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bep/debounce v1.2.0
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
@@ -30,7 +30,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.11.0 // indirect
-	github.com/ethereum/go-ethereum v1.9.18
+	github.com/ethereum/go-ethereum v1.9.25
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/getsentry/raven-go v0.2.0
 	github.com/ghodss/yaml v1.0.0 // indirect
@@ -82,10 +82,10 @@ require (
 	github.com/urfave/cli v1.22.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9 // indirect
+	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
-	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
-	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e // indirect
+	golang.org/x/net v0.0.0-20201216054612-986b41b23924
+	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/tools v0.0.0-20200729041821-df70183b1872 // indirect
 	gonum.org/v1/plot v0.7.0
