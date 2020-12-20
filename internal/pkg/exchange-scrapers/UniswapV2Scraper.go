@@ -162,8 +162,15 @@ func (s *UniswapScraper) mainLoop() {
 			continue
 		}
 		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			log.Info("skip pair ", pair.ForeignName, ", symbol is blacklisted")
+			if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
+				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
+			} else {
+				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
+			}
 			continue
+		}
+		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
+			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		}
 		pair.normalizeUniPair()
 		ps, ok := s.pairScrapers[pair.ForeignName]
@@ -196,7 +203,7 @@ func (s *UniswapScraper) mainLoop() {
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
 						}
-						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" {
+						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" || strings.ToLower(pair.Token1.Address.Hex()) == "0xf5d669627376ebd411e34b98f19c868c8aba5ada" || strings.ToLower(pair.Token1.Address.Hex()) == "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4" {
 							tSwapped, err := dia.SwapTrade(*t)
 							if err == nil {
 								t = &tSwapped
