@@ -28,7 +28,7 @@ const (
 
 type KyberToken struct {
 	Symbol   string
-	Decimals uint8
+	Decimals *big.Int
 }
 
 type KyberScraper struct {
@@ -88,13 +88,13 @@ func (scraper *KyberScraper) loadTokens() {
 
 	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
 		Symbol:   "ETH",
-		Decimals: 18,
+		Decimals: big.NewInt(18) ,
 	}
 
 	// added by hand because the symbol method returns a bytes32 instead of string
 	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &KyberToken{
 		Symbol:   "MKR",
-		Decimals: 18,
+		Decimals: big.NewInt(18),
 	}
 
 	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
@@ -266,9 +266,9 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals.Int64())))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals.Int64())))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut

@@ -137,7 +137,7 @@ func bindBalancerpool(address common.Address, caller bind.ContractCaller, transa
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Balancerpool *BalancerpoolRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Balancerpool *BalancerpoolRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Balancerpool.Contract.BalancerpoolCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Balancerpool *BalancerpoolRaw) Transact(opts *bind.TransactOpts, method s
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Balancerpool *BalancerpoolCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Balancerpool *BalancerpoolCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Balancerpool.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Balancerpool *BalancerpoolTransactorRaw) Transact(opts *bind.TransactOpts
 //
 // Solidity: function BONE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) BONE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "BONE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "BONE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BONE is a free data retrieval call binding the contract method 0xc36596a6.
@@ -201,12 +206,17 @@ func (_Balancerpool *BalancerpoolCallerSession) BONE() (*big.Int, error) {
 //
 // Solidity: function BPOW_PRECISION() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) BPOWPRECISION(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "BPOW_PRECISION")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "BPOW_PRECISION")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BPOWPRECISION is a free data retrieval call binding the contract method 0x189d00ca.
@@ -227,12 +237,17 @@ func (_Balancerpool *BalancerpoolCallerSession) BPOWPRECISION() (*big.Int, error
 //
 // Solidity: function EXIT_FEE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) EXITFEE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "EXIT_FEE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "EXIT_FEE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // EXITFEE is a free data retrieval call binding the contract method 0xc6580d12.
@@ -253,12 +268,17 @@ func (_Balancerpool *BalancerpoolCallerSession) EXITFEE() (*big.Int, error) {
 //
 // Solidity: function INIT_POOL_SUPPLY() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) INITPOOLSUPPLY(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "INIT_POOL_SUPPLY")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "INIT_POOL_SUPPLY")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // INITPOOLSUPPLY is a free data retrieval call binding the contract method 0x9381cd2b.
@@ -279,12 +299,17 @@ func (_Balancerpool *BalancerpoolCallerSession) INITPOOLSUPPLY() (*big.Int, erro
 //
 // Solidity: function MAX_BOUND_TOKENS() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXBOUNDTOKENS(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_BOUND_TOKENS")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_BOUND_TOKENS")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXBOUNDTOKENS is a free data retrieval call binding the contract method 0xb0e0d136.
@@ -305,12 +330,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXBOUNDTOKENS() (*big.Int, erro
 //
 // Solidity: function MAX_BPOW_BASE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXBPOWBASE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_BPOW_BASE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_BPOW_BASE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXBPOWBASE is a free data retrieval call binding the contract method 0xbc694ea2.
@@ -331,12 +361,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXBPOWBASE() (*big.Int, error) 
 //
 // Solidity: function MAX_FEE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXFEE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_FEE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_FEE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXFEE is a free data retrieval call binding the contract method 0xbc063e1a.
@@ -357,12 +392,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXFEE() (*big.Int, error) {
 //
 // Solidity: function MAX_IN_RATIO() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXINRATIO(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_IN_RATIO")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_IN_RATIO")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXINRATIO is a free data retrieval call binding the contract method 0xec093021.
@@ -383,12 +423,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXINRATIO() (*big.Int, error) {
 //
 // Solidity: function MAX_OUT_RATIO() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXOUTRATIO(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_OUT_RATIO")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_OUT_RATIO")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXOUTRATIO is a free data retrieval call binding the contract method 0x992e2a92.
@@ -409,12 +454,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXOUTRATIO() (*big.Int, error) 
 //
 // Solidity: function MAX_TOTAL_WEIGHT() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXTOTALWEIGHT(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_TOTAL_WEIGHT")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_TOTAL_WEIGHT")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXTOTALWEIGHT is a free data retrieval call binding the contract method 0x09a3bbe4.
@@ -435,12 +485,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXTOTALWEIGHT() (*big.Int, erro
 //
 // Solidity: function MAX_WEIGHT() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MAXWEIGHT(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MAX_WEIGHT")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MAX_WEIGHT")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXWEIGHT is a free data retrieval call binding the contract method 0xe4a28a52.
@@ -461,12 +516,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MAXWEIGHT() (*big.Int, error) {
 //
 // Solidity: function MIN_BALANCE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MINBALANCE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MIN_BALANCE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MIN_BALANCE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MINBALANCE is a free data retrieval call binding the contract method 0x867378c5.
@@ -487,12 +547,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MINBALANCE() (*big.Int, error) {
 //
 // Solidity: function MIN_BOUND_TOKENS() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MINBOUNDTOKENS(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MIN_BOUND_TOKENS")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MIN_BOUND_TOKENS")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MINBOUNDTOKENS is a free data retrieval call binding the contract method 0xb7b800a4.
@@ -513,12 +578,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MINBOUNDTOKENS() (*big.Int, erro
 //
 // Solidity: function MIN_BPOW_BASE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MINBPOWBASE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MIN_BPOW_BASE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MIN_BPOW_BASE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MINBPOWBASE is a free data retrieval call binding the contract method 0xba019dab.
@@ -539,12 +609,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MINBPOWBASE() (*big.Int, error) 
 //
 // Solidity: function MIN_FEE() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MINFEE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MIN_FEE")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MIN_FEE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MINFEE is a free data retrieval call binding the contract method 0x76c7a3c7.
@@ -565,12 +640,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MINFEE() (*big.Int, error) {
 //
 // Solidity: function MIN_WEIGHT() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) MINWEIGHT(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "MIN_WEIGHT")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "MIN_WEIGHT")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MINWEIGHT is a free data retrieval call binding the contract method 0x218b5382.
@@ -591,12 +671,17 @@ func (_Balancerpool *BalancerpoolCallerSession) MINWEIGHT() (*big.Int, error) {
 //
 // Solidity: function allowance(address src, address dst) view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) Allowance(opts *bind.CallOpts, src common.Address, dst common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "allowance", src, dst)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "allowance", src, dst)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -617,12 +702,17 @@ func (_Balancerpool *BalancerpoolCallerSession) Allowance(src common.Address, ds
 //
 // Solidity: function balanceOf(address whom) view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) BalanceOf(opts *bind.CallOpts, whom common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "balanceOf", whom)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "balanceOf", whom)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -643,12 +733,17 @@ func (_Balancerpool *BalancerpoolCallerSession) BalanceOf(whom common.Address) (
 //
 // Solidity: function calcInGivenOut(uint256 tokenBalanceIn, uint256 tokenWeightIn, uint256 tokenBalanceOut, uint256 tokenWeightOut, uint256 tokenAmountOut, uint256 swapFee) pure returns(uint256 tokenAmountIn)
 func (_Balancerpool *BalancerpoolCaller) CalcInGivenOut(opts *bind.CallOpts, tokenBalanceIn *big.Int, tokenWeightIn *big.Int, tokenBalanceOut *big.Int, tokenWeightOut *big.Int, tokenAmountOut *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcInGivenOut", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcInGivenOut", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcInGivenOut is a free data retrieval call binding the contract method 0xf8d6aed4.
@@ -669,12 +764,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcInGivenOut(tokenBalanceIn *b
 //
 // Solidity: function calcOutGivenIn(uint256 tokenBalanceIn, uint256 tokenWeightIn, uint256 tokenBalanceOut, uint256 tokenWeightOut, uint256 tokenAmountIn, uint256 swapFee) pure returns(uint256 tokenAmountOut)
 func (_Balancerpool *BalancerpoolCaller) CalcOutGivenIn(opts *bind.CallOpts, tokenBalanceIn *big.Int, tokenWeightIn *big.Int, tokenBalanceOut *big.Int, tokenWeightOut *big.Int, tokenAmountIn *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcOutGivenIn", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountIn, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcOutGivenIn", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountIn, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcOutGivenIn is a free data retrieval call binding the contract method 0xba9530a6.
@@ -695,12 +795,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcOutGivenIn(tokenBalanceIn *b
 //
 // Solidity: function calcPoolInGivenSingleOut(uint256 tokenBalanceOut, uint256 tokenWeightOut, uint256 poolSupply, uint256 totalWeight, uint256 tokenAmountOut, uint256 swapFee) pure returns(uint256 poolAmountIn)
 func (_Balancerpool *BalancerpoolCaller) CalcPoolInGivenSingleOut(opts *bind.CallOpts, tokenBalanceOut *big.Int, tokenWeightOut *big.Int, poolSupply *big.Int, totalWeight *big.Int, tokenAmountOut *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcPoolInGivenSingleOut", tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, tokenAmountOut, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcPoolInGivenSingleOut", tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, tokenAmountOut, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcPoolInGivenSingleOut is a free data retrieval call binding the contract method 0x82f652ad.
@@ -721,12 +826,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcPoolInGivenSingleOut(tokenBa
 //
 // Solidity: function calcPoolOutGivenSingleIn(uint256 tokenBalanceIn, uint256 tokenWeightIn, uint256 poolSupply, uint256 totalWeight, uint256 tokenAmountIn, uint256 swapFee) pure returns(uint256 poolAmountOut)
 func (_Balancerpool *BalancerpoolCaller) CalcPoolOutGivenSingleIn(opts *bind.CallOpts, tokenBalanceIn *big.Int, tokenWeightIn *big.Int, poolSupply *big.Int, totalWeight *big.Int, tokenAmountIn *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcPoolOutGivenSingleIn", tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, tokenAmountIn, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcPoolOutGivenSingleIn", tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, tokenAmountIn, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcPoolOutGivenSingleIn is a free data retrieval call binding the contract method 0x8656b653.
@@ -747,12 +857,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcPoolOutGivenSingleIn(tokenBa
 //
 // Solidity: function calcSingleInGivenPoolOut(uint256 tokenBalanceIn, uint256 tokenWeightIn, uint256 poolSupply, uint256 totalWeight, uint256 poolAmountOut, uint256 swapFee) pure returns(uint256 tokenAmountIn)
 func (_Balancerpool *BalancerpoolCaller) CalcSingleInGivenPoolOut(opts *bind.CallOpts, tokenBalanceIn *big.Int, tokenWeightIn *big.Int, poolSupply *big.Int, totalWeight *big.Int, poolAmountOut *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcSingleInGivenPoolOut", tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, poolAmountOut, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcSingleInGivenPoolOut", tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, poolAmountOut, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcSingleInGivenPoolOut is a free data retrieval call binding the contract method 0x5c1bbaf7.
@@ -773,12 +888,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcSingleInGivenPoolOut(tokenBa
 //
 // Solidity: function calcSingleOutGivenPoolIn(uint256 tokenBalanceOut, uint256 tokenWeightOut, uint256 poolSupply, uint256 totalWeight, uint256 poolAmountIn, uint256 swapFee) pure returns(uint256 tokenAmountOut)
 func (_Balancerpool *BalancerpoolCaller) CalcSingleOutGivenPoolIn(opts *bind.CallOpts, tokenBalanceOut *big.Int, tokenWeightOut *big.Int, poolSupply *big.Int, totalWeight *big.Int, poolAmountIn *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcSingleOutGivenPoolIn", tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, poolAmountIn, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcSingleOutGivenPoolIn", tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, poolAmountIn, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcSingleOutGivenPoolIn is a free data retrieval call binding the contract method 0x89298012.
@@ -799,12 +919,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcSingleOutGivenPoolIn(tokenBa
 //
 // Solidity: function calcSpotPrice(uint256 tokenBalanceIn, uint256 tokenWeightIn, uint256 tokenBalanceOut, uint256 tokenWeightOut, uint256 swapFee) pure returns(uint256 spotPrice)
 func (_Balancerpool *BalancerpoolCaller) CalcSpotPrice(opts *bind.CallOpts, tokenBalanceIn *big.Int, tokenWeightIn *big.Int, tokenBalanceOut *big.Int, tokenWeightOut *big.Int, swapFee *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "calcSpotPrice", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFee)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "calcSpotPrice", tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFee)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcSpotPrice is a free data retrieval call binding the contract method 0xa221ee49.
@@ -825,12 +950,17 @@ func (_Balancerpool *BalancerpoolCallerSession) CalcSpotPrice(tokenBalanceIn *bi
 //
 // Solidity: function decimals() view returns(uint8)
 func (_Balancerpool *BalancerpoolCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -851,12 +981,17 @@ func (_Balancerpool *BalancerpoolCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function getBalance(address token) view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetBalance(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getBalance", token)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getBalance", token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBalance is a free data retrieval call binding the contract method 0xf8b2cb4f.
@@ -877,12 +1012,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetBalance(token common.Address)
 //
 // Solidity: function getColor() view returns(bytes32)
 func (_Balancerpool *BalancerpoolCaller) GetColor(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getColor")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getColor")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // GetColor is a free data retrieval call binding the contract method 0x9a86139b.
@@ -903,12 +1043,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetColor() ([32]byte, error) {
 //
 // Solidity: function getController() view returns(address)
 func (_Balancerpool *BalancerpoolCaller) GetController(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getController")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getController")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetController is a free data retrieval call binding the contract method 0x3018205f.
@@ -929,12 +1074,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetController() (common.Address,
 //
 // Solidity: function getCurrentTokens() view returns(address[] tokens)
 func (_Balancerpool *BalancerpoolCaller) GetCurrentTokens(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getCurrentTokens")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getCurrentTokens")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetCurrentTokens is a free data retrieval call binding the contract method 0xcc77828d.
@@ -955,12 +1105,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetCurrentTokens() ([]common.Add
 //
 // Solidity: function getDenormalizedWeight(address token) view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetDenormalizedWeight(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getDenormalizedWeight", token)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getDenormalizedWeight", token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDenormalizedWeight is a free data retrieval call binding the contract method 0x948d8ce6.
@@ -981,12 +1136,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetDenormalizedWeight(token comm
 //
 // Solidity: function getFinalTokens() view returns(address[] tokens)
 func (_Balancerpool *BalancerpoolCaller) GetFinalTokens(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getFinalTokens")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getFinalTokens")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetFinalTokens is a free data retrieval call binding the contract method 0xbe3bbd2e.
@@ -1007,12 +1167,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetFinalTokens() ([]common.Addre
 //
 // Solidity: function getNormalizedWeight(address token) view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetNormalizedWeight(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getNormalizedWeight", token)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getNormalizedWeight", token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetNormalizedWeight is a free data retrieval call binding the contract method 0xf1b8a9b7.
@@ -1033,12 +1198,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetNormalizedWeight(token common
 //
 // Solidity: function getNumTokens() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetNumTokens(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getNumTokens")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getNumTokens")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetNumTokens is a free data retrieval call binding the contract method 0xcd2ed8fb.
@@ -1059,12 +1229,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetNumTokens() (*big.Int, error)
 //
 // Solidity: function getSpotPrice(address tokenIn, address tokenOut) view returns(uint256 spotPrice)
 func (_Balancerpool *BalancerpoolCaller) GetSpotPrice(opts *bind.CallOpts, tokenIn common.Address, tokenOut common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getSpotPrice", tokenIn, tokenOut)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getSpotPrice", tokenIn, tokenOut)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSpotPrice is a free data retrieval call binding the contract method 0x15e84af9.
@@ -1085,12 +1260,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetSpotPrice(tokenIn common.Addr
 //
 // Solidity: function getSpotPriceSansFee(address tokenIn, address tokenOut) view returns(uint256 spotPrice)
 func (_Balancerpool *BalancerpoolCaller) GetSpotPriceSansFee(opts *bind.CallOpts, tokenIn common.Address, tokenOut common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getSpotPriceSansFee", tokenIn, tokenOut)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getSpotPriceSansFee", tokenIn, tokenOut)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSpotPriceSansFee is a free data retrieval call binding the contract method 0x1446a7ff.
@@ -1111,12 +1291,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetSpotPriceSansFee(tokenIn comm
 //
 // Solidity: function getSwapFee() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetSwapFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getSwapFee")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getSwapFee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSwapFee is a free data retrieval call binding the contract method 0xd4cadf68.
@@ -1137,12 +1322,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetSwapFee() (*big.Int, error) {
 //
 // Solidity: function getTotalDenormalizedWeight() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) GetTotalDenormalizedWeight(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "getTotalDenormalizedWeight")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "getTotalDenormalizedWeight")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetTotalDenormalizedWeight is a free data retrieval call binding the contract method 0x936c3477.
@@ -1163,12 +1353,17 @@ func (_Balancerpool *BalancerpoolCallerSession) GetTotalDenormalizedWeight() (*b
 //
 // Solidity: function isBound(address t) view returns(bool)
 func (_Balancerpool *BalancerpoolCaller) IsBound(opts *bind.CallOpts, t common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "isBound", t)
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "isBound", t)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsBound is a free data retrieval call binding the contract method 0x2f37b624.
@@ -1189,12 +1384,17 @@ func (_Balancerpool *BalancerpoolCallerSession) IsBound(t common.Address) (bool,
 //
 // Solidity: function isFinalized() view returns(bool)
 func (_Balancerpool *BalancerpoolCaller) IsFinalized(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "isFinalized")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "isFinalized")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsFinalized is a free data retrieval call binding the contract method 0x8d4e4083.
@@ -1215,12 +1415,17 @@ func (_Balancerpool *BalancerpoolCallerSession) IsFinalized() (bool, error) {
 //
 // Solidity: function isPublicSwap() view returns(bool)
 func (_Balancerpool *BalancerpoolCaller) IsPublicSwap(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "isPublicSwap")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "isPublicSwap")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsPublicSwap is a free data retrieval call binding the contract method 0xfde924f7.
@@ -1241,12 +1446,17 @@ func (_Balancerpool *BalancerpoolCallerSession) IsPublicSwap() (bool, error) {
 //
 // Solidity: function name() view returns(string)
 func (_Balancerpool *BalancerpoolCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -1267,12 +1477,17 @@ func (_Balancerpool *BalancerpoolCallerSession) Name() (string, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_Balancerpool *BalancerpoolCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -1293,12 +1508,17 @@ func (_Balancerpool *BalancerpoolCallerSession) Symbol() (string, error) {
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_Balancerpool *BalancerpoolCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Balancerpool.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Balancerpool.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -1906,6 +2126,7 @@ func (_Balancerpool *BalancerpoolFilterer) ParseApproval(log types.Log) (*Balanc
 	if err := _Balancerpool.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2059,6 +2280,7 @@ func (_Balancerpool *BalancerpoolFilterer) ParseLOGEXIT(log types.Log) (*Balance
 	if err := _Balancerpool.contract.UnpackLog(event, "LOG_EXIT", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2212,6 +2434,7 @@ func (_Balancerpool *BalancerpoolFilterer) ParseLOGJOIN(log types.Log) (*Balance
 	if err := _Balancerpool.contract.UnpackLog(event, "LOG_JOIN", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2375,6 +2598,7 @@ func (_Balancerpool *BalancerpoolFilterer) ParseLOGSWAP(log types.Log) (*Balance
 	if err := _Balancerpool.contract.UnpackLog(event, "LOG_SWAP", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2528,5 +2752,6 @@ func (_Balancerpool *BalancerpoolFilterer) ParseTransfer(log types.Log) (*Balanc
 	if err := _Balancerpool.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

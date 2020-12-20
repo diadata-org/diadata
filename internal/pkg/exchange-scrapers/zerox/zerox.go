@@ -196,7 +196,7 @@ func bindZerox(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Zerox *ZeroxRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Zerox *ZeroxRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Zerox.Contract.ZeroxCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -215,7 +215,7 @@ func (_Zerox *ZeroxRaw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Zerox *ZeroxCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Zerox *ZeroxCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Zerox.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -234,12 +234,17 @@ func (_Zerox *ZeroxTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function EIP1271_MAGIC_VALUE() view returns(bytes4)
 func (_Zerox *ZeroxCaller) EIP1271MAGICVALUE(opts *bind.CallOpts) ([4]byte, error) {
-	var (
-		ret0 = new([4]byte)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "EIP1271_MAGIC_VALUE")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "EIP1271_MAGIC_VALUE")
+
+	if err != nil {
+		return *new([4]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([4]byte)).(*[4]byte)
+
+	return out0, err
+
 }
 
 // EIP1271MAGICVALUE is a free data retrieval call binding the contract method 0xdd885e2d.
@@ -260,12 +265,17 @@ func (_Zerox *ZeroxCallerSession) EIP1271MAGICVALUE() ([4]byte, error) {
 //
 // Solidity: function EIP712_EXCHANGE_DOMAIN_HASH() view returns(bytes32)
 func (_Zerox *ZeroxCaller) EIP712EXCHANGEDOMAINHASH(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "EIP712_EXCHANGE_DOMAIN_HASH")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "EIP712_EXCHANGE_DOMAIN_HASH")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // EIP712EXCHANGEDOMAINHASH is a free data retrieval call binding the contract method 0xc26cfecd.
@@ -286,12 +296,17 @@ func (_Zerox *ZeroxCallerSession) EIP712EXCHANGEDOMAINHASH() ([32]byte, error) {
 //
 // Solidity: function allowedValidators(address , address ) view returns(bool)
 func (_Zerox *ZeroxCaller) AllowedValidators(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "allowedValidators", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "allowedValidators", arg0, arg1)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // AllowedValidators is a free data retrieval call binding the contract method 0x7b8e3514.
@@ -312,12 +327,17 @@ func (_Zerox *ZeroxCallerSession) AllowedValidators(arg0 common.Address, arg1 co
 //
 // Solidity: function cancelled(bytes32 ) view returns(bool)
 func (_Zerox *ZeroxCaller) Cancelled(opts *bind.CallOpts, arg0 [32]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "cancelled", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "cancelled", arg0)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // Cancelled is a free data retrieval call binding the contract method 0x2ac12622.
@@ -338,12 +358,17 @@ func (_Zerox *ZeroxCallerSession) Cancelled(arg0 [32]byte) (bool, error) {
 //
 // Solidity: function currentContextAddress() view returns(address)
 func (_Zerox *ZeroxCaller) CurrentContextAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "currentContextAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "currentContextAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // CurrentContextAddress is a free data retrieval call binding the contract method 0xeea086ba.
@@ -364,12 +389,17 @@ func (_Zerox *ZeroxCallerSession) CurrentContextAddress() (common.Address, error
 //
 // Solidity: function filled(bytes32 ) view returns(uint256)
 func (_Zerox *ZeroxCaller) Filled(opts *bind.CallOpts, arg0 [32]byte) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "filled", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "filled", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Filled is a free data retrieval call binding the contract method 0x288cdc91.
@@ -390,12 +420,17 @@ func (_Zerox *ZeroxCallerSession) Filled(arg0 [32]byte) (*big.Int, error) {
 //
 // Solidity: function getAssetProxy(bytes4 assetProxyId) view returns(address)
 func (_Zerox *ZeroxCaller) GetAssetProxy(opts *bind.CallOpts, assetProxyId [4]byte) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "getAssetProxy", assetProxyId)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "getAssetProxy", assetProxyId)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetAssetProxy is a free data retrieval call binding the contract method 0x60704108.
@@ -416,12 +451,17 @@ func (_Zerox *ZeroxCallerSession) GetAssetProxy(assetProxyId [4]byte) (common.Ad
 //
 // Solidity: function getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes) order) view returns((uint8,bytes32,uint256) orderInfo)
 func (_Zerox *ZeroxCaller) GetOrderInfo(opts *bind.CallOpts, order LibOrderOrder) (LibOrderOrderInfo, error) {
-	var (
-		ret0 = new(LibOrderOrderInfo)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "getOrderInfo", order)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "getOrderInfo", order)
+
+	if err != nil {
+		return *new(LibOrderOrderInfo), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(LibOrderOrderInfo)).(*LibOrderOrderInfo)
+
+	return out0, err
+
 }
 
 // GetOrderInfo is a free data retrieval call binding the contract method 0x9d3fa4b9.
@@ -442,12 +482,17 @@ func (_Zerox *ZeroxCallerSession) GetOrderInfo(order LibOrderOrder) (LibOrderOrd
 //
 // Solidity: function isValidHashSignature(bytes32 hash, address signerAddress, bytes signature) view returns(bool isValid)
 func (_Zerox *ZeroxCaller) IsValidHashSignature(opts *bind.CallOpts, hash [32]byte, signerAddress common.Address, signature []byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "isValidHashSignature", hash, signerAddress, signature)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "isValidHashSignature", hash, signerAddress, signature)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsValidHashSignature is a free data retrieval call binding the contract method 0x8171c407.
@@ -468,12 +513,17 @@ func (_Zerox *ZeroxCallerSession) IsValidHashSignature(hash [32]byte, signerAddr
 //
 // Solidity: function isValidOrderSignature((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes) order, bytes signature) view returns(bool isValid)
 func (_Zerox *ZeroxCaller) IsValidOrderSignature(opts *bind.CallOpts, order LibOrderOrder, signature []byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "isValidOrderSignature", order, signature)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "isValidOrderSignature", order, signature)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsValidOrderSignature is a free data retrieval call binding the contract method 0xa12dcc6f.
@@ -494,12 +544,17 @@ func (_Zerox *ZeroxCallerSession) IsValidOrderSignature(order LibOrderOrder, sig
 //
 // Solidity: function isValidTransactionSignature((uint256,uint256,uint256,address,bytes) transaction, bytes signature) view returns(bool isValid)
 func (_Zerox *ZeroxCaller) IsValidTransactionSignature(opts *bind.CallOpts, transaction LibZeroExTransactionZeroExTransaction, signature []byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "isValidTransactionSignature", transaction, signature)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "isValidTransactionSignature", transaction, signature)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsValidTransactionSignature is a free data retrieval call binding the contract method 0x8d45cd23.
@@ -520,12 +575,17 @@ func (_Zerox *ZeroxCallerSession) IsValidTransactionSignature(transaction LibZer
 //
 // Solidity: function orderEpoch(address , address ) view returns(uint256)
 func (_Zerox *ZeroxCaller) OrderEpoch(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "orderEpoch", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "orderEpoch", arg0, arg1)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // OrderEpoch is a free data retrieval call binding the contract method 0xd9bfa73e.
@@ -546,12 +606,17 @@ func (_Zerox *ZeroxCallerSession) OrderEpoch(arg0 common.Address, arg1 common.Ad
 //
 // Solidity: function owner() view returns(address)
 func (_Zerox *ZeroxCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -572,12 +637,17 @@ func (_Zerox *ZeroxCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function preSigned(bytes32 , address ) view returns(bool)
 func (_Zerox *ZeroxCaller) PreSigned(opts *bind.CallOpts, arg0 [32]byte, arg1 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "preSigned", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "preSigned", arg0, arg1)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // PreSigned is a free data retrieval call binding the contract method 0x82c174d0.
@@ -598,12 +668,17 @@ func (_Zerox *ZeroxCallerSession) PreSigned(arg0 [32]byte, arg1 common.Address) 
 //
 // Solidity: function protocolFeeCollector() view returns(address)
 func (_Zerox *ZeroxCaller) ProtocolFeeCollector(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "protocolFeeCollector")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "protocolFeeCollector")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // ProtocolFeeCollector is a free data retrieval call binding the contract method 0x850a1501.
@@ -624,12 +699,17 @@ func (_Zerox *ZeroxCallerSession) ProtocolFeeCollector() (common.Address, error)
 //
 // Solidity: function protocolFeeMultiplier() view returns(uint256)
 func (_Zerox *ZeroxCaller) ProtocolFeeMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "protocolFeeMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "protocolFeeMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ProtocolFeeMultiplier is a free data retrieval call binding the contract method 0x1ce4c78b.
@@ -650,12 +730,17 @@ func (_Zerox *ZeroxCallerSession) ProtocolFeeMultiplier() (*big.Int, error) {
 //
 // Solidity: function transactionsExecuted(bytes32 ) view returns(bool)
 func (_Zerox *ZeroxCaller) TransactionsExecuted(opts *bind.CallOpts, arg0 [32]byte) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Zerox.contract.Call(opts, out, "transactionsExecuted", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Zerox.contract.Call(opts, &out, "transactionsExecuted", arg0)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // TransactionsExecuted is a free data retrieval call binding the contract method 0x0228e168.
@@ -1349,6 +1434,7 @@ func (_Zerox *ZeroxFilterer) ParseAssetProxyRegistered(log types.Log) (*ZeroxAss
 	if err := _Zerox.contract.UnpackLog(event, "AssetProxyRegistered", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1515,6 +1601,7 @@ func (_Zerox *ZeroxFilterer) ParseCancel(log types.Log) (*ZeroxCancel, error) {
 	if err := _Zerox.contract.UnpackLog(event, "Cancel", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1668,6 +1755,7 @@ func (_Zerox *ZeroxFilterer) ParseCancelUpTo(log types.Log) (*ZeroxCancelUpTo, e
 	if err := _Zerox.contract.UnpackLog(event, "CancelUpTo", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1842,6 +1930,7 @@ func (_Zerox *ZeroxFilterer) ParseFill(log types.Log) (*ZeroxFill, error) {
 	if err := _Zerox.contract.UnpackLog(event, "Fill", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1994,6 +2083,7 @@ func (_Zerox *ZeroxFilterer) ParseOwnershipTransferred(log types.Log) (*ZeroxOwn
 	if err := _Zerox.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2128,6 +2218,7 @@ func (_Zerox *ZeroxFilterer) ParseProtocolFeeCollectorAddress(log types.Log) (*Z
 	if err := _Zerox.contract.UnpackLog(event, "ProtocolFeeCollectorAddress", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2262,6 +2353,7 @@ func (_Zerox *ZeroxFilterer) ParseProtocolFeeMultiplier(log types.Log) (*ZeroxPr
 	if err := _Zerox.contract.UnpackLog(event, "ProtocolFeeMultiplier", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2415,6 +2507,7 @@ func (_Zerox *ZeroxFilterer) ParseSignatureValidatorApproval(log types.Log) (*Ze
 	if err := _Zerox.contract.UnpackLog(event, "SignatureValidatorApproval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2558,6 +2651,6 @@ func (_Zerox *ZeroxFilterer) ParseTransactionExecution(log types.Log) (*ZeroxTra
 	if err := _Zerox.contract.UnpackLog(event, "TransactionExecution", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-
