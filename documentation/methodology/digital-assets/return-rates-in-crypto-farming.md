@@ -24,11 +24,11 @@ $$
 
 Here, $$r_X(i)$$ is the _pool rate_ corresponding to the pool of token $$X$$ .
 
-As the initial supply $$A_X(i_0)$$ is constant, the price depends on the evolution of $$A_X(i)$$ and hence on the pool's investment strategy - if the number of tokens $$A_X(i)$$ increases with block number $$i$$ , so will the pool rate. In other words, the return of an investment is determined by the change in the pool rate.  
+As the initial supply $$A_X(i_0)$$ is constant, the price depends on the evolution of $$A_X(i)$$ and hence on the pool's investment strategy - if the number of tokens $$A_X(i)$$ increases with block number $$i$$, so will the pool rate. In other words, the return of an investment is determined by the change in the pool rate.  
 The following example illustrates the relation between the pool rate and the return on an investment. We remark that in general, as for interest rates in traditional finance, differences of pool rates can be used for simple interest calculation as well as for compounded interest.
 
 **Example:**  
-Assume an investor puts an amount of $$100$$ tokens $$X$$ into an empty pool at block number $$10000000$$ . With the notation from above this means $$i_0=10000000$$ and $$A_X(10000000)=100$$. Further assume that $$1000$$ blocks later, the investment strategy has increased the number of tokens in the pool to $$101$$ tokens, so $$A_X(10001000)=101$$. The return on the initial investment after these $$1000$$ blocks can be obtained by the difference of the pool rates at blocks $$10001000$$ and $$10000000$$ respectively. Indeed, we have $$p_X(10000000)=1$$ and thus $$r_X(10000000)=0$$. By the above equation for $$A_X(i)$$ we have $$p_X(10001000)=\frac{A_X(10001000)}{A_X(10000000)}=\frac{101}{100}$$ and thus $$r_X(10001000)=\frac{1}{100}$$. This yields
+Assume an investor puts an amount of $$100$$ tokens $$X$$ into an empty pool at block number $$10000000$$. With the notation from above this means $$i_0=10000000$$ and $$A_X(10000000)=100$$. Further assume that $$1000$$ blocks later, the investment strategy has increased the number of tokens in the pool to $$101$$ tokens, so $$A_X(10001000)=101$$. The return on the initial investment after these $$1000$$ blocks can be obtained by the difference of the pool rates at blocks $$10001000$$ and $$10000000$$ respectively. Indeed, we have $$p_X(10000000)=1$$ and thus $$r_X(10000000)=0$$. By the above equation for $$A_X(i)$$ we have $$p_X(10001000)=\frac{A_X(10001000)}{A_X(10000000)}=\frac{101}{100}$$ and thus $$r_X(10001000)=\frac{1}{100}$$. This yields
 
 $$
 r_X(10001000)-r_X(10000000)=\frac{1}{100}
