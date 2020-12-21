@@ -35,7 +35,6 @@ func main() {
 	yearnAprOracleAddress := flag.String("apr-oracle", "0x97ff4a1b787ade6b94cca95b61f79417c673331d", "Address of the deployed APR Oracle address")
 
 	flag.Parse()
-	log.Infof("rateType: %s", *rateType)
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
 
