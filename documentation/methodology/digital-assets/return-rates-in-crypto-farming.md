@@ -133,10 +133,10 @@ $$
   </tbody>
 </table>
 
-Consider a protocol with just two pools, namely sBTC and sETH, and three investors as shown in the first row. The system's total debt is the sum of the investments. Assume that after one farming period the ETH price miraculously remains the same, and the price of BTC doubles, leading to the balances shown in row 2. In the third row, the personal debt for each investor is computed using the above formula for $$D_{Inv}$$ . In the last row, the corresponding total gains are computed. Although investor 3's strategy made a gain of $$100\%$$, the investor itself only made a gain of $$0,00015\%$$, as he was the only one winning and his total gain is distributed among all investors. Furthermore, it is distributed according to the initial shares. As Investors 1 and 2 have far bigger initial shares, they get a large amount of Investment 3's gain, although their strategy did not win.  
+Consider a protocol with just two pools, namely sBTC and sETH, and three investors as shown in the first row. The system's total debt is the sum of the investments. Assume that after one farming period the ETH price miraculously remains the same, and the price of BTC doubles, leading to the balances shown in row 2. In the third row, the personal debt for each investor is computed using the above formula for $$D_{Inv}$$ . In the last row, the corresponding total gains are computed. Although investor 3's strategy made a gain of $$100\%$$, the investor himself only made a gain of $$1,5\%$$, as he was the only one winning and his total gain is distributed among all investors. Furthermore, it is distributed according to the initial shares. As Investors 1 and 2 have far bigger initial shares, they get a large amount of Investment 3's gain, although their strategy did not win.  
 Finally, we can easily compute the farming period's pool rate for this example, using the above formula
 
 $$
-r=\frac{152}{150}-1=0,01\bar{3}.
+r=\frac{152}{150}-1=0,01\bar{3}=1,\bar{3}\%.
 $$
 
