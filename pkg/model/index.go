@@ -43,15 +43,15 @@ type CryptoIndexConstituent struct {
 
 // MarshalBinary -
 func (e *CryptoIndex) MarshalBinary() ([]byte, error) {
-  return json.Marshal(e)
+	return json.Marshal(e)
 }
 
 // UnmarshalBinary -
 func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
-  if err := json.Unmarshal(data, &e); err != nil {
-    return err
-  }
-  return nil
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
@@ -64,25 +64,63 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			// Get index fields
 			currentIndex := CryptoIndex{}
-			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			constituentsSerial := res[0].Series[0].Values[i][1].(string)
 			currentIndex.Name = res[0].Series[0].Values[i][2].(string)
-			currentIndex.Price, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
+			// Value
 			tmp, err := res[0].Series[0].Values[i][4].(json.Number).Float64()
 			if err != nil {
 				return retval, err
 			}
 			tmp /= indexNormalization
 			currentIndex.Value = tmp
-			var constituents []CryptoIndexConstituent
+			// Prices (actual, 1h, 24h, ...)
+			// TO DO: instead of log.Error return error as soon as we have long enough data trail
+			currentIndex.Price, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			price1h, err := db.GetPrice1h(currentIndex.Name, "")
+			if err != nil {
+				log.Error("error index price 1h: ", err)
+			}
+			currentIndex.Price1h = price1h
+			price1d, err := db.GetPriceYesterday(currentIndex.Name, "")
+			if err != nil {
+				log.Error("error index price 24h: ", err)
+			}
+			currentIndex.Price24h = price1d
+			price7d, err := db.GetPrice7d(currentIndex.Name, "")
+			if err != nil {
+				log.Error("error index price 7d: ", err)
+			}
+			currentIndex.Price7d = price7d
+			price14d, err := db.GetPrice14d(currentIndex.Name, "")
+			if err != nil {
+				log.Error("error index price 14d: ", err)
+			}
+			currentIndex.Price14d = price14d
+			price30d, err := db.GetPrice30d(currentIndex.Name, "")
+			if err != nil {
+				log.Error("error index price 30d: ", err)
+			}
+			currentIndex.Price30d = price30d
+			// TO DO: Volume
+			// Circulating supply
+			diaSupply, err := db.GetLatestSupply(currentIndex.Name)
+			if err != nil {
+				return retval, err
+			}
+			currentIndex.CirculatingSupply = diaSupply.CirculatingSupply
+			// Calculation time
+			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			constituentsSerial := res[0].Series[0].Values[i][1].(string)
+
 			// Get constituents
+			var constituents []CryptoIndexConstituent
 			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {
 				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5*time.Hour), endtime, constituentSymbol)
 				if err != nil {
@@ -119,9 +157,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	if err != nil {
 		log.Error("Writing Crypto Index to Influx: ", err)
 		return err
-	} else {
-		db.addPoint(pt)
 	}
+	db.addPoint(pt)
 
 	err = db.WriteBatchInflux()
 	if err != nil {
@@ -139,7 +176,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 }
 
 func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
-	startdate := date.AddDate(0, 0, -1)
+	startdate := date.Add(-1 * time.Hour)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
