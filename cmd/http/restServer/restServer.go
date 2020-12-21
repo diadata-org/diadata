@@ -243,6 +243,7 @@ func main() {
 
 		// Index
 		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndex))
+		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

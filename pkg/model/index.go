@@ -41,6 +41,14 @@ type CryptoIndexConstituent struct {
 	CappingFactor     float64
 }
 
+type CryptoIndexMintAmount struct {
+	Name          string
+	Symbol        string
+	Address       string
+	Amount        uint64
+	RebalanceTime time.Time
+}
+
 // MarshalBinary -
 func (e *CryptoIndex) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
@@ -263,4 +271,37 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) err
 		log.Error("Writing Crypto Index Constituent to Influx: ", err)
 	}
 	return err
+}
+
+// WIP: Returns the amounts of constituents tokens needed to mint an index token
+// For now we hard-code amounts. TO DO: Set and Get data to and from influx/config
+func (db *DB) GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error) {
+
+	constituents := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
+	amounts := []uint64{102504643110709000, 907990711110561000, 206329281567188, 55663649889442, 461546152853883000, 56696968122059100, 4185582958247, 26215696618443200, 3778532359289460, 38656197930994700, 972363917807713, 2038967220923070, 952603382004964, 16697065735724400}
+	addresses := []string{
+		"0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
+		"0x408e41876cccdc0f92210600ef50372656052a38",
+		"0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
+		"0x5D8d9F5b96f4438195BE9b99eee6118Ed4304286",
+		"0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c",
+		"0xF5D669627376EBd411E34b98F19C868c8ABA5ADA",
+		"0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577",
+		"0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
+		"0x0Ae055097C6d159879521C384F1D2123D1f195e6",
+		"0x83e6f1E41cdd28eAcEB20Cb649155049Fac3D5Aa",
+		"0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5",
+		"0x913D8ADf7CE6986a8CbFee5A54725D9Eea4F0729",
+		"0x875773784Af8135eA0ef43b5a374AaD105c5D39e",
+		"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664"}
+	var mintAmounts []CryptoIndexMintAmount
+	for i, constituent := range constituents {
+		var mintAmount CryptoIndexMintAmount
+		mintAmount.Symbol = constituent
+		mintAmount.Address = addresses[i]
+		mintAmount.Amount = amounts[i]
+		mintAmount.RebalanceTime = time.Unix(0, 1608403933000000000)
+		mintAmounts = append(mintAmounts, mintAmount)
+	}
+	return mintAmounts, nil
 }

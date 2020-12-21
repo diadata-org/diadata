@@ -1120,3 +1120,17 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, q)
 }
+
+func (env *Env) GetCryptoIndexMintAmounts(c *gin.Context) {
+	symbol := c.Param("symbol")
+	q, err := env.DataStore.GetCryptoIndexMintAmounts(symbol)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
