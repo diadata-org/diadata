@@ -54,7 +54,7 @@ $$
 G=D_{you}-p_0=p_0\left( \frac{D_1}{D_0}-1 \right).
 $$
 
-In order to see the relation to the pool rate $$r$$  from the previous section, we rewrite the personal debt $$D_{you}$$  in a somewhat artificial manner as
+In order to see the relation to the _pool rate_ $$r$$  from the previous section, we rewrite the personal debt $$D_{you}$$  in a somewhat artificial manner as
 
 $$
 D_{you}=p_0\left(1+\left(\frac{D_1}{D_0}-1\right)\right).
