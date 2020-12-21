@@ -42,22 +42,22 @@ Again, whether the amount of tokens in a pool increases or decreases solely depe
 
 A slightly different approach for farming is presented by other platforms such as Synthetix. Apart from constant fee rates on transactions such as trades,  the dynamical return rate depends on the  average return of all investments on the platform. The corresponding gains \(or losses\) for the investors are paid out periodically, for instance weekly. We will first explain the general mechanism and then illustrate it with an example.
 
-Consider a platform with $$n$$ different pools associated to an investment strategy. In most cases, the investment strategy is short or long on a cryptocurrency, represented by a minted synthetic asset. Assume that you make an investment by buying from a pool of such a token $$X$$  worth $$p_0$$  US-Dollar \(it could be any other currency obviously\). You thereby increase the so-called system's _total debt_ from the previous value $$D_{-1}$$  to $$D_0:=D_{-1}+p_0$$. In other words, the total debt  is just the value of all investments across the platform during one farming period. Now assume that after one farming period has elapsed, the value of your investment is $$p_1$$.  Furthermore, the system's total debt, i.e. the US-Dollar price of all investments together changed to $$D_1$$. The idea is that the system does not owe you your initial investment, but rather your initial proportion of the system's total debt, which is $$\frac{p_0}{D_0}$$. Hence, your actual personal debt $$D_{you}$$ is
+Consider a platform with $$n$$ different pools associated to an investment strategy. In most cases, the investment strategy is short or long on a cryptocurrency, represented by a minted synthetic asset. Assume an investor makes an investment by buying from a pool of such a token $$X$$  worth $$p_0$$  US-Dollar \(it could be any other currency obviously\). She thereby increases the so-called system's _total debt_ from the previous value $$D_{-1}$$  to $$D_0:=D_{-1}+p_0$$. In other words, the total debt  is just the value of all investments across the platform during one farming period. Now assume that after one farming period has elapsed, the value of her investment is $$p_1$$.  Furthermore, the system's total debt, i.e. the US-Dollar price of all investments together changed to $$D_1$$. The idea is that the system does not owe her her initial investment, but rather her initial proportion of the system's total debt, which is $$\frac{p_0}{D_0}$$. Hence, her actual personal debt $$D_{Inv}$$ is
 
 $$
-D_{you}=\frac{p_0}{D_0}\cdot D_1.
+D_{Inv}=\frac{p_0}{D_0}\cdot D_1.
 $$
 
-In other words, the total debt is distributed among all investors according to their initial share of the total debt. In particular, you win if $$D_1>D_0$$, that is, the total debt increases, and you loose if $$D_1<D_0$$. Furthermore, your total gain $$G$$ after one farming period is given by your personal debt minus your initial investment
+In other words, the total debt is distributed among all investors according to their initial share of the total debt. In particular, everyone wins if $$D_1>D_0$$, that is, the total debt increases, and everyone looses if $$D_1<D_0$$. Furthermore, the investor's total gain $$G$$ after one farming period is given by her personal debt minus her initial investment
 
 $$
-G=D_{you}-p_0=p_0\left( \frac{D_1}{D_0}-1 \right).
+G=D_{Inv}-p_0=p_0\left( \frac{D_1}{D_0}-1 \right).
 $$
 
-In order to see the relation to the _pool rate_ $$r$$  from the previous section, we rewrite the personal debt $$D_{you}$$  in a somewhat artificial manner as
+In order to see the relation to the _pool rate_ $$r$$  from the previous section, we rewrite the personal debt $$D_{Inv}$$  in a somewhat artificial manner as
 
 $$
-D_{you}=p_0\left(1+\left(\frac{D_1}{D_0}-1\right)\right).
+D_{Inv}=p_0\left(1+\left(\frac{D_1}{D_0}-1\right)\right).
 $$
 
 And hence, the pool rate $$r$$ is given by
@@ -65,4 +65,73 @@ And hence, the pool rate $$r$$ is given by
 $$
 r=\frac{D_1}{D_0}-1.
 $$
+
+**Example:**
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left"><b>Step</b>
+      </th>
+      <th style="text-align:left">Investment 1 in $</th>
+      <th style="text-align:left">Investment 2 in $</th>
+      <th style="text-align:left">Investment 3 in $</th>
+      <th style="text-align:left">Total Debt in $</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:left">
+        <p>sBTC</p>
+        <p>sETH</p>
+      </td>
+      <td style="text-align:left">
+        <p>0</p>
+        <p>100</p>
+      </td>
+      <td style="text-align:left">0
+        <br />48</td>
+      <td style="text-align:left">
+        <p>2</p>
+        <p>0</p>
+      </td>
+      <td style="text-align:left"></td>
+    </tr>
+    <tr>
+      <td style="text-align:left">
+        <p>sBTC</p>
+        <p>sETH</p>
+      </td>
+      <td style="text-align:left">
+        <p>0</p>
+        <p>100</p>
+      </td>
+      <td style="text-align:left">
+        <p>0</p>
+        <p>48</p>
+      </td>
+      <td style="text-align:left">
+        <p>4</p>
+        <p>0</p>
+      </td>
+      <td style="text-align:left"></td>
+    </tr>
+    <tr>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+    </tr>
+    <tr>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+      <td style="text-align:left"></td>
+    </tr>
+  </tbody>
+</table>
+
+Consider a protocol with just two pools, namely sBTC and sETH, and three investors as shown in the first row. The system's total debt is the sum of the investments. Now, after one farming period, the ETH price miraculously remains the same, and the price of BTC doubles, leading to the balances shown in row 2. In the third row, the personal debt for each investor is computed using the above formula for $$D_{Inv}$$ . In the last row, the corresponding total gains are computed. Although investor 3's strategy made a gain of $$100\%$$ , the investor itself only made a gain of $$0,00015\%$$, as he was the only one winning and his total gain is distributed among all investors. Furthermore, it is distributed according to the initial shares. As Investors 1 and 2 have far bigger initial shares, they get a large amount of Investment 3's gain, although their strategy did not win.
 
