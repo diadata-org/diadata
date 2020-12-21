@@ -1,7 +1,7 @@
 package yearn
 
 import (
-	yearn "github.com/diadata-org/diadata/internal/pkg/ratescrapers/yearn/aproracle"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/yearn"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
