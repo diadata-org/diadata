@@ -137,7 +137,7 @@ func bindCvaultpoolcontract(address common.Address, caller bind.ContractCaller, 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Cvaultpoolcontract *CvaultpoolcontractRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Cvaultpoolcontract *CvaultpoolcontractRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Cvaultpoolcontract.Contract.CvaultpoolcontractCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractRaw) Transact(opts *bind.TransactOp
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Cvaultpoolcontract *CvaultpoolcontractCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Cvaultpoolcontract *CvaultpoolcontractCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Cvaultpoolcontract.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractTransactorRaw) Transact(opts *bind.
 //
 // Solidity: function averageFeesPerBlockEpoch() view returns(uint256 averagePerBlock)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) AverageFeesPerBlockEpoch(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "averageFeesPerBlockEpoch")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "averageFeesPerBlockEpoch")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AverageFeesPerBlockEpoch is a free data retrieval call binding the contract method 0x03dec009.
@@ -201,12 +206,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) AverageFeesPerBlockE
 //
 // Solidity: function averageFeesPerBlockSinceStart() view returns(uint256 averagePerBlock)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) AverageFeesPerBlockSinceStart(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "averageFeesPerBlockSinceStart")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "averageFeesPerBlockSinceStart")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AverageFeesPerBlockSinceStart is a free data retrieval call binding the contract method 0x9dbc2d90.
@@ -227,12 +237,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) AverageFeesPerBlockS
 //
 // Solidity: function contractStartBlock() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) ContractStartBlock(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "contractStartBlock")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "contractStartBlock")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ContractStartBlock is a free data retrieval call binding the contract method 0x49c5468d.
@@ -253,12 +268,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) ContractStartBlock()
 //
 // Solidity: function core() view returns(address)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) Core(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "core")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "core")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Core is a free data retrieval call binding the contract method 0xf2f4eb26.
@@ -279,12 +299,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) Core() (common.Addre
 //
 // Solidity: function cumulativeRewardsSinceStart() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) CumulativeRewardsSinceStart(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "cumulativeRewardsSinceStart")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "cumulativeRewardsSinceStart")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CumulativeRewardsSinceStart is a free data retrieval call binding the contract method 0xc8ffb873.
@@ -305,12 +330,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) CumulativeRewardsSin
 //
 // Solidity: function devaddr() view returns(address)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) Devaddr(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "devaddr")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "devaddr")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Devaddr is a free data retrieval call binding the contract method 0xd49e77cd.
@@ -331,12 +361,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) Devaddr() (common.Ad
 //
 // Solidity: function epoch() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) Epoch(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "epoch")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "epoch")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Epoch is a free data retrieval call binding the contract method 0x900cf0cf.
@@ -357,12 +392,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) Epoch() (*big.Int, e
 //
 // Solidity: function epochCalculationStartBlock() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) EpochCalculationStartBlock(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "epochCalculationStartBlock")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "epochCalculationStartBlock")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // EpochCalculationStartBlock is a free data retrieval call binding the contract method 0x5d577c18.
@@ -383,12 +423,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) EpochCalculationStar
 //
 // Solidity: function epochRewards(uint256 ) view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) EpochRewards(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "epochRewards", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "epochRewards", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // EpochRewards is a free data retrieval call binding the contract method 0x4dc47d34.
@@ -409,12 +454,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) EpochRewards(arg0 *b
 //
 // Solidity: function owner() view returns(address)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -435,12 +485,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) Owner() (common.Addr
 //
 // Solidity: function pendingCore(uint256 _pid, address _user) view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) PendingCore(opts *bind.CallOpts, _pid *big.Int, _user common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "pendingCore", _pid, _user)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "pendingCore", _pid, _user)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // PendingCore is a free data retrieval call binding the contract method 0xa4f00c82.
@@ -461,12 +516,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) PendingCore(_pid *bi
 //
 // Solidity: function pendingRewards() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) PendingRewards(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "pendingRewards")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "pendingRewards")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // PendingRewards is a free data retrieval call binding the contract method 0xeded3fda.
@@ -492,15 +552,23 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCaller) PoolInfo(opts *bind.CallOpt
 	AccCorePerShare *big.Int
 	Withdrawable    bool
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "poolInfo", arg0)
+
+	outstruct := new(struct {
 		Token           common.Address
 		AllocPoint      *big.Int
 		AccCorePerShare *big.Int
 		Withdrawable    bool
 	})
-	out := ret
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "poolInfo", arg0)
-	return *ret, err
+
+	outstruct.Token = out[0].(common.Address)
+	outstruct.AllocPoint = out[1].(*big.Int)
+	outstruct.AccCorePerShare = out[2].(*big.Int)
+	outstruct.Withdrawable = out[3].(bool)
+
+	return *outstruct, err
+
 }
 
 // PoolInfo is a free data retrieval call binding the contract method 0x1526fe27.
@@ -531,12 +599,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) PoolInfo(arg0 *big.I
 //
 // Solidity: function poolLength() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) PoolLength(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "poolLength")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "poolLength")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // PoolLength is a free data retrieval call binding the contract method 0x081e3eda.
@@ -557,12 +630,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) PoolLength() (*big.I
 //
 // Solidity: function rewardsInThisEpoch() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) RewardsInThisEpoch(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "rewardsInThisEpoch")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "rewardsInThisEpoch")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RewardsInThisEpoch is a free data retrieval call binding the contract method 0x608c8d3a.
@@ -583,12 +661,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) RewardsInThisEpoch()
 //
 // Solidity: function superAdmin() view returns(address)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) SuperAdmin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "superAdmin")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "superAdmin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // SuperAdmin is a free data retrieval call binding the contract method 0x29575f6a.
@@ -609,12 +692,17 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCallerSession) SuperAdmin() (common
 //
 // Solidity: function totalAllocPoint() view returns(uint256)
 func (_Cvaultpoolcontract *CvaultpoolcontractCaller) TotalAllocPoint(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "totalAllocPoint")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "totalAllocPoint")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAllocPoint is a free data retrieval call binding the contract method 0x17caf6f1.
@@ -638,13 +726,19 @@ func (_Cvaultpoolcontract *CvaultpoolcontractCaller) UserInfo(opts *bind.CallOpt
 	Amount     *big.Int
 	RewardDebt *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Cvaultpoolcontract.contract.Call(opts, &out, "userInfo", arg0, arg1)
+
+	outstruct := new(struct {
 		Amount     *big.Int
 		RewardDebt *big.Int
 	})
-	out := ret
-	err := _Cvaultpoolcontract.contract.Call(opts, out, "userInfo", arg0, arg1)
-	return *ret, err
+
+	outstruct.Amount = out[0].(*big.Int)
+	outstruct.RewardDebt = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // UserInfo is a free data retrieval call binding the contract method 0x93f1a40b.
@@ -1259,6 +1353,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseApproval(log types.L
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1412,6 +1507,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseDeposit(log types.Lo
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "Deposit", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1565,6 +1661,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseEmergencyWithdraw(lo
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "EmergencyWithdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1717,6 +1814,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseOwnershipTransferred
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1869,6 +1967,7 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseSuperAdminTransfered
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "SuperAdminTransfered", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2022,5 +2121,6 @@ func (_Cvaultpoolcontract *CvaultpoolcontractFilterer) ParseWithdraw(log types.L
 	if err := _Cvaultpoolcontract.contract.UnpackLog(event, "Withdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
