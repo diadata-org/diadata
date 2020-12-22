@@ -184,7 +184,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 }
 
 func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
-	startdate := date.Add(-1 * time.Hour)
+	startdate := date.Add(-30 * time.Minute)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -200,48 +200,49 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 
 func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
-	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 10", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+
+	q := fmt.Sprintf("SELECT * from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
 	if err != nil {
 		return retval, err
 	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentConstituent := CryptoIndexConstituent{}
-			/*currentConstituent.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}*/ //TODO: Do we need time?
-			currentConstituent.Address = res[0].Series[0].Values[i][1].(string)
-			currentConstituent.CappingFactor, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			currentConstituent.Name = res[0].Series[0].Values[i][4].(string)
-			currentConstituent.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			currentConstituent.Symbol = res[0].Series[0].Values[i][6].(string)
-			currentConstituent.Weight, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			// Get price yesterday
-			priceYesterday, err := db.GetCryptoIndexConstituentPrice(currentConstituent.Symbol, endtime.AddDate(0, 0, -1))
-			if err != nil {
-				currentConstituent.PriceYesterday = float64(0)
-			} else {
-				currentConstituent.PriceYesterday = priceYesterday
-			}
+	if len(res) > 0 && len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 
-			retval = append(retval, currentConstituent)
+		currentConstituent := CryptoIndexConstituent{}
+		/*currentConstituent.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+		if err != nil {
+			return retval, err
+		}*/ //TODO: Do we need time?
+		currentConstituent.Address = res[0].Series[0].Values[0][1].(string)
+		currentConstituent.CappingFactor, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
+		if err != nil {
+			return retval, err
 		}
+		currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		currentConstituent.Name = res[0].Series[0].Values[0][4].(string)
+		currentConstituent.Price, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		currentConstituent.Symbol = res[0].Series[0].Values[0][6].(string)
+		currentConstituent.Weight, err = res[0].Series[0].Values[0][7].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		// Get price yesterday
+		priceYesterday, err := db.GetCryptoIndexConstituentPrice(currentConstituent.Symbol, endtime.AddDate(0, 0, -1))
+		if err != nil {
+			currentConstituent.PriceYesterday = float64(0)
+		} else {
+			currentConstituent.PriceYesterday = priceYesterday
+		}
+
+		retval = append(retval, currentConstituent)
+
 	}
 	return retval, nil
 }

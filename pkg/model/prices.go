@@ -11,7 +11,7 @@ func (db *DB) SetPriceZSET(symbol string, exchange string, price float64, t time
 	db.SaveFilterInflux(dia.FilterKing, symbol, exchange, price, t)
 	key := getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange))
 	log.Debug("SetPriceZSET ", key)
-	return db.setZSETValue(key, price, time.Now().Unix(), BiggestWindow)
+	return db.setZSETValue(key, price, time.Now().Unix(), Window30d)
 }
 
 func (db *DB) GetPrice(symbol string, exchange string) (float64, error) {
