@@ -52,7 +52,6 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
-		// Init Yearn Manager
 		sRate := defiscraper.SpawnDefiScraper(ds, *rateType, *rpcURL, *yearnAprOracleAddress)
 		defer sRate.Close()
 
