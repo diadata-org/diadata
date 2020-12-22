@@ -41,5 +41,10 @@ func (db *DB) GetPrice30d(symbol string, exchange string) (float64, error) {
 }
 
 func (db *DB) getPriceLookup(symbol string, exchange string, window int64) (float64, error) {
-	return db.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange)), time.Now().Unix()-window)
+	return db.getZSETValue(
+		getKeyFilterZSET(
+			getKey(dia.FilterKing, symbol, exchange),
+		),
+		time.Now().Unix()-window,
+	)
 }
