@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/ratescrapers/yearn"
 	"sync"
 
 	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
@@ -31,9 +30,6 @@ func main() {
 	// Parse the option for the type of interest rate. The available values
 	// for the flags can be found in the Update() method in RateScraper.go.
 	rateType := flag.String("type", "SOFR", "Type of interest rate")
-	rpcURL := flag.String("rpc-url", "http://127.0.0.1:8545", "RPC endpoint of the Ethereum client")
-	yearnAprOracleAddress := flag.String("apr-oracle", "0x97ff4a1b787ade6b94cca95b61f79417c673331d", "Address of the deployed APR Oracle address")
-
 	flag.Parse()
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
@@ -54,10 +50,8 @@ func main() {
 			log.Errorf("Error writing rate %s: %v", *rateType, err)
 		}
 
-		// Init Yearn Manager
-		yearnManager := yearn.NewYearnManager(*rpcURL, *yearnAprOracleAddress)
 		// Spawn the corresponding rate scraper
-		sRate := ratescrapers.SpawnRateScraper(ds, *rateType, yearnManager)
+		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)
 		defer sRate.Close()
 
 		// Send rates to the database while the scraper scrapes

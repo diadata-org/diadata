@@ -28,4 +28,7 @@ type DefiScraper struct {
 	datastore     models.Datastore
 	chanDefiRate  chan *dia.DefiRate
 	chanDefiState chan *dia.DefiProtocolState
+
+	rpcUrl string
+	aprOracleAddress string
 }

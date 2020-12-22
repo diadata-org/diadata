@@ -2,7 +2,6 @@ package ratescrapers
 
 import (
 	"errors"
-	"github.com/diadata-org/diadata/internal/pkg/ratescrapers/yearn"
 	"sync"
 	"time"
 
@@ -30,12 +29,11 @@ type RateScraper struct {
 	ticker           *time.Ticker
 	datastore        models.Datastore
 	chanInterestRate chan *models.InterestRate
-	yearnManager *yearn.YearnManager
 }
 
 // SpawnRateScraper returns a new RateScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func SpawnRateScraper(datastore models.Datastore, rateType string, yearnManager *yearn.YearnManager) *RateScraper {
+func SpawnRateScraper(datastore models.Datastore, rateType string) *RateScraper {
 	s := &RateScraper{
 		shutdown:         make(chan nothing),
 		shutdownDone:     make(chan nothing),
@@ -43,11 +41,9 @@ func SpawnRateScraper(datastore models.Datastore, rateType string, yearnManager 
 		ticker:           time.NewTicker(refreshDelay),
 		datastore:        datastore,
 		chanInterestRate: make(chan *models.InterestRate),
-		yearnManager: yearnManager,
 	}
 
 	log.Info("Rate scraper is built and triggered")
-	s.yearnManager.Init()
 	go s.mainLoop(rateType)
 	return s
 }
@@ -113,8 +109,6 @@ func (s *RateScraper) Update(rateType string) error {
 		return s.UpdateSAFRAvgs()
 	case "SONIA":
 		return s.UpdateSonia()
-	case "YEARN":
-		return s.UpdateYEARN()
 	}
 	return errors.New("Error: " + rateType + " does not exist in database")
 }

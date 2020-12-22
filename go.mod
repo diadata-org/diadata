@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata
 go 1.14
 
 require (
-	github.com/DefinitelyNotAGoat/go-tezos v1.0.9
+	//github.com/DefinitelyNotAGoat/go-tezos v1.0.9
 	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/OneOfOne/xxhash v1.2.5 // indirect
 	github.com/PaddyMc/go-tron v0.0.0-20181127165653-0f1071546155
@@ -42,6 +42,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/goat-systems/go-tezos/v3 v3.0.2 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.0.3 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
