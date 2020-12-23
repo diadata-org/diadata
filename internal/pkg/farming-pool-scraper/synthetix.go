@@ -64,7 +64,9 @@ func (sts *SynthetixScraper) mainLoop() {
 
 func (sts *SynthetixScraper) scrapePools() error {
 	// Mechanism of synthetic farming in DIA Methodology and in the synthetix litepaper
-	//  https://www.synthetix.io/uploads/synthetix_litepaper.pdf
+	// https://www.synthetix.io/uploads/synthetix_litepaper.pdf
+	// https://synthetix.community/docs/claiming-rewards
+	// https://docs.synthetix.io/addresses/
 
 	sntxBase, err := synthetixcontract.NewISynthetixCaller(common.HexToAddress(synthetixBaseAddress), sts.restClient)
 	if err != nil {
