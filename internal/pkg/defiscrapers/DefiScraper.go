@@ -19,18 +19,16 @@ type nothing struct{}
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func SpawnDefiScraper(datastore models.Datastore, rateType, rpcUrl, aprOracleAddress string) *DefiScraper {
+func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper {
 	s := &DefiScraper{
-		shutdown:         make(chan nothing),
-		shutdownDone:     make(chan nothing),
-		error:            nil,
-		tickerRate:       time.NewTicker(refreshRateDelay),
-		tickerState:      time.NewTicker(refreshStateDelay),
-		datastore:        datastore,
-		chanDefiRate:     make(chan *dia.DefiRate),
-		chanDefiState:    make(chan *dia.DefiProtocolState),
-		rpcUrl:           rpcUrl,
-		aprOracleAddress: aprOracleAddress,
+		shutdown:      make(chan nothing),
+		shutdownDone:  make(chan nothing),
+		error:         nil,
+		tickerRate:    time.NewTicker(refreshRateDelay),
+		tickerState:   time.NewTicker(refreshStateDelay),
+		datastore:     datastore,
+		chanDefiRate:  make(chan *dia.DefiRate),
+		chanDefiState: make(chan *dia.DefiProtocolState),
 	}
 
 	log.Info("Defi scraper is built and triggered")
@@ -231,7 +229,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			helper = NewYearn(s, protocol, s.rpcUrl, s.aprOracleAddress)
+			helper = NewYearn(s, protocol)
 		}
 
 	default:
@@ -293,7 +291,7 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 		}
 	case "YEARN":
 		{
-			helper = NewYearn(s, protocol, s.rpcUrl, s.aprOracleAddress)
+			helper = NewYearn(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")

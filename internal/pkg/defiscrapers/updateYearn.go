@@ -3,9 +3,14 @@ package defiscrapers
 import (
 	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/yearn"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	aprOracleAddress = "0x97ff4a1b787ade6b94cca95b61f79417c673331d"
 )
 
 type YearnProtocol struct {
@@ -15,8 +20,8 @@ type YearnProtocol struct {
 	yearnManager *yearn.YearnManager
 }
 
-func NewYearn(scraper *DefiScraper, protocol dia.DefiProtocol, rpcUrl, aprOracleAddress string) *YearnProtocol {
-	connection, err := ethclient.Dial(rpcUrl)
+func NewYearn(scraper *DefiScraper, protocol dia.DefiProtocol) *YearnProtocol {
+	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -48,7 +53,6 @@ func (proto *YearnProtocol) UpdateRate() error {
 	go proto.yearnManager.Publish(proto.protocol.Name, "CUSDC", compoundAPRResult.CUSDC, proto.scraper.RateChannel())
 	go proto.yearnManager.Publish(proto.protocol.Name, "CWBTC", compoundAPRResult.CWBTC, proto.scraper.RateChannel())
 	go proto.yearnManager.Publish(proto.protocol.Name, "CZRC", compoundAPRResult.CZRC, proto.scraper.RateChannel())
-	proto.yearnManager.GetAllCompoundAPR()
 	proto.connection.Close()
 	log.Info("Update complete")
 	return nil
