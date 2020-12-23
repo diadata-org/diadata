@@ -137,7 +137,7 @@ func bindStrategy(address common.Address, caller bind.ContractCaller, transactor
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Strategy *StrategyRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Strategy *StrategyRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Strategy.Contract.StrategyCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Strategy *StrategyRaw) Transact(opts *bind.TransactOpts, method string, p
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Strategy *StrategyCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Strategy *StrategyCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Strategy.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Strategy *StrategyTransactorRaw) Transact(opts *bind.TransactOpts, method
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
 func (_Strategy *StrategyCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "allowance", owner, spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -201,12 +206,17 @@ func (_Strategy *StrategyCallerSession) Allowance(owner common.Address, spender 
 //
 // Solidity: function available() view returns(uint256)
 func (_Strategy *StrategyCaller) Available(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "available")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "available")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Available is a free data retrieval call binding the contract method 0x48a0d754.
@@ -227,12 +237,17 @@ func (_Strategy *StrategyCallerSession) Available() (*big.Int, error) {
 //
 // Solidity: function balance() view returns(uint256)
 func (_Strategy *StrategyCaller) Balance(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "balance")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "balance")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Balance is a free data retrieval call binding the contract method 0xb69ef8a8.
@@ -253,12 +268,17 @@ func (_Strategy *StrategyCallerSession) Balance() (*big.Int, error) {
 //
 // Solidity: function balanceOf(address account) view returns(uint256)
 func (_Strategy *StrategyCaller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "balanceOf", account)
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "balanceOf", account)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -279,12 +299,17 @@ func (_Strategy *StrategyCallerSession) BalanceOf(account common.Address) (*big.
 //
 // Solidity: function controller() view returns(address)
 func (_Strategy *StrategyCaller) Controller(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "controller")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "controller")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Controller is a free data retrieval call binding the contract method 0xf77c4791.
@@ -305,12 +330,17 @@ func (_Strategy *StrategyCallerSession) Controller() (common.Address, error) {
 //
 // Solidity: function decimals() view returns(uint8)
 func (_Strategy *StrategyCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -331,12 +361,17 @@ func (_Strategy *StrategyCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function getPricePerFullShare() view returns(uint256)
 func (_Strategy *StrategyCaller) GetPricePerFullShare(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "getPricePerFullShare")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "getPricePerFullShare")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetPricePerFullShare is a free data retrieval call binding the contract method 0x77c7b8fc.
@@ -357,12 +392,17 @@ func (_Strategy *StrategyCallerSession) GetPricePerFullShare() (*big.Int, error)
 //
 // Solidity: function governance() view returns(address)
 func (_Strategy *StrategyCaller) Governance(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "governance")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "governance")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Governance is a free data retrieval call binding the contract method 0x5aa6e675.
@@ -383,12 +423,17 @@ func (_Strategy *StrategyCallerSession) Governance() (common.Address, error) {
 //
 // Solidity: function max() view returns(uint256)
 func (_Strategy *StrategyCaller) Max(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "max")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "max")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Max is a free data retrieval call binding the contract method 0x6ac5db19.
@@ -409,12 +454,17 @@ func (_Strategy *StrategyCallerSession) Max() (*big.Int, error) {
 //
 // Solidity: function min() view returns(uint256)
 func (_Strategy *StrategyCaller) Min(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "min")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "min")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Min is a free data retrieval call binding the contract method 0xf8897945.
@@ -435,12 +485,17 @@ func (_Strategy *StrategyCallerSession) Min() (*big.Int, error) {
 //
 // Solidity: function name() view returns(string)
 func (_Strategy *StrategyCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -461,12 +516,17 @@ func (_Strategy *StrategyCallerSession) Name() (string, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_Strategy *StrategyCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -487,12 +547,17 @@ func (_Strategy *StrategyCallerSession) Symbol() (string, error) {
 //
 // Solidity: function token() view returns(address)
 func (_Strategy *StrategyCaller) Token(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "token")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "token")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Token is a free data retrieval call binding the contract method 0xfc0c546a.
@@ -513,12 +578,17 @@ func (_Strategy *StrategyCallerSession) Token() (common.Address, error) {
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_Strategy *StrategyCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Strategy.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Strategy.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.

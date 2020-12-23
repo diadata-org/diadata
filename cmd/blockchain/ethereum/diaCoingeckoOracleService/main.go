@@ -67,7 +67,7 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaCoingeckoOracleService.DIACoingecoOracle
+	var contract *diaCoingeckoOracleService.DIACoingeckoOracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -88,7 +88,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingecoOracle) error {
+func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle) error {
 
 	topCoins, err := getTopCoinsFromCoingecko(*numCoins)
 	if err != nil {
@@ -112,7 +112,7 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingecoOracle) error {
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle) error {
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
 	timestamp := foreignQuotation.Time.Unix()
@@ -177,10 +177,10 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	return &quotation, nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoingeckoOracleService.DIACoingecoOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoingeckoOracleService.DIACoingeckoOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaCoingeckoOracleService.NewDIACoingecoOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaCoingeckoOracleService.NewDIACoingeckoOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -188,7 +188,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaCoingeckoOracleService.DeployDIACoingecoOracle(auth, conn)
+		addr, tx, *contract, err = diaCoingeckoOracleService.DeployDIACoingeckoOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -201,7 +201,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 }
 
 func updateOracle(
-	contract *diaCoingeckoOracleService.DIACoingecoOracle,
+	contract *diaCoingeckoOracleService.DIACoingeckoOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,

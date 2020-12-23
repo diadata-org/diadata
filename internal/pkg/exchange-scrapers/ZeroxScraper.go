@@ -140,7 +140,7 @@ func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxT
 		}
 		dfToken := &ZeroxToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Int64()),
 		}
 		dfToken.normalizeETH()
 		scraper.tokens[tokenStr] = dfToken

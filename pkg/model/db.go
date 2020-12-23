@@ -109,6 +109,7 @@ type Datastore interface {
 	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
 	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
+	GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
