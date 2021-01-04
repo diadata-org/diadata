@@ -137,7 +137,7 @@ func bindGnosis(address common.Address, caller bind.ContractCaller, transactor b
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Gnosis *GnosisRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Gnosis *GnosisRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Gnosis.Contract.GnosisCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Gnosis *GnosisRaw) Transact(opts *bind.TransactOpts, method string, param
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Gnosis *GnosisCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Gnosis *GnosisCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Gnosis.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Gnosis *GnosisTransactorRaw) Transact(opts *bind.TransactOpts, method str
 //
 // Solidity: function AMOUNT_MINIMUM() view returns(uint128)
 func (_Gnosis *GnosisCaller) AMOUNTMINIMUM(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "AMOUNT_MINIMUM")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "AMOUNT_MINIMUM")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AMOUNTMINIMUM is a free data retrieval call binding the contract method 0x61ed16d0.
@@ -201,12 +206,17 @@ func (_Gnosis *GnosisCallerSession) AMOUNTMINIMUM() (*big.Int, error) {
 //
 // Solidity: function BATCH_TIME() view returns(uint32)
 func (_Gnosis *GnosisCaller) BATCHTIME(opts *bind.CallOpts) (uint32, error) {
-	var (
-		ret0 = new(uint32)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "BATCH_TIME")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "BATCH_TIME")
+
+	if err != nil {
+		return *new(uint32), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+
+	return out0, err
+
 }
 
 // BATCHTIME is a free data retrieval call binding the contract method 0xe48c015e.
@@ -227,12 +237,17 @@ func (_Gnosis *GnosisCallerSession) BATCHTIME() (uint32, error) {
 //
 // Solidity: function ENCODED_AUCTION_ELEMENT_WIDTH() view returns(uint128)
 func (_Gnosis *GnosisCaller) ENCODEDAUCTIONELEMENTWIDTH(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "ENCODED_AUCTION_ELEMENT_WIDTH")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "ENCODED_AUCTION_ELEMENT_WIDTH")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ENCODEDAUCTIONELEMENTWIDTH is a free data retrieval call binding the contract method 0xe1d5f64e.
@@ -253,12 +268,17 @@ func (_Gnosis *GnosisCallerSession) ENCODEDAUCTIONELEMENTWIDTH() (*big.Int, erro
 //
 // Solidity: function FEE_DENOMINATOR() view returns(uint128)
 func (_Gnosis *GnosisCaller) FEEDENOMINATOR(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "FEE_DENOMINATOR")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "FEE_DENOMINATOR")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FEEDENOMINATOR is a free data retrieval call binding the contract method 0xd73792a9.
@@ -279,12 +299,17 @@ func (_Gnosis *GnosisCallerSession) FEEDENOMINATOR() (*big.Int, error) {
 //
 // Solidity: function FEE_FOR_LISTING_TOKEN_IN_OWL() view returns(uint256)
 func (_Gnosis *GnosisCaller) FEEFORLISTINGTOKENINOWL(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "FEE_FOR_LISTING_TOKEN_IN_OWL")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "FEE_FOR_LISTING_TOKEN_IN_OWL")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FEEFORLISTINGTOKENINOWL is a free data retrieval call binding the contract method 0x41e383ed.
@@ -305,12 +330,17 @@ func (_Gnosis *GnosisCallerSession) FEEFORLISTINGTOKENINOWL() (*big.Int, error) 
 //
 // Solidity: function IMPROVEMENT_DENOMINATOR() view returns(uint256)
 func (_Gnosis *GnosisCaller) IMPROVEMENTDENOMINATOR(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "IMPROVEMENT_DENOMINATOR")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "IMPROVEMENT_DENOMINATOR")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IMPROVEMENTDENOMINATOR is a free data retrieval call binding the contract method 0x094c7e19.
@@ -331,12 +361,17 @@ func (_Gnosis *GnosisCallerSession) IMPROVEMENTDENOMINATOR() (*big.Int, error) {
 //
 // Solidity: function MAX_TOKENS() view returns(uint256)
 func (_Gnosis *GnosisCaller) MAXTOKENS(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "MAX_TOKENS")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "MAX_TOKENS")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXTOKENS is a free data retrieval call binding the contract method 0xf47c84c5.
@@ -357,12 +392,17 @@ func (_Gnosis *GnosisCallerSession) MAXTOKENS() (*big.Int, error) {
 //
 // Solidity: function MAX_TOUCHED_ORDERS() view returns(uint256)
 func (_Gnosis *GnosisCaller) MAXTOUCHEDORDERS(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "MAX_TOUCHED_ORDERS")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "MAX_TOUCHED_ORDERS")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MAXTOUCHEDORDERS is a free data retrieval call binding the contract method 0xfb736d32.
@@ -383,12 +423,17 @@ func (_Gnosis *GnosisCallerSession) MAXTOUCHEDORDERS() (*big.Int, error) {
 //
 // Solidity: function UNLIMITED_ORDER_AMOUNT() view returns(uint128)
 func (_Gnosis *GnosisCaller) UNLIMITEDORDERAMOUNT(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "UNLIMITED_ORDER_AMOUNT")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "UNLIMITED_ORDER_AMOUNT")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // UNLIMITEDORDERAMOUNT is a free data retrieval call binding the contract method 0x7fb47b06.
@@ -409,12 +454,17 @@ func (_Gnosis *GnosisCallerSession) UNLIMITEDORDERAMOUNT() (*big.Int, error) {
 //
 // Solidity: function acceptingSolutions(uint32 batchId) view returns(bool)
 func (_Gnosis *GnosisCaller) AcceptingSolutions(opts *bind.CallOpts, batchId uint32) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "acceptingSolutions", batchId)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "acceptingSolutions", batchId)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // AcceptingSolutions is a free data retrieval call binding the contract method 0xc49598fb.
@@ -435,12 +485,17 @@ func (_Gnosis *GnosisCallerSession) AcceptingSolutions(batchId uint32) (bool, er
 //
 // Solidity: function currentPrices(uint16 ) view returns(uint128)
 func (_Gnosis *GnosisCaller) CurrentPrices(opts *bind.CallOpts, arg0 uint16) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "currentPrices", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "currentPrices", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CurrentPrices is a free data retrieval call binding the contract method 0x66367c10.
@@ -461,12 +516,17 @@ func (_Gnosis *GnosisCallerSession) CurrentPrices(arg0 uint16) (*big.Int, error)
 //
 // Solidity: function feeToken() view returns(address)
 func (_Gnosis *GnosisCaller) FeeToken(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "feeToken")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "feeToken")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FeeToken is a free data retrieval call binding the contract method 0x647846a5.
@@ -487,12 +547,17 @@ func (_Gnosis *GnosisCallerSession) FeeToken() (common.Address, error) {
 //
 // Solidity: function getBalance(address user, address token) view returns(uint256)
 func (_Gnosis *GnosisCaller) GetBalance(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getBalance", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getBalance", user, token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBalance is a free data retrieval call binding the contract method 0xd4fac45d.
@@ -513,12 +578,17 @@ func (_Gnosis *GnosisCallerSession) GetBalance(user common.Address, token common
 //
 // Solidity: function getCurrentBatchId() view returns(uint32)
 func (_Gnosis *GnosisCaller) GetCurrentBatchId(opts *bind.CallOpts) (uint32, error) {
-	var (
-		ret0 = new(uint32)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getCurrentBatchId")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getCurrentBatchId")
+
+	if err != nil {
+		return *new(uint32), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+
+	return out0, err
+
 }
 
 // GetCurrentBatchId is a free data retrieval call binding the contract method 0xe720ac8e.
@@ -539,12 +609,17 @@ func (_Gnosis *GnosisCallerSession) GetCurrentBatchId() (uint32, error) {
 //
 // Solidity: function getCurrentObjectiveValue() view returns(uint256)
 func (_Gnosis *GnosisCaller) GetCurrentObjectiveValue(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getCurrentObjectiveValue")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getCurrentObjectiveValue")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetCurrentObjectiveValue is a free data retrieval call binding the contract method 0xff97c626.
@@ -565,12 +640,17 @@ func (_Gnosis *GnosisCallerSession) GetCurrentObjectiveValue() (*big.Int, error)
 //
 // Solidity: function getEncodedOrders() view returns(bytes elements)
 func (_Gnosis *GnosisCaller) GetEncodedOrders(opts *bind.CallOpts) ([]byte, error) {
-	var (
-		ret0 = new([]byte)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getEncodedOrders")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getEncodedOrders")
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
 }
 
 // GetEncodedOrders is a free data retrieval call binding the contract method 0x23d4a3c9.
@@ -591,12 +671,17 @@ func (_Gnosis *GnosisCallerSession) GetEncodedOrders() ([]byte, error) {
 //
 // Solidity: function getEncodedUserOrders(address user) view returns(bytes elements)
 func (_Gnosis *GnosisCaller) GetEncodedUserOrders(opts *bind.CallOpts, user common.Address) ([]byte, error) {
-	var (
-		ret0 = new([]byte)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getEncodedUserOrders", user)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getEncodedUserOrders", user)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
 }
 
 // GetEncodedUserOrders is a free data retrieval call binding the contract method 0x72f3dd39.
@@ -617,12 +702,17 @@ func (_Gnosis *GnosisCallerSession) GetEncodedUserOrders(user common.Address) ([
 //
 // Solidity: function getEncodedUserOrdersPaginated(address user, uint16 offset, uint16 pageSize) view returns(bytes elements)
 func (_Gnosis *GnosisCaller) GetEncodedUserOrdersPaginated(opts *bind.CallOpts, user common.Address, offset uint16, pageSize uint16) ([]byte, error) {
-	var (
-		ret0 = new([]byte)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getEncodedUserOrdersPaginated", user, offset, pageSize)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getEncodedUserOrdersPaginated", user, offset, pageSize)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
 }
 
 // GetEncodedUserOrdersPaginated is a free data retrieval call binding the contract method 0xed2da357.
@@ -643,12 +733,17 @@ func (_Gnosis *GnosisCallerSession) GetEncodedUserOrdersPaginated(user common.Ad
 //
 // Solidity: function getEncodedUsersPaginated(address previousPageUser, uint16 previousPageUserOffset, uint16 pageSize) view returns(bytes elements)
 func (_Gnosis *GnosisCaller) GetEncodedUsersPaginated(opts *bind.CallOpts, previousPageUser common.Address, previousPageUserOffset uint16, pageSize uint16) ([]byte, error) {
-	var (
-		ret0 = new([]byte)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getEncodedUsersPaginated", previousPageUser, previousPageUserOffset, pageSize)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getEncodedUsersPaginated", previousPageUser, previousPageUserOffset, pageSize)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
 }
 
 // GetEncodedUsersPaginated is a free data retrieval call binding the contract method 0x95466a46.
@@ -669,16 +764,18 @@ func (_Gnosis *GnosisCallerSession) GetEncodedUsersPaginated(previousPageUser co
 //
 // Solidity: function getPendingDeposit(address user, address token) view returns(uint256, uint32)
 func (_Gnosis *GnosisCaller) GetPendingDeposit(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, uint32, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(uint32)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getPendingDeposit", user, token)
+
+	if err != nil {
+		return *new(*big.Int), *new(uint32), err
 	}
-	err := _Gnosis.contract.Call(opts, out, "getPendingDeposit", user, token)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(uint32)).(*uint32)
+
+	return out0, out1, err
+
 }
 
 // GetPendingDeposit is a free data retrieval call binding the contract method 0xb3c0afa1.
@@ -699,16 +796,18 @@ func (_Gnosis *GnosisCallerSession) GetPendingDeposit(user common.Address, token
 //
 // Solidity: function getPendingWithdraw(address user, address token) view returns(uint256, uint32)
 func (_Gnosis *GnosisCaller) GetPendingWithdraw(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, uint32, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(uint32)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getPendingWithdraw", user, token)
+
+	if err != nil {
+		return *new(*big.Int), *new(uint32), err
 	}
-	err := _Gnosis.contract.Call(opts, out, "getPendingWithdraw", user, token)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(uint32)).(*uint32)
+
+	return out0, out1, err
+
 }
 
 // GetPendingWithdraw is a free data retrieval call binding the contract method 0xc33eb9f6.
@@ -729,12 +828,17 @@ func (_Gnosis *GnosisCallerSession) GetPendingWithdraw(user common.Address, toke
 //
 // Solidity: function getSecondsRemainingInBatch() view returns(uint256)
 func (_Gnosis *GnosisCaller) GetSecondsRemainingInBatch(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getSecondsRemainingInBatch")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getSecondsRemainingInBatch")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSecondsRemainingInBatch is a free data retrieval call binding the contract method 0x17569c1d.
@@ -755,12 +859,17 @@ func (_Gnosis *GnosisCallerSession) GetSecondsRemainingInBatch() (*big.Int, erro
 //
 // Solidity: function getUsersPaginated(address previousPageUser, uint16 pageSize) view returns(bytes users)
 func (_Gnosis *GnosisCaller) GetUsersPaginated(opts *bind.CallOpts, previousPageUser common.Address, pageSize uint16) ([]byte, error) {
-	var (
-		ret0 = new([]byte)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "getUsersPaginated", previousPageUser, pageSize)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "getUsersPaginated", previousPageUser, pageSize)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
 }
 
 // GetUsersPaginated is a free data retrieval call binding the contract method 0x43383ac3.
@@ -781,12 +890,17 @@ func (_Gnosis *GnosisCallerSession) GetUsersPaginated(previousPageUser common.Ad
 //
 // Solidity: function hasToken(address addr) view returns(bool)
 func (_Gnosis *GnosisCaller) HasToken(opts *bind.CallOpts, addr common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "hasToken", addr)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "hasToken", addr)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // HasToken is a free data retrieval call binding the contract method 0x9bb0f599.
@@ -807,12 +921,17 @@ func (_Gnosis *GnosisCallerSession) HasToken(addr common.Address) (bool, error) 
 //
 // Solidity: function hasValidWithdrawRequest(address user, address token) view returns(bool)
 func (_Gnosis *GnosisCaller) HasValidWithdrawRequest(opts *bind.CallOpts, user common.Address, token common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "hasValidWithdrawRequest", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "hasValidWithdrawRequest", user, token)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // HasValidWithdrawRequest is a free data retrieval call binding the contract method 0xf3f47982.
@@ -833,12 +952,17 @@ func (_Gnosis *GnosisCallerSession) HasValidWithdrawRequest(user common.Address,
 //
 // Solidity: function lastCreditBatchId(address , address ) view returns(uint32)
 func (_Gnosis *GnosisCaller) LastCreditBatchId(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (uint32, error) {
-	var (
-		ret0 = new(uint32)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "lastCreditBatchId", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "lastCreditBatchId", arg0, arg1)
+
+	if err != nil {
+		return *new(uint32), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+
+	return out0, err
+
 }
 
 // LastCreditBatchId is a free data retrieval call binding the contract method 0x907767c0.
@@ -864,15 +988,26 @@ func (_Gnosis *GnosisCaller) LatestSolution(opts *bind.CallOpts) (struct {
 	FeeReward         *big.Int
 	ObjectiveValue    *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "latestSolution")
+
+	outstruct := new(struct {
 		BatchId           uint32
 		SolutionSubmitter common.Address
 		FeeReward         *big.Int
 		ObjectiveValue    *big.Int
 	})
-	out := ret
-	err := _Gnosis.contract.Call(opts, out, "latestSolution")
-	return *ret, err
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.BatchId = out[0].(uint32)
+	outstruct.SolutionSubmitter = out[1].(common.Address)
+	outstruct.FeeReward = out[2].(*big.Int)
+	outstruct.ObjectiveValue = out[3].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // LatestSolution is a free data retrieval call binding the contract method 0x9cc84ed3.
@@ -903,12 +1038,17 @@ func (_Gnosis *GnosisCallerSession) LatestSolution() (struct {
 //
 // Solidity: function numTokens() view returns(uint16)
 func (_Gnosis *GnosisCaller) NumTokens(opts *bind.CallOpts) (uint16, error) {
-	var (
-		ret0 = new(uint16)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "numTokens")
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "numTokens")
+
+	if err != nil {
+		return *new(uint16), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint16)).(*uint16)
+
+	return out0, err
+
 }
 
 // NumTokens is a free data retrieval call binding the contract method 0x8e499bcf.
@@ -937,7 +1077,10 @@ func (_Gnosis *GnosisCaller) Orders(opts *bind.CallOpts, arg0 common.Address, ar
 	PriceDenominator *big.Int
 	UsedAmount       *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "orders", arg0, arg1)
+
+	outstruct := new(struct {
 		BuyToken         uint16
 		SellToken        uint16
 		ValidFrom        uint32
@@ -946,9 +1089,20 @@ func (_Gnosis *GnosisCaller) Orders(opts *bind.CallOpts, arg0 common.Address, ar
 		PriceDenominator *big.Int
 		UsedAmount       *big.Int
 	})
-	out := ret
-	err := _Gnosis.contract.Call(opts, out, "orders", arg0, arg1)
-	return *ret, err
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.BuyToken = out[0].(uint16)
+	outstruct.SellToken = out[1].(uint16)
+	outstruct.ValidFrom = out[2].(uint32)
+	outstruct.ValidUntil = out[3].(uint32)
+	outstruct.PriceNumerator = out[4].(*big.Int)
+	outstruct.PriceDenominator = out[5].(*big.Int)
+	outstruct.UsedAmount = out[6].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // Orders is a free data retrieval call binding the contract method 0x793b8c6d.
@@ -985,12 +1139,17 @@ func (_Gnosis *GnosisCallerSession) Orders(arg0 common.Address, arg1 *big.Int) (
 //
 // Solidity: function tokenAddressToIdMap(address addr) view returns(uint16)
 func (_Gnosis *GnosisCaller) TokenAddressToIdMap(opts *bind.CallOpts, addr common.Address) (uint16, error) {
-	var (
-		ret0 = new(uint16)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "tokenAddressToIdMap", addr)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "tokenAddressToIdMap", addr)
+
+	if err != nil {
+		return *new(uint16), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint16)).(*uint16)
+
+	return out0, err
+
 }
 
 // TokenAddressToIdMap is a free data retrieval call binding the contract method 0xef574d23.
@@ -1011,12 +1170,17 @@ func (_Gnosis *GnosisCallerSession) TokenAddressToIdMap(addr common.Address) (ui
 //
 // Solidity: function tokenIdToAddressMap(uint16 id) view returns(address)
 func (_Gnosis *GnosisCaller) TokenIdToAddressMap(opts *bind.CallOpts, id uint16) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gnosis.contract.Call(opts, out, "tokenIdToAddressMap", id)
-	return *ret0, err
+	var out []interface{}
+	err := _Gnosis.contract.Call(opts, &out, "tokenIdToAddressMap", id)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenIdToAddressMap is a free data retrieval call binding the contract method 0x2f10d082.
@@ -1394,6 +1558,7 @@ func (_Gnosis *GnosisFilterer) ParseDeposit(log types.Log) (*GnosisDeposit, erro
 	if err := _Gnosis.contract.UnpackLog(event, "Deposit", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1538,6 +1703,7 @@ func (_Gnosis *GnosisFilterer) ParseOrderCancellation(log types.Log) (*GnosisOrd
 	if err := _Gnosis.contract.UnpackLog(event, "OrderCancellation", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1682,6 +1848,7 @@ func (_Gnosis *GnosisFilterer) ParseOrderDeletion(log types.Log) (*GnosisOrderDe
 	if err := _Gnosis.contract.UnpackLog(event, "OrderDeletion", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1850,6 +2017,7 @@ func (_Gnosis *GnosisFilterer) ParseOrderPlacement(log types.Log) (*GnosisOrderP
 	if err := _Gnosis.contract.UnpackLog(event, "OrderPlacement", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1999,6 +2167,7 @@ func (_Gnosis *GnosisFilterer) ParseSolutionSubmission(log types.Log) (*GnosisSo
 	if err := _Gnosis.contract.UnpackLog(event, "SolutionSubmission", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2133,6 +2302,7 @@ func (_Gnosis *GnosisFilterer) ParseTokenListing(log types.Log) (*GnosisTokenLis
 	if err := _Gnosis.contract.UnpackLog(event, "TokenListing", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2297,6 +2467,7 @@ func (_Gnosis *GnosisFilterer) ParseTrade(log types.Log) (*GnosisTrade, error) {
 	if err := _Gnosis.contract.UnpackLog(event, "Trade", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2461,6 +2632,7 @@ func (_Gnosis *GnosisFilterer) ParseTradeReversion(log types.Log) (*GnosisTradeR
 	if err := _Gnosis.contract.UnpackLog(event, "TradeReversion", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2614,6 +2786,7 @@ func (_Gnosis *GnosisFilterer) ParseWithdraw(log types.Log) (*GnosisWithdraw, er
 	if err := _Gnosis.contract.UnpackLog(event, "Withdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2768,6 +2941,6 @@ func (_Gnosis *GnosisFilterer) ParseWithdrawRequest(log types.Log) (*GnosisWithd
 	if err := _Gnosis.contract.UnpackLog(event, "WithdrawRequest", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-

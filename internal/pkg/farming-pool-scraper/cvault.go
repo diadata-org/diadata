@@ -89,6 +89,7 @@ func (cv *Cvault) mainLoop() {
 	// s.cleanup(err)
 }
 
+// https://help.cvault.finance/core-formulas/formulas
 func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	//TODO call all pool details at once and save in cache
 	log.Infoln("Getting Pool Info")

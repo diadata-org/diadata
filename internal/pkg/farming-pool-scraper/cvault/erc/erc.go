@@ -137,7 +137,7 @@ func bindCvaultcontract(address common.Address, caller bind.ContractCaller, tran
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Cvaultcontract *CvaultcontractRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Cvaultcontract *CvaultcontractRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Cvaultcontract.Contract.CvaultcontractCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Cvaultcontract *CvaultcontractRaw) Transact(opts *bind.TransactOpts, meth
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Cvaultcontract *CvaultcontractCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Cvaultcontract *CvaultcontractCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Cvaultcontract.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Cvaultcontract *CvaultcontractTransactorRaw) Transact(opts *bind.Transact
 //
 // Solidity: function DELEGATION_TYPEHASH() view returns(bytes32)
 func (_Cvaultcontract *CvaultcontractCaller) DELEGATIONTYPEHASH(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "DELEGATION_TYPEHASH")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "DELEGATION_TYPEHASH")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // DELEGATIONTYPEHASH is a free data retrieval call binding the contract method 0xe7a324dc.
@@ -201,12 +206,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) DELEGATIONTYPEHASH() ([32]by
 //
 // Solidity: function DOMAIN_TYPEHASH() view returns(bytes32)
 func (_Cvaultcontract *CvaultcontractCaller) DOMAINTYPEHASH(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "DOMAIN_TYPEHASH")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "DOMAIN_TYPEHASH")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // DOMAINTYPEHASH is a free data retrieval call binding the contract method 0x20606b70.
@@ -227,12 +237,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) DOMAINTYPEHASH() ([32]byte, 
 //
 // Solidity: function LPGenerationCompleted() view returns(bool)
 func (_Cvaultcontract *CvaultcontractCaller) LPGenerationCompleted(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "LPGenerationCompleted")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "LPGenerationCompleted")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // LPGenerationCompleted is a free data retrieval call binding the contract method 0x14b8fecc.
@@ -253,12 +268,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) LPGenerationCompleted() (boo
 //
 // Solidity: function LPperETHUnit() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) LPperETHUnit(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "LPperETHUnit")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "LPperETHUnit")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LPperETHUnit is a free data retrieval call binding the contract method 0x31a22a20.
@@ -279,12 +299,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) LPperETHUnit() (*big.Int, er
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "allowance", owner, spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -305,12 +330,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Allowance(owner common.Addre
 //
 // Solidity: function balanceOf(address _owner) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "balanceOf", _owner)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "balanceOf", _owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -334,13 +364,19 @@ func (_Cvaultcontract *CvaultcontractCaller) Checkpoints(opts *bind.CallOpts, ar
 	FromBlock uint32
 	Votes     *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "checkpoints", arg0, arg1)
+
+	outstruct := new(struct {
 		FromBlock uint32
 		Votes     *big.Int
 	})
-	out := ret
-	err := _Cvaultcontract.contract.Call(opts, out, "checkpoints", arg0, arg1)
-	return *ret, err
+
+	outstruct.FromBlock = out[0].(uint32)
+	outstruct.Votes = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // Checkpoints is a free data retrieval call binding the contract method 0xf1127ed8.
@@ -367,12 +403,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Checkpoints(arg0 common.Addr
 //
 // Solidity: function contractStartTimestamp() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) ContractStartTimestamp(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "contractStartTimestamp")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "contractStartTimestamp")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ContractStartTimestamp is a free data retrieval call binding the contract method 0x6a2f796c.
@@ -393,12 +434,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) ContractStartTimestamp() (*b
 //
 // Solidity: function decimals() view returns(uint8)
 func (_Cvaultcontract *CvaultcontractCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -419,12 +465,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function delegates(address delegator) view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) Delegates(opts *bind.CallOpts, delegator common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "delegates", delegator)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "delegates", delegator)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Delegates is a free data retrieval call binding the contract method 0x587cde1e.
@@ -445,12 +496,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Delegates(delegator common.A
 //
 // Solidity: function ethContributed(address ) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) EthContributed(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "ethContributed", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "ethContributed", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // EthContributed is a free data retrieval call binding the contract method 0xf96f5b35.
@@ -471,12 +527,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) EthContributed(arg0 common.A
 //
 // Solidity: function feeDistributor() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) FeeDistributor(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "feeDistributor")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "feeDistributor")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FeeDistributor is a free data retrieval call binding the contract method 0x0d43e8ad.
@@ -497,12 +558,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) FeeDistributor() (common.Add
 //
 // Solidity: function getCurrentVotes(address account) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) GetCurrentVotes(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "getCurrentVotes", account)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "getCurrentVotes", account)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetCurrentVotes is a free data retrieval call binding the contract method 0xb4b5ea57.
@@ -523,12 +589,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) GetCurrentVotes(account comm
 //
 // Solidity: function getPriorVotes(address account, uint256 blockNumber) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) GetPriorVotes(opts *bind.CallOpts, account common.Address, blockNumber *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "getPriorVotes", account, blockNumber)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "getPriorVotes", account, blockNumber)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetPriorVotes is a free data retrieval call binding the contract method 0x782d6fe1.
@@ -549,12 +620,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) GetPriorVotes(account common
 //
 // Solidity: function getSecondsLeftInLiquidityGenerationEvent() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) GetSecondsLeftInLiquidityGenerationEvent(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "getSecondsLeftInLiquidityGenerationEvent")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "getSecondsLeftInLiquidityGenerationEvent")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSecondsLeftInLiquidityGenerationEvent is a free data retrieval call binding the contract method 0x5b5f3e87.
@@ -575,12 +651,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) GetSecondsLeftInLiquidityGen
 //
 // Solidity: function initialSupply() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) InitialSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "initialSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "initialSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialSupply is a free data retrieval call binding the contract method 0x378dc3dc.
@@ -601,12 +682,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) InitialSupply() (*big.Int, e
 //
 // Solidity: function liquidityGenerationOngoing() view returns(bool)
 func (_Cvaultcontract *CvaultcontractCaller) LiquidityGenerationOngoing(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "liquidityGenerationOngoing")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "liquidityGenerationOngoing")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // LiquidityGenerationOngoing is a free data retrieval call binding the contract method 0x60a02590.
@@ -627,12 +713,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) LiquidityGenerationOngoing()
 //
 // Solidity: function liquidityGenerationParticipationAgreement() view returns(string)
 func (_Cvaultcontract *CvaultcontractCaller) LiquidityGenerationParticipationAgreement(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "liquidityGenerationParticipationAgreement")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "liquidityGenerationParticipationAgreement")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // LiquidityGenerationParticipationAgreement is a free data retrieval call binding the contract method 0x8e8e2925.
@@ -653,12 +744,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) LiquidityGenerationParticipa
 //
 // Solidity: function name() view returns(string)
 func (_Cvaultcontract *CvaultcontractCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -679,12 +775,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Name() (string, error) {
 //
 // Solidity: function nonces(address ) view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) Nonces(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "nonces", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "nonces", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Nonces is a free data retrieval call binding the contract method 0x7ecebe00.
@@ -705,12 +806,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Nonces(arg0 common.Address) 
 //
 // Solidity: function numCheckpoints(address ) view returns(uint32)
 func (_Cvaultcontract *CvaultcontractCaller) NumCheckpoints(opts *bind.CallOpts, arg0 common.Address) (uint32, error) {
-	var (
-		ret0 = new(uint32)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "numCheckpoints", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "numCheckpoints", arg0)
+
+	if err != nil {
+		return *new(uint32), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
+
+	return out0, err
+
 }
 
 // NumCheckpoints is a free data retrieval call binding the contract method 0x6fcfff45.
@@ -731,12 +837,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) NumCheckpoints(arg0 common.A
 //
 // Solidity: function owner() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -757,12 +868,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Owner() (common.Address, err
 //
 // Solidity: function symbol() view returns(string)
 func (_Cvaultcontract *CvaultcontractCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -783,12 +899,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) Symbol() (string, error) {
 //
 // Solidity: function tokenUniswapPair() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) TokenUniswapPair(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "tokenUniswapPair")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "tokenUniswapPair")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenUniswapPair is a free data retrieval call binding the contract method 0x4d332457.
@@ -809,12 +930,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) TokenUniswapPair() (common.A
 //
 // Solidity: function totalETHContributed() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) TotalETHContributed(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "totalETHContributed")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "totalETHContributed")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalETHContributed is a free data retrieval call binding the contract method 0x23399434.
@@ -835,12 +961,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) TotalETHContributed() (*big.
 //
 // Solidity: function totalLPTokensMinted() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) TotalLPTokensMinted(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "totalLPTokensMinted")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "totalLPTokensMinted")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalLPTokensMinted is a free data retrieval call binding the contract method 0x002b1329.
@@ -861,12 +992,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) TotalLPTokensMinted() (*big.
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_Cvaultcontract *CvaultcontractCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -887,12 +1023,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) TotalSupply() (*big.Int, err
 //
 // Solidity: function transferCheckerAddress() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) TransferCheckerAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "transferCheckerAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "transferCheckerAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TransferCheckerAddress is a free data retrieval call binding the contract method 0xb2aef26b.
@@ -913,12 +1054,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) TransferCheckerAddress() (co
 //
 // Solidity: function uniswapFactory() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) UniswapFactory(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "uniswapFactory")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "uniswapFactory")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // UniswapFactory is a free data retrieval call binding the contract method 0x8bdb2afa.
@@ -939,12 +1085,17 @@ func (_Cvaultcontract *CvaultcontractCallerSession) UniswapFactory() (common.Add
 //
 // Solidity: function uniswapRouterV2() view returns(address)
 func (_Cvaultcontract *CvaultcontractCaller) UniswapRouterV2(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Cvaultcontract.contract.Call(opts, out, "uniswapRouterV2")
-	return *ret0, err
+	var out []interface{}
+	err := _Cvaultcontract.contract.Call(opts, &out, "uniswapRouterV2")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // UniswapRouterV2 is a free data retrieval call binding the contract method 0x596fa9e3.

@@ -137,7 +137,7 @@ func bindKyber(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Kyber *KyberRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Kyber *KyberRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Kyber.Contract.KyberCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Kyber *KyberRaw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Kyber *KyberCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Kyber *KyberCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Kyber.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Kyber *KyberTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function admin() view returns(address)
 func (_Kyber *KyberCaller) Admin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "admin")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "admin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Admin is a free data retrieval call binding the contract method 0xf851a440.
@@ -201,12 +206,17 @@ func (_Kyber *KyberCallerSession) Admin() (common.Address, error) {
 //
 // Solidity: function enabled() view returns(bool)
 func (_Kyber *KyberCaller) Enabled(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "enabled")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "enabled")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // Enabled is a free data retrieval call binding the contract method 0x238dafe0.
@@ -227,12 +237,17 @@ func (_Kyber *KyberCallerSession) Enabled() (bool, error) {
 //
 // Solidity: function getAlerters() view returns(address[])
 func (_Kyber *KyberCaller) GetAlerters(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "getAlerters")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "getAlerters")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetAlerters is a free data retrieval call binding the contract method 0x7c423f54.
@@ -256,13 +271,22 @@ func (_Kyber *KyberCaller) GetExpectedRate(opts *bind.CallOpts, src common.Addre
 	ExpectedRate *big.Int
 	WorstRate    *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "getExpectedRate", src, dest, srcQty)
+
+	outstruct := new(struct {
 		ExpectedRate *big.Int
 		WorstRate    *big.Int
 	})
-	out := ret
-	err := _Kyber.contract.Call(opts, out, "getExpectedRate", src, dest, srcQty)
-	return *ret, err
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.ExpectedRate = out[0].(*big.Int)
+	outstruct.WorstRate = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // GetExpectedRate is a free data retrieval call binding the contract method 0x809a9e55.
@@ -289,12 +313,17 @@ func (_Kyber *KyberCallerSession) GetExpectedRate(src common.Address, dest commo
 //
 // Solidity: function getExpectedRateAfterFee(address src, address dest, uint256 srcQty, uint256 platformFeeBps, bytes hint) view returns(uint256 expectedRate)
 func (_Kyber *KyberCaller) GetExpectedRateAfterFee(opts *bind.CallOpts, src common.Address, dest common.Address, srcQty *big.Int, platformFeeBps *big.Int, hint []byte) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "getExpectedRateAfterFee", src, dest, srcQty, platformFeeBps, hint)
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "getExpectedRateAfterFee", src, dest, srcQty, platformFeeBps, hint)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetExpectedRateAfterFee is a free data retrieval call binding the contract method 0x418436bc.
@@ -315,12 +344,17 @@ func (_Kyber *KyberCallerSession) GetExpectedRateAfterFee(src common.Address, de
 //
 // Solidity: function getOperators() view returns(address[])
 func (_Kyber *KyberCaller) GetOperators(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "getOperators")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "getOperators")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetOperators is a free data retrieval call binding the contract method 0x27a099d8.
@@ -341,12 +375,17 @@ func (_Kyber *KyberCallerSession) GetOperators() ([]common.Address, error) {
 //
 // Solidity: function kyberHintHandler() view returns(address)
 func (_Kyber *KyberCaller) KyberHintHandler(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "kyberHintHandler")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "kyberHintHandler")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // KyberHintHandler is a free data retrieval call binding the contract method 0x13c213b7.
@@ -367,12 +406,17 @@ func (_Kyber *KyberCallerSession) KyberHintHandler() (common.Address, error) {
 //
 // Solidity: function kyberNetwork() view returns(address)
 func (_Kyber *KyberCaller) KyberNetwork(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "kyberNetwork")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "kyberNetwork")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // KyberNetwork is a free data retrieval call binding the contract method 0xb78b842d.
@@ -393,12 +437,17 @@ func (_Kyber *KyberCallerSession) KyberNetwork() (common.Address, error) {
 //
 // Solidity: function maxGasPrice() view returns(uint256)
 func (_Kyber *KyberCaller) MaxGasPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "maxGasPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "maxGasPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MaxGasPrice is a free data retrieval call binding the contract method 0x3de39c11.
@@ -419,12 +468,17 @@ func (_Kyber *KyberCallerSession) MaxGasPrice() (*big.Int, error) {
 //
 // Solidity: function pendingAdmin() view returns(address)
 func (_Kyber *KyberCaller) PendingAdmin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Kyber.contract.Call(opts, out, "pendingAdmin")
-	return *ret0, err
+	var out []interface{}
+	err := _Kyber.contract.Call(opts, &out, "pendingAdmin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // PendingAdmin is a free data retrieval call binding the contract method 0x26782247.
@@ -929,6 +983,7 @@ func (_Kyber *KyberFilterer) ParseAdminClaimed(log types.Log) (*KyberAdminClaime
 	if err := _Kyber.contract.UnpackLog(event, "AdminClaimed", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1063,6 +1118,7 @@ func (_Kyber *KyberFilterer) ParseAlerterAdded(log types.Log) (*KyberAlerterAdde
 	if err := _Kyber.contract.UnpackLog(event, "AlerterAdded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1197,6 +1253,7 @@ func (_Kyber *KyberFilterer) ParseEtherWithdraw(log types.Log) (*KyberEtherWithd
 	if err := _Kyber.contract.UnpackLog(event, "EtherWithdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1347,6 +1404,7 @@ func (_Kyber *KyberFilterer) ParseExecuteTrade(log types.Log) (*KyberExecuteTrad
 	if err := _Kyber.contract.UnpackLog(event, "ExecuteTrade", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1480,6 +1538,7 @@ func (_Kyber *KyberFilterer) ParseKyberHintHandlerSet(log types.Log) (*KyberKybe
 	if err := _Kyber.contract.UnpackLog(event, "KyberHintHandlerSet", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1614,6 +1673,7 @@ func (_Kyber *KyberFilterer) ParseKyberNetworkSet(log types.Log) (*KyberKyberNet
 	if err := _Kyber.contract.UnpackLog(event, "KyberNetworkSet", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1748,6 +1808,7 @@ func (_Kyber *KyberFilterer) ParseOperatorAdded(log types.Log) (*KyberOperatorAd
 	if err := _Kyber.contract.UnpackLog(event, "OperatorAdded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1883,6 +1944,7 @@ func (_Kyber *KyberFilterer) ParseTokenWithdraw(log types.Log) (*KyberTokenWithd
 	if err := _Kyber.contract.UnpackLog(event, "TokenWithdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2016,5 +2078,6 @@ func (_Kyber *KyberFilterer) ParseTransferAdminPending(log types.Log) (*KyberTra
 	if err := _Kyber.contract.UnpackLog(event, "TransferAdminPending", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

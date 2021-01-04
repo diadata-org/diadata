@@ -1,16 +1,22 @@
 # Oracle Documentation
 
-{% page-ref page="crypto-assets.md" %}
+{% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
 
 {% page-ref page="defi-protocol-rates-and-states.md" %}
 
-{% page-ref page="interest-rates.md" %}
+{% page-ref page="farming-pools.md" %}
 
 {% page-ref page="chart-points.md" %}
 
 {% page-ref page="fiat-prices.md" %}
 
-{% page-ref page="guest-quotations.md" %}
+{% page-ref page="interest-rates.md" %}
+
+{% page-ref page="crypto-assets.md" %}
+
+{% page-ref page="guest-quotations/" %}
+
+
 
 Oracles are smart contract interfaces that bring data from an external source into a smart contract. Smart contracts run in an isolated environment in a virtual machine and can not "measure" any outside information by themselves. The only way to get external data into a smart contract is by executing a transaction with the external data as payload. With that data, a smart contract can perform calculations and operations that depend on this data, such as calculating an interest based on the reference interest rates published by a central bank.
 

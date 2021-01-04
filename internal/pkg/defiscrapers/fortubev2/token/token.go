@@ -137,7 +137,7 @@ func bindToken(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Token *TokenRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Token *TokenRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Token.Contract.TokenCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Token *TokenRaw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Token *TokenCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Token *TokenCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Token.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Token *TokenTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function APR() view returns(uint256)
 func (_Token *TokenCaller) APR(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "APR")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "APR")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // APR is a free data retrieval call binding the contract method 0xbd30558e.
@@ -201,12 +206,17 @@ func (_Token *TokenCallerSession) APR() (*big.Int, error) {
 //
 // Solidity: function APY() view returns(uint256)
 func (_Token *TokenCaller) APY(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "APY")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "APY")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // APY is a free data retrieval call binding the contract method 0xef8bd305.
@@ -227,12 +237,17 @@ func (_Token *TokenCallerSession) APY() (*big.Int, error) {
 //
 // Solidity: function ONE() view returns(uint256)
 func (_Token *TokenCaller) ONE(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "ONE")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "ONE")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ONE is a free data retrieval call binding the contract method 0xc2ee3a08.
@@ -256,13 +271,19 @@ func (_Token *TokenCaller) AccountBorrows(opts *bind.CallOpts, arg0 common.Addre
 	Principal     *big.Int
 	InterestIndex *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "accountBorrows", arg0)
+
+	outstruct := new(struct {
 		Principal     *big.Int
 		InterestIndex *big.Int
 	})
-	out := ret
-	err := _Token.contract.Call(opts, out, "accountBorrows", arg0)
-	return *ret, err
+
+	outstruct.Principal = out[0].(*big.Int)
+	outstruct.InterestIndex = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // AccountBorrows is a free data retrieval call binding the contract method 0xd40e8f4a.
@@ -289,12 +310,17 @@ func (_Token *TokenCallerSession) AccountBorrows(arg0 common.Address) (struct {
 //
 // Solidity: function accountTokens(address ) view returns(uint256)
 func (_Token *TokenCaller) AccountTokens(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "accountTokens", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "accountTokens", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AccountTokens is a free data retrieval call binding the contract method 0xa19d1460.
@@ -315,12 +341,17 @@ func (_Token *TokenCallerSession) AccountTokens(arg0 common.Address) (*big.Int, 
 //
 // Solidity: function accrualBlockNumber() view returns(uint256)
 func (_Token *TokenCaller) AccrualBlockNumber(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "accrualBlockNumber")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "accrualBlockNumber")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AccrualBlockNumber is a free data retrieval call binding the contract method 0x6c540baf.
@@ -341,12 +372,17 @@ func (_Token *TokenCallerSession) AccrualBlockNumber() (*big.Int, error) {
 //
 // Solidity: function addExp(uint256 a, uint256 b) pure returns(uint256 result)
 func (_Token *TokenCaller) AddExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "addExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "addExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AddExp is a free data retrieval call binding the contract method 0x4147da13.
@@ -367,12 +403,17 @@ func (_Token *TokenCallerSession) AddExp(a *big.Int, b *big.Int) (*big.Int, erro
 //
 // Solidity: function admin() view returns(address)
 func (_Token *TokenCaller) Admin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "admin")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "admin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Admin is a free data retrieval call binding the contract method 0xf851a440.
@@ -393,12 +434,17 @@ func (_Token *TokenCallerSession) Admin() (common.Address, error) {
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
 func (_Token *TokenCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "allowance", owner, spender)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "allowance", owner, spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -419,12 +465,17 @@ func (_Token *TokenCallerSession) Allowance(owner common.Address, spender common
 //
 // Solidity: function balanceOf(address owner) view returns(uint256)
 func (_Token *TokenCaller) BalanceOf(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "balanceOf", owner)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "balanceOf", owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -445,12 +496,17 @@ func (_Token *TokenCallerSession) BalanceOf(owner common.Address) (*big.Int, err
 //
 // Solidity: function bank() view returns(address)
 func (_Token *TokenCaller) Bank(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "bank")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "bank")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Bank is a free data retrieval call binding the contract method 0x76cdb03b.
@@ -471,12 +527,17 @@ func (_Token *TokenCallerSession) Bank() (common.Address, error) {
 //
 // Solidity: function borrowBalanceStored(address account) view returns(uint256)
 func (_Token *TokenCaller) BorrowBalanceStored(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "borrowBalanceStored", account)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "borrowBalanceStored", account)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BorrowBalanceStored is a free data retrieval call binding the contract method 0x95dd9193.
@@ -497,12 +558,17 @@ func (_Token *TokenCallerSession) BorrowBalanceStored(account common.Address) (*
 //
 // Solidity: function borrowIndex() view returns(uint256)
 func (_Token *TokenCaller) BorrowIndex(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "borrowIndex")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "borrowIndex")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BorrowIndex is a free data retrieval call binding the contract method 0xaa5af0fd.
@@ -523,12 +589,17 @@ func (_Token *TokenCallerSession) BorrowIndex() (*big.Int, error) {
 //
 // Solidity: function borrowSafeRatio() view returns(uint256)
 func (_Token *TokenCaller) BorrowSafeRatio(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "borrowSafeRatio")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "borrowSafeRatio")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BorrowSafeRatio is a free data retrieval call binding the contract method 0x85cc1486.
@@ -549,12 +620,17 @@ func (_Token *TokenCallerSession) BorrowSafeRatio() (*big.Int, error) {
 //
 // Solidity: function calcBalanceOfUnderlying(address owner) view returns(uint256)
 func (_Token *TokenCaller) CalcBalanceOfUnderlying(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "calcBalanceOfUnderlying", owner)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "calcBalanceOfUnderlying", owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcBalanceOfUnderlying is a free data retrieval call binding the contract method 0xe61de305.
@@ -575,12 +651,17 @@ func (_Token *TokenCallerSession) CalcBalanceOfUnderlying(owner common.Address) 
 //
 // Solidity: function calcExchangeRate(uint256 _totalBorrows, uint256 _totalReserves) view returns(uint256 exchangeRate)
 func (_Token *TokenCaller) CalcExchangeRate(opts *bind.CallOpts, _totalBorrows *big.Int, _totalReserves *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "calcExchangeRate", _totalBorrows, _totalReserves)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "calcExchangeRate", _totalBorrows, _totalReserves)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcExchangeRate is a free data retrieval call binding the contract method 0xc5e9cadc.
@@ -601,12 +682,17 @@ func (_Token *TokenCallerSession) CalcExchangeRate(_totalBorrows *big.Int, _tota
 //
 // Solidity: function controller() view returns(address)
 func (_Token *TokenCaller) Controller(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "controller")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "controller")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Controller is a free data retrieval call binding the contract method 0xf77c4791.
@@ -627,12 +713,17 @@ func (_Token *TokenCallerSession) Controller() (common.Address, error) {
 //
 // Solidity: function decimals() view returns(uint8)
 func (_Token *TokenCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -653,12 +744,17 @@ func (_Token *TokenCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function divExp(uint256 a, uint256 b) pure returns(uint256)
 func (_Token *TokenCaller) DivExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "divExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "divExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivExp is a free data retrieval call binding the contract method 0xb507f9f9.
@@ -679,12 +775,17 @@ func (_Token *TokenCallerSession) DivExp(a *big.Int, b *big.Int) (*big.Int, erro
 //
 // Solidity: function divScalar(uint256 a, uint256 scalar) pure returns(uint256)
 func (_Token *TokenCaller) DivScalar(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "divScalar", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "divScalar", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalar is a free data retrieval call binding the contract method 0x4751b79c.
@@ -705,12 +806,17 @@ func (_Token *TokenCallerSession) DivScalar(a *big.Int, scalar *big.Int) (*big.I
 //
 // Solidity: function divScalarByExp(uint256 scalar, uint256 divisor) pure returns(uint256)
 func (_Token *TokenCaller) DivScalarByExp(opts *bind.CallOpts, scalar *big.Int, divisor *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "divScalarByExp", scalar, divisor)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "divScalarByExp", scalar, divisor)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalarByExp is a free data retrieval call binding the contract method 0xce603aad.
@@ -731,12 +837,17 @@ func (_Token *TokenCallerSession) DivScalarByExp(scalar *big.Int, divisor *big.I
 //
 // Solidity: function divScalarByExpTruncate(uint256 scalar, uint256 divisor) pure returns(uint256)
 func (_Token *TokenCaller) DivScalarByExpTruncate(opts *bind.CallOpts, scalar *big.Int, divisor *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "divScalarByExpTruncate", scalar, divisor)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "divScalarByExpTruncate", scalar, divisor)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalarByExpTruncate is a free data retrieval call binding the contract method 0xd6079cc6.
@@ -757,12 +868,17 @@ func (_Token *TokenCallerSession) DivScalarByExpTruncate(scalar *big.Int, diviso
 //
 // Solidity: function exchangeRateAfter(uint256 transferInAmout) view returns(uint256 exchangeRate)
 func (_Token *TokenCaller) ExchangeRateAfter(opts *bind.CallOpts, transferInAmout *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "exchangeRateAfter", transferInAmout)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "exchangeRateAfter", transferInAmout)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ExchangeRateAfter is a free data retrieval call binding the contract method 0x08186ecf.
@@ -783,12 +899,17 @@ func (_Token *TokenCallerSession) ExchangeRateAfter(transferInAmout *big.Int) (*
 //
 // Solidity: function exchangeRateStored() view returns(uint256 exchangeRate)
 func (_Token *TokenCaller) ExchangeRateStored(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "exchangeRateStored")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "exchangeRateStored")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ExchangeRateStored is a free data retrieval call binding the contract method 0x182df0f5.
@@ -809,18 +930,19 @@ func (_Token *TokenCallerSession) ExchangeRateStored() (*big.Int, error) {
 //
 // Solidity: function getAccountState(address account) view returns(uint256, uint256, uint256)
 func (_Token *TokenCaller) GetAccountState(opts *bind.CallOpts, account common.Address) (*big.Int, *big.Int, *big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(*big.Int)
-		ret2 = new(*big.Int)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
-		ret2,
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "getAccountState", account)
+
+	if err != nil {
+		return *new(*big.Int), *new(*big.Int), *new(*big.Int), err
 	}
-	err := _Token.contract.Call(opts, out, "getAccountState", account)
-	return *ret0, *ret1, *ret2, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	out2 := *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+
+	return out0, out1, out2, err
+
 }
 
 // GetAccountState is a free data retrieval call binding the contract method 0x9ee2735b.
@@ -841,12 +963,17 @@ func (_Token *TokenCallerSession) GetAccountState(account common.Address) (*big.
 //
 // Solidity: function getBorrowRate() view returns(uint256)
 func (_Token *TokenCaller) GetBorrowRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "getBorrowRate")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "getBorrowRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBorrowRate is a free data retrieval call binding the contract method 0xba1c5e80.
@@ -867,12 +994,17 @@ func (_Token *TokenCallerSession) GetBorrowRate() (*big.Int, error) {
 //
 // Solidity: function getDiv(uint256 num, uint256 denom) pure returns(uint256 rational)
 func (_Token *TokenCaller) GetDiv(opts *bind.CallOpts, num *big.Int, denom *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "getDiv", num, denom)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "getDiv", num, denom)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDiv is a free data retrieval call binding the contract method 0x5293ff31.
@@ -893,12 +1025,17 @@ func (_Token *TokenCallerSession) GetDiv(num *big.Int, denom *big.Int) (*big.Int
 //
 // Solidity: function getExp(uint256 num, uint256 denom) pure returns(uint256 rational)
 func (_Token *TokenCaller) GetExp(opts *bind.CallOpts, num *big.Int, denom *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "getExp", num, denom)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "getExp", num, denom)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetExp is a free data retrieval call binding the contract method 0xba9316b7.
@@ -919,12 +1056,17 @@ func (_Token *TokenCallerSession) GetExp(num *big.Int, denom *big.Int) (*big.Int
 //
 // Solidity: function getSupplyRate() view returns(uint256)
 func (_Token *TokenCaller) GetSupplyRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "getSupplyRate")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "getSupplyRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetSupplyRate is a free data retrieval call binding the contract method 0x84bdc9a8.
@@ -945,12 +1087,17 @@ func (_Token *TokenCallerSession) GetSupplyRate() (*big.Int, error) {
 //
 // Solidity: function initialExchangeRate() view returns(uint256)
 func (_Token *TokenCaller) InitialExchangeRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "initialExchangeRate")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "initialExchangeRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialExchangeRate is a free data retrieval call binding the contract method 0x6d019f35.
@@ -971,12 +1118,17 @@ func (_Token *TokenCallerSession) InitialExchangeRate() (*big.Int, error) {
 //
 // Solidity: function interestRateModel() view returns(address)
 func (_Token *TokenCaller) InterestRateModel(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "interestRateModel")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "interestRateModel")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // InterestRateModel is a free data retrieval call binding the contract method 0xf3fdb15a.
@@ -997,12 +1149,17 @@ func (_Token *TokenCallerSession) InterestRateModel() (common.Address, error) {
 //
 // Solidity: function mulExp(uint256 a, uint256 b) pure returns(uint256)
 func (_Token *TokenCaller) MulExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "mulExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "mulExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulExp is a free data retrieval call binding the contract method 0xde32abd1.
@@ -1023,12 +1180,17 @@ func (_Token *TokenCallerSession) MulExp(a *big.Int, b *big.Int) (*big.Int, erro
 //
 // Solidity: function mulExp3(uint256 a, uint256 b, uint256 c) pure returns(uint256)
 func (_Token *TokenCaller) MulExp3(opts *bind.CallOpts, a *big.Int, b *big.Int, c *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "mulExp3", a, b, c)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "mulExp3", a, b, c)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulExp3 is a free data retrieval call binding the contract method 0x8de46362.
@@ -1049,12 +1211,17 @@ func (_Token *TokenCallerSession) MulExp3(a *big.Int, b *big.Int, c *big.Int) (*
 //
 // Solidity: function mulScalar(uint256 a, uint256 scalar) pure returns(uint256 scaled)
 func (_Token *TokenCaller) MulScalar(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "mulScalar", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "mulScalar", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalar is a free data retrieval call binding the contract method 0x2985fa31.
@@ -1075,12 +1242,17 @@ func (_Token *TokenCallerSession) MulScalar(a *big.Int, scalar *big.Int) (*big.I
 //
 // Solidity: function mulScalarTruncate(uint256 a, uint256 scalar) pure returns(uint256)
 func (_Token *TokenCaller) MulScalarTruncate(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "mulScalarTruncate", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "mulScalarTruncate", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalarTruncate is a free data retrieval call binding the contract method 0xb4ab15e7.
@@ -1101,12 +1273,17 @@ func (_Token *TokenCallerSession) MulScalarTruncate(a *big.Int, scalar *big.Int)
 //
 // Solidity: function mulScalarTruncateAddUInt(uint256 a, uint256 scalar, uint256 addend) pure returns(uint256)
 func (_Token *TokenCaller) MulScalarTruncateAddUInt(opts *bind.CallOpts, a *big.Int, scalar *big.Int, addend *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "mulScalarTruncateAddUInt", a, scalar, addend)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "mulScalarTruncateAddUInt", a, scalar, addend)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalarTruncateAddUInt is a free data retrieval call binding the contract method 0x6208fc41.
@@ -1127,12 +1304,17 @@ func (_Token *TokenCallerSession) MulScalarTruncateAddUInt(a *big.Int, scalar *b
 //
 // Solidity: function name() view returns(string)
 func (_Token *TokenCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -1158,15 +1340,23 @@ func (_Token *TokenCaller) PeekInterest(opts *bind.CallOpts) (struct {
 	TotalBorrows       *big.Int
 	TotalReserves      *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "peekInterest")
+
+	outstruct := new(struct {
 		AccrualBlockNumber *big.Int
 		BorrowIndex        *big.Int
 		TotalBorrows       *big.Int
 		TotalReserves      *big.Int
 	})
-	out := ret
-	err := _Token.contract.Call(opts, out, "peekInterest")
-	return *ret, err
+
+	outstruct.AccrualBlockNumber = out[0].(*big.Int)
+	outstruct.BorrowIndex = out[1].(*big.Int)
+	outstruct.TotalBorrows = out[2].(*big.Int)
+	outstruct.TotalReserves = out[3].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // PeekInterest is a free data retrieval call binding the contract method 0x0873f150.
@@ -1197,12 +1387,17 @@ func (_Token *TokenCallerSession) PeekInterest() (struct {
 //
 // Solidity: function reserveFactor() view returns(uint256)
 func (_Token *TokenCaller) ReserveFactor(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "reserveFactor")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "reserveFactor")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ReserveFactor is a free data retrieval call binding the contract method 0x4322b714.
@@ -1223,12 +1418,17 @@ func (_Token *TokenCallerSession) ReserveFactor() (*big.Int, error) {
 //
 // Solidity: function subExp(uint256 a, uint256 b) pure returns(uint256 result)
 func (_Token *TokenCaller) SubExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "subExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "subExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SubExp is a free data retrieval call binding the contract method 0x396a98cf.
@@ -1249,12 +1449,17 @@ func (_Token *TokenCallerSession) SubExp(a *big.Int, b *big.Int) (*big.Int, erro
 //
 // Solidity: function symbol() view returns(string)
 func (_Token *TokenCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -1275,12 +1480,17 @@ func (_Token *TokenCallerSession) Symbol() (string, error) {
 //
 // Solidity: function tokenCash(address token, address account) view returns(uint256)
 func (_Token *TokenCaller) TokenCash(opts *bind.CallOpts, token common.Address, account common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "tokenCash", token, account)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "tokenCash", token, account)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TokenCash is a free data retrieval call binding the contract method 0x93508164.
@@ -1301,12 +1511,17 @@ func (_Token *TokenCallerSession) TokenCash(token common.Address, account common
 //
 // Solidity: function totalBorrows() view returns(uint256)
 func (_Token *TokenCaller) TotalBorrows(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "totalBorrows")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "totalBorrows")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalBorrows is a free data retrieval call binding the contract method 0x47bd3718.
@@ -1327,12 +1542,17 @@ func (_Token *TokenCallerSession) TotalBorrows() (*big.Int, error) {
 //
 // Solidity: function totalCash() view returns(uint256)
 func (_Token *TokenCaller) TotalCash(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "totalCash")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "totalCash")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalCash is a free data retrieval call binding the contract method 0xbee12d53.
@@ -1353,12 +1573,17 @@ func (_Token *TokenCallerSession) TotalCash() (*big.Int, error) {
 //
 // Solidity: function totalReserves() view returns(uint256)
 func (_Token *TokenCaller) TotalReserves(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "totalReserves")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "totalReserves")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalReserves is a free data retrieval call binding the contract method 0x8f840ddd.
@@ -1379,12 +1604,17 @@ func (_Token *TokenCallerSession) TotalReserves() (*big.Int, error) {
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_Token *TokenCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -1405,12 +1635,17 @@ func (_Token *TokenCallerSession) TotalSupply() (*big.Int, error) {
 //
 // Solidity: function truncate(uint256 exp) pure returns(uint256)
 func (_Token *TokenCaller) Truncate(opts *bind.CallOpts, exp *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "truncate", exp)
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "truncate", exp)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Truncate is a free data retrieval call binding the contract method 0x7b94aaac.
@@ -1431,12 +1666,17 @@ func (_Token *TokenCallerSession) Truncate(exp *big.Int) (*big.Int, error) {
 //
 // Solidity: function underlying() view returns(address)
 func (_Token *TokenCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Token.contract.Call(opts, out, "underlying")
-	return *ret0, err
+	var out []interface{}
+	err := _Token.contract.Call(opts, &out, "underlying")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
@@ -2086,6 +2326,7 @@ func (_Token *TokenFilterer) ParseApproval(log types.Log) (*TokenApproval, error
 	if err := _Token.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2239,6 +2480,6 @@ func (_Token *TokenFilterer) ParseTransfer(log types.Log) (*TokenTransfer, error
 	if err := _Token.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-

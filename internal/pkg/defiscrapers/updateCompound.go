@@ -43,30 +43,28 @@ type CompoundProtocol struct {
 func NewCompound(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundProtocol {
 	assets := make(map[string]string)
 	//https://compound.finance/docs#networks
-	assets["ETH"] = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
 	assets["BAT"] = "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e"
+	assets["COMP"] = "0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4"
 	assets["DAI"] = "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643"
+	assets["ETH"] = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
 	assets["REP"] = "0x158079ee67fce2f58472a96584a73c7ab9ac95c1"
+	assets["UNI"] = "0x35a18000230da775cac24873d00ff85bccded550"
 	assets["USDC"] = "0x39aa39c021dfbae8fac545936693ac917d5e7563"
 	assets["USDT"] = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9"
 	assets["WBTC"] = "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4"
 	assets["ZRX"] = "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407"
-	assets["UNI"] = "0xd88b94128ff2b8cf2d7886cd1c1e46757418ca2a"
-
-
-
 
 	decimals := make(map[string]int)
-	decimals["ETH"] = 18
 	decimals["BAT"] = 18
+	decimals["COMP"] = 18
 	decimals["DAI"] = 18
+	decimals["ETH"] = 18
 	decimals["REP"] = 18
+	decimals["UNI"] = 18
 	decimals["USDC"] = 6
 	decimals["USDT"] = 6
 	decimals["WBTC"] = 8
 	decimals["ZRX"] = 18
-	decimals["UNI"] = 18
-
 
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
@@ -128,16 +126,25 @@ func NewCreamFinance(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundP
 		log.Error("Error connecting Eth Client")
 	}
 
-	return &CompoundProtocol{scraper: scraper, protocol: protocol, assets: assets, decimals: decimals, connection: connection}
+	return &CompoundProtocol{scraper: scraper, protocol: protocol, decimals: decimals, assets: assets, connection: connection}
 }
 
 func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error) {
 	var contract *compoundcontract.CTokenCaller
 	contract, err = compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
 
-	// var underlyingContract *compoundcontract.CErc20Caller
-	// underlyingContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
-	// address, _ := underlyingContract.Underlying(&bind.CallOpts{})
+	// Get decimals of underlying token for computation of tvl
+	var decs *big.Int
+	if asset == "ETH" {
+		decs = big.NewInt(18)
+	} else {
+		var cContract *compoundcontract.CErc20Caller
+		cContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
+		address, _ := cContract.Underlying(&bind.CallOpts{})
+		var underlyingContract *compoundcontract.CErc20Caller
+		underlyingContract, err = compoundcontract.NewCErc20Caller(address, proto.connection)
+		decs, _ = underlyingContract.Decimals(&bind.CallOpts{})
+	}
 
 	supplyInterestRate, err := contract.SupplyRatePerBlock(&bind.CallOpts{})
 	if err != nil {
@@ -165,7 +172,7 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 	}
 	rate = CompoundRate{
 		Symbol:        asset,
-		Decimal:       proto.decimals[asset],
+		Decimal:       int(decs.Int64()),
 		BorrowRate:    proto.calculateAPY(borrowInterestRate),
 		SupplyRate:    proto.calculateAPY(supplyInterestRate),
 		TotalSupply:   totalSupply,
@@ -198,7 +205,7 @@ func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 	for asset := range proto.assets {
 		Compoundrate, err := proto.fetch(asset)
 		if err != nil {
-			log.Error("error fetching asset: ", err)
+			log.Errorf("error fetching asset %s: %v", asset, err)
 		}
 		rates = append(rates, Compoundrate)
 	}
