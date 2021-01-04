@@ -113,7 +113,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				log.Error("error index price 30d: ", err)
 			}
 			currentIndex.Price30d = price30d
-			// TO DO: Volume
+			// TODO: Volume
 			// Circulating supply
 			diaSupply, err := db.GetLatestSupply(currentIndex.Name)
 			if err != nil {
@@ -130,6 +130,10 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			// Get constituents
 			var constituents []CryptoIndexConstituent
 			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {
+				//TODO: remove after cover fix
+				if constituentSymbol == "COVER" {
+					continue
+				}
 				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5*time.Hour), endtime, constituentSymbol)
 				if err != nil {
 					return retval, err
@@ -278,13 +282,12 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) err
 // For now we hard-code amounts. TO DO: Set and Get data to and from influx/config
 func (db *DB) GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error) {
 
-	constituents := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
-	amounts := []uint64{102504643110709000, 907990711110561000, 206329281567188, 55663649889442, 461546152853883000, 56696968122059100, 4185582958247, 26215696618443200, 3778532359289460, 38656197930994700, 972363917807713, 2038967220923070, 952603382004964, 16697065735724400}
+	constituents := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
+	amounts := []uint64{102504643110709000, 907990711110561000, 206329281567188, 461546152853883000, 56696968122059100, 4185582958247, 26215696618443200, 3778532359289460, 38656197930994700, 972363917807713, 2038967220923070, 952603382004964, 16697065735724400}
 	addresses := []string{
 		"0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
 		"0x408e41876cccdc0f92210600ef50372656052a38",
 		"0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
-		"0x5D8d9F5b96f4438195BE9b99eee6118Ed4304286",
 		"0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c",
 		"0xF5D669627376EBd411E34b98F19C868c8ABA5ADA",
 		"0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577",

@@ -19,7 +19,9 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	currentConstituents := periodicIndexRebalancingCalculation()
+	//currentConstituents := periodicIndexRebalancingCalculation()
+	symbols := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
+	currentConstituents := getCurrentIndexComposition(symbols, ds)
 	indexTicker := time.NewTicker(2 * 60 * time.Second)
 	rebalancingTicker := time.NewTicker(30 * 24 * time.Hour)
 	go func() {
@@ -39,8 +41,23 @@ func main() {
 	select {}
 }
 
+func getCurrentIndexComposition(constituentsSymbols []string, ds *models.DB) []models.CryptoIndexConstituent {
+	var constituents []models.CryptoIndexConstituent
+	for _, constituentSymbol := range constituentsSymbols {
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5*time.Hour), time.Now(), constituentSymbol)
+		if err != nil {
+			log.Error(err)
+			return constituents
+		}
+		if len(curr) > 0 {
+			constituents = append(constituents, curr[0])
+		}
+	}
+	return constituents
+}
+
 func periodicIndexRebalancingCalculation() []models.CryptoIndexConstituent {
-	symbols := []string{"SUSHI", "REN", "KP3R", "COVER", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
+	symbols := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
 
 	// Get constituents information
 	constituents, err := indexCalculationService.GetIndexBasket(symbols)
