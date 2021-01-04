@@ -11,6 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
+	LRCtoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
+	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
 	stakingpool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
 )
 
@@ -20,7 +22,7 @@ type LRCPool struct {
 	WsClient   *ethclient.Client
 }
 
-func NewLRCPoolScrapper(scraper *PoolScraper) *YFIPool {
+func NewLRCPoolScrapper(scraper *PoolScraper) *LRCPool {
 	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
@@ -57,7 +59,7 @@ func (cv *LRCPool) mainLoop() {
 
 func (cv *LRCPool) scrapePools() (err error) {
 	for _, poolDetail := range cv.getLRCPools() {
-		lc, err := lrcstakingpool.NewLRCStakingPoolContractCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
+		lc, err := stakingpool.NewUserStakingPoolCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
@@ -65,28 +67,50 @@ func (cv *LRCPool) scrapePools() (err error) {
 		header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
 		if err != nil {
 			return err
-
 		}
 
-		pricePerFullShareFromContract, err := lrcstakingpool.GetPricePerFullShare(&bind.CallOpts{BlockNumber: header.Number})
+		token, err := LRCtoken.NewLRCtokenCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
+		if err != nil {	
+			return err
+		}
+		vault, err := protocolfeevault.NewProtocolFeeVaultCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
 		if err != nil {
 			return err
-
 		}
-		bal, err := lrcstakingpool.Balance(&bind.CallOpts{})
+		protocolFeeStats, err := vault.GetProtocolFeeStats(&bind.CallOpts{BlockNumber: header.Number})
+		if err != nil {
+			return err
+		}
+		
+	
+		totalStaking, err := lc.GetTotalStaking(&bind.CallOpts{BlockNumber: header.Number})
+		if err != nil {
+			return err
+		}
+		bal, err := token.BalanceOf(&bind.CallOpts{BlockNumber: header.Number}, common.HexToAddress("0x4b89f8996892d137c3dE1312d1dD4E4F4fFcA171"))
 		if err != nil {
 			log.Error(err)
 			return err
 
 		}
-		decimals, err := lrcstakingpool.Decimals(&bind.CallOpts{})
+		decimals, err := token.DECIMALS(&bind.CallOpts{BlockNumber: header.Number})	
 		if err != nil {
 			return err
 
 		}
-		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
 
-		pricePerFullShare := new(big.Float).SetInt(pricePerFullShareFromContract)
+		decimalConvert, _ := new(big.Int).SetString(decimals.String(), 10)
+		dec := decimalConvert.Int64()
+		if err != nil {
+			return err
+		}
+
+		pricePerFullShareFromContract := new(big.Int).Add(protocolFeeStats.AccumulatedReward,protocolFeeStats.RemainingReward)
+		pricePerFullShareFromContractWithStaking := new(big.Int).Add(pricePerFullShareFromContract,totalStaking)
+
+		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(dec)))).Float64()
+
+		pricePerFullShare := new(big.Float).SetInt(pricePerFullShareFromContractWithStaking)
 		rate, _ := big.NewFloat(0).Sub(pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18)), big.NewFloat(1)).Float64()
 
 		var pr models.FarmingPool

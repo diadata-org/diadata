@@ -35,7 +35,7 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 	case "BALANCER":
 		s.poolHelper = NewBalancerPoolScrapper(s)
 	case "LOOPRING":
-		s.poolHelper = NewLoopringPoolScrapper(s)
+		s.poolHelper = NewLRCPoolScrapper(s)
 	case "SYNTHETIX":
 		s.poolHelper = NewSynthetixScraper(s)
 	}
