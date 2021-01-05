@@ -36,8 +36,10 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
+	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
+	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -436,6 +438,49 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		db.addPoint(pt)
 	}
 	return err
+}
+
+func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time) (*dia.Trade, error) {
+	retval := dia.Trade{}
+	var q string
+	if exchange != "" {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and echange='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, exchange, timestamp.UnixNano())
+	} else {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, timestamp.UnixNano())
+	}
+
+	/// TODO
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return &retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			retval.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return &retval, err
+			}
+			retval.EstimatedUSDPrice, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+			retval.Source = res[0].Series[0].Values[i][2].(string)
+			retval.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			retval.Pair = res[0].Series[0].Values[i][4].(string)
+			retval.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+			retval.Symbol = res[0].Series[0].Values[i][6].(string)
+			retval.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+		}
+	} else {
+		return &retval, errors.New("Error parsing Trade from Database")
+	}
+	return &retval, nil
 }
 
 func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {

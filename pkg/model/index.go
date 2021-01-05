@@ -88,31 +88,45 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			if err != nil {
 				return retval, err
 			}
-			price1h, err := db.GetPrice1h(currentIndex.Name, "")
+			price1h, err := db.GetTradePrice1h(currentIndex.Name, "")
 			if err != nil {
 				log.Error("error index price 1h: ", err)
+				currentIndex.Price1h = 0.0
+			} else {
+				currentIndex.Price1h = price1h.EstimatedUSDPrice
 			}
-			currentIndex.Price1h = price1h
-			price1d, err := db.GetPriceYesterday(currentIndex.Name, "")
+
+			price24h, err := db.GetTradePrice24h(currentIndex.Name, "")
 			if err != nil {
 				log.Error("error index price 24h: ", err)
+				currentIndex.Price24h = 0.0
+			} else {
+				currentIndex.Price24h = price24h.EstimatedUSDPrice
 			}
-			currentIndex.Price24h = price1d
-			price7d, err := db.GetPrice7d(currentIndex.Name, "")
+
+			price7d, err := db.GetTradePrice7d(currentIndex.Name, "")
 			if err != nil {
 				log.Error("error index price 7d: ", err)
+				currentIndex.Price7d = 0.0
+			} else {
+				currentIndex.Price7d = price7d.EstimatedUSDPrice
 			}
-			currentIndex.Price7d = price7d
-			price14d, err := db.GetPrice14d(currentIndex.Name, "")
+
+			price14d, err := db.GetTradePrice14d(currentIndex.Name, "")
 			if err != nil {
 				log.Error("error index price 14d: ", err)
+				currentIndex.Price14d = 0.0
+			} else {
+				currentIndex.Price14d = price14d.EstimatedUSDPrice
 			}
-			currentIndex.Price14d = price14d
-			price30d, err := db.GetPrice30d(currentIndex.Name, "")
+
+			price30d, err := db.GetTradePrice30d(currentIndex.Name, "")
 			if err != nil {
 				log.Error("error index price 30d: ", err)
+				currentIndex.Price30d = 0.0
+			} else {
+				currentIndex.Price30d = price30d.EstimatedUSDPrice
 			}
-			currentIndex.Price30d = price30d
 			// TODO: Volume
 			// Circulating supply
 			diaSupply, err := db.GetLatestSupply(currentIndex.Name)
