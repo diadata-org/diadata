@@ -11,9 +11,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	LRCtoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
 	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
 	stakingpool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
+	lrctoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
 )
 
 type LRCPool struct {
@@ -22,7 +22,11 @@ type LRCPool struct {
 	WsClient   *ethclient.Client
 }
 
-func NewLRCPoolScrapper(scraper *PoolScraper) *LRCPool {
+const (
+	lrcStakingPoolAddress = "0xF4662bB1C4831fD411a95b8050B3A5998d8A4A5b"
+)
+
+func NewLRCPoolScraper(scraper *PoolScraper) *LRCPool {
 	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
@@ -48,7 +52,7 @@ func (cv *LRCPool) mainLoop() {
 			case <-cv.scraper.tickerRate.C:
 				err := cv.scrapePools()
 				if err != nil {
-					log.Errorln("Error while Scrapping", err)
+					log.Errorln("Error while Scraping", err)
 				}
 			}
 
@@ -58,88 +62,69 @@ func (cv *LRCPool) mainLoop() {
 }
 
 func (cv *LRCPool) scrapePools() (err error) {
-	for _, poolDetail := range cv.getLRCPools() {
-		lc, err := stakingpool.NewUserStakingPoolCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
-		if err != nil {
-			return err
-		}
-
-		header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
-		if err != nil {
-			return err
-		}
-
-		token, err := LRCtoken.NewLRCtokenCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
-		if err != nil {	
-			return err
-		}
-		vault, err := protocolfeevault.NewProtocolFeeVaultCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
-		if err != nil {
-			return err
-		}
-		protocolFeeStats, err := vault.GetProtocolFeeStats(&bind.CallOpts{BlockNumber: header.Number})
-		if err != nil {
-			return err
-		}
-		
-	
-		totalStaking, err := lc.GetTotalStaking(&bind.CallOpts{BlockNumber: header.Number})
-		if err != nil {
-			return err
-		}
-		bal, err := token.BalanceOf(&bind.CallOpts{BlockNumber: header.Number}, common.HexToAddress("0x4b89f8996892d137c3dE1312d1dD4E4F4fFcA171"))
-		if err != nil {
-			log.Error(err)
-			return err
-
-		}
-		decimals, err := token.DECIMALS(&bind.CallOpts{BlockNumber: header.Number})	
-		if err != nil {
-			return err
-
-		}
-
-		decimalConvert, _ := new(big.Int).SetString(decimals.String(), 10)
-		dec := decimalConvert.Int64()
-		if err != nil {
-			return err
-		}
-
-		pricePerFullShareFromContract := new(big.Int).Add(protocolFeeStats.AccumulatedReward,protocolFeeStats.RemainingReward)
-		pricePerFullShareFromContractWithStaking := new(big.Int).Add(pricePerFullShareFromContract,totalStaking)
-
-		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(dec)))).Float64()
-
-		pricePerFullShare := new(big.Float).SetInt(pricePerFullShareFromContractWithStaking)
-		rate, _ := big.NewFloat(0).Sub(pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18)), big.NewFloat(1)).Float64()
-
-		var pr models.FarmingPool
-		pr.TimeStamp = time.Now()
-		pr.Rate = rate
-		pr.Balance = poolBalance
-		pr.ProtocolName = cv.scraper.poolName
-		pr.PoolID = poolDetail.PoolID
-		pr.OutputAsset = []string{poolDetail.TokenName}
-		pr.BlockNumber = header.Number.Int64()
-		pr.InputAsset = []string{poolDetail.TokenName}
-		cv.scraper.chanPoolInfo <- &pr
+	header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return err
 	}
+
+	// Get contract methods
+	stakingPool, err := stakingpool.NewUserStakingPoolCaller(common.HexToAddress(lrcStakingPoolAddress), cv.RestClient)
+	if err != nil {
+		return err
+	}
+	lrcFeeVaultAddress, err := stakingPool.ProtocolFeeVaultAddress(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+	feevault, err := protocolfeevault.NewProtocolFeeVaultCaller(lrcFeeVaultAddress, cv.RestClient)
+	if err != nil {
+		return err
+	}
+	tokenaddress, err := stakingPool.LrcAddress(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+	token, err := lrctoken.NewLRCV2Caller(tokenaddress, cv.RestClient)
+	if err != nil {
+		return err
+	}
+
+	// Determine feeVault and staking values
+	symbol, err := token.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+	decimals, err := token.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+
+	totalStaking, err := stakingPool.Total(&bind.CallOpts{BlockNumber: header.Number})
+	if err != nil {
+		return err
+	}
+	balance := totalStaking.Balance
+
+	protocolFeeStats, err := feevault.GetProtocolFeeStats(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+	remainingReward := protocolFeeStats.RemainingReward
+
+	poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+	poolReward, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(remainingReward), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+
+	var pr models.FarmingPool
+	pr.TimeStamp = time.Now()
+	pr.Rate = poolReward
+	pr.Balance = poolBalance
+	pr.ProtocolName = cv.scraper.poolName
+	pr.PoolID = symbol
+	pr.OutputAsset = []string{symbol}
+	pr.BlockNumber = header.Number.Int64()
+	pr.InputAsset = []string{symbol}
+	cv.scraper.chanPoolInfo <- &pr
+
 	return
 
-}
-
-func (cv *LRCPool) getLRCPools() (pools []*LRCPoolDetail) {
-	pools = append(pools, &LRCPoolDetail{TokenName: "LRC", VaultAddress: "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd", PoolID: "LRC"})
-	pools = append(pools, &LRCPoolDetail{TokenName: "fLRC", VaultAddress: "0x4b89f8996892d137c3dE1312d1dD4E4F4fFcA171", PoolID: "feeLRC"})
-	pools = append(pools, &LRCPoolDetail{TokenName: "LRCdex", VaultAddress: "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777", PoolID: "LRCdex"})
-	pools = append(pools, &LRCPoolDetail{TokenName: "stakingLRC", VaultAddress: "0xF4662bB1C4831fD411a95b8050B3A5998d8A4A5b", PoolID: "stakingLRC"})
-
-	return
-
-}
-
-type LRCPoolDetail struct {
-	TokenName    string
-	VaultAddress string
-	PoolID       string
 }
