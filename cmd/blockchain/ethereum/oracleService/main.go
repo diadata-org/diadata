@@ -472,6 +472,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// SYNTHETIX sETH pool rate
+	rawSYNTHETIX, err := getFarmingPoolFromDia("Synthetix", "0xD0DC005d31C2979CC0d38718e23c82D1A50004C0")
+	if err != nil {
+		log.Fatalf("Failed to retrieve SYNTHETIX pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawSYNTHETIX, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update YFI Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// // Top 15 coins
 	// rawCoins, err := getToplistFromDia()
 	// if err != nil {

@@ -43,6 +43,20 @@ services:
       options:
         max-size: "50m"
 
+  synthetixscraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingpools -type=SYNTHETIX
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   genericfarmingscraper:
     build:
       context: ../../../..

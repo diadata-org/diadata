@@ -119,7 +119,7 @@ func (sts *SynthetixScraper) scrapePools() error {
 		pr.TimeStamp = time.Now()
 		pr.Rate = totalSystemDebt
 		pr.Balance = totalSupply
-		pr.ProtocolName = "Synthetix"
+		pr.ProtocolName = "SYNTHETIX"
 		pr.PoolID = synthAddress.Hex()
 		pr.OutputAsset = []string{symbol}
 		pr.BlockNumber = header.Number.Int64()
