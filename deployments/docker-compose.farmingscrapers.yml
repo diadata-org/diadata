@@ -57,6 +57,20 @@ services:
       options:
         max-size: "50m"
 
+  loopringscraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingpools -type=LOOPRING
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   genericfarmingscraper:
     build:
       context: ../../../..
