@@ -81,10 +81,10 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 		log.Error(err)
 	}
 	quotation := 0.0
-	quotationObject, err := ds.GetQuotation(symbol)
+	tradeObject, err := ds.GetTradeInflux(symbol, "", time.Now())
 	if err == nil {
 		// Quotation does exist
-		quotation = quotationObject.Price
+		quotation = tradeObject.EstimatedUSDPrice
 	}
 	supply := 0.0
 	supplyObject, err := ds.GetLatestSupply(symbol)

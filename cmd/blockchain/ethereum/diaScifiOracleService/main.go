@@ -89,6 +89,7 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
+	time.Sleep(13 * time.Minute)
 	rawIndex, err := getIndexValueFromDia(indexName)
 	if err != nil {
 		log.Fatalf("Failed to retrieve crypto index data from DIA: %v", err)

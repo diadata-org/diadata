@@ -1134,3 +1134,18 @@ func (env *Env) GetCryptoIndexMintAmounts(c *gin.Context) {
 		c.JSON(http.StatusOK, q)
 	}
 }
+
+// Get last 1000 trades of an asset
+func (env *Env) GetLastTrades(c *gin.Context) {
+	symbol := c.Param("symbol")
+	q, err := env.DataStore.GetLastTradesAllExchanges(symbol, 1000)
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
