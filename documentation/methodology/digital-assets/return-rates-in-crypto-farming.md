@@ -67,6 +67,9 @@ $$
 r=\frac{D_1}{D_0}-1.
 $$
 
+It should come as no surprise that this leads to the pool rate $$r=0.1$$ for the above example.  
+Let us now consider a slightly more comprehensive example.
+
 **Example:**
 
 <table>
