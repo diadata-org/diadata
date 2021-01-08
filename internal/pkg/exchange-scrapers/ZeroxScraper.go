@@ -109,8 +109,12 @@ func (scraper *ZeroxScraper) loadTokens() {
 	}
 
 	for it.Next() {
-		i, _ := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
-		o, _ := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
+		i, err := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
+		o, err := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
+		if err != nil {
+			// skip non-existing token data
+			continue
+		}
 		log.Printf("\n %v  -%v- %v -%v- %v %v ",
 			common.BytesToAddress(it.Event.TakerAssetData).Hex(),
 			i.Symbol, i.Decimals,
@@ -125,27 +129,27 @@ func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxT
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
-	} else {
-		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
-		if err != nil {
-			log.Error(err)
-		}
-		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
-		if err != nil {
-			log.Error(err)
-		}
-		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
-		if err != nil {
-			log.Error(err)
-		}
-		dfToken := &ZeroxToken{
-			Symbol:   symbol,
-			Decimals: uint8(decimals.Int64()),
-		}
-		dfToken.normalizeETH()
-		scraper.tokens[tokenStr] = dfToken
-		return dfToken, err
 	}
+	tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	dfToken := &ZeroxToken{
+		Symbol:   symbol,
+		Decimals: uint8(decimals.Int64()),
+	}
+	dfToken.normalizeETH()
+	scraper.tokens[tokenStr] = dfToken
+	return dfToken, err
+
 }
 
 func (scraper *ZeroxScraper) subscribeToTrades() error {
@@ -223,6 +227,7 @@ func (scraper *ZeroxScraper) mainLoop() {
 	scraper.run = true
 
 	scraper.subscribeToTrades()
+
 	go func() {
 		for scraper.run {
 			_ = <-scraper.resubscribe
