@@ -54,6 +54,7 @@ $$
 G=D_{Inv}-p_0=p_0\left( \frac{D_1}{D_0}-1 \right).
 $$
 
+Let us quickly illustrate this equation before making the connection to the pool rate $$r$$. Assume the total debt has increased from $$D_0=1000$$  by $$10\%$$ to $$D_1=1100$$. Plugging into the above equation for the gain $$G$$ leads to $$G=p_0\frac{1}{10}$$ and hence, the investor makes a gain of $$10\%$$.  
 In order to see the relation to the _pool rate_ $$r$$  from the previous section, we rewrite the personal debt $$D_{Inv}$$  in a somewhat artificial manner as
 
 $$
@@ -65,6 +66,9 @@ And hence, the pool rate $$r$$ is given by
 $$
 r=\frac{D_1}{D_0}-1.
 $$
+
+It should come as no surprise that this leads to the pool rate $$r=0.1$$ for the above example.  
+Let us now consider a slightly more comprehensive example.
 
 **Example:**
 
@@ -139,4 +143,14 @@ Finally, we can easily compute the farming period's pool rate for this example, 
 $$
 r=\frac{152}{150}-1=0,01\bar{3}=1,\bar{3}\%.
 $$
+
+## Estimation of Returns from Total Rewards
+
+Some platforms such as Loopring emit total system rewards. We remark that, given the staking pool's total balance $$D$$ and the total reward $$R$$, an average pool rate $$\tilde{r}$$ can be estimated as follows
+
+$$
+\tilde{r}=\frac{R}{D}.
+$$
+
+ 
 
