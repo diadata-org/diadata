@@ -137,7 +137,7 @@ func bindGauge(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Gauge *GaugeRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Gauge *GaugeRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Gauge.Contract.GaugeCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Gauge *GaugeRaw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Gauge *GaugeCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Gauge *GaugeCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Gauge.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Gauge *GaugeTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function approved_to_deposit(address arg0, address arg1) view returns(bool)
 func (_Gauge *GaugeCaller) ApprovedToDeposit(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "approved_to_deposit", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "approved_to_deposit", arg0, arg1)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // ApprovedToDeposit is a free data retrieval call binding the contract method 0xe1522536.
@@ -201,12 +206,17 @@ func (_Gauge *GaugeCallerSession) ApprovedToDeposit(arg0 common.Address, arg1 co
 //
 // Solidity: function balanceOf(address arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) BalanceOf(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "balanceOf", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "balanceOf", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -227,12 +237,17 @@ func (_Gauge *GaugeCallerSession) BalanceOf(arg0 common.Address) (*big.Int, erro
 //
 // Solidity: function controller() view returns(address)
 func (_Gauge *GaugeCaller) Controller(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "controller")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "controller")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Controller is a free data retrieval call binding the contract method 0xf77c4791.
@@ -253,12 +268,17 @@ func (_Gauge *GaugeCallerSession) Controller() (common.Address, error) {
 //
 // Solidity: function crv_token() view returns(address)
 func (_Gauge *GaugeCaller) CrvToken(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "crv_token")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "crv_token")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // CrvToken is a free data retrieval call binding the contract method 0x76d8b117.
@@ -279,12 +299,17 @@ func (_Gauge *GaugeCallerSession) CrvToken() (common.Address, error) {
 //
 // Solidity: function future_epoch_time() view returns(uint256)
 func (_Gauge *GaugeCaller) FutureEpochTime(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "future_epoch_time")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "future_epoch_time")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureEpochTime is a free data retrieval call binding the contract method 0xbe5d1be9.
@@ -305,12 +330,17 @@ func (_Gauge *GaugeCallerSession) FutureEpochTime() (*big.Int, error) {
 //
 // Solidity: function inflation_rate() view returns(uint256)
 func (_Gauge *GaugeCaller) InflationRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "inflation_rate")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "inflation_rate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InflationRate is a free data retrieval call binding the contract method 0x180692d0.
@@ -331,12 +361,17 @@ func (_Gauge *GaugeCallerSession) InflationRate() (*big.Int, error) {
 //
 // Solidity: function integrate_checkpoint() view returns(uint256)
 func (_Gauge *GaugeCaller) IntegrateCheckpoint(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "integrate_checkpoint")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "integrate_checkpoint")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IntegrateCheckpoint is a free data retrieval call binding the contract method 0xd31f3f6d.
@@ -357,12 +392,17 @@ func (_Gauge *GaugeCallerSession) IntegrateCheckpoint() (*big.Int, error) {
 //
 // Solidity: function integrate_checkpoint_of(address arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) IntegrateCheckpointOf(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "integrate_checkpoint_of", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "integrate_checkpoint_of", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IntegrateCheckpointOf is a free data retrieval call binding the contract method 0x9bd324f2.
@@ -383,12 +423,17 @@ func (_Gauge *GaugeCallerSession) IntegrateCheckpointOf(arg0 common.Address) (*b
 //
 // Solidity: function integrate_fraction(address arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) IntegrateFraction(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "integrate_fraction", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "integrate_fraction", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IntegrateFraction is a free data retrieval call binding the contract method 0x09400707.
@@ -409,12 +454,17 @@ func (_Gauge *GaugeCallerSession) IntegrateFraction(arg0 common.Address) (*big.I
 //
 // Solidity: function integrate_inv_supply(uint256 arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) IntegrateInvSupply(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "integrate_inv_supply", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "integrate_inv_supply", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IntegrateInvSupply is a free data retrieval call binding the contract method 0xfec8ee0c.
@@ -435,12 +485,17 @@ func (_Gauge *GaugeCallerSession) IntegrateInvSupply(arg0 *big.Int) (*big.Int, e
 //
 // Solidity: function integrate_inv_supply_of(address arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) IntegrateInvSupplyOf(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "integrate_inv_supply_of", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "integrate_inv_supply_of", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // IntegrateInvSupplyOf is a free data retrieval call binding the contract method 0xde263bfa.
@@ -461,12 +516,17 @@ func (_Gauge *GaugeCallerSession) IntegrateInvSupplyOf(arg0 common.Address) (*bi
 //
 // Solidity: function lp_token() view returns(address)
 func (_Gauge *GaugeCaller) LpToken(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "lp_token")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "lp_token")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LpToken is a free data retrieval call binding the contract method 0x82c63066.
@@ -487,12 +547,17 @@ func (_Gauge *GaugeCallerSession) LpToken() (common.Address, error) {
 //
 // Solidity: function minter() view returns(address)
 func (_Gauge *GaugeCaller) Minter(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "minter")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "minter")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Minter is a free data retrieval call binding the contract method 0x07546172.
@@ -513,12 +578,17 @@ func (_Gauge *GaugeCallerSession) Minter() (common.Address, error) {
 //
 // Solidity: function period() view returns(int128)
 func (_Gauge *GaugeCaller) Period(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "period")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "period")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Period is a free data retrieval call binding the contract method 0xef78d4fd.
@@ -539,12 +609,17 @@ func (_Gauge *GaugeCallerSession) Period() (*big.Int, error) {
 //
 // Solidity: function period_timestamp(uint256 arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) PeriodTimestamp(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "period_timestamp", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "period_timestamp", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // PeriodTimestamp is a free data retrieval call binding the contract method 0x7598108c.
@@ -565,12 +640,17 @@ func (_Gauge *GaugeCallerSession) PeriodTimestamp(arg0 *big.Int) (*big.Int, erro
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_Gauge *GaugeCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -591,12 +671,17 @@ func (_Gauge *GaugeCallerSession) TotalSupply() (*big.Int, error) {
 //
 // Solidity: function voting_escrow() view returns(address)
 func (_Gauge *GaugeCaller) VotingEscrow(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "voting_escrow")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "voting_escrow")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // VotingEscrow is a free data retrieval call binding the contract method 0xdfe05031.
@@ -617,12 +702,17 @@ func (_Gauge *GaugeCallerSession) VotingEscrow() (common.Address, error) {
 //
 // Solidity: function working_balances(address arg0) view returns(uint256)
 func (_Gauge *GaugeCaller) WorkingBalances(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "working_balances", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "working_balances", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // WorkingBalances is a free data retrieval call binding the contract method 0x13ecb1ca.
@@ -643,12 +733,17 @@ func (_Gauge *GaugeCallerSession) WorkingBalances(arg0 common.Address) (*big.Int
 //
 // Solidity: function working_supply() view returns(uint256)
 func (_Gauge *GaugeCaller) WorkingSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Gauge.contract.Call(opts, out, "working_supply")
-	return *ret0, err
+	var out []interface{}
+	err := _Gauge.contract.Call(opts, &out, "working_supply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // WorkingSupply is a free data retrieval call binding the contract method 0x17e28089.
@@ -953,6 +1048,7 @@ func (_Gauge *GaugeFilterer) ParseDeposit(log types.Log) (*GaugeDeposit, error) 
 	if err := _Gauge.contract.UnpackLog(event, "Deposit", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1090,6 +1186,7 @@ func (_Gauge *GaugeFilterer) ParseUpdateLiquidityLimit(log types.Log) (*GaugeUpd
 	if err := _Gauge.contract.UnpackLog(event, "UpdateLiquidityLimit", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1234,5 +1331,6 @@ func (_Gauge *GaugeFilterer) ParseWithdraw(log types.Log) (*GaugeWithdraw, error
 	if err := _Gauge.contract.UnpackLog(event, "Withdraw", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

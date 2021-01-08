@@ -9,7 +9,7 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refreshRateDelay = 1 * 20 * time.Second
+	refreshRateDelay = 30 * 60 * time.Second
 	restDial         = "http://159.69.120.42:8545/"
 	wsDial           = "ws://159.69.120.42:8546/"
 )

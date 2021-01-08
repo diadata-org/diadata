@@ -2,6 +2,7 @@ package pool
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"math/big"
 	"time"
@@ -26,11 +27,11 @@ type CFIPool struct {
 
 func NewCFIPool(scraper *PoolScraper) *CFIPool {
 	log.Info("Curvefi pool is built and triggered")
-	restClient, err := ethclient.Dial(restDial)
+	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
-	wsClient, err := ethclient.Dial(wsDial)
+	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,24 +69,25 @@ func (cv *CFIPool) scrapePools() (err error) {
 	metaPool := []string{"gusd", "husd", "usdk", "usdn", "musd", "rsv", "tbtc", "3", "hbtc"}
 
 	for _, poolDetail := range cv.getCFIPools() {
-		var coins []string
 
+		fmt.Println("----------------------------------------------------------------")
+		fmt.Printf("write pool: %s\n", poolDetail.PoolName)
+		fmt.Println("----------------------------------------------------------------")
+
+		var coins []string
 		var balances float64
 
 		platform, err := platform.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress[0]), cv.RestClient)
 		if err != nil {
 			return err
 		}
-
 		special, err := special.NewSpecial(common.HexToAddress(poolDetail.PoolAddress[0]), cv.RestClient)
 		if err != nil {
 			return err
 		}
-
 		header, err := cv.RestClient.HeaderByNumber(context.Background(), nil)
 		if err != nil {
 			return err
-
 		}
 
 		virtualPrice, _ := platform.GetVirtualPrice(&bind.CallOpts{})

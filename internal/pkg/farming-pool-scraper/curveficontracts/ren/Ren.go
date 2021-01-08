@@ -137,7 +137,7 @@ func bindRen(address common.Address, caller bind.ContractCaller, transactor bind
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Ren *RenRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Ren *RenRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Ren.Contract.RenCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Ren *RenRaw) Transact(opts *bind.TransactOpts, method string, params ...i
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Ren *RenCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Ren *RenCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Ren.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Ren *RenTransactorRaw) Transact(opts *bind.TransactOpts, method string, p
 //
 // Solidity: function A() returns(uint256)
 func (_Ren *RenCaller) A(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "A")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // A is a free data retrieval call binding the contract method 0xf446c1d0.
@@ -201,12 +206,17 @@ func (_Ren *RenCallerSession) A() (*big.Int, error) {
 //
 // Solidity: function admin_actions_deadline() returns(uint256)
 func (_Ren *RenCaller) AdminActionsDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "admin_actions_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "admin_actions_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminActionsDeadline is a free data retrieval call binding the contract method 0x405e28f8.
@@ -227,12 +237,17 @@ func (_Ren *RenCallerSession) AdminActionsDeadline() (*big.Int, error) {
 //
 // Solidity: function admin_fee() returns(uint256)
 func (_Ren *RenCaller) AdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminFee is a free data retrieval call binding the contract method 0xfee3f7f9.
@@ -253,12 +268,17 @@ func (_Ren *RenCallerSession) AdminFee() (*big.Int, error) {
 //
 // Solidity: function balances(int128 arg0) returns(uint256)
 func (_Ren *RenCaller) Balances(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "balances", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "balances", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Balances is a free data retrieval call binding the contract method 0x065a80d8.
@@ -279,12 +299,17 @@ func (_Ren *RenCallerSession) Balances(arg0 *big.Int) (*big.Int, error) {
 //
 // Solidity: function calc_token_amount(uint256[2] amounts, bool deposit) returns(uint256)
 func (_Ren *RenCaller) CalcTokenAmount(opts *bind.CallOpts, amounts [2]*big.Int, deposit bool) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "calc_token_amount", amounts, deposit)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "calc_token_amount", amounts, deposit)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcTokenAmount is a free data retrieval call binding the contract method 0xed8e84f3.
@@ -305,12 +330,17 @@ func (_Ren *RenCallerSession) CalcTokenAmount(amounts [2]*big.Int, deposit bool)
 //
 // Solidity: function calc_withdraw_one_coin(uint256 _token_amount, int128 i) returns(uint256)
 func (_Ren *RenCaller) CalcWithdrawOneCoin(opts *bind.CallOpts, _token_amount *big.Int, i *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "calc_withdraw_one_coin", _token_amount, i)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "calc_withdraw_one_coin", _token_amount, i)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcWithdrawOneCoin is a free data retrieval call binding the contract method 0xcc2b27d7.
@@ -331,12 +361,17 @@ func (_Ren *RenCallerSession) CalcWithdrawOneCoin(_token_amount *big.Int, i *big
 //
 // Solidity: function coins(int128 arg0) returns(address)
 func (_Ren *RenCaller) Coins(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "coins", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "coins", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Coins is a free data retrieval call binding the contract method 0x23746eb8.
@@ -357,12 +392,17 @@ func (_Ren *RenCallerSession) Coins(arg0 *big.Int) (common.Address, error) {
 //
 // Solidity: function fee() returns(uint256)
 func (_Ren *RenCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Fee is a free data retrieval call binding the contract method 0xddca3f43.
@@ -383,12 +423,17 @@ func (_Ren *RenCallerSession) Fee() (*big.Int, error) {
 //
 // Solidity: function future_A() returns(uint256)
 func (_Ren *RenCaller) FutureA(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "future_A")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "future_A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureA is a free data retrieval call binding the contract method 0xb4b577ad.
@@ -409,12 +454,17 @@ func (_Ren *RenCallerSession) FutureA() (*big.Int, error) {
 //
 // Solidity: function future_A_time() returns(uint256)
 func (_Ren *RenCaller) FutureATime(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "future_A_time")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "future_A_time")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureATime is a free data retrieval call binding the contract method 0x14052288.
@@ -435,12 +485,17 @@ func (_Ren *RenCallerSession) FutureATime() (*big.Int, error) {
 //
 // Solidity: function future_admin_fee() returns(uint256)
 func (_Ren *RenCaller) FutureAdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "future_admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "future_admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureAdminFee is a free data retrieval call binding the contract method 0xe3824462.
@@ -461,12 +516,17 @@ func (_Ren *RenCallerSession) FutureAdminFee() (*big.Int, error) {
 //
 // Solidity: function future_fee() returns(uint256)
 func (_Ren *RenCaller) FutureFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "future_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "future_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureFee is a free data retrieval call binding the contract method 0x58680d0b.
@@ -487,12 +547,17 @@ func (_Ren *RenCallerSession) FutureFee() (*big.Int, error) {
 //
 // Solidity: function future_owner() returns(address)
 func (_Ren *RenCaller) FutureOwner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "future_owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "future_owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FutureOwner is a free data retrieval call binding the contract method 0x1ec0cdc1.
@@ -513,12 +578,17 @@ func (_Ren *RenCallerSession) FutureOwner() (common.Address, error) {
 //
 // Solidity: function get_dy(int128 i, int128 j, uint256 dx) returns(uint256)
 func (_Ren *RenCaller) GetDy(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "get_dy", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "get_dy", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDy is a free data retrieval call binding the contract method 0x5e0d443f.
@@ -539,12 +609,17 @@ func (_Ren *RenCallerSession) GetDy(i *big.Int, j *big.Int, dx *big.Int) (*big.I
 //
 // Solidity: function get_dy_underlying(int128 i, int128 j, uint256 dx) returns(uint256)
 func (_Ren *RenCaller) GetDyUnderlying(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "get_dy_underlying", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "get_dy_underlying", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDyUnderlying is a free data retrieval call binding the contract method 0x07211ef7.
@@ -565,12 +640,17 @@ func (_Ren *RenCallerSession) GetDyUnderlying(i *big.Int, j *big.Int, dx *big.In
 //
 // Solidity: function get_virtual_price() returns(uint256)
 func (_Ren *RenCaller) GetVirtualPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "get_virtual_price")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "get_virtual_price")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetVirtualPrice is a free data retrieval call binding the contract method 0xbb7b8b80.
@@ -591,12 +671,17 @@ func (_Ren *RenCallerSession) GetVirtualPrice() (*big.Int, error) {
 //
 // Solidity: function initial_A() returns(uint256)
 func (_Ren *RenCaller) InitialA(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "initial_A")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "initial_A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialA is a free data retrieval call binding the contract method 0x5409491a.
@@ -617,12 +702,17 @@ func (_Ren *RenCallerSession) InitialA() (*big.Int, error) {
 //
 // Solidity: function initial_A_time() returns(uint256)
 func (_Ren *RenCaller) InitialATime(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "initial_A_time")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "initial_A_time")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialATime is a free data retrieval call binding the contract method 0x2081066c.
@@ -643,12 +733,17 @@ func (_Ren *RenCallerSession) InitialATime() (*big.Int, error) {
 //
 // Solidity: function owner() returns(address)
 func (_Ren *RenCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -669,12 +764,17 @@ func (_Ren *RenCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function transfer_ownership_deadline() returns(uint256)
 func (_Ren *RenCaller) TransferOwnershipDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Ren.contract.Call(opts, out, "transfer_ownership_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Ren.contract.Call(opts, &out, "transfer_ownership_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TransferOwnershipDeadline is a free data retrieval call binding the contract method 0xe0a0b586.
@@ -1171,6 +1271,7 @@ func (_Ren *RenFilterer) ParseAddLiquidity(log types.Log) (*RenAddLiquidity, err
 	if err := _Ren.contract.UnpackLog(event, "AddLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1323,6 +1424,7 @@ func (_Ren *RenFilterer) ParseCommitNewAdmin(log types.Log) (*RenCommitNewAdmin,
 	if err := _Ren.contract.UnpackLog(event, "CommitNewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1468,6 +1570,7 @@ func (_Ren *RenFilterer) ParseCommitNewFee(log types.Log) (*RenCommitNewFee, err
 	if err := _Ren.contract.UnpackLog(event, "CommitNewFee", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1611,6 +1714,7 @@ func (_Ren *RenFilterer) ParseNewAdmin(log types.Log) (*RenNewAdmin, error) {
 	if err := _Ren.contract.UnpackLog(event, "NewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1745,6 +1849,7 @@ func (_Ren *RenFilterer) ParseNewFee(log types.Log) (*RenNewFee, error) {
 	if err := _Ren.contract.UnpackLog(event, "NewFee", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1881,6 +1986,7 @@ func (_Ren *RenFilterer) ParseRampA(log types.Log) (*RenRampA, error) {
 	if err := _Ren.contract.UnpackLog(event, "RampA", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2027,6 +2133,7 @@ func (_Ren *RenFilterer) ParseRemoveLiquidity(log types.Log) (*RenRemoveLiquidit
 	if err := _Ren.contract.UnpackLog(event, "RemoveLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2174,6 +2281,7 @@ func (_Ren *RenFilterer) ParseRemoveLiquidityImbalance(log types.Log) (*RenRemov
 	if err := _Ren.contract.UnpackLog(event, "RemoveLiquidityImbalance", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2319,6 +2427,7 @@ func (_Ren *RenFilterer) ParseRemoveLiquidityOne(log types.Log) (*RenRemoveLiqui
 	if err := _Ren.contract.UnpackLog(event, "RemoveLiquidityOne", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2453,6 +2562,7 @@ func (_Ren *RenFilterer) ParseStopRampA(log types.Log) (*RenStopRampA, error) {
 	if err := _Ren.contract.UnpackLog(event, "StopRampA", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2600,5 +2710,6 @@ func (_Ren *RenFilterer) ParseTokenExchange(log types.Log) (*RenTokenExchange, e
 	if err := _Ren.contract.UnpackLog(event, "TokenExchange", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

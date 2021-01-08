@@ -137,7 +137,7 @@ func bindSuds(address common.Address, caller bind.ContractCaller, transactor bin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Suds *SudsRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Suds *SudsRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Suds.Contract.SudsCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Suds *SudsRaw) Transact(opts *bind.TransactOpts, method string, params ..
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Suds *SudsCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Suds *SudsCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Suds.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Suds *SudsTransactorRaw) Transact(opts *bind.TransactOpts, method string,
 //
 // Solidity: function A() returns(uint256)
 func (_Suds *SudsCaller) A(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "A")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // A is a free data retrieval call binding the contract method 0xf446c1d0.
@@ -201,12 +206,17 @@ func (_Suds *SudsCallerSession) A() (*big.Int, error) {
 //
 // Solidity: function admin_actions_deadline() returns(uint256)
 func (_Suds *SudsCaller) AdminActionsDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "admin_actions_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "admin_actions_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminActionsDeadline is a free data retrieval call binding the contract method 0x405e28f8.
@@ -227,12 +237,17 @@ func (_Suds *SudsCallerSession) AdminActionsDeadline() (*big.Int, error) {
 //
 // Solidity: function admin_fee() returns(uint256)
 func (_Suds *SudsCaller) AdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AdminFee is a free data retrieval call binding the contract method 0xfee3f7f9.
@@ -253,12 +268,17 @@ func (_Suds *SudsCallerSession) AdminFee() (*big.Int, error) {
 //
 // Solidity: function balances(int128 arg0) returns(uint256)
 func (_Suds *SudsCaller) Balances(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "balances", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "balances", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Balances is a free data retrieval call binding the contract method 0x065a80d8.
@@ -279,12 +299,17 @@ func (_Suds *SudsCallerSession) Balances(arg0 *big.Int) (*big.Int, error) {
 //
 // Solidity: function calc_token_amount(uint256[4] amounts, bool deposit) returns(uint256)
 func (_Suds *SudsCaller) CalcTokenAmount(opts *bind.CallOpts, amounts [4]*big.Int, deposit bool) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "calc_token_amount", amounts, deposit)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "calc_token_amount", amounts, deposit)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcTokenAmount is a free data retrieval call binding the contract method 0xcf701ff7.
@@ -305,12 +330,17 @@ func (_Suds *SudsCallerSession) CalcTokenAmount(amounts [4]*big.Int, deposit boo
 //
 // Solidity: function coins(int128 arg0) returns(address)
 func (_Suds *SudsCaller) Coins(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "coins", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "coins", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Coins is a free data retrieval call binding the contract method 0x23746eb8.
@@ -331,12 +361,17 @@ func (_Suds *SudsCallerSession) Coins(arg0 *big.Int) (common.Address, error) {
 //
 // Solidity: function fee() returns(uint256)
 func (_Suds *SudsCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Fee is a free data retrieval call binding the contract method 0xddca3f43.
@@ -357,12 +392,17 @@ func (_Suds *SudsCallerSession) Fee() (*big.Int, error) {
 //
 // Solidity: function future_A() returns(uint256)
 func (_Suds *SudsCaller) FutureA(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "future_A")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "future_A")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureA is a free data retrieval call binding the contract method 0xb4b577ad.
@@ -383,12 +423,17 @@ func (_Suds *SudsCallerSession) FutureA() (*big.Int, error) {
 //
 // Solidity: function future_admin_fee() returns(uint256)
 func (_Suds *SudsCaller) FutureAdminFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "future_admin_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "future_admin_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureAdminFee is a free data retrieval call binding the contract method 0xe3824462.
@@ -409,12 +454,17 @@ func (_Suds *SudsCallerSession) FutureAdminFee() (*big.Int, error) {
 //
 // Solidity: function future_fee() returns(uint256)
 func (_Suds *SudsCaller) FutureFee(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "future_fee")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "future_fee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // FutureFee is a free data retrieval call binding the contract method 0x58680d0b.
@@ -435,12 +485,17 @@ func (_Suds *SudsCallerSession) FutureFee() (*big.Int, error) {
 //
 // Solidity: function future_owner() returns(address)
 func (_Suds *SudsCaller) FutureOwner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "future_owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "future_owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FutureOwner is a free data retrieval call binding the contract method 0x1ec0cdc1.
@@ -461,12 +516,17 @@ func (_Suds *SudsCallerSession) FutureOwner() (common.Address, error) {
 //
 // Solidity: function get_dy(int128 i, int128 j, uint256 dx) returns(uint256)
 func (_Suds *SudsCaller) GetDy(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "get_dy", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "get_dy", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDy is a free data retrieval call binding the contract method 0x5e0d443f.
@@ -487,12 +547,17 @@ func (_Suds *SudsCallerSession) GetDy(i *big.Int, j *big.Int, dx *big.Int) (*big
 //
 // Solidity: function get_dy_underlying(int128 i, int128 j, uint256 dx) returns(uint256)
 func (_Suds *SudsCaller) GetDyUnderlying(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "get_dy_underlying", i, j, dx)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "get_dy_underlying", i, j, dx)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDyUnderlying is a free data retrieval call binding the contract method 0x07211ef7.
@@ -513,12 +578,17 @@ func (_Suds *SudsCallerSession) GetDyUnderlying(i *big.Int, j *big.Int, dx *big.
 //
 // Solidity: function get_virtual_price() returns(uint256)
 func (_Suds *SudsCaller) GetVirtualPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "get_virtual_price")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "get_virtual_price")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetVirtualPrice is a free data retrieval call binding the contract method 0xbb7b8b80.
@@ -539,12 +609,17 @@ func (_Suds *SudsCallerSession) GetVirtualPrice() (*big.Int, error) {
 //
 // Solidity: function owner() returns(address)
 func (_Suds *SudsCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -565,12 +640,17 @@ func (_Suds *SudsCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function transfer_ownership_deadline() returns(uint256)
 func (_Suds *SudsCaller) TransferOwnershipDeadline(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "transfer_ownership_deadline")
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "transfer_ownership_deadline")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TransferOwnershipDeadline is a free data retrieval call binding the contract method 0xe0a0b586.
@@ -591,12 +671,17 @@ func (_Suds *SudsCallerSession) TransferOwnershipDeadline() (*big.Int, error) {
 //
 // Solidity: function underlying_coins(int128 arg0) returns(address)
 func (_Suds *SudsCaller) UnderlyingCoins(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Suds.contract.Call(opts, out, "underlying_coins", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Suds.contract.Call(opts, &out, "underlying_coins", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // UnderlyingCoins is a free data retrieval call binding the contract method 0xb739953e.
@@ -1051,6 +1136,7 @@ func (_Suds *SudsFilterer) ParseAddLiquidity(log types.Log) (*SudsAddLiquidity, 
 	if err := _Suds.contract.UnpackLog(event, "AddLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1203,6 +1289,7 @@ func (_Suds *SudsFilterer) ParseCommitNewAdmin(log types.Log) (*SudsCommitNewAdm
 	if err := _Suds.contract.UnpackLog(event, "CommitNewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1349,6 +1436,7 @@ func (_Suds *SudsFilterer) ParseCommitNewParameters(log types.Log) (*SudsCommitN
 	if err := _Suds.contract.UnpackLog(event, "CommitNewParameters", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1492,6 +1580,7 @@ func (_Suds *SudsFilterer) ParseNewAdmin(log types.Log) (*SudsNewAdmin, error) {
 	if err := _Suds.contract.UnpackLog(event, "NewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1627,6 +1716,7 @@ func (_Suds *SudsFilterer) ParseNewParameters(log types.Log) (*SudsNewParameters
 	if err := _Suds.contract.UnpackLog(event, "NewParameters", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1773,6 +1863,7 @@ func (_Suds *SudsFilterer) ParseRemoveLiquidity(log types.Log) (*SudsRemoveLiqui
 	if err := _Suds.contract.UnpackLog(event, "RemoveLiquidity", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1920,6 +2011,7 @@ func (_Suds *SudsFilterer) ParseRemoveLiquidityImbalance(log types.Log) (*SudsRe
 	if err := _Suds.contract.UnpackLog(event, "RemoveLiquidityImbalance", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2067,6 +2159,7 @@ func (_Suds *SudsFilterer) ParseTokenExchange(log types.Log) (*SudsTokenExchange
 	if err := _Suds.contract.UnpackLog(event, "TokenExchange", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2214,5 +2307,6 @@ func (_Suds *SudsFilterer) ParseTokenExchangeUnderlying(log types.Log) (*SudsTok
 	if err := _Suds.contract.UnpackLog(event, "TokenExchangeUnderlying", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
