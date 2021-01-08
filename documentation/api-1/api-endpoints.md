@@ -146,7 +146,14 @@ https://api.diadata.org/v1/FarmingPoolData/YFI/USDT
   
 Get information for a time range using the query parameters.  
 Example:  
-https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121
+https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121  
+  
+_Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. The value in the field \`Rate\` has the following meaning:  
+- Pool rate: Balancer, CVault, YFI  
+- Total debt: Synthetix  
+- Total reward: Loopring  
+For a detailed explanation of these quantities, see:  
+https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming
 {% endapi-method-description %}
 
 {% api-method-spec %}
