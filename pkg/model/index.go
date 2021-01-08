@@ -38,6 +38,7 @@ type CryptoIndexConstituent struct {
 	PriceYesterday    float64
 	CirculatingSupply float64
 	Weight            float64
+	Percentage        float64
 	CappingFactor     float64
 }
 
@@ -202,7 +203,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 }
 
 func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
-	startdate := date.Add(-30 * time.Minute)
+	startdate := date.Add(-12 * 60 * time.Minute)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -242,12 +243,16 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 			return retval, err
 		}
 		currentConstituent.Name = res[0].Series[0].Values[0][4].(string)
-		currentConstituent.Price, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
+		currentConstituent.Percentage, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
 		if err != nil {
 			return retval, err
 		}
-		currentConstituent.Symbol = res[0].Series[0].Values[0][6].(string)
-		currentConstituent.Weight, err = res[0].Series[0].Values[0][7].(json.Number).Float64()
+		currentConstituent.Price, err = res[0].Series[0].Values[0][6].(json.Number).Float64()
+		if err != nil {
+			return retval, err
+		}
+		currentConstituent.Symbol = res[0].Series[0].Values[0][7].(string)
+		currentConstituent.Weight, err = res[0].Series[0].Values[0][8].(json.Number).Float64()
 		if err != nil {
 			return retval, err
 		}
@@ -267,6 +272,7 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 
 func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent) error {
 	fields := map[string]interface{}{
+		"percentage":        constituent.Percentage,
 		"price":             constituent.Price,
 		"circulatingsupply": constituent.CirculatingSupply,
 		"weight":            constituent.Weight,
