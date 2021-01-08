@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,17 +20,15 @@ import (
 )
 
 const (
-	kyberContract              = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
-	kyberStartBlock            = uint64(11062549 - 5250)
-	kyberStartBlockToFindPairs = uint64(11062549 - 5250)
-
-	kyberWsDial   = "ws://159.69.120.42:8546/"
-	kyberRestDial = "http://159.69.120.42:8545/"
+	kyberContract       = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
+	kyberWsDial         = "ws://159.69.120.42:8546/"
+	kyberRestDial       = "http://159.69.120.42:8545/"
+	kyberLookBackBlocks = 6 * 60 * 24
 )
 
 type KyberToken struct {
 	Symbol   string
-	Decimals uint8
+	Decimals *big.Int
 }
 
 type KyberScraper struct {
@@ -89,13 +88,13 @@ func (scraper *KyberScraper) loadTokens() {
 
 	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
 		Symbol:   "ETH",
-		Decimals: 18,
+		Decimals: big.NewInt(18) ,
 	}
 
 	// added by hand because the symbol method returns a bytes32 instead of string
 	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &KyberToken{
 		Symbol:   "MKR",
-		Decimals: 18,
+		Decimals: big.NewInt(18),
 	}
 
 	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
@@ -103,8 +102,13 @@ func (scraper *KyberScraper) loadTokens() {
 		log.Error(err)
 
 	}
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(kyberLookBackBlocks)
 
-	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: kyberStartBlockToFindPairs}, nil)
+	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: startblock}, nil)
 	if err != nil {
 		log.Error(err)
 	}
@@ -156,9 +160,14 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(5250)
+
 	sink := make(chan *kyber.KyberExecuteTrade)
-	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &start}, sink, nil)
+	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &startblock}, sink, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -257,9 +266,9 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals.Int64())))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals.Int64())))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut

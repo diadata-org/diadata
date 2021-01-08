@@ -3,7 +3,6 @@ package ethhelper
 import (
 	"encoding/json"
 	"io/ioutil"
-	"math/big"
 	"os"
 	"os/user"
 	"strings"
@@ -60,23 +59,25 @@ func bindToken(address common.Address, caller bind.ContractCaller, transactor bi
 }
 
 // GetDecimals returns the decimals of token with address @address
-func GetDecimals(address common.Address) (int, error) {
-	ethConn, err := NewETHClient()
-	if err != nil {
-		return 0, err
-	}
-	tc, err := newTokenCaller(address, ethConn)
-	if err != nil {
-		log.Error("error: ", err)
-	}
-	var decimals = new(*big.Int)
-	err = tc.contract.Call(&bind.CallOpts{}, decimals, "decimals")
-	if err != nil {
-		return 0, err
-	}
-	return int((*decimals).Int64()), nil
-
-}
+//func GetDecimals(address common.Address) (int, error) {
+//	ethConn, err := NewETHClient()
+//	if err != nil {
+//		return 0, err
+//	}
+//	tc, err := newTokenCaller(address, ethConn)
+//	if err != nil {
+//		log.Error("error: ", err)
+//	}
+// 	var decimals = new(*big.Int)
+//
+//
+//	err = tc.contract.Call(&bind.CallOpts{}, decimals, "decimals")
+//	if err != nil {
+//		return 0, err
+//	}
+//	return int((*decimals).Int64()), nil
+//
+//}
 
 func ConfigFilePath(filename string) string {
 	usr, _ := user.Current()

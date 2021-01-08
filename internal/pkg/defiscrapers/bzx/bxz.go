@@ -102,7 +102,7 @@ var AdvancedTokenFuncSigs = map[string]string{
 }
 
 // AdvancedTokenBin is the compiled bytecode used for deploying new contracts.
-var AdvancedTokenBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556109f68061004d6000396000f3fe608060405234801561001057600080fd5b50600436106101a95760003560e01c80637866c6c1116100f9578063995363d311610097578063dd62ed3e11610071578063dd62ed3e14610309578063f2fde38b1461031c578063fbd9574d14610331578063fe05634214610352576101a9565b8063995363d3146102e65780639b3a54d1146102ee578063d84d2a4714610301576101a9565b8063894ca308116100d3578063894ca308146102c65780638da5cb5b146102ce57806395d89b41146102d657806396c7871b146102de576101a9565b80637866c6c114610295578063797bf385146102b65780637b7933b4146102be576101a9565b806320f6d07c11610166578063330691ac11610140578063330691ac1461025d5780634780eac11461026557806370a082311461027a578063736ee3d31461028d576101a9565b806320f6d07c146102195780632515aacd14610221578063313ce56714610248576101a9565b806306fdde03146101ae578063095ea7b3146101cc5780630c4925fd146101ec57806318160ddd146102015780631d0806ae146102095780631f68f20a14610211575b600080fd5b6101b6610365565b6040516101c391906108f0565b60405180910390f35b6101df6101da36600461077d565b6103f0565b6040516101c3919061085d565b6101f461045b565b6040516101c3919061086b565b6101f4610461565b6101f4610467565b6101f461046d565b6101f4610473565b61023461022f3660046107ad565b610479565b6040516101c3989796959493929190610879565b6102506104c5565b6040516101c3919061091c565b6101f46104ce565b61026d6104d4565b6040516101c3919061082d565b6101f461028836600461071d565b6104e3565b61026d6104fe565b6102a86102a33660046107ad565b610512565b6040516101c392919061083b565b61026d610547565b6101f4610556565b61026d61055c565b61026d61056b565b6101b661057a565b61026d6105d5565b61026d6105e4565b6101f46102fc3660046107ad565b6105f8565b6101f4610616565b6101f4610317366004610743565b61061c565b61032f61032a36600461071d565b610647565b005b61034461033f36600461071d565b61066a565b6040516101c3929190610901565b6101f46103603660046107ad565b610686565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156103e85780601f106103bd576101008083540402835291602001916103e8565b820191906000526020600020905b8154815290600101906020018083116103cb57829003601f168201915b505050505081565b336000818152601a602090815260408083206001600160a01b038716808552925280832085905551919290917f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9259061044990869061086b565b60405180910390a35060015b92915050565b60135481565b601b5490565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b6001600160a01b031660009081526019602052604090205490565b600a5461010090046001600160a01b031681565b6011818154811061051f57fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e85780601f106103bd576101008083540402835291602001916103e8565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061060557fe5b600091825260209091200154905081565b600d5481565b6001600160a01b039182166000908152601a6020908152604080832093909416825291909152205490565b6001546001600160a01b0316331461065e57600080fd5b61066781610698565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b0381166106ab57600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561045581610996565b8035610455816109aa565b60006020828403121561072f57600080fd5b600061073b8484610707565b949350505050565b6000806040838503121561075657600080fd5b60006107628585610707565b925050602061077385828601610707565b9150509250929050565b6000806040838503121561079057600080fd5b600061079c8585610707565b925050602061077385828601610712565b6000602082840312156107bf57600080fd5b600061073b8484610712565b6107d481610937565b82525050565b6107d481610942565b6107d481610947565b60006107f78261092a565b610801818561092e565b935061081181856020860161095c565b61081a8161098c565b9093019392505050565b6107d481610956565b6020810161045582846107cb565b6040810161084982856107cb565b61085660208301846107e3565b9392505050565b6020810161045582846107da565b6020810161045582846107e3565b6101008101610888828b6107e3565b610895602083018a6107e3565b6108a260408301896107e3565b6108af60608301886107e3565b6108bc60808301876107e3565b6108c960a08301866107e3565b6108d660c08301856107e3565b6108e360e08301846107cb565b9998505050505050505050565b6020808252810161085681846107ec565b6040810161090f82856107e3565b61085660208301846107da565b602081016104558284610824565b5190565b90815260200190565b60006104558261094a565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b8381101561097757818101518382015260200161095f565b83811115610986576000848401525b50505050565b601f01601f191690565b61099f81610937565b811461066757600080fd5b61099f8161094756fea365627a7a72315820d97b1d79265865ca44f9727d590c9d07c59472320340c0ecb2a98a2ed915de516c6578706572696d656e74616cf564736f6c63430005110040"
+var AdvancedTokenBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556109f68061004d6000396000f3fe608060405234801561001057600080fd5b50600436106101a95760003560e01c80637866c6c1116100f9578063995363d311610097578063dd62ed3e11610071578063dd62ed3e14610309578063f2fde38b1461031c578063fbd9574d14610331578063fe05634214610352576101a9565b8063995363d3146102e65780639b3a54d1146102ee578063d84d2a4714610301576101a9565b8063894ca308116100d3578063894ca308146102c65780638da5cb5b146102ce57806395d89b41146102d657806396c7871b146102de576101a9565b80637866c6c114610295578063797bf385146102b65780637b7933b4146102be576101a9565b806320f6d07c11610166578063330691ac11610140578063330691ac1461025d5780634780eac11461026557806370a082311461027a578063736ee3d31461028d576101a9565b806320f6d07c146102195780632515aacd14610221578063313ce56714610248576101a9565b806306fdde03146101ae578063095ea7b3146101cc5780630c4925fd146101ec57806318160ddd146102015780631d0806ae146102095780631f68f20a14610211575b600080fd5b6101b6610365565b6040516101c391906108f0565b60405180910390f35b6101df6101da36600461077d565b6103f0565b6040516101c3919061085d565b6101f461045b565b6040516101c3919061086b565b6101f4610461565b6101f4610467565b6101f461046d565b6101f4610473565b61023461022f3660046107ad565b610479565b6040516101c3989796959493929190610879565b6102506104c5565b6040516101c3919061091c565b6101f46104ce565b61026d6104d4565b6040516101c3919061082d565b6101f461028836600461071d565b6104e3565b61026d6104fe565b6102a86102a33660046107ad565b610512565b6040516101c392919061083b565b61026d610547565b6101f4610556565b61026d61055c565b61026d61056b565b6101b661057a565b61026d6105d5565b61026d6105e4565b6101f46102fc3660046107ad565b6105f8565b6101f4610616565b6101f4610317366004610743565b61061c565b61032f61032a36600461071d565b610647565b005b61034461033f36600461071d565b61066a565b6040516101c3929190610901565b6101f46103603660046107ad565b610686565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156103e85780601f106103bd576101008083540402835291602001916103e8565b820191906000526020600020905b8154815290600101906020018083116103cb57829003601f168201915b505050505081565b336000818152601a602090815260408083206001600160a01b038716808552925280832085905551919290917f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9259061044990869061086b565b60405180910390a35060015b92915050565b60135481565b601b5490565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b6001600160a01b031660009081526019602052604090205490565b600a5461010090046001600160a01b031681565b6011818154811061051f57fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e85780601f106103bd576101008083540402835291602001916103e8565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061060557fe5b600091825260209091200154905081565b600d5481565b6001600160a01b039182166000908152601a6020908152604080832093909416825291909152205490565b6001546001600160a01b0316331461065e57600080fd5b61066781610698565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b0381166106ab57600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561045581610996565b8035610455816109aa565b60006020828403121561072f57600080fd5b600061073b8484610707565b949350505050565b6000806040838503121561075657600080fd5b60006107628585610707565b925050602061077385828601610707565b9150509250929050565b6000806040838503121561079057600080fd5b600061079c8585610707565b925050602061077385828601610712565b6000602082840312156107bf57600080fd5b600061073b8484610712565b6107d481610937565b82525050565b6107d481610942565b6107d481610947565b60006107f78261092a565b610801818561092e565b935061081181856020860161095c565b61081a8161098c565b9093019392505050565b6107d481610956565b6020810161045582846107cb565b6040810161084982856107cb565b61085660208301846107e3565b9392505050565b6020810161045582846107da565b6020810161045582846107e3565b6101008101610888828b6107e3565b610895602083018a6107e3565b6108a260408301896107e3565b6108af60608301886107e3565b6108bc60808301876107e3565b6108c960a08301866107e3565b6108d660c08301856107e3565b6108e360e08301846107cb565b9998505050505050505050565b6020808252810161085681846107ec565b6040810161090f82856107e3565b61085660208301846107da565b602081016104558284610824565b5190565b90815260200190565b60006104558261094a565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b8381101561097757818101518382015260200161095f565b83811115610986576000848401525b50505050565b601f01601f191690565b61099f81610937565b811461066757600080fd5b61099f8161094756fea365627a7a723158203ad6720cad2e5a798dedbc7bfb11dc280a29a8542b417ff222a45b49d6d290126c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployAdvancedToken deploys a new Ethereum contract, binding an instance of AdvancedToken to it.
 func DeployAdvancedToken(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *AdvancedToken, error) {
@@ -226,7 +226,7 @@ func bindAdvancedToken(address common.Address, caller bind.ContractCaller, trans
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AdvancedToken *AdvancedTokenRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_AdvancedToken *AdvancedTokenRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _AdvancedToken.Contract.AdvancedTokenCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -245,7 +245,7 @@ func (_AdvancedToken *AdvancedTokenRaw) Transact(opts *bind.TransactOpts, method
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AdvancedToken *AdvancedTokenCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_AdvancedToken *AdvancedTokenCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _AdvancedToken.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -264,12 +264,17 @@ func (_AdvancedToken *AdvancedTokenTransactorRaw) Transact(opts *bind.TransactOp
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -290,12 +295,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) Allowance(_owner common.Addres
 //
 // Solidity: function bZxContract() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) BZxContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "bZxContract")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "bZxContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxContract is a free data retrieval call binding the contract method 0x995363d3.
@@ -316,12 +326,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BZxContract() (common.Address,
 //
 // Solidity: function bZxOracle() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) BZxOracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "bZxOracle")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "bZxOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxOracle is a free data retrieval call binding the contract method 0x96c7871b.
@@ -342,12 +357,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BZxOracle() (common.Address, e
 //
 // Solidity: function bZxVault() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) BZxVault(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "bZxVault")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "bZxVault")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxVault is a free data retrieval call binding the contract method 0x894ca308.
@@ -368,12 +388,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BZxVault() (common.Address, er
 //
 // Solidity: function balanceOf(address _owner) view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "balanceOf", _owner)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "balanceOf", _owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -394,12 +419,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BalanceOf(_owner common.Addres
 //
 // Solidity: function baseRate() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) BaseRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "baseRate")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "baseRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BaseRate is a free data retrieval call binding the contract method 0x1f68f20a.
@@ -423,13 +453,19 @@ func (_AdvancedToken *AdvancedTokenCaller) BurntTokenReserveList(opts *bind.Call
 	Lender common.Address
 	Amount *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "burntTokenReserveList", arg0)
+
+	outstruct := new(struct {
 		Lender common.Address
 		Amount *big.Int
 	})
-	out := ret
-	err := _AdvancedToken.contract.Call(opts, out, "burntTokenReserveList", arg0)
-	return *ret, err
+
+	outstruct.Lender = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveList is a free data retrieval call binding the contract method 0x7866c6c1.
@@ -459,13 +495,19 @@ func (_AdvancedToken *AdvancedTokenCaller) BurntTokenReserveListIndex(opts *bind
 	Index *big.Int
 	IsSet bool
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "burntTokenReserveListIndex", arg0)
+
+	outstruct := new(struct {
 		Index *big.Int
 		IsSet bool
 	})
-	out := ret
-	err := _AdvancedToken.contract.Call(opts, out, "burntTokenReserveListIndex", arg0)
-	return *ret, err
+
+	outstruct.Index = out[0].(*big.Int)
+	outstruct.IsSet = out[1].(bool)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveListIndex is a free data retrieval call binding the contract method 0xfbd9574d.
@@ -492,12 +534,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BurntTokenReserveListIndex(arg
 //
 // Solidity: function burntTokenReserved() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) BurntTokenReserved(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "burntTokenReserved")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "burntTokenReserved")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BurntTokenReserved is a free data retrieval call binding the contract method 0x0c4925fd.
@@ -518,12 +565,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) BurntTokenReserved() (*big.Int
 //
 // Solidity: function checkpointSupply() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) CheckpointSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "checkpointSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "checkpointSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CheckpointSupply is a free data retrieval call binding the contract method 0x7b7933b4.
@@ -544,12 +596,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) CheckpointSupply() (*big.Int, 
 //
 // Solidity: function decimals() view returns(uint8)
 func (_AdvancedToken *AdvancedTokenCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -570,12 +627,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function initialPrice() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) InitialPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "initialPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "initialPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialPrice is a free data retrieval call binding the contract method 0x1d0806ae.
@@ -596,12 +658,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) InitialPrice() (*big.Int, erro
 //
 // Solidity: function leverageList(uint256 ) view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) LeverageList(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "leverageList", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "leverageList", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LeverageList is a free data retrieval call binding the contract method 0x9b3a54d1.
@@ -631,7 +698,10 @@ func (_AdvancedToken *AdvancedTokenCaller) LoanOrderData(opts *bind.CallOpts, ar
 	MarginPremiumAmount         *big.Int
 	CollateralTokenAddress      common.Address
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "loanOrderData", arg0)
+
+	outstruct := new(struct {
 		LoanOrderHash               [32]byte
 		LeverageAmount              *big.Int
 		InitialMarginAmount         *big.Int
@@ -641,9 +711,18 @@ func (_AdvancedToken *AdvancedTokenCaller) LoanOrderData(opts *bind.CallOpts, ar
 		MarginPremiumAmount         *big.Int
 		CollateralTokenAddress      common.Address
 	})
-	out := ret
-	err := _AdvancedToken.contract.Call(opts, out, "loanOrderData", arg0)
-	return *ret, err
+
+	outstruct.LoanOrderHash = out[0].([32]byte)
+	outstruct.LeverageAmount = out[1].(*big.Int)
+	outstruct.InitialMarginAmount = out[2].(*big.Int)
+	outstruct.MaintenanceMarginAmount = out[3].(*big.Int)
+	outstruct.MaxDurationUnixTimestampSec = out[4].(*big.Int)
+	outstruct.Index = out[5].(*big.Int)
+	outstruct.MarginPremiumAmount = out[6].(*big.Int)
+	outstruct.CollateralTokenAddress = out[7].(common.Address)
+
+	return *outstruct, err
+
 }
 
 // LoanOrderData is a free data retrieval call binding the contract method 0x2515aacd.
@@ -682,12 +761,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) LoanOrderData(arg0 [32]byte) (
 //
 // Solidity: function loanOrderHashes(uint256 ) view returns(bytes32)
 func (_AdvancedToken *AdvancedTokenCaller) LoanOrderHashes(opts *bind.CallOpts, arg0 *big.Int) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "loanOrderHashes", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "loanOrderHashes", arg0)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // LoanOrderHashes is a free data retrieval call binding the contract method 0xfe056342.
@@ -708,12 +792,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) LoanOrderHashes(arg0 *big.Int)
 //
 // Solidity: function loanTokenAddress() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) LoanTokenAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "loanTokenAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "loanTokenAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LoanTokenAddress is a free data retrieval call binding the contract method 0x797bf385.
@@ -734,12 +823,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) LoanTokenAddress() (common.Add
 //
 // Solidity: function name() view returns(string)
 func (_AdvancedToken *AdvancedTokenCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -760,12 +854,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) Name() (string, error) {
 //
 // Solidity: function owner() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -786,12 +885,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) Owner() (common.Address, error
 //
 // Solidity: function rateMultiplier() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) RateMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "rateMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "rateMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RateMultiplier is a free data retrieval call binding the contract method 0x330691ac.
@@ -812,12 +916,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) RateMultiplier() (*big.Int, er
 //
 // Solidity: function spreadMultiplier() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) SpreadMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "spreadMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "spreadMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SpreadMultiplier is a free data retrieval call binding the contract method 0xd84d2a47.
@@ -838,12 +947,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) SpreadMultiplier() (*big.Int, 
 //
 // Solidity: function symbol() view returns(string)
 func (_AdvancedToken *AdvancedTokenCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -864,12 +978,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) Symbol() (string, error) {
 //
 // Solidity: function tokenizedRegistry() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) TokenizedRegistry(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "tokenizedRegistry")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "tokenizedRegistry")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenizedRegistry is a free data retrieval call binding the contract method 0x736ee3d3.
@@ -890,12 +1009,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) TokenizedRegistry() (common.Ad
 //
 // Solidity: function totalAssetBorrow() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) TotalAssetBorrow(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "totalAssetBorrow")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "totalAssetBorrow")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAssetBorrow is a free data retrieval call binding the contract method 0x20f6d07c.
@@ -916,12 +1040,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) TotalAssetBorrow() (*big.Int, 
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_AdvancedToken *AdvancedTokenCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -942,12 +1071,17 @@ func (_AdvancedToken *AdvancedTokenCallerSession) TotalSupply() (*big.Int, error
 //
 // Solidity: function wethContract() view returns(address)
 func (_AdvancedToken *AdvancedTokenCaller) WethContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedToken.contract.Call(opts, out, "wethContract")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedToken.contract.Call(opts, &out, "wethContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // WethContract is a free data retrieval call binding the contract method 0x4780eac1.
@@ -1156,6 +1290,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseApproval(log types.Log) (*Adva
 	if err := _AdvancedToken.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1304,6 +1439,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseBorrow(log types.Log) (*Advanc
 	if err := _AdvancedToken.contract.UnpackLog(event, "Borrow", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1450,6 +1586,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseBurn(log types.Log) (*Advanced
 	if err := _AdvancedToken.contract.UnpackLog(event, "Burn", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1597,6 +1734,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseClaim(log types.Log) (*Advance
 	if err := _AdvancedToken.contract.UnpackLog(event, "Claim", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1743,6 +1881,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseMint(log types.Log) (*Advanced
 	if err := _AdvancedToken.contract.UnpackLog(event, "Mint", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1895,6 +2034,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseOwnershipTransferred(log types
 	if err := _AdvancedToken.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2050,6 +2190,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseRepay(log types.Log) (*Advance
 	if err := _AdvancedToken.contract.UnpackLog(event, "Repay", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2203,6 +2344,7 @@ func (_AdvancedToken *AdvancedTokenFilterer) ParseTransfer(log types.Log) (*Adva
 	if err := _AdvancedToken.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2240,7 +2382,7 @@ var AdvancedTokenStorageFuncSigs = map[string]string{
 }
 
 // AdvancedTokenStorageBin is the compiled bytecode used for deploying new contracts.
-var AdvancedTokenStorageBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556109148061004d6000396000f3fe608060405234801561001057600080fd5b506004361061018e5760003560e01c8063797bf385116100de578063995363d311610097578063dd62ed3e11610071578063dd62ed3e146102ce578063f2fde38b146102e1578063fbd9574d146102f6578063fe056342146103175761018e565b8063995363d3146102ab5780639b3a54d1146102b3578063d84d2a47146102c65761018e565b8063797bf3851461027b5780637b7933b414610283578063894ca3081461028b5780638da5cb5b1461029357806395d89b411461029b57806396c7871b146102a35761018e565b80632515aacd1161014b5780634780eac1116101255780634780eac11461022a57806370a082311461023f578063736ee3d3146102525780637866c6c11461025a5761018e565b80632515aacd146101e6578063313ce5671461020d578063330691ac146102225761018e565b806306fdde03146101935780630c4925fd146101b157806318160ddd146101c65780631d0806ae146101ce5780631f68f20a146101d657806320f6d07c146101de575b600080fd5b61019b61032a565b6040516101a8919061080e565b60405180910390f35b6101b96103b5565b6040516101a89190610789565b6101b96103bb565b6101b96103c1565b6101b96103c7565b6101b96103cd565b6101f96101f43660046106d9565b6103d3565b6040516101a8989796959493929190610797565b61021561041f565b6040516101a8919061083a565b6101b9610428565b61023261042e565b6040516101a89190610759565b6101b961024d366004610679565b61043d565b610232610458565b61026d6102683660046106d9565b61046c565b6040516101a8929190610767565b6102326104a1565b6101b96104b0565b6102326104b6565b6102326104c5565b61019b6104d4565b61023261052f565b61023261053e565b6101b96102c13660046106d9565b610552565b6101b9610570565b6101b96102dc36600461069f565b610576565b6102f46102ef366004610679565b6105a3565b005b610309610304366004610679565b6105c6565b6040516101a892919061081f565b6101b96103253660046106d9565b6105e2565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156103ad5780601f10610382576101008083540402835291602001916103ad565b820191906000526020600020905b81548152906001019060200180831161039057829003601f168201915b505050505081565b60135481565b601b5490565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b6001600160a01b031660009081526019602052604090205490565b600a5461010090046001600160a01b031681565b6011818154811061047957fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103ad5780601f10610382576101008083540402835291602001916103ad565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061055f57fe5b600091825260209091200154905081565b600d5481565b6001600160a01b038083166000908152601a60209081526040808320938516835292905220545b92915050565b6001546001600160a01b031633146105ba57600080fd5b6105c3816105f4565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b03811661060757600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561059d816108b4565b803561059d816108c8565b60006020828403121561068b57600080fd5b60006106978484610663565b949350505050565b600080604083850312156106b257600080fd5b60006106be8585610663565b92505060206106cf85828601610663565b9150509250929050565b6000602082840312156106eb57600080fd5b6000610697848461066e565b61070081610855565b82525050565b61070081610860565b61070081610865565b600061072382610848565b61072d818561084c565b935061073d81856020860161087a565b610746816108aa565b9093019392505050565b61070081610874565b6020810161059d82846106f7565b6040810161077582856106f7565b610782602083018461070f565b9392505050565b6020810161059d828461070f565b61010081016107a6828b61070f565b6107b3602083018a61070f565b6107c0604083018961070f565b6107cd606083018861070f565b6107da608083018761070f565b6107e760a083018661070f565b6107f460c083018561070f565b61080160e08301846106f7565b9998505050505050505050565b602080825281016107828184610718565b6040810161082d828561070f565b6107826020830184610706565b6020810161059d8284610750565b5190565b90815260200190565b600061059d82610868565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b8381101561089557818101518382015260200161087d565b838111156108a4576000848401525b50505050565b601f01601f191690565b6108bd81610855565b81146105c357600080fd5b6108bd8161086556fea365627a7a72315820a7a06faa26e3c41dd95f4e0490a113f141f25320e97c12b380c378e057f1e84a6c6578706572696d656e74616cf564736f6c63430005110040"
+var AdvancedTokenStorageBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556109148061004d6000396000f3fe608060405234801561001057600080fd5b506004361061018e5760003560e01c8063797bf385116100de578063995363d311610097578063dd62ed3e11610071578063dd62ed3e146102ce578063f2fde38b146102e1578063fbd9574d146102f6578063fe056342146103175761018e565b8063995363d3146102ab5780639b3a54d1146102b3578063d84d2a47146102c65761018e565b8063797bf3851461027b5780637b7933b414610283578063894ca3081461028b5780638da5cb5b1461029357806395d89b411461029b57806396c7871b146102a35761018e565b80632515aacd1161014b5780634780eac1116101255780634780eac11461022a57806370a082311461023f578063736ee3d3146102525780637866c6c11461025a5761018e565b80632515aacd146101e6578063313ce5671461020d578063330691ac146102225761018e565b806306fdde03146101935780630c4925fd146101b157806318160ddd146101c65780631d0806ae146101ce5780631f68f20a146101d657806320f6d07c146101de575b600080fd5b61019b61032a565b6040516101a8919061080e565b60405180910390f35b6101b96103b5565b6040516101a89190610789565b6101b96103bb565b6101b96103c1565b6101b96103c7565b6101b96103cd565b6101f96101f43660046106d9565b6103d3565b6040516101a8989796959493929190610797565b61021561041f565b6040516101a8919061083a565b6101b9610428565b61023261042e565b6040516101a89190610759565b6101b961024d366004610679565b61043d565b610232610458565b61026d6102683660046106d9565b61046c565b6040516101a8929190610767565b6102326104a1565b6101b96104b0565b6102326104b6565b6102326104c5565b61019b6104d4565b61023261052f565b61023261053e565b6101b96102c13660046106d9565b610552565b6101b9610570565b6101b96102dc36600461069f565b610576565b6102f46102ef366004610679565b6105a3565b005b610309610304366004610679565b6105c6565b6040516101a892919061081f565b6101b96103253660046106d9565b6105e2565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156103ad5780601f10610382576101008083540402835291602001916103ad565b820191906000526020600020905b81548152906001019060200180831161039057829003601f168201915b505050505081565b60135481565b601b5490565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b6001600160a01b031660009081526019602052604090205490565b600a5461010090046001600160a01b031681565b6011818154811061047957fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103ad5780601f10610382576101008083540402835291602001916103ad565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061055f57fe5b600091825260209091200154905081565b600d5481565b6001600160a01b038083166000908152601a60209081526040808320938516835292905220545b92915050565b6001546001600160a01b031633146105ba57600080fd5b6105c3816105f4565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b03811661060757600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561059d816108b4565b803561059d816108c8565b60006020828403121561068b57600080fd5b60006106978484610663565b949350505050565b600080604083850312156106b257600080fd5b60006106be8585610663565b92505060206106cf85828601610663565b9150509250929050565b6000602082840312156106eb57600080fd5b6000610697848461066e565b61070081610855565b82525050565b61070081610860565b61070081610865565b600061072382610848565b61072d818561084c565b935061073d81856020860161087a565b610746816108aa565b9093019392505050565b61070081610874565b6020810161059d82846106f7565b6040810161077582856106f7565b610782602083018461070f565b9392505050565b6020810161059d828461070f565b61010081016107a6828b61070f565b6107b3602083018a61070f565b6107c0604083018961070f565b6107cd606083018861070f565b6107da608083018761070f565b6107e760a083018661070f565b6107f460c083018561070f565b61080160e08301846106f7565b9998505050505050505050565b602080825281016107828184610718565b6040810161082d828561070f565b6107826020830184610706565b6020810161059d8284610750565b5190565b90815260200190565b600061059d82610868565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b8381101561089557818101518382015260200161087d565b838111156108a4576000848401525b50505050565b601f01601f191690565b6108bd81610855565b81146105c357600080fd5b6108bd8161086556fea365627a7a7231582016d3d7b96ff7e78d919d15f0521e4dfa379c32b674f24d54323c788f655b63216c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployAdvancedTokenStorage deploys a new Ethereum contract, binding an instance of AdvancedTokenStorage to it.
 func DeployAdvancedTokenStorage(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *AdvancedTokenStorage, error) {
@@ -2364,7 +2506,7 @@ func bindAdvancedTokenStorage(address common.Address, caller bind.ContractCaller
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AdvancedTokenStorage *AdvancedTokenStorageRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_AdvancedTokenStorage *AdvancedTokenStorageRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _AdvancedTokenStorage.Contract.AdvancedTokenStorageCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -2383,7 +2525,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageRaw) Transact(opts *bind.Transa
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_AdvancedTokenStorage *AdvancedTokenStorageCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_AdvancedTokenStorage *AdvancedTokenStorageCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _AdvancedTokenStorage.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -2402,12 +2544,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageTransactorRaw) Transact(opts *b
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -2428,12 +2575,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) Allowance(_owner
 //
 // Solidity: function bZxContract() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BZxContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "bZxContract")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "bZxContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxContract is a free data retrieval call binding the contract method 0x995363d3.
@@ -2454,12 +2606,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BZxContract() (c
 //
 // Solidity: function bZxOracle() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BZxOracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "bZxOracle")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "bZxOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxOracle is a free data retrieval call binding the contract method 0x96c7871b.
@@ -2480,12 +2637,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BZxOracle() (com
 //
 // Solidity: function bZxVault() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BZxVault(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "bZxVault")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "bZxVault")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxVault is a free data retrieval call binding the contract method 0x894ca308.
@@ -2506,12 +2668,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BZxVault() (comm
 //
 // Solidity: function balanceOf(address _owner) view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "balanceOf", _owner)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "balanceOf", _owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -2532,12 +2699,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BalanceOf(_owner
 //
 // Solidity: function baseRate() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BaseRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "baseRate")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "baseRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BaseRate is a free data retrieval call binding the contract method 0x1f68f20a.
@@ -2561,13 +2733,19 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BurntTokenReserveList(o
 	Lender common.Address
 	Amount *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "burntTokenReserveList", arg0)
+
+	outstruct := new(struct {
 		Lender common.Address
 		Amount *big.Int
 	})
-	out := ret
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "burntTokenReserveList", arg0)
-	return *ret, err
+
+	outstruct.Lender = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveList is a free data retrieval call binding the contract method 0x7866c6c1.
@@ -2597,13 +2775,19 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BurntTokenReserveListIn
 	Index *big.Int
 	IsSet bool
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "burntTokenReserveListIndex", arg0)
+
+	outstruct := new(struct {
 		Index *big.Int
 		IsSet bool
 	})
-	out := ret
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "burntTokenReserveListIndex", arg0)
-	return *ret, err
+
+	outstruct.Index = out[0].(*big.Int)
+	outstruct.IsSet = out[1].(bool)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveListIndex is a free data retrieval call binding the contract method 0xfbd9574d.
@@ -2630,12 +2814,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BurntTokenReserv
 //
 // Solidity: function burntTokenReserved() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) BurntTokenReserved(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "burntTokenReserved")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "burntTokenReserved")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BurntTokenReserved is a free data retrieval call binding the contract method 0x0c4925fd.
@@ -2656,12 +2845,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) BurntTokenReserv
 //
 // Solidity: function checkpointSupply() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) CheckpointSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "checkpointSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "checkpointSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CheckpointSupply is a free data retrieval call binding the contract method 0x7b7933b4.
@@ -2682,12 +2876,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) CheckpointSupply
 //
 // Solidity: function decimals() view returns(uint8)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -2708,12 +2907,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) Decimals() (uint
 //
 // Solidity: function initialPrice() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) InitialPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "initialPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "initialPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialPrice is a free data retrieval call binding the contract method 0x1d0806ae.
@@ -2734,12 +2938,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) InitialPrice() (
 //
 // Solidity: function leverageList(uint256 ) view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) LeverageList(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "leverageList", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "leverageList", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LeverageList is a free data retrieval call binding the contract method 0x9b3a54d1.
@@ -2769,7 +2978,10 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) LoanOrderData(opts *bin
 	MarginPremiumAmount         *big.Int
 	CollateralTokenAddress      common.Address
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "loanOrderData", arg0)
+
+	outstruct := new(struct {
 		LoanOrderHash               [32]byte
 		LeverageAmount              *big.Int
 		InitialMarginAmount         *big.Int
@@ -2779,9 +2991,18 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) LoanOrderData(opts *bin
 		MarginPremiumAmount         *big.Int
 		CollateralTokenAddress      common.Address
 	})
-	out := ret
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "loanOrderData", arg0)
-	return *ret, err
+
+	outstruct.LoanOrderHash = out[0].([32]byte)
+	outstruct.LeverageAmount = out[1].(*big.Int)
+	outstruct.InitialMarginAmount = out[2].(*big.Int)
+	outstruct.MaintenanceMarginAmount = out[3].(*big.Int)
+	outstruct.MaxDurationUnixTimestampSec = out[4].(*big.Int)
+	outstruct.Index = out[5].(*big.Int)
+	outstruct.MarginPremiumAmount = out[6].(*big.Int)
+	outstruct.CollateralTokenAddress = out[7].(common.Address)
+
+	return *outstruct, err
+
 }
 
 // LoanOrderData is a free data retrieval call binding the contract method 0x2515aacd.
@@ -2820,12 +3041,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) LoanOrderData(ar
 //
 // Solidity: function loanOrderHashes(uint256 ) view returns(bytes32)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) LoanOrderHashes(opts *bind.CallOpts, arg0 *big.Int) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "loanOrderHashes", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "loanOrderHashes", arg0)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // LoanOrderHashes is a free data retrieval call binding the contract method 0xfe056342.
@@ -2846,12 +3072,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) LoanOrderHashes(
 //
 // Solidity: function loanTokenAddress() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) LoanTokenAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "loanTokenAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "loanTokenAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LoanTokenAddress is a free data retrieval call binding the contract method 0x797bf385.
@@ -2872,12 +3103,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) LoanTokenAddress
 //
 // Solidity: function name() view returns(string)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -2898,12 +3134,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) Name() (string, 
 //
 // Solidity: function owner() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -2924,12 +3165,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) Owner() (common.
 //
 // Solidity: function rateMultiplier() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) RateMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "rateMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "rateMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RateMultiplier is a free data retrieval call binding the contract method 0x330691ac.
@@ -2950,12 +3196,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) RateMultiplier()
 //
 // Solidity: function spreadMultiplier() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) SpreadMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "spreadMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "spreadMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SpreadMultiplier is a free data retrieval call binding the contract method 0xd84d2a47.
@@ -2976,12 +3227,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) SpreadMultiplier
 //
 // Solidity: function symbol() view returns(string)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -3002,12 +3258,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) Symbol() (string
 //
 // Solidity: function tokenizedRegistry() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) TokenizedRegistry(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "tokenizedRegistry")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "tokenizedRegistry")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenizedRegistry is a free data retrieval call binding the contract method 0x736ee3d3.
@@ -3028,12 +3289,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) TokenizedRegistr
 //
 // Solidity: function totalAssetBorrow() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) TotalAssetBorrow(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "totalAssetBorrow")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "totalAssetBorrow")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAssetBorrow is a free data retrieval call binding the contract method 0x20f6d07c.
@@ -3054,12 +3320,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) TotalAssetBorrow
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -3080,12 +3351,17 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageCallerSession) TotalSupply() (*
 //
 // Solidity: function wethContract() view returns(address)
 func (_AdvancedTokenStorage *AdvancedTokenStorageCaller) WethContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _AdvancedTokenStorage.contract.Call(opts, out, "wethContract")
-	return *ret0, err
+	var out []interface{}
+	err := _AdvancedTokenStorage.contract.Call(opts, &out, "wethContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // WethContract is a free data retrieval call binding the contract method 0x4780eac1.
@@ -3273,6 +3549,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseApproval(log typ
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3421,6 +3698,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseBorrow(log types
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Borrow", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3567,6 +3845,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseBurn(log types.L
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Burn", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3714,6 +3993,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseClaim(log types.
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Claim", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3860,6 +4140,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseMint(log types.L
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Mint", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -4012,6 +4293,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseOwnershipTransfe
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -4167,6 +4449,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseRepay(log types.
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Repay", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -4320,6 +4603,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseTransfer(log typ
 	if err := _AdvancedTokenStorage.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -4327,7 +4611,7 @@ func (_AdvancedTokenStorage *AdvancedTokenStorageFilterer) ParseTransfer(log typ
 const BZxObjectsABI = "[]"
 
 // BZxObjectsBin is the compiled bytecode used for deploying new contracts.
-var BZxObjectsBin = "0x6080604052348015600f57600080fd5b50604c80601d6000396000f3fe6080604052600080fdfea365627a7a7231582045c07eb2a95aae47bec92d1b6e80a8330a4339a4e89401b686070aa11f79bbd26c6578706572696d656e74616cf564736f6c63430005110040"
+var BZxObjectsBin = "0x6080604052348015600f57600080fd5b50604c80601d6000396000f3fe6080604052600080fdfea365627a7a72315820b65598396e82458b3b7518a556381a8d4702926e6d63d2d1f3ada85680e8ec3d6c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployBZxObjects deploys a new Ethereum contract, binding an instance of BZxObjects to it.
 func DeployBZxObjects(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *BZxObjects, error) {
@@ -4451,7 +4735,7 @@ func bindBZxObjects(address common.Address, caller bind.ContractCaller, transact
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_BZxObjects *BZxObjectsRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_BZxObjects *BZxObjectsRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _BZxObjects.Contract.BZxObjectsCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -4470,7 +4754,7 @@ func (_BZxObjects *BZxObjectsRaw) Transact(opts *bind.TransactOpts, method strin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_BZxObjects *BZxObjectsCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_BZxObjects *BZxObjectsCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _BZxObjects.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -4609,7 +4893,7 @@ func bindEIP20(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_EIP20 *EIP20Raw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_EIP20 *EIP20Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _EIP20.Contract.EIP20Caller.contract.Call(opts, result, method, params...)
 }
 
@@ -4628,7 +4912,7 @@ func (_EIP20 *EIP20Raw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_EIP20 *EIP20CallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_EIP20 *EIP20CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _EIP20.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -4647,12 +4931,17 @@ func (_EIP20 *EIP20TransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_EIP20 *EIP20Caller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -4673,12 +4962,17 @@ func (_EIP20 *EIP20CallerSession) Allowance(_owner common.Address, _spender comm
 //
 // Solidity: function balanceOf(address _who) view returns(uint256)
 func (_EIP20 *EIP20Caller) BalanceOf(opts *bind.CallOpts, _who common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "balanceOf", _who)
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "balanceOf", _who)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -4699,12 +4993,17 @@ func (_EIP20 *EIP20CallerSession) BalanceOf(_who common.Address) (*big.Int, erro
 //
 // Solidity: function decimals() view returns(uint8)
 func (_EIP20 *EIP20Caller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -4725,12 +5024,17 @@ func (_EIP20 *EIP20CallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function name() view returns(string)
 func (_EIP20 *EIP20Caller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -4751,12 +5055,17 @@ func (_EIP20 *EIP20CallerSession) Name() (string, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_EIP20 *EIP20Caller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -4777,12 +5086,17 @@ func (_EIP20 *EIP20CallerSession) Symbol() (string, error) {
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_EIP20 *EIP20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _EIP20.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _EIP20.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -5012,6 +5326,7 @@ func (_EIP20 *EIP20Filterer) ParseApproval(log types.Log) (*EIP20Approval, error
 	if err := _EIP20.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -5165,6 +5480,7 @@ func (_EIP20 *EIP20Filterer) ParseTransfer(log types.Log) (*EIP20Transfer, error
 	if err := _EIP20.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -5289,7 +5605,7 @@ func bindERC20(address common.Address, caller bind.ContractCaller, transactor bi
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ERC20 *ERC20Raw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ERC20 *ERC20Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20.Contract.ERC20Caller.contract.Call(opts, result, method, params...)
 }
 
@@ -5308,7 +5624,7 @@ func (_ERC20 *ERC20Raw) Transact(opts *bind.TransactOpts, method string, params 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ERC20 *ERC20CallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ERC20 *ERC20CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -5327,12 +5643,17 @@ func (_ERC20 *ERC20TransactorRaw) Transact(opts *bind.TransactOpts, method strin
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_ERC20 *ERC20Caller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _ERC20.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -5353,12 +5674,17 @@ func (_ERC20 *ERC20CallerSession) Allowance(_owner common.Address, _spender comm
 //
 // Solidity: function balanceOf(address _who) view returns(uint256)
 func (_ERC20 *ERC20Caller) BalanceOf(opts *bind.CallOpts, _who common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20.contract.Call(opts, out, "balanceOf", _who)
-	return *ret0, err
+	var out []interface{}
+	err := _ERC20.contract.Call(opts, &out, "balanceOf", _who)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -5379,12 +5705,17 @@ func (_ERC20 *ERC20CallerSession) BalanceOf(_who common.Address) (*big.Int, erro
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_ERC20 *ERC20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _ERC20.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -5614,6 +5945,7 @@ func (_ERC20 *ERC20Filterer) ParseApproval(log types.Log) (*ERC20Approval, error
 	if err := _ERC20.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -5767,6 +6099,7 @@ func (_ERC20 *ERC20Filterer) ParseTransfer(log types.Log) (*ERC20Transfer, error
 	if err := _ERC20.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -5888,7 +6221,7 @@ func bindERC20Basic(address common.Address, caller bind.ContractCaller, transact
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ERC20Basic *ERC20BasicRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ERC20Basic *ERC20BasicRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20Basic.Contract.ERC20BasicCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -5907,7 +6240,7 @@ func (_ERC20Basic *ERC20BasicRaw) Transact(opts *bind.TransactOpts, method strin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ERC20Basic *ERC20BasicCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ERC20Basic *ERC20BasicCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20Basic.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -5926,12 +6259,17 @@ func (_ERC20Basic *ERC20BasicTransactorRaw) Transact(opts *bind.TransactOpts, me
 //
 // Solidity: function balanceOf(address _who) view returns(uint256)
 func (_ERC20Basic *ERC20BasicCaller) BalanceOf(opts *bind.CallOpts, _who common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Basic.contract.Call(opts, out, "balanceOf", _who)
-	return *ret0, err
+	var out []interface{}
+	err := _ERC20Basic.contract.Call(opts, &out, "balanceOf", _who)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -5952,12 +6290,17 @@ func (_ERC20Basic *ERC20BasicCallerSession) BalanceOf(_who common.Address) (*big
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_ERC20Basic *ERC20BasicCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _ERC20Basic.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _ERC20Basic.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -6145,6 +6488,7 @@ func (_ERC20Basic *ERC20BasicFilterer) ParseTransfer(log types.Log) (*ERC20Basic
 	if err := _ERC20Basic.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -6269,7 +6613,7 @@ func bindIBZx(address common.Address, caller bind.ContractCaller, transactor bin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IBZx *IBZxRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IBZx *IBZxRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IBZx.Contract.IBZxCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -6288,7 +6632,7 @@ func (_IBZx *IBZxRaw) Transact(opts *bind.TransactOpts, method string, params ..
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IBZx *IBZxCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IBZx *IBZxCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IBZx.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -6307,12 +6651,17 @@ func (_IBZx *IBZxTransactorRaw) Transact(opts *bind.TransactOpts, method string,
 //
 // Solidity: function getBorrowAmount(address loanTokenAddress, address collateralTokenAddress, address oracleAddress, uint256 collateralTokenAmount, uint256 marginAmount) view returns(uint256 borrowAmount)
 func (_IBZx *IBZxCaller) GetBorrowAmount(opts *bind.CallOpts, loanTokenAddress common.Address, collateralTokenAddress common.Address, oracleAddress common.Address, collateralTokenAmount *big.Int, marginAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IBZx.contract.Call(opts, out, "getBorrowAmount", loanTokenAddress, collateralTokenAddress, oracleAddress, collateralTokenAmount, marginAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _IBZx.contract.Call(opts, &out, "getBorrowAmount", loanTokenAddress, collateralTokenAddress, oracleAddress, collateralTokenAmount, marginAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBorrowAmount is a free data retrieval call binding the contract method 0xf3d75a9c.
@@ -6338,15 +6687,23 @@ func (_IBZx *IBZxCaller) GetLenderInterestForOracle(opts *bind.CallOpts, lender 
 	InterestOwedPerDay *big.Int
 	InterestUnPaid     *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _IBZx.contract.Call(opts, &out, "getLenderInterestForOracle", lender, oracleAddress, interestTokenAddress)
+
+	outstruct := new(struct {
 		InterestPaid       *big.Int
 		InterestPaidDate   *big.Int
 		InterestOwedPerDay *big.Int
 		InterestUnPaid     *big.Int
 	})
-	out := ret
-	err := _IBZx.contract.Call(opts, out, "getLenderInterestForOracle", lender, oracleAddress, interestTokenAddress)
-	return *ret, err
+
+	outstruct.InterestPaid = out[0].(*big.Int)
+	outstruct.InterestPaidDate = out[1].(*big.Int)
+	outstruct.InterestOwedPerDay = out[2].(*big.Int)
+	outstruct.InterestUnPaid = out[3].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // GetLenderInterestForOracle is a free data retrieval call binding the contract method 0x0a90b578.
@@ -6377,12 +6734,17 @@ func (_IBZx *IBZxCallerSession) GetLenderInterestForOracle(lender common.Address
 //
 // Solidity: function getRequiredCollateral(address loanTokenAddress, address collateralTokenAddress, address oracleAddress, uint256 newLoanAmount, uint256 marginAmount) view returns(uint256 collateralTokenAmount)
 func (_IBZx *IBZxCaller) GetRequiredCollateral(opts *bind.CallOpts, loanTokenAddress common.Address, collateralTokenAddress common.Address, oracleAddress common.Address, newLoanAmount *big.Int, marginAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _IBZx.contract.Call(opts, out, "getRequiredCollateral", loanTokenAddress, collateralTokenAddress, oracleAddress, newLoanAmount, marginAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _IBZx.contract.Call(opts, &out, "getRequiredCollateral", loanTokenAddress, collateralTokenAddress, oracleAddress, newLoanAmount, marginAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetRequiredCollateral is a free data retrieval call binding the contract method 0xbc6cb1d9.
@@ -6403,12 +6765,17 @@ func (_IBZx *IBZxCallerSession) GetRequiredCollateral(loanTokenAddress common.Ad
 //
 // Solidity: function oracleAddresses(address oracleAddress) view returns(address)
 func (_IBZx *IBZxCaller) OracleAddresses(opts *bind.CallOpts, oracleAddress common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _IBZx.contract.Call(opts, out, "oracleAddresses", oracleAddress)
-	return *ret0, err
+	var out []interface{}
+	err := _IBZx.contract.Call(opts, &out, "oracleAddresses", oracleAddress)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // OracleAddresses is a free data retrieval call binding the contract method 0x71eb125e.
@@ -6583,7 +6950,7 @@ func bindIBZxOracle(address common.Address, caller bind.ContractCaller, transact
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IBZxOracle *IBZxOracleRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IBZxOracle *IBZxOracleRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IBZxOracle.Contract.IBZxOracleCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -6602,7 +6969,7 @@ func (_IBZxOracle *IBZxOracleRaw) Transact(opts *bind.TransactOpts, method strin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IBZxOracle *IBZxOracleCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IBZxOracle *IBZxOracleCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IBZxOracle.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -6625,14 +6992,21 @@ func (_IBZxOracle *IBZxOracleCaller) GetTradeData(opts *bind.CallOpts, sourceTok
 	SourceToDestPrecision *big.Int
 	DestTokenAmount       *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _IBZxOracle.contract.Call(opts, &out, "getTradeData", sourceTokenAddress, destTokenAddress, sourceTokenAmount)
+
+	outstruct := new(struct {
 		SourceToDestRate      *big.Int
 		SourceToDestPrecision *big.Int
 		DestTokenAmount       *big.Int
 	})
-	out := ret
-	err := _IBZxOracle.contract.Call(opts, out, "getTradeData", sourceTokenAddress, destTokenAddress, sourceTokenAmount)
-	return *ret, err
+
+	outstruct.SourceToDestRate = out[0].(*big.Int)
+	outstruct.SourceToDestPrecision = out[1].(*big.Int)
+	outstruct.DestTokenAmount = out[2].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // GetTradeData is a free data retrieval call binding the contract method 0x06599aa0.
@@ -6773,7 +7147,7 @@ func bindIWethHelper(address common.Address, caller bind.ContractCaller, transac
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IWethHelper *IWethHelperRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IWethHelper *IWethHelperRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IWethHelper.Contract.IWethHelperCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -6792,7 +7166,7 @@ func (_IWethHelper *IWethHelperRaw) Transact(opts *bind.TransactOpts, method str
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_IWethHelper *IWethHelperCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_IWethHelper *IWethHelperCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _IWethHelper.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -6892,7 +7266,7 @@ var LoanTokenLogicV4FuncSigs = map[string]string{
 }
 
 // LoanTokenLogicV4Bin is the compiled bytecode used for deploying new contracts.
-var LoanTokenLogicV4Bin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b03191633179055614d748061004d6000396000f3fe60806040526004361061036b5760003560e01c80637d90dcba116101c65780639dc29fac116100f7578063d84d2a4711610095578063f2fde38b1161006f578063f2fde38b14610948578063fbd9574d14610968578063fc3b72b114610996578063fe056342146109ab5761036b565b8063d84d2a47146108f3578063dd62ed3e14610908578063eebc5081146109285761036b565b8063c4d2b1b3116100d1578063c4d2b1b314610873578063cd4fa66d146108a0578063cfb65bb9146108c0578063d65a5021146108d35761036b565b80639dc29fac14610813578063a9059cbb14610833578063b9fe1a8f146108535761036b565b80638da5cb5b1161016457806395d89b411161013e57806395d89b41146107b457806396c7871b146107c9578063995363d3146107de5780639b3a54d1146107f35761036b565b80638da5cb5b146107775780638f6ede1f1461078c5780638fb807c51461079f5761036b565b8063829b38f4116101a0578063829b38f41461070d5780638325a1c01461072d5780638423acd614610742578063894ca308146107625761036b565b80637d90dcba146106b85780637ff9b596146106d857806381a6b250146106ed5761036b565b8063284e2f56116102a0578063612ef80b1161023e578063736ee3d311610218578063736ee3d31461064b5780637866c6c114610660578063797bf3851461068e5780637b7933b4146106a35761036b565b8063612ef80b146105f657806370a082311461060b5780637288b3441461062b5761036b565b8063330691ac1161027a578063330691ac1461058a57806340c10f191461059f57806344a4a003146105bf5780634780eac1146105d45761036b565b8063284e2f56146105245780632ecae90a14610546578063313ce567146105685761036b565b80631c5d1da51161030d57806320f6d07c116102e757806320f6d07c1461049b57806323b872dd146104b057806324d25f4a146104d05780632515aacd146104f05761036b565b80631c5d1da51461045e5780631d0806ae146104715780631f68f20a146104865761036b565b806309ec6b6b1161034957806309ec6b6b146103ff5780630c4925fd14610414578063124168981461042957806318160ddd146104495761036b565b806306b3efd61461037a57806306fdde03146103b0578063095ea7b3146103d2575b34801561037757600080fd5b50005b34801561038657600080fd5b5061039a610395366004613cf7565b6109cb565b6040516103a791906148ee565b60405180910390f35b3480156103bc57600080fd5b506103c5610a0d565b6040516103a791906149af565b3480156103de57600080fd5b506103f26103ed366004613e02565b610a98565b6040516103a791906148e0565b34801561040b57600080fd5b5061039a610b03565b34801561042057600080fd5b5061039a610b16565b34801561043557600080fd5b5061039a610444366004613e32565b610b1c565b34801561045557600080fd5b5061039a610b40565b61039a61046c3660046140f8565b610b46565b34801561047d57600080fd5b5061039a610d3a565b34801561049257600080fd5b5061039a610d40565b3480156104a757600080fd5b5061039a610d46565b3480156104bc57600080fd5b506103f26104cb366004613d6d565b610d4c565b3480156104dc57600080fd5b5061039a6104eb366004613f7a565b610f77565b3480156104fc57600080fd5b5061051061050b366004613e32565b610fbc565b6040516103a7989796959493929190614938565b34801561053057600080fd5b5061054461053f366004613dba565b611008565b005b34801561055257600080fd5b5061055b611140565b6040516103a791906148cf565b34801561057457600080fd5b5061057d611198565b6040516103a79190614be7565b34801561059657600080fd5b5061039a6111a1565b3480156105ab57600080fd5b5061039a6105ba366004613e02565b6111a7565b3480156105cb57600080fd5b5061039a6111e8565b3480156105e057600080fd5b506105e9611222565b6040516103a791906147c7565b34801561060257600080fd5b5061039a611231565b34801561061757600080fd5b5061039a610626366004613cf7565b61125c565b34801561063757600080fd5b5061039a610646366004613f18565b611277565b34801561065757600080fd5b506105e96112c5565b34801561066c57600080fd5b5061068061067b366004613e32565b6112d9565b6040516103a792919061488c565b34801561069a57600080fd5b506105e961130e565b3480156106af57600080fd5b5061039a61131d565b3480156106c457600080fd5b5061039a6106d3366004613ee8565b611323565b3480156106e457600080fd5b5061039a61132f565b3480156106f957600080fd5b5061039a610708366004613e02565b61135e565b34801561071957600080fd5b5061039a610728366004613e32565b6114bc565b34801561073957600080fd5b5061039a61157f565b34801561074e57600080fd5b5061039a61075d366004613f7a565b61158c565b34801561076e57600080fd5b506105e96117f3565b34801561078357600080fd5b506105e9611802565b61039a61079a366004613cf7565b611811565b3480156107ab57600080fd5b5061039a611874565b3480156107c057600080fd5b506103c5611895565b3480156107d557600080fd5b506105e96118f0565b3480156107ea57600080fd5b506105e96118ff565b3480156107ff57600080fd5b5061039a61080e366004613e32565b611913565b34801561081f57600080fd5b5061039a61082e366004613e02565b611931565b34801561083f57600080fd5b506103f261084e366004613e02565b61199d565b34801561085f57600080fd5b5061039a61086e366004613e32565b611b31565b34801561087f57600080fd5b5061089361088e366004613e32565b611b3e565b6040516103a79190614b60565b3480156108ac57600080fd5b506103f26108bb366004613e50565b611bbd565b61039a6108ce366004614030565b611db5565b3480156108df57600080fd5b5061039a6108ee366004613e32565b61207e565b3480156108ff57600080fd5b5061039a61208f565b34801561091457600080fd5b5061039a610923366004613d33565b612095565b34801561093457600080fd5b5061039a610943366004613cf7565b6120c0565b34801561095457600080fd5b50610544610963366004613cf7565b6120db565b34801561097457600080fd5b50610988610983366004613cf7565b6120fe565b6040516103a7929190614b6f565b3480156109a257600080fd5b5061039a61211a565b3480156109b757600080fd5b5061039a6109c6366004613e32565b612127565b6000610a05670de0b6b3a76400006109f96109e461132f565b6109ed8661125c565b9063ffffffff61213916565b9063ffffffff61215e16565b90505b919050565b6002805460408051602060018416156101000260001901909316849004601f81018490048402820184019092528181529291830182828015610a905780601f10610a6557610100808354040283529160200191610a90565b820191906000526020600020905b815481529060010190602001808311610a7357829003601f168201915b505050505081565b336000818152601a602090815260408083206001600160a01b038716808552925280832085905551919290917f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92590610af19086906148ee565b60405180910390a35060015b92915050565b6000610b10610444611874565b90505b90565b60135481565b6015546000908015610b3a57610b328184611277565b915050610a08565b50919050565b601b5490565b6001546000906001600160a01b03163314610b6057600080fd5b6001600160a01b03831615801590610b8657506008546001600160a01b03848116911614155b610bab5760405162461bcd60e51b8152600401610ba2906149e0565b60405180910390fd5b8a6001600160a01b038681169085161415610c52576006546008546040516232ccd560e51b81526001600160a01b03928316926306599aa092610bf8928992909116908690600401614864565b60606040518083038186803b158015610c1057600080fd5b505afa158015610c24573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250610c489190810190613f37565b9250610c7f915050565b6008546001600160a01b03878116911614610c7f5760405162461bcd60e51b8152600401610ba290614a70565b610d2a8b60405180608001604052808a6001600160a01b03166001600160a01b03168152602001886001600160a01b03166001600160a01b03168152602001876001600160a01b03166001600160a01b031681526020018a6001600160a01b03166001600160a01b03168152506040518060e0016040528060008152602001858152602001600081526020018e81526020018d81526020018c81526020016000815250600187612171565b9c9b505050505050505050505050565b60185481565b600b5481565b60155481565b6001600160a01b0383166000818152601a6020908152604080832033845282528083205493835260199091528120549091908311801590610d8d5750808311155b8015610da157506001600160a01b03841615155b610dbd5760405162461bcd60e51b8152600401610ba290614a40565b6001600160a01b038516600090815260196020526040902054610de6908463ffffffff6122eb16565b6001600160a01b038087166000908152601960205260408082209390935590861681522054610e1b908463ffffffff6122fd16565b6001600160a01b038516600090815260196020526040902055600019811015610e7357610e4e818463ffffffff6122eb16565b6001600160a01b0386166000908152601a602090815260408083203384529091529020555b6000610e7d61132f565b6001600160a01b03871660009081526019602052604090205490915015610ebe576001600160a01b0386166000908152600960205260409020819055610ed8565b6001600160a01b0386166000908152600960205260408120555b6001600160a01b03851660009081526019602052604090205415610f16576001600160a01b0385166000908152600960205260409020819055610f30565b6001600160a01b0385166000908152600960205260408120555b846001600160a01b0316866001600160a01b0316600080516020614d1283398151915286604051610f6191906148ee565b60405180910390a36001925050505b9392505050565b60008382604051602001610f8c9291906147a1565b6040516020818303038152906040528051906020012060001c9350610fb38585858561230a565b95945050505050565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b6001546001600160a01b03163314611093577f7ad06df6a0af6bd602d90db766e0d5f253b45187c3717a0f9026ea8b10ff0d4b547f34b31cff1dbd8374124bd4505521fc29cab0f9554a5386ba7d784a4e611c7e3154336001600160a01b0383161480156110875750806001600160a01b0316846001600160a01b0316145b61109057600080fd5b50505b601c80546001600160a01b038481166001600160a01b031983161790925560405191169060009030906110c7908590614795565b6000604051808303816000865af19150503d8060008114611104576040519150601f19603f3d011682016040523d82523d6000602084013e611109565b606091505b50506040519091503d90816000823e82611121578181fd5b601c80546001600160a01b0319166001600160a01b0386161790558181f35b6060601080548060200260200160405190810160405280929190818152602001828054801561118e57602002820191906000526020600020905b81548152602001906001019080831161117a575b5050505050905090565b60045460ff1681565b600c5481565b60006001600054146111cb5760405162461bcd60e51b8152600401610ba290614b10565b60026000556111da838361252d565b90505b600160005592915050565b60155460009080156112165761120e6111ff611874565b6109f96016546109ed85612659565b915050610b13565b61120e612691565b5090565b6007546001600160a01b031681565b60008061123c611874565b905060155481111561121e5760155461120e90829063ffffffff6122eb16565b6001600160a01b031660009081526019602052604090205490565b600082158015906112885750828210155b15610afd576112be701d6329f1c35ca4bfabb9f56100000000006109f9600d546109ed6112b588886126b6565b6109ed89612659565b9050610afd565b600a5461010090046001600160a01b031681565b601181815481106112e657fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6000610f7083836126e8565b600080426017541461134757611343612760565b9150505b61135861135382612827565b612884565b91505090565b60006001600054146113825760405162461bcd60e51b8152600401610ba290614b10565b60026000556007546008546001600160a01b039081169116146113b75760405162461bcd60e51b8152600401610ba290614a10565b6113c0826128b3565b905080156111dd576008546040805180820190915260018152600d60fa1b6020820152733b5bdccdfa2a0a1911984f203c19628eeb6036e091611412916001600160a01b039091169083908590612a21565b604051630bfcf63b60e41b81526001600160a01b0382169063bfcf63b090611440908790869060040161488c565b602060405180830381600087803b15801561145a57600080fd5b505af115801561146e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506114929190810190613eca565b82146114b05760405162461bcd60e51b8152600401610ba2906149c0565b50600160005592915050565b60006114c6613a0d565b506000828152600e60209081526040808320548352600f8252918290208251610100810184528154815260018201549281019290925260028101549282018390526003810154606083015260048101546080830152600581015460a0830152600681015460c0830152600701546001600160a01b031660e082015290611550576000915050610a08565b610f7061156f68056bc75e2d6310000083608001518460400151612aec565b6109f983604001516109ed611231565b6000610b106000806126e8565b600084156117eb5783826040516020016115a79291906147a1565b6040516020818303038152906040528051906020012060001c93506115ca613a0d565b506000848152600e60209081526040808320548352600f82528083208151610100810183528154815260018201549381019390935260028101549183018290526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e08301529091906116609068056bc75e2d6310000063ffffffff6122fd16565b905061168969021e19e0c9bab24000006109f961167c88612b2d565b8a9063ffffffff61213916565b6008546040516370a0823160e01b81529198506001600160a01b0316906370a08231906116ba9030906004016147c7565b60206040518083038186803b1580156116d257600080fd5b505afa1580156116e6573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525061170a9190810190613eca565b87116117e8576004546008546117df91600a916001600160a01b0361010090920482169163bc6cb1d991811690891661174e576007546001600160a01b0316611750565b885b6006546040516001600160e01b031960e086901b1681526117839392916001600160a01b0316908f908a90600401614818565b60206040518083038186803b15801561179b57600080fd5b505afa1580156117af573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506117d39190810190613eca565b9063ffffffff6122fd16565b925050506117eb565b50505b949350505050565b6005546001600160a01b031681565b6001546001600160a01b031681565b60006001600054146118355760405162461bcd60e51b8152600401610ba290614b10565b60026000556007546008546001600160a01b0390811691161461186a5760405162461bcd60e51b8152600401610ba290614ae0565b6111dd823461252d565b600080426017541461188c57611888612760565b9150505b61135881612827565b6003805460408051602060026001851615610100026000190190941693909304601f81018490048402820184019092528181529291830182828015610a905780601f10610a6557610100808354040283529160200191610a90565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061192057fe5b600091825260209091200154905081565b60006001600054146119555760405162461bcd60e51b8152600401610ba290614b10565b6002600055611963826128b3565b905080156111dd576008546040805180820190915260018152603560f81b60208201526111dd916001600160a01b03169085908490612a21565b3360009081526019602052604081205482118015906119c457506001600160a01b03831615155b6119e05760405162461bcd60e51b8152600401610ba290614a80565b33600090815260196020526040902054611a00908363ffffffff6122eb16565b33600090815260196020526040808220929092556001600160a01b03851681522054611a32908363ffffffff6122fd16565b6001600160a01b038416600090815260196020526040812091909155611a5661132f565b3360009081526019602052604090205490915015611a8557336000908152600960205260409020819055611a96565b336000908152600960205260408120555b6001600160a01b03841660009081526019602052604090205415611ad4576001600160a01b0384166000908152600960205260409020819055611aee565b6001600160a01b0384166000908152600960205260408120555b836001600160a01b0316336001600160a01b0316600080516020614d1283398151915285604051611b1f91906148ee565b60405180910390a35060019392505050565b6000610a058260006126e8565b611b46613a0d565b506000908152600f6020908152604091829020825161010081018452815481526001820154928101929092526002810154928201929092526003820154606082015260048201546080820152600582015460a0820152600682015460c08201526007909101546001600160a01b031660e082015290565b600480546006546040516338f5892f60e11b81526000936001600160a01b036101009094048416936371eb125e93611bf893911691016147c7565b60206040518083038186803b158015611c1057600080fd5b505afa158015611c24573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250611c489190810190613d15565b6001600160a01b0316336001600160a01b031614611c785760405162461bcd60e51b8152600401610ba290614af0565b611c80612b79565b611c88613a0d565b50610120860180516000908152600f602090815260409182902082516101008101845281548082526001830154938201939093526002820154938101939093526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e0830152915190911415611da8578360155411611d1c576000611d2f565b601554611d2f908563ffffffff6122eb16565b60155585516101208801516040516001600160a01b03909216917f85dfc0033a3e5b3b9b3151bd779c1f9b855d66b83ff5bb79283b68d82e8e5b7390611d7a908990899089906148a7565b60405180910390a383611d91576001915050610fb3565b611d9b6000612827565b6016555060019050610fb3565b5060009695505050505050565b6001546000906001600160a01b03163314611dcf57600080fd5b34158015611de557506001600160a01b03831615155b8015611df057508515155b80611e2d57503415801590611e2357506001600160a01b0383161580611e2357506007546001600160a01b038481169116145b8015611e2d575085155b611e495760405162461bcd60e51b8152600401610ba290614b20565b3415611e61576007543496506001600160a01b031692505b6040518990611e76908a9086906020016147a1565b60408051601f1981840301815291815281516020928301206000818152600e909352912054909950915081611ebd5760405162461bcd60e51b8152600401610ba290614a20565b611ec5612b79565b611ecd613a5e565b611ed5613a0d565b506000838152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282019290925260038201546060820152600482015460808201819052600583015460a0830152600683015460c08301526007909201546001600160a01b031660e0820152901583611f8957611f5e8a8d8d8a61230a565b935083611f7d5760405162461bcd60e51b8152600401610ba290614a50565b60c08301849052611f91565b60c083018490525b611fa684611f9f6000612827565b8d84612c19565b60408681019290925291855280516080810182526001600160a01b038c811682528a8116602080840191909152600083850152908c166060830152825160e08101845287518152908101849052929650612049928892810187600260200201518152602001600081526020018e8152602001600081526020018760066007811061202c57fe5b602002015181525060405180602001604052806000815250612c6a565b60c08401819052841461206e5760405162461bcd60e51b8152600401610ba290614b30565b5050505098975050505050505050565b6000610a05610444836117d3611874565b600d5481565b6001600160a01b039182166000908152601a6020908152604080832093909416825291909152205490565b6001600160a01b031660009081526009602052604090205490565b6001546001600160a01b031633146120f257600080fd5b6120fb81612ec4565b50565b6012602052600090815260409020805460019091015460ff1682565b6000610b10601554612659565b600e6020526000908152604090205481565b60008261214857506000610afd565b508181028183828161215657fe5b0414610afd57fe5b600081838161216957fe5b049392505050565b60208301516000906121955760405162461bcd60e51b8152600401610ba290614b50565b506000858152600e6020526040902054806121c25760405162461bcd60e51b8152600401610ba290614b00565b6121ca612b79565b6121d2613a0d565b506000818152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282019290925260038201546060820152600482015460808201819052600583015460a0830152600683015460c08301526007909201546001600160a01b031660e0820152901584156122755761226283876001602002015183612f33565b87526020870181905260c0870152612291565b602086015161228e906122886000612827565b8361304c565b86525b60408701516001600160a01b03166122ab57600060a08701525b60006122b984898988612c6a565b602088015190915081146122df5760405162461bcd60e51b8152600401610ba2906149d0565b50505095945050505050565b6000828211156122f757fe5b50900390565b81810182811015610afd57fe5b600084156117eb5761231a613a0d565b506000848152600e60209081526040808320548352600f82528083208151610100810183528154815260018201549381019390935260028101549183018290526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e08301529091906123b09068056bc75e2d6310000063ffffffff6122fd16565b6004546008549192506001600160a01b0361010090910481169163f3d75a9c919081169087166123eb576007546001600160a01b03166123ed565b865b6006546040516001600160e01b031960e086901b1681526124209392916001600160a01b0316908d908890600401614818565b60206040518083038186803b15801561243857600080fd5b505afa15801561244c573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506124709190810190613eca565b925061249861247e86612b2d565b6109f98569021e19e0c9bab240000063ffffffff61213916565b6008546040516370a0823160e01b81529194506001600160a01b0316906370a08231906124c99030906004016147c7565b60206040518083038186803b1580156124e157600080fd5b505afa1580156124f5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506125199190810190613eca565b8311156117e8575060009695505050505050565b60008161254c5760405162461bcd60e51b8152600401610ba290614aa0565b612554612b79565b60006125636113536000612827565b9050612581816109f985670de0b6b3a764000063ffffffff61213916565b9150346125c257600854604080518082019091526002815261062760f31b60208201526125bd916001600160a01b031690339030908790613224565b61262c565b600760009054906101000a90046001600160a01b03166001600160a01b031663d0e30db0846040518263ffffffff1660e01b81526004016000604051808303818588803b15801561261257600080fd5b505af1158015612626573d6000803e3d6000fd5b50505050505b612638848385846132f2565b6001600160a01b039093166000908152600960205260409020929092555090565b60008115610a0857600061266b612760565b509050610b3261016d6109ed856109f98568056bc75e2d6310000063ffffffff61213916565b7f3d82e958c891799f357c1316ae5543412952ae5c423336f8929ed7458039c9955490565b600082158015906126c657508115155b15610afd576112be826109f98568056bc75e2d6310000063ffffffff61213916565b600080831561274d57426017541461270657612702612760565b9150505b6008546040516370a0823160e01b815260009161273d9184916001600160a01b0316906370a08231906117839030906004016147c7565b90508085111561274b578094505b505b6117eb8461275a83612827565b8561304c565b6004805460065460085460405163015216af60e31b8152600094859461010090046001600160a01b0390811694630a90b578946127a79430949284169390911691016147f0565b60806040518083038186803b1580156127bf57600080fd5b505afa1580156127d3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506127f79190810190613fdb565b600d549195509350612821925068056bc75e2d6310000091506109f990849063ffffffff61213916565b90509091565b6000601b54600014610a085760135480612874576015546008546040516370a0823160e01b815261287192916001600160a01b0316906370a08231906117839030906004016147c7565b90505b610b32818463ffffffff6122fd16565b601b546000908061289757601854610f70565b610f70816109f985670de0b6b3a764000063ffffffff61213916565b6000816128d25760405162461bcd60e51b8152600401610ba290614ac0565b6128db3361125c565b8211156128ee576128eb3361125c565b91505b6128f6612b79565b60006129056113536000612827565b90506000612925670de0b6b3a76400006109f9868563ffffffff61213916565b6008546040516370a0823160e01b81529192506000916001600160a01b03909116906370a082319061295b9030906004016147c7565b60206040518083038186803b15801561297357600080fd5b505afa158015612987573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506129ab9190810190613eca565b9050819350808411156129d05760405162461bcd60e51b8152600401610ba290614a30565b6129dc338686866133f0565b3360009081526019602052604090205415612a0857336000908152600960205260409020839055612a19565b336000908152600960205260408120555b505050919050565b6000846001600160a01b031663a9059cbb8585604051602401612a4592919061488c565b6040516020818303038152906040529060e01b6020820180516001600160e01b038381831617835250505050604051612a7e9190614795565b6000604051808303816000865af19150503d8060008114612abb576040519150601f19603f3d011682016040523d82523d6000602084013e612ac0565b606091505b50509050808290612ae45760405162461bcd60e51b8152600401610ba291906149af565b505050505050565b600082612b025768056bc75e2d631000006117eb565b6117eb68056bc75e2d631000006117d3846109f9876109ed6301e13380838c8863ffffffff61213916565b6000610a0569021e19e0c9bab24000006117d36204cfe06109f9866109ed600b546117d368056bc75e2d631000006109f96804563918244f400000600c5461213990919063ffffffff16565b4260175414612c17576004805460065460085460405163327ab63960e01b81526001600160a01b0361010090940484169463327ab63994612bbf948116931691016147d5565b602060405180830381600087803b158015612bd957600080fd5b505af1158015612bed573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250612c119190810190613eca565b50426017555b565b6000806000612c2a87878787613548565b9250612c499050612c41888463ffffffff6122fd16565b878787613548565b9093509150612c5e878363ffffffff6122fd16565b90509450945094915050565b6000612c74613587565b6008546040516370a0823160e01b81526001600160a01b03909116906370a0823190612ca49030906004016147c7565b60206040518083038186803b158015612cbc57600080fd5b505afa158015612cd0573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250612cf49190810190613eca565b602084015111801590612d10575083516001600160a01b031615155b612d2c5760405162461bcd60e51b8152600401610ba290614a60565b60608401516001600160a01b0316612d4f5783516001600160a01b031660608501525b612d598484613607565b60208301516060840151612d6c916122fd565b606084015260003415612d8657504734811115612d865750345b6004805460405163b1eac3ad60e01b81526101009091046001600160a01b03169163b1eac3ad918491612dc1918b918b918b918b91016148fc565b6020604051808303818588803b158015612dda57600080fd5b505af1158015612dee573d6000803e3d6000fd5b50505050506040513d601f19601f82011682018060405250612e139190810190613eca565b60208501819052612e365760405162461bcd60e51b8152600401610ba290614a90565b6020840151601554612e47916122fd565b601555612e546000612827565b60165584516020858101518651918801516040808a015190516001600160a01b03958616957f86e15dd78cd784ab7788bcf5b96b9395e86030e048e5faedcfe752c700f6157e95612eaf959490939092909182161590614b8a565b60405180910390a25050506020015192915050565b6001600160a01b038116612ed757600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b600080612f3e613a0d565b506000858152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282018390526003810154606083015260048101546080830152600581015460a0830152600681015460c0830152600701546001600160a01b031660e082015290612fcc5760405162461bcd60e51b8152600401610ba290614b40565b604081015161300090612ff2906109f98868056bc75e2d6310000063ffffffff61213916565b612ffa611874565b8661304c565b915061304181604001516109f96130208585608001518660400151612aec565b6109f989701d6329f1c35ca4bfabb9f561000000000063ffffffff61213916565b925050935093915050565b60008061306d613067866015546122fd90919063ffffffff16565b856126b6565b905060008060008086156130e4576804563918244f400000851015613099576804563918244f40000094505b50507f185a40c6b6d3f849f72c71ea950323d21149c27a9d90f7dc5e5ea2d332edcf7f547f9ff54bc0049f5eab56ca7cd14591be3f7ed6355b856d01e3770305c74a004ea254613131565b6802b5e3af16b1880000851015613128576130fd612691565b91507f2b4858b1bc9e2d14afab03340ce5f6c81b703c86a0c570653ae586534e095fb1549050613131565b5050600b54600c545b6804e1003b28d92800008511156131c25761315b856804e1003b28d928000063ffffffff6122eb16565b9450678ac7230489e8000085111561317957678ac7230489e8000094505b61319360646109f9605a6109ed858763ffffffff6122fd16565b92506131bb836117d3678ac7230489e800006109f961167c68056bc75e2d63100000896122eb565b9550613218565b6131e3826117d368056bc75e2d631000006109f9898663ffffffff61213916565b955090925082906131fa818363ffffffff6122fd16565b92508386101561320c57839550613218565b82861115613218578295505b50505050509392505050565b6000856001600160a01b03166323b872dd86868660405160240161324a93929190614864565b6040516020818303038152906040529060e01b6020820180516001600160e01b0383818316178352505050506040516132839190614795565b6000604051808303816000865af19150503d80600081146132c0576040519150601f19603f3d011682016040523d82523d6000602084013e6132c5565b606091505b505090508082906132e95760405162461bcd60e51b8152600401610ba291906149af565b50505050505050565b6001600160a01b0384166133185760405162461bcd60e51b8152600401610ba2906149f0565b601b5461332b908463ffffffff6122fd16565b601b556001600160a01b038416600090815260196020526040902054613357908463ffffffff6122fd16565b6001600160a01b038516600081815260196020526040908190209290925590517fb4c03061fb5b7fed76389d5af8f2e0ddb09f8c70d1333abbb62582835e10accb906133a890869086908690614bcc565b60405180910390a2836001600160a01b031660006001600160a01b0316600080516020614d12833981519152856040516133e291906148ee565b60405180910390a350505050565b6001600160a01b0384166000908152601960205260409020548311156134285760405162461bcd60e51b8152600401610ba290614a00565b6001600160a01b038416600090815260196020526040902054613451908463ffffffff6122eb16565b6001600160a01b0385166000908152601960205260409020819055600a106134b9576001600160a01b03841660009081526019602052604090205461349d90849063ffffffff6122fd16565b6001600160a01b03851660009081526019602052604081205592505b601b546134cc908463ffffffff6122eb16565b601b556040516001600160a01b038516907f743033787f4738ff4d6a7225ce2bd0977ee5f86b91a902a58f5e4d0b297b46449061350e90869086908690614bcc565b60405180910390a260006001600160a01b0316846001600160a01b0316600080516020614d12833981519152856040516133e291906148ee565b60008061355686868561304c565b915061357c6b0a3098c68eb9427db80000006109f9866109ed8a8763ffffffff61213916565b905094509492505050565b600080356001600160e01b0319167fd46a704bc285dbd6ff5ad3863506260b1df02812f4f857c8cc852317a6ac64f26040516020016135c792919061476f565b60405160208183030381529060405280519060200120905060008154905080156136035760405162461bcd60e51b8152600401610ba290614ab0565b5050565b60208083015160408401516060808601519385015190850151608086015160a087015160c08801519596949560006001600160a01b0388166137b7576007546008546001600160a01b039081169116141561372757600854604080516020810190915260008152733b5bdccdfa2a0a1911984f203c19628eeb6036e09161369d916001600160a01b039091169083908690612a21565b604051630bfcf63b60e41b81526001600160a01b0382169063bfcf63b0906136cb908b90879060040161488c565b602060405180830381600087803b1580156136e557600080fd5b505af11580156136f9573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525061371d9190810190613eca565b8314915050613754565b600854604080516020810190915260008152613750916001600160a01b03169089908590612a21565b5060015b80801561376057508186115b1561379557600854600554604080516020810190915260008152613795926001600160a01b03908116921690858a0390612a21565b806137b25760405162461bcd60e51b8152600401610ba290614ad0565b6137ef565b600854600554604080518082019091526002815261191b60f11b60208201526137ef926001600160a01b039081169216908990612a21565b8315613957576007546001600160a01b038a8116911614801561381157503415155b801561381c57503484145b156138c457600760009054906101000a90046001600160a01b03166001600160a01b031663d0e30db0856040518263ffffffff1660e01b81526004016000604051808303818588803b15801561387157600080fd5b505af1158015613885573d6000803e3d6000fd5b5050600554604080518082019091526002815261323760f01b60208201526138bf94508d93506001600160a01b0390911691508790612a21565b613957565b6008546001600160a01b038a8116911614156138f1576138ea858563ffffffff6122fd16565b9450613957565b876001600160a01b0316896001600160a01b031614156139225761391b838563ffffffff6122fd16565b9250613957565b600554604080518082019091526002815261323760f01b6020820152613957918b9133916001600160a01b0316908890613224565b84156139c5576008546001600160a01b038981169116141561398a57613983838663ffffffff6122fd16565b92506139c5565b600854600554604080518082019091526002815261333160f01b60208201526139c5926001600160a01b039081169233929116908990613224565b8215613a0057600554604080518082019091526002815261199960f11b6020820152613a00918a9133916001600160a01b0316908790613224565b5050505050505050505050565b6040518061010001604052806000801916815260200160008152602001600081526020016000815260200160008152602001600081526020016000815260200160006001600160a01b031681525090565b6040518060e001604052806007906020820280388339509192915050565b8035610afd81614ceb565b8051610afd81614ceb565b8035610afd81614cff565b8035610afd81614d08565b600082601f830112613ab957600080fd5b8135613acc613ac782614c1c565b614bf5565b91508082526020830160208301858383011115613ae857600080fd5b613af3838284614c92565b50505092915050565b60006101408284031215613b0f57600080fd5b613b1a610140614bf5565b90506000613b288484613a7c565b8252506020613b3984848301613a7c565b6020830152506040613b4d84828501613a7c565b6040830152506060613b6184828501613a7c565b6060830152506080613b7584828501613a9d565b60808301525060a0613b8984828501613a9d565b60a08301525060c0613b9d84828501613a9d565b60c08301525060e0613bb184828501613a9d565b60e083015250610100613bc684828501613a9d565b61010083015250610120613bdc84828501613a9d565b6101208301525092915050565b60006101608284031215613bfc57600080fd5b613c07610160614bf5565b90506000613c158484613a7c565b8252506020613c2684848301613a7c565b6020830152506040613c3a84828501613a7c565b6040830152506060613c4e84828501613a9d565b6060830152506080613c6284828501613a9d565b60808301525060a0613c7684828501613a9d565b60a08301525060c0613c8a84828501613a9d565b60c08301525060e0613c9e84828501613a9d565b60e083015250610100613cb384828501613a9d565b61010083015250610120613cc984828501613a92565b61012083015250610140613cdf84828501613a9d565b6101408301525092915050565b8051610afd81614d08565b600060208284031215613d0957600080fd5b60006117eb8484613a7c565b600060208284031215613d2757600080fd5b60006117eb8484613a87565b60008060408385031215613d4657600080fd5b6000613d528585613a7c565b9250506020613d6385828601613a7c565b9150509250929050565b600080600060608486031215613d8257600080fd5b6000613d8e8686613a7c565b9350506020613d9f86828701613a7c565b9250506040613db086828701613a9d565b9150509250925092565b60008060408385031215613dcd57600080fd5b6000613dd98585613a7c565b925050602083013567ffffffffffffffff811115613df657600080fd5b613d6385828601613aa8565b60008060408385031215613e1557600080fd5b6000613e218585613a7c565b9250506020613d6385828601613a9d565b600060208284031215613e4457600080fd5b60006117eb8484613a9d565b60008060008060006103008688031215613e6957600080fd5b6000613e758888613afc565b955050610140613e8788828901613be9565b9450506102a0613e9988828901613a7c565b9350506102c0613eab88828901613a9d565b9250506102e0613ebd88828901613a92565b9150509295509295909350565b600060208284031215613edc57600080fd5b60006117eb8484613cec565b60008060408385031215613efb57600080fd5b6000613f078585613a9d565b9250506020613d6385828601613a92565b60008060408385031215613f2b57600080fd5b6000613e218585613a9d565b600080600060608486031215613f4c57600080fd5b6000613f588686613cec565b9350506020613f6986828701613cec565b9250506040613db086828701613cec565b60008060008060808587031215613f9057600080fd5b6000613f9c8787613a9d565b9450506020613fad87828801613a9d565b9350506040613fbe87828801613a9d565b9250506060613fcf87828801613a7c565b91505092959194509250565b60008060008060808587031215613ff157600080fd5b6000613ffd8787613cec565b945050602061400e87828801613cec565b935050604061401f87828801613cec565b9250506060613fcf87828801613cec565b600080600080600080600080610100898b03121561404d57600080fd5b60006140598b8b613a9d565b985050602061406a8b828c01613a9d565b975050604061407b8b828c01613a9d565b965050606061408c8b828c01613a9d565b955050608061409d8b828c01613a7c565b94505060a06140ae8b828c01613a7c565b93505060c06140bf8b828c01613a7c565b92505060e089013567ffffffffffffffff8111156140dc57600080fd5b6140e88b828c01613aa8565b9150509295985092959890939650565b6000806000806000806000806000806101408b8d03121561411857600080fd5b60006141248d8d613a9d565b9a505060206141358d828e01613a9d565b99505060406141468d828e01613a9d565b98505060606141578d828e01613a9d565b97505060806141688d828e01613a9d565b96505060a06141798d828e01613a7c565b95505060c061418a8d828e01613a7c565b94505060e061419b8d828e01613a7c565b9350506101006141ad8d828e01613a7c565b9250506101208b013567ffffffffffffffff8111156141cb57600080fd5b6141d78d828e01613aa8565b9150509295989b9194979a5092959850565b60006141f58383614209565b505060200190565b60006141f58383614323565b61421281614c63565b82525050565b61421261422482614c63565b614cca565b61423281614c4a565b61423c8184610a08565b925061424782610b13565b8060005b83811015612ae457815161425f87826141e9565b965061426a83614c44565b92505060010161424b565b61427e81614c50565b6142888184610a08565b925061429382610b13565b8060005b83811015612ae45781516142ab87826141fd565b96506142b683614c44565b925050600101614297565b60006142cc82614c56565b6142d68185614c5a565b93506142e183614c44565b8060005b8381101561430f5781516142f988826141fd565b975061430483614c44565b9250506001016142e5565b509495945050505050565b61421281614c6e565b61421281610b13565b61421261433882614c73565b610b13565b600061434882614c56565b6143528185614c5a565b9350614362818560208601614c9e565b61436b81614cdb565b9093019392505050565b600061438082614c56565b61438a8185610a08565b935061439a818560208601614c9e565b9290920192915050565b60006143b1600183614c5a565b600d60fa1b815260200192915050565b60006143ce600283614c5a565b61323360f01b815260200192915050565b60006143ec600283614c5a565b61031360f41b815260200192915050565b600061440a600283614c5a565b61313560f01b815260200192915050565b6000614428600283614c5a565b61189b60f11b815260200192915050565b6000614446600183614c5a565b603360f81b815260200192915050565b6000614463600183614c5a565b603760f81b815260200192915050565b6000614480600283614c5a565b61333760f01b815260200192915050565b600061449e600283614c5a565b610c4d60f21b815260200192915050565b60006144bc600283614c5a565b61333560f01b815260200192915050565b60006144da600283614c5a565b610c8d60f21b815260200192915050565b60006144f8600283614c5a565b61313160f01b815260200192915050565b6000614516600283614c5a565b61313360f01b815260200192915050565b6000614534600283614c5a565b61323560f01b815260200192915050565b6000614552600283614c5a565b61313760f01b815260200192915050565b6000614570600c83614c5a565b6b1d5b985d5d1a1bdc9a5e995960a21b815260200192915050565b6000614598600283614c5a565b61313960f01b815260200192915050565b60006145b6600283614c5a565b61191b60f11b815260200192915050565b60006145d4600183614c5a565b601960f91b815260200192915050565b60006145f1600183614c5a565b603160f81b815260200192915050565b600061460e600283614c5a565b61191960f11b815260200192915050565b600061462c600c83614c5a565b6b1b9bdb9499595b9d1c985b9d60a21b815260200192915050565b6000614654600183614c5a565b601b60f91b815260200192915050565b6000614671600183614c5a565b600760fb1b815260200192915050565b600061468e600283614c5a565b61333360f01b815260200192915050565b60006146ac600283614c5a565b61323160f01b815260200192915050565b80516101008301906146cf8482614323565b5060208201516146e26020850182614323565b5060408201516146f56040850182614323565b5060608201516147086060850182614323565b50608082015161471b6080850182614323565b5060a082015161472e60a0850182614323565b5060c082015161474160c0850182614323565b5060e082015161475460e0850182614209565b50505050565b61421261433882610b13565b61421281614c8c565b600061477b828561432c565b60048201915061478b828461475a565b5060200192915050565b6000610f708284614375565b60006147ad828561475a565b6020820191506147bd8284614218565b5060140192915050565b60208101610afd8284614209565b604081016147e38285614209565b610f706020830184614209565b606081016147fe8286614209565b61480b6020830185614209565b6117eb6040830184614209565b60a081016148268288614209565b6148336020830187614209565b6148406040830186614209565b61484d6060830185614323565b61485a6080830184614323565b9695505050505050565b606081016148728286614209565b61487f6020830185614209565b6117eb6040830184614323565b6040810161489a8285614209565b610f706020830184614323565b606081016148b58286614209565b6148c26020830185614323565b6117eb604083018461431a565b60208082528101610f7081846142c1565b60208101610afd828461431a565b60208101610afd8284614323565b6101a0810161490b8287614323565b6149186020830186614229565b61492560a0830185614275565b81810361018083015261485a818461433d565b6101008101614947828b614323565b614954602083018a614323565b6149616040830189614323565b61496e6060830188614323565b61497b6080830187614323565b61498860a0830186614323565b61499560c0830185614323565b6149a260e0830184614209565b9998505050505050505050565b60208082528101610f70818461433d565b60208082528101610a05816143a4565b60208082528101610a05816143c1565b60208082528101610a05816143df565b60208082528101610a05816143fd565b60208082528101610a058161441b565b60208082528101610a0581614439565b60208082528101610a0581614456565b60208082528101610a0581614473565b60208082528101610a0581614491565b60208082528101610a05816144af565b60208082528101610a05816144cd565b60208082528101610a05816144eb565b60208082528101610a0581614509565b60208082528101610a0581614527565b60208082528101610a0581614545565b60208082528101610a0581614563565b60208082528101610a058161458b565b60208082528101610a05816145a9565b60208082528101610a05816145c7565b60208082528101610a05816145e4565b60208082528101610a0581614601565b60208082528101610a058161461f565b60208082528101610a0581614647565b60208082528101610a0581614664565b60208082528101610a0581614681565b60208082528101610a058161469f565b6101008101610afd82846146bd565b60408101614b7d8285614323565b610f70602083018461431a565b60a08101614b988288614323565b614ba56020830187614323565b614bb26040830186614209565b614bbf6060830185614209565b61485a608083018461431a565b60608101614bda8286614323565b61487f6020830185614323565b60208101610afd8284614766565b60405181810167ffffffffffffffff81118282101715614c1457600080fd5b604052919050565b600067ffffffffffffffff821115614c3357600080fd5b506020601f91909101601f19160190565b60200190565b50600490565b50600790565b5190565b90815260200190565b6000610a0582614c80565b151590565b6001600160e01b03191690565b6001600160a01b031690565b60ff1690565b82818337506000910152565b60005b83811015614cb9578181015183820152602001614ca1565b838111156147545750506000910152565b6000610a05826000610a0582614ce5565b601f01601f191690565b60601b90565b614cf481614c63565b81146120fb57600080fd5b614cf481614c6e565b614cf481610b1356feddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3efa365627a7a723158202b80d18d52b494a55fc164e716e1df5fc6aaae24c069e582cbbaac841e7f475f6c6578706572696d656e74616cf564736f6c63430005110040"
+var LoanTokenLogicV4Bin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b03191633179055614d748061004d6000396000f3fe60806040526004361061036b5760003560e01c80637d90dcba116101c65780639dc29fac116100f7578063d84d2a4711610095578063f2fde38b1161006f578063f2fde38b14610948578063fbd9574d14610968578063fc3b72b114610996578063fe056342146109ab5761036b565b8063d84d2a47146108f3578063dd62ed3e14610908578063eebc5081146109285761036b565b8063c4d2b1b3116100d1578063c4d2b1b314610873578063cd4fa66d146108a0578063cfb65bb9146108c0578063d65a5021146108d35761036b565b80639dc29fac14610813578063a9059cbb14610833578063b9fe1a8f146108535761036b565b80638da5cb5b1161016457806395d89b411161013e57806395d89b41146107b457806396c7871b146107c9578063995363d3146107de5780639b3a54d1146107f35761036b565b80638da5cb5b146107775780638f6ede1f1461078c5780638fb807c51461079f5761036b565b8063829b38f4116101a0578063829b38f41461070d5780638325a1c01461072d5780638423acd614610742578063894ca308146107625761036b565b80637d90dcba146106b85780637ff9b596146106d857806381a6b250146106ed5761036b565b8063284e2f56116102a0578063612ef80b1161023e578063736ee3d311610218578063736ee3d31461064b5780637866c6c114610660578063797bf3851461068e5780637b7933b4146106a35761036b565b8063612ef80b146105f657806370a082311461060b5780637288b3441461062b5761036b565b8063330691ac1161027a578063330691ac1461058a57806340c10f191461059f57806344a4a003146105bf5780634780eac1146105d45761036b565b8063284e2f56146105245780632ecae90a14610546578063313ce567146105685761036b565b80631c5d1da51161030d57806320f6d07c116102e757806320f6d07c1461049b57806323b872dd146104b057806324d25f4a146104d05780632515aacd146104f05761036b565b80631c5d1da51461045e5780631d0806ae146104715780631f68f20a146104865761036b565b806309ec6b6b1161034957806309ec6b6b146103ff5780630c4925fd14610414578063124168981461042957806318160ddd146104495761036b565b806306b3efd61461037a57806306fdde03146103b0578063095ea7b3146103d2575b34801561037757600080fd5b50005b34801561038657600080fd5b5061039a610395366004613cf7565b6109cb565b6040516103a791906148ee565b60405180910390f35b3480156103bc57600080fd5b506103c5610a0d565b6040516103a791906149af565b3480156103de57600080fd5b506103f26103ed366004613e02565b610a98565b6040516103a791906148e0565b34801561040b57600080fd5b5061039a610b03565b34801561042057600080fd5b5061039a610b16565b34801561043557600080fd5b5061039a610444366004613e32565b610b1c565b34801561045557600080fd5b5061039a610b40565b61039a61046c3660046140f8565b610b46565b34801561047d57600080fd5b5061039a610d3a565b34801561049257600080fd5b5061039a610d40565b3480156104a757600080fd5b5061039a610d46565b3480156104bc57600080fd5b506103f26104cb366004613d6d565b610d4c565b3480156104dc57600080fd5b5061039a6104eb366004613f7a565b610f77565b3480156104fc57600080fd5b5061051061050b366004613e32565b610fbc565b6040516103a7989796959493929190614938565b34801561053057600080fd5b5061054461053f366004613dba565b611008565b005b34801561055257600080fd5b5061055b611140565b6040516103a791906148cf565b34801561057457600080fd5b5061057d611198565b6040516103a79190614be7565b34801561059657600080fd5b5061039a6111a1565b3480156105ab57600080fd5b5061039a6105ba366004613e02565b6111a7565b3480156105cb57600080fd5b5061039a6111e8565b3480156105e057600080fd5b506105e9611222565b6040516103a791906147c7565b34801561060257600080fd5b5061039a611231565b34801561061757600080fd5b5061039a610626366004613cf7565b61125c565b34801561063757600080fd5b5061039a610646366004613f18565b611277565b34801561065757600080fd5b506105e96112c5565b34801561066c57600080fd5b5061068061067b366004613e32565b6112d9565b6040516103a792919061488c565b34801561069a57600080fd5b506105e961130e565b3480156106af57600080fd5b5061039a61131d565b3480156106c457600080fd5b5061039a6106d3366004613ee8565b611323565b3480156106e457600080fd5b5061039a61132f565b3480156106f957600080fd5b5061039a610708366004613e02565b61135e565b34801561071957600080fd5b5061039a610728366004613e32565b6114bc565b34801561073957600080fd5b5061039a61157f565b34801561074e57600080fd5b5061039a61075d366004613f7a565b61158c565b34801561076e57600080fd5b506105e96117f3565b34801561078357600080fd5b506105e9611802565b61039a61079a366004613cf7565b611811565b3480156107ab57600080fd5b5061039a611874565b3480156107c057600080fd5b506103c5611895565b3480156107d557600080fd5b506105e96118f0565b3480156107ea57600080fd5b506105e96118ff565b3480156107ff57600080fd5b5061039a61080e366004613e32565b611913565b34801561081f57600080fd5b5061039a61082e366004613e02565b611931565b34801561083f57600080fd5b506103f261084e366004613e02565b61199d565b34801561085f57600080fd5b5061039a61086e366004613e32565b611b31565b34801561087f57600080fd5b5061089361088e366004613e32565b611b3e565b6040516103a79190614b60565b3480156108ac57600080fd5b506103f26108bb366004613e50565b611bbd565b61039a6108ce366004614030565b611db5565b3480156108df57600080fd5b5061039a6108ee366004613e32565b61207e565b3480156108ff57600080fd5b5061039a61208f565b34801561091457600080fd5b5061039a610923366004613d33565b612095565b34801561093457600080fd5b5061039a610943366004613cf7565b6120c0565b34801561095457600080fd5b50610544610963366004613cf7565b6120db565b34801561097457600080fd5b50610988610983366004613cf7565b6120fe565b6040516103a7929190614b6f565b3480156109a257600080fd5b5061039a61211a565b3480156109b757600080fd5b5061039a6109c6366004613e32565b612127565b6000610a05670de0b6b3a76400006109f96109e461132f565b6109ed8661125c565b9063ffffffff61213916565b9063ffffffff61215e16565b90505b919050565b6002805460408051602060018416156101000260001901909316849004601f81018490048402820184019092528181529291830182828015610a905780601f10610a6557610100808354040283529160200191610a90565b820191906000526020600020905b815481529060010190602001808311610a7357829003601f168201915b505050505081565b336000818152601a602090815260408083206001600160a01b038716808552925280832085905551919290917f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92590610af19086906148ee565b60405180910390a35060015b92915050565b6000610b10610444611874565b90505b90565b60135481565b6015546000908015610b3a57610b328184611277565b915050610a08565b50919050565b601b5490565b6001546000906001600160a01b03163314610b6057600080fd5b6001600160a01b03831615801590610b8657506008546001600160a01b03848116911614155b610bab5760405162461bcd60e51b8152600401610ba2906149e0565b60405180910390fd5b8a6001600160a01b038681169085161415610c52576006546008546040516232ccd560e51b81526001600160a01b03928316926306599aa092610bf8928992909116908690600401614864565b60606040518083038186803b158015610c1057600080fd5b505afa158015610c24573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250610c489190810190613f37565b9250610c7f915050565b6008546001600160a01b03878116911614610c7f5760405162461bcd60e51b8152600401610ba290614a70565b610d2a8b60405180608001604052808a6001600160a01b03166001600160a01b03168152602001886001600160a01b03166001600160a01b03168152602001876001600160a01b03166001600160a01b031681526020018a6001600160a01b03166001600160a01b03168152506040518060e0016040528060008152602001858152602001600081526020018e81526020018d81526020018c81526020016000815250600187612171565b9c9b505050505050505050505050565b60185481565b600b5481565b60155481565b6001600160a01b0383166000818152601a6020908152604080832033845282528083205493835260199091528120549091908311801590610d8d5750808311155b8015610da157506001600160a01b03841615155b610dbd5760405162461bcd60e51b8152600401610ba290614a40565b6001600160a01b038516600090815260196020526040902054610de6908463ffffffff6122eb16565b6001600160a01b038087166000908152601960205260408082209390935590861681522054610e1b908463ffffffff6122fd16565b6001600160a01b038516600090815260196020526040902055600019811015610e7357610e4e818463ffffffff6122eb16565b6001600160a01b0386166000908152601a602090815260408083203384529091529020555b6000610e7d61132f565b6001600160a01b03871660009081526019602052604090205490915015610ebe576001600160a01b0386166000908152600960205260409020819055610ed8565b6001600160a01b0386166000908152600960205260408120555b6001600160a01b03851660009081526019602052604090205415610f16576001600160a01b0385166000908152600960205260409020819055610f30565b6001600160a01b0385166000908152600960205260408120555b846001600160a01b0316866001600160a01b0316600080516020614d1283398151915286604051610f6191906148ee565b60405180910390a36001925050505b9392505050565b60008382604051602001610f8c9291906147a1565b6040516020818303038152906040528051906020012060001c9350610fb38585858561230a565b95945050505050565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b6001546001600160a01b03163314611093577f7ad06df6a0af6bd602d90db766e0d5f253b45187c3717a0f9026ea8b10ff0d4b547f34b31cff1dbd8374124bd4505521fc29cab0f9554a5386ba7d784a4e611c7e3154336001600160a01b0383161480156110875750806001600160a01b0316846001600160a01b0316145b61109057600080fd5b50505b601c80546001600160a01b038481166001600160a01b031983161790925560405191169060009030906110c7908590614795565b6000604051808303816000865af19150503d8060008114611104576040519150601f19603f3d011682016040523d82523d6000602084013e611109565b606091505b50506040519091503d90816000823e82611121578181fd5b601c80546001600160a01b0319166001600160a01b0386161790558181f35b6060601080548060200260200160405190810160405280929190818152602001828054801561118e57602002820191906000526020600020905b81548152602001906001019080831161117a575b5050505050905090565b60045460ff1681565b600c5481565b60006001600054146111cb5760405162461bcd60e51b8152600401610ba290614b10565b60026000556111da838361252d565b90505b600160005592915050565b60155460009080156112165761120e6111ff611874565b6109f96016546109ed85612659565b915050610b13565b61120e612691565b5090565b6007546001600160a01b031681565b60008061123c611874565b905060155481111561121e5760155461120e90829063ffffffff6122eb16565b6001600160a01b031660009081526019602052604090205490565b600082158015906112885750828210155b15610afd576112be701d6329f1c35ca4bfabb9f56100000000006109f9600d546109ed6112b588886126b6565b6109ed89612659565b9050610afd565b600a5461010090046001600160a01b031681565b601181815481106112e657fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6000610f7083836126e8565b600080426017541461134757611343612760565b9150505b61135861135382612827565b612884565b91505090565b60006001600054146113825760405162461bcd60e51b8152600401610ba290614b10565b60026000556007546008546001600160a01b039081169116146113b75760405162461bcd60e51b8152600401610ba290614a10565b6113c0826128b3565b905080156111dd576008546040805180820190915260018152600d60fa1b6020820152733b5bdccdfa2a0a1911984f203c19628eeb6036e091611412916001600160a01b039091169083908590612a21565b604051630bfcf63b60e41b81526001600160a01b0382169063bfcf63b090611440908790869060040161488c565b602060405180830381600087803b15801561145a57600080fd5b505af115801561146e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506114929190810190613eca565b82146114b05760405162461bcd60e51b8152600401610ba2906149c0565b50600160005592915050565b60006114c6613a0d565b506000828152600e60209081526040808320548352600f8252918290208251610100810184528154815260018201549281019290925260028101549282018390526003810154606083015260048101546080830152600581015460a0830152600681015460c0830152600701546001600160a01b031660e082015290611550576000915050610a08565b610f7061156f68056bc75e2d6310000083608001518460400151612aec565b6109f983604001516109ed611231565b6000610b106000806126e8565b600084156117eb5783826040516020016115a79291906147a1565b6040516020818303038152906040528051906020012060001c93506115ca613a0d565b506000848152600e60209081526040808320548352600f82528083208151610100810183528154815260018201549381019390935260028101549183018290526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e08301529091906116609068056bc75e2d6310000063ffffffff6122fd16565b905061168969021e19e0c9bab24000006109f961167c88612b2d565b8a9063ffffffff61213916565b6008546040516370a0823160e01b81529198506001600160a01b0316906370a08231906116ba9030906004016147c7565b60206040518083038186803b1580156116d257600080fd5b505afa1580156116e6573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525061170a9190810190613eca565b87116117e8576004546008546117df91600a916001600160a01b0361010090920482169163bc6cb1d991811690891661174e576007546001600160a01b0316611750565b885b6006546040516001600160e01b031960e086901b1681526117839392916001600160a01b0316908f908a90600401614818565b60206040518083038186803b15801561179b57600080fd5b505afa1580156117af573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506117d39190810190613eca565b9063ffffffff6122fd16565b925050506117eb565b50505b949350505050565b6005546001600160a01b031681565b6001546001600160a01b031681565b60006001600054146118355760405162461bcd60e51b8152600401610ba290614b10565b60026000556007546008546001600160a01b0390811691161461186a5760405162461bcd60e51b8152600401610ba290614ae0565b6111dd823461252d565b600080426017541461188c57611888612760565b9150505b61135881612827565b6003805460408051602060026001851615610100026000190190941693909304601f81018490048402820184019092528181529291830182828015610a905780601f10610a6557610100808354040283529160200191610a90565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6010818154811061192057fe5b600091825260209091200154905081565b60006001600054146119555760405162461bcd60e51b8152600401610ba290614b10565b6002600055611963826128b3565b905080156111dd576008546040805180820190915260018152603560f81b60208201526111dd916001600160a01b03169085908490612a21565b3360009081526019602052604081205482118015906119c457506001600160a01b03831615155b6119e05760405162461bcd60e51b8152600401610ba290614a80565b33600090815260196020526040902054611a00908363ffffffff6122eb16565b33600090815260196020526040808220929092556001600160a01b03851681522054611a32908363ffffffff6122fd16565b6001600160a01b038416600090815260196020526040812091909155611a5661132f565b3360009081526019602052604090205490915015611a8557336000908152600960205260409020819055611a96565b336000908152600960205260408120555b6001600160a01b03841660009081526019602052604090205415611ad4576001600160a01b0384166000908152600960205260409020819055611aee565b6001600160a01b0384166000908152600960205260408120555b836001600160a01b0316336001600160a01b0316600080516020614d1283398151915285604051611b1f91906148ee565b60405180910390a35060019392505050565b6000610a058260006126e8565b611b46613a0d565b506000908152600f6020908152604091829020825161010081018452815481526001820154928101929092526002810154928201929092526003820154606082015260048201546080820152600582015460a0820152600682015460c08201526007909101546001600160a01b031660e082015290565b600480546006546040516338f5892f60e11b81526000936001600160a01b036101009094048416936371eb125e93611bf893911691016147c7565b60206040518083038186803b158015611c1057600080fd5b505afa158015611c24573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250611c489190810190613d15565b6001600160a01b0316336001600160a01b031614611c785760405162461bcd60e51b8152600401610ba290614af0565b611c80612b79565b611c88613a0d565b50610120860180516000908152600f602090815260409182902082516101008101845281548082526001830154938201939093526002820154938101939093526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e0830152915190911415611da8578360155411611d1c576000611d2f565b601554611d2f908563ffffffff6122eb16565b60155585516101208801516040516001600160a01b03909216917f85dfc0033a3e5b3b9b3151bd779c1f9b855d66b83ff5bb79283b68d82e8e5b7390611d7a908990899089906148a7565b60405180910390a383611d91576001915050610fb3565b611d9b6000612827565b6016555060019050610fb3565b5060009695505050505050565b6001546000906001600160a01b03163314611dcf57600080fd5b34158015611de557506001600160a01b03831615155b8015611df057508515155b80611e2d57503415801590611e2357506001600160a01b0383161580611e2357506007546001600160a01b038481169116145b8015611e2d575085155b611e495760405162461bcd60e51b8152600401610ba290614b20565b3415611e61576007543496506001600160a01b031692505b6040518990611e76908a9086906020016147a1565b60408051601f1981840301815291815281516020928301206000818152600e909352912054909950915081611ebd5760405162461bcd60e51b8152600401610ba290614a20565b611ec5612b79565b611ecd613a5e565b611ed5613a0d565b506000838152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282019290925260038201546060820152600482015460808201819052600583015460a0830152600683015460c08301526007909201546001600160a01b031660e0820152901583611f8957611f5e8a8d8d8a61230a565b935083611f7d5760405162461bcd60e51b8152600401610ba290614a50565b60c08301849052611f91565b60c083018490525b611fa684611f9f6000612827565b8d84612c19565b60408681019290925291855280516080810182526001600160a01b038c811682528a8116602080840191909152600083850152908c166060830152825160e08101845287518152908101849052929650612049928892810187600260200201518152602001600081526020018e8152602001600081526020018760066007811061202c57fe5b602002015181525060405180602001604052806000815250612c6a565b60c08401819052841461206e5760405162461bcd60e51b8152600401610ba290614b30565b5050505098975050505050505050565b6000610a05610444836117d3611874565b600d5481565b6001600160a01b039182166000908152601a6020908152604080832093909416825291909152205490565b6001600160a01b031660009081526009602052604090205490565b6001546001600160a01b031633146120f257600080fd5b6120fb81612ec4565b50565b6012602052600090815260409020805460019091015460ff1682565b6000610b10601554612659565b600e6020526000908152604090205481565b60008261214857506000610afd565b508181028183828161215657fe5b0414610afd57fe5b600081838161216957fe5b049392505050565b60208301516000906121955760405162461bcd60e51b8152600401610ba290614b50565b506000858152600e6020526040902054806121c25760405162461bcd60e51b8152600401610ba290614b00565b6121ca612b79565b6121d2613a0d565b506000818152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282019290925260038201546060820152600482015460808201819052600583015460a0830152600683015460c08301526007909201546001600160a01b031660e0820152901584156122755761226283876001602002015183612f33565b87526020870181905260c0870152612291565b602086015161228e906122886000612827565b8361304c565b86525b60408701516001600160a01b03166122ab57600060a08701525b60006122b984898988612c6a565b602088015190915081146122df5760405162461bcd60e51b8152600401610ba2906149d0565b50505095945050505050565b6000828211156122f757fe5b50900390565b81810182811015610afd57fe5b600084156117eb5761231a613a0d565b506000848152600e60209081526040808320548352600f82528083208151610100810183528154815260018201549381019390935260028101549183018290526003810154606084015260048101546080840152600581015460a0840152600681015460c0840152600701546001600160a01b031660e08301529091906123b09068056bc75e2d6310000063ffffffff6122fd16565b6004546008549192506001600160a01b0361010090910481169163f3d75a9c919081169087166123eb576007546001600160a01b03166123ed565b865b6006546040516001600160e01b031960e086901b1681526124209392916001600160a01b0316908d908890600401614818565b60206040518083038186803b15801561243857600080fd5b505afa15801561244c573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506124709190810190613eca565b925061249861247e86612b2d565b6109f98569021e19e0c9bab240000063ffffffff61213916565b6008546040516370a0823160e01b81529194506001600160a01b0316906370a08231906124c99030906004016147c7565b60206040518083038186803b1580156124e157600080fd5b505afa1580156124f5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506125199190810190613eca565b8311156117e8575060009695505050505050565b60008161254c5760405162461bcd60e51b8152600401610ba290614aa0565b612554612b79565b60006125636113536000612827565b9050612581816109f985670de0b6b3a764000063ffffffff61213916565b9150346125c257600854604080518082019091526002815261062760f31b60208201526125bd916001600160a01b031690339030908790613224565b61262c565b600760009054906101000a90046001600160a01b03166001600160a01b031663d0e30db0846040518263ffffffff1660e01b81526004016000604051808303818588803b15801561261257600080fd5b505af1158015612626573d6000803e3d6000fd5b50505050505b612638848385846132f2565b6001600160a01b039093166000908152600960205260409020929092555090565b60008115610a0857600061266b612760565b509050610b3261016d6109ed856109f98568056bc75e2d6310000063ffffffff61213916565b7f3d82e958c891799f357c1316ae5543412952ae5c423336f8929ed7458039c9955490565b600082158015906126c657508115155b15610afd576112be826109f98568056bc75e2d6310000063ffffffff61213916565b600080831561274d57426017541461270657612702612760565b9150505b6008546040516370a0823160e01b815260009161273d9184916001600160a01b0316906370a08231906117839030906004016147c7565b90508085111561274b578094505b505b6117eb8461275a83612827565b8561304c565b6004805460065460085460405163015216af60e31b8152600094859461010090046001600160a01b0390811694630a90b578946127a79430949284169390911691016147f0565b60806040518083038186803b1580156127bf57600080fd5b505afa1580156127d3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506127f79190810190613fdb565b600d549195509350612821925068056bc75e2d6310000091506109f990849063ffffffff61213916565b90509091565b6000601b54600014610a085760135480612874576015546008546040516370a0823160e01b815261287192916001600160a01b0316906370a08231906117839030906004016147c7565b90505b610b32818463ffffffff6122fd16565b601b546000908061289757601854610f70565b610f70816109f985670de0b6b3a764000063ffffffff61213916565b6000816128d25760405162461bcd60e51b8152600401610ba290614ac0565b6128db3361125c565b8211156128ee576128eb3361125c565b91505b6128f6612b79565b60006129056113536000612827565b90506000612925670de0b6b3a76400006109f9868563ffffffff61213916565b6008546040516370a0823160e01b81529192506000916001600160a01b03909116906370a082319061295b9030906004016147c7565b60206040518083038186803b15801561297357600080fd5b505afa158015612987573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052506129ab9190810190613eca565b9050819350808411156129d05760405162461bcd60e51b8152600401610ba290614a30565b6129dc338686866133f0565b3360009081526019602052604090205415612a0857336000908152600960205260409020839055612a19565b336000908152600960205260408120555b505050919050565b6000846001600160a01b031663a9059cbb8585604051602401612a4592919061488c565b6040516020818303038152906040529060e01b6020820180516001600160e01b038381831617835250505050604051612a7e9190614795565b6000604051808303816000865af19150503d8060008114612abb576040519150601f19603f3d011682016040523d82523d6000602084013e612ac0565b606091505b50509050808290612ae45760405162461bcd60e51b8152600401610ba291906149af565b505050505050565b600082612b025768056bc75e2d631000006117eb565b6117eb68056bc75e2d631000006117d3846109f9876109ed6301e13380838c8863ffffffff61213916565b6000610a0569021e19e0c9bab24000006117d36204cfe06109f9866109ed600b546117d368056bc75e2d631000006109f96804563918244f400000600c5461213990919063ffffffff16565b4260175414612c17576004805460065460085460405163327ab63960e01b81526001600160a01b0361010090940484169463327ab63994612bbf948116931691016147d5565b602060405180830381600087803b158015612bd957600080fd5b505af1158015612bed573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250612c119190810190613eca565b50426017555b565b6000806000612c2a87878787613548565b9250612c499050612c41888463ffffffff6122fd16565b878787613548565b9093509150612c5e878363ffffffff6122fd16565b90509450945094915050565b6000612c74613587565b6008546040516370a0823160e01b81526001600160a01b03909116906370a0823190612ca49030906004016147c7565b60206040518083038186803b158015612cbc57600080fd5b505afa158015612cd0573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250612cf49190810190613eca565b602084015111801590612d10575083516001600160a01b031615155b612d2c5760405162461bcd60e51b8152600401610ba290614a60565b60608401516001600160a01b0316612d4f5783516001600160a01b031660608501525b612d598484613607565b60208301516060840151612d6c916122fd565b606084015260003415612d8657504734811115612d865750345b6004805460405163b1eac3ad60e01b81526101009091046001600160a01b03169163b1eac3ad918491612dc1918b918b918b918b91016148fc565b6020604051808303818588803b158015612dda57600080fd5b505af1158015612dee573d6000803e3d6000fd5b50505050506040513d601f19601f82011682018060405250612e139190810190613eca565b60208501819052612e365760405162461bcd60e51b8152600401610ba290614a90565b6020840151601554612e47916122fd565b601555612e546000612827565b60165584516020858101518651918801516040808a015190516001600160a01b03958616957f86e15dd78cd784ab7788bcf5b96b9395e86030e048e5faedcfe752c700f6157e95612eaf959490939092909182161590614b8a565b60405180910390a25050506020015192915050565b6001600160a01b038116612ed757600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b600080612f3e613a0d565b506000858152600f60209081526040918290208251610100810184528154815260018201549281019290925260028101549282018390526003810154606083015260048101546080830152600581015460a0830152600681015460c0830152600701546001600160a01b031660e082015290612fcc5760405162461bcd60e51b8152600401610ba290614b40565b604081015161300090612ff2906109f98868056bc75e2d6310000063ffffffff61213916565b612ffa611874565b8661304c565b915061304181604001516109f96130208585608001518660400151612aec565b6109f989701d6329f1c35ca4bfabb9f561000000000063ffffffff61213916565b925050935093915050565b60008061306d613067866015546122fd90919063ffffffff16565b856126b6565b905060008060008086156130e4576804563918244f400000851015613099576804563918244f40000094505b50507f185a40c6b6d3f849f72c71ea950323d21149c27a9d90f7dc5e5ea2d332edcf7f547f9ff54bc0049f5eab56ca7cd14591be3f7ed6355b856d01e3770305c74a004ea254613131565b6802b5e3af16b1880000851015613128576130fd612691565b91507f2b4858b1bc9e2d14afab03340ce5f6c81b703c86a0c570653ae586534e095fb1549050613131565b5050600b54600c545b6804e1003b28d92800008511156131c25761315b856804e1003b28d928000063ffffffff6122eb16565b9450678ac7230489e8000085111561317957678ac7230489e8000094505b61319360646109f9605a6109ed858763ffffffff6122fd16565b92506131bb836117d3678ac7230489e800006109f961167c68056bc75e2d63100000896122eb565b9550613218565b6131e3826117d368056bc75e2d631000006109f9898663ffffffff61213916565b955090925082906131fa818363ffffffff6122fd16565b92508386101561320c57839550613218565b82861115613218578295505b50505050509392505050565b6000856001600160a01b03166323b872dd86868660405160240161324a93929190614864565b6040516020818303038152906040529060e01b6020820180516001600160e01b0383818316178352505050506040516132839190614795565b6000604051808303816000865af19150503d80600081146132c0576040519150601f19603f3d011682016040523d82523d6000602084013e6132c5565b606091505b505090508082906132e95760405162461bcd60e51b8152600401610ba291906149af565b50505050505050565b6001600160a01b0384166133185760405162461bcd60e51b8152600401610ba2906149f0565b601b5461332b908463ffffffff6122fd16565b601b556001600160a01b038416600090815260196020526040902054613357908463ffffffff6122fd16565b6001600160a01b038516600081815260196020526040908190209290925590517fb4c03061fb5b7fed76389d5af8f2e0ddb09f8c70d1333abbb62582835e10accb906133a890869086908690614bcc565b60405180910390a2836001600160a01b031660006001600160a01b0316600080516020614d12833981519152856040516133e291906148ee565b60405180910390a350505050565b6001600160a01b0384166000908152601960205260409020548311156134285760405162461bcd60e51b8152600401610ba290614a00565b6001600160a01b038416600090815260196020526040902054613451908463ffffffff6122eb16565b6001600160a01b0385166000908152601960205260409020819055600a106134b9576001600160a01b03841660009081526019602052604090205461349d90849063ffffffff6122fd16565b6001600160a01b03851660009081526019602052604081205592505b601b546134cc908463ffffffff6122eb16565b601b556040516001600160a01b038516907f743033787f4738ff4d6a7225ce2bd0977ee5f86b91a902a58f5e4d0b297b46449061350e90869086908690614bcc565b60405180910390a260006001600160a01b0316846001600160a01b0316600080516020614d12833981519152856040516133e291906148ee565b60008061355686868561304c565b915061357c6b0a3098c68eb9427db80000006109f9866109ed8a8763ffffffff61213916565b905094509492505050565b600080356001600160e01b0319167fd46a704bc285dbd6ff5ad3863506260b1df02812f4f857c8cc852317a6ac64f26040516020016135c792919061476f565b60405160208183030381529060405280519060200120905060008154905080156136035760405162461bcd60e51b8152600401610ba290614ab0565b5050565b60208083015160408401516060808601519385015190850151608086015160a087015160c08801519596949560006001600160a01b0388166137b7576007546008546001600160a01b039081169116141561372757600854604080516020810190915260008152733b5bdccdfa2a0a1911984f203c19628eeb6036e09161369d916001600160a01b039091169083908690612a21565b604051630bfcf63b60e41b81526001600160a01b0382169063bfcf63b0906136cb908b90879060040161488c565b602060405180830381600087803b1580156136e557600080fd5b505af11580156136f9573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525061371d9190810190613eca565b8314915050613754565b600854604080516020810190915260008152613750916001600160a01b03169089908590612a21565b5060015b80801561376057508186115b1561379557600854600554604080516020810190915260008152613795926001600160a01b03908116921690858a0390612a21565b806137b25760405162461bcd60e51b8152600401610ba290614ad0565b6137ef565b600854600554604080518082019091526002815261191b60f11b60208201526137ef926001600160a01b039081169216908990612a21565b8315613957576007546001600160a01b038a8116911614801561381157503415155b801561381c57503484145b156138c457600760009054906101000a90046001600160a01b03166001600160a01b031663d0e30db0856040518263ffffffff1660e01b81526004016000604051808303818588803b15801561387157600080fd5b505af1158015613885573d6000803e3d6000fd5b5050600554604080518082019091526002815261323760f01b60208201526138bf94508d93506001600160a01b0390911691508790612a21565b613957565b6008546001600160a01b038a8116911614156138f1576138ea858563ffffffff6122fd16565b9450613957565b876001600160a01b0316896001600160a01b031614156139225761391b838563ffffffff6122fd16565b9250613957565b600554604080518082019091526002815261323760f01b6020820152613957918b9133916001600160a01b0316908890613224565b84156139c5576008546001600160a01b038981169116141561398a57613983838663ffffffff6122fd16565b92506139c5565b600854600554604080518082019091526002815261333160f01b60208201526139c5926001600160a01b039081169233929116908990613224565b8215613a0057600554604080518082019091526002815261199960f11b6020820152613a00918a9133916001600160a01b0316908790613224565b5050505050505050505050565b6040518061010001604052806000801916815260200160008152602001600081526020016000815260200160008152602001600081526020016000815260200160006001600160a01b031681525090565b6040518060e001604052806007906020820280388339509192915050565b8035610afd81614ceb565b8051610afd81614ceb565b8035610afd81614cff565b8035610afd81614d08565b600082601f830112613ab957600080fd5b8135613acc613ac782614c1c565b614bf5565b91508082526020830160208301858383011115613ae857600080fd5b613af3838284614c92565b50505092915050565b60006101408284031215613b0f57600080fd5b613b1a610140614bf5565b90506000613b288484613a7c565b8252506020613b3984848301613a7c565b6020830152506040613b4d84828501613a7c565b6040830152506060613b6184828501613a7c565b6060830152506080613b7584828501613a9d565b60808301525060a0613b8984828501613a9d565b60a08301525060c0613b9d84828501613a9d565b60c08301525060e0613bb184828501613a9d565b60e083015250610100613bc684828501613a9d565b61010083015250610120613bdc84828501613a9d565b6101208301525092915050565b60006101608284031215613bfc57600080fd5b613c07610160614bf5565b90506000613c158484613a7c565b8252506020613c2684848301613a7c565b6020830152506040613c3a84828501613a7c565b6040830152506060613c4e84828501613a9d565b6060830152506080613c6284828501613a9d565b60808301525060a0613c7684828501613a9d565b60a08301525060c0613c8a84828501613a9d565b60c08301525060e0613c9e84828501613a9d565b60e083015250610100613cb384828501613a9d565b61010083015250610120613cc984828501613a92565b61012083015250610140613cdf84828501613a9d565b6101408301525092915050565b8051610afd81614d08565b600060208284031215613d0957600080fd5b60006117eb8484613a7c565b600060208284031215613d2757600080fd5b60006117eb8484613a87565b60008060408385031215613d4657600080fd5b6000613d528585613a7c565b9250506020613d6385828601613a7c565b9150509250929050565b600080600060608486031215613d8257600080fd5b6000613d8e8686613a7c565b9350506020613d9f86828701613a7c565b9250506040613db086828701613a9d565b9150509250925092565b60008060408385031215613dcd57600080fd5b6000613dd98585613a7c565b925050602083013567ffffffffffffffff811115613df657600080fd5b613d6385828601613aa8565b60008060408385031215613e1557600080fd5b6000613e218585613a7c565b9250506020613d6385828601613a9d565b600060208284031215613e4457600080fd5b60006117eb8484613a9d565b60008060008060006103008688031215613e6957600080fd5b6000613e758888613afc565b955050610140613e8788828901613be9565b9450506102a0613e9988828901613a7c565b9350506102c0613eab88828901613a9d565b9250506102e0613ebd88828901613a92565b9150509295509295909350565b600060208284031215613edc57600080fd5b60006117eb8484613cec565b60008060408385031215613efb57600080fd5b6000613f078585613a9d565b9250506020613d6385828601613a92565b60008060408385031215613f2b57600080fd5b6000613e218585613a9d565b600080600060608486031215613f4c57600080fd5b6000613f588686613cec565b9350506020613f6986828701613cec565b9250506040613db086828701613cec565b60008060008060808587031215613f9057600080fd5b6000613f9c8787613a9d565b9450506020613fad87828801613a9d565b9350506040613fbe87828801613a9d565b9250506060613fcf87828801613a7c565b91505092959194509250565b60008060008060808587031215613ff157600080fd5b6000613ffd8787613cec565b945050602061400e87828801613cec565b935050604061401f87828801613cec565b9250506060613fcf87828801613cec565b600080600080600080600080610100898b03121561404d57600080fd5b60006140598b8b613a9d565b985050602061406a8b828c01613a9d565b975050604061407b8b828c01613a9d565b965050606061408c8b828c01613a9d565b955050608061409d8b828c01613a7c565b94505060a06140ae8b828c01613a7c565b93505060c06140bf8b828c01613a7c565b92505060e089013567ffffffffffffffff8111156140dc57600080fd5b6140e88b828c01613aa8565b9150509295985092959890939650565b6000806000806000806000806000806101408b8d03121561411857600080fd5b60006141248d8d613a9d565b9a505060206141358d828e01613a9d565b99505060406141468d828e01613a9d565b98505060606141578d828e01613a9d565b97505060806141688d828e01613a9d565b96505060a06141798d828e01613a7c565b95505060c061418a8d828e01613a7c565b94505060e061419b8d828e01613a7c565b9350506101006141ad8d828e01613a7c565b9250506101208b013567ffffffffffffffff8111156141cb57600080fd5b6141d78d828e01613aa8565b9150509295989b9194979a5092959850565b60006141f58383614209565b505060200190565b60006141f58383614323565b61421281614c63565b82525050565b61421261422482614c63565b614cca565b61423281614c4a565b61423c8184610a08565b925061424782610b13565b8060005b83811015612ae457815161425f87826141e9565b965061426a83614c44565b92505060010161424b565b61427e81614c50565b6142888184610a08565b925061429382610b13565b8060005b83811015612ae45781516142ab87826141fd565b96506142b683614c44565b925050600101614297565b60006142cc82614c56565b6142d68185614c5a565b93506142e183614c44565b8060005b8381101561430f5781516142f988826141fd565b975061430483614c44565b9250506001016142e5565b509495945050505050565b61421281614c6e565b61421281610b13565b61421261433882614c73565b610b13565b600061434882614c56565b6143528185614c5a565b9350614362818560208601614c9e565b61436b81614cdb565b9093019392505050565b600061438082614c56565b61438a8185610a08565b935061439a818560208601614c9e565b9290920192915050565b60006143b1600183614c5a565b600d60fa1b815260200192915050565b60006143ce600283614c5a565b61323360f01b815260200192915050565b60006143ec600283614c5a565b61031360f41b815260200192915050565b600061440a600283614c5a565b61313560f01b815260200192915050565b6000614428600283614c5a565b61189b60f11b815260200192915050565b6000614446600183614c5a565b603360f81b815260200192915050565b6000614463600183614c5a565b603760f81b815260200192915050565b6000614480600283614c5a565b61333760f01b815260200192915050565b600061449e600283614c5a565b610c4d60f21b815260200192915050565b60006144bc600283614c5a565b61333560f01b815260200192915050565b60006144da600283614c5a565b610c8d60f21b815260200192915050565b60006144f8600283614c5a565b61313160f01b815260200192915050565b6000614516600283614c5a565b61313360f01b815260200192915050565b6000614534600283614c5a565b61323560f01b815260200192915050565b6000614552600283614c5a565b61313760f01b815260200192915050565b6000614570600c83614c5a565b6b1d5b985d5d1a1bdc9a5e995960a21b815260200192915050565b6000614598600283614c5a565b61313960f01b815260200192915050565b60006145b6600283614c5a565b61191b60f11b815260200192915050565b60006145d4600183614c5a565b601960f91b815260200192915050565b60006145f1600183614c5a565b603160f81b815260200192915050565b600061460e600283614c5a565b61191960f11b815260200192915050565b600061462c600c83614c5a565b6b1b9bdb9499595b9d1c985b9d60a21b815260200192915050565b6000614654600183614c5a565b601b60f91b815260200192915050565b6000614671600183614c5a565b600760fb1b815260200192915050565b600061468e600283614c5a565b61333360f01b815260200192915050565b60006146ac600283614c5a565b61323160f01b815260200192915050565b80516101008301906146cf8482614323565b5060208201516146e26020850182614323565b5060408201516146f56040850182614323565b5060608201516147086060850182614323565b50608082015161471b6080850182614323565b5060a082015161472e60a0850182614323565b5060c082015161474160c0850182614323565b5060e082015161475460e0850182614209565b50505050565b61421261433882610b13565b61421281614c8c565b600061477b828561432c565b60048201915061478b828461475a565b5060200192915050565b6000610f708284614375565b60006147ad828561475a565b6020820191506147bd8284614218565b5060140192915050565b60208101610afd8284614209565b604081016147e38285614209565b610f706020830184614209565b606081016147fe8286614209565b61480b6020830185614209565b6117eb6040830184614209565b60a081016148268288614209565b6148336020830187614209565b6148406040830186614209565b61484d6060830185614323565b61485a6080830184614323565b9695505050505050565b606081016148728286614209565b61487f6020830185614209565b6117eb6040830184614323565b6040810161489a8285614209565b610f706020830184614323565b606081016148b58286614209565b6148c26020830185614323565b6117eb604083018461431a565b60208082528101610f7081846142c1565b60208101610afd828461431a565b60208101610afd8284614323565b6101a0810161490b8287614323565b6149186020830186614229565b61492560a0830185614275565b81810361018083015261485a818461433d565b6101008101614947828b614323565b614954602083018a614323565b6149616040830189614323565b61496e6060830188614323565b61497b6080830187614323565b61498860a0830186614323565b61499560c0830185614323565b6149a260e0830184614209565b9998505050505050505050565b60208082528101610f70818461433d565b60208082528101610a05816143a4565b60208082528101610a05816143c1565b60208082528101610a05816143df565b60208082528101610a05816143fd565b60208082528101610a058161441b565b60208082528101610a0581614439565b60208082528101610a0581614456565b60208082528101610a0581614473565b60208082528101610a0581614491565b60208082528101610a05816144af565b60208082528101610a05816144cd565b60208082528101610a05816144eb565b60208082528101610a0581614509565b60208082528101610a0581614527565b60208082528101610a0581614545565b60208082528101610a0581614563565b60208082528101610a058161458b565b60208082528101610a05816145a9565b60208082528101610a05816145c7565b60208082528101610a05816145e4565b60208082528101610a0581614601565b60208082528101610a058161461f565b60208082528101610a0581614647565b60208082528101610a0581614664565b60208082528101610a0581614681565b60208082528101610a058161469f565b6101008101610afd82846146bd565b60408101614b7d8285614323565b610f70602083018461431a565b60a08101614b988288614323565b614ba56020830187614323565b614bb26040830186614209565b614bbf6060830185614209565b61485a608083018461431a565b60608101614bda8286614323565b61487f6020830185614323565b60208101610afd8284614766565b60405181810167ffffffffffffffff81118282101715614c1457600080fd5b604052919050565b600067ffffffffffffffff821115614c3357600080fd5b506020601f91909101601f19160190565b60200190565b50600490565b50600790565b5190565b90815260200190565b6000610a0582614c80565b151590565b6001600160e01b03191690565b6001600160a01b031690565b60ff1690565b82818337506000910152565b60005b83811015614cb9578181015183820152602001614ca1565b838111156147545750506000910152565b6000610a05826000610a0582614ce5565b601f01601f191690565b60601b90565b614cf481614c63565b81146120fb57600080fd5b614cf481614c6e565b614cf481610b1356feddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3efa365627a7a723158202c52b2611a838957ba5608341251340a42bfdff943abf96b14a7e3faf27cb5866c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployLoanTokenLogicV4 deploys a new Ethereum contract, binding an instance of LoanTokenLogicV4 to it.
 func DeployLoanTokenLogicV4(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *LoanTokenLogicV4, error) {
@@ -7016,7 +7390,7 @@ func bindLoanTokenLogicV4(address common.Address, caller bind.ContractCaller, tr
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenLogicV4 *LoanTokenLogicV4Raw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenLogicV4 *LoanTokenLogicV4Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenLogicV4.Contract.LoanTokenLogicV4Caller.contract.Call(opts, result, method, params...)
 }
 
@@ -7035,7 +7409,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Raw) Transact(opts *bind.TransactOpts, 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenLogicV4.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -7050,42 +7424,52 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4TransactorRaw) Transact(opts *bind.Tran
 	return _LoanTokenLogicV4.Contract.contract.Transact(opts, method, params...)
 }
 
-// SupplyInterestRate1 is a free data retrieval call binding the contract method 0x7288b344.
+// SupplyInterestRate is a free data retrieval call binding the contract method 0x7288b344.
 //
 // Solidity: function _supplyInterestRate(uint256 assetBorrow, uint256 assetSupply) view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) SupplyInterestRate1(opts *bind.CallOpts, assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "_supplyInterestRate", assetBorrow, assetSupply)
-	return *ret0, err
+func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) SupplyInterestRate(opts *bind.CallOpts, assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "_supplyInterestRate", assetBorrow, assetSupply)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
-// SupplyInterestRate1 is a free data retrieval call binding the contract method 0x7288b344.
+// SupplyInterestRate is a free data retrieval call binding the contract method 0x7288b344.
 //
 // Solidity: function _supplyInterestRate(uint256 assetBorrow, uint256 assetSupply) view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4Session) SupplyInterestRate1(assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
-	return _LoanTokenLogicV4.Contract.SupplyInterestRate1(&_LoanTokenLogicV4.CallOpts, assetBorrow, assetSupply)
+func (_LoanTokenLogicV4 *LoanTokenLogicV4Session) SupplyInterestRate(assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
+	return _LoanTokenLogicV4.Contract.SupplyInterestRate(&_LoanTokenLogicV4.CallOpts, assetBorrow, assetSupply)
 }
 
-// SupplyInterestRate1 is a free data retrieval call binding the contract method 0x7288b344.
+// SupplyInterestRate is a free data retrieval call binding the contract method 0x7288b344.
 //
 // Solidity: function _supplyInterestRate(uint256 assetBorrow, uint256 assetSupply) view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) SupplyInterestRate1(assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
-	return _LoanTokenLogicV4.Contract.SupplyInterestRate1(&_LoanTokenLogicV4.CallOpts, assetBorrow, assetSupply)
+func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) SupplyInterestRate(assetBorrow *big.Int, assetSupply *big.Int) (*big.Int, error) {
+	return _LoanTokenLogicV4.Contract.SupplyInterestRate(&_LoanTokenLogicV4.CallOpts, assetBorrow, assetSupply)
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -7106,12 +7490,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) Allowance(_owner common.
 //
 // Solidity: function assetBalanceOf(address _owner) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) AssetBalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "assetBalanceOf", _owner)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "assetBalanceOf", _owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AssetBalanceOf is a free data retrieval call binding the contract method 0x06b3efd6.
@@ -7132,12 +7521,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) AssetBalanceOf(_owner co
 //
 // Solidity: function avgBorrowInterestRate() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) AvgBorrowInterestRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "avgBorrowInterestRate")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "avgBorrowInterestRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AvgBorrowInterestRate is a free data retrieval call binding the contract method 0x44a4a003.
@@ -7158,12 +7552,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) AvgBorrowInterestRate() 
 //
 // Solidity: function bZxContract() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BZxContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "bZxContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "bZxContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxContract is a free data retrieval call binding the contract method 0x995363d3.
@@ -7184,12 +7583,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BZxContract() (common.Ad
 //
 // Solidity: function bZxOracle() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BZxOracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "bZxOracle")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "bZxOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxOracle is a free data retrieval call binding the contract method 0x96c7871b.
@@ -7210,12 +7614,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BZxOracle() (common.Addr
 //
 // Solidity: function bZxVault() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BZxVault(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "bZxVault")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "bZxVault")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxVault is a free data retrieval call binding the contract method 0x894ca308.
@@ -7236,12 +7645,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BZxVault() (common.Addre
 //
 // Solidity: function balanceOf(address _owner) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "balanceOf", _owner)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "balanceOf", _owner)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -7262,12 +7676,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BalanceOf(_owner common.
 //
 // Solidity: function baseRate() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BaseRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "baseRate")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "baseRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BaseRate is a free data retrieval call binding the contract method 0x1f68f20a.
@@ -7288,12 +7707,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BaseRate() (*big.Int, er
 //
 // Solidity: function borrowInterestRate() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BorrowInterestRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "borrowInterestRate")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "borrowInterestRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BorrowInterestRate is a free data retrieval call binding the contract method 0x8325a1c0.
@@ -7317,13 +7741,19 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BurntTokenReserveList(opts *bin
 	Lender common.Address
 	Amount *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "burntTokenReserveList", arg0)
+
+	outstruct := new(struct {
 		Lender common.Address
 		Amount *big.Int
 	})
-	out := ret
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "burntTokenReserveList", arg0)
-	return *ret, err
+
+	outstruct.Lender = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveList is a free data retrieval call binding the contract method 0x7866c6c1.
@@ -7353,13 +7783,19 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BurntTokenReserveListIndex(opts
 	Index *big.Int
 	IsSet bool
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "burntTokenReserveListIndex", arg0)
+
+	outstruct := new(struct {
 		Index *big.Int
 		IsSet bool
 	})
-	out := ret
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "burntTokenReserveListIndex", arg0)
-	return *ret, err
+
+	outstruct.Index = out[0].(*big.Int)
+	outstruct.IsSet = out[1].(bool)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveListIndex is a free data retrieval call binding the contract method 0xfbd9574d.
@@ -7386,12 +7822,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BurntTokenReserveListInd
 //
 // Solidity: function burntTokenReserved() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) BurntTokenReserved(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "burntTokenReserved")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "burntTokenReserved")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BurntTokenReserved is a free data retrieval call binding the contract method 0x0c4925fd.
@@ -7412,12 +7853,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) BurntTokenReserved() (*b
 //
 // Solidity: function checkpointPrice(address _user) view returns(uint256 price)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) CheckpointPrice(opts *bind.CallOpts, _user common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "checkpointPrice", _user)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "checkpointPrice", _user)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CheckpointPrice is a free data retrieval call binding the contract method 0xeebc5081.
@@ -7438,12 +7884,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) CheckpointPrice(_user co
 //
 // Solidity: function checkpointSupply() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) CheckpointSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "checkpointSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "checkpointSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CheckpointSupply is a free data retrieval call binding the contract method 0x7b7933b4.
@@ -7464,12 +7915,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) CheckpointSupply() (*big
 //
 // Solidity: function decimals() view returns(uint8)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -7490,12 +7946,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) Decimals() (uint8, error
 //
 // Solidity: function getBorrowAmountForDeposit(uint256 depositAmount, uint256 leverageAmount, uint256 initialLoanDuration, address collateralTokenAddress) view returns(uint256 borrowAmount)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) GetBorrowAmountForDeposit(opts *bind.CallOpts, depositAmount *big.Int, leverageAmount *big.Int, initialLoanDuration *big.Int, collateralTokenAddress common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "getBorrowAmountForDeposit", depositAmount, leverageAmount, initialLoanDuration, collateralTokenAddress)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "getBorrowAmountForDeposit", depositAmount, leverageAmount, initialLoanDuration, collateralTokenAddress)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBorrowAmountForDeposit is a free data retrieval call binding the contract method 0x24d25f4a.
@@ -7516,12 +7977,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) GetBorrowAmountForDeposi
 //
 // Solidity: function getDepositAmountForBorrow(uint256 borrowAmount, uint256 leverageAmount, uint256 initialLoanDuration, address collateralTokenAddress) view returns(uint256 depositAmount)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) GetDepositAmountForBorrow(opts *bind.CallOpts, borrowAmount *big.Int, leverageAmount *big.Int, initialLoanDuration *big.Int, collateralTokenAddress common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "getDepositAmountForBorrow", borrowAmount, leverageAmount, initialLoanDuration, collateralTokenAddress)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "getDepositAmountForBorrow", borrowAmount, leverageAmount, initialLoanDuration, collateralTokenAddress)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDepositAmountForBorrow is a free data retrieval call binding the contract method 0x8423acd6.
@@ -7542,12 +8008,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) GetDepositAmountForBorro
 //
 // Solidity: function getLeverageList() view returns(uint256[])
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) GetLeverageList(opts *bind.CallOpts) ([]*big.Int, error) {
-	var (
-		ret0 = new([]*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "getLeverageList")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "getLeverageList")
+
+	if err != nil {
+		return *new([]*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]*big.Int)).(*[]*big.Int)
+
+	return out0, err
+
 }
 
 // GetLeverageList is a free data retrieval call binding the contract method 0x2ecae90a.
@@ -7568,12 +8039,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) GetLeverageList() ([]*bi
 //
 // Solidity: function getLoanData(bytes32 loanOrderHash) view returns((bytes32,uint256,uint256,uint256,uint256,uint256,uint256,address))
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) GetLoanData(opts *bind.CallOpts, loanOrderHash [32]byte) (LoanTokenStorageLoanData, error) {
-	var (
-		ret0 = new(LoanTokenStorageLoanData)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "getLoanData", loanOrderHash)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "getLoanData", loanOrderHash)
+
+	if err != nil {
+		return *new(LoanTokenStorageLoanData), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(LoanTokenStorageLoanData)).(*LoanTokenStorageLoanData)
+
+	return out0, err
+
 }
 
 // GetLoanData is a free data retrieval call binding the contract method 0xc4d2b1b3.
@@ -7594,12 +8070,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) GetLoanData(loanOrderHas
 //
 // Solidity: function getMaxEscrowAmount(uint256 leverageAmount) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) GetMaxEscrowAmount(opts *bind.CallOpts, leverageAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "getMaxEscrowAmount", leverageAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "getMaxEscrowAmount", leverageAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetMaxEscrowAmount is a free data retrieval call binding the contract method 0x829b38f4.
@@ -7620,12 +8101,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) GetMaxEscrowAmount(lever
 //
 // Solidity: function initialPrice() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) InitialPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "initialPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "initialPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialPrice is a free data retrieval call binding the contract method 0x1d0806ae.
@@ -7646,12 +8132,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) InitialPrice() (*big.Int
 //
 // Solidity: function leverageList(uint256 ) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) LeverageList(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "leverageList", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "leverageList", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LeverageList is a free data retrieval call binding the contract method 0x9b3a54d1.
@@ -7681,7 +8172,10 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) LoanOrderData(opts *bind.CallOp
 	MarginPremiumAmount         *big.Int
 	CollateralTokenAddress      common.Address
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "loanOrderData", arg0)
+
+	outstruct := new(struct {
 		LoanOrderHash               [32]byte
 		LeverageAmount              *big.Int
 		InitialMarginAmount         *big.Int
@@ -7691,9 +8185,18 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) LoanOrderData(opts *bind.CallOp
 		MarginPremiumAmount         *big.Int
 		CollateralTokenAddress      common.Address
 	})
-	out := ret
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "loanOrderData", arg0)
-	return *ret, err
+
+	outstruct.LoanOrderHash = out[0].([32]byte)
+	outstruct.LeverageAmount = out[1].(*big.Int)
+	outstruct.InitialMarginAmount = out[2].(*big.Int)
+	outstruct.MaintenanceMarginAmount = out[3].(*big.Int)
+	outstruct.MaxDurationUnixTimestampSec = out[4].(*big.Int)
+	outstruct.Index = out[5].(*big.Int)
+	outstruct.MarginPremiumAmount = out[6].(*big.Int)
+	outstruct.CollateralTokenAddress = out[7].(common.Address)
+
+	return *outstruct, err
+
 }
 
 // LoanOrderData is a free data retrieval call binding the contract method 0x2515aacd.
@@ -7732,12 +8235,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) LoanOrderData(arg0 [32]b
 //
 // Solidity: function loanOrderHashes(uint256 ) view returns(bytes32)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) LoanOrderHashes(opts *bind.CallOpts, arg0 *big.Int) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "loanOrderHashes", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "loanOrderHashes", arg0)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // LoanOrderHashes is a free data retrieval call binding the contract method 0xfe056342.
@@ -7758,12 +8266,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) LoanOrderHashes(arg0 *bi
 //
 // Solidity: function loanTokenAddress() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) LoanTokenAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "loanTokenAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "loanTokenAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LoanTokenAddress is a free data retrieval call binding the contract method 0x797bf385.
@@ -7784,12 +8297,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) LoanTokenAddress() (comm
 //
 // Solidity: function marketLiquidity() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) MarketLiquidity(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "marketLiquidity")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "marketLiquidity")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MarketLiquidity is a free data retrieval call binding the contract method 0x612ef80b.
@@ -7810,12 +8328,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) MarketLiquidity() (*big.
 //
 // Solidity: function name() view returns(string)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -7836,12 +8359,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) Name() (string, error) {
 //
 // Solidity: function nextBorrowInterestRate(uint256 borrowAmount) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) NextBorrowInterestRate(opts *bind.CallOpts, borrowAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "nextBorrowInterestRate", borrowAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "nextBorrowInterestRate", borrowAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // NextBorrowInterestRate is a free data retrieval call binding the contract method 0xb9fe1a8f.
@@ -7862,12 +8390,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) NextBorrowInterestRate(b
 //
 // Solidity: function nextBorrowInterestRateWithOption(uint256 borrowAmount, bool useFixedInterestModel) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) NextBorrowInterestRateWithOption(opts *bind.CallOpts, borrowAmount *big.Int, useFixedInterestModel bool) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "nextBorrowInterestRateWithOption", borrowAmount, useFixedInterestModel)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "nextBorrowInterestRateWithOption", borrowAmount, useFixedInterestModel)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // NextBorrowInterestRateWithOption is a free data retrieval call binding the contract method 0x7d90dcba.
@@ -7888,12 +8421,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) NextBorrowInterestRateWi
 //
 // Solidity: function nextSupplyInterestRate(uint256 supplyAmount) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) NextSupplyInterestRate(opts *bind.CallOpts, supplyAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "nextSupplyInterestRate", supplyAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "nextSupplyInterestRate", supplyAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // NextSupplyInterestRate is a free data retrieval call binding the contract method 0xd65a5021.
@@ -7914,12 +8452,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) NextSupplyInterestRate(s
 //
 // Solidity: function owner() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -7940,12 +8483,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) Owner() (common.Address,
 //
 // Solidity: function protocolInterestRate() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) ProtocolInterestRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "protocolInterestRate")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "protocolInterestRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ProtocolInterestRate is a free data retrieval call binding the contract method 0xfc3b72b1.
@@ -7966,12 +8514,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) ProtocolInterestRate() (
 //
 // Solidity: function rateMultiplier() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) RateMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "rateMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "rateMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RateMultiplier is a free data retrieval call binding the contract method 0x330691ac.
@@ -7992,12 +8545,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) RateMultiplier() (*big.I
 //
 // Solidity: function spreadMultiplier() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) SpreadMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "spreadMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "spreadMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SpreadMultiplier is a free data retrieval call binding the contract method 0xd84d2a47.
@@ -8014,42 +8572,52 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) SpreadMultiplier() (*big
 	return _LoanTokenLogicV4.Contract.SpreadMultiplier(&_LoanTokenLogicV4.CallOpts)
 }
 
-// SupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
+// NextsupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
 //
 // Solidity: function supplyInterestRate() view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) SupplyInterestRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "supplyInterestRate")
-	return *ret0, err
+func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) NextsupplyInterestRate(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "supplyInterestRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
-// SupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
+// NextsupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
 //
 // Solidity: function supplyInterestRate() view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4Session) SupplyInterestRate() (*big.Int, error) {
-	return _LoanTokenLogicV4.Contract.SupplyInterestRate(&_LoanTokenLogicV4.CallOpts)
+func (_LoanTokenLogicV4 *LoanTokenLogicV4Session) NextsupplyInterestRate() (*big.Int, error) {
+	return _LoanTokenLogicV4.Contract.NextsupplyInterestRate(&_LoanTokenLogicV4.CallOpts)
 }
 
-// SupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
+// NextsupplyInterestRate is a free data retrieval call binding the contract method 0x09ec6b6b.
 //
 // Solidity: function supplyInterestRate() view returns(uint256)
-func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) SupplyInterestRate() (*big.Int, error) {
-	return _LoanTokenLogicV4.Contract.SupplyInterestRate(&_LoanTokenLogicV4.CallOpts)
+func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) NextsupplyInterestRate() (*big.Int, error) {
+	return _LoanTokenLogicV4.Contract.NextsupplyInterestRate(&_LoanTokenLogicV4.CallOpts)
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
 // Solidity: function symbol() view returns(string)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -8070,12 +8638,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) Symbol() (string, error)
 //
 // Solidity: function tokenPrice() view returns(uint256 price)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TokenPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "tokenPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "tokenPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TokenPrice is a free data retrieval call binding the contract method 0x7ff9b596.
@@ -8096,12 +8669,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TokenPrice() (*big.Int, 
 //
 // Solidity: function tokenizedRegistry() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TokenizedRegistry(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "tokenizedRegistry")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "tokenizedRegistry")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenizedRegistry is a free data retrieval call binding the contract method 0x736ee3d3.
@@ -8122,12 +8700,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TokenizedRegistry() (com
 //
 // Solidity: function totalAssetBorrow() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TotalAssetBorrow(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "totalAssetBorrow")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "totalAssetBorrow")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAssetBorrow is a free data retrieval call binding the contract method 0x20f6d07c.
@@ -8148,12 +8731,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TotalAssetBorrow() (*big
 //
 // Solidity: function totalAssetSupply() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TotalAssetSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "totalAssetSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "totalAssetSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAssetSupply is a free data retrieval call binding the contract method 0x8fb807c5.
@@ -8174,12 +8762,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TotalAssetSupply() (*big
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -8200,12 +8793,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TotalSupply() (*big.Int,
 //
 // Solidity: function totalSupplyInterestRate(uint256 assetSupply) view returns(uint256)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) TotalSupplyInterestRate(opts *bind.CallOpts, assetSupply *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "totalSupplyInterestRate", assetSupply)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "totalSupplyInterestRate", assetSupply)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupplyInterestRate is a free data retrieval call binding the contract method 0x12416898.
@@ -8226,12 +8824,17 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4CallerSession) TotalSupplyInterestRate(
 //
 // Solidity: function wethContract() view returns(address)
 func (_LoanTokenLogicV4 *LoanTokenLogicV4Caller) WethContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenLogicV4.contract.Call(opts, out, "wethContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenLogicV4.contract.Call(opts, &out, "wethContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // WethContract is a free data retrieval call binding the contract method 0x4780eac1.
@@ -8671,6 +9274,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseApproval(log types.Log) 
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -8819,6 +9423,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseBorrow(log types.Log) (*
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Borrow", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -8965,6 +9570,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseBurn(log types.Log) (*Lo
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Burn", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9112,6 +9718,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseClaim(log types.Log) (*L
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Claim", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9258,6 +9865,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseMint(log types.Log) (*Lo
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Mint", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9410,6 +10018,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseOwnershipTransferred(log
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9565,6 +10174,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseRepay(log types.Log) (*L
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Repay", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9718,6 +10328,7 @@ func (_LoanTokenLogicV4 *LoanTokenLogicV4Filterer) ParseTransfer(log types.Log) 
 	if err := _LoanTokenLogicV4.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -9752,7 +10363,7 @@ var LoanTokenStorageFuncSigs = map[string]string{
 }
 
 // LoanTokenStorageBin is the compiled bytecode used for deploying new contracts.
-var LoanTokenStorageBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556108238061004d6000396000f3fe608060405234801561001057600080fd5b506004361061014d5760003560e01c8063797bf385116100c3578063995363d31161007c578063995363d31461024f5780639b3a54d114610257578063d84d2a471461026a578063f2fde38b14610272578063fbd9574d14610287578063fe056342146102a85761014d565b8063797bf3851461021f5780637b7933b414610227578063894ca3081461022f5780638da5cb5b1461023757806395d89b411461023f57806396c7871b146102475761014d565b80632515aacd116101155780632515aacd1461019d578063313ce567146101c4578063330691ac146101d95780634780eac1146101e1578063736ee3d3146101f65780637866c6c1146101fe5761014d565b806306fdde03146101525780630c4925fd146101705780631d0806ae146101855780631f68f20a1461018d57806320f6d07c14610195575b600080fd5b61015a6102bb565b604051610167919061071d565b60405180910390f35b610178610346565b6040516101679190610698565b61017861034c565b610178610352565b610178610358565b6101b06101ab3660046105e8565b61035e565b6040516101679897969594939291906106a6565b6101cc6103aa565b6040516101679190610749565b6101786103b3565b6101e96103b9565b6040516101679190610668565b6101e96103c8565b61021161020c3660046105e8565b6103dc565b604051610167929190610676565b6101e9610411565b610178610420565b6101e9610426565b6101e9610435565b61015a610444565b6101e961049f565b6101e96104ae565b6101786102653660046105e8565b6104c2565b6101786104e0565b6102856102803660046105c2565b6104e6565b005b61029a6102953660046105c2565b610509565b60405161016792919061072e565b6101786102b63660046105e8565b610525565b6002805460408051602060018416156101000260001901909316849004601f8101849004840282018401909252818152929183018282801561033e5780601f106103135761010080835404028352916020019161033e565b820191906000526020600020905b81548152906001019060200180831161032157829003601f168201915b505050505081565b60135481565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b600a5461010090046001600160a01b031681565b601181815481106103e957fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561033e5780601f106103135761010080835404028352916020019161033e565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b601081815481106104cf57fe5b600091825260209091200154905081565b600d5481565b6001546001600160a01b031633146104fd57600080fd5b61050681610537565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b03811661054a57600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b80356105b1816107c3565b92915050565b80356105b1816107d7565b6000602082840312156105d457600080fd5b60006105e084846105a6565b949350505050565b6000602082840312156105fa57600080fd5b60006105e084846105b7565b61060f81610764565b82525050565b61060f8161076f565b61060f81610774565b600061063282610757565b61063c818561075b565b935061064c818560208601610789565b610655816107b9565b9093019392505050565b61060f81610783565b602081016105b18284610606565b604081016106848285610606565b610691602083018461061e565b9392505050565b602081016105b1828461061e565b61010081016106b5828b61061e565b6106c2602083018a61061e565b6106cf604083018961061e565b6106dc606083018861061e565b6106e9608083018761061e565b6106f660a083018661061e565b61070360c083018561061e565b61071060e0830184610606565b9998505050505050505050565b602080825281016106918184610627565b6040810161073c828561061e565b6106916020830184610615565b602081016105b1828461065f565b5190565b90815260200190565b60006105b182610777565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b838110156107a457818101518382015260200161078c565b838111156107b3576000848401525b50505050565b601f01601f191690565b6107cc81610764565b811461050657600080fd5b6107cc8161077456fea365627a7a723158200853a9e06e23585f5a283e3e2599feb6bd1f04fd12235d4251ef78a6e5191f8b6c6578706572696d656e74616cf564736f6c63430005110040"
+var LoanTokenStorageBin = "0x608060405260016000819055600a805460ff19169055670de0b6b3a7640000600b556801043561a882930000600c5580546001600160a01b031916331790556108238061004d6000396000f3fe608060405234801561001057600080fd5b506004361061014d5760003560e01c8063797bf385116100c3578063995363d31161007c578063995363d31461024f5780639b3a54d114610257578063d84d2a471461026a578063f2fde38b14610272578063fbd9574d14610287578063fe056342146102a85761014d565b8063797bf3851461021f5780637b7933b414610227578063894ca3081461022f5780638da5cb5b1461023757806395d89b411461023f57806396c7871b146102475761014d565b80632515aacd116101155780632515aacd1461019d578063313ce567146101c4578063330691ac146101d95780634780eac1146101e1578063736ee3d3146101f65780637866c6c1146101fe5761014d565b806306fdde03146101525780630c4925fd146101705780631d0806ae146101855780631f68f20a1461018d57806320f6d07c14610195575b600080fd5b61015a6102bb565b604051610167919061071d565b60405180910390f35b610178610346565b6040516101679190610698565b61017861034c565b610178610352565b610178610358565b6101b06101ab3660046105e8565b61035e565b6040516101679897969594939291906106a6565b6101cc6103aa565b6040516101679190610749565b6101786103b3565b6101e96103b9565b6040516101679190610668565b6101e96103c8565b61021161020c3660046105e8565b6103dc565b604051610167929190610676565b6101e9610411565b610178610420565b6101e9610426565b6101e9610435565b61015a610444565b6101e961049f565b6101e96104ae565b6101786102653660046105e8565b6104c2565b6101786104e0565b6102856102803660046105c2565b6104e6565b005b61029a6102953660046105c2565b610509565b60405161016792919061072e565b6101786102b63660046105e8565b610525565b6002805460408051602060018416156101000260001901909316849004601f8101849004840282018401909252818152929183018282801561033e5780601f106103135761010080835404028352916020019161033e565b820191906000526020600020905b81548152906001019060200180831161032157829003601f168201915b505050505081565b60135481565b60185481565b600b5481565b60155481565b600f60205260009081526040902080546001820154600283015460038401546004850154600586015460068701546007909701549596949593949293919290916001600160a01b031688565b60045460ff1681565b600c5481565b6007546001600160a01b031681565b600a5461010090046001600160a01b031681565b601181815481106103e957fe5b6000918252602090912060029091020180546001909101546001600160a01b03909116915082565b6008546001600160a01b031681565b60165481565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561033e5780601f106103135761010080835404028352916020019161033e565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b601081815481106104cf57fe5b600091825260209091200154905081565b600d5481565b6001546001600160a01b031633146104fd57600080fd5b61050681610537565b50565b6012602052600090815260409020805460019091015460ff1682565b600e6020526000908152604090205481565b6001600160a01b03811661054a57600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b80356105b1816107c3565b92915050565b80356105b1816107d7565b6000602082840312156105d457600080fd5b60006105e084846105a6565b949350505050565b6000602082840312156105fa57600080fd5b60006105e084846105b7565b61060f81610764565b82525050565b61060f8161076f565b61060f81610774565b600061063282610757565b61063c818561075b565b935061064c818560208601610789565b610655816107b9565b9093019392505050565b61060f81610783565b602081016105b18284610606565b604081016106848285610606565b610691602083018461061e565b9392505050565b602081016105b1828461061e565b61010081016106b5828b61061e565b6106c2602083018a61061e565b6106cf604083018961061e565b6106dc606083018861061e565b6106e9608083018761061e565b6106f660a083018661061e565b61070360c083018561061e565b61071060e0830184610606565b9998505050505050505050565b602080825281016106918184610627565b6040810161073c828561061e565b6106916020830184610615565b602081016105b1828461065f565b5190565b90815260200190565b60006105b182610777565b151590565b90565b6001600160a01b031690565b60ff1690565b60005b838110156107a457818101518382015260200161078c565b838111156107b3576000848401525b50505050565b601f01601f191690565b6107cc81610764565b811461050657600080fd5b6107cc8161077456fea365627a7a723158202b66d86d8a8bea41f8a93ae7c4b24543e9d451b7e22cf820809a277aa173b0066c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployLoanTokenStorage deploys a new Ethereum contract, binding an instance of LoanTokenStorage to it.
 func DeployLoanTokenStorage(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *LoanTokenStorage, error) {
@@ -9876,7 +10487,7 @@ func bindLoanTokenStorage(address common.Address, caller bind.ContractCaller, tr
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenStorage *LoanTokenStorageRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenStorage *LoanTokenStorageRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenStorage.Contract.LoanTokenStorageCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -9895,7 +10506,7 @@ func (_LoanTokenStorage *LoanTokenStorageRaw) Transact(opts *bind.TransactOpts, 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenStorage *LoanTokenStorageCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenStorage *LoanTokenStorageCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenStorage.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -9914,12 +10525,17 @@ func (_LoanTokenStorage *LoanTokenStorageTransactorRaw) Transact(opts *bind.Tran
 //
 // Solidity: function bZxContract() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) BZxContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "bZxContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "bZxContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxContract is a free data retrieval call binding the contract method 0x995363d3.
@@ -9940,12 +10556,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) BZxContract() (common.Ad
 //
 // Solidity: function bZxOracle() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) BZxOracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "bZxOracle")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "bZxOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxOracle is a free data retrieval call binding the contract method 0x96c7871b.
@@ -9966,12 +10587,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) BZxOracle() (common.Addr
 //
 // Solidity: function bZxVault() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) BZxVault(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "bZxVault")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "bZxVault")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxVault is a free data retrieval call binding the contract method 0x894ca308.
@@ -9992,12 +10618,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) BZxVault() (common.Addre
 //
 // Solidity: function baseRate() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) BaseRate(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "baseRate")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "baseRate")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BaseRate is a free data retrieval call binding the contract method 0x1f68f20a.
@@ -10021,13 +10652,19 @@ func (_LoanTokenStorage *LoanTokenStorageCaller) BurntTokenReserveList(opts *bin
 	Lender common.Address
 	Amount *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "burntTokenReserveList", arg0)
+
+	outstruct := new(struct {
 		Lender common.Address
 		Amount *big.Int
 	})
-	out := ret
-	err := _LoanTokenStorage.contract.Call(opts, out, "burntTokenReserveList", arg0)
-	return *ret, err
+
+	outstruct.Lender = out[0].(common.Address)
+	outstruct.Amount = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveList is a free data retrieval call binding the contract method 0x7866c6c1.
@@ -10057,13 +10694,19 @@ func (_LoanTokenStorage *LoanTokenStorageCaller) BurntTokenReserveListIndex(opts
 	Index *big.Int
 	IsSet bool
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "burntTokenReserveListIndex", arg0)
+
+	outstruct := new(struct {
 		Index *big.Int
 		IsSet bool
 	})
-	out := ret
-	err := _LoanTokenStorage.contract.Call(opts, out, "burntTokenReserveListIndex", arg0)
-	return *ret, err
+
+	outstruct.Index = out[0].(*big.Int)
+	outstruct.IsSet = out[1].(bool)
+
+	return *outstruct, err
+
 }
 
 // BurntTokenReserveListIndex is a free data retrieval call binding the contract method 0xfbd9574d.
@@ -10090,12 +10733,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) BurntTokenReserveListInd
 //
 // Solidity: function burntTokenReserved() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) BurntTokenReserved(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "burntTokenReserved")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "burntTokenReserved")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BurntTokenReserved is a free data retrieval call binding the contract method 0x0c4925fd.
@@ -10116,12 +10764,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) BurntTokenReserved() (*b
 //
 // Solidity: function checkpointSupply() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) CheckpointSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "checkpointSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "checkpointSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CheckpointSupply is a free data retrieval call binding the contract method 0x7b7933b4.
@@ -10142,12 +10795,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) CheckpointSupply() (*big
 //
 // Solidity: function decimals() view returns(uint8)
 func (_LoanTokenStorage *LoanTokenStorageCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -10168,12 +10826,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) Decimals() (uint8, error
 //
 // Solidity: function initialPrice() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) InitialPrice(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "initialPrice")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "initialPrice")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // InitialPrice is a free data retrieval call binding the contract method 0x1d0806ae.
@@ -10194,12 +10857,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) InitialPrice() (*big.Int
 //
 // Solidity: function leverageList(uint256 ) view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) LeverageList(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "leverageList", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "leverageList", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LeverageList is a free data retrieval call binding the contract method 0x9b3a54d1.
@@ -10229,7 +10897,10 @@ func (_LoanTokenStorage *LoanTokenStorageCaller) LoanOrderData(opts *bind.CallOp
 	MarginPremiumAmount         *big.Int
 	CollateralTokenAddress      common.Address
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "loanOrderData", arg0)
+
+	outstruct := new(struct {
 		LoanOrderHash               [32]byte
 		LeverageAmount              *big.Int
 		InitialMarginAmount         *big.Int
@@ -10239,9 +10910,18 @@ func (_LoanTokenStorage *LoanTokenStorageCaller) LoanOrderData(opts *bind.CallOp
 		MarginPremiumAmount         *big.Int
 		CollateralTokenAddress      common.Address
 	})
-	out := ret
-	err := _LoanTokenStorage.contract.Call(opts, out, "loanOrderData", arg0)
-	return *ret, err
+
+	outstruct.LoanOrderHash = out[0].([32]byte)
+	outstruct.LeverageAmount = out[1].(*big.Int)
+	outstruct.InitialMarginAmount = out[2].(*big.Int)
+	outstruct.MaintenanceMarginAmount = out[3].(*big.Int)
+	outstruct.MaxDurationUnixTimestampSec = out[4].(*big.Int)
+	outstruct.Index = out[5].(*big.Int)
+	outstruct.MarginPremiumAmount = out[6].(*big.Int)
+	outstruct.CollateralTokenAddress = out[7].(common.Address)
+
+	return *outstruct, err
+
 }
 
 // LoanOrderData is a free data retrieval call binding the contract method 0x2515aacd.
@@ -10280,12 +10960,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) LoanOrderData(arg0 [32]b
 //
 // Solidity: function loanOrderHashes(uint256 ) view returns(bytes32)
 func (_LoanTokenStorage *LoanTokenStorageCaller) LoanOrderHashes(opts *bind.CallOpts, arg0 *big.Int) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "loanOrderHashes", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "loanOrderHashes", arg0)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // LoanOrderHashes is a free data retrieval call binding the contract method 0xfe056342.
@@ -10306,12 +10991,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) LoanOrderHashes(arg0 *bi
 //
 // Solidity: function loanTokenAddress() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) LoanTokenAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "loanTokenAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "loanTokenAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LoanTokenAddress is a free data retrieval call binding the contract method 0x797bf385.
@@ -10332,12 +11022,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) LoanTokenAddress() (comm
 //
 // Solidity: function name() view returns(string)
 func (_LoanTokenStorage *LoanTokenStorageCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -10358,12 +11053,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) Name() (string, error) {
 //
 // Solidity: function owner() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -10384,12 +11084,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) Owner() (common.Address,
 //
 // Solidity: function rateMultiplier() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) RateMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "rateMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "rateMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RateMultiplier is a free data retrieval call binding the contract method 0x330691ac.
@@ -10410,12 +11115,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) RateMultiplier() (*big.I
 //
 // Solidity: function spreadMultiplier() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) SpreadMultiplier(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "spreadMultiplier")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "spreadMultiplier")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SpreadMultiplier is a free data retrieval call binding the contract method 0xd84d2a47.
@@ -10436,12 +11146,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) SpreadMultiplier() (*big
 //
 // Solidity: function symbol() view returns(string)
 func (_LoanTokenStorage *LoanTokenStorageCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -10462,12 +11177,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) Symbol() (string, error)
 //
 // Solidity: function tokenizedRegistry() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) TokenizedRegistry(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "tokenizedRegistry")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "tokenizedRegistry")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TokenizedRegistry is a free data retrieval call binding the contract method 0x736ee3d3.
@@ -10488,12 +11208,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) TokenizedRegistry() (com
 //
 // Solidity: function totalAssetBorrow() view returns(uint256)
 func (_LoanTokenStorage *LoanTokenStorageCaller) TotalAssetBorrow(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "totalAssetBorrow")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "totalAssetBorrow")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalAssetBorrow is a free data retrieval call binding the contract method 0x20f6d07c.
@@ -10514,12 +11239,17 @@ func (_LoanTokenStorage *LoanTokenStorageCallerSession) TotalAssetBorrow() (*big
 //
 // Solidity: function wethContract() view returns(address)
 func (_LoanTokenStorage *LoanTokenStorageCaller) WethContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenStorage.contract.Call(opts, out, "wethContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenStorage.contract.Call(opts, &out, "wethContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // WethContract is a free data retrieval call binding the contract method 0x4780eac1.
@@ -10702,6 +11432,7 @@ func (_LoanTokenStorage *LoanTokenStorageFilterer) ParseBorrow(log types.Log) (*
 	if err := _LoanTokenStorage.contract.UnpackLog(event, "Borrow", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -10849,6 +11580,7 @@ func (_LoanTokenStorage *LoanTokenStorageFilterer) ParseClaim(log types.Log) (*L
 	if err := _LoanTokenStorage.contract.UnpackLog(event, "Claim", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -11001,6 +11733,7 @@ func (_LoanTokenStorage *LoanTokenStorageFilterer) ParseOwnershipTransferred(log
 	if err := _LoanTokenStorage.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -11156,6 +11889,7 @@ func (_LoanTokenStorage *LoanTokenStorageFilterer) ParseRepay(log types.Log) (*L
 	if err := _LoanTokenStorage.contract.UnpackLog(event, "Repay", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -11177,7 +11911,7 @@ var LoanTokenizationFuncSigs = map[string]string{
 }
 
 // LoanTokenizationBin is the compiled bytecode used for deploying new contracts.
-var LoanTokenizationBin = "0x60806040526001600081905580546001600160a01b031916331790556104808061002a6000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c80638da5cb5b116100665780638da5cb5b146100fb57806395d89b411461010357806396c7871b1461010b578063995363d314610113578063f2fde38b1461011b5761009e565b806306fdde03146100a3578063313ce567146100c15780634780eac1146100d6578063797bf385146100eb578063894ca308146100f3575b600080fd5b6100ab610130565b6040516100b891906103a5565b60405180910390f35b6100c96101bb565b6040516100b891906103bd565b6100de6101c4565b6040516100b89190610397565b6100de6101d3565b6100de6101e2565b6100de6101f1565b6100ab610200565b6100de61025b565b6100de61026a565b61012e610129366004610321565b61027e565b005b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156101b35780601f10610188576101008083540402835291602001916101b3565b820191906000526020600020905b81548152906001019060200180831161019657829003601f168201915b505050505081565b60045460ff1681565b6007546001600160a01b031681565b6008546001600160a01b031681565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156101b35780601f10610188576101008083540402835291602001916101b3565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6001546001600160a01b0316331461029557600080fd5b61029e816102a1565b50565b6001600160a01b0381166102b457600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561031b81610429565b92915050565b60006020828403121561033357600080fd5b600061033f8484610310565b949350505050565b610350816103d8565b82525050565b6000610361826103cb565b61036b81856103cf565b935061037b8185602086016103ef565b6103848161041f565b9093019392505050565b610350816103e9565b6020810161031b8284610347565b602080825281016103b68184610356565b9392505050565b6020810161031b828461038e565b5190565b90815260200190565b60006001600160a01b03821661031b565b60ff1690565b60005b8381101561040a5781810151838201526020016103f2565b83811115610419576000848401525b50505050565b601f01601f191690565b610432816103d8565b811461029e57600080fdfea365627a7a723158206e662627937e4502d07d9118632b14ffbad6272f0c78cb295ddb42760a4fd9e46c6578706572696d656e74616cf564736f6c63430005110040"
+var LoanTokenizationBin = "0x60806040526001600081905580546001600160a01b031916331790556104808061002a6000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c80638da5cb5b116100665780638da5cb5b146100fb57806395d89b411461010357806396c7871b1461010b578063995363d314610113578063f2fde38b1461011b5761009e565b806306fdde03146100a3578063313ce567146100c15780634780eac1146100d6578063797bf385146100eb578063894ca308146100f3575b600080fd5b6100ab610130565b6040516100b891906103a5565b60405180910390f35b6100c96101bb565b6040516100b891906103bd565b6100de6101c4565b6040516100b89190610397565b6100de6101d3565b6100de6101e2565b6100de6101f1565b6100ab610200565b6100de61025b565b6100de61026a565b61012e610129366004610321565b61027e565b005b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156101b35780601f10610188576101008083540402835291602001916101b3565b820191906000526020600020905b81548152906001019060200180831161019657829003601f168201915b505050505081565b60045460ff1681565b6007546001600160a01b031681565b6008546001600160a01b031681565b6005546001600160a01b031681565b6001546001600160a01b031681565b6003805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156101b35780601f10610188576101008083540402835291602001916101b3565b6006546001600160a01b031681565b60045461010090046001600160a01b031681565b6001546001600160a01b0316331461029557600080fd5b61029e816102a1565b50565b6001600160a01b0381166102b457600080fd5b6001546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b803561031b81610429565b92915050565b60006020828403121561033357600080fd5b600061033f8484610310565b949350505050565b610350816103d8565b82525050565b6000610361826103cb565b61036b81856103cf565b935061037b8185602086016103ef565b6103848161041f565b9093019392505050565b610350816103e9565b6020810161031b8284610347565b602080825281016103b68184610356565b9392505050565b6020810161031b828461038e565b5190565b90815260200190565b60006001600160a01b03821661031b565b60ff1690565b60005b8381101561040a5781810151838201526020016103f2565b83811115610419576000848401525b50505050565b601f01601f191690565b610432816103d8565b811461029e57600080fdfea365627a7a72315820adf270209b0ac6b8ecd2c7b42c892837b39fc0997508bc6825430f6f9a4307566c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployLoanTokenization deploys a new Ethereum contract, binding an instance of LoanTokenization to it.
 func DeployLoanTokenization(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *LoanTokenization, error) {
@@ -11301,7 +12035,7 @@ func bindLoanTokenization(address common.Address, caller bind.ContractCaller, tr
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenization *LoanTokenizationRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenization *LoanTokenizationRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenization.Contract.LoanTokenizationCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -11320,7 +12054,7 @@ func (_LoanTokenization *LoanTokenizationRaw) Transact(opts *bind.TransactOpts, 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_LoanTokenization *LoanTokenizationCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_LoanTokenization *LoanTokenizationCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _LoanTokenization.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -11339,12 +12073,17 @@ func (_LoanTokenization *LoanTokenizationTransactorRaw) Transact(opts *bind.Tran
 //
 // Solidity: function bZxContract() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) BZxContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "bZxContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "bZxContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxContract is a free data retrieval call binding the contract method 0x995363d3.
@@ -11365,12 +12104,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) BZxContract() (common.Ad
 //
 // Solidity: function bZxOracle() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) BZxOracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "bZxOracle")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "bZxOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxOracle is a free data retrieval call binding the contract method 0x96c7871b.
@@ -11391,12 +12135,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) BZxOracle() (common.Addr
 //
 // Solidity: function bZxVault() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) BZxVault(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "bZxVault")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "bZxVault")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BZxVault is a free data retrieval call binding the contract method 0x894ca308.
@@ -11417,12 +12166,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) BZxVault() (common.Addre
 //
 // Solidity: function decimals() view returns(uint8)
 func (_LoanTokenization *LoanTokenizationCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -11443,12 +12197,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) Decimals() (uint8, error
 //
 // Solidity: function loanTokenAddress() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) LoanTokenAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "loanTokenAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "loanTokenAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // LoanTokenAddress is a free data retrieval call binding the contract method 0x797bf385.
@@ -11469,12 +12228,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) LoanTokenAddress() (comm
 //
 // Solidity: function name() view returns(string)
 func (_LoanTokenization *LoanTokenizationCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -11495,12 +12259,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) Name() (string, error) {
 //
 // Solidity: function owner() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -11521,12 +12290,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) Owner() (common.Address,
 //
 // Solidity: function symbol() view returns(string)
 func (_LoanTokenization *LoanTokenizationCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -11547,12 +12321,17 @@ func (_LoanTokenization *LoanTokenizationCallerSession) Symbol() (string, error)
 //
 // Solidity: function wethContract() view returns(address)
 func (_LoanTokenization *LoanTokenizationCaller) WethContract(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _LoanTokenization.contract.Call(opts, out, "wethContract")
-	return *ret0, err
+	var out []interface{}
+	err := _LoanTokenization.contract.Call(opts, &out, "wethContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // WethContract is a free data retrieval call binding the contract method 0x4780eac1.
@@ -11739,6 +12518,7 @@ func (_LoanTokenization *LoanTokenizationFilterer) ParseOwnershipTransferred(log
 	if err := _LoanTokenization.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -11858,7 +12638,7 @@ func bindOracleNotifierInterface(address common.Address, caller bind.ContractCal
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_OracleNotifierInterface *OracleNotifierInterfaceRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_OracleNotifierInterface *OracleNotifierInterfaceRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _OracleNotifierInterface.Contract.OracleNotifierInterfaceCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -11877,7 +12657,7 @@ func (_OracleNotifierInterface *OracleNotifierInterfaceRaw) Transact(opts *bind.
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_OracleNotifierInterface *OracleNotifierInterfaceCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_OracleNotifierInterface *OracleNotifierInterfaceCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _OracleNotifierInterface.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -11923,7 +12703,7 @@ var OwnableFuncSigs = map[string]string{
 }
 
 // OwnableBin is the compiled bytecode used for deploying new contracts.
-var OwnableBin = "0x608060405234801561001057600080fd5b50600080546001600160a01b031916331790556101ca806100326000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80638da5cb5b1461003b578063f2fde38b14610059575b600080fd5b61004361006e565b6040516100509190610154565b60405180910390f35b61006c61006736600461011f565b61007d565b005b6000546001600160a01b031681565b6000546001600160a01b0316331461009457600080fd5b61009d816100a0565b50565b6001600160a01b0381166100b357600080fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b803561011981610173565b92915050565b60006020828403121561013157600080fd5b600061013d848461010e565b949350505050565b61014e81610162565b82525050565b602081016101198284610145565b60006001600160a01b038216610119565b61017c81610162565b811461009d57600080fdfea365627a7a72315820712c1ccf6b5dbc9f1633f3d4781e1a00a4ae551c4be3fb57300722c76cfec4166c6578706572696d656e74616cf564736f6c63430005110040"
+var OwnableBin = "0x608060405234801561001057600080fd5b50600080546001600160a01b031916331790556101ca806100326000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80638da5cb5b1461003b578063f2fde38b14610059575b600080fd5b61004361006e565b6040516100509190610154565b60405180910390f35b61006c61006736600461011f565b61007d565b005b6000546001600160a01b031681565b6000546001600160a01b0316331461009457600080fd5b61009d816100a0565b50565b6001600160a01b0381166100b357600080fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b803561011981610173565b92915050565b60006020828403121561013157600080fd5b600061013d848461010e565b949350505050565b61014e81610162565b82525050565b602081016101198284610145565b60006001600160a01b038216610119565b61017c81610162565b811461009d57600080fdfea365627a7a72315820bef1e0b470382b2836ce58a549a5d6902e360553ec6f0e44b340624b8ac1fe3b6c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployOwnable deploys a new Ethereum contract, binding an instance of Ownable to it.
 func DeployOwnable(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Ownable, error) {
@@ -12047,7 +12827,7 @@ func bindOwnable(address common.Address, caller bind.ContractCaller, transactor 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Ownable *OwnableRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Ownable *OwnableRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Ownable.Contract.OwnableCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -12066,7 +12846,7 @@ func (_Ownable *OwnableRaw) Transact(opts *bind.TransactOpts, method string, par
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Ownable *OwnableCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Ownable *OwnableCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Ownable.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -12085,12 +12865,17 @@ func (_Ownable *OwnableTransactorRaw) Transact(opts *bind.TransactOpts, method s
 //
 // Solidity: function owner() view returns(address)
 func (_Ownable *OwnableCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Ownable.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Ownable.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -12277,6 +13062,7 @@ func (_Ownable *OwnableFilterer) ParseOwnershipTransferred(log types.Log) (*Owna
 	if err := _Ownable.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -12284,7 +13070,7 @@ func (_Ownable *OwnableFilterer) ParseOwnershipTransferred(log types.Log) (*Owna
 const ReentrancyGuardABI = "[]"
 
 // ReentrancyGuardBin is the compiled bytecode used for deploying new contracts.
-var ReentrancyGuardBin = "0x60806040526001600055348015601457600080fd5b50604c8060226000396000f3fe6080604052600080fdfea365627a7a72315820a95be2af28afd462188de41550c842bd6cbf8385519b4ea46231051c2b01745d6c6578706572696d656e74616cf564736f6c63430005110040"
+var ReentrancyGuardBin = "0x60806040526001600055348015601457600080fd5b50604c8060226000396000f3fe6080604052600080fdfea365627a7a723158203c03d9a3800684e74665fba8171daaeb82db970fa68380f275fa3c91f94b800d6c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeployReentrancyGuard deploys a new Ethereum contract, binding an instance of ReentrancyGuard to it.
 func DeployReentrancyGuard(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *ReentrancyGuard, error) {
@@ -12408,7 +13194,7 @@ func bindReentrancyGuard(address common.Address, caller bind.ContractCaller, tra
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ReentrancyGuard *ReentrancyGuardRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ReentrancyGuard *ReentrancyGuardRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ReentrancyGuard.Contract.ReentrancyGuardCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -12427,7 +13213,7 @@ func (_ReentrancyGuard *ReentrancyGuardRaw) Transact(opts *bind.TransactOpts, me
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_ReentrancyGuard *ReentrancyGuardCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_ReentrancyGuard *ReentrancyGuardCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ReentrancyGuard.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -12446,7 +13232,7 @@ func (_ReentrancyGuard *ReentrancyGuardTransactorRaw) Transact(opts *bind.Transa
 const SafeMathABI = "[]"
 
 // SafeMathBin is the compiled bytecode used for deploying new contracts.
-var SafeMathBin = "0x60636023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea365627a7a723158203e1713335a0f0ce53f3241858bb92cc5db58b82f012f56cc0a6ed2b952ee91d16c6578706572696d656e74616cf564736f6c63430005110040"
+var SafeMathBin = "0x60636023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea365627a7a723158209fd8d462558a3488516eba8a5e48650cb0494a958573461380211d794d88bf926c6578706572696d656e74616cf564736f6c63430005110040"
 
 // DeploySafeMath deploys a new Ethereum contract, binding an instance of SafeMath to it.
 func DeploySafeMath(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *SafeMath, error) {
@@ -12570,7 +13356,7 @@ func bindSafeMath(address common.Address, caller bind.ContractCaller, transactor
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_SafeMath *SafeMathRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_SafeMath *SafeMathRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _SafeMath.Contract.SafeMathCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -12589,7 +13375,7 @@ func (_SafeMath *SafeMathRaw) Transact(opts *bind.TransactOpts, method string, p
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_SafeMath *SafeMathCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_SafeMath *SafeMathCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _SafeMath.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -12730,7 +13516,7 @@ func bindWETHInterface(address common.Address, caller bind.ContractCaller, trans
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_WETHInterface *WETHInterfaceRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_WETHInterface *WETHInterfaceRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _WETHInterface.Contract.WETHInterfaceCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -12749,7 +13535,7 @@ func (_WETHInterface *WETHInterfaceRaw) Transact(opts *bind.TransactOpts, method
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_WETHInterface *WETHInterfaceCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_WETHInterface *WETHInterfaceCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _WETHInterface.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -12768,12 +13554,17 @@ func (_WETHInterface *WETHInterfaceTransactorRaw) Transact(opts *bind.TransactOp
 //
 // Solidity: function allowance(address _owner, address _spender) view returns(uint256)
 func (_WETHInterface *WETHInterfaceCaller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "allowance", _owner, _spender)
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "allowance", _owner, _spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -12794,12 +13585,17 @@ func (_WETHInterface *WETHInterfaceCallerSession) Allowance(_owner common.Addres
 //
 // Solidity: function balanceOf(address _who) view returns(uint256)
 func (_WETHInterface *WETHInterfaceCaller) BalanceOf(opts *bind.CallOpts, _who common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "balanceOf", _who)
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "balanceOf", _who)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -12820,12 +13616,17 @@ func (_WETHInterface *WETHInterfaceCallerSession) BalanceOf(_who common.Address)
 //
 // Solidity: function decimals() view returns(uint8)
 func (_WETHInterface *WETHInterfaceCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
-	var (
-		ret0 = new(uint8)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "decimals")
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "decimals")
+
+	if err != nil {
+		return *new(uint8), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
+
+	return out0, err
+
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -12846,12 +13647,17 @@ func (_WETHInterface *WETHInterfaceCallerSession) Decimals() (uint8, error) {
 //
 // Solidity: function name() view returns(string)
 func (_WETHInterface *WETHInterfaceCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -12872,12 +13678,17 @@ func (_WETHInterface *WETHInterfaceCallerSession) Name() (string, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_WETHInterface *WETHInterfaceCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -12898,12 +13709,17 @@ func (_WETHInterface *WETHInterfaceCallerSession) Symbol() (string, error) {
 //
 // Solidity: function totalSupply() view returns(uint256)
 func (_WETHInterface *WETHInterfaceCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _WETHInterface.contract.Call(opts, out, "totalSupply")
-	return *ret0, err
+	var out []interface{}
+	err := _WETHInterface.contract.Call(opts, &out, "totalSupply")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -13175,6 +13991,7 @@ func (_WETHInterface *WETHInterfaceFilterer) ParseApproval(log types.Log) (*WETH
 	if err := _WETHInterface.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -13328,5 +14145,6 @@ func (_WETHInterface *WETHInterfaceFilterer) ParseTransfer(log types.Log) (*WETH
 	if err := _WETHInterface.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

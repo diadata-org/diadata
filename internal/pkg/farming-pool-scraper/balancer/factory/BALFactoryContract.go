@@ -26,107 +26,107 @@ var (
 	_ = event.NewSubscription
 )
 
-// BALFactoryContractABI is the input ABI used to generate the binding from.
-const BALFactoryContractABI = "[{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"blabs\",\"type\":\"address\"}],\"name\":\"LOG_BLABS\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"}],\"name\":\"LOG_NEW_POOL\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contractBPool\",\"name\":\"pool\",\"type\":\"address\"}],\"name\":\"collect\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getBLabs\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getColor\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"}],\"name\":\"isBPool\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"newBPool\",\"outputs\":[{\"internalType\":\"contractBPool\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"}],\"name\":\"setBLabs\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+// BalfactoryABI is the input ABI used to generate the binding from.
+const BalfactoryABI = "[{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"blabs\",\"type\":\"address\"}],\"name\":\"LOG_BLABS\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"}],\"name\":\"LOG_NEW_POOL\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contractBPool\",\"name\":\"pool\",\"type\":\"address\"}],\"name\":\"collect\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getBLabs\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getColor\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"}],\"name\":\"isBPool\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"newBPool\",\"outputs\":[{\"internalType\":\"contractBPool\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"b\",\"type\":\"address\"}],\"name\":\"setBLabs\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
-// BALFactoryContract is an auto generated Go binding around an Ethereum contract.
-type BALFactoryContract struct {
-	BALFactoryContractCaller     // Read-only binding to the contract
-	BALFactoryContractTransactor // Write-only binding to the contract
-	BALFactoryContractFilterer   // Log filterer for contract events
+// Balfactory is an auto generated Go binding around an Ethereum contract.
+type Balfactory struct {
+	BalfactoryCaller     // Read-only binding to the contract
+	BalfactoryTransactor // Write-only binding to the contract
+	BalfactoryFilterer   // Log filterer for contract events
 }
 
-// BALFactoryContractCaller is an auto generated read-only Go binding around an Ethereum contract.
-type BALFactoryContractCaller struct {
+// BalfactoryCaller is an auto generated read-only Go binding around an Ethereum contract.
+type BalfactoryCaller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// BALFactoryContractTransactor is an auto generated write-only Go binding around an Ethereum contract.
-type BALFactoryContractTransactor struct {
+// BalfactoryTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type BalfactoryTransactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// BALFactoryContractFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
-type BALFactoryContractFilterer struct {
+// BalfactoryFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type BalfactoryFilterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// BALFactoryContractSession is an auto generated Go binding around an Ethereum contract,
+// BalfactorySession is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
-type BALFactoryContractSession struct {
-	Contract     *BALFactoryContract // Generic contract binding to set the session for
-	CallOpts     bind.CallOpts       // Call options to use throughout this session
-	TransactOpts bind.TransactOpts   // Transaction auth options to use throughout this session
+type BalfactorySession struct {
+	Contract     *Balfactory       // Generic contract binding to set the session for
+	CallOpts     bind.CallOpts     // Call options to use throughout this session
+	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// BALFactoryContractCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// BalfactoryCallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
-type BALFactoryContractCallerSession struct {
-	Contract *BALFactoryContractCaller // Generic contract caller binding to set the session for
-	CallOpts bind.CallOpts             // Call options to use throughout this session
+type BalfactoryCallerSession struct {
+	Contract *BalfactoryCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts     // Call options to use throughout this session
 }
 
-// BALFactoryContractTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// BalfactoryTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
-type BALFactoryContractTransactorSession struct {
-	Contract     *BALFactoryContractTransactor // Generic contract transactor binding to set the session for
-	TransactOpts bind.TransactOpts             // Transaction auth options to use throughout this session
+type BalfactoryTransactorSession struct {
+	Contract     *BalfactoryTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts     // Transaction auth options to use throughout this session
 }
 
-// BALFactoryContractRaw is an auto generated low-level Go binding around an Ethereum contract.
-type BALFactoryContractRaw struct {
-	Contract *BALFactoryContract // Generic contract binding to access the raw methods on
+// BalfactoryRaw is an auto generated low-level Go binding around an Ethereum contract.
+type BalfactoryRaw struct {
+	Contract *Balfactory // Generic contract binding to access the raw methods on
 }
 
-// BALFactoryContractCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
-type BALFactoryContractCallerRaw struct {
-	Contract *BALFactoryContractCaller // Generic read-only contract binding to access the raw methods on
+// BalfactoryCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type BalfactoryCallerRaw struct {
+	Contract *BalfactoryCaller // Generic read-only contract binding to access the raw methods on
 }
 
-// BALFactoryContractTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
-type BALFactoryContractTransactorRaw struct {
-	Contract *BALFactoryContractTransactor // Generic write-only contract binding to access the raw methods on
+// BalfactoryTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type BalfactoryTransactorRaw struct {
+	Contract *BalfactoryTransactor // Generic write-only contract binding to access the raw methods on
 }
 
-// NewBALFactoryContract creates a new instance of BALFactoryContract, bound to a specific deployed contract.
-func NewBALFactoryContract(address common.Address, backend bind.ContractBackend) (*BALFactoryContract, error) {
-	contract, err := bindBALFactoryContract(address, backend, backend, backend)
+// NewBalfactory creates a new instance of Balfactory, bound to a specific deployed contract.
+func NewBalfactory(address common.Address, backend bind.ContractBackend) (*Balfactory, error) {
+	contract, err := bindBalfactory(address, backend, backend, backend)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContract{BALFactoryContractCaller: BALFactoryContractCaller{contract: contract}, BALFactoryContractTransactor: BALFactoryContractTransactor{contract: contract}, BALFactoryContractFilterer: BALFactoryContractFilterer{contract: contract}}, nil
+	return &Balfactory{BalfactoryCaller: BalfactoryCaller{contract: contract}, BalfactoryTransactor: BalfactoryTransactor{contract: contract}, BalfactoryFilterer: BalfactoryFilterer{contract: contract}}, nil
 }
 
-// NewBALFactoryContractCaller creates a new read-only instance of BALFactoryContract, bound to a specific deployed contract.
-func NewBALFactoryContractCaller(address common.Address, caller bind.ContractCaller) (*BALFactoryContractCaller, error) {
-	contract, err := bindBALFactoryContract(address, caller, nil, nil)
+// NewBalfactoryCaller creates a new read-only instance of Balfactory, bound to a specific deployed contract.
+func NewBalfactoryCaller(address common.Address, caller bind.ContractCaller) (*BalfactoryCaller, error) {
+	contract, err := bindBalfactory(address, caller, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContractCaller{contract: contract}, nil
+	return &BalfactoryCaller{contract: contract}, nil
 }
 
-// NewBALFactoryContractTransactor creates a new write-only instance of BALFactoryContract, bound to a specific deployed contract.
-func NewBALFactoryContractTransactor(address common.Address, transactor bind.ContractTransactor) (*BALFactoryContractTransactor, error) {
-	contract, err := bindBALFactoryContract(address, nil, transactor, nil)
+// NewBalfactoryTransactor creates a new write-only instance of Balfactory, bound to a specific deployed contract.
+func NewBalfactoryTransactor(address common.Address, transactor bind.ContractTransactor) (*BalfactoryTransactor, error) {
+	contract, err := bindBalfactory(address, nil, transactor, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContractTransactor{contract: contract}, nil
+	return &BalfactoryTransactor{contract: contract}, nil
 }
 
-// NewBALFactoryContractFilterer creates a new log filterer instance of BALFactoryContract, bound to a specific deployed contract.
-func NewBALFactoryContractFilterer(address common.Address, filterer bind.ContractFilterer) (*BALFactoryContractFilterer, error) {
-	contract, err := bindBALFactoryContract(address, nil, nil, filterer)
+// NewBalfactoryFilterer creates a new log filterer instance of Balfactory, bound to a specific deployed contract.
+func NewBalfactoryFilterer(address common.Address, filterer bind.ContractFilterer) (*BalfactoryFilterer, error) {
+	contract, err := bindBalfactory(address, nil, nil, filterer)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContractFilterer{contract: contract}, nil
+	return &BalfactoryFilterer{contract: contract}, nil
 }
 
-// bindBALFactoryContract binds a generic wrapper to an already deployed contract.
-func bindBALFactoryContract(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := abi.JSON(strings.NewReader(BALFactoryContractABI))
+// bindBalfactory binds a generic wrapper to an already deployed contract.
+func bindBalfactory(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(BalfactoryABI))
 	if err != nil {
 		return nil, err
 	}
@@ -137,184 +137,199 @@ func bindBALFactoryContract(address common.Address, caller bind.ContractCaller, 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_BALFactoryContract *BALFactoryContractRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
-	return _BALFactoryContract.Contract.BALFactoryContractCaller.contract.Call(opts, result, method, params...)
+func (_Balfactory *BalfactoryRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _Balfactory.Contract.BalfactoryCaller.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_BALFactoryContract *BALFactoryContractRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.BALFactoryContractTransactor.contract.Transfer(opts)
+func (_Balfactory *BalfactoryRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Balfactory.Contract.BalfactoryTransactor.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_BALFactoryContract *BALFactoryContractRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.BALFactoryContractTransactor.contract.Transact(opts, method, params...)
+func (_Balfactory *BalfactoryRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _Balfactory.Contract.BalfactoryTransactor.contract.Transact(opts, method, params...)
 }
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_BALFactoryContract *BALFactoryContractCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
-	return _BALFactoryContract.Contract.contract.Call(opts, result, method, params...)
+func (_Balfactory *BalfactoryCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _Balfactory.Contract.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_BALFactoryContract *BALFactoryContractTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.contract.Transfer(opts)
+func (_Balfactory *BalfactoryTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Balfactory.Contract.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_BALFactoryContract *BALFactoryContractTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.contract.Transact(opts, method, params...)
+func (_Balfactory *BalfactoryTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _Balfactory.Contract.contract.Transact(opts, method, params...)
 }
 
 // GetBLabs is a free data retrieval call binding the contract method 0x36ffb167.
 //
 // Solidity: function getBLabs() view returns(address)
-func (_BALFactoryContract *BALFactoryContractCaller) GetBLabs(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _BALFactoryContract.contract.Call(opts, out, "getBLabs")
-	return *ret0, err
+func (_Balfactory *BalfactoryCaller) GetBLabs(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _Balfactory.contract.Call(opts, &out, "getBLabs")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetBLabs is a free data retrieval call binding the contract method 0x36ffb167.
 //
 // Solidity: function getBLabs() view returns(address)
-func (_BALFactoryContract *BALFactoryContractSession) GetBLabs() (common.Address, error) {
-	return _BALFactoryContract.Contract.GetBLabs(&_BALFactoryContract.CallOpts)
+func (_Balfactory *BalfactorySession) GetBLabs() (common.Address, error) {
+	return _Balfactory.Contract.GetBLabs(&_Balfactory.CallOpts)
 }
 
 // GetBLabs is a free data retrieval call binding the contract method 0x36ffb167.
 //
 // Solidity: function getBLabs() view returns(address)
-func (_BALFactoryContract *BALFactoryContractCallerSession) GetBLabs() (common.Address, error) {
-	return _BALFactoryContract.Contract.GetBLabs(&_BALFactoryContract.CallOpts)
+func (_Balfactory *BalfactoryCallerSession) GetBLabs() (common.Address, error) {
+	return _Balfactory.Contract.GetBLabs(&_Balfactory.CallOpts)
 }
 
 // GetColor is a free data retrieval call binding the contract method 0x9a86139b.
 //
 // Solidity: function getColor() view returns(bytes32)
-func (_BALFactoryContract *BALFactoryContractCaller) GetColor(opts *bind.CallOpts) ([32]byte, error) {
-	var (
-		ret0 = new([32]byte)
-	)
-	out := ret0
-	err := _BALFactoryContract.contract.Call(opts, out, "getColor")
-	return *ret0, err
+func (_Balfactory *BalfactoryCaller) GetColor(opts *bind.CallOpts) ([32]byte, error) {
+	var out []interface{}
+	err := _Balfactory.contract.Call(opts, &out, "getColor")
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
 }
 
 // GetColor is a free data retrieval call binding the contract method 0x9a86139b.
 //
 // Solidity: function getColor() view returns(bytes32)
-func (_BALFactoryContract *BALFactoryContractSession) GetColor() ([32]byte, error) {
-	return _BALFactoryContract.Contract.GetColor(&_BALFactoryContract.CallOpts)
+func (_Balfactory *BalfactorySession) GetColor() ([32]byte, error) {
+	return _Balfactory.Contract.GetColor(&_Balfactory.CallOpts)
 }
 
 // GetColor is a free data retrieval call binding the contract method 0x9a86139b.
 //
 // Solidity: function getColor() view returns(bytes32)
-func (_BALFactoryContract *BALFactoryContractCallerSession) GetColor() ([32]byte, error) {
-	return _BALFactoryContract.Contract.GetColor(&_BALFactoryContract.CallOpts)
+func (_Balfactory *BalfactoryCallerSession) GetColor() ([32]byte, error) {
+	return _Balfactory.Contract.GetColor(&_Balfactory.CallOpts)
 }
 
 // IsBPool is a free data retrieval call binding the contract method 0xc2bb6dc2.
 //
 // Solidity: function isBPool(address b) view returns(bool)
-func (_BALFactoryContract *BALFactoryContractCaller) IsBPool(opts *bind.CallOpts, b common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _BALFactoryContract.contract.Call(opts, out, "isBPool", b)
-	return *ret0, err
+func (_Balfactory *BalfactoryCaller) IsBPool(opts *bind.CallOpts, b common.Address) (bool, error) {
+	var out []interface{}
+	err := _Balfactory.contract.Call(opts, &out, "isBPool", b)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsBPool is a free data retrieval call binding the contract method 0xc2bb6dc2.
 //
 // Solidity: function isBPool(address b) view returns(bool)
-func (_BALFactoryContract *BALFactoryContractSession) IsBPool(b common.Address) (bool, error) {
-	return _BALFactoryContract.Contract.IsBPool(&_BALFactoryContract.CallOpts, b)
+func (_Balfactory *BalfactorySession) IsBPool(b common.Address) (bool, error) {
+	return _Balfactory.Contract.IsBPool(&_Balfactory.CallOpts, b)
 }
 
 // IsBPool is a free data retrieval call binding the contract method 0xc2bb6dc2.
 //
 // Solidity: function isBPool(address b) view returns(bool)
-func (_BALFactoryContract *BALFactoryContractCallerSession) IsBPool(b common.Address) (bool, error) {
-	return _BALFactoryContract.Contract.IsBPool(&_BALFactoryContract.CallOpts, b)
+func (_Balfactory *BalfactoryCallerSession) IsBPool(b common.Address) (bool, error) {
+	return _Balfactory.Contract.IsBPool(&_Balfactory.CallOpts, b)
 }
 
 // Collect is a paid mutator transaction binding the contract method 0x06ec16f8.
 //
 // Solidity: function collect(address pool) returns()
-func (_BALFactoryContract *BALFactoryContractTransactor) Collect(opts *bind.TransactOpts, pool common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.contract.Transact(opts, "collect", pool)
+func (_Balfactory *BalfactoryTransactor) Collect(opts *bind.TransactOpts, pool common.Address) (*types.Transaction, error) {
+	return _Balfactory.contract.Transact(opts, "collect", pool)
 }
 
 // Collect is a paid mutator transaction binding the contract method 0x06ec16f8.
 //
 // Solidity: function collect(address pool) returns()
-func (_BALFactoryContract *BALFactoryContractSession) Collect(pool common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.Collect(&_BALFactoryContract.TransactOpts, pool)
+func (_Balfactory *BalfactorySession) Collect(pool common.Address) (*types.Transaction, error) {
+	return _Balfactory.Contract.Collect(&_Balfactory.TransactOpts, pool)
 }
 
 // Collect is a paid mutator transaction binding the contract method 0x06ec16f8.
 //
 // Solidity: function collect(address pool) returns()
-func (_BALFactoryContract *BALFactoryContractTransactorSession) Collect(pool common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.Collect(&_BALFactoryContract.TransactOpts, pool)
+func (_Balfactory *BalfactoryTransactorSession) Collect(pool common.Address) (*types.Transaction, error) {
+	return _Balfactory.Contract.Collect(&_Balfactory.TransactOpts, pool)
 }
 
 // NewBPool is a paid mutator transaction binding the contract method 0xd556c5dc.
 //
 // Solidity: function newBPool() returns(address)
-func (_BALFactoryContract *BALFactoryContractTransactor) NewBPool(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _BALFactoryContract.contract.Transact(opts, "newBPool")
+func (_Balfactory *BalfactoryTransactor) NewBPool(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Balfactory.contract.Transact(opts, "newBPool")
 }
 
 // NewBPool is a paid mutator transaction binding the contract method 0xd556c5dc.
 //
 // Solidity: function newBPool() returns(address)
-func (_BALFactoryContract *BALFactoryContractSession) NewBPool() (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.NewBPool(&_BALFactoryContract.TransactOpts)
+func (_Balfactory *BalfactorySession) NewBPool() (*types.Transaction, error) {
+	return _Balfactory.Contract.NewBPool(&_Balfactory.TransactOpts)
 }
 
 // NewBPool is a paid mutator transaction binding the contract method 0xd556c5dc.
 //
 // Solidity: function newBPool() returns(address)
-func (_BALFactoryContract *BALFactoryContractTransactorSession) NewBPool() (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.NewBPool(&_BALFactoryContract.TransactOpts)
+func (_Balfactory *BalfactoryTransactorSession) NewBPool() (*types.Transaction, error) {
+	return _Balfactory.Contract.NewBPool(&_Balfactory.TransactOpts)
 }
 
 // SetBLabs is a paid mutator transaction binding the contract method 0xc6ce34fb.
 //
 // Solidity: function setBLabs(address b) returns()
-func (_BALFactoryContract *BALFactoryContractTransactor) SetBLabs(opts *bind.TransactOpts, b common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.contract.Transact(opts, "setBLabs", b)
+func (_Balfactory *BalfactoryTransactor) SetBLabs(opts *bind.TransactOpts, b common.Address) (*types.Transaction, error) {
+	return _Balfactory.contract.Transact(opts, "setBLabs", b)
 }
 
 // SetBLabs is a paid mutator transaction binding the contract method 0xc6ce34fb.
 //
 // Solidity: function setBLabs(address b) returns()
-func (_BALFactoryContract *BALFactoryContractSession) SetBLabs(b common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.SetBLabs(&_BALFactoryContract.TransactOpts, b)
+func (_Balfactory *BalfactorySession) SetBLabs(b common.Address) (*types.Transaction, error) {
+	return _Balfactory.Contract.SetBLabs(&_Balfactory.TransactOpts, b)
 }
 
 // SetBLabs is a paid mutator transaction binding the contract method 0xc6ce34fb.
 //
 // Solidity: function setBLabs(address b) returns()
-func (_BALFactoryContract *BALFactoryContractTransactorSession) SetBLabs(b common.Address) (*types.Transaction, error) {
-	return _BALFactoryContract.Contract.SetBLabs(&_BALFactoryContract.TransactOpts, b)
+func (_Balfactory *BalfactoryTransactorSession) SetBLabs(b common.Address) (*types.Transaction, error) {
+	return _Balfactory.Contract.SetBLabs(&_Balfactory.TransactOpts, b)
 }
 
-// BALFactoryContractLOGBLABSIterator is returned from FilterLOGBLABS and is used to iterate over the raw logs and unpacked data for LOGBLABS events raised by the BALFactoryContract contract.
-type BALFactoryContractLOGBLABSIterator struct {
-	Event *BALFactoryContractLOGBLABS // Event containing the contract specifics and raw log
+// BalfactoryLOGBLABSIterator is returned from FilterLOGBLABS and is used to iterate over the raw logs and unpacked data for LOGBLABS events raised by the Balfactory contract.
+type BalfactoryLOGBLABSIterator struct {
+	Event *BalfactoryLOGBLABS // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -328,7 +343,7 @@ type BALFactoryContractLOGBLABSIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *BALFactoryContractLOGBLABSIterator) Next() bool {
+func (it *BalfactoryLOGBLABSIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -337,7 +352,7 @@ func (it *BALFactoryContractLOGBLABSIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(BALFactoryContractLOGBLABS)
+			it.Event = new(BalfactoryLOGBLABS)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -352,7 +367,7 @@ func (it *BALFactoryContractLOGBLABSIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(BALFactoryContractLOGBLABS)
+		it.Event = new(BalfactoryLOGBLABS)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -368,19 +383,19 @@ func (it *BALFactoryContractLOGBLABSIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *BALFactoryContractLOGBLABSIterator) Error() error {
+func (it *BalfactoryLOGBLABSIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *BALFactoryContractLOGBLABSIterator) Close() error {
+func (it *BalfactoryLOGBLABSIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// BALFactoryContractLOGBLABS represents a LOGBLABS event raised by the BALFactoryContract contract.
-type BALFactoryContractLOGBLABS struct {
+// BalfactoryLOGBLABS represents a LOGBLABS event raised by the Balfactory contract.
+type BalfactoryLOGBLABS struct {
 	Caller common.Address
 	Blabs  common.Address
 	Raw    types.Log // Blockchain specific contextual infos
@@ -389,7 +404,7 @@ type BALFactoryContractLOGBLABS struct {
 // FilterLOGBLABS is a free log retrieval operation binding the contract event 0xf586fa6ee1fc42f5b727f3b214ccbd0b6d7e698c45d49ba32f224fbb8670155d.
 //
 // Solidity: event LOG_BLABS(address indexed caller, address indexed blabs)
-func (_BALFactoryContract *BALFactoryContractFilterer) FilterLOGBLABS(opts *bind.FilterOpts, caller []common.Address, blabs []common.Address) (*BALFactoryContractLOGBLABSIterator, error) {
+func (_Balfactory *BalfactoryFilterer) FilterLOGBLABS(opts *bind.FilterOpts, caller []common.Address, blabs []common.Address) (*BalfactoryLOGBLABSIterator, error) {
 
 	var callerRule []interface{}
 	for _, callerItem := range caller {
@@ -400,17 +415,17 @@ func (_BALFactoryContract *BALFactoryContractFilterer) FilterLOGBLABS(opts *bind
 		blabsRule = append(blabsRule, blabsItem)
 	}
 
-	logs, sub, err := _BALFactoryContract.contract.FilterLogs(opts, "LOG_BLABS", callerRule, blabsRule)
+	logs, sub, err := _Balfactory.contract.FilterLogs(opts, "LOG_BLABS", callerRule, blabsRule)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContractLOGBLABSIterator{contract: _BALFactoryContract.contract, event: "LOG_BLABS", logs: logs, sub: sub}, nil
+	return &BalfactoryLOGBLABSIterator{contract: _Balfactory.contract, event: "LOG_BLABS", logs: logs, sub: sub}, nil
 }
 
 // WatchLOGBLABS is a free log subscription operation binding the contract event 0xf586fa6ee1fc42f5b727f3b214ccbd0b6d7e698c45d49ba32f224fbb8670155d.
 //
 // Solidity: event LOG_BLABS(address indexed caller, address indexed blabs)
-func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGBLABS(opts *bind.WatchOpts, sink chan<- *BALFactoryContractLOGBLABS, caller []common.Address, blabs []common.Address) (event.Subscription, error) {
+func (_Balfactory *BalfactoryFilterer) WatchLOGBLABS(opts *bind.WatchOpts, sink chan<- *BalfactoryLOGBLABS, caller []common.Address, blabs []common.Address) (event.Subscription, error) {
 
 	var callerRule []interface{}
 	for _, callerItem := range caller {
@@ -421,7 +436,7 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGBLABS(opts *bind.
 		blabsRule = append(blabsRule, blabsItem)
 	}
 
-	logs, sub, err := _BALFactoryContract.contract.WatchLogs(opts, "LOG_BLABS", callerRule, blabsRule)
+	logs, sub, err := _Balfactory.contract.WatchLogs(opts, "LOG_BLABS", callerRule, blabsRule)
 	if err != nil {
 		return nil, err
 	}
@@ -431,8 +446,8 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGBLABS(opts *bind.
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(BALFactoryContractLOGBLABS)
-				if err := _BALFactoryContract.contract.UnpackLog(event, "LOG_BLABS", log); err != nil {
+				event := new(BalfactoryLOGBLABS)
+				if err := _Balfactory.contract.UnpackLog(event, "LOG_BLABS", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -456,17 +471,17 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGBLABS(opts *bind.
 // ParseLOGBLABS is a log parse operation binding the contract event 0xf586fa6ee1fc42f5b727f3b214ccbd0b6d7e698c45d49ba32f224fbb8670155d.
 //
 // Solidity: event LOG_BLABS(address indexed caller, address indexed blabs)
-func (_BALFactoryContract *BALFactoryContractFilterer) ParseLOGBLABS(log types.Log) (*BALFactoryContractLOGBLABS, error) {
-	event := new(BALFactoryContractLOGBLABS)
-	if err := _BALFactoryContract.contract.UnpackLog(event, "LOG_BLABS", log); err != nil {
+func (_Balfactory *BalfactoryFilterer) ParseLOGBLABS(log types.Log) (*BalfactoryLOGBLABS, error) {
+	event := new(BalfactoryLOGBLABS)
+	if err := _Balfactory.contract.UnpackLog(event, "LOG_BLABS", log); err != nil {
 		return nil, err
 	}
 	return event, nil
 }
 
-// BALFactoryContractLOGNEWPOOLIterator is returned from FilterLOGNEWPOOL and is used to iterate over the raw logs and unpacked data for LOGNEWPOOL events raised by the BALFactoryContract contract.
-type BALFactoryContractLOGNEWPOOLIterator struct {
-	Event *BALFactoryContractLOGNEWPOOL // Event containing the contract specifics and raw log
+// BalfactoryLOGNEWPOOLIterator is returned from FilterLOGNEWPOOL and is used to iterate over the raw logs and unpacked data for LOGNEWPOOL events raised by the Balfactory contract.
+type BalfactoryLOGNEWPOOLIterator struct {
+	Event *BalfactoryLOGNEWPOOL // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -480,7 +495,7 @@ type BALFactoryContractLOGNEWPOOLIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *BALFactoryContractLOGNEWPOOLIterator) Next() bool {
+func (it *BalfactoryLOGNEWPOOLIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -489,7 +504,7 @@ func (it *BALFactoryContractLOGNEWPOOLIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(BALFactoryContractLOGNEWPOOL)
+			it.Event = new(BalfactoryLOGNEWPOOL)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -504,7 +519,7 @@ func (it *BALFactoryContractLOGNEWPOOLIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(BALFactoryContractLOGNEWPOOL)
+		it.Event = new(BalfactoryLOGNEWPOOL)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -520,19 +535,19 @@ func (it *BALFactoryContractLOGNEWPOOLIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *BALFactoryContractLOGNEWPOOLIterator) Error() error {
+func (it *BalfactoryLOGNEWPOOLIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *BALFactoryContractLOGNEWPOOLIterator) Close() error {
+func (it *BalfactoryLOGNEWPOOLIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// BALFactoryContractLOGNEWPOOL represents a LOGNEWPOOL event raised by the BALFactoryContract contract.
-type BALFactoryContractLOGNEWPOOL struct {
+// BalfactoryLOGNEWPOOL represents a LOGNEWPOOL event raised by the Balfactory contract.
+type BalfactoryLOGNEWPOOL struct {
 	Caller common.Address
 	Pool   common.Address
 	Raw    types.Log // Blockchain specific contextual infos
@@ -541,7 +556,7 @@ type BALFactoryContractLOGNEWPOOL struct {
 // FilterLOGNEWPOOL is a free log retrieval operation binding the contract event 0x8ccec77b0cb63ac2cafd0f5de8cdfadab91ce656d262240ba8a6343bccc5f945.
 //
 // Solidity: event LOG_NEW_POOL(address indexed caller, address indexed pool)
-func (_BALFactoryContract *BALFactoryContractFilterer) FilterLOGNEWPOOL(opts *bind.FilterOpts, caller []common.Address, pool []common.Address) (*BALFactoryContractLOGNEWPOOLIterator, error) {
+func (_Balfactory *BalfactoryFilterer) FilterLOGNEWPOOL(opts *bind.FilterOpts, caller []common.Address, pool []common.Address) (*BalfactoryLOGNEWPOOLIterator, error) {
 
 	var callerRule []interface{}
 	for _, callerItem := range caller {
@@ -552,17 +567,17 @@ func (_BALFactoryContract *BALFactoryContractFilterer) FilterLOGNEWPOOL(opts *bi
 		poolRule = append(poolRule, poolItem)
 	}
 
-	logs, sub, err := _BALFactoryContract.contract.FilterLogs(opts, "LOG_NEW_POOL", callerRule, poolRule)
+	logs, sub, err := _Balfactory.contract.FilterLogs(opts, "LOG_NEW_POOL", callerRule, poolRule)
 	if err != nil {
 		return nil, err
 	}
-	return &BALFactoryContractLOGNEWPOOLIterator{contract: _BALFactoryContract.contract, event: "LOG_NEW_POOL", logs: logs, sub: sub}, nil
+	return &BalfactoryLOGNEWPOOLIterator{contract: _Balfactory.contract, event: "LOG_NEW_POOL", logs: logs, sub: sub}, nil
 }
 
 // WatchLOGNEWPOOL is a free log subscription operation binding the contract event 0x8ccec77b0cb63ac2cafd0f5de8cdfadab91ce656d262240ba8a6343bccc5f945.
 //
 // Solidity: event LOG_NEW_POOL(address indexed caller, address indexed pool)
-func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGNEWPOOL(opts *bind.WatchOpts, sink chan<- *BALFactoryContractLOGNEWPOOL, caller []common.Address, pool []common.Address) (event.Subscription, error) {
+func (_Balfactory *BalfactoryFilterer) WatchLOGNEWPOOL(opts *bind.WatchOpts, sink chan<- *BalfactoryLOGNEWPOOL, caller []common.Address, pool []common.Address) (event.Subscription, error) {
 
 	var callerRule []interface{}
 	for _, callerItem := range caller {
@@ -573,7 +588,7 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGNEWPOOL(opts *bin
 		poolRule = append(poolRule, poolItem)
 	}
 
-	logs, sub, err := _BALFactoryContract.contract.WatchLogs(opts, "LOG_NEW_POOL", callerRule, poolRule)
+	logs, sub, err := _Balfactory.contract.WatchLogs(opts, "LOG_NEW_POOL", callerRule, poolRule)
 	if err != nil {
 		return nil, err
 	}
@@ -583,8 +598,8 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGNEWPOOL(opts *bin
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(BALFactoryContractLOGNEWPOOL)
-				if err := _BALFactoryContract.contract.UnpackLog(event, "LOG_NEW_POOL", log); err != nil {
+				event := new(BalfactoryLOGNEWPOOL)
+				if err := _Balfactory.contract.UnpackLog(event, "LOG_NEW_POOL", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -608,9 +623,9 @@ func (_BALFactoryContract *BALFactoryContractFilterer) WatchLOGNEWPOOL(opts *bin
 // ParseLOGNEWPOOL is a log parse operation binding the contract event 0x8ccec77b0cb63ac2cafd0f5de8cdfadab91ce656d262240ba8a6343bccc5f945.
 //
 // Solidity: event LOG_NEW_POOL(address indexed caller, address indexed pool)
-func (_BALFactoryContract *BALFactoryContractFilterer) ParseLOGNEWPOOL(log types.Log) (*BALFactoryContractLOGNEWPOOL, error) {
-	event := new(BALFactoryContractLOGNEWPOOL)
-	if err := _BALFactoryContract.contract.UnpackLog(event, "LOG_NEW_POOL", log); err != nil {
+func (_Balfactory *BalfactoryFilterer) ParseLOGNEWPOOL(log types.Log) (*BalfactoryLOGNEWPOOL, error) {
+	event := new(BalfactoryLOGNEWPOOL)
+	if err := _Balfactory.contract.UnpackLog(event, "LOG_NEW_POOL", log); err != nil {
 		return nil, err
 	}
 	return event, nil

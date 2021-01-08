@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,10 +20,9 @@ import (
 )
 
 const (
-	gnosisStartBlock = uint64(10780772 - 5250)
-
-	gnosisWsDial   = "ws://159.69.120.42:8546/"
-	gnosisRestDial = "http://159.69.120.42:8545/"
+	gnosisWsDial         = "ws://159.69.120.42:8546/"
+	gnosisRestDial       = "http://159.69.120.42:8545/"
+	gnosisLookBackBlocks = 6 * 60 * 24 * 7
 )
 
 type GnosisToken struct {
@@ -51,13 +51,13 @@ type GnosisScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[uint16]*GnosisToken
-	contract common.Address
+	contract    common.Address
 }
 
 func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	scraper := &GnosisScraper{
 		exchangeName:   exchange.Name,
-		contract:   exchange.Contract,
+		contract:       exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -115,7 +115,7 @@ func (scraper *GnosisScraper) loadTokens() {
 		}
 		scraper.tokens[i] = &GnosisToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Int64()),
 		}
 
 		scraper.tokens[i].normalizeETH()
@@ -131,9 +131,15 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(gnosisLookBackBlocks)
+
 	sink := make(chan *gnosis.GnosisTrade)
-	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -283,7 +289,6 @@ func (t *GnosisToken) normalizeETH() {
 func (scraper *GnosisScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
-
 
 func (scraper *GnosisScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()

@@ -18,6 +18,7 @@ The oracle contains information about chart points of an ever growing list of ex
 As of now, the following list of exchanges is available in this oracle:  
 - 0x \(ETH\)  
 - Bancor \(ETH\)  
+- Bitmax \(ETH\)  
 - Curvefi \(DAI\)  
 - Gnosis \(ETH\)  
 - Kyber \(ETH\)  

@@ -137,7 +137,7 @@ func bindFortubev2(address common.Address, caller bind.ContractCaller, transacto
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Fortubev2 *Fortubev2Raw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Fortubev2 *Fortubev2Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Fortubev2.Contract.Fortubev2Caller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Fortubev2 *Fortubev2Raw) Transact(opts *bind.TransactOpts, method string,
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Fortubev2 *Fortubev2CallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Fortubev2 *Fortubev2CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Fortubev2.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Fortubev2 *Fortubev2TransactorRaw) Transact(opts *bind.TransactOpts, meth
 //
 // Solidity: function accountAssets(address , uint256 ) view returns(address)
 func (_Fortubev2 *Fortubev2Caller) AccountAssets(opts *bind.CallOpts, arg0 common.Address, arg1 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "accountAssets", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "accountAssets", arg0, arg1)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // AccountAssets is a free data retrieval call binding the contract method 0xdce15449.
@@ -201,12 +206,17 @@ func (_Fortubev2 *Fortubev2CallerSession) AccountAssets(arg0 common.Address, arg
 //
 // Solidity: function addExp(uint256 a, uint256 b) pure returns(uint256 result)
 func (_Fortubev2 *Fortubev2Caller) AddExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "addExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "addExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // AddExp is a free data retrieval call binding the contract method 0x4147da13.
@@ -227,12 +237,17 @@ func (_Fortubev2 *Fortubev2CallerSession) AddExp(a *big.Int, b *big.Int) (*big.I
 //
 // Solidity: function admin() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) Admin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "admin")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "admin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Admin is a free data retrieval call binding the contract method 0xf851a440.
@@ -253,12 +268,17 @@ func (_Fortubev2 *Fortubev2CallerSession) Admin() (common.Address, error) {
 //
 // Solidity: function allMarkets(uint256 ) view returns(address)
 func (_Fortubev2 *Fortubev2Caller) AllMarkets(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "allMarkets", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "allMarkets", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // AllMarkets is a free data retrieval call binding the contract method 0x52d84d1e.
@@ -279,12 +299,17 @@ func (_Fortubev2 *Fortubev2CallerSession) AllMarkets(arg0 *big.Int) (common.Addr
 //
 // Solidity: function allUnderlyingMarkets(uint256 ) view returns(address)
 func (_Fortubev2 *Fortubev2Caller) AllUnderlyingMarkets(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "allUnderlyingMarkets", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "allUnderlyingMarkets", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // AllUnderlyingMarkets is a free data retrieval call binding the contract method 0x941a9b11.
@@ -305,12 +330,17 @@ func (_Fortubev2 *Fortubev2CallerSession) AllUnderlyingMarkets(arg0 *big.Int) (c
 //
 // Solidity: function bankEntryAddress() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) BankEntryAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "bankEntryAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "bankEntryAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // BankEntryAddress is a free data retrieval call binding the contract method 0x94df6bc4.
@@ -331,12 +361,17 @@ func (_Fortubev2 *Fortubev2CallerSession) BankEntryAddress() (common.Address, er
 //
 // Solidity: function calcExchangeUnit(address fToken) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcExchangeUnit(opts *bind.CallOpts, fToken common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcExchangeUnit", fToken)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcExchangeUnit", fToken)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcExchangeUnit is a free data retrieval call binding the contract method 0x4d7ab633.
@@ -357,12 +392,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcExchangeUnit(fToken common.Address
 //
 // Solidity: function calcMaxBorrowAmount(address user, address token) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcMaxBorrowAmount(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcMaxBorrowAmount", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcMaxBorrowAmount", user, token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcMaxBorrowAmount is a free data retrieval call binding the contract method 0xec63aaa3.
@@ -383,12 +423,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcMaxBorrowAmount(user common.Addres
 //
 // Solidity: function calcMaxBorrowAmountWithRatio(address user, address token) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcMaxBorrowAmountWithRatio(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcMaxBorrowAmountWithRatio", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcMaxBorrowAmountWithRatio", user, token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcMaxBorrowAmountWithRatio is a free data retrieval call binding the contract method 0x75861c6f.
@@ -409,12 +454,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcMaxBorrowAmountWithRatio(user comm
 //
 // Solidity: function calcMaxCashOutAmount(address user, address token) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcMaxCashOutAmount(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcMaxCashOutAmount", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcMaxCashOutAmount", user, token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcMaxCashOutAmount is a free data retrieval call binding the contract method 0xa9dc394c.
@@ -435,12 +485,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcMaxCashOutAmount(user common.Addre
 //
 // Solidity: function calcMaxWithdrawAmount(address user, address token) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcMaxWithdrawAmount(opts *bind.CallOpts, user common.Address, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcMaxWithdrawAmount", user, token)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcMaxWithdrawAmount", user, token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcMaxWithdrawAmount is a free data retrieval call binding the contract method 0x2b91acc0.
@@ -461,12 +516,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcMaxWithdrawAmount(user common.Addr
 //
 // Solidity: function calcRewardAmount(uint256 gasSpend, uint256 gasPrice, address _for) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcRewardAmount(opts *bind.CallOpts, gasSpend *big.Int, gasPrice *big.Int, _for common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcRewardAmount", gasSpend, gasPrice, _for)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcRewardAmount", gasSpend, gasPrice, _for)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcRewardAmount is a free data retrieval call binding the contract method 0x2ddb60a3.
@@ -487,12 +547,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcRewardAmount(gasSpend *big.Int, ga
 //
 // Solidity: function calcRewardAmountByFactor(uint256 gasSpend, uint256 gasPrice, address _for, uint256 factor) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CalcRewardAmountByFactor(opts *bind.CallOpts, gasSpend *big.Int, gasPrice *big.Int, _for common.Address, factor *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "calcRewardAmountByFactor", gasSpend, gasPrice, _for, factor)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "calcRewardAmountByFactor", gasSpend, gasPrice, _for, factor)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CalcRewardAmountByFactor is a free data retrieval call binding the contract method 0x9ee30be8.
@@ -513,12 +578,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CalcRewardAmountByFactor(gasSpend *big
 //
 // Solidity: function checkAccountsIn(address account, address fToken) view returns(bool)
 func (_Fortubev2 *Fortubev2Caller) CheckAccountsIn(opts *bind.CallOpts, account common.Address, fToken common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "checkAccountsIn", account, fToken)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "checkAccountsIn", account, fToken)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // CheckAccountsIn is a free data retrieval call binding the contract method 0xa53caa16.
@@ -539,12 +609,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CheckAccountsIn(account common.Address
 //
 // Solidity: function closeFactor() view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) CloseFactor(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "closeFactor")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "closeFactor")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // CloseFactor is a free data retrieval call binding the contract method 0x05308b9f.
@@ -565,12 +640,17 @@ func (_Fortubev2 *Fortubev2CallerSession) CloseFactor() (*big.Int, error) {
 //
 // Solidity: function divExp(uint256 a, uint256 b) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) DivExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "divExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "divExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivExp is a free data retrieval call binding the contract method 0xb507f9f9.
@@ -591,12 +671,17 @@ func (_Fortubev2 *Fortubev2CallerSession) DivExp(a *big.Int, b *big.Int) (*big.I
 //
 // Solidity: function divScalar(uint256 a, uint256 scalar) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) DivScalar(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "divScalar", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "divScalar", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalar is a free data retrieval call binding the contract method 0x4751b79c.
@@ -617,12 +702,17 @@ func (_Fortubev2 *Fortubev2CallerSession) DivScalar(a *big.Int, scalar *big.Int)
 //
 // Solidity: function divScalarByExp(uint256 scalar, uint256 divisor) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) DivScalarByExp(opts *bind.CallOpts, scalar *big.Int, divisor *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "divScalarByExp", scalar, divisor)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "divScalarByExp", scalar, divisor)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalarByExp is a free data retrieval call binding the contract method 0xce603aad.
@@ -643,12 +733,17 @@ func (_Fortubev2 *Fortubev2CallerSession) DivScalarByExp(scalar *big.Int, diviso
 //
 // Solidity: function divScalarByExpTruncate(uint256 scalar, uint256 divisor) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) DivScalarByExpTruncate(opts *bind.CallOpts, scalar *big.Int, divisor *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "divScalarByExpTruncate", scalar, divisor)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "divScalarByExpTruncate", scalar, divisor)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // DivScalarByExpTruncate is a free data retrieval call binding the contract method 0xd6079cc6.
@@ -669,16 +764,18 @@ func (_Fortubev2 *Fortubev2CallerSession) DivScalarByExpTruncate(scalar *big.Int
 //
 // Solidity: function fetchAssetPrice(address token) view returns(uint256, bool)
 func (_Fortubev2 *Fortubev2Caller) FetchAssetPrice(opts *bind.CallOpts, token common.Address) (*big.Int, bool, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(bool)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "fetchAssetPrice", token)
+
+	if err != nil {
+		return *new(*big.Int), *new(bool), err
 	}
-	err := _Fortubev2.contract.Call(opts, out, "fetchAssetPrice", token)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(bool)).(*bool)
+
+	return out0, out1, err
+
 }
 
 // FetchAssetPrice is a free data retrieval call binding the contract method 0xddec280e.
@@ -702,13 +799,19 @@ func (_Fortubev2 *Fortubev2Caller) GetAccountLiquidity(opts *bind.CallOpts, acco
 	Liquidity *big.Int
 	Shortfall *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getAccountLiquidity", account)
+
+	outstruct := new(struct {
 		Liquidity *big.Int
 		Shortfall *big.Int
 	})
-	out := ret
-	err := _Fortubev2.contract.Call(opts, out, "getAccountLiquidity", account)
-	return *ret, err
+
+	outstruct.Liquidity = out[0].(*big.Int)
+	outstruct.Shortfall = out[1].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // GetAccountLiquidity is a free data retrieval call binding the contract method 0x5ec88c79.
@@ -735,16 +838,18 @@ func (_Fortubev2 *Fortubev2CallerSession) GetAccountLiquidity(account common.Add
 //
 // Solidity: function getAccountLiquidityExcludeDeposit(address account, address token) view returns(uint256, uint256)
 func (_Fortubev2 *Fortubev2Caller) GetAccountLiquidityExcludeDeposit(opts *bind.CallOpts, account common.Address, token common.Address) (*big.Int, *big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(*big.Int)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getAccountLiquidityExcludeDeposit", account, token)
+
+	if err != nil {
+		return *new(*big.Int), *new(*big.Int), err
 	}
-	err := _Fortubev2.contract.Call(opts, out, "getAccountLiquidityExcludeDeposit", account, token)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
 }
 
 // GetAccountLiquidityExcludeDeposit is a free data retrieval call binding the contract method 0x70de3062.
@@ -765,12 +870,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetAccountLiquidityExcludeDeposit(acco
 //
 // Solidity: function getAllMarkets() view returns(address[])
 func (_Fortubev2 *Fortubev2Caller) GetAllMarkets(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getAllMarkets")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getAllMarkets")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetAllMarkets is a free data retrieval call binding the contract method 0xb0772d0b.
@@ -791,12 +901,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetAllMarkets() ([]common.Address, err
 //
 // Solidity: function getAssetsIn(address account) view returns(address[])
 func (_Fortubev2 *Fortubev2Caller) GetAssetsIn(opts *bind.CallOpts, account common.Address) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getAssetsIn", account)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getAssetsIn", account)
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
 }
 
 // GetAssetsIn is a free data retrieval call binding the contract method 0xabfceffc.
@@ -817,12 +932,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetAssetsIn(account common.Address) ([
 //
 // Solidity: function getCashAfter(address underlying, uint256 transferInAmount) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) GetCashAfter(opts *bind.CallOpts, underlying common.Address, transferInAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getCashAfter", underlying, transferInAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getCashAfter", underlying, transferInAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetCashAfter is a free data retrieval call binding the contract method 0xa3f0fa20.
@@ -843,12 +963,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetCashAfter(underlying common.Address
 //
 // Solidity: function getCashPrior(address underlying) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) GetCashPrior(opts *bind.CallOpts, underlying common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getCashPrior", underlying)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getCashPrior", underlying)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetCashPrior is a free data retrieval call binding the contract method 0x9f77437b.
@@ -869,12 +994,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetCashPrior(underlying common.Address
 //
 // Solidity: function getDiv(uint256 num, uint256 denom) pure returns(uint256 rational)
 func (_Fortubev2 *Fortubev2Caller) GetDiv(opts *bind.CallOpts, num *big.Int, denom *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getDiv", num, denom)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getDiv", num, denom)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetDiv is a free data retrieval call binding the contract method 0x5293ff31.
@@ -895,12 +1025,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetDiv(num *big.Int, denom *big.Int) (
 //
 // Solidity: function getExp(uint256 num, uint256 denom) pure returns(uint256 rational)
 func (_Fortubev2 *Fortubev2Caller) GetExp(opts *bind.CallOpts, num *big.Int, denom *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getExp", num, denom)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getExp", num, denom)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetExp is a free data retrieval call binding the contract method 0xba9316b7.
@@ -921,12 +1056,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetExp(num *big.Int, denom *big.Int) (
 //
 // Solidity: function getFTokeAddress(address underlying) view returns(address)
 func (_Fortubev2 *Fortubev2Caller) GetFTokeAddress(opts *bind.CallOpts, underlying common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "getFTokeAddress", underlying)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getFTokeAddress", underlying)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetFTokeAddress is a free data retrieval call binding the contract method 0xfc1ce708.
@@ -947,16 +1087,18 @@ func (_Fortubev2 *Fortubev2CallerSession) GetFTokeAddress(underlying common.Addr
 //
 // Solidity: function getTotalDepositAndBorrow(address account) view returns(uint256, uint256)
 func (_Fortubev2 *Fortubev2Caller) GetTotalDepositAndBorrow(opts *bind.CallOpts, account common.Address) (*big.Int, *big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(*big.Int)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getTotalDepositAndBorrow", account)
+
+	if err != nil {
+		return *new(*big.Int), *new(*big.Int), err
 	}
-	err := _Fortubev2.contract.Call(opts, out, "getTotalDepositAndBorrow", account)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
 }
 
 // GetTotalDepositAndBorrow is a free data retrieval call binding the contract method 0x8e93aa73.
@@ -977,16 +1119,18 @@ func (_Fortubev2 *Fortubev2CallerSession) GetTotalDepositAndBorrow(account commo
 //
 // Solidity: function getUserLiquidity(address account, address fTokenNow, uint256 withdrawTokens, uint256 borrowAmount) view returns(uint256, uint256)
 func (_Fortubev2 *Fortubev2Caller) GetUserLiquidity(opts *bind.CallOpts, account common.Address, fTokenNow common.Address, withdrawTokens *big.Int, borrowAmount *big.Int) (*big.Int, *big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(*big.Int)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getUserLiquidity", account, fTokenNow, withdrawTokens, borrowAmount)
+
+	if err != nil {
+		return *new(*big.Int), *new(*big.Int), err
 	}
-	err := _Fortubev2.contract.Call(opts, out, "getUserLiquidity", account, fTokenNow, withdrawTokens, borrowAmount)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
 }
 
 // GetUserLiquidity is a free data retrieval call binding the contract method 0x87dac0cc.
@@ -1007,16 +1151,18 @@ func (_Fortubev2 *Fortubev2CallerSession) GetUserLiquidity(account common.Addres
 //
 // Solidity: function getUserLiquidityExcludeToken(address account, address excludeToken, address fTokenNow, uint256 withdrawTokens, uint256 borrowAmount) view returns(uint256, uint256)
 func (_Fortubev2 *Fortubev2Caller) GetUserLiquidityExcludeToken(opts *bind.CallOpts, account common.Address, excludeToken common.Address, fTokenNow common.Address, withdrawTokens *big.Int, borrowAmount *big.Int) (*big.Int, *big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-		ret1 = new(*big.Int)
-	)
-	out := &[]interface{}{
-		ret0,
-		ret1,
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "getUserLiquidityExcludeToken", account, excludeToken, fTokenNow, withdrawTokens, borrowAmount)
+
+	if err != nil {
+		return *new(*big.Int), *new(*big.Int), err
 	}
-	err := _Fortubev2.contract.Call(opts, out, "getUserLiquidityExcludeToken", account, excludeToken, fTokenNow, withdrawTokens, borrowAmount)
-	return *ret0, *ret1, err
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
 }
 
 // GetUserLiquidityExcludeToken is a free data retrieval call binding the contract method 0x8ac4ddc8.
@@ -1037,12 +1183,17 @@ func (_Fortubev2 *Fortubev2CallerSession) GetUserLiquidityExcludeToken(account c
 //
 // Solidity: function isFTokenValid(address fToken) view returns(bool)
 func (_Fortubev2 *Fortubev2Caller) IsFTokenValid(opts *bind.CallOpts, fToken common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "isFTokenValid", fToken)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "isFTokenValid", fToken)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsFTokenValid is a free data retrieval call binding the contract method 0x2a4d98cf.
@@ -1063,12 +1214,17 @@ func (_Fortubev2 *Fortubev2CallerSession) IsFTokenValid(fToken common.Address) (
 //
 // Solidity: function liquidateTokens(address fTokenBorrowed, address fTokenCollateral, uint256 actualRepayAmount) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) LiquidateTokens(opts *bind.CallOpts, fTokenBorrowed common.Address, fTokenCollateral common.Address, actualRepayAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "liquidateTokens", fTokenBorrowed, fTokenCollateral, actualRepayAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "liquidateTokens", fTokenBorrowed, fTokenCollateral, actualRepayAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // LiquidateTokens is a free data retrieval call binding the contract method 0x0c7fa6e0.
@@ -1094,15 +1250,23 @@ func (_Fortubev2 *Fortubev2Caller) Markets(opts *bind.CallOpts, arg0 common.Addr
 	CollateralAbility    *big.Int
 	LiquidationIncentive *big.Int
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "markets", arg0)
+
+	outstruct := new(struct {
 		FTokenAddress        common.Address
 		IsValid              bool
 		CollateralAbility    *big.Int
 		LiquidationIncentive *big.Int
 	})
-	out := ret
-	err := _Fortubev2.contract.Call(opts, out, "markets", arg0)
-	return *ret, err
+
+	outstruct.FTokenAddress = out[0].(common.Address)
+	outstruct.IsValid = out[1].(bool)
+	outstruct.CollateralAbility = out[2].(*big.Int)
+	outstruct.LiquidationIncentive = out[3].(*big.Int)
+
+	return *outstruct, err
+
 }
 
 // Markets is a free data retrieval call binding the contract method 0x8e8f294b.
@@ -1133,12 +1297,17 @@ func (_Fortubev2 *Fortubev2CallerSession) Markets(arg0 common.Address) (struct {
 //
 // Solidity: function marketsContains(address fToken) view returns(bool)
 func (_Fortubev2 *Fortubev2Caller) MarketsContains(opts *bind.CallOpts, fToken common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "marketsContains", fToken)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "marketsContains", fToken)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // MarketsContains is a free data retrieval call binding the contract method 0x9deec7cb.
@@ -1159,12 +1328,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MarketsContains(fToken common.Address)
 //
 // Solidity: function mulExp(uint256 a, uint256 b) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) MulExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulExp is a free data retrieval call binding the contract method 0xde32abd1.
@@ -1185,12 +1359,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MulExp(a *big.Int, b *big.Int) (*big.I
 //
 // Solidity: function mulExp3(uint256 a, uint256 b, uint256 c) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) MulExp3(opts *bind.CallOpts, a *big.Int, b *big.Int, c *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulExp3", a, b, c)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulExp3", a, b, c)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulExp3 is a free data retrieval call binding the contract method 0x8de46362.
@@ -1211,12 +1390,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MulExp3(a *big.Int, b *big.Int, c *big
 //
 // Solidity: function mulScalar(uint256 a, uint256 scalar) pure returns(uint256 scaled)
 func (_Fortubev2 *Fortubev2Caller) MulScalar(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulScalar", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulScalar", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalar is a free data retrieval call binding the contract method 0x2985fa31.
@@ -1237,12 +1421,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MulScalar(a *big.Int, scalar *big.Int)
 //
 // Solidity: function mulScalarTruncate(uint256 a, uint256 scalar) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) MulScalarTruncate(opts *bind.CallOpts, a *big.Int, scalar *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulScalarTruncate", a, scalar)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulScalarTruncate", a, scalar)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalarTruncate is a free data retrieval call binding the contract method 0xb4ab15e7.
@@ -1263,12 +1452,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MulScalarTruncate(a *big.Int, scalar *
 //
 // Solidity: function mulScalarTruncateAddUInt(uint256 a, uint256 scalar, uint256 addend) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) MulScalarTruncateAddUInt(opts *bind.CallOpts, a *big.Int, scalar *big.Int, addend *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulScalarTruncateAddUInt", a, scalar, addend)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulScalarTruncateAddUInt", a, scalar, addend)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MulScalarTruncateAddUInt is a free data retrieval call binding the contract method 0x6208fc41.
@@ -1289,12 +1483,17 @@ func (_Fortubev2 *Fortubev2CallerSession) MulScalarTruncateAddUInt(a *big.Int, s
 //
 // Solidity: function mulsig() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) Mulsig(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "mulsig")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "mulsig")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Mulsig is a free data retrieval call binding the contract method 0x1a435b55.
@@ -1315,12 +1514,17 @@ func (_Fortubev2 *Fortubev2CallerSession) Mulsig() (common.Address, error) {
 //
 // Solidity: function oracle() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) Oracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "oracle")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "oracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Oracle is a free data retrieval call binding the contract method 0x7dc0d1d0.
@@ -1341,12 +1545,17 @@ func (_Fortubev2 *Fortubev2CallerSession) Oracle() (common.Address, error) {
 //
 // Solidity: function proposedAdmin() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) ProposedAdmin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "proposedAdmin")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "proposedAdmin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // ProposedAdmin is a free data retrieval call binding the contract method 0x32f751ec.
@@ -1367,10 +1576,15 @@ func (_Fortubev2 *Fortubev2CallerSession) ProposedAdmin() (common.Address, error
 //
 // Solidity: function repayCheck(address underlying) view returns()
 func (_Fortubev2 *Fortubev2Caller) RepayCheck(opts *bind.CallOpts, underlying common.Address) error {
-	var ()
-	out := &[]interface{}{}
-	err := _Fortubev2.contract.Call(opts, out, "repayCheck", underlying)
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "repayCheck", underlying)
+
+	if err != nil {
+		return err
+	}
+
 	return err
+
 }
 
 // RepayCheck is a free data retrieval call binding the contract method 0x44f4b506.
@@ -1391,12 +1605,17 @@ func (_Fortubev2 *Fortubev2CallerSession) RepayCheck(underlying common.Address) 
 //
 // Solidity: function rewardFactors(uint256 ) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) RewardFactors(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "rewardFactors", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "rewardFactors", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // RewardFactors is a free data retrieval call binding the contract method 0xdd4b8b7d.
@@ -1417,12 +1636,17 @@ func (_Fortubev2 *Fortubev2CallerSession) RewardFactors(arg0 *big.Int) (*big.Int
 //
 // Solidity: function rewardPool() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) RewardPool(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "rewardPool")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "rewardPool")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // RewardPool is a free data retrieval call binding the contract method 0x66666aa9.
@@ -1443,10 +1667,15 @@ func (_Fortubev2 *Fortubev2CallerSession) RewardPool() (common.Address, error) {
 //
 // Solidity: function seizeCheck(address cTokenCollateral, address cTokenBorrowed) view returns()
 func (_Fortubev2 *Fortubev2Caller) SeizeCheck(opts *bind.CallOpts, cTokenCollateral common.Address, cTokenBorrowed common.Address) error {
-	var ()
-	out := &[]interface{}{}
-	err := _Fortubev2.contract.Call(opts, out, "seizeCheck", cTokenCollateral, cTokenBorrowed)
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "seizeCheck", cTokenCollateral, cTokenBorrowed)
+
+	if err != nil {
+		return err
+	}
+
 	return err
+
 }
 
 // SeizeCheck is a free data retrieval call binding the contract method 0x7ceb4c97.
@@ -1467,12 +1696,17 @@ func (_Fortubev2 *Fortubev2CallerSession) SeizeCheck(cTokenCollateral common.Add
 //
 // Solidity: function subExp(uint256 a, uint256 b) pure returns(uint256 result)
 func (_Fortubev2 *Fortubev2Caller) SubExp(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "subExp", a, b)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "subExp", a, b)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // SubExp is a free data retrieval call binding the contract method 0x396a98cf.
@@ -1493,12 +1727,17 @@ func (_Fortubev2 *Fortubev2CallerSession) SubExp(a *big.Int, b *big.Int) (*big.I
 //
 // Solidity: function theForceToken() view returns(address)
 func (_Fortubev2 *Fortubev2Caller) TheForceToken(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "theForceToken")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "theForceToken")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // TheForceToken is a free data retrieval call binding the contract method 0x96a614d2.
@@ -1519,12 +1758,17 @@ func (_Fortubev2 *Fortubev2CallerSession) TheForceToken() (common.Address, error
 //
 // Solidity: function tokenDecimals(address token) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) TokenDecimals(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "tokenDecimals", token)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "tokenDecimals", token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TokenDecimals is a free data retrieval call binding the contract method 0x8ee573ac.
@@ -1545,12 +1789,17 @@ func (_Fortubev2 *Fortubev2CallerSession) TokenDecimals(token common.Address) (*
 //
 // Solidity: function transferEthGasCost() view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) TransferEthGasCost(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "transferEthGasCost")
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "transferEthGasCost")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // TransferEthGasCost is a free data retrieval call binding the contract method 0x4f9c751e.
@@ -1571,12 +1820,17 @@ func (_Fortubev2 *Fortubev2CallerSession) TransferEthGasCost() (*big.Int, error)
 //
 // Solidity: function truncate(uint256 exp) pure returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) Truncate(opts *bind.CallOpts, exp *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "truncate", exp)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "truncate", exp)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Truncate is a free data retrieval call binding the contract method 0x7b94aaac.
@@ -1597,12 +1851,17 @@ func (_Fortubev2 *Fortubev2CallerSession) Truncate(exp *big.Int) (*big.Int, erro
 //
 // Solidity: function withdrawCheck(address fToken, address withdrawer, uint256 withdrawTokens) view returns(uint256)
 func (_Fortubev2 *Fortubev2Caller) WithdrawCheck(opts *bind.CallOpts, fToken common.Address, withdrawer common.Address, withdrawTokens *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Fortubev2.contract.Call(opts, out, "withdrawCheck", fToken, withdrawer, withdrawTokens)
-	return *ret0, err
+	var out []interface{}
+	err := _Fortubev2.contract.Call(opts, &out, "withdrawCheck", fToken, withdrawer, withdrawTokens)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // WithdrawCheck is a free data retrieval call binding the contract method 0x57986129.
@@ -2212,6 +2471,6 @@ func (_Fortubev2 *Fortubev2Filterer) ParseAddTokenToMarket(log types.Log) (*Fort
 	if err := _Fortubev2.contract.UnpackLog(event, "AddTokenToMarket", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-
