@@ -144,7 +144,7 @@ $$
 r=\frac{152}{150}-1=0,01\bar{3}=1,\bar{3}\%.
 $$
 
-## Estimation of Returns from Total Rewards
+## Estimation of Pool Rates from Total Rewards
 
 Some platforms such as Loopring emit total system rewards. We remark that, given the staking pool's total balance $$D$$ and the total reward $$R$$, an average pool rate $$\tilde{r}$$ can be estimated as follows
 
