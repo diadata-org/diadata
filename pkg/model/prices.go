@@ -11,7 +11,7 @@ func (db *DB) SetPriceZSET(symbol string, exchange string, price float64, t time
 	db.SaveFilterInflux(dia.FilterKing, symbol, exchange, price, t)
 	key := getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange))
 	log.Debug("SetPriceZSET ", key)
-	return db.setZSETValue(key, price, time.Now().Unix(), BiggestWindow)
+	return db.setZSETValue(key, price, time.Now().Unix(), Window30d)
 }
 
 func (db *DB) GetPrice(symbol string, exchange string) (float64, error) {
@@ -38,4 +38,28 @@ func (db *DB) GetPrice14d(symbol string, exchange string) (float64, error) {
 
 func (db *DB) GetPrice30d(symbol string, exchange string) (float64, error) {
 	return db.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, symbol, exchange)), time.Now().Unix()-Window30d)
+}
+
+func (db *DB) GetTradePriceBefore(symbol string, exchange string, timestamp time.Time) (*dia.Trade, error) {
+	return db.GetTradeInflux(symbol, exchange, timestamp)
+}
+
+func (db *DB) GetTradePrice1h(symbol string, exchange string) (*dia.Trade, error) {
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-1 * time.Hour))
+}
+
+func (db *DB) GetTradePrice24h(symbol string, exchange string) (*dia.Trade, error) {
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-24 * time.Hour))
+}
+
+func (db *DB) GetTradePrice7d(symbol string, exchange string) (*dia.Trade, error) {
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-7 * 24 * time.Hour))
+}
+
+func (db *DB) GetTradePrice14d(symbol string, exchange string) (*dia.Trade, error) {
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-14 * 24 * time.Hour))
+}
+
+func (db *DB) GetTradePrice30d(symbol string, exchange string) (*dia.Trade, error) {
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-30 * 24 * time.Hour))
 }

@@ -16,9 +16,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/factory"
-	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/pool"
-	baltokencontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/balancer/token"
+	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
+	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
+	baltokencontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 )
@@ -69,8 +69,8 @@ func NewBalancerPoolScrapper(scraper *PoolScraper) *BalancerPoolScrapper {
 }
 
 // watchFactory watches the BPFactory contract for New Pool creation events.
-func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontract.BALFactoryContractLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBALFactoryContractFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	_, err := fr.WatchLOGNEWPOOL(&bind.WatchOpts{}, newPoolChan, nil, nil)
 	if err != nil {
@@ -81,8 +81,8 @@ func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontrac
 }
 
 // fetchPreviousPools fetches all the past pool creation event on the BPFactory contract.
-func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BALFactoryContractLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBALFactoryContractFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	header, err := bp.restClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -215,7 +215,7 @@ func (bp *BalancerPoolScrapper) mainLoop() {
 	// watched for transactions by bp.poolWatcher
 	newPoolChan := make(chan common.Address, 16)
 	// pool creation events sent to newPoolEventChan will get their pool sent to newPoolChan
-	newPoolEventChan := make(chan *balfactorycontract.BALFactoryContractLOGNEWPOOL, 16)
+	newPoolEventChan := make(chan *balfactorycontract.BalancerfactoryLOGNEWPOOL, 16)
 	// pools sent to poolHandlerChan are forwarded to a bp.poolHandler routine
 	poolToFetchChan := make(chan common.Address, 16)
 	// pools sent to poolWatcherPerceiver will be watched by bp.poolWatcher.
@@ -249,7 +249,7 @@ func (bp *BalancerPoolScrapper) mainLoop() {
 // getPool gets informations of the pool at the given pool address. These informations are emited as scrapped data.
 // To avoid rate limitation errors, do not call this function directly. It is preferred to use a fixed amount of draining goroutines.
 func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) {
-	pool, err := balancerpoolcontract.NewBalancerPoolContractCaller(poolAddress, bp.restClient)
+	pool, err := balancerpoolcontract.NewBalancerpoolCaller(poolAddress, bp.restClient)
 	if err != nil {
 		return errors.Wrap(err, "loading pool contract")
 	}
@@ -287,7 +287,7 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 	for _, token := range tokens {
 		// tokCaller, err := erctoken.NewERC20Token(token, bp.restClient)
 		// tokCaller, err := erctoken.NewERC20TokenCaller(token, bp.restClient)
-		tokCaller, err := baltokencontract.NewBALTokenContractCaller(token, bp.restClient)
+		tokCaller, err := baltokencontract.NewBalancertokenCaller(token, bp.restClient)
 		if err != nil {
 			return errors.Wrapf(err, "creating bal token contract caller for %s", token.Hex())
 		}

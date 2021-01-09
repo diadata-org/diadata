@@ -147,7 +147,7 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		}
 		dfToken := &DforceToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Uint64()),
 			Address: tokenAddress.String(),
 			Name: name,
 		}

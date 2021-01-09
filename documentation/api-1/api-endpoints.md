@@ -685,7 +685,7 @@ Guest Quotation
 {% api-method-description %}
 Get the latest quotation for a token from a guest source.  
 Example:  
-https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC  
+https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC  
   
 Use the query parameter time in order to get the latest quotation before the specified timestamp.  
 Example:  

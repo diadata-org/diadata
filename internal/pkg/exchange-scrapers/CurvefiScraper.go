@@ -271,13 +271,13 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 
 		poolCoinsMap[cIdx] = &CurveCoin{
 			Symbol:   symbol,
-			Decimals: uint8(decimals),
+			Decimals: uint8(decimals.Uint64()),
 			Name:     name,
 			Address:  c.String(),
 		}
 		scraper.curveCoins[c.Hex()] = &CurveCoin{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Uint64()),
 		}
 
 		scraper.pools.setPool(pool, poolCoinsMap)

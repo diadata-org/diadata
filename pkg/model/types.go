@@ -120,6 +120,21 @@ type CryptoIndex struct {
 		Price             float64
 		CirculatingSupply float64
 	}
+type Coin struct {
+	Symbol             string
+	Name               string
+	Price              float64
+	PriceYesterday     *float64
+	VolumeYesterdayUSD *float64
+	Time               time.Time
+	CirculatingSupply  *float64
+	ITIN               string
+}
+
+type Coins struct {
+	CompleteCoinList []CoinSymbolAndName
+	Change           *Change
+	Coins            []Coin
 }
 
 type Pairs struct {

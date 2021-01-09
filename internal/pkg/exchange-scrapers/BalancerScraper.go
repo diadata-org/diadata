@@ -348,7 +348,7 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 		if symbol != "" {
 			tokenMap[token] = &BalancerToken{
 				Symbol:   symbol,
-				Decimals: decimals,
+				Decimals: uint8(decimals.Uint64()),
 			}
 		}
 	}

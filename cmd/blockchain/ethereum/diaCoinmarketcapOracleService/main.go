@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -29,7 +30,7 @@ func main() {
 	 * Read in Oracle address
 	 */
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var numCoins = flag.Int("numCoins", 100, "Number of coins to push with the oracle")
+	var numCoins = flag.Int("numCoins", 50, "Number of coins to push with the oracle")
 	flag.Parse()
 
 	/*
@@ -73,7 +74,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, auth, contract)
+	periodicOracleUpdateHelper(numCoins, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
@@ -82,27 +83,28 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, auth, contract)
+				periodicOracleUpdateHelper(numCoins, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle) error {
+func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle, conn *ethclient.Client) error {
 
+	time.Sleep(7 * time.Minute)
 	topCoins, err := getTopCoinsFromCoinmarketcap(*numCoins)
 	if err != nil {
 		log.Fatalf("Failed to get top %d coins from Coinmarketcap: %v", numCoins, err)
 	}
 	// Get quotation for topCoins and update Oracle
 	for _, symbol := range topCoins {
-		rawQuot, err := getForeignQuotationFromDia("Coinmarketcap", symbol)
+		rawQuot, err := getForeignQuotationFromDia("CoinMarketCap", symbol)
 		if err != nil {
 			log.Fatalf("Failed to retrieve Coinmarketcap data from DIA: %v", err)
 			return err
 		}
-		err = updateForeignQuotation(rawQuot, auth, contract)
+		err = updateForeignQuotation(rawQuot, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update Coinmarketcap Oracle: %v", err)
 			return err
@@ -113,11 +115,11 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle) error {
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle, conn *ethclient.Client) error {
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
 	timestamp := foreignQuotation.Time.Unix()
-	err := updateOracle(contract, auth, symbol, int64(price*100000), timestamp)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -183,7 +185,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	}
 	type CoinMarketCapListing struct {
 		Data []struct {
-			Symbol            string           `json:"symbol"`
+			Symbol string `json:"symbol"`
 		} `json:"data"`
 	}
 	var quotations CoinMarketCapListing
@@ -199,7 +201,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
@@ -244,17 +246,30 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 }
 
 func updateOracle(
+	client *ethclient.Client,
 	contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
 	timestamp int64) error {
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get 110% of the gas price
+	fmt.Println(gasPrice)
+	fGas := new(big.Float).SetInt(gasPrice)
+	fGas.Mul(fGas, big.NewFloat(1.1))
+	gasPrice, _ = fGas.Int(nil)
+	fmt.Println(gasPrice)
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 800725,
-		//	Nonce: big.NewInt(time.Now().Unix()),
+		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err

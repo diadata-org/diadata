@@ -118,3 +118,25 @@ func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]di
 	}
 	return r, nil
 }
+
+func (db *DB) GetLastTradesAllExchanges(symbol string, maxTrades int) ([]dia.Trade, error) {
+	r := []dia.Trade{}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' ORDER BY DESC LIMIT %d", influxDbTradesTable, symbol, maxTrades)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("GetLastTrades", err)
+		return r, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			t := parseTrade(row)
+			if t != nil {
+				r = append(r, *t)
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s on %s \n", symbol)
+	}
+	return r, nil
+}

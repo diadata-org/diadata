@@ -122,7 +122,7 @@ func (scraper *GnosisScraper) loadTokens() {
 
 		scraper.tokens[i] = &GnosisToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Int64()),
 			Address:  tokenAddress.String(),
 			Name:     name,
 		}

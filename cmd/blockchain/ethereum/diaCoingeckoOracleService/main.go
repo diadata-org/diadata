@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -67,12 +68,12 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaCoingeckoOracleService.DIACoingecoOracle
+	var contract *diaCoingeckoOracleService.DIACoingeckoOracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, auth, contract)
+	periodicOracleUpdateHelper(numCoins, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
@@ -81,14 +82,14 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, auth, contract)
+				periodicOracleUpdateHelper(numCoins, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingecoOracle) error {
+func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
 
 	topCoins, err := getTopCoinsFromCoingecko(*numCoins)
 	if err != nil {
@@ -101,7 +102,7 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 			log.Fatalf("Failed to retrieve Coingecko data from DIA: %v", err)
 			return err
 		}
-		err = updateForeignQuotation(rawQuot, auth, contract)
+		err = updateForeignQuotation(rawQuot, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update Coingecko Oracle: %v", err)
 			return err
@@ -112,11 +113,11 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingecoOracle) error {
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
 	timestamp := foreignQuotation.Time.Unix()
-	err := updateOracle(contract, auth, symbol, int64(price*100000), timestamp)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -177,10 +178,10 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	return &quotation, nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoingeckoOracleService.DIACoingecoOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoingeckoOracleService.DIACoingeckoOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaCoingeckoOracleService.NewDIACoingecoOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaCoingeckoOracleService.NewDIACoingeckoOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -188,7 +189,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaCoingeckoOracleService.DeployDIACoingecoOracle(auth, conn)
+		addr, tx, *contract, err = diaCoingeckoOracleService.DeployDIACoingeckoOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -201,17 +202,30 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 }
 
 func updateOracle(
-	contract *diaCoingeckoOracleService.DIACoingecoOracle,
+	client *ethclient.Client,
+	contract *diaCoingeckoOracleService.DIACoingeckoOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
 	timestamp int64) error {
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get 110% of the gas price
+	fmt.Println(gasPrice)
+	fGas := new(big.Float).SetInt(gasPrice)
+	fGas.Mul(fGas, big.NewFloat(1.1))
+	gasPrice, _ = fGas.Int(nil)
+	fmt.Println(gasPrice)
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 800725,
-		//	Nonce: big.NewInt(time.Now().Unix()),
+		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
