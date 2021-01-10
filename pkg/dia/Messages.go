@@ -35,6 +35,7 @@ type Asset struct {
 	Symbol     string
 	Name       string
 	Address    string
+	Decimals    string
 	Blockchain BlockChain
 }
 

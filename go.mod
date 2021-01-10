@@ -81,6 +81,7 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/urfave/cli v1.22.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
