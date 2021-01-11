@@ -36,11 +36,17 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 			return nil, err
 		}
 		log.Info("Supply: ", currSupply)
+		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(symbol), 1)
+		if err != nil {
+			log.Error("Error when retrieveing lst trades for ", symbol)
+			return nil, err
+		}
+		log.Info("LastTrade: ", currLastTrade[0])
 		newConstituent := models.CryptoIndexConstituent{
 			Address:            "-",
 			Name:								currQuotation.Name,
 			Symbol:							currSupply.Symbol,
-			Price:							currQuotation.Price,
+			Price:							currLastTrade[0].EstimatedUSDPrice,
 			CirculatingSupply:	currSupply.CirculatingSupply,
 			Weight:             0.0,
 			CappingFactor:      0.0,
@@ -146,7 +152,6 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 		}
 	}
 
-
 	return nil
 }
 
@@ -157,19 +162,25 @@ func UpdateConstituentsMarketData(currentConstituents *[]models.CryptoIndexConst
 		return err
 	}
 	for i, c := range *currentConstituents {
-		currQuotation, err := db.GetQuotation(strings.ToUpper(c.Symbol))
-		if err != nil {
-			log.Error("Error when retrieveing quotation for ", c.Symbol)
-			return err
-		}
-
 		currSupply, err := db.GetLatestSupply(c.Symbol)
 		if err != nil {
 			log.Error("Error when retrieveing supply for ", c.Symbol)
 			return err
 		}
-		(*currentConstituents)[i].Price = currQuotation.Price
+		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(c.Symbol), 1)
+		if err != nil {
+			log.Error("Error when retrieveing lst trades for ", c.Symbol)
+			return err
+		}
+		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice
 		(*currentConstituents)[i].CirculatingSupply = currSupply.CirculatingSupply
+	}
+
+	// Calculate current percentages: 1. get index value 2. Determine percentage of each asset
+	currIndexValue := GetIndexValue(*currentConstituents)
+	for i, _ := range *currentConstituents {
+		currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].CirculatingSupply * (*currentConstituents)[i].CappingFactor) / currIndexValue
+		(*currentConstituents)[i].Percentage = currPercentage
 	}
 	return nil
 }
