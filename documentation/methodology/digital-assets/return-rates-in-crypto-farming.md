@@ -10,7 +10,7 @@ We emphasize that in this context, the term APY is to be read with caution. In c
 
 ## Pool Rates
 
-Due to the complexity of this topic, our first step consists of publishing the pool rates as emitted in the smart contracts of various farming products. The basic idea of pool rates is pretty straightforward and can be understood as follows. Consider a farming pool of token $$X$$ and let $$A_X(i)$$ be the amount of token $$X$$ at block number $$i$$. Assume, farming starts at block number $$i_0$$, then we have the following equation
+Due to the complexity of this topic, our first step consists of publishing the pool rates as emitted in the smart contracts of various farming products such as  _yearn.finance_ or _CVault_. The basic idea of pool rates is pretty straightforward and can be understood as follows. Consider a farming pool of token $$X$$ and let $$A_X(i)$$ be the amount of token $$X$$ at block number $$i$$. Assume, farming starts at block number $$i_0$$, then we have the following equation
 
 $$
 A_X(i)=A_X(i_0)\cdot p_X(i)
@@ -22,7 +22,7 @@ $$
 p_X(i)=1+r_X(i).
 $$
 
-Here, $$r_X(i)$$ is the _pool rate_ corresponding to the pool of token $$X$$ .
+Here, $$r_X(i)$$ is the _pool rate_ corresponding to the pool of token $$X$$.
 
 As the initial supply $$A_X(i_0)$$ is constant, the price depends on the evolution of $$A_X(i)$$ and hence on the pool's investment strategy - if the number of tokens $$A_X(i)$$ increases with block number $$i$$, so will the pool rate. In other words, the return of an investment is determined by the change in the pool rate.  
 The following example illustrates the relation between the pool rate and the return on an investment. We remark that in general, as for interest rates in traditional finance, differences of pool rates can be used for simple interest calculation as well as for compounded interest.
@@ -40,7 +40,7 @@ Again, whether the amount of tokens in a pool increases or decreases solely depe
 
 ## Total Debt Systems
 
-A slightly different approach for farming is presented by other platforms such as Synthetix. Apart from constant fee rates on transactions such as trades,  the dynamical return rate depends on the  average return of all investments on the platform. The corresponding gains \(or losses\) for the investors are paid out periodically, for instance weekly. We will first explain the general mechanism and then illustrate it with an example.
+A slightly different approach for farming is presented by other platforms such as _Synthetix_. Apart from constant fee rates on transactions such as trades,  the dynamical return rate depends on the  average return of all investments on the platform. The corresponding gains \(or losses\) for the investors are paid out periodically, for instance weekly. We will first explain the general mechanism and then illustrate it with an example.
 
 Consider a platform with $$n$$ different pools associated to an investment strategy. In most cases, the investment strategy is short or long on a cryptocurrency, represented by a minted synthetic asset. Assume an investor makes an investment by buying from a pool of such a token $$X$$  worth $$p_0$$  US-Dollar \(it could be any other currency obviously\). She thereby increases the so-called system's _total debt_ from the previous value to $$D_0$$ \(also in US-Dollar\). Here, the total debt  is just the value of all investments across the platform. Now assume that after one farming period has elapsed, the value of her investment is $$p_1$$.  Furthermore, the system's total debt, i.e. the US-Dollar value of all investments together changed to $$D_1$$. The idea is that the system does not owe the investor her initial investment, but rather her initial proportion of the system's total debt, which is $$\frac{p_0}{D_0}$$. Hence, her actual personal debt $$D_{Inv}$$ is
 
@@ -146,11 +146,9 @@ $$
 
 ## Estimation of Pool Rates from Total Rewards
 
-Some platforms such as Loopring emit total system rewards. We remark that, given the staking pool's total balance $$D$$ and the total reward $$R$$, an average pool rate $$\tilde{r}$$ can be estimated as follows
+Some platforms such as _Loopring_ emit total system rewards, i.e. accumulated rewards distributed among all pools. We remark that, given a particular staking pool's balance $$D$$ and the total reward $$R$$, an average pool rate $$\tilde{r}$$ can be estimated as follows
 
 $$
 \tilde{r}=\frac{R}{D}.
 $$
-
- 
 
