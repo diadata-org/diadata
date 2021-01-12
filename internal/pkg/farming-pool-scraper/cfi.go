@@ -28,7 +28,7 @@ type CFIPool struct {
 }
 
 func NewCFIScraper(scraper *PoolScraper) *CFIScraper {
-	log.Info("Curvefi pool is built and triggered")
+	log.Info("Curvefi scrapers is built and triggered")
 	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
@@ -137,15 +137,20 @@ func (cv *CFIScraper) getCoins(poolAddress common.Address) ([]string, error) {
 	}
 
 	for i := 0; i < 5; i++ {
-		coin, err = platform.Coins(&bind.CallOpts{}, big.NewInt(int64(i)))
+		// If present, get underlying coin...
+		coin, err = platform.UnderlyingCoins(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if err != nil {
+			// ... if not, get coin itself from platform if present...
+			coin, err = platform.Coins(&bind.CallOpts{}, big.NewInt(int64(i)))
+		}
+		if err != nil {
+			// ... if not get from special
 			coin, err = special.Coins(&bind.CallOpts{}, big.NewInt(int64(i)))
 			if err != nil {
 				continue
 			}
 		}
 		tokenCaller, _ := ethhelper.NewTokenCaller(coin, cv.RestClient)
-		// var decimals *[]interface{}
 		symbol := new([]interface{})
 		err = tokenCaller.Contract.Call(&bind.CallOpts{}, symbol, "symbol")
 		symbols = append(symbols, (*symbol)[0].(string))
