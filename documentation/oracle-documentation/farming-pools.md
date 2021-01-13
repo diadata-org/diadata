@@ -22,5 +22,15 @@ You can execute an oracle call as follows:
 As of now, the following list of pools is available in this oracle:  
 - BALANCER: largest WETH/WBTC pool \(by market cap\)  
 - CVAULT: WETH pool  
-- YFI \(yearn.finance\): WETH pool
+- YFI \(yearn.finance\): WETH pool  
+- SYNTHETIX: sETH pool  
+- LOOPRING: LRC pool  
+- CURVEFI: 3pool \(DAI, USDC, USDT\)
+
+_Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. See [here](https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming) for a detailed explanation. The emitted value "Pool rate" has the following meaning for the corresponding protocol:  
+- Pool rate: Balancer, CVault, YFI  
+- Total debt: Synthetix  
+- Total reward: Loopring  
+- Virtual price: Curve Finance  
+
 
