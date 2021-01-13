@@ -721,7 +721,7 @@ func (env *Env) GetFarmingPoolData(c *gin.Context) {
 				restApi.SendError(c, http.StatusInternalServerError, err)
 			}
 		} else {
-			c.JSON(http.StatusOK, q[len(q)-1])
+			c.JSON(http.StatusOK, q[0])
 		}
 	} else {
 		starttime, err := utils.StrToUnixtime(dateInit)

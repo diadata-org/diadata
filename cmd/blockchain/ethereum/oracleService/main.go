@@ -500,6 +500,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// CURVEFI virtual price
+	rawCURVEFI, err := getFarmingPoolFromDia("Curvefi", "3")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CURVEFI pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawCURVEFI, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update CURVEFI Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// // Top 15 coins
 	// rawCoins, err := getToplistFromDia()
 	// if err != nil {
