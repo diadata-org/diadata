@@ -12,3 +12,7 @@ description: Develop applications and sources on top of DIA
 
 {% page-ref page="exchangescrapers.md" %}
 
+{% page-ref page="write-your-own-crypto-farming-scraper.md" %}
+
+
+

@@ -188,9 +188,9 @@ type BancorScraper struct {
 	chanTrades     chan *dia.Trade
 }
 
-func NewBancorScraper(exchangeName string) *BancorScraper {
+func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
 	scraper := &BancorScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -258,6 +258,10 @@ func (scraper *BancorScraper) mainLoop() {
 		scraper.error = errors.New("Main loop terminated by Close().")
 	}
 	scraper.cleanup(nil)
+}
+
+func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {

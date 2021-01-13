@@ -62,7 +62,7 @@ func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 		log.Error(err)
 		return
 	}
-	supplyInterestRate, err := contract.SupplyInterestRate(&bind.CallOpts{})
+	supplyInterestRate, err := contract.NextsupplyInterestRate(&bind.CallOpts{})
 	if err != nil {
 		return
 	}

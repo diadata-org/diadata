@@ -71,6 +71,10 @@ func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 	return s
 }
 
+func (s *ECBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
+
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *ECBScraper) mainLoop() {
 	for {

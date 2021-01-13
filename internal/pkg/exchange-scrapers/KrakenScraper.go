@@ -33,14 +33,14 @@ type KrakenScraper struct {
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewKrakenScraper(key string, secret string, exchangeName string) *KrakenScraper {
+func NewKrakenScraper(key string, secret string, exchange dia.Exchange) *KrakenScraper {
 	s := &KrakenScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*KrakenPairScraper),
 		api:          krakenapi.New(key, secret),
 		ticker:       time.NewTicker(krakenRefreshDelay),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -140,6 +140,10 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
+}
+
+func (s *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information

@@ -40,12 +40,12 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper(exchangeName string) *CoinBaseScraper {
+func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*CoinBasePairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -141,6 +141,20 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, er
 	return symbol, nil
 }
 
+func (s *CoinBaseScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	str := strings.Split(pair.ForeignName, "-")
+	symbol := str[0]
+	pair.Symbol = symbol
+	if helpers.NameForSymbol(symbol) == symbol {
+		return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return pair, errors.New("Symbol is black listed:" + symbol)
+	}
+	return pair, nil
+
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
@@ -152,13 +166,14 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			symbol, serr := s.normalizeSymbol(p.ID)
+			pairToNormalise := dia.Pair{
+				Symbol:      "",
+				ForeignName: p.ID,
+				Exchange:    s.exchangeName,
+			}
+			pair, serr := s.NormalizePair(pairToNormalise)
 			if serr == nil {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      symbol,
-					ForeignName: p.ID,
-					Exchange:    s.exchangeName,
-				})
+				pairs = append(pairs, pair)
 			} else {
 				log.Error(serr)
 			}

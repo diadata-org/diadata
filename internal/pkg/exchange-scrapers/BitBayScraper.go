@@ -53,12 +53,12 @@ type BitBayScraper struct {
 }
 
 //NewBitBayScraper get a scrapper for BitBay exchange
-func NewBitBayScraper(exchangeName string) *BitBayScraper {
+func NewBitBayScraper(exchange dia.Exchange) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make([]*BitBayPairScraper, 0),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		closed:       false,
@@ -188,6 +188,9 @@ func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 // set exchange base currency according to DIA standard
 func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
 	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
+}
+func (s *BitBayScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 //Channel returns the channel to get trades

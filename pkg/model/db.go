@@ -36,11 +36,13 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
+	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
+	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	Flush() error
-	GetFilterPoints(filter string, exchange string, symbol string, scale string) (*Points, error)
+	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
@@ -75,7 +77,9 @@ type Datastore interface {
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 
 	// Pool  methods
-	SetPoolRate(pr *PoolRate) error
+	SetFarmingPool(pr *FarmingPool) error
+	GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error)
+	GetFarmingPools() ([]FarmingPoolType, error)
 
 	// Itin methods
 	SetItinData(token dia.ItinToken) error
@@ -98,6 +102,16 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
+	// Gold token methods
+	GetPaxgQuotationOunces() (*Quotation, error)
+	GetPaxgQuotationGrams() (*Quotation, error)
+	// Crypto Index methods
+	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
+	SetCryptoIndex(index *CryptoIndex) error
+	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
+	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
+	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
+	GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
@@ -117,15 +131,18 @@ type DB struct {
 }
 
 const (
-	influxDbName           = "dia"
-	influxDbTradesTable    = "trades"
-	influxDbFiltersTable   = "filters"
-	influxDbOptionsTable   = "options"
-	influxDbCVITable       = "cvi"
-	influxDbSupplyTable    = "supplies"
-	influxDbSupplyTableOld = "supply"
-	influxDbDefiRateTable  = "defiRate"
-	influxDbDefiStateTable = "defiState"
+	influxDbName                         = "dia"
+	influxDbTradesTable                  = "trades"
+	influxDbFiltersTable                 = "filters"
+	influxDbOptionsTable                 = "options"
+	influxDbCVITable                     = "cvi"
+	influxDbSupplyTable                  = "supplies"
+	influxDbSupplyTableOld               = "supply"
+	influxDbDefiRateTable                = "defiRate"
+	influxDbDefiStateTable               = "defiState"
+	influxDbPoolTable                    = "defiPools"
+	influxDbCryptoIndexTable             = "cryptoindex"
+	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -423,6 +440,49 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	return err
 }
 
+func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time) (*dia.Trade, error) {
+	retval := dia.Trade{}
+	var q string
+	if exchange != "" {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and echange='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, exchange, timestamp.UnixNano())
+	} else {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, timestamp.UnixNano())
+	}
+
+	/// TODO
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return &retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			retval.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return &retval, err
+			}
+			retval.EstimatedUSDPrice, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+			retval.Source = res[0].Series[0].Values[i][2].(string)
+			retval.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			retval.Pair = res[0].Series[0].Values[i][4].(string)
+			retval.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+			retval.Symbol = res[0].Series[0].Values[i][6].(string)
+			retval.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return &retval, err
+			}
+		}
+	} else {
+		return &retval, errors.New("Error parsing Trade from Database")
+	}
+	return &retval, nil
+}
+
 func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	fields := map[string]interface{}{
 		"value": cviValue,
@@ -523,6 +583,143 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 		return retval, nil
 	}
 	return retval, nil
+}
+
+func (db *DB) SetFarmingPool(pool *FarmingPool) error {
+	fields := map[string]interface{}{
+		"rate":        pool.Rate,
+		"balance":     pool.Balance,
+		"blockNumber": pool.BlockNumber,
+	}
+	inputAssetBytes, err := json.Marshal(pool.InputAsset)
+	if err != nil {
+		return err
+	}
+	outputAssetBytes, err := json.Marshal(pool.OutputAsset)
+	if err != nil {
+		return err
+	}
+	tags := map[string]string{
+		"inputAssets":  string(inputAssetBytes),
+		"outputAssets": string(outputAssetBytes),
+		"protocol":     pool.ProtocolName,
+		"poolID":       pool.PoolID,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, pool.TimeStamp)
+	if err != nil {
+		log.Errorln("SetPoolInfo:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SetPoolInfo", err)
+	}
+
+	return err
+}
+
+// GetFarmingPools returns all farming pool states in the given time range
+// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
+func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
+	var retval []FarmingPoolType
+	// First get all protocols
+	qProtocol := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s", influxDbPoolTable, "protocol")
+	fmt.Println("protocol query: ", qProtocol)
+	resProtocols, err := queryInfluxDB(db.influxClient, qProtocol)
+	if err != nil {
+		return retval, err
+	}
+
+	if len(resProtocols) > 0 && len(resProtocols[0].Series) > 0 {
+		for i := 0; i < len(resProtocols[0].Series[0].Values); i++ {
+			protocolName := resProtocols[0].Series[0].Values[i][1].(string)
+			// For each protocol, get available pools by ID
+			qPoolIDs := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s'", influxDbPoolTable, "poolID", protocolName)
+			resPoolIDs, err := queryInfluxDB(db.influxClient, qPoolIDs)
+			if err != nil {
+				return retval, err
+			}
+			if len(resPoolIDs) > 0 && len(resPoolIDs[0].Series) > 0 {
+				for k := 0; k < len(resPoolIDs[0].Series[0].Values); k++ {
+					poolType := FarmingPoolType{}
+					poolType.ProtocolName = protocolName
+					poolType.PoolID = resPoolIDs[0].Series[0].Values[k][1].(string)
+					// Get input assets of pool
+					qAssets := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s' and poolID='%s'", influxDbPoolTable, "inputAssets", protocolName, poolType.PoolID)
+					resAssets, err := queryInfluxDB(db.influxClient, qAssets)
+					if err != nil {
+						return retval, err
+					}
+					inputAssets := []string{}
+					err = json.Unmarshal([]byte(resAssets[0].Series[0].Values[0][1].(string)), &inputAssets)
+					if err != nil {
+						return retval, err
+					}
+					poolType.InputAsset = inputAssets
+
+					retval = append(retval, poolType)
+				}
+			}
+		}
+	} else {
+		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+	}
+	return retval, nil
+
+}
+
+// GetFarmingPoolData returns all farming pool states in the given time range
+// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
+func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error) {
+	retval := []FarmingPool{}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time <= %d and protocol = '%s' and poolID='%s' order by desc", influxDbPoolTable, starttime.UnixNano(), endtime.UnixNano(), protocol, poolID)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return retval, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			pool := FarmingPool{}
+			pool.TimeStamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return retval, err
+			}
+			pool.Balance, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+			pool.BlockNumber, err = res[0].Series[0].Values[i][2].(json.Number).Int64()
+			if err != nil {
+				return retval, err
+			}
+			inputAssets := []string{}
+			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][3].(string)), &inputAssets)
+			if err != nil {
+				return retval, err
+			}
+			pool.InputAsset = inputAssets
+			outputAssets := []string{}
+			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][4].(string)), &outputAssets)
+			if err != nil {
+				return retval, err
+			}
+			pool.OutputAsset = outputAssets
+			pool.PoolID = res[0].Series[0].Values[i][5].(string)
+			pool.ProtocolName = res[0].Series[0].Values[i][6].(string)
+			pool.Rate, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
+
+			retval = append(retval, pool)
+		}
+	} else {
+		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+	}
+	return retval, nil
+
 }
 
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {

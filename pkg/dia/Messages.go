@@ -2,6 +2,7 @@ package dia
 
 import (
 	"encoding/json"
+	"github.com/ethereum/go-ethereum/common"
 	"strings"
 	"time"
 
@@ -11,6 +12,13 @@ import (
 const (
 	Diadata = "diadata.org"
 )
+
+type Exchange struct {
+	Name        string
+	Centralized bool
+	Contract    common.Address
+	BlockChain BlockChain
+}
 
 type Supply struct {
 	Symbol            string
@@ -147,6 +155,52 @@ type FilterPoint struct {
 	Value  float64
 	Name   string
 	Time   time.Time
+}
+
+type IndexBlock struct {
+  BlockHash      string
+  IndexBlockData IndexBlockData
+}
+
+type IndexBlockData struct {
+  FiltersBlockHash    string
+  SuppliesBlockHash   string
+  VolatilityBlockHash string
+  IndexElements       []IndexElement
+  IndexElementsNumber int
+  Time                time.Time
+  IndexValue          float64
+  ValueTokenette      float64
+  ValueToken          float64
+  USDPerPointsOfIndex float64
+}
+
+type IndexElement struct {
+  Name            string
+  Symbol          string
+  Percentage      float64
+  FilteredPoint   FilterPoint
+  Supply          Supply
+  VolatilityRatio VolatilityRatio
+}
+
+type VolatilityRatio struct {
+  Symbol    string
+  Threehold float64
+  DaysAbove int64
+  DaysBelow int64
+  Time      time.Time
+  Selected  bool
+}
+
+type SuppliesBlock struct {
+  BlockHash string
+  BlockData SuppliesBlockData
+}
+
+type SuppliesBlockData struct {
+  Time     time.Time
+  Supplies []Supply
 }
 
 // MarshalBinary for DefiProtocolState
@@ -320,4 +374,34 @@ func (e *OptionMeta) UnmarshalBinary(data []byte) error {
 	}
 
 	return nil
+}
+
+func (ib IndexBlock) Hash() string {
+  return ib.BlockHash
+}
+
+// MarshalBinary -
+func (e *IndexBlock) MarshalBinary() ([]byte, error) {
+  return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *IndexBlock) UnmarshalBinary(data []byte) error {
+  if err := json.Unmarshal(data, &e); err != nil {
+    return err
+  }
+  return nil
+}
+
+// MarshalBinary -
+func (e *SuppliesBlock) MarshalBinary() ([]byte, error) {
+  return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *SuppliesBlock) UnmarshalBinary(data []byte) error {
+  if err := json.Unmarshal(data, &e); err != nil {
+    return err
+  }
+  return nil
 }

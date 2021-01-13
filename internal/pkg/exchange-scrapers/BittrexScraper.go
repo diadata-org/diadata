@@ -38,12 +38,12 @@ type BittrexScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-func NewBittrexScraper(exchangeName string) *BittrexScraper {
+func NewBittrexScraper(exchange dia.Exchange) *BittrexScraper {
 	s := &BittrexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*BittrexPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -220,6 +220,11 @@ func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		}
 	}
 	return
+}
+
+func (s *BittrexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	//Normalise need more fields that Pair struct has
+	return dia.Pair{}, nil
 }
 
 // BittrexPairScraper implements PairScraper for Bittrex

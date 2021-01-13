@@ -42,7 +42,7 @@ type BitfinexScraper struct {
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string, exchangeName string) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -58,7 +58,7 @@ func NewBitfinexScraper(key string, secret string, exchangeName string) *Bitfine
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		symbols:      make(map[string]string),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -191,32 +191,35 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 	return ps, nil
 }
-func (s *BitfinexScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
-	symbol = strings.ToUpper(foreignName[0:3])
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if symbol == "IOT" {
-				return "MIOTA", nil
-			}
-			if symbol == "IOS" {
-				return "IOST", nil
-			}
-			if symbol == "QTM" {
-				return "QTUM", nil
-			}
-			if symbol == "QSH" {
-				return "QASH", nil
-			}
-			if symbol == "DSH" {
-				return "DASH", nil
-			}
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+func (s *BitfinexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+
+	switch pair.Symbol {
+	case "IOT":
+		pair.Symbol = "MIOTA"
+	case "IOS":
+		pair.Symbol = "IOST"
+	case "QTM":
+		pair.Symbol = "QTUM"
+	case "QSH":
+		pair.Symbol = "QASH"
+	case "DSH":
+		pair.Symbol = "DASH"
+	}
+	return pair, nil
+
+}
+func (s *BitfinexScraper) normalizeSymbol(pair dia.Pair) (dia.Pair, error) {
+	pair.Symbol = strings.ToUpper(pair.ForeignName[0:3])
+	if helpers.NameForSymbol(pair.Symbol) == pair.Symbol {
+		if !helpers.SymbolIsName(pair.Symbol) {
+			pair, _ = s.NormalizePair(pair)
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + pair.Symbol)
 		}
 	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
+	if helpers.SymbolIsBlackListed(pair.Symbol) {
+		return pair, errors.New("Symbol is black listed:" + pair.Symbol)
 	}
-	return symbol, nil
+	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
@@ -228,13 +231,16 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		symbol, serr := s.normalizeSymbol(p)
+
+		pairToNormalize := dia.Pair{
+			Symbol:      p,
+			ForeignName: p,
+			Exchange:    s.exchangeName,
+		}
+
+		pair, serr := s.normalizeSymbol(pairToNormalize)
 		if serr == nil {
-			pairs = append(pairs, dia.Pair{
-				Symbol:      symbol,
-				ForeignName: p,
-				Exchange:    s.exchangeName,
-			})
+			pairs = append(pairs, pair)
 		} else {
 			log.Error(serr)
 		}

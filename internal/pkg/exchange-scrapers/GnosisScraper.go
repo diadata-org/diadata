@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,11 +20,9 @@ import (
 )
 
 const (
-	gnosisContract   = "0x6F400810b62df8E13fded51bE75fF5393eaa841F"
-	gnosisStartBlock = uint64(10780772 - 5250)
-
-	gnosisWsDial   = "ws://159.69.120.42:8546/"
-	gnosisRestDial = "http://159.69.120.42:8545/"
+	gnosisWsDial         = "ws://159.69.120.42:8546/"
+	gnosisRestDial       = "http://159.69.120.42:8545/"
+	gnosisLookBackBlocks = 6 * 60 * 24 * 7
 )
 
 type GnosisToken struct {
@@ -52,11 +51,13 @@ type GnosisScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[uint16]*GnosisToken
+	contract    common.Address
 }
 
-func NewGnosisScraper(exchangeName string) *GnosisScraper {
+func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	scraper := &GnosisScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
+		contract:       exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -85,7 +86,7 @@ func NewGnosisScraper(exchangeName string) *GnosisScraper {
 }
 func (scraper *GnosisScraper) loadTokens() {
 
-	contract, err := gnosis.NewGnosisCaller(common.HexToAddress(gnosisContract), scraper.RestClient)
+	contract, err := gnosis.NewGnosisCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -114,7 +115,7 @@ func (scraper *GnosisScraper) loadTokens() {
 		}
 		scraper.tokens[i] = &GnosisToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Int64()),
 		}
 
 		scraper.tokens[i].normalizeETH()
@@ -125,14 +126,20 @@ func (scraper *GnosisScraper) loadTokens() {
 }
 
 func (scraper *GnosisScraper) subscribeToTrades() error {
-	filterer, err := gnosis.NewGnosisFilterer(common.HexToAddress(gnosisContract), scraper.WsClient)
+	filterer, err := gnosis.NewGnosisFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(gnosisLookBackBlocks)
+
 	sink := make(chan *gnosis.GnosisTrade)
-	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -277,6 +284,10 @@ func (t *GnosisToken) normalizeETH() {
 	if t.Symbol == "WETH" {
 		t.Symbol = "ETH"
 	}
+}
+
+func (scraper *GnosisScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (scraper *GnosisScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {

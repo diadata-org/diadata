@@ -49,13 +49,13 @@ type ZBScraper struct {
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper(exchangeName string) *ZBScraper {
+func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*ZBPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -71,6 +71,8 @@ func NewZBScraper(exchangeName string) *ZBScraper {
 	go s.mainLoop()
 	return s
 }
+
+
 
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
@@ -119,6 +121,10 @@ func (s *ZBScraper) mainLoop() {
 		}
 	}
 	s.cleanup(s.error)
+}
+
+func (s *ZBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (s *ZBScraper) cleanup(err error) {

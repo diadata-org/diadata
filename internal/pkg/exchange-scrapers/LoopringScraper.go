@@ -78,7 +78,7 @@ type LoopringScraper struct {
 }
 
 // NewLoopringScraper returns a new LoopringScraper for the given pair
-func NewLoopringScraper(exchangeName string) *LoopringScraper {
+func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 
 	decimalAsset := make(map[string]float64)
 	decimalAsset["ETH"] = 18
@@ -118,7 +118,7 @@ func NewLoopringScraper(exchangeName string) *LoopringScraper {
 		shutdown:      make(chan nothing),
 		shutdownDone:  make(chan nothing),
 		pairScrapers:  make(map[string]*LoopringPairScraper),
-		exchangeName:  exchangeName,
+		exchangeName:  exchange.Name,
 		error:         nil,
 		chanTrades:    make(chan *dia.Trade),
 		decimalsAsset: decimalAsset,
@@ -159,7 +159,9 @@ func (s *LoopringScraper) subscribeToALL() {
 		}
 	}
 }
-
+func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
 // runs in a goroutine until s is closed
 func (s *LoopringScraper) mainLoop() {
 	for true {

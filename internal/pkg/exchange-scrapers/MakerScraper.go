@@ -63,9 +63,9 @@ type MakerTrade struct {
 	Time   time.Time `json:"time"`
 }
 
-func NewMakerScraper(exchangeName string) *MakerScraper {
+func NewMakerScraper(exchange dia.Exchange) *MakerScraper {
 	scraper := &MakerScraper{
-		exchangeName:   exchangeName,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -177,6 +177,10 @@ func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 	return scraper.getPairs()
 }
 
+
+func (scraper *MakerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
+}
 func (scraper *MakerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()

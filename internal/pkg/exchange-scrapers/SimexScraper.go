@@ -43,12 +43,12 @@ type SimexScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-func NewSimexScraper(exchangeName string) *SimexScraper {
+func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*SimexPairScraper),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -219,17 +219,21 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *SimexScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
-	symbol = strings.ToUpper(baseCurrency)
+func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	symbol := strings.ToUpper(pair.Symbol)
+	pair.Symbol = symbol
+	pair.ForeignName = symbol + pair.ForeignName
+
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + name + " symbol:" + symbol)
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
 		}
 	}
 	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
+		return pair, errors.New("Symbol is black listed:" + symbol)
 	}
-	return symbol, nil
+	return pair, nil
+
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
@@ -256,13 +260,15 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar.Data {
-			symbol, serr := s.normalizeSymbol(p.Base.Name, p.Base.Description)
+
+			pairToNormalize := dia.Pair{
+				Symbol:      p.Base.Name,
+				ForeignName: p.Base.Name,
+				Exchange:    s.exchangeName,
+			}
+			pair, serr := s.NormalizePair(pairToNormalize)
 			if serr == nil {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      symbol,
-					ForeignName: symbol + p.Quote.Name,
-					Exchange:    s.exchangeName,
-				})
+				pairs = append(pairs, pair)
 			} else {
 				log.Error(serr)
 			}

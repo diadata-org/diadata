@@ -137,7 +137,7 @@ func bindDforce(address common.Address, caller bind.ContractCaller, transactor b
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Dforce *DforceRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Dforce *DforceRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Dforce.Contract.DforceCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -156,7 +156,7 @@ func (_Dforce *DforceRaw) Transact(opts *bind.TransactOpts, method string, param
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Dforce *DforceCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Dforce *DforceCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Dforce.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -175,12 +175,17 @@ func (_Dforce *DforceTransactorRaw) Transact(opts *bind.TransactOpts, method str
 //
 // Solidity: function authority() view returns(address)
 func (_Dforce *DforceCaller) Authority(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "authority")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "authority")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Authority is a free data retrieval call binding the contract method 0xbf7e214f.
@@ -201,12 +206,17 @@ func (_Dforce *DforceCallerSession) Authority() (common.Address, error) {
 //
 // Solidity: function exchangeRate(address _input, address _output) view returns(uint256)
 func (_Dforce *DforceCaller) ExchangeRate(opts *bind.CallOpts, _input common.Address, _output common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "exchangeRate", _input, _output)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "exchangeRate", _input, _output)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // ExchangeRate is a free data retrieval call binding the contract method 0xccb0101b.
@@ -227,12 +237,17 @@ func (_Dforce *DforceCallerSession) ExchangeRate(_input common.Address, _output 
 //
 // Solidity: function fee(address , address ) view returns(uint256)
 func (_Dforce *DforceCaller) Fee(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "fee", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "fee", arg0, arg1)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // Fee is a free data retrieval call binding the contract method 0xbe5011a1.
@@ -253,12 +268,17 @@ func (_Dforce *DforceCallerSession) Fee(arg0 common.Address, arg1 common.Address
 //
 // Solidity: function getAmountByInput(address _input, address _output, uint256 _inputAmount) view returns(uint256)
 func (_Dforce *DforceCaller) GetAmountByInput(opts *bind.CallOpts, _input common.Address, _output common.Address, _inputAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "getAmountByInput", _input, _output, _inputAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "getAmountByInput", _input, _output, _inputAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetAmountByInput is a free data retrieval call binding the contract method 0xaf77fedb.
@@ -279,12 +299,17 @@ func (_Dforce *DforceCallerSession) GetAmountByInput(_input common.Address, _out
 //
 // Solidity: function getAmountByOutput(address _input, address _output, uint256 _outputAmount) view returns(uint256)
 func (_Dforce *DforceCaller) GetAmountByOutput(opts *bind.CallOpts, _input common.Address, _output common.Address, _outputAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "getAmountByOutput", _input, _output, _outputAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "getAmountByOutput", _input, _output, _outputAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetAmountByOutput is a free data retrieval call binding the contract method 0xf6cf166f.
@@ -305,12 +330,17 @@ func (_Dforce *DforceCallerSession) GetAmountByOutput(_input common.Address, _ou
 //
 // Solidity: function getBestOutputByInput(address _input, address _output, uint256 _inputAmount) view returns(uint256)
 func (_Dforce *DforceCaller) GetBestOutputByInput(opts *bind.CallOpts, _input common.Address, _output common.Address, _inputAmount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "getBestOutputByInput", _input, _output, _inputAmount)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "getBestOutputByInput", _input, _output, _inputAmount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetBestOutputByInput is a free data retrieval call binding the contract method 0x858efd4b.
@@ -331,12 +361,17 @@ func (_Dforce *DforceCallerSession) GetBestOutputByInput(_input common.Address, 
 //
 // Solidity: function getLiquidity(address _token) view returns(uint256)
 func (_Dforce *DforceCaller) GetLiquidity(opts *bind.CallOpts, _token common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "getLiquidity", _token)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "getLiquidity", _token)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetLiquidity is a free data retrieval call binding the contract method 0xa747b93b.
@@ -357,12 +392,17 @@ func (_Dforce *DforceCallerSession) GetLiquidity(_token common.Address) (*big.In
 //
 // Solidity: function isOpen() view returns(bool)
 func (_Dforce *DforceCaller) IsOpen(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "isOpen")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "isOpen")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // IsOpen is a free data retrieval call binding the contract method 0x47535d7b.
@@ -383,12 +423,17 @@ func (_Dforce *DforceCallerSession) IsOpen() (bool, error) {
 //
 // Solidity: function maxSwing() view returns(uint256)
 func (_Dforce *DforceCaller) MaxSwing(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "maxSwing")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "maxSwing")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // MaxSwing is a free data retrieval call binding the contract method 0xc5faf1d5.
@@ -409,12 +454,17 @@ func (_Dforce *DforceCallerSession) MaxSwing() (*big.Int, error) {
 //
 // Solidity: function newOwner() view returns(address)
 func (_Dforce *DforceCaller) NewOwner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "newOwner")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "newOwner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // NewOwner is a free data retrieval call binding the contract method 0xd4ee1d90.
@@ -435,12 +485,17 @@ func (_Dforce *DforceCallerSession) NewOwner() (common.Address, error) {
 //
 // Solidity: function oracle() view returns(address)
 func (_Dforce *DforceCaller) Oracle(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "oracle")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "oracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Oracle is a free data retrieval call binding the contract method 0x7dc0d1d0.
@@ -461,12 +516,17 @@ func (_Dforce *DforceCallerSession) Oracle() (common.Address, error) {
 //
 // Solidity: function owner() view returns(address)
 func (_Dforce *DforceCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "owner")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -487,12 +547,17 @@ func (_Dforce *DforceCallerSession) Owner() (common.Address, error) {
 //
 // Solidity: function paused() view returns(bool)
 func (_Dforce *DforceCaller) Paused(opts *bind.CallOpts) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "paused")
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "paused")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // Paused is a free data retrieval call binding the contract method 0x5c975abb.
@@ -513,12 +578,17 @@ func (_Dforce *DforceCallerSession) Paused() (bool, error) {
 //
 // Solidity: function remainingDToken(address ) view returns(address)
 func (_Dforce *DforceCaller) RemainingDToken(opts *bind.CallOpts, arg0 common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "remainingDToken", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "remainingDToken", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // RemainingDToken is a free data retrieval call binding the contract method 0x3a8921a7.
@@ -539,12 +609,17 @@ func (_Dforce *DforceCallerSession) RemainingDToken(arg0 common.Address) (common
 //
 // Solidity: function supportDToken(address ) view returns(address)
 func (_Dforce *DforceCaller) SupportDToken(opts *bind.CallOpts, arg0 common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "supportDToken", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "supportDToken", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // SupportDToken is a free data retrieval call binding the contract method 0xd6692462.
@@ -565,12 +640,17 @@ func (_Dforce *DforceCallerSession) SupportDToken(arg0 common.Address) (common.A
 //
 // Solidity: function tokensEnable(address ) view returns(bool)
 func (_Dforce *DforceCaller) TokensEnable(opts *bind.CallOpts, arg0 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "tokensEnable", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "tokensEnable", arg0)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // TokensEnable is a free data retrieval call binding the contract method 0x338a6397.
@@ -591,12 +671,17 @@ func (_Dforce *DforceCallerSession) TokensEnable(arg0 common.Address) (bool, err
 //
 // Solidity: function tradesDisable(address , address ) view returns(bool)
 func (_Dforce *DforceCaller) TradesDisable(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (bool, error) {
-	var (
-		ret0 = new(bool)
-	)
-	out := ret0
-	err := _Dforce.contract.Call(opts, out, "tradesDisable", arg0, arg1)
-	return *ret0, err
+	var out []interface{}
+	err := _Dforce.contract.Call(opts, &out, "tradesDisable", arg0, arg1)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
 }
 
 // TradesDisable is a free data retrieval call binding the contract method 0xb1db0a6e.
@@ -1270,6 +1355,7 @@ func (_Dforce *DforceFilterer) ParseDisableDToken(log types.Log) (*DforceDisable
 	if err := _Dforce.contract.UnpackLog(event, "DisableDToken", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1403,6 +1489,7 @@ func (_Dforce *DforceFilterer) ParseDisableToken(log types.Log) (*DforceDisableT
 	if err := _Dforce.contract.UnpackLog(event, "DisableToken", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1537,6 +1624,7 @@ func (_Dforce *DforceFilterer) ParseDisableTrade(log types.Log) (*DforceDisableT
 	if err := _Dforce.contract.UnpackLog(event, "DisableTrade", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1670,6 +1758,7 @@ func (_Dforce *DforceFilterer) ParseEmergencyStop(log types.Log) (*DforceEmergen
 	if err := _Dforce.contract.UnpackLog(event, "EmergencyStop", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1805,6 +1894,7 @@ func (_Dforce *DforceFilterer) ParseEnableDToken(log types.Log) (*DforceEnableDT
 	if err := _Dforce.contract.UnpackLog(event, "EnableDToken", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1938,6 +2028,7 @@ func (_Dforce *DforceFilterer) ParseEnableToken(log types.Log) (*DforceEnableTok
 	if err := _Dforce.contract.UnpackLog(event, "EnableToken", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2072,6 +2163,7 @@ func (_Dforce *DforceFilterer) ParseEnableTrade(log types.Log) (*DforceEnableTra
 	if err := _Dforce.contract.UnpackLog(event, "EnableTrade", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2215,6 +2307,7 @@ func (_Dforce *DforceFilterer) ParseLogSetAuthority(log types.Log) (*DforceLogSe
 	if err := _Dforce.contract.UnpackLog(event, "LogSetAuthority", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2358,6 +2451,7 @@ func (_Dforce *DforceFilterer) ParseLogSetOwner(log types.Log) (*DforceLogSetOwn
 	if err := _Dforce.contract.UnpackLog(event, "LogSetOwner", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2510,6 +2604,7 @@ func (_Dforce *DforceFilterer) ParseOwnerUpdate(log types.Log) (*DforceOwnerUpda
 	if err := _Dforce.contract.UnpackLog(event, "OwnerUpdate", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2643,6 +2738,7 @@ func (_Dforce *DforceFilterer) ParsePaused(log types.Log) (*DforcePaused, error)
 	if err := _Dforce.contract.UnpackLog(event, "Paused", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2778,6 +2874,7 @@ func (_Dforce *DforceFilterer) ParseSetFee(log types.Log) (*DforceSetFee, error)
 	if err := _Dforce.contract.UnpackLog(event, "SetFee", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2911,6 +3008,7 @@ func (_Dforce *DforceFilterer) ParseSetMaxSwing(log types.Log) (*DforceSetMaxSwi
 	if err := _Dforce.contract.UnpackLog(event, "SetMaxSwing", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3044,6 +3142,7 @@ func (_Dforce *DforceFilterer) ParseSetOracle(log types.Log) (*DforceSetOracle, 
 	if err := _Dforce.contract.UnpackLog(event, "SetOracle", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3184,6 +3283,7 @@ func (_Dforce *DforceFilterer) ParseSwap(log types.Log) (*DforceSwap, error) {
 	if err := _Dforce.contract.UnpackLog(event, "Swap", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3319,6 +3419,7 @@ func (_Dforce *DforceFilterer) ParseTransferIn(log types.Log) (*DforceTransferIn
 	if err := _Dforce.contract.UnpackLog(event, "TransferIn", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3455,6 +3556,7 @@ func (_Dforce *DforceFilterer) ParseTransferOut(log types.Log) (*DforceTransferO
 	if err := _Dforce.contract.UnpackLog(event, "TransferOut", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -3588,6 +3690,6 @@ func (_Dforce *DforceFilterer) ParseUnpaused(log types.Log) (*DforceUnpaused, er
 	if err := _Dforce.contract.UnpackLog(event, "Unpaused", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
-

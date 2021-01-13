@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,12 +20,9 @@ import (
 )
 
 const (
-	dforceContract              = "0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2"
-	dforceStartBlock            = uint64(10080772 - 5250)
-	dforceStartBlockToFindPairs = uint64(10080772 - 5250)
-
-	dforceWsDial   = "ws://159.69.120.42:8546/"
-	dforceRestDial = "http://159.69.120.42:8545/"
+	dforceWsDial         = "ws://159.69.120.42:8546/"
+	dforceRestDial       = "http://159.69.120.42:8545/"
+	dforceLookBackBlocks = 6 * 60 * 24 * 20
 )
 
 type DforceToken struct {
@@ -53,11 +51,13 @@ type DforceScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[string]*DforceToken
+	contract    common.Address
 }
 
-func NewDforceScraper(exchangeName string) *DforceScraper {
+func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 	scraper := &DforceScraper{
-		exchangeName:   exchangeName,
+		contract:       exchange.Contract,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -93,13 +93,19 @@ func (scraper *DforceScraper) loadTokens() {
 		Decimals: 18,
 	}
 
-	filterer, err := dforce.NewDforceFilterer(common.HexToAddress(dforceContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 
 	}
 
-	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: dforceStartBlockToFindPairs})
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(dforceLookBackBlocks)
+
+	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: startblock})
 	if err != nil {
 		log.Error(err)
 	}
@@ -135,7 +141,7 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		}
 		dfToken := &DforceToken{
 			Symbol:   symbol,
-			Decimals: decimals,
+			Decimals: uint8(decimals.Uint64()),
 		}
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
@@ -144,14 +150,19 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 
 func (scraper *DforceScraper) subscribeToTrades() error {
 
-	filterer, err := dforce.NewDforceFilterer(common.HexToAddress(dforceContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(25250)
+
 	sink := make(chan *dforce.DforceSwap)
-	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &start}, sink)
+	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &startblock}, sink)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -298,10 +309,8 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	return
 }
 
-func (t *DforceToken) normalizeETH() {
-	if t.Symbol == "WETH" {
-		t.Symbol = "ETH"
-	}
+func (scraper *DforceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (scraper *DforceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {

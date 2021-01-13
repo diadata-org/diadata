@@ -38,14 +38,14 @@ type BinanceScraper struct {
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchangeName string) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		exchangeName: exchangeName,
+		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
@@ -63,6 +63,24 @@ func eventHandler(event *binance.WsAggTradeEvent) {
 func errorHandler(err error) {
 	fmt.Println(err)
 
+}
+
+func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	if pair.Symbol == "IOTA" {
+		pair.Symbol = "MIOTA"
+	}
+	if pair.Symbol == "YOYO" {
+		pair.Symbol = "YOYOW"
+	}
+	/// ethos
+	if pair.Symbol == "BQX" {
+		pair.Symbol = "ETHOS"
+	}
+	/// Bitcoin Cash
+	if pair.Symbol == "BCC" {
+		pair.Symbol = "BCH"
+	}
+	return pair, nil
 }
 
 // runs in a goroutine until s is closed
@@ -155,37 +173,27 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, err
 }
-func (s *BinanceScraper) normalizeSymbol(foreignName string, params ...string) (symbol string, err error) {
-	symbol = params[0]
-	status := params[1]
+func (s *BinanceScraper) normalizeSymbol(p dia.Pair, foreignName string, params ...string) (pair dia.Pair, err error) {
+	symbol := p.Symbol
+	status := params[0]
 	if status == "TRADING" {
 		if helpers.NameForSymbol(symbol) == symbol {
 			if !helpers.SymbolIsName(symbol) {
-				if symbol == "IOTA" {
-					return "MIOTA", nil
-				}
-				if symbol == "YOYO" {
-					return "YOYOW", nil
-				}
-				/// ethos
-				if symbol == "BQX" {
-					return "ETHOS", nil
-				}
-				/// Bitcoin Cash
-				if symbol == "BCC" {
-					return "BCH", nil
-				}
-				return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+				pair.Symbol = symbol
+				pair, _ = s.NormalizePair(pair)
+
+				return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
 			}
 		}
 		if helpers.SymbolIsBlackListed(symbol) {
-			return symbol, errors.New("Symbol is black listed:" + symbol)
+			pair.Symbol = symbol
+			return pair, errors.New("Symbol is black listed:" + symbol)
 		}
 	} else {
-		return symbol, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
+		return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
 
 	}
-	return symbol, nil
+	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
@@ -200,13 +208,16 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar.Symbols {
-			symbol, serr := s.normalizeSymbol(p.Symbol, p.BaseAsset, p.Status)
+
+			pairToNormalise := dia.Pair{
+				Symbol:      p.Symbol,
+				ForeignName: p.Symbol,
+				Exchange:    s.exchangeName,
+			}
+
+			pair, serr := s.normalizeSymbol(pairToNormalise, p.BaseAsset, p.Status)
 			if serr == nil {
-				pairs = append(pairs, dia.Pair{
-					Symbol:      symbol,
-					ForeignName: p.Symbol,
-					Exchange:    s.exchangeName,
-				})
+				pairs = append(pairs, pair)
 			} else {
 				log.Error(serr)
 			}

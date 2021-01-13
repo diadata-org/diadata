@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -101,6 +102,34 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	}
 
 	return XMLdata, err
+}
+
+// GraphQLGet returns the body of the result of a graphQL GET query.
+// @url is the base url of the graphQL API
+// @query is a byte slice representing the graphQL query message
+// @bearer contains the API key if present
+func GraphQLGet(url string, query []byte, bearer string) ([]byte, error) {
+
+	// Form post request with graphQL query
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query))
+	if err != nil {
+		return []byte{}, err
+	}
+
+	// Add authorization bearer to header
+	req.Header.Add("Authorization", bearer)
+
+	// Send request using http Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return []byte{}, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	return body, nil
 }
 
 // GetCoinPrice Gets the price in USD of coin through our API.
