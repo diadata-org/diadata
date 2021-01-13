@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -19,12 +20,10 @@ import (
 )
 
 const (
-	zeroxContract              = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxStartBlock            = uint64(11082549 - 5250)
-	zeroxStartBlockToFindPairs = uint64(11082549 - 5250)
-
-	zeroxWsDial   = "ws://159.69.120.42:8546/"
-	zeroxRestDial = "http://159.69.120.42:8545/"
+	zeroxContract       = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
+	zeroxWsDial         = "ws://159.69.120.42:8546/"
+	zeroxRestDial       = "http://159.69.120.42:8545/"
+	zeroxLookBackBlocks = 6 * 60 * 24
 )
 
 type ZeroxToken struct {
@@ -98,14 +97,24 @@ func (scraper *ZeroxScraper) loadTokens() {
 
 	}
 
-	it, err := filterer.FilterFill(&bind.FilterOpts{Start: zeroxStartBlockToFindPairs}, nil, nil, nil)
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(zeroxLookBackBlocks)
+
+	it, err := filterer.FilterFill(&bind.FilterOpts{Start: startblock}, nil, nil, nil)
 	if err != nil {
 		log.Error(err)
 	}
 
 	for it.Next() {
-		i, _ := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
-		o, _ := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
+		i, err := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
+		o, err := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
+		if err != nil {
+			// skip non-existing token data
+			continue
+		}
 		log.Printf("\n %v  -%v- %v -%v- %v %v ",
 			common.BytesToAddress(it.Event.TakerAssetData).Hex(),
 			i.Symbol, i.Decimals,
@@ -120,27 +129,27 @@ func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxT
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
-	} else {
-		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
-		if err != nil {
-			log.Error(err)
-		}
-		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
-		if err != nil {
-			log.Error(err)
-		}
-		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
-		if err != nil {
-			log.Error(err)
-		}
-		dfToken := &ZeroxToken{
-			Symbol:   symbol,
-			Decimals: decimals,
-		}
-		dfToken.normalizeETH()
-		scraper.tokens[tokenStr] = dfToken
-		return dfToken, err
 	}
+	tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return &ZeroxToken{}, err
+	}
+	dfToken := &ZeroxToken{
+		Symbol:   symbol,
+		Decimals: uint8(decimals.Int64()),
+	}
+	dfToken.normalizeETH()
+	scraper.tokens[tokenStr] = dfToken
+	return dfToken, err
+
 }
 
 func (scraper *ZeroxScraper) subscribeToTrades() error {
@@ -150,9 +159,14 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 		log.Error(err)
 		return err
 	}
-	start := startBlock
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(15250)
+
 	sink := make(chan *zerox.ZeroxFill)
-	sub, err := filterer.WatchFill(&bind.WatchOpts{Start: &start}, sink, nil, nil, nil)
+	sub, err := filterer.WatchFill(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -213,6 +227,7 @@ func (scraper *ZeroxScraper) mainLoop() {
 	scraper.run = true
 
 	scraper.subscribeToTrades()
+
 	go func() {
 		for scraper.run {
 			_ = <-scraper.resubscribe

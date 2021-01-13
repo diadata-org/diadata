@@ -146,7 +146,15 @@ https://api.diadata.org/v1/FarmingPoolData/YFI/USDT
   
 Get information for a time range using the query parameters.  
 Example:  
-https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121
+https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121  
+  
+_Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. The value in the field \`Rate\` has the following meaning:  
+- Pool rate: _Balancer, CVault, YFI_  
+- Total debt: _Synthetix_  
+- Total reward: _Loopring_  
+- Virtual price: _Curve Finance_  
+For a detailed explanation of these quantities, see:  
+https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -685,7 +693,7 @@ Guest Quotation
 {% api-method-description %}
 Get the latest quotation for a token from a guest source.  
 Example:  
-https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC  
+https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC  
   
 Use the query parameter time in order to get the latest quotation before the specified timestamp.  
 Example:  

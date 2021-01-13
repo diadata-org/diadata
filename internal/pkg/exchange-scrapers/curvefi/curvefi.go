@@ -26,16 +26,16 @@ var (
 	_ = event.NewSubscription
 )
 
-// Struct0 is an auto generated low-level Go binding around an user-defined struct.
-type Struct0 struct {
+// Struct1 is an auto generated low-level Go binding around an user-defined struct.
+type Struct1 struct {
 	Coins              [8]common.Address
 	UnderlyingCoins    [8]common.Address
 	Decimals           [8]*big.Int
 	UnderlyingDecimals [8]*big.Int
 }
 
-// Struct1 is an auto generated low-level Go binding around an user-defined struct.
-type Struct1 struct {
+// Struct0 is an auto generated low-level Go binding around an user-defined struct.
+type Struct0 struct {
 	Balances           [8]*big.Int
 	UnderlyingBalances [8]*big.Int
 	Decimals           [8]*big.Int
@@ -156,7 +156,7 @@ func bindCurvefi(address common.Address, caller bind.ContractCaller, transactor 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Curvefi *CurvefiRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Curvefi *CurvefiRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Curvefi.Contract.CurvefiCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -175,7 +175,7 @@ func (_Curvefi *CurvefiRaw) Transact(opts *bind.TransactOpts, method string, par
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Curvefi *CurvefiCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Curvefi *CurvefiCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Curvefi.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -194,12 +194,17 @@ func (_Curvefi *CurvefiTransactorRaw) Transact(opts *bind.TransactOpts, method s
 //
 // Solidity: function admin() returns(address)
 func (_Curvefi *CurvefiCaller) Admin(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "admin")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "admin")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // Admin is a free data retrieval call binding the contract method 0xf851a440.
@@ -220,12 +225,17 @@ func (_Curvefi *CurvefiCallerSession) Admin() (common.Address, error) {
 //
 // Solidity: function estimate_gas_used(address _pool, address _from, address _to) returns(uint256)
 func (_Curvefi *CurvefiCaller) EstimateGasUsed(opts *bind.CallOpts, _pool common.Address, _from common.Address, _to common.Address) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "estimate_gas_used", _pool, _from, _to)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "estimate_gas_used", _pool, _from, _to)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // EstimateGasUsed is a free data retrieval call binding the contract method 0xb0bb365b.
@@ -246,12 +256,17 @@ func (_Curvefi *CurvefiCallerSession) EstimateGasUsed(_pool common.Address, _fro
 //
 // Solidity: function find_pool_for_coins(address _from, address _to) returns(address)
 func (_Curvefi *CurvefiCaller) FindPoolForCoins(opts *bind.CallOpts, _from common.Address, _to common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "find_pool_for_coins", _from, _to)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "find_pool_for_coins", _from, _to)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FindPoolForCoins is a free data retrieval call binding the contract method 0xa87df06c.
@@ -272,12 +287,17 @@ func (_Curvefi *CurvefiCallerSession) FindPoolForCoins(_from common.Address, _to
 //
 // Solidity: function find_pool_for_coins(address _from, address _to, uint256 i) returns(address)
 func (_Curvefi *CurvefiCaller) FindPoolForCoins0(opts *bind.CallOpts, _from common.Address, _to common.Address, i *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "find_pool_for_coins0", _from, _to, i)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "find_pool_for_coins0", _from, _to, i)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FindPoolForCoins0 is a free data retrieval call binding the contract method 0x6982eb0b.
@@ -298,12 +318,17 @@ func (_Curvefi *CurvefiCallerSession) FindPoolForCoins0(_from common.Address, _t
 //
 // Solidity: function get_calculator(address _pool) returns(address)
 func (_Curvefi *CurvefiCaller) GetCalculator(opts *bind.CallOpts, _pool common.Address) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "get_calculator", _pool)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "get_calculator", _pool)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // GetCalculator is a free data retrieval call binding the contract method 0x5d7dc825.
@@ -324,12 +349,17 @@ func (_Curvefi *CurvefiCallerSession) GetCalculator(_pool common.Address) (commo
 //
 // Solidity: function get_exchange_amount(address _pool, address _from, address _to, uint256 _amount) returns(uint256)
 func (_Curvefi *CurvefiCaller) GetExchangeAmount(opts *bind.CallOpts, _pool common.Address, _from common.Address, _to common.Address, _amount *big.Int) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "get_exchange_amount", _pool, _from, _to, _amount)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "get_exchange_amount", _pool, _from, _to, _amount)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // GetExchangeAmount is a free data retrieval call binding the contract method 0x3973e834.
@@ -349,26 +379,31 @@ func (_Curvefi *CurvefiCallerSession) GetExchangeAmount(_pool common.Address, _f
 // GetPoolCoins is a free data retrieval call binding the contract method 0xe030afb8.
 //
 // Solidity: function get_pool_coins(address _pool) returns((address[8],address[8],uint256[8],uint256[8]))
-func (_Curvefi *CurvefiCaller) GetPoolCoins(opts *bind.CallOpts, _pool common.Address) (Struct0, error) {
-	var (
-		ret0 = new(Struct0)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "get_pool_coins", _pool)
-	return *ret0, err
+func (_Curvefi *CurvefiCaller) GetPoolCoins(opts *bind.CallOpts, _pool common.Address) (Struct1, error) {
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "get_pool_coins", _pool)
+
+	if err != nil {
+		return *new(Struct1), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(Struct1)).(*Struct1)
+
+	return out0, err
+
 }
 
 // GetPoolCoins is a free data retrieval call binding the contract method 0xe030afb8.
 //
 // Solidity: function get_pool_coins(address _pool) returns((address[8],address[8],uint256[8],uint256[8]))
-func (_Curvefi *CurvefiSession) GetPoolCoins(_pool common.Address) (Struct0, error) {
+func (_Curvefi *CurvefiSession) GetPoolCoins(_pool common.Address) (Struct1, error) {
 	return _Curvefi.Contract.GetPoolCoins(&_Curvefi.CallOpts, _pool)
 }
 
 // GetPoolCoins is a free data retrieval call binding the contract method 0xe030afb8.
 //
 // Solidity: function get_pool_coins(address _pool) returns((address[8],address[8],uint256[8],uint256[8]))
-func (_Curvefi *CurvefiCallerSession) GetPoolCoins(_pool common.Address) (Struct0, error) {
+func (_Curvefi *CurvefiCallerSession) GetPoolCoins(_pool common.Address) (Struct1, error) {
 	return _Curvefi.Contract.GetPoolCoins(&_Curvefi.CallOpts, _pool)
 }
 
@@ -376,12 +411,17 @@ func (_Curvefi *CurvefiCallerSession) GetPoolCoins(_pool common.Address) (Struct
 //
 // Solidity: function pool_count() returns(uint256)
 func (_Curvefi *CurvefiCaller) PoolCount(opts *bind.CallOpts) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "pool_count")
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "pool_count")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
 }
 
 // PoolCount is a free data retrieval call binding the contract method 0x956aae3a.
@@ -402,12 +442,17 @@ func (_Curvefi *CurvefiCallerSession) PoolCount() (*big.Int, error) {
 //
 // Solidity: function pool_list(int128 arg0) returns(address)
 func (_Curvefi *CurvefiCaller) PoolList(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Curvefi.contract.Call(opts, out, "pool_list", arg0)
-	return *ret0, err
+	var out []interface{}
+	err := _Curvefi.contract.Call(opts, &out, "pool_list", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // PoolList is a free data retrieval call binding the contract method 0xe140b271.
@@ -972,6 +1017,7 @@ func (_Curvefi *CurvefiFilterer) ParseCommitNewAdmin(log types.Log) (*CurvefiCom
 	if err := _Curvefi.contract.UnpackLog(event, "CommitNewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1115,6 +1161,7 @@ func (_Curvefi *CurvefiFilterer) ParseNewAdmin(log types.Log) (*CurvefiNewAdmin,
 	if err := _Curvefi.contract.UnpackLog(event, "NewAdmin", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1259,6 +1306,7 @@ func (_Curvefi *CurvefiFilterer) ParsePoolAdded(log types.Log) (*CurvefiPoolAdde
 	if err := _Curvefi.contract.UnpackLog(event, "PoolAdded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1402,6 +1450,7 @@ func (_Curvefi *CurvefiFilterer) ParsePoolRemoved(log types.Log) (*CurvefiPoolRe
 	if err := _Curvefi.contract.UnpackLog(event, "PoolRemoved", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1558,5 +1607,6 @@ func (_Curvefi *CurvefiFilterer) ParseTokenExchange(log types.Log) (*CurvefiToke
 	if err := _Curvefi.contract.UnpackLog(event, "TokenExchange", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
