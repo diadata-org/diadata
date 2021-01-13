@@ -2,11 +2,10 @@ package pool
 
 import (
 	"context"
-	"math"
 	"math/big"
 	"time"
 
-	staking "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/staking/BONDstaking"
+	bondstaking "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/bondstaking"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -14,29 +13,30 @@ import (
 )
 
 var (
-	daiTokenAddress = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
-	usdTokenAddress = common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
-	susdTokenAddress = common.HexToAddress("0x57ab1ec28d129707052df4df418d58a2d46d5f51")
-	bondTokenAddress = common.HexToAddress("0x0391D2021f89DC339F60Fff84546EA23E337750f")
+	daiTokenAddress   = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
+	usdTokenAddress   = common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
+	susdTokenAddress  = common.HexToAddress("0x57ab1ec28d129707052df4df418d58a2d46d5f51")
+	bondTokenAddress  = common.HexToAddress("0x0391D2021f89DC339F60Fff84546EA23E337750f")
 	uniLPTokenAddress = common.HexToAddress("0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244")
+	stakingAddress    = common.HexToAddress("0xb0fa2beee3cf36a7ac7e99b885b48538ab364853")
 )
 
-type BONDPool struct {
+type BONDScraper struct {
 	scraper    *PoolScraper
 	RestClient *ethclient.Client
 	WsClient   *ethclient.Client
 }
 
-func NewBONDPool(scraper *PoolScraper) *BONDPool {
-	restClient, err := ethclient.Dial(restDial)
+func NewBONDScraper(scraper *PoolScraper) *BONDScraper {
+	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
-	wsClient, err := ethclient.Dial(wsDial)
+	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
-	bd := &BONDPool{scraper: scraper, RestClient: restClient, WsClient: wsClient}
+	bd := &BONDScraper{scraper: scraper, RestClient: restClient, WsClient: wsClient}
 	go bd.mainLoop()
 
 	return bd
@@ -44,7 +44,7 @@ func NewBONDPool(scraper *PoolScraper) *BONDPool {
 }
 
 // runs in a goroutine until s is closed
-func (bd *BONDPool) mainLoop() {
+func (bd *BONDScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
@@ -56,67 +56,46 @@ func (bd *BONDPool) mainLoop() {
 					log.Errorln("Error while Scrapping", err)
 				}
 			}
-
 		}
 	}()
 
 }
 
-func (bd *BONDPool) scrapePools() (err error) {
+func (bd *BONDScraper) scrapePools() (err error) {
+	log.Info("begin scraping BOND pools")
 	for _, poolDetail := range bd.getBONDPools() {
-		staking, err := staking.BONDStakingCaller(common.HexToAddress(poolDetail.VaultAddress), bd.RestClient)
+
+		// TO DO:
+		// 1. Get vault contracts (please add to the commit) and make go bindings.
+		// 2. Get tvl as commented out below
+		// 3. Figure out how to get rate
+
+		staking, err := bondstaking.NewBondstakingCaller(common.HexToAddress(poolDetail.VaultAddress), bd.RestClient)
 		if err != nil {
 			return err
 		}
-
 		header, err := bd.RestClient.HeaderByNumber(context.Background(), nil)
 		if err != nil {
 			return err
 
 		}
 
-		getCurrentEpoch, err := staking.GetCurrentEpoch()
+		currentEpoch, err := staking.GetCurrentEpoch(&bind.CallOpts{})
 		if err != nil {
 			return err
 		}
 
-		var priceStablePool
-		
-		if getCurrentEpoch >= 7 && getCurrentEpoch <= 25 {	
-			priceStablePool, err := staking.GetEpochPoolSize(daiTokenAddress,getCurrentEpoch) + staking.GetEpochPoolSize(usdTokenAddress,getCurrentEpoch) + staking.GetEpochPoolSize(susdTokenAddress,getCurrentEpoch)
-			if err != nil {
-				return err
-			}
-		}
+		log.Infof("current epoch for pool %s: %v \n", poolDetail.PoolID, currentEpoch)
 
-		if getCurrentEpoch >= 3 && getCurrentEpoch <= 12 {	
-			priceStablePool, err := staking.GetEpochPoolSize(bondTokenAddress,getCurrentEpoch) 
-			if err != nil {
-				return err
-			}
-		}
-		
-		if getCurrentEpoch >= 6 && getCurrentEpoch <= 100 {	
-			priceStablePool, err := staking.GetEpochPoolSize(uniLPTokenAddress,getCurrentEpoch) 
-			if err != nil {
-				return err
-			}
-		}
-		
-		
-		
-		bal, err := staking.Balance(&bind.CallOpts{})
-		if err != nil {
-			log.Error(err)
-			return err
+		var priceStablePool = big.NewInt(0)
 
-		}
-		decimals, err := staking.Decimals(&bind.CallOpts{})
-		if err != nil {
-			return err
-
-		}
-		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+		// //
+		// bal, err := staking.GetPoolSize(&bind.CallOpts{})
+		// if err != nil {
+		// 	log.Error(err)
+		// 	return err
+		// }
+		// poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
 
 		pricePerFullShare := new(big.Float).SetInt(priceStablePool)
 		rate, _ := big.NewFloat(0).Sub(pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18)), big.NewFloat(1)).Float64()
@@ -124,7 +103,7 @@ func (bd *BONDPool) scrapePools() (err error) {
 		var pr models.FarmingPool
 		pr.TimeStamp = time.Now()
 		pr.Rate = rate
-		pr.Balance = poolBalance
+		// pr.Balance = poolBalance
 		pr.ProtocolName = bd.scraper.poolName
 		pr.PoolID = poolDetail.PoolID
 		pr.OutputAsset = []string{poolDetail.TokenName}
@@ -136,11 +115,11 @@ func (bd *BONDPool) scrapePools() (err error) {
 
 }
 
-func (bd *BONDPool) getBONDPools() (pools []*BONDPoolDetail) {
+func (bd *BONDScraper) getBONDPools() (pools []*BONDPoolDetail) {
 
-	pools = append(pools, &BONDPoolDetail{TokenName: "USDC/DAI/sUSD", VaultAddress: "0xb0fa2beee3cf36a7ac7e99b885b48538ab364853", PoolID: "USDC/DAI/sUSD"})
-	pools = append(pools, &BONDPoolDetail{TokenName: "USDC_BOND_UNI_LP", VaultAddress: "0xb0fa2beee3cf36a7ac7e99b885b48538ab364853", PoolID: "USDC_BOND_UNI_LP"})
-	pools = append(pools, &BONDPoolDetail{TokenName: "BOND", VaultAddress: "0xb0fa2beee3cf36a7ac7e99b885b48538ab364853", PoolID: "BOND"})
+	pools = append(pools, &BONDPoolDetail{TokenName: "USDC/DAI/sUSD", VaultAddress: "0xB3F7abF8FA1Df0fF61C5AC38d35e20490419f4bb", PoolID: "USDC/DAI/sUSD"})
+	pools = append(pools, &BONDPoolDetail{TokenName: "USDC_BOND_UNI_LP", VaultAddress: "0xC25c37c387C5C909a94055F4f16184ca325D3a76", PoolID: "USDC_BOND_UNI_LP"})
+	pools = append(pools, &BONDPoolDetail{TokenName: "BOND", VaultAddress: "0x3FdFb07472ea4771E1aD66FD3b87b265Cd4ec112", PoolID: "BOND"})
 
 	return
 
