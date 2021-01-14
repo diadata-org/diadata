@@ -119,6 +119,16 @@ func (bd *BONDScraper) scrapePools() (err error) {
 
 		poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(priceStablePool), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
 
+
+		// //
+		// bal, err := staking.GetPoolSize(&bind.CallOpts{})
+		// if err != nil {
+		// 	log.Error(err)
+		// 	return err
+		// }
+		// poolBalance, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(bal), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()
+
+
 		pricePerFullShare := new(big.Float).SetInt(priceStablePool)
 		rate, _ := big.NewFloat(0).Sub(pricePerFullShare.Quo(pricePerFullShare, new(big.Float).SetFloat64(1e18)), big.NewFloat(1)).Float64()
 
