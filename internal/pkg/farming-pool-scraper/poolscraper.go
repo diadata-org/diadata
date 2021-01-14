@@ -9,7 +9,7 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refreshRateDelay = 1 * 20 * time.Second
+	refreshRateDelay = 30 * 60 * time.Second
 	restDial         = "http://159.69.120.42:8545/"
 	wsDial           = "ws://159.69.120.42:8546/"
 )
@@ -34,8 +34,8 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 		s.poolHelper = NewYFIPool(s)
 	case "BALANCER":
 		s.poolHelper = NewBalancerPoolScrapper(s)
-	case "BOND":
-		s.poolHelper = NewBONDScraper(s)
+	case "BARNBRIDGE":
+		s.poolHelper = NewBARNBRIDGEScraper(s)
 	case "CURVEFI":
 		s.poolHelper = NewCFIScraper(s)
 	case "LOOPRING":
