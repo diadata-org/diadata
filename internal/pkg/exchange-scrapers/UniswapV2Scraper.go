@@ -1,9 +1,13 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"math"
 	"math/big"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -11,6 +15,7 @@ import (
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -18,6 +23,7 @@ import (
 
 var (
 	exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+	reversePairs                   *[]string
 )
 
 const (
@@ -73,7 +79,6 @@ type UniswapScraper struct {
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
-
 	var wsClient, restClient *ethclient.Client
 	var err error
 
@@ -135,6 +140,13 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 
 // runs in a goroutine until s is closed
 func (s *UniswapScraper) mainLoop() {
+
+	// Import tokens which appear as base token and we need a quotation for
+	var err error
+	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
 
 	// wait for all pairs have added into s.PairScrapers
 	time.Sleep(4 * time.Second)
@@ -203,7 +215,8 @@ func (s *UniswapScraper) mainLoop() {
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
 						}
-						if strings.ToLower(pair.Token1.Address.Hex()) == "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577" || strings.ToLower(pair.Token1.Address.Hex()) == "0xf5d669627376ebd411e34b98f19c868c8aba5ada" || strings.ToLower(pair.Token1.Address.Hex()) == "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4" {
+						// If we need quotation of a base token, reverse pair
+						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
 							tSwapped, err := dia.SwapTrade(*t)
 							if err == nil {
 								t = &tSwapped
@@ -239,6 +252,42 @@ func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *unis
 
 	return sink, nil
 
+}
+
+// getReverseTokensFromConfig returns a list of addresses from config file.
+func getReverseTokensFromConfig(filename string) (*[]string, error) {
+
+	var reverseTokens []string
+
+	// Load file and read data
+	fileName := fmt.Sprintf("../config/uniswap/%s.json", filename)
+	jsonFile, err := os.Open(fileName)
+	if err != nil {
+		return &[]string{}, err
+	}
+	defer jsonFile.Close()
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return &[]string{}, err
+	}
+
+	// Unmarshal read data
+	type lockedAsset struct {
+		Address string `json:"Address"`
+		Symbol  string `json:"Symbol"`
+	}
+	type lockedAssetList struct {
+		AllAssets []lockedAsset `json:"Tokens"`
+	}
+	var allAssets lockedAssetList
+	json.Unmarshal(byteData, &allAssets)
+
+	// Extract addresses
+	for _, token := range allAssets.AllAssets {
+		reverseTokens = append(reverseTokens, token.Address)
+	}
+
+	return &reverseTokens, nil
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type

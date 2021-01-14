@@ -2341,8 +2341,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-NOIA",
+            "Symbol": "NOIA",
+            "ForeignName": "NOIA-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -2371,8 +2371,32 @@
             "Ignore": false
         },
         {
-            "Symbol": "GRT",
-            "ForeignName": "GRT-ETH",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-GRT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GRT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALPHA",
+            "ForeignName": "ALPHA-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ibETH",
+            "ForeignName": "ibETH-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ROOK",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -12913,12 +12937,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "GRT",
-            "ForeignName": "GRT-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "HARB",
             "ForeignName": "HARB-ETH",
             "Exchange": "UniswapV2",
@@ -19687,8 +19705,32 @@
             "Ignore": false
         },
         {
-            "Symbol": "1inch",
-            "ForeignName": "1inch-ETH",
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-USDT",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCTO",
+            "ForeignName": "OCTO-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCTO",
+            "ForeignName": "OCTO-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-INJ",
             "Exchange": "UniswapV2",
             "Ignore": false
         },

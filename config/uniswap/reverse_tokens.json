@@ -1,0 +1,28 @@
+{
+    "Tokens": [
+      {
+        "Address": "0xfa5047c9c78b8877af97bdcb85db743fd7313d4a",
+        "Symbol": "ROOK"
+      },
+      {
+        "Address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+        "Symbol": "INJ"
+      },
+      {
+        "Address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+        "Symbol": "GRT"
+      },
+      {
+          "Address": "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577",
+          "Symbol": "YF-DAI"
+      },
+      {
+        "Address": "0xf5d669627376ebd411e34b98f19c868c8aba5ada",
+        "Symbol": "AXS"
+    },
+    {
+        "Address": "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4",
+        "Symbol": "SCIFI"
+    }
+    ]
+}
