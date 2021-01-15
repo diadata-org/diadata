@@ -25,12 +25,14 @@ As of now, the following list of pools is available in this oracle:
 - YFI \(yearn.finance\): WETH pool  
 - SYNTHETIX: sETH pool  
 - LOOPRING: LRC pool  
-- CURVEFI: 3pool \(DAI, USDC, USDT\)
+- CURVEFI: 3pool \(USDC, DAI, USDT\)  
+- BARNBRIDGE: Stablecoin pool \(USDC, DAI, sUSD\)
 
 _Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. See [here](https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming) for a detailed explanation. The emitted value "Pool rate" has the following meaning for the corresponding protocol:  
-- Pool rate: Balancer, CVault, YFI  
-- Total debt: Synthetix  
-- Total reward: Loopring  
-- Virtual price: Curve Finance  
+- Pool rate: _Balancer, CVault, YFI_  
+- Total debt: _Synthetix_  
+- Total reward: _Loopring_  
+- Virtual price: _Curve Finance_  
+- Fixed reward: _Barnbridge_  
 
 

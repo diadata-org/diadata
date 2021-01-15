@@ -152,7 +152,8 @@ _Remark_: Due to different mechanics of farming, the meaning of pool rate can di
 - Pool rate: _Balancer, CVault, YFI_  
 - Total debt: _Synthetix_  
 - Total reward: _Loopring_  
-- Virtual price: _Curve Finance_  
+- Virtual price: _Curve Finance  
+-_ Fixed reward: _Barnbridge_  
 For a detailed explanation of these quantities, see:  
 https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming
 {% endapi-method-description %}
