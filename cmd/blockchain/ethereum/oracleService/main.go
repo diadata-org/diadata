@@ -514,6 +514,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	}
 	time.Sleep(5 * time.Minute)
 
+	// BARNBRIDGE total reward
+	rawBARNBRIDGE, err := getFarmingPoolFromDia("BARNBRIDGE", "STABLECOIN")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BARNBRIDGE pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawBARNBRIDGE, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update BARNBRIDGE Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// // Top 15 coins
 	// rawCoins, err := getToplistFromDia()
 	// if err != nil {
