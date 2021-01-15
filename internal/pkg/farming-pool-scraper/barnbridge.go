@@ -92,7 +92,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
 			numEpochs = float64(numEpochsBig.Int64())
-		case "LP":
+		case "USDC_BOND_UNI_LP":
 			vault, err := lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
