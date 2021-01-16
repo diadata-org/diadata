@@ -187,13 +187,13 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
-	c, err := s.datastore.GetCoins()
-	if err == nil {
-		for i, v := range c.Coins {
-			log.Info("UpdateSymbolDetails on ", v.Symbol)
-			s.datastore.UpdateSymbolDetails(v.Symbol, i+1)
-		}
-	}
+	// c, err := s.datastore.GetCoins()
+	// if err == nil {
+	// for i, v := range c.Coins {
+	// 	log.Info("UpdateSymbolDetails on ", v.Symbol)
+	// 	s.datastore.UpdateSymbolDetails(v.Symbol, i+1)
+	// }
+	// }
 }
 
 // runs in a goroutine until s is closed
@@ -205,7 +205,8 @@ func (s *FiltersBlockService) mainLoop() {
 			log.Println("Filters shutting down")
 			s.cleanup(nil)
 			return
-		case tb, _ := <-s.chanTradesBlock:
+		case tb, ok := <-s.chanTradesBlock:
+			log.Info("receive tradesBlock for further processing ok: ", ok)
 			s.processTradesBlock(tb)
 		}
 	}
