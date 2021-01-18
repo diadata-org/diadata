@@ -12,36 +12,30 @@ var (MAX_RELATIVE_CAP float64 = 0.3)
 
 // Get supply and price information for the index constituents
 func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, error) {
-	log.Info(symbolsList)
 	db, err := models.NewDataStore()
 	if err != nil {
 		log.Error("Error connecting to datastore")
 		return nil, err
 	}
-	log.Info("Found datastore")
 
 	var constituents []models.CryptoIndexConstituent
 
 	for _, symbol := range symbolsList {
-		log.Info("Processing ", symbol)
 		currQuotation, err := db.GetQuotation(strings.ToUpper(symbol))
 		if err != nil {
 			log.Error("Error when retrieveing quotation for ", symbol)
 			return nil, err
 		}
-		log.Info("Quotation: ", currQuotation)
 		currSupply, err := db.GetLatestSupply(symbol)
 		if err != nil {
 			log.Error("Error when retrieveing supply for ", symbol)
 			return nil, err
 		}
-		log.Info("Supply: ", currSupply)
 		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(symbol), 1)
 		if err != nil {
 			log.Error("Error when retrieveing lst trades for ", symbol)
 			return nil, err
 		}
-		log.Info("LastTrade: ", currLastTrade[0])
 		newConstituent := models.CryptoIndexConstituent{
 			Address:            "-",
 			Name:								currQuotation.Name,
@@ -50,6 +44,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 			CirculatingSupply:	currSupply.CirculatingSupply,
 			Weight:             0.0,
 			CappingFactor:      0.0,
+			NumBaseTokens:      0.0,
 		}
 		constituents = append(constituents, newConstituent)
 	}
@@ -116,6 +111,13 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 		}
 	}
 
+	// Debug: Sum all relative caps
+	sumCaps := 0.0
+	for _, constituent := range marketCaps {
+		sumCaps += constituent.RelativeCap
+	}
+	log.Info("Capsum1: ", sumCaps)
+
 	// 5. Go through everything again and hardcode SPICE to 2.5%
 	spiceIndex := len(*constituents)
 	for i, constituent := range marketCaps {
@@ -137,10 +139,17 @@ func CalculateWeights(constituents *[]models.CryptoIndexConstituent) error {
 			}
 			// Determine constitute's relative share to "give up"
 			subtractionShare := correctionDelta * constituent.RelativeCap
-			marketCaps[i].RelativeCap = constituent.RelativeCap * (1 - subtractionShare)
+			marketCaps[i].RelativeCap = constituent.RelativeCap - subtractionShare
 			marketCaps[i].CappingFactor = constituent.CappingFactor * (1 - subtractionShare)
 		}
 	}
+
+	// Debug: Sum all relative caps
+	sumCaps = 0.0
+	for _, constituent := range marketCaps {
+		sumCaps += constituent.RelativeCap
+	}
+	log.Info("Capsum2: ", sumCaps)
 
 	// 6. Final step! Set data in the output struct
 	for i, mc := range marketCaps {
@@ -169,7 +178,7 @@ func UpdateConstituentsMarketData(currentConstituents *[]models.CryptoIndexConst
 		}
 		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(c.Symbol), 1)
 		if err != nil {
-			log.Error("Error when retrieveing lst trades for ", c.Symbol)
+			log.Error("Error when retrieveing last trades for ", c.Symbol)
 			return err
 		}
 		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice

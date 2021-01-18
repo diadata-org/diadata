@@ -188,6 +188,7 @@ func main() {
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
 	{
 		diaAuth.POST("/supply", diaApiEnv.PostSupply)
+		diaAuth.POST("/indexRebalance/:symbol", diaApiEnv.PostIndexRebalance)
 	}
 
 	dia := r.Group("/v1")

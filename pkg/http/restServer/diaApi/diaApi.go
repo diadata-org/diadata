@@ -13,6 +13,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -1148,4 +1149,69 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, q)
 	}
+}
+
+func (env *Env) PostIndexRebalance(c *gin.Context) {
+	indexSymbol := c.Param("symbol")
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
+		return
+	}
+	var constituentsSymbols []string
+	err = json.Unmarshal(body, &constituentsSymbols)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	// Get constituents information
+	constituents, err := indexCalculationService.GetIndexBasket(constituentsSymbols)
+	if err != nil {
+		log.Error(err)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Calculate relative weights
+	err = indexCalculationService.CalculateWeights(&constituents)
+	if err != nil {
+		log.Error(err)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Get old index
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	if err != nil {
+		log.Error(err)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Determine new divisor
+	currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
+	newIndexRawValue := indexCalculationService.GetIndexValue(constituents)
+	newDivisor := (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
+	newIndexValue := newIndexRawValue / newDivisor
+	//log.Info("New Index Value: ", newIndexValue)
+
+	// Calculate Base Amount for each constituent
+	for i, constituent := range constituents {
+		constituents[i].NumBaseTokens = ((constituent.Weight * newIndexValue) / constituent.Price) * 1e16 //((Weight * IndexPrice) / TokenPrice) * 1e18  (divided by 100 because index level is 100 = 1 usd)
+	}
+
+	var newIndex models.CryptoIndex
+	newIndex.Name = indexSymbol
+	newIndex.Constituents = constituents
+	newIndex.Value = newIndexRawValue
+	newIndex.Price = currIndex[0].Price
+	newIndex.Divisor = newDivisor
+
+	err = env.DataStore.SetCryptoIndex(&newIndex)
+	if err != nil {
+		log.Error()
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, constituents)
 }
