@@ -11,8 +11,8 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refreshRateDelay  = time.Second * 60 * 1
-	refreshStateDelay = time.Second * 60 * 1
+	refreshRateDelay  = time.Second * 60 * 5
+	refreshStateDelay = time.Second * 60 * 5
 )
 
 type nothing struct{}

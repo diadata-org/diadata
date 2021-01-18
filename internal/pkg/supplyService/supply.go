@@ -140,7 +140,6 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 		CirculatingSupply: circulatingSupply,
 		Source:            "diadata.org",
 		Time:              time.Unix(int64(header.Time), 0),
-		Block:             header.Number.Int64(),
 	}
 
 	return
