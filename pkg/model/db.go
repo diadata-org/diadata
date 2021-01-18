@@ -872,7 +872,6 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
 		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
-		fmt.Println("influx query: ", q)
 	} else {
 		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	}
