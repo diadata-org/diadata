@@ -67,7 +67,7 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 
 func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor,foo from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
