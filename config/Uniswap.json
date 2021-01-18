@@ -17215,8 +17215,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "UTK",
-            "ForeignName": "UTK-ETH",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-UTK",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
