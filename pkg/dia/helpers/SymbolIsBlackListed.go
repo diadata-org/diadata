@@ -199,8 +199,6 @@ func AddressIsBlacklisted(address common.Address) bool {
 		return true
 	case "0x84633d3453a1f3582f7ab33b8116a1346308a084":
 		return true
-	case "0xdc9ac3c20d1ed0b540df9b1fedc10039df13f99c":
-		return true
 	default:
 		return false
 	}
