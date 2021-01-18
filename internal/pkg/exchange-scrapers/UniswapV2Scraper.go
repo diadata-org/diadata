@@ -183,6 +183,7 @@ func (s *UniswapScraper) mainLoop() {
 		}
 		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+			continue
 		}
 		pair.normalizeUniPair()
 		ps, ok := s.pairScrapers[pair.ForeignName]

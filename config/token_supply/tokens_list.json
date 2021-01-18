@@ -117,6 +117,10 @@
       "Name": "Synthetix Network Token"
     },
     {
+      "Address": "0xa8c8cfb141a3bb59fea1e2ea6b79b5ecbcd7b6ca",
+      "Name": "Syntropy"
+    },
+    {
       "Address": "0xba100000625a3754423978a60c9317c58a424e3d",
       "Name": "Balancer"
     },
@@ -175,6 +179,10 @@
     {
       "Address": "0x8762db106b2c2a0bccb3a80d1ed41273552616e8",
       "Name": "Reserve Rights Token"
+    },
+    {
+      "Address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+      "Name": "The Graph"
     },
     {
       "Address": "0x1122b6a0e00dce0563082b6e2953f3a943855c1f",
@@ -1011,6 +1019,14 @@
     {
       "Address": "0x584bc13c7d411c00c01a62e8019472de68768430",
       "Name": "Hegic"
+    },
+    {
+      "Address": "0xfa5047c9c78b8877af97bdcb85db743fd7313d4a",
+      "Name": "KeeperDAO"
+    },
+    {
+      "Address": "0x111111111117dc0aa78b770fa6a738034120c302",
+      "Name": "1inch"
     },
     {
       "Address": "0x41e5560054824ea6b0732e656e3ad64e20e94e45",
@@ -2301,10 +2317,6 @@
       "Name": "Yee"
     },
     {
-      "Address": "0xfc858154c0b2c4a3323046fb505811f110ebda57",
-      "Name": "NOIA Network"
-    },
-    {
       "Address": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
       "Name": "Request"
     },
@@ -2869,6 +2881,10 @@
       "Name": "Doctors Coin"
     },
     {
+      "Address": "0x7240ac91f01233baaf8b064248e80feaa5912ba3",
+      "Name": "OctoFi"
+    },
+    {
       "Address": "0xa806b3fed6891136940cf81c4085661500aa2709",
       "Name": "Sport and Leisure"
     },
@@ -2883,6 +2899,10 @@
     {
       "Address": "0xe54b3458c47e44c37a267e7c633afef88287c294",
       "Name": "Artfinity Token"
+    },
+    {
+      "Address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+      "Name": "Injective Protocol"
     },
     {
       "Address": "0x51db5ad35c671a87207d88fc11d593ac0c8415bd",
@@ -5365,8 +5385,8 @@
       "Name": "Gric Coin"
     },
     {
-      "Address": "0xffc63b9146967a1ba33066fb057ee3722221acf0",
-      "Name": "Alpha Token"
+      "Address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+      "Name": "AlphaToken"
     },
     {
       "Address": "0xc626c9e2247c8a0c863ad6daa97ed939e12786de",
@@ -6277,10 +6297,6 @@
       "Name": "Pantos"
     },
     {
-      "Address": "0x1fb6bccc7da51aa32e96118b8a33226d2ae16517",
-      "Name": "Global Rental Token"
-    },
-    {
       "Address": "0x3be6e7bf2cd8e1a0a95597e72ca6d3709bbeff76",
       "Name": "Demeter Chain"
     },
@@ -6783,10 +6799,6 @@
     {
       "Address": "0x6a93ae6147ada96a7459167c4d18e6613efe2994",
       "Name": "Internet Exchange Token"
-    },
-    {
-      "Address": "0xb83cd8d39462b761bb0092437d38b37812dd80a2",
-      "Name": "Golden Ratio Token"
     },
     {
       "Address": "0x90d46a9636b973f18186541d1b04ed3621a49cb0",
