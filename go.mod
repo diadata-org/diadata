@@ -21,6 +21,7 @@ require (
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
+	github.com/carterjones/signalr v0.3.5
 	github.com/certifi/gocertifi v0.0.0-20200922220541-2c3bb06c6054 // indirect
 	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b
 	github.com/chromedp/chromedp v0.5.3
