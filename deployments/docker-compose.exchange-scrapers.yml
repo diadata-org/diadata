@@ -26,6 +26,19 @@ services:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
+  
+  crex24collector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=CREX24
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   hitbtccollector:
     depends_on: [genericcollector]

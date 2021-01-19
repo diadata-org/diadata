@@ -126,6 +126,9 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 	for _, trade := range update.NT {
 		price, pok := strconv.ParseFloat(trade.Price, 64)
 		volume, vok := strconv.ParseFloat(trade.Volume, 64)
+		if trade.Side == "s" {
+			volume *= -1
+		}
 		if pok == nil && vok == nil {
 			t := &dia.Trade{
 				Pair:           pair.ForeignName,
