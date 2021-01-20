@@ -26,20 +26,20 @@ func (t *Trade) BaseToken() string {
 		}
 	}
 
-	second := strings.TrimPrefix(pair, t.Symbol+"_")
+	second := strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"_")
 	if second != pair {
 		return second
 	}
-	second = strings.TrimPrefix(pair, t.Symbol+"-")
+	second = strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"-")
 	if second != pair {
 		return second
 	}
-	second = strings.TrimPrefix(pair, t.Symbol+"/")
+	second = strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"/")
 	if second != pair {
 		return second
 	}
 
-	return strings.TrimPrefix(pair, t.Symbol)
+	return strings.TrimPrefix(pair, strings.ToUpper(t.Symbol))
 }
 
 // SwapTrade swaps base and quote token of a trade and inverts the price accordingly

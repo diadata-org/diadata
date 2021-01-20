@@ -13717,12 +13717,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "NXM",
-            "ForeignName": "NXM-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "ETH",
             "ForeignName": "ETH-PUX",
             "Exchange": "UniswapV2",
@@ -15825,12 +15819,6 @@
         {
             "Symbol": "cDAI",
             "ForeignName": "cDAI-COMP",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "wNXM",
-            "ForeignName": "wNXM-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
