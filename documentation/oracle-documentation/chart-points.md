@@ -19,6 +19,7 @@ As of now, the following list of exchanges is available in this oracle:
 - 0x \(ETH\)  
 - Bancor \(ETH\)  
 - Bitmax \(ETH\)  
+- CREX24 \(CREX\)  
 - Curvefi \(DAI\)  
 - Gnosis \(ETH\)  
 - Kyber \(ETH\)  
