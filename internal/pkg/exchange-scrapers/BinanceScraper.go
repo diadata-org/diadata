@@ -66,19 +66,14 @@ func errorHandler(err error) {
 }
 
 func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	if pair.Symbol == "IOTA" {
-		pair.Symbol = "MIOTA"
+	if pair.Symbol == "MIOTA" {
+		pair.ForeignName = "M" + pair.ForeignName
 	}
-	if pair.Symbol == "YOYO" {
-		pair.Symbol = "YOYOW"
+	if pair.Symbol == "YOYOW" {
+		pair.ForeignName = "YOYOW" + pair.ForeignName[4:]
 	}
-	/// ethos
-	if pair.Symbol == "BQX" {
-		pair.Symbol = "ETHOS"
-	}
-	/// Bitcoin Cash
-	if pair.Symbol == "BCC" {
-		pair.Symbol = "BCH"
+	if pair.Symbol == "ETHOS" {
+		pair.ForeignName = "ETHOS" + pair.ForeignName[3:]
 	}
 	return pair, nil
 }
@@ -150,9 +145,10 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 			if event.IsBuyerMaker == false {
 				volume = -volume
 			}
+			pairNormalized, _ := s.NormalizePair(pair)
 			t := &dia.Trade{
-				Symbol:         pair.Symbol,
-				Pair:           pair.ForeignName,
+				Symbol:         pairNormalized.Symbol,
+				Pair:           pairNormalized.ForeignName,
 				Price:          price,
 				Volume:         volume,
 				Time:           time.Unix(event.TradeTime/1000, (event.TradeTime%1000)*int64(time.Millisecond)),
