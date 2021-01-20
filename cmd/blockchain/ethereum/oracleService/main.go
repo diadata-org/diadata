@@ -273,6 +273,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// }
 	// time.Sleep(5 * time.Minute)
 
+	// CREX24 Chart Point
+	rawCrex24, err := getDEXFromDia("CREX24", "CREX")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CREX24 from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawCrex24, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update CREX24 Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Bitmax CEX Chart Point
 	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
 	if err != nil {
