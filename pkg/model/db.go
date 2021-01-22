@@ -116,6 +116,11 @@ type Datastore interface {
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
+
+	// Github methods
+	SetCommit(commit *GithubCommit) error
+	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
+	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
 }
 
 const (
