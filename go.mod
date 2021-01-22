@@ -48,6 +48,7 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2
+	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jinzhu/now v1.1.1
@@ -85,10 +86,12 @@ require (
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
+	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924
-	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+	golang.org/x/sys v0.0.0-20210122235752-a8b976e07c7b // indirect
 	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20200729041821-df70183b1872 // indirect
+	golang.org/x/tools/gopls v0.6.4 // indirect
 	gonum.org/v1/plot v0.7.0
 	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f // indirect
 	google.golang.org/grpc v1.30.0 // indirect
@@ -96,4 +99,5 @@ require (
 	gopkg.in/dgrijalva/jwt-go.v2 v2.7.0 // indirect
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	honnef.co/go/tools v0.1.1 // indirect
 )
