@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -127,15 +126,17 @@ func (s *GateIOScraper) mainLoop() {
 								}
 								timestamp_temp := int64(md_inner["time"].(float64))
 								timestamp := time.Unix(timestamp_temp, 0).UTC()
+								normalizedPair, _ := s.NormalizePair(ps.pair)
 								t := &dia.Trade{
-									Symbol:         ps.pair.Symbol,
-									Pair:           pairRetrieved,
+									Symbol:         normalizedPair.Symbol,
+									Pair:           normalizedPair.ForeignName,
 									Price:          f64Price,
 									Volume:         f64Volume,
 									Time:           timestamp,
 									ForeignTradeID: strconv.FormatInt(int64(md_inner["id"].(float64)), 16),
 									Source:         s.exchangeName,
 								}
+								log.Info("got trade: ", t)
 								ps.parent.chanTrades <- t
 							} else {
 								log.Error("error parsing volume %v " + md_inner["amount"].(string))
@@ -202,42 +203,32 @@ func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
-	str := strings.Split(foreignName, "_")
-	symbol = strings.ToUpper(str[0])
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if symbol == "IOTA" {
-				return "MIOTA", nil
-			}
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
 
 func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	str := strings.Split(pair.ForeignName, "_")
-	symbol := strings.ToUpper(str[0])
-	pair.Symbol = symbol
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if symbol == "IOTA" {
-				pair.Symbol = "MIOTA"
-			}
-			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
-		}
+
+	if pair.Symbol == "RENBTC" {
+		pair.Symbol = "renBTC"
+		pair.ForeignName = "renBTC" + pair.ForeignName[6:]
+		return pair, nil
 	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return pair, errors.New("Symbol is black listed:" + symbol)
+	if pair.Symbol == "WNXM" {
+		pair.Symbol = "wNXM"
+		pair.ForeignName = "wNXM" + pair.ForeignName[4:]
+		return pair, nil
 	}
+	if pair.Symbol == "IOTA" {
+		pair.Symbol = "MIOTA"
+		pair.ForeignName = "M" + pair.ForeignName
+		return pair, nil
+	}
+	if pair.Symbol == "PROPY" {
+		pair.Symbol = "PRO"
+		pair.ForeignName = "PRO" + pair.ForeignName[5:]
+		return pair, nil
+	}
+
 	return pair, nil
 }
-
-
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
@@ -247,17 +238,13 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		pairToNormalize := dia.Pair{
-			Symbol:      "",
+		pair := dia.Pair{
+			Symbol:      strings.Split(p, "_")[0],
 			ForeignName: p,
 			Exchange:    s.exchangeName,
+			Ignore:      false,
 		}
-		pair, serr := s.NormalizePair(pairToNormalize)
-		if serr == nil {
-			pairs = append(pairs, pair)
-		} else {
-			log.Error(serr)
-		}
+		pairs = append(pairs, pair)
 	}
 	return
 }
