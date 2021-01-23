@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"os"
 	"time"
 
@@ -16,38 +17,61 @@ var (
 
 func main() {
 
-	// TO DO: Upon start, get last timestamp from commit table. If table is empty, run GetAllCommits and then
-	// GetCommitInfo in time ranges with ticker.
-	// If table is not empty, get last timestamp and run GetAllCommits from last timestamp until now.
-
+	// Set basic structure
+	var nameUser = flag.String("username", "diadata-org", "github username")
+	var nameRepository = flag.String("repository", "diadata", "name of the repository")
+	flag.Parse()
+	apiKey := getAPIKeyFromSecrets()
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
 
-	// Continuously update supplies once every 6h
+	// Get latest commit from database, if existent
+	latestCommit, err := ds.GetLatestCommit(*nameUser, *nameRepository)
+	if err != nil {
+		log.Fatal("error getting latest commit: ", err)
+	}
+
+	// If no commit is in the DB, fetch all commits up until now
+	if (latestCommit) == (models.GithubCommit{}) {
+		commits, err := githubservice.FetchAllCommits(*nameUser, *nameRepository, 100, apiKey)
+		if err != nil {
+			log.Fatal("error fetching all commits: ", err)
+		}
+		for _, commit := range commits {
+			err = ds.SetCommit(&commit)
+			if err != nil {
+				log.Fatal("error setting commit: ", err)
+			}
+			log.Info("set commit: ", commit)
+		}
+	}
+
+	// Continuously update commits once every 6h
 	// ticker := time.NewTicker(6 * time.Hour)
 	ticker := time.NewTicker(20 * time.Second)
-	// timeInit := time.Now().AddDate(0, -1, -10)
-	// timeFinal := time.Now().AddDate(0, -1, -5)
-	// fmt.Println("time: ", timeInit.Format("2006-01-02T15:04:05+00:00"))
 
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				apiKey := getAPIKeyFromSecrets()
-				// repo, err := githubservice.GetCommitInfo("diadata-org", "diadata", apiKey, timeInit, timeFinal)
-				repo, err := githubservice.GetAllCommits("diadata-org", "diadata", apiKey)
+				latestCommit, err := ds.GetLatestCommit(*nameUser, *nameRepository)
+				if err != nil {
+					log.Fatal("error getting latest commit: ", err)
+				}
+				lastTimestamp := latestCommit.Timestamp
+				commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, lastTimestamp, time.Now())
 				if err != nil {
 					log.Fatal(err)
 				}
-				var commit models.GithubCommit
-				err = ds.SetCommit(&commit)
-				if err != nil {
-					log.Fatal(err)
+				for _, commit := range commits {
+					err = ds.SetCommit(&commit)
+					if err != nil {
+						log.Fatal(err)
+					}
+					log.Info("set commit: ", commit)
 				}
-				log.Info("set repository: ", repo)
 
 			}
 		}

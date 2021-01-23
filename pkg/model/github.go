@@ -6,7 +6,7 @@ type GithubCommit struct {
 	User            string
 	Repository      string
 	Hash            string
-	Timestamp       string
+	Timestamp       time.Time
 	Author          Author
 	NumAdditions    int
 	NumDeletions    int
@@ -33,6 +33,13 @@ func (db *DB) GetCommitByDate(user, repository string, date time.Time) (GithubCo
 
 // GetCommitByHash returns the commit from @repository of github user @user with hash @hash.
 func (db *DB) GetCommitByHash(user, repository, hash string) (GithubCommit, error) {
+	// TO DO
+	return GithubCommit{}, nil
+}
+
+// GetLatestCommit returns the latest commit from influx.
+// Returns empty struct and nil if no commits are in the database.
+func (db *DB) GetLatestCommit(user, repository string) (GithubCommit, error) {
 	// TO DO
 	return GithubCommit{}, nil
 }
