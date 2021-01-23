@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -16,9 +16,7 @@ import (
 	"github.com/graarh/golang-socketio/transport"
 )
 
-var _socketHost string = "socket.stex.com"
-
-const WS_TIMEOUT = 10 * time.Second
+var _socketURL string = "wss://socket.stex.com"
 
 type Trade struct {
 	Amount         string      `json:"amount"`
@@ -48,30 +46,31 @@ type STEXScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*STEXPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
+	pairScrapers   map[string]*STEXPairScraper
+	pairSymbolToID map[string]int
+	pairIDToSymbol map[int]string
+	exchangeName   string
+	chanTrades     chan *dia.Trade
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
 func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
-
 	s := &STEXScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*STEXPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
+		shutdown:       make(chan nothing),
+		shutdownDone:   make(chan nothing),
+		pairScrapers:   make(map[string]*STEXPairScraper),
+		pairSymbolToId: make(map[string]int),
+		pairIdToSymbol: make(map[int]string),
+		exchangeName:   exchange.Name,
+		error:          nil,
+		chanTrades:     make(chan *dia.Trade),
 	}
 
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	c, err := gosocketio.Dial(
-		gosocketio.GetUrl(_socketHost, 443, true),
+		_socketURL,
 		transport.GetDefaultWebsocketTransport())
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("dial: %v", err)
 	}
 
 	s.c = c
@@ -82,10 +81,10 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 // Reconnect to socketIO when the connection is down.
 func (s *STEXScraper) reconnectToSocketIO() {
 	c, err := gosocketio.Dial(
-		gosocketio.GetUrl(_socketHost, 443, true),
+		_socketURL,
 		transport.GetDefaultWebsocketTransport())
 	if err != nil {
-		log.Error("dial:", err)
+		log.Printf("dial: %v", err)
 	}
 	s.c = c
 }
@@ -106,7 +105,7 @@ func (s *STEXScraper) subscribeToALL() {
 		log.Println("Connected")
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
 		// TODO: reconnect here
@@ -114,12 +113,39 @@ func (s *STEXScraper) subscribeToALL() {
 		s.closed = true
 	})
 
-	err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, trade Trade) {
+	err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, message Trade) {
 		// Handle new trades.
-		log.Println(trade)
+		var pairID = message.CurrencyPairID
+		var forName = s.pairIDToSymbol[int(pairID)]
+		ps, ok := s.pairScrapers[forName]
+
+		if ok {
+			f64Price, _ := strconv.ParseFloat(message.Price, 64)
+			f64Volume := message.Amount2
+			timeStamp := time.Now().UTC()
+
+			if message.OrderType == "SELL" {
+				f64Volume = -f64Volume
+			}
+			// element id is more than int64/uint64 in size
+			// leave the id in float64 format
+			t := &dia.Trade{
+				Symbol:         ps.pair.Symbol,
+				Pair:           forName,
+				Price:          f64Price,
+				Volume:         f64Volume,
+				Time:           timeStamp,
+				ForeignTradeID: fmt.Sprintf("%d", message.ID),
+				Source:         s.exchangeName,
+			}
+			ps.parent.chanTrades <- t
+			log.Info("got trade: ", t)
+		} else {
+			log.Printf("Unknown Pair %v", forName)
+		}
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
@@ -245,10 +271,12 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			AmountMultiplier  int    `json:"amount_multiplier"`
 		} `json:"data"`
 	}
+	log.Println("sending req")
 	data, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
 	if err != nil {
 		return
 	}
+	log.Println("sending req done")
 	var response CurrencyPairs
 	err = json.Unmarshal(data, &response)
 	if err != nil {
@@ -259,15 +287,17 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	for _, p := range response.Data {
 		pairToNormalize := dia.Pair{
-			Symbol:      p.CurrencyName,
-			ForeignName: fmt.Sprintf("%d", p.ID),
+			Symbol:      p.CurrencyCode,
+			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
 		}
 		pair, serr := s.NormalizePair(pairToNormalize)
 		if serr == nil {
 			pairs = append(pairs, pair)
+			s.pairSymbolToID[pair.Symbol] = p.ID
+			s.pairIDToSymbol[p.ID] = pair.Symbol
 		} else {
-			log.Error(serr)
+			log.Println(serr)
 		}
 	}
 	return
