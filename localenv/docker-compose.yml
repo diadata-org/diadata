@@ -30,14 +30,23 @@ services:
     - KAFKA_DELETE_TOPIC_ENABLE=true
     - ALLOW_PLAINTEXT_LISTENER=yes
 
-  mongo:
-    image: mongo
+  postgres:
+    image: postgres
     restart: always
     ports:
       - "27017:27017"
+      - "5432:5432"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./pginit.sql:/docker-entrypoint-initdb.d/init.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
     depends_on:
       - zookeeper

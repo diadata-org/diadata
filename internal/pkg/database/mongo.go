@@ -52,15 +52,15 @@ func (md *MongoDatabase) Save(asset dia.Asset) error {
 }
 
 func (md *MongoDatabase) GetPage(pageNumber int64) (assets []dia.Asset, err error) {
- 	var limit int64
+	var limit int64
 	limit = 100
 	skip := limit * pageNumber
- 	cursor, err := md.collection.Find(context.Background(), bson.M{}, &options.FindOptions{Limit: &limit, Skip: &skip})
+	cursor, err := md.collection.Find(context.Background(), bson.M{}, &options.FindOptions{Limit: &limit, Skip: &skip})
 
 	if err != nil {
 		return
- 	}
-	err = cursor.All(context.Background(),&assets)
+	}
+	err = cursor.All(context.Background(), &assets)
 	return
 }
 

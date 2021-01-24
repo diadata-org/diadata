@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"github.com/diadata-org/diadata/cmd/services/assets/database"
 	"github.com/diadata-org/diadata/cmd/services/assets/source"
+	"github.com/diadata-org/diadata/internal/pkg/database"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
@@ -23,9 +22,8 @@ var feedRedis bool
 
 func init() {
 
-	flag.BoolVar( &feedRedis,"feedRedis",false,"Feed Asset to redis")
+	flag.BoolVar(&feedRedis, "feedRedis", false, "Feed Asset to redis")
 	flag.Parse()
-
 
 	blockchains = make(map[string]dia.BlockChain)
 	blockchains[dia.Bitcoin] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_STAKE}
@@ -46,17 +44,15 @@ func NewAssetScraper(exchange string, key string, secret string) source.AssetSou
 
 func main() {
 
-	data, err := database.NewMongo("mongodb://root:example@localhost/admin")
+	data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
 	if err != nil {
 		log.Errorln("Error connecting to data source", err)
 		return
 	}
 
-	fmt.Println(feedRedis)
-
 	if feedRedis {
 		feedAssetToRedis(data)
-	}else{
+	} else {
 		fetchAssetFromSource(data)
 
 	}
@@ -65,7 +61,7 @@ func main() {
 
 func feedAssetToRedis(assetsaver database.AssetSaver) {
 
-  assetCache := database.NewAssetcache()
+	assetCache := database.NewAssetcache()
 
 	totalAssets, err := assetsaver.Count()
 	if err != nil {
@@ -84,7 +80,7 @@ func feedAssetToRedis(assetsaver database.AssetSaver) {
 			log.Errorln("Error getting assets for page number", i, err)
 		}
 
-		for _,asset := range assets{
+		for _, asset := range assets {
 			log.Println(asset)
 			assetCache.SetAsset(asset)
 		}
