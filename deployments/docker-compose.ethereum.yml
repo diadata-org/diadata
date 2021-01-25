@@ -25,21 +25,6 @@ services:
         delay: 2s
         window: 20s
 
-  binance-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-binance-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binance-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
   oracleservice:
     build:
       context: $GOPATH
@@ -96,66 +81,6 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys
-
-  eth:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eth
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eth
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  maker-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-maker-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_maker-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  xcel-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xcel-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xcel-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  aragon-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-aragon-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_aragon-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
 
 secrets:
   api_diadata:
