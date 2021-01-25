@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	apiKeyFilename = "github_key.txt"
+	apiKeyFilename = "github_key"
 )
 
 func main() {
@@ -33,8 +33,9 @@ func main() {
 		log.Fatal("error getting latest commit: ", err)
 	}
 
-	// If no commit is in the DB, fetch all commits up until now
+	// If no commit is in the DB, fetch all commits until now
 	if (latestCommit) == (models.GithubCommit{}) {
+		log.Info("populate database...")
 		commits, err := githubservice.FetchAllCommits(*nameUser, *nameRepository, 100, apiKey)
 		if err != nil {
 			log.Fatal("error fetching all commits: ", err)
@@ -46,6 +47,7 @@ func main() {
 			}
 			log.Info("set commit: ", commit)
 		}
+		log.Info("...initial database population done.")
 	}
 
 	// Continuously update commits once every 6h
@@ -56,12 +58,15 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
+				log.Info("update github commits")
 				latestCommit, err := ds.GetLatestCommit(*nameUser, *nameRepository)
 				if err != nil {
 					log.Fatal("error getting latest commit: ", err)
 				}
-				lastTimestamp := latestCommit.Timestamp
-				commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, lastTimestamp, time.Now())
+				// Remark: if between two ticker signals no new commits are added, the latest commit is fetched again nevertheless,
+				// because FetchCommitsByDate includes the borders. This does not hurt as the set of tags is the same and hence, data
+				// is only stored once in influx.
+				commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, latestCommit.Timestamp, time.Now())
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -70,7 +75,6 @@ func main() {
 					if err != nil {
 						log.Fatal(err)
 					}
-					log.Info("set commit: ", commit)
 				}
 
 			}
