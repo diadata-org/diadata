@@ -61,9 +61,8 @@ type Author struct {
 }
 
 // FetchCommitsByDate returns all commits in repository @nameRepository of user @nameUser in the time range
-// given by @timeInit and @timeFinal including both borders.
+// given by @timeInit and @timeFinal including both borders because the graphQL query does so.
 func FetchCommitsByDate(nameUser, nameRepository, apiKey string, timeInit time.Time, timeFinal time.Time) (githubCommits []models.GithubCommit, err error) {
-
 	// And interactive graphQL Explorer:
 	// https://developer.github.com/v4/explorer/
 	jsonData := map[string]string{
@@ -114,9 +113,9 @@ func FetchCommitsByDate(nameUser, nameRepository, apiKey string, timeInit time.T
 
 	// Check, whether all commits in the given time range were returned by a single query.
 	endCursor := repository.Data.Repository.Object.History.PageInfo.EndCursor
-	log.Info("iterate through commits...")
+	// log.Info("iterate through commits...")
 	for endCursor != "" {
-		log.Info("current end cursor: ", endCursor)
+		// log.Info("current end cursor: ", endCursor)
 		repository, endCursor, err = fetchCommitsAfterCursorInRange(nameUser, nameRepository, endCursor, timeInit, timeFinal, apiKey)
 		aux := githubRepoToCommit(nameUser, nameRepository, repository)
 		githubCommits = append(githubCommits, aux...)
@@ -179,7 +178,6 @@ func fetchCommitsAfterCursorInRange(nameUser, nameRepository, cursor string, tim
 // @numPerPage is the number of commits fetched per request. For github this is limited to 100 atm.
 func FetchAllCommits(nameUser, nameRepository string, numPerPage int, apiKey string) (githubCommits []models.GithubCommit, err error) {
 	// Inital fetch to initiate pageing through all commits
-	log.Info("first fetch...")
 	jsonData := map[string]string{
 		"query": fmt.Sprintf(`{
 			repository(owner:"%s", name:"%s") {
@@ -225,13 +223,11 @@ func FetchAllCommits(nameUser, nameRepository string, numPerPage int, apiKey str
 		return
 	}
 	githubCommits = githubRepoToCommit(nameUser, nameRepository, repository)
-	log.Info("...first fetch done.")
 
 	// Iterate over commits until cursor==null
 	endCursor := repository.Data.Repository.Object.History.PageInfo.EndCursor
-	log.Info("iterate through commits...")
 	for endCursor != "" {
-		log.Info("current end cursor: ", endCursor)
+		// log.Info("current end cursor: ", endCursor)
 		repository, endCursor, err = fetchCommitsAfterCursor(nameUser, nameRepository, endCursor, numPerPage, apiKey)
 		aux := githubRepoToCommit(nameUser, nameRepository, repository)
 		githubCommits = append(githubCommits, aux...)

@@ -149,6 +149,7 @@ const (
 	influxDbPoolTable                    = "defiPools"
 	influxDbCryptoIndexTable             = "cryptoindex"
 	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
+	influxDbGithubCommitTable            = "githubcommits"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -429,7 +430,11 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	// Create a point and add to batch
-	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
+	tags := map[string]string{
+		"symbol":   t.Symbol,
+		"exchange": t.Source,
+		"pair":     t.Pair,
+	}
 	fields := map[string]interface{}{
 		"price":             t.Price,
 		"volume":            t.Volume,
