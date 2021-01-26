@@ -24,6 +24,8 @@ As of now, the following list of rates is available in this oracle:
 * DDEX \(DAI\) 
 * dYdX \(DAI\) 
 * ForTube \(DAI\)
-* MakerDAO \(ETH\)
+* MakerDAO \(DAI\)
 * NUO \(DAI\)
+
+_Remark_: The borrowing rate for DAI on MakerDAO refers to the collateral ETH here.
 
