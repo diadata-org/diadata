@@ -96,6 +96,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 
 	time.Sleep(2 * time.Minute)
 
+	// Maker Rate
+	rawMaker, err := getDefiRatesFromDia("MAKERDAO", "ETH-A")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Makerdao data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawMaker, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Makerdao Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// CREAM Rates
 	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
 	if err != nil {
@@ -216,6 +229,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// -----------------------------------------------------------------------
 	// LENDING PROTOCOL STATES
 	// -----------------------------------------------------------------------
+
+	// MAKERDAO State Data
+	rawMakerState, err := getDefiStateFromDia("MAKERDAO")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Maker state data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiState(rawMakerState, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Maker state Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
 
 	// CREAM State Data
 	rawCreamState, err := getDefiStateFromDia("CREAM")
