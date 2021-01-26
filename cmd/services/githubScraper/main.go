@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	apiKeyFilename = "github_key"
+	apiKey = "api_github"
 )
 
 func main() {
@@ -91,12 +91,12 @@ func getAPIKeyFromSecrets() string {
 	var file *os.File
 	var err error
 	if executionMode == "production" {
-		file, err = os.Open("/run/secrets/" + apiKeyFilename)
+		file, err = os.Open("/run/secrets/" + apiKey)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		file, err = os.Open("../../../secrets/" + apiKeyFilename)
+		file, err = os.Open("../../../secrets/" + apiKey)
 		if err != nil {
 			log.Fatal(err)
 		}
