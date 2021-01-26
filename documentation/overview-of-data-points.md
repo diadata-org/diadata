@@ -116,7 +116,7 @@
       </td>
       <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states">DeFi Lending Oracle</a>
       </td>
-      <td style="text-align:left">1 min.</td>
+      <td style="text-align:left">5 min.</td>
       <td style="text-align:left">1 day</td>
     </tr>
     <tr>
@@ -128,7 +128,7 @@
       </td>
       <td style="text-align:left"><a href="https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states">DeFi  Lending Oracle</a>
       </td>
-      <td style="text-align:left">1 min.</td>
+      <td style="text-align:left">5 min.</td>
       <td style="text-align:left">1 day</td>
     </tr>
     <tr>

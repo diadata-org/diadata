@@ -43,6 +43,20 @@ services:
       options:
         max-size: "50m"
 
+  makerdaoscraper:
+    depends_on: [genericdefiratescraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
+    command: /bin/defiscraper -type MAKERDAO
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   creamscraper:
     depends_on: [genericdefiratescraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericdefiratescraper:latest
