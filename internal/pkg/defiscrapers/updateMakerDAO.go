@@ -165,19 +165,18 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 
-	dsr, err := pot.Dsr(&bind.CallOpts{})
+	daiLendingInstantRate, err := pot.Dsr(&bind.CallOpts{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dsrFloat := convertBigintToFloat64(dsr)
-	apy := getYearlyFromInstantaneous(dsrFloat)
+	daiLendingApy := getYearlyFromInstantaneous(convertBigintToFloat64(daiLendingInstantRate))
 
 	asset := &dia.DefiRate{
 		Timestamp:     time.Now(),
 		Asset:         fmt.Sprintf("DAI"),
 		Protocol:      proto.protocol.Name,
-		LendingRate:   apy,
+		LendingRate:   daiLendingApy,
 		BorrowingRate: 0,
 	}
 	log.Printf("writing DEFI rate for %#v in %v\n", asset, proto.scraper.RateChannel())
@@ -202,12 +201,12 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 			log.Fatal(err)
 		}
 
-		localBase := *base
+		baseCopy := *base
 
-		localBase.Add(&localBase, ilks.Duty)
+		baseCopy.Add(&baseCopy, ilks.Duty)
 
-		rate := convertBigintToFloat64(&localBase)
-		apy := getYearlyFromInstantaneous(rate)
+		InstantRate := convertBigintToFloat64(&baseCopy)
+		apy := getYearlyFromInstantaneous(InstantRate)
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
