@@ -65,6 +65,8 @@ type Author struct {
 func FetchCommitsByDate(nameUser, nameRepository, apiKey string, timeInit time.Time, timeFinal time.Time) (githubCommits []models.GithubCommit, err error) {
 	// And interactive graphQL Explorer:
 	// https://developer.github.com/v4/explorer/
+	// and
+	// https://docs.github.com/en/graphql/overview/explorer
 	jsonData := map[string]string{
 		"query": fmt.Sprintf(`{
 			repository(owner:"%s", name:"%s") {

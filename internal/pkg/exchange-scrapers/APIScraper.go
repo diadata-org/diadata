@@ -51,6 +51,7 @@ func init() {
 	exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: true}
 	exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true}
 	exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true}
+	exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true}
 }
 
 // APIScraper provides common methods needed to get Trade information from
@@ -138,6 +139,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewKyberScraper(exchanges[dia.KyberExchange])
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(exchanges[dia.BitMaxExchange])
+	case dia.STEXExchange:
+		return NewSTEXScraper(exchanges[dia.STEXExchange])
 
 	default:
 		return nil
