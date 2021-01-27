@@ -72,9 +72,8 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 	if err != nil {
 		log.Printf("dial: %v", err)
 	}
-
 	s.c = c
-	s.mainLoop()
+	go s.mainLoop()
 	return s
 }
 
@@ -85,81 +84,94 @@ func (s *STEXScraper) reconnectToSocketIO() {
 		transport.GetDefaultWebsocketTransport())
 	if err != nil {
 		log.Printf("dial: %v", err)
+	} else {
+		log.Info("successfully reconnected.")
 	}
 	s.c = c
 }
 
 // Subscribe again to all channels
 func (s *STEXScraper) subscribeToALL() {
+
+	// FetchAvailablePairs fetches pair IDs needed for ws subscriptions
+	s.FetchAvailablePairs()
+
 	for _, pairScraper := range s.pairScrapers {
+
+		log.Info("pair: ", pairScraper.pair)
 		a := &Channel{
-			Channel: fmt.Sprintf("trade_c%s", pairScraper.pair.ForeignName),
+			Channel: fmt.Sprintf("trade_c%s", strconv.Itoa(s.pairSymbolToID[pairScraper.pair.Symbol])),
 		}
+		log.Info("subscribe: ", a.Channel)
 		if err := s.c.Emit("subscribe", a); err != nil {
 			fmt.Println(err.Error())
 		}
 
-	}
-	var err error
-	err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
-		log.Println("Connected")
-	})
-	if err != nil {
-		log.Println(err)
-	}
-	err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
-		// TODO: reconnect here
-		log.Println("Disconnected")
-		s.closed = true
-	})
-
-	err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, message Trade) {
-		log.Info("Handle new trades...")
-		var pairID = message.CurrencyPairID
-		var forName = s.pairIDToSymbol[int(pairID)]
-		ps, ok := s.pairScrapers[forName]
-
-		if ok {
-			f64Price, _ := strconv.ParseFloat(message.Price, 64)
-			f64Volume := message.Amount2
-			timeStamp := time.Now().UTC()
-
-			if message.OrderType == "SELL" {
-				f64Volume = -f64Volume
-			}
-			// element id is more than int64/uint64 in size
-			// leave the id in float64 format
-			t := &dia.Trade{
-				Symbol:         ps.pair.Symbol,
-				Pair:           forName,
-				Price:          f64Price,
-				Volume:         f64Volume,
-				Time:           timeStamp,
-				ForeignTradeID: fmt.Sprintf("%d", message.ID),
-				Source:         s.exchangeName,
-			}
-			ps.parent.chanTrades <- t
-			log.Info("got trade: ", t)
-		} else {
-			log.Printf("Unknown Pair %v", forName)
+		var err error
+		err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
+			log.Println("Connected")
+		})
+		if err != nil {
+			log.Println(err)
 		}
-	})
-	if err != nil {
-		log.Println(err)
+		err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
+			s.closed = true
+			log.Info("s closed, subscribe and reconnect")
+			s.reconnectToSocketIO()
+		})
+
+		err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, message Trade) {
+			log.Info("Handle new trades...")
+			var pairID = message.CurrencyPairID
+			var forName = s.pairIDToSymbol[int(pairID)]
+			ps, ok := s.pairScrapers[forName]
+
+			if ok {
+				go func() {
+					f64Price, _ := strconv.ParseFloat(message.Price, 64)
+					f64Volume := message.Amount2
+					timeStamp := time.Now().UTC()
+
+					if message.OrderType == "SELL" {
+						f64Volume = -f64Volume
+					}
+					// element id is more than int64/uint64 in size
+					// leave the id in float64 format
+					t := &dia.Trade{
+						Symbol:         ps.pair.Symbol,
+						Pair:           forName,
+						Price:          f64Price,
+						Volume:         f64Volume,
+						Time:           timeStamp,
+						ForeignTradeID: fmt.Sprintf("%d", message.ID),
+						Source:         s.exchangeName,
+					}
+					ps.parent.chanTrades <- t
+					log.Info("got trade: ", t)
+				}()
+			} else {
+				log.Printf("Unknown Pair %v", forName)
+			}
+		})
+		if err != nil {
+			log.Println(err)
+		}
 	}
+
 }
 
 // runs in a goroutine until s is closed
 func (s *STEXScraper) mainLoop() {
-	log.Info("starting mainLoop()...")
-	for true {
-		if s.closed {
-			log.Info("s closed, subscribe and reconnect")
-			s.reconnectToSocketIO()
-		} else {
-			s.subscribeToALL()
-		}
+	log.Info("mainLoop() waiting for pairs to be added...")
+	time.Sleep(10 * time.Second)
+
+	if s.closed {
+		log.Info("s closed, subscribe and reconnect")
+		s.reconnectToSocketIO()
+	} else {
+		s.subscribeToALL()
 	}
+
 	s.cleanup(errors.New("main loop terminated by Close()"))
 }
 
@@ -195,11 +207,9 @@ func (s *STEXScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("STEXScraper: Call ScrapePair on closed scraper")
 	}
@@ -219,26 +229,10 @@ func (s *STEXScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *STEXScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
-	symbol = strings.ToUpper(baseCurrency)
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
+
 func (s *STEXScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
-		}
-	}
 	if helpers.SymbolIsBlackListed(symbol) {
 		return pair, errors.New("Symbol is black listed:" + symbol)
 	}
@@ -310,6 +304,7 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 type STEXPairScraper struct {
 	parent *STEXScraper
 	pair   dia.Pair
+	id     int
 	closed bool
 }
 
