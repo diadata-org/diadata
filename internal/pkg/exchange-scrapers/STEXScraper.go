@@ -32,7 +32,7 @@ type Trade struct {
 	Timestamp      int64       `json:"timestamp"`
 }
 type Channel struct {
-	Channel string
+	Channel string `json:"channel"`
 }
 
 type STEXScraper struct {
@@ -72,7 +72,7 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 	if err != nil {
 		log.Printf("dial: %v", err)
 	}
-	s.c = c
+ 	s.c = c
 	go s.mainLoop()
 	return s
 }
@@ -102,21 +102,25 @@ func (s *STEXScraper) subscribeToALL() {
 		a := &Channel{
 			Channel: fmt.Sprintf("trade_c%s", strconv.Itoa(s.pairSymbolToID[pairScraper.pair.Symbol])),
 		}
-		log.Info("subscribe: ", a.Channel)
+
+		b,_ := json.Marshal(a)
+		log.Info("subscribe: ", string(b))
 		if err := s.c.Emit("subscribe", a); err != nil {
 			fmt.Println(err.Error())
 		}
 
 		var err error
+
 		err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
 			log.Println("Connected")
 		})
 		if err != nil {
 			log.Println(err)
 		}
+
 		err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
 			s.closed = true
-			log.Info("s closed, subscribe and reconnect")
+			log.Info("socket is  closed, subscribe and reconnect")
 			s.reconnectToSocketIO()
 		})
 
