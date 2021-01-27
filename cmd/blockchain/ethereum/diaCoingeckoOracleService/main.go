@@ -18,6 +18,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoingeckoOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -95,6 +96,20 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 	if err != nil {
 		log.Fatalf("Failed to get top %d coins from Coingecko: %v", numCoins, err)
 	}
+
+	// Get quotation for JOOS coin and update Oracle
+	rawQuot, err := getForeignQuotationByAddress("0x05f9abf4b0c5661e83b92c056a8791d5ccd7ca52")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Coingecko data for JOOS: %v", err)
+		return err
+	}
+	err = updateForeignQuotation(rawQuot, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Coingecko Oracle for JOOS: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// Get quotation for topCoins and update Oracle
 	for _, symbol := range topCoins {
 		rawQuot, err := getForeignQuotationFromDia("Coingecko", symbol)
@@ -235,4 +250,92 @@ func updateOracle(
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
+}
+
+// ------------------------------------------------------------
+// Methods for getting additional foreign quotations by address
+// ------------------------------------------------------------
+
+type CoinData struct {
+	Prices     [][]float64 `json:"prices"`
+	MarketCaps [][]float64 `json:"market_caps"`
+	Volumes    [][]float64 `json:"total_volumes"`
+}
+
+type BasicTokenInfo struct {
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
+}
+
+func getCoinInfoByAddress(address string) (name, symbol string, err error) {
+	// Pull and unmarshall data from coingecko API
+	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+	if err != nil {
+		return
+	}
+	var tokenInfo BasicTokenInfo
+	err = json.Unmarshal(response, &tokenInfo)
+	if err != nil {
+		return
+	}
+	name = tokenInfo.Name
+	symbol = tokenInfo.Symbol
+	return
+}
+
+func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
+	// Pull and unmarshall data from coingecko API
+	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+	if err != nil {
+		return &models.ForeignQuotation{}, err
+	}
+	var coin CoinData
+	err = json.Unmarshal(response, &coin)
+	if err != nil {
+		return &models.ForeignQuotation{}, err
+	}
+
+	// Get index of most recent timestamp
+	prices := coin.Prices
+	latestTimestamp := time.Time{}
+	indexLatestTimestamp := 0
+	for i, price := range prices {
+		tm := time.Unix(int64(price[0]/1000), 0)
+		if latestTimestamp.Before(tm) {
+			latestTimestamp = tm
+			indexLatestTimestamp = i
+		}
+	}
+
+	// Get index of timestamp closest to latestTimestamp-24h
+	indexYesterday := 0
+	yesterday := latestTimestamp.AddDate(0, 0, -1)
+	minDuration := time.Duration(int64(1e16))
+	for i, price := range prices {
+		tm := time.Unix(int64(price[0]/1000), 0)
+		diff := yesterday.Sub(tm)
+		if diff < 0 {
+			diff = tm.Sub(yesterday)
+		}
+		if diff < minDuration {
+			minDuration = diff
+			indexYesterday = i
+		}
+	}
+
+	// Get name and symbol by address from coingecko
+	name, symbol, err := getCoinInfoByAddress(address)
+	if err != nil {
+		return &models.ForeignQuotation{}, err
+	}
+
+	var fq models.ForeignQuotation
+	fq.Symbol = strings.ToUpper(symbol)
+	fq.Name = name
+	fq.Price = prices[indexLatestTimestamp][1]
+	fq.PriceYesterday = prices[indexYesterday][1]
+	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
+	fq.Source = "Coingecko"
+	fq.Time = latestTimestamp
+	return &fq, nil
 }

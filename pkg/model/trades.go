@@ -75,8 +75,10 @@ func parseTrade(row []interface{}) *dia.Trade {
 	return nil
 }
 
+// GetAllTrades returns at most @maxTrades trades from influx with timestamp > @t. Only used by replayInflux option.
 func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
+	// TO DO: Substitute select * with precise statment select estimatedUSDPrice, source,...
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
 	log.Debug(q)
 	res, err := queryInfluxDB(db.influxClient, q)
@@ -136,7 +138,7 @@ func (db *DB) GetLastTradesAllExchanges(symbol string, maxTrades int) ([]dia.Tra
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTradesAllExchanges for %s on %s \n", symbol)
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", symbol)
 	}
 	return r, nil
 }

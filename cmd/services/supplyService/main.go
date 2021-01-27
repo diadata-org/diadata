@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
@@ -59,6 +60,9 @@ func main() {
 		if supp.Symbol == "SPICE" {
 			supp.CirculatingSupply = float64(1945426.80)
 		}
+		if strings.ToLower(address) == "0xa1faa113cbe53436df28ff0aee54275c13b40975" {
+			supp.CirculatingSupply = float64(174136442)
+		}
 
 		ds.SetSupply(&supp)
 		log.Info("set supply: ", supp)
@@ -90,6 +94,9 @@ func main() {
 					}
 					if supp.Symbol == "SPICE" {
 						supp.CirculatingSupply = float64(1945426.80)
+					}
+					if strings.ToLower(address) == "0xa1faa113cbe53436df28ff0aee54275c13b40975" {
+						supp.CirculatingSupply = float64(174136442)
 					}
 
 					ds.SetSupply(&supp)

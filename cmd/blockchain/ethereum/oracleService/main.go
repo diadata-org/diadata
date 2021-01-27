@@ -96,6 +96,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 
 	time.Sleep(2 * time.Minute)
 
+	// Maker Rate
+	rawMaker, err := getDefiRatesFromDia("MAKERDAO", "ETH-A")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Makerdao data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiRate(rawMaker, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Makerdao Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// CREAM Rates
 	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
 	if err != nil {
@@ -217,6 +230,19 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// LENDING PROTOCOL STATES
 	// -----------------------------------------------------------------------
 
+	// MAKERDAO State Data
+	rawMakerState, err := getDefiStateFromDia("MAKERDAO")
+	if err != nil {
+		log.Fatalf("Failed to retrieve Maker state data from DIA: %v", err)
+		return err
+	}
+	err = updateDefiState(rawMakerState, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Maker state Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// CREAM State Data
 	rawCreamState, err := getDefiStateFromDia("CREAM")
 	if err != nil {
@@ -272,6 +298,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// 	return err
 	// }
 	// time.Sleep(5 * time.Minute)
+
+	// CREX24 Chart Point
+	rawCrex24, err := getDEXFromDia("CREX24", "CREX")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CREX24 from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawCrex24, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update CREX24 Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
 
 	// Bitmax CEX Chart Point
 	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
@@ -496,6 +536,34 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	err = updateFarmingPool(rawLRC, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update LOOPRING Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// CURVEFI virtual price
+	rawCURVEFI, err := getFarmingPoolFromDia("Curvefi", "3")
+	if err != nil {
+		log.Fatalf("Failed to retrieve CURVEFI pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawCURVEFI, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update CURVEFI Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
+	// BARNBRIDGE total reward
+	rawBARNBRIDGE, err := getFarmingPoolFromDia("BARNBRIDGE", "STABLECOIN")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BARNBRIDGE pool from DIA: %v", err)
+		return err
+	}
+
+	err = updateFarmingPool(rawBARNBRIDGE, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update BARNBRIDGE Oracle: %v", err)
 		return err
 	}
 	time.Sleep(5 * time.Minute)

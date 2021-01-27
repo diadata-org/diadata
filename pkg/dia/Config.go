@@ -40,6 +40,8 @@ const (
 	ZeroxExchange     = "0x"
 	KyberExchange     = "Kyber"
 	BitMaxExchange    = "Bitmax"
+	CREX24Exchange    = "CREX24"
+	STEXExchange      = "STEX"
 )
 
 const (
@@ -77,6 +79,8 @@ func Exchanges() []string {
 		KyberExchange,
 		BitMaxExchange,
 		PanCakeSwap,
+		CREX24Exchange,
+		STEXExchange,
 	}
 }
 

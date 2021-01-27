@@ -21,7 +21,7 @@ import (
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
 func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 
-	fileName := fmt.Sprintf("../../../config/token_supply/%s.json", filename)
+	fileName := fmt.Sprintf("../config/token_supply/%s.json", filename)
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
@@ -140,7 +140,6 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 		CirculatingSupply: circulatingSupply,
 		Source:            "diadata.org",
 		Time:              time.Unix(int64(header.Time), 0),
-		Block:             header.Number.Int64(),
 	}
 
 	return

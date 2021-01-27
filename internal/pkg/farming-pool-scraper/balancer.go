@@ -37,26 +37,25 @@ var (
 	balPoolInfoFetchingGoroutines = 4
 )
 
-type BalancerPoolScrapper struct {
-	scraper *PoolScraper
-
+type BalancerPoolScraper struct {
+	scraper    *PoolScraper
 	restClient *ethclient.Client
 	wsClient   *ethclient.Client
 }
 
-// NewBalancerPoolScrapper creates a new balancer scrapper.
-func NewBalancerPoolScrapper(scraper *PoolScraper) *BalancerPoolScrapper {
+// NewBalancerPoolScraper creates a new balancer scraper.
+func NewBalancerPoolScraper(scraper *PoolScraper) *BalancerPoolScraper {
 	// create rest and ws eth clients
-	restClient, err := ethclient.Dial(restDial)
+	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
-	wsClient, err := ethclient.Dial(wsDial)
+	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	bp := &BalancerPoolScrapper{
+	bp := &BalancerPoolScraper{
 		restClient: restClient,
 		wsClient:   wsClient,
 
@@ -69,7 +68,7 @@ func NewBalancerPoolScrapper(scraper *PoolScraper) *BalancerPoolScrapper {
 }
 
 // watchFactory watches the BPFactory contract for New Pool creation events.
-func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
+func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
 	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	_, err := fr.WatchLOGNEWPOOL(&bind.WatchOpts{}, newPoolChan, nil, nil)
@@ -81,7 +80,7 @@ func (bp *BalancerPoolScrapper) watchFactory(newPoolChan chan *balfactorycontrac
 }
 
 // fetchPreviousPools fetches all the past pool creation event on the BPFactory contract.
-func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
+func (bp *BalancerPoolScraper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
 	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	header, err := bp.restClient.HeaderByNumber(context.Background(), nil)
@@ -103,6 +102,8 @@ func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfac
 
 	for it.Next() {
 		ev := it.Event
+		log.Info("found new pool: ", ev.Pool.Hex())
+
 		log.Trace("new pool from historic new pool iterator")
 		newPoolEventChan <- ev
 	}
@@ -116,7 +117,7 @@ func (bp *BalancerPoolScrapper) fetchPreviousPools(newPoolEventChan chan *balfac
 }
 
 // poolFetcher executes bp.getPool on provided pools.
-func (bp *BalancerPoolScrapper) poolFetcher(poolChan chan common.Address) {
+func (bp *BalancerPoolScraper) poolFetcher(poolChan chan common.Address) {
 	for {
 		pool := <-poolChan
 		if err := bp.getPool(pool); err != nil {
@@ -130,7 +131,7 @@ func (bp *BalancerPoolScrapper) poolFetcher(poolChan chan common.Address) {
 
 // poolWatcher watches the given pools for transactions. Upon transaction, it asks for pool informations refreshal.
 // which updates pool informations.
-func (bp *BalancerPoolScrapper) poolWatcher(perceive chan common.Address, poolToFetch chan common.Address) {
+func (bp *BalancerPoolScraper) poolWatcher(perceive chan common.Address, poolToFetch chan common.Address) {
 	watchedPoolsMu := new(sync.Mutex)
 	watchedPools := make(map[string]func(f func()))
 
@@ -205,7 +206,7 @@ func (bp *BalancerPoolScrapper) poolWatcher(perceive chan common.Address, poolTo
 	}
 }
 
-func (bp *BalancerPoolScrapper) mainLoop() {
+func (bp *BalancerPoolScraper) mainLoop() {
 	// currently:
 	// - watches for New Pool creation logs on the Balancer Factory contract
 	// - retrieves and processes all the past pool creation events
@@ -248,7 +249,7 @@ func (bp *BalancerPoolScrapper) mainLoop() {
 
 // getPool gets informations of the pool at the given pool address. These informations are emited as scrapped data.
 // To avoid rate limitation errors, do not call this function directly. It is preferred to use a fixed amount of draining goroutines.
-func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) {
+func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	pool, err := balancerpoolcontract.NewBalancerpoolCaller(poolAddress, bp.restClient)
 	if err != nil {
 		return errors.Wrap(err, "loading pool contract")
@@ -379,7 +380,7 @@ func (bp *BalancerPoolScrapper) getPool(poolAddress common.Address) (err error) 
 	return nil
 }
 
-func (bp *BalancerPoolScrapper) bootstrapPools(newPoolChan chan common.Address) {
+func (bp *BalancerPoolScraper) bootstrapPools(newPoolChan chan common.Address) {
 	// first shared pools from pools.balancer.exchange
 	// not necessary: will be fetched anyway from historical New Pool log events.
 	// useful for testing

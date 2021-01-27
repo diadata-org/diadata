@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"io"
+
+	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
@@ -23,6 +24,7 @@ func init() {
 	exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true}
 	exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false, Contract: common.HexToAddress("0x6F400810b62df8E13fded51bE75fF5393eaa841F"), BlockChain: blockchains[dia.Ethereum]}
 	exchanges[dia.KrakenExchange] = dia.Exchange{Name: dia.KrakenExchange, Centralized: true}
+	exchanges[dia.CREX24Exchange] = dia.Exchange{Name: dia.CREX24Exchange, Centralized: true}
 	exchanges[dia.BitfinexExchange] = dia.Exchange{Name: dia.BitfinexExchange, Centralized: true}
 	exchanges[dia.BitBayExchange] = dia.Exchange{Name: dia.BitBayExchange, Centralized: true}
 	exchanges[dia.BittrexExchange] = dia.Exchange{Name: dia.BittrexExchange, Centralized: true}
@@ -49,6 +51,7 @@ func init() {
 	exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: true}
 	exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true}
 	exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true}
+	exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true}
 }
 
 // APIScraper provides common methods needed to get Trade information from
@@ -88,6 +91,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewBittrexScraper(exchanges[dia.BittrexExchange])
 	case dia.CoinBaseExchange:
 		return NewCoinBaseScraper(exchanges[dia.CoinBaseExchange])
+	case dia.CREX24Exchange:
+		return NewCREX24Scraper(exchanges[dia.CREX24Exchange])
 	case dia.KrakenExchange:
 		return NewKrakenScraper(key, secret, exchanges[dia.KrakenExchange])
 	case dia.HitBTCExchange:
@@ -134,6 +139,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewKyberScraper(exchanges[dia.KyberExchange])
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(exchanges[dia.BitMaxExchange])
+	case dia.STEXExchange:
+		return NewSTEXScraper(exchanges[dia.STEXExchange])
 
 	default:
 		return nil

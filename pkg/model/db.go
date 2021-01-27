@@ -116,6 +116,12 @@ type Datastore interface {
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
+
+	// Github methods
+	SetCommit(commit *GithubCommit) error
+	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
+	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
+	GetLatestCommit(user, repository string) (GithubCommit, error)
 }
 
 const (
@@ -143,6 +149,7 @@ const (
 	influxDbPoolTable                    = "defiPools"
 	influxDbCryptoIndexTable             = "cryptoindex"
 	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
+	influxDbGithubCommitTable            = "githubcommits"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -423,7 +430,11 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	// Create a point and add to batch
-	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
+	tags := map[string]string{
+		"symbol":   t.Symbol,
+		"exchange": t.Source,
+		"pair":     t.Pair,
+	}
 	fields := map[string]interface{}{
 		"price":             t.Price,
 		"volume":            t.Volume,
@@ -674,7 +685,8 @@ func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
 // time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
 func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error) {
 	retval := []FarmingPool{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time <= %d and protocol = '%s' and poolID='%s' order by desc", influxDbPoolTable, starttime.UnixNano(), endtime.UnixNano(), protocol, poolID)
+	influxQuery := "SELECT balance,blockNumber,\"inputAssets\",\"outputAssets\",\"poolID\",\"protocol\",rate FROM %s WHERE time > %d and time <= %d and protocol = '%s' and poolID='%s' order by desc"
+	q := fmt.Sprintf(influxQuery, influxDbPoolTable, starttime.UnixNano(), endtime.UnixNano(), protocol, poolID)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -748,8 +760,11 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 
 func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
 	retval := []dia.DefiRate{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
+	influxQuery := "SELECT \"asset\",borrowRate,lendingRate,\"protocol\" FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'"
+	q := fmt.Sprintf(influxQuery, influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
+	fmt.Println("influx query: ", q)
 	res, err := queryInfluxDB(db.influxClient, q)
+	fmt.Println("res, err: ", res, err)
 	if err != nil {
 		return retval, err
 	}
@@ -805,7 +820,8 @@ func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 }
 
 func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protocol string) (retval []dia.DefiProtocolState, err error) {
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and protocol = '%s'", influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
+	influxQuery := "SELECT totalETH,totalUSD FROM %s WHERE time > %d and time < %d and protocol = '%s'"
+	q := fmt.Sprintf(influxQuery, influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -821,11 +837,11 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			// if err != nil {
 			// 	return
 			// }
-			defiState.TotalETH, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+			defiState.TotalETH, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
 				return
 			}
-			defiState.TotalUSD, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			defiState.TotalUSD, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return
 			}
@@ -872,7 +888,6 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
 		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
-		fmt.Println("influx query: ", q)
 	} else {
 		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	}
