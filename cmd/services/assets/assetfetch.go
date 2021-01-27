@@ -2,12 +2,13 @@ package main
 
 import (
 	"flag"
+	"sync"
+
 	"github.com/diadata-org/diadata/cmd/services/assets/source"
 	"github.com/diadata-org/diadata/internal/pkg/database"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
-	"sync"
 )
 
 /*
@@ -98,7 +99,12 @@ func fetchAssetFromSource(data database.AssetSaver) {
 		select {
 		case recievedAsset := <-asset.Asset():
 			log.Infoln("Received asset", recievedAsset)
-			err := data.Save(recievedAsset)
+			asset, err := data.GetByName(recievedAsset.Name)
+			if err != nil {
+				log.Errorf("error getting asset %s: %v\n", recievedAsset.Name, err)
+			}
+			log.Infof("asset %s already in DB \n", asset.Name)
+			err = data.Save(recievedAsset)
 			if err != nil {
 				log.Error("Error saving asset ", err)
 			}
