@@ -104,6 +104,7 @@ type VerificationMechanism string
 
 const (
 	PROOF_OF_STAKE VerificationMechanism = "pos"
+	PROOF_OF_WORK  VerificationMechanism = "pow"
 )
 
 func GetConfig(exchange string) (*ConfigApi, error) {

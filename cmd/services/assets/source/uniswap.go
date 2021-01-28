@@ -1,12 +1,15 @@
 package source
 
 import (
+	"fmt"
+	"math/big"
+	"time"
+
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 )
 
 type UniswapPair struct {
@@ -50,7 +53,6 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		break
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.String()
@@ -103,27 +105,37 @@ func (uas *UniswapAssetSource) getNumPairs() (int, error) {
 }
 
 func (uas *UniswapAssetSource) fetchAssets() {
+	var blockchain dia.BlockChain
+	blockchain.Name = dia.Ethereum
+	genesisDate, err := time.Parse("2006-01-02", "2015-07-30")
+	if err != nil {
+		fmt.Println(err)
+	}
+	blockchain.GenesisDate = genesisDate
+	blockchain.NativeToken = "ETH"
+	blockchain.VerificationMechanism = dia.PROOF_OF_WORK
+
 	numPairs, err := uas.getNumPairs()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	log.Info("Found ", numPairs, " pairs")
 	for i := 0; i < numPairs; i++ {
 		pair, err := uas.GetPairByID(int64(i))
 		if err != nil {
-			log.Errorln("Error getting pair bu ID ", i)
+			log.Errorln("Error getting pair with ID ", i)
 		}
-		uas.asset <- pair.Token0
-		uas.asset <- pair.Token1
-
+		asset0 := pair.Token0
+		asset1 := pair.Token1
+		asset0.Blockchain = blockchain
+		asset1.Blockchain = blockchain
+		uas.asset <- asset0
+		uas.asset <- asset1
 	}
-
 }
 
 // GetPairByID returns the UniswapPair with the integer id @num
 func (uas *UniswapAssetSource) GetPairByID(num int64) (UniswapPair, error) {
-	log.Info("Get pair ID: ", num)
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
 	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
@@ -142,6 +154,7 @@ func (uas *UniswapAssetSource) GetPairByID(num int64) (UniswapPair, error) {
 		log.Error(err)
 		return UniswapPair{}, err
 	}
+	// log.Infof("Get pair with ID %v: %v", num, pair)
 	return pair, err
 }
 
@@ -175,6 +188,14 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 	if err != nil {
 		log.Error(err)
 	}
+	decimals0, err := token0Contract.Decimals(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
+	}
+	decimals1, err := token1Contract.Decimals(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
+	}
 
 	name0, err := uas.GetName(address0)
 	if err != nil {
@@ -187,14 +208,16 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 		return UniswapPair{}, err
 	}
 	token0 := dia.Asset{
-		Address: address0.String(),
-		Symbol:  symbol0,
-		Name:    name0,
+		Address:  address0.String(),
+		Symbol:   symbol0,
+		Name:     name0,
+		Decimals: decimals0,
 	}
 	token1 := dia.Asset{
-		Address: address1.String(),
-		Symbol:  symbol1,
-		Name:    name1,
+		Address:  address1.String(),
+		Symbol:   symbol1,
+		Name:     name1,
+		Decimals: decimals1,
 	}
 	pair.Token0 = token0
 	pair.Token1 = token1

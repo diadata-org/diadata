@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"sync"
 
 	"github.com/diadata-org/diadata/cmd/services/assets/source"
 	"github.com/diadata-org/diadata/internal/pkg/database"
@@ -90,26 +89,26 @@ func feedAssetToRedis(assetsaver database.AssetSaver) {
 
 }
 func fetchAssetFromSource(data database.AssetSaver) {
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 
 	log.Println("Fetching asset from ", dia.UniswapExchange)
-	wg.Add(1)
+	// wg.Add(1)
 	asset := NewAssetScraper(dia.UniswapExchange, "", "")
 	for {
 		select {
-		case recievedAsset := <-asset.Asset():
-			log.Infoln("Received asset", recievedAsset)
-			asset, err := data.GetByName(recievedAsset.Name)
+		case receivedAsset := <-asset.Asset():
+			log.Infoln("Received asset", receivedAsset)
+			asset, err := data.GetByName(receivedAsset.Name)
 			if err != nil {
-				log.Errorf("error getting asset %s: %v\n", recievedAsset.Name, err)
+				log.Errorf("error getting asset %s: %v\n", receivedAsset.Name, err)
 			}
 			log.Infof("asset %s already in DB \n", asset.Name)
-			err = data.Save(recievedAsset)
+			err = data.Save(receivedAsset)
 			if err != nil {
-				log.Error("Error saving asset ", err)
+				log.Error("Error saving asset: ", err)
 			}
 		}
 
 	}
-	wg.Wait()
+	// wg.Wait()
 }
