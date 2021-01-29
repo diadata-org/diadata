@@ -2,6 +2,8 @@
 
 {% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
 
+{% page-ref page="guest-quotations/coingecko-quotations.md" %}
+
 {% page-ref page="defi-protocol-rates-and-states.md" %}
 
 {% page-ref page="farming-pools.md" %}
