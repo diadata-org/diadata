@@ -11,10 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	filtersParam = dia.BlockSizeSeconds
-)
-
 type nothing struct{}
 
 type FiltersBlockService struct {
@@ -142,7 +138,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		s.createFilters(trade.Symbol, "", tb.TradesBlockData.BeginTime)
 		s.createFilters(trade.Symbol, trade.Source, tb.TradesBlockData.BeginTime)
 		s.computeFilters(trade, trade.Symbol)
-		s.computeFilters(trade, trade.Symbol+trade.Source)
+		s.computeFilters(trade, trade.Symbol + trade.Source)
 	}
 
 	resultFilters := []dia.FilterPoint{}

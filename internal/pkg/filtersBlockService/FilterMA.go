@@ -14,6 +14,7 @@ type FilterMA struct {
 	exchange       string
 	currentTime    time.Time
 	previousPrices []float64
+	previousVolumes []float64
 	lastTrade      *dia.Trade
 	param          int
 	value          float64
@@ -34,18 +35,16 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
 	} else {
-		s.fill(t, s.lastTrade.EstimatedUSDPrice)
+		s.fill(t, *s.lastTrade)
 	}
 
+	var totalVolume float64 = 0
 	var total float64 = 0
-	for _, v := range s.previousPrices {
-		total += v
+	for priceIndex, price := range s.previousPrices {
+		total += price * s.previousVolumes[priceIndex]
+		totalVolume += s.previousVolumes[priceIndex]
 	}
-	div := s.param
-	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
-		div = len(s.previousPrices)
-	}
-	s.value = total / float64(div)
+	s.value = total / totalVolume
 	return s.value
 }
 
@@ -62,24 +61,32 @@ func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
 	}
 }
 
-func (s *FilterMA) fill(t time.Time, price float64) {
+func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 	diff := int(t.Sub(s.currentTime).Seconds())
+	currPrice := trade.EstimatedUSDPrice
+	currVolume := trade.Volume
 	if diff > 1 {
 		for diff > 1 {
-			s.previousPrices = append([]float64{price}, s.previousPrices...)
+			s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
+			s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 			diff--
 		}
 	} else {
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]
+				s.previousVolumes = s.previousVolumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{price}, s.previousPrices...)
+		s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
+		s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 	}
 
 	if len(s.previousPrices) > s.param {
 		s.previousPrices = s.previousPrices[0:s.param]
+	}
+	if len(s.previousVolumes) > s.param {
+		s.previousVolumes = s.previousVolumes[0:s.param]
 	}
 	s.currentTime = t
 }
@@ -91,10 +98,10 @@ func (s *FilterMA) compute(trade dia.Trade) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
 		} else {
-			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
+			s.fill(trade.Time, *s.lastTrade)
 		}
 	}
-	s.fill(trade.Time, trade.EstimatedUSDPrice)
+	s.fill(trade.Time, trade)
 	s.lastTrade = &trade
 }
 
