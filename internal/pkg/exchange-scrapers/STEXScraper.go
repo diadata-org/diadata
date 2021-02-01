@@ -107,6 +107,7 @@ func (s *STEXScraper) subscribeToALL() {
 			fmt.Println(err.Error())
 		}
 
+<<<<<<< Updated upstream
 		var err error
 		err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
 			log.Println("Connected")
@@ -151,6 +152,46 @@ func (s *STEXScraper) subscribeToALL() {
 				}()
 			} else {
 				log.Printf("Unknown Pair %v", forName)
+=======
+	}
+	var err error
+	err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
+		log.Println("Connected")
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
+		// TODO: reconnect here
+		log.Println("Disconnected")
+		s.closed = true
+	})
+
+	err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, message Trade) {
+		log.Info("Handle new trades...")
+		var pairID = message.CurrencyPairID
+		var forName = s.pairIDToSymbol[int(pairID)]
+		ps, ok := s.pairScrapers[forName]
+
+		if ok {
+			f64Price, _ := strconv.ParseFloat(message.Price, 64)
+			f64Volume := message.Amount2
+			timeStamp := time.Now().UTC()
+
+			if message.OrderType == "SELL" {
+				f64Volume = -f64Volume
+			}
+			// element id is more than int64/uint64 in size
+			// leave the id in float64 format
+			t := &dia.Trade{
+				Symbol:         ps.pair.Symbol,
+				Pair:           forName,
+				Price:          f64Price,
+				Volume:         f64Volume,
+				Time:           timeStamp,
+				ForeignTradeID: fmt.Sprintf("%d", message.ID),
+				Source:         s.exchangeName,
+>>>>>>> Stashed changes
 			}
 		})
 		if err != nil {
@@ -162,6 +203,8 @@ func (s *STEXScraper) subscribeToALL() {
 
 // runs in a goroutine until s is closed
 func (s *STEXScraper) mainLoop() {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	log.Info("mainLoop() waiting for pairs to be added...")
 	time.Sleep(10 * time.Second)
 
@@ -170,6 +213,18 @@ func (s *STEXScraper) mainLoop() {
 		s.reconnectToSocketIO()
 	} else {
 		s.subscribeToALL()
+=======
+=======
+>>>>>>> Stashed changes
+	log.Info("starting mainLoop()...")
+	for true {
+		if s.closed {
+			log.Info("s closed, subscribe and reconnect")
+			s.reconnectToSocketIO()
+		} else {
+			s.subscribeToALL()
+		}
+>>>>>>> Stashed changes
 	}
 
 	s.cleanup(errors.New("main loop terminated by Close()"))
