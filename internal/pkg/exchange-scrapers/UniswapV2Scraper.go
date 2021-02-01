@@ -325,6 +325,9 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		return
 	}
 	for _, pair := range uniPairs {
+		if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
+			continue
+		}
 		pairToNormalise := dia.Pair{
 			Symbol:      pair.Token0.Symbol,
 			ForeignName: pair.ForeignName,
