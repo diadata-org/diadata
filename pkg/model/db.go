@@ -226,6 +226,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			Addr:     address,
 			Username: "",
 			Password: "",
+			Timeout:  time.Duration(20 * time.Second),
 		})
 		if err != nil {
 			log.Error("NewDataStore influxdb", err)

@@ -1,6 +1,7 @@
 package filters
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -10,15 +11,15 @@ import (
 )
 
 type FilterMA struct {
-	symbol         string
-	exchange       string
-	currentTime    time.Time
-	previousPrices []float64
+	symbol          string
+	exchange        string
+	currentTime     time.Time
+	previousPrices  []float64
 	previousVolumes []float64
-	lastTrade      *dia.Trade
-	param          int
-	value          float64
-	modified       bool
+	lastTrade       *dia.Trade
+	param           int
+	value           float64
+	modified        bool
 }
 
 func NewFilterMA(symbol string, exchange string, currentTime time.Time, param int) *FilterMA {
@@ -41,10 +42,12 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 	var totalVolume float64 = 0
 	var total float64 = 0
 	for priceIndex, price := range s.previousPrices {
-		total += price * s.previousVolumes[priceIndex]
-		totalVolume += s.previousVolumes[priceIndex]
+		total += price * math.Abs(s.previousVolumes[priceIndex])
+		totalVolume += math.Abs(s.previousVolumes[priceIndex])
 	}
-	s.value = total / totalVolume
+	if totalVolume != float64(0) {
+		s.value = total / totalVolume
+	}
 	return s.value
 }
 

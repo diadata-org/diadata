@@ -12,6 +12,8 @@ services:
     image: influxdb
     volumes:
       - /home/srv/influxdb:/var/lib/influxdb
+    environment:
+      INFLUXDB_HTTP_MAX_BODY_SIZE: 0
     networks:
       - influxdb-network
     logging:
