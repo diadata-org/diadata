@@ -20,18 +20,15 @@ func init() {
 	log = logrus.New()
 }
 
-const (
-	watchdogDelay = 60.0 * 20
-)
-
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, exchange string) {
 	lastTradeTime := time.Now()
-	t := time.NewTicker(watchdogDelay * time.Second)
+	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
+	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
 		select {
 		case <-t.C:
 			duration := time.Since(lastTradeTime)
-			if duration.Seconds() > watchdogDelay {
+			if duration > time.Duration(watchdogDelay)*time.Second {
 				log.Error(duration)
 				panic("frozen? ")
 			}
@@ -112,5 +109,5 @@ func main() {
 		}
 		defer wg.Wait()
 	}
-	go handleTrades(es.Channel(), &wg, w)
+	go handleTrades(es.Channel(), &wg, w, *exchange)
 }

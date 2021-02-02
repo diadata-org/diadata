@@ -15,10 +15,11 @@ const (
 )
 
 type Exchange struct {
-	Name        string
-	Centralized bool
-	Contract    common.Address
-	BlockChain  BlockChain
+	Name          string
+	Centralized   bool
+	Contract      common.Address
+	BlockChain    BlockChain
+	WatchdogDelay int
 }
 
 type Supply struct {
