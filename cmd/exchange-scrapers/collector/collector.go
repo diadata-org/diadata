@@ -54,18 +54,21 @@ func init() {
 	if *exchange == "" {
 		flag.Usage()
 		log.Println(dia.Exchanges())
-		log.Fatal("exchange is required")
+		for true {
+			time.Sleep(24 * time.Hour)
+		}
+		// log.Fatal("exchange is required")
 	}
 }
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
+
 	ds, err := models.NewRedisDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
-	} else {
-
 	}
+
 	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
 	log.Info("available pairs:", len(pairsExchange))
 

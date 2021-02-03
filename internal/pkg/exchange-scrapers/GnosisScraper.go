@@ -68,12 +68,12 @@ func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 		tokens:         make(map[uint16]*GnosisToken),
 	}
 
-	wsClient, err := ethclient.Dial(gnosisWsDial)
+	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/806b0419b2d041869fc83727e0043236")
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(gnosisRestDial)
+	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,7 +85,7 @@ func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 	return scraper
 }
 func (scraper *GnosisScraper) loadTokens() {
-
+	fmt.Println("contract address: ", scraper.contract.String())
 	contract, err := gnosis.NewGnosisCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
@@ -94,33 +94,34 @@ func (scraper *GnosisScraper) loadTokens() {
 	if err != nil {
 		log.Error(err)
 	}
-
+	count := uint16(0)
 	for i := uint16(0); i < numTokens; i++ {
 		tokenAddress, err := contract.TokenIdToAddressMap(&bind.CallOpts{}, i)
-
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
-		scraper.tokens[i] = &GnosisToken{
+		scraper.tokens[count] = &GnosisToken{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Int64()),
 		}
-
-		scraper.tokens[i].normalizeETH()
-
-		fmt.Println(i, tokenAddress.Hex(), symbol, decimals)
+		scraper.tokens[count].normalizeETH()
+		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
+		count++
 	}
 	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
 }
@@ -198,7 +199,7 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
 func (scraper *GnosisScraper) mainLoop() {
 
 	scraper.run = true
-
+	log.Info("subscribe to trades...")
 	scraper.subscribeToTrades()
 	go func() {
 		for scraper.run {
