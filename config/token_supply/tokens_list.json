@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+      "Name": "Maker"
+    },
+    {
       "Address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "Name": "Tether USD"
     },
@@ -159,10 +163,6 @@
     {
       "Address": "0x0ba45a8b5d5575935b8158a88c631e9f9c95a2e5",
       "Name": "Tellor"
-    },
-    {
-      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-      "Name": "Maker"
     },
     {
       "Address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
@@ -6617,10 +6617,6 @@
       "Name": "Bitfex"
     },
     {
-      "Address": "0x2730d6fdc86c95a74253beffaa8306b40fedecbb",
-      "Name": "UNICORN Token"
-    },
-    {
       "Address": "0xa063341d10054188e3cb715bfb663b37c0c1515e",
       "Name": "Diagon Coin"
     },
@@ -7675,10 +7671,6 @@
     {
       "Address": "0x2e2e0a28f6585e895dd646a363bae29b77b88a31",
       "Name": "Volume Network"
-    },
-    {
-      "Address": "0xe6877ea9c28fbdec631ffbc087956d0023a76bf2",
-      "Name": "UNI COIN"
     },
     {
       "Address": "0x19c9872640ec38c2cf36c0f04d1365ef067869b3",

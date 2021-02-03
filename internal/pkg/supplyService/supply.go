@@ -21,7 +21,13 @@ import (
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
 func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 
-	fileName := fmt.Sprintf("../config/token_supply/%s.json", filename)
+	var fileName string
+	executionMode := os.Getenv("EXEC_MODE")
+	if executionMode == "production" {
+		fileName = fmt.Sprintf("/config/token_supply/%s.json", filename)
+	} else {
+		fileName = fmt.Sprintf("../../../config/token_supply/%s.json", filename)
+	}
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
