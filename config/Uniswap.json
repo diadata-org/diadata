@@ -27882,6 +27882,18 @@
             "ForeignName": "USDC-SCIFI",
             "Exchange": "UniswapV2",
             "Ignore": false
+        },
+        {
+            "Symbol": "SFI",
+            "ForeignName": "SFI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OPIUM",
+            "ForeignName": "OPIUM-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
         }
     ]
 }
