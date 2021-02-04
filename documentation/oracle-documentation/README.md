@@ -26,7 +26,7 @@ DIA is capable of publishing financial data with such an oracle so that any smar
 
 ## Immutable Oracle Feeds
 
-The DIA oracle data is located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price value, and – if applicable – supply data.
+The DIA oracle data can be accessed in an Ethereum [smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price value, and – if applicable – supply data.
 
 By using the read function `getCoinInfo(coin_name)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
 
