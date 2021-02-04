@@ -245,6 +245,18 @@
       "Name": "Nexus Mutual"
     },
     {
+      "Address": "0x0d438f3b5175bebc262bf23753c1e53d03432bde",
+      "Name": "Wrapped NXM"
+    },
+    {
+      "Address": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9",
+      "Name": "BoringDAO"
+    },
+    {
+      "Address": "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+      "Name": "Spice"
+    },
+    {
       "Address": "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
       "Name": "cDAI"
     },
@@ -2571,6 +2583,10 @@
     {
       "Address":"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664",
       "Name":"Spice"
+    },
+    {
+      "Address": "0x888888888889c00c67689029d7856aac1065ec11",
+      "Name": "Opium Governance Token"
     },
     {
       "Address": "0x3fd8f39a962efda04956981c31ab89fab5fb8bc8",

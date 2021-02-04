@@ -1,6 +1,28 @@
 {
   "lockedWallets": [
     {
+      "asset": "0x2ba592f78db6436527729929aaf6c908497cb200",
+      "wallets": [
+        "0xe6f6f9492098aad009faa3f9b84f35c0b6ee7f3c",
+        "0xE618C25f580684770f2578FAca31fb7aCB2F5945",
+        "0xBdc3372161dfd0361161e06083eE5D52a9cE7595",
+        "0xB8c3a282De181889EF20488e73e7A149a8C1bFe1",
+        "0x000000000000000000000000000000000000dead",
+        "0x65bC20147E2cA6F3bf0819c38E519F8792043b36",
+        "0xCcD5cb3401704AF8462a4FFE708a180d3C5c4Da0",
+        "0x1E5fe7bAd3672D0d0cc041B7154331EE461C3349",
+        "0x0cd8fd90bacc7a676fcc7c0d7573b970f8784b50",
+        "0xCC5f8cA88cAbA27f15746aeb481F0C446991F863",
+        "0xCF679b2E16498a866Bd4CBda60d42f208084c6E1",
+        "0x1676fc274B65966ED0c6438a26d34c6C92A5981C",
+        "0x224061756c150e5048a1e4a3e6e066db35037462",
+        "0x43a8ecE49718E22D21077000768afF91849BCEfF",
+        "0x780F75ad0B02afeb6039672E6a6CEDe7447a8b45",
+        "0x6d5a7597896a703fe8c85775b23395a48f971305",
+        "0xD5586C1804D2e1795f3FBbAfB1FBB9099ee20A6c"
+      ]
+    },
+    {
       "asset": "0x84ca8bc7997272c7cfb4d0cd3d55cd942b3c9419",
       "wallets": [
         "0x46af96fa8f4587c028675f7bf848a7aca2cabcd2",
@@ -870,6 +892,29 @@
       ]
     },
     {
+      "asset": "0x888888888889c00c67689029d7856aac1065ec11",
+      "wallets": [
+        "0x65402c084f79d698e17f32617f6c4198751dc5a0",
+        "0xdbc2f7f3bccccf54f1bda43c57e8ab526e379df1",
+        "0xe3e19293a5b628fbd8561a3670400a4e8cff1576"
+      ]
+    },
+    {
+      "asset": "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+      "wallets": [
+        "0xd51d953b017e6f2fc76446b0e6ba26e271305952",
+        "0xcb2cd4cf7d8e246e696084e6bf3db3054b8d6c3b",
+        "0xe177496a1877b7d06e8cd82c688faf4d84ea470b",
+        "0x09e9ff67d9d5a25fa465db6f0bede5560581f8cb",
+        "0xe1e76b570a032293bb6cf8a21b1c0e6c08b8c185",
+        "0x48ef0725f8a3b94fcdb509c8ea0ca24e096d6bd4",
+        "0xdc41bbb87200d4e28a244e008cfe39a459a87fde",
+        "0x710c4147be2f21e4229aaa0dfa8b64689cbbd9c9",
+        "0x5b8acA478d24f0AFa830355091015546a6503CD6",
+        "0x46526f829a464ff8d272c3ee63aa5a8cb788c429"
+      ]
+    },
+    {
         "asset": "0x960b236a07cf122663c4303350609a66a7b288c0",
         "wallets": [
           "0xcafe1a77e84698c83ca8931f54a755176ef75f2c",
@@ -899,9 +944,9 @@
         ]
       },
       {
-        "asset": "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b",
+        "asset": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9",
         "wallets": [
-          "0x84EdfFA16bb0b9Ab1163abb0a13Ff0744c11272f"
+          "0x67ee188ee1319cdac271553e7b8faaed2fbc52cc"
         ]
       },
       {
