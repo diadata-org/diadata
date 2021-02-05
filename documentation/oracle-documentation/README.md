@@ -38,5 +38,7 @@ As an example application, we implemented and deployed a [simple smart contract 
 
 Call `getAssetEurRate()` with a crypto asset name as argument in order to request the current crypto asset price from our oracle which is then converted to EUR by using the ECB exchange rate for EUR-USD, also published in the oracle contract.  In the above link, you can use the "Read Contract" tab for easy web access. The rate is displayed in a fix comma format with five decimal digits. The source code of that example contract can be found at the "Code" tab. This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address where the oracle is deployed afterwards. Ideally, this should be done in a way that allows updates if the oracle address changes at any time in the future.
 
+## Gas Estimation
 
+All DIA oracles use the go-ethereum gas estimation to estimate the gas costs for an update contract call. To ensure timely delivery of the transaction, the gas estimate is scaled to 110% of the original estimate.
 
