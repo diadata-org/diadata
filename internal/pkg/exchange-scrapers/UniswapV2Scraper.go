@@ -223,8 +223,10 @@ func (s *UniswapScraper) mainLoop() {
 								t = &tSwapped
 							}
 						}
-						log.Info("Got trade: ", t)
-						ps.parent.chanTrades <- t
+						if price > 0 {
+							log.Info("Got trade: ", t)
+							ps.parent.chanTrades <- t
+						}
 					}
 				}
 			}()
