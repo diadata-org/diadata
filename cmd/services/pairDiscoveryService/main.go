@@ -65,7 +65,7 @@ func savePairsToFile(exchange string, pairs []dia.Pair) {
 	if err != nil {
 		log.Error("error while saving pairs to file", err)
 	}
-	err = ioutil.WriteFile("/tmp/" + exchange + ".json", b, 0644)
+	err = ioutil.WriteFile("/tmp/"+exchange+".json", b, 0644)
 }
 
 func updateExchangePairs() {
@@ -173,7 +173,7 @@ func main() {
 		ticker: time.NewTicker(time.Second * 60 * 60),
 	}
 	var err error
-  db , err = models.NewDataStore()
+	db, err = models.NewDataStore()
 	if err != nil {
 		panic("Can not initialize db, error: " + err.Error())
 	}
