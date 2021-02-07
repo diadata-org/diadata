@@ -3,18 +3,17 @@ package main
 import (
 	"flag"
 
-	"github.com/diadata-org/diadata/cmd/services/assets/source"
-	"github.com/diadata-org/diadata/internal/pkg/database"
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/database"
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 )
 
 /*
-
-
-fetch assets from various exchange ans save it in mongo
+fetch assets from various exchanges and save them in postgresql
 */
+
 var blockchains map[string]dia.BlockChain
 
 var log = logrus.New()
@@ -24,22 +23,20 @@ func init() {
 
 	flag.BoolVar(&feedRedis, "feedRedis", false, "Feed Asset to redis")
 	flag.Parse()
-
 	blockchains = make(map[string]dia.BlockChain)
-	blockchains[dia.Bitcoin] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.Ethereum] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.Bitcoin] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.Ethereum] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
 
 }
 
+// NewAssetScraper returns a scraper for assets on @exchange
 func NewAssetScraper(exchange string, key string, secret string) source.AssetSource {
 	switch exchange {
 	case dia.UniswapExchange:
 		return source.NewUniswapAssetSource(dia.Exchange{Name: dia.UniswapExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f")})
-
 	default:
 		return nil
 	}
-
 }
 
 func main() {
@@ -54,7 +51,6 @@ func main() {
 		feedAssetToRedis(data)
 	} else {
 		fetchAssetFromSource(data)
-
 	}
 
 }
@@ -62,7 +58,6 @@ func main() {
 func feedAssetToRedis(assetsaver database.AssetSaver) {
 
 	assetCache := database.NewAssetcache()
-
 	totalAssets, err := assetsaver.Count()
 	if err != nil {
 		log.Errorln("Error Getting Asset counts", err)
@@ -86,8 +81,8 @@ func feedAssetToRedis(assetsaver database.AssetSaver) {
 		}
 		log.Infoln("updated cache with all assets")
 	}
-
 }
+
 func fetchAssetFromSource(data database.AssetSaver) {
 	// var wg sync.WaitGroup
 
