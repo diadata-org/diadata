@@ -393,6 +393,14 @@ func (up *UniswapPair) normalizeUniPair() {
 		up.Token1.Symbol = "ETH"
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
+	if up.Token1.Symbol == "WNXM" {
+		up.Token0.Symbol = "wNXM"
+		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+	}
+	if up.Token1.Symbol == "WNXM" {
+		up.Token1.Symbol = "wNXM"
+		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+	}
 }
 
 // GetPairByID returns the UniswapPair with the integer id @num
