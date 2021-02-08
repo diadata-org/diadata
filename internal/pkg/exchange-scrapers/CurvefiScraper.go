@@ -29,6 +29,8 @@ const (
 type CurveCoin struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type Pools struct {
@@ -262,10 +264,17 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 			log.Error(err)
 			continue
 		}
+		name, err := coinCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+			continue
+		}
 
 		poolCoinsMap[cIdx] = &CurveCoin{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Uint64()),
+			Name:     name,
+			Address:  c.String(),
 		}
 		scraper.curveCoins[c.Hex()] = &CurveCoin{
 			Symbol:   symbol,
@@ -280,7 +289,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 
 func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.CurvepoolTokenExchange) {
 
-	foreignName, volume, price, err := scraper.getSwapDataCurve(pool, swp)
+	foreignName, volume, price, baseToken, quoteToken, err := scraper.getSwapDataCurve(pool, swp)
 	if err != nil {
 		log.Error(err)
 	}
@@ -291,6 +300,8 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 		trade := &dia.Trade{
 			Symbol:         pairScraper.pair.Symbol,
 			Pair:           foreignName,
+			BaseToken:      baseToken,
+			QuoteToken:     quoteToken,
 			Price:          price,
 			Volume:         volume,
 			Time:           time.Unix(timestamp, 0),
@@ -351,7 +362,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
 
 	// fromToken, _ := scraper.curveCoins[s.TokenSold.Hex()]
 	// toToken, _ := scraper.curveCoins[s.TokenBought.Hex()]
@@ -360,9 +371,20 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	if !ok {
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 	}
+	baseToken = dia.Asset{
+		Name:    fromToken.Name,
+		Address: fromToken.Address,
+		Symbol:  fromToken.Symbol,
+	}
 	toToken, ok := scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
 	if !ok {
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+	}
+
+	quoteToken = dia.Asset{
+		Name:    toToken.Name,
+		Address: toToken.Address,
+		Symbol:  toToken.Symbol,
 	}
 
 	// amountIn := s.AmountSold. / math.Pow10( fromToken.Decimals )

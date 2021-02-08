@@ -50,6 +50,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jinzhu/now v1.1.1
 	github.com/jjjjpppp/quoinex-go-client v0.0.8
@@ -83,6 +84,7 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/urfave/cli v1.22.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect

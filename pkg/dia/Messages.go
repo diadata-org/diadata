@@ -31,6 +31,14 @@ type Supply struct {
 	Time              time.Time
 }
 
+type Asset struct {
+	Symbol     string
+	Name       string
+	Address    string
+	Decimals   string
+	Blockchain BlockChain
+}
+
 type Pair struct {
 	Symbol      string
 	ForeignName string
@@ -44,11 +52,13 @@ type Pairs []Pair
 type Trade struct {
 	Symbol            string
 	Pair              string
+	QuoteToken        Asset
+	BaseToken         Asset
 	Price             float64
 	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time
 	ForeignTradeID    string
-	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
+	EstimatedUSDPrice float64 // will be filled by the TradesBlockService
 	Source            string
 }
 

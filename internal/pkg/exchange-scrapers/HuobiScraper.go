@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -112,7 +111,7 @@ func (s *HuobiScraper) mainLoop() {
 				if message.Status == "" {
 
 					var splitString = strings.Split(message.Ch, ".")
-					var forName = strings.ToUpper(splitString[1])
+					var forName = splitString[1]
 					ps, ok := s.pairScrapers[forName]
 
 					if ok {
@@ -133,14 +132,22 @@ func (s *HuobiScraper) mainLoop() {
 
 							// element id is more than int64/uint64 in size
 							// leave the id in float64 format
+							pairNormalized, _ := s.NormalizePair(ps.pair)
 							t := &dia.Trade{
-								Symbol:         ps.pair.Symbol,
-								Pair:           forName,
+								Symbol:         pairNormalized.Symbol,
+								Pair:           pairNormalized.ForeignName,
 								Price:          f64Price,
 								Volume:         f64Volume,
 								Time:           timeStamp,
 								ForeignTradeID: strconv.FormatFloat(md_element["id"].(float64), 'E', -1, 64),
 								Source:         s.exchangeName,
+							}
+							// Reverse USDC-HUSD pair in order to get a quotation for HUSD
+							if t.Pair == "BTCHUSD" {
+								tSwapped, err := dia.SwapTrade(*t)
+								if err == nil {
+									t = &tSwapped
+								}
 							}
 							ps.parent.chanTrades <- t
 							log.Info("got trade: ", t)
@@ -216,33 +223,42 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-
+// NormalizePair accounts for the lower case symbols in Huobi API + some peculiarities
 func (s *HuobiScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	symbol := strings.ToUpper(pair.Symbol)
-	pair.Symbol = symbol
 
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
-				pair.Symbol = "MIOTA"
-			}
-			if pair.Symbol =="PROPY"{
-				pair.Symbol = "PRO"
-			}
-			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
-		}
+	pair.Symbol = strings.ToUpper(pair.Symbol)
+	pair.ForeignName = strings.ToUpper(pair.ForeignName)
+
+	if pair.Symbol == "RENBTC" {
+		pair.Symbol = "renBTC"
+		pair.ForeignName = "renBTC" + pair.ForeignName[6:]
+		return pair, nil
 	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return pair, errors.New("Symbol is black listed:" + symbol)
+	if pair.Symbol == "WNXM" {
+		pair.Symbol = "wNXM"
+		pair.ForeignName = "wNXM" + pair.ForeignName[4:]
+		return pair, nil
 	}
+	if pair.Symbol == "IOTA" {
+		pair.Symbol = "MIOTA"
+		pair.ForeignName = "M" + pair.ForeignName
+		return pair, nil
+	}
+	if pair.Symbol == "PROPY" {
+		pair.Symbol = "PRO"
+		pair.ForeignName = "PRO" + pair.ForeignName[5:]
+		return pair, nil
+	}
+
 	return pair, nil
 
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	log.Info("start fetching pairs for HUOBI")
 	type DataT struct {
-		Id           string `json:"symbol"`
+		ID           string `json:"symbol"`
 		BaseCurrency string `json:"base-currency"`
 	}
 	type APIResponse struct {
@@ -250,28 +266,26 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 
 	data, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
-
 	if err != nil {
 		return
 	}
 
 	var ar APIResponse
+	var pair dia.Pair
 	err = json.Unmarshal(data, &ar)
-	if err == nil {
-		for _, p := range ar.Data {
-			pairToNormalize := dia.Pair{
-				Symbol:      p.BaseCurrency,
-				ForeignName: p.Id,
-				Exchange:    s.exchangeName,
-			}
-			pair, serr := s.NormalizePair(pairToNormalize)
-			if serr == nil {
-				pairs = append(pairs, pair)
-			} else {
-				log.Error(serr)
-			}
-		}
+	if err != nil {
+		return
 	}
+	for _, p := range ar.Data {
+		pair = dia.Pair{
+			Symbol:      p.BaseCurrency,
+			ForeignName: p.ID,
+			Exchange:    s.exchangeName,
+			Ignore:      false,
+		}
+		pairs = append(pairs, pair)
+	}
+
 	return
 }
 

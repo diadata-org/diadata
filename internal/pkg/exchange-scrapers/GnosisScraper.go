@@ -28,6 +28,8 @@ const (
 type GnosisToken struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type GnosisScraper struct {
@@ -115,9 +117,15 @@ func (scraper *GnosisScraper) loadTokens() {
 		if err != nil {
 			log.Error(err)
 		}
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		scraper.tokens[count] = &GnosisToken{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Int64()),
+			Address:  tokenAddress.String(),
+			Name:     name,
 		}
 		scraper.tokens[count].normalizeETH()
 		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
@@ -180,10 +188,26 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
 	} else {
 		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
+			buyToken := scraper.tokens[trade.BuyToken]
+			sellToken := scraper.tokens[trade.SellToken]
+
+			token0 := dia.Asset{
+				Address: buyToken.Address,
+				Symbol:  buyToken.Symbol,
+				Name:    buyToken.Name,
+			}
+			token1 := dia.Asset{
+				Address: sellToken.Address,
+				Symbol:  sellToken.Symbol,
+				Name:    sellToken.Name,
+			}
+
 			trade := &dia.Trade{
 				Symbol:         symbol,
 				Pair:           pairScraper.pair.ForeignName,
 				Price:          price,
+				BaseToken:      token0,
+				QuoteToken:     token1,
 				Volume:         volume,
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",

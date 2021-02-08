@@ -1,262 +1,5296 @@
 {
-  "Coins": [
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADABTC",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADAETH",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADAUSDT",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BCHBTC",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BCHUSDT",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BTCUSDT",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BTGBTC",
-      "Ignore": false,
-      "Symbol": "BTG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DASHBTC",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DASHUSDT",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DCRBTC",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DCRETH",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DGBBTC",
-      "Ignore": false,
-      "Symbol": "DGB"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSBTC",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSETH",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSUSDT",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETCBTC",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETCUSDT",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETHBTC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETHUSDT",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTABTC",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTAETH",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTAUSDT",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LSKBTC",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LSKETH",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LTCBTC",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LTCUSDT",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGBTC",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGETH",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGUSDT",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ONTUSDT",
-      "Ignore": false,
-      "Symbol": "ONT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMBTC",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMETH",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMUSDT",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SNTBTC",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SNTUSDT",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STEEMBTC",
-      "Ignore": false,
-      "Symbol": "STEEM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STEEMETH",
-      "Ignore": false,
-      "Symbol": "STEEM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XMRBTC",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XMRETH",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XRPBTC",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XRPUSDT",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ZECBTC",
-      "Ignore": false,
-      "Symbol": "ZEC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ZRXBTC",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    }
-  ]
+    "Coins": [
+        {
+            "Symbol": "gnx",
+            "ForeignName": "gnxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hit",
+            "ForeignName": "hitusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "egcc",
+            "ForeignName": "egccbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vidy",
+            "ForeignName": "vidybtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zjlt",
+            "ForeignName": "zjltbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "band",
+            "ForeignName": "bandhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "top",
+            "ForeignName": "topbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gt",
+            "ForeignName": "gtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swftc",
+            "ForeignName": "swftcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sbtc",
+            "ForeignName": "sbtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wicc",
+            "ForeignName": "wiccbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wnxm",
+            "ForeignName": "wnxmeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lol",
+            "ForeignName": "lolusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "node",
+            "ForeignName": "nodeusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pearl",
+            "ForeignName": "pearlusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc3s",
+            "ForeignName": "ltc3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btchusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nexo",
+            "ForeignName": "nexousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zen",
+            "ForeignName": "zenbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mt",
+            "ForeignName": "mtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pvt",
+            "ForeignName": "pvtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aave",
+            "ForeignName": "aavebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bt1",
+            "ForeignName": "bt1btc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "badger",
+            "ForeignName": "badgerusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot",
+            "ForeignName": "dotusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "elf",
+            "ForeignName": "elfeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "abt",
+            "ForeignName": "abtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ach",
+            "ForeignName": "achbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos",
+            "ForeignName": "eoseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pc",
+            "ForeignName": "pceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "akro",
+            "ForeignName": "akroht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lrc",
+            "ForeignName": "lrcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zil",
+            "ForeignName": "zileth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "but",
+            "ForeignName": "buteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lxt",
+            "ForeignName": "lxtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wxt",
+            "ForeignName": "wxtht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "for",
+            "ForeignName": "forusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kcash",
+            "ForeignName": "kcashusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "icx",
+            "ForeignName": "icxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mass",
+            "ForeignName": "massbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aac",
+            "ForeignName": "aacusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nhbtc",
+            "ForeignName": "nhbtcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "jst",
+            "ForeignName": "jstbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sun",
+            "ForeignName": "sunbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iost",
+            "ForeignName": "iostht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qsp",
+            "ForeignName": "qspeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "doge",
+            "ForeignName": "dogeeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kava",
+            "ForeignName": "kavabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bot",
+            "ForeignName": "botusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "itc",
+            "ForeignName": "itcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sushi",
+            "ForeignName": "sushieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hpt",
+            "ForeignName": "hptbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wtc",
+            "ForeignName": "wtcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hot",
+            "ForeignName": "hotusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pai",
+            "ForeignName": "paiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "new",
+            "ForeignName": "newusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ren",
+            "ForeignName": "renusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btt",
+            "ForeignName": "bttbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bsv",
+            "ForeignName": "bsvhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uma",
+            "ForeignName": "umausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tt",
+            "ForeignName": "ttht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omghusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "inj",
+            "ForeignName": "injbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hc",
+            "ForeignName": "hcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zec",
+            "ForeignName": "zecbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "luna",
+            "ForeignName": "lunausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qtum",
+            "ForeignName": "qtumhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1inch",
+            "ForeignName": "1incheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcx",
+            "ForeignName": "bcxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rccc",
+            "ForeignName": "rccceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gtc",
+            "ForeignName": "gtceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "oxt",
+            "ForeignName": "oxtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trb",
+            "ForeignName": "trbeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etn",
+            "ForeignName": "etneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mta",
+            "ForeignName": "mtaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "band",
+            "ForeignName": "bandusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "renbtc",
+            "ForeignName": "renbtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pond",
+            "ForeignName": "pondeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gve",
+            "ForeignName": "gvebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nano",
+            "ForeignName": "nanoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chr",
+            "ForeignName": "chrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "topc",
+            "ForeignName": "topcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos",
+            "ForeignName": "eosusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbc",
+            "ForeignName": "hbcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zil",
+            "ForeignName": "zilhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kan",
+            "ForeignName": "kaneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcv",
+            "ForeignName": "bcveth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nsure",
+            "ForeignName": "nsureeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nexo",
+            "ForeignName": "nexoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vsys",
+            "ForeignName": "vsysbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sc",
+            "ForeignName": "scbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dgb",
+            "ForeignName": "dgbeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "stk",
+            "ForeignName": "stketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ost",
+            "ForeignName": "osteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "egt",
+            "ForeignName": "egtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rsr",
+            "ForeignName": "rsrht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "em",
+            "ForeignName": "embtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "man",
+            "ForeignName": "manbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zec3s",
+            "ForeignName": "zec3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dka",
+            "ForeignName": "dkabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ocn",
+            "ForeignName": "ocnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qtum",
+            "ForeignName": "qtumeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "value",
+            "ForeignName": "valuebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bifi",
+            "ForeignName": "bifibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ar",
+            "ForeignName": "areth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cnns",
+            "ForeignName": "cnnsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mana",
+            "ForeignName": "manausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "badger",
+            "ForeignName": "badgereth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dash",
+            "ForeignName": "dashhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "propy",
+            "ForeignName": "propybtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sand",
+            "ForeignName": "sandusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dac",
+            "ForeignName": "dacusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sand",
+            "ForeignName": "sandbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uc",
+            "ForeignName": "uceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eng",
+            "ForeignName": "engbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil",
+            "ForeignName": "filusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aidoc",
+            "ForeignName": "aidoceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pha",
+            "ForeignName": "phabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nsure",
+            "ForeignName": "nsureusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ren",
+            "ForeignName": "renhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omgeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bat",
+            "ForeignName": "bateth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rbtc",
+            "ForeignName": "rbtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvp",
+            "ForeignName": "cvpusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qtum",
+            "ForeignName": "qtumusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aac",
+            "ForeignName": "aaceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kmd",
+            "ForeignName": "kmdeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wnxm",
+            "ForeignName": "wnxmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kcash",
+            "ForeignName": "kcasheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iris",
+            "ForeignName": "irishusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wtc",
+            "ForeignName": "wtceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waves",
+            "ForeignName": "wavesbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fis",
+            "ForeignName": "fisbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mtx",
+            "ForeignName": "mtxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yamv2",
+            "ForeignName": "yamv2usdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swrv",
+            "ForeignName": "swrvbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "one",
+            "ForeignName": "oneusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bsv",
+            "ForeignName": "bsvusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vidy",
+            "ForeignName": "vidyht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ctxc",
+            "ForeignName": "ctxcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trx",
+            "ForeignName": "trxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "edu",
+            "ForeignName": "edubtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lend",
+            "ForeignName": "lendbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rcn",
+            "ForeignName": "rcneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dock",
+            "ForeignName": "docketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ruff",
+            "ForeignName": "ruffeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hit",
+            "ForeignName": "hiteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot",
+            "ForeignName": "dothusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cro",
+            "ForeignName": "crobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lun",
+            "ForeignName": "lunbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "itc",
+            "ForeignName": "itcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "em",
+            "ForeignName": "emht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "matic",
+            "ForeignName": "maticeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tos",
+            "ForeignName": "tosbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iota",
+            "ForeignName": "iotabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "band",
+            "ForeignName": "bandeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etc",
+            "ForeignName": "etcht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dcr",
+            "ForeignName": "dcreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp3s",
+            "ForeignName": "xrp3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "18c",
+            "ForeignName": "18cbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch3s",
+            "ForeignName": "bch3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mana",
+            "ForeignName": "manabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1inch",
+            "ForeignName": "1inchusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grt",
+            "ForeignName": "grtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pai",
+            "ForeignName": "paieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrphusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "for",
+            "ForeignName": "forbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tnt",
+            "ForeignName": "tnteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cova",
+            "ForeignName": "covaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cru",
+            "ForeignName": "crubtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rte",
+            "ForeignName": "rtebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pnt",
+            "ForeignName": "pntbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "she",
+            "ForeignName": "shebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil",
+            "ForeignName": "filbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mxc",
+            "ForeignName": "mxcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pond",
+            "ForeignName": "pondusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cre",
+            "ForeignName": "creht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "oxt",
+            "ForeignName": "oxtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ren",
+            "ForeignName": "reneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "appc",
+            "ForeignName": "appceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uip",
+            "ForeignName": "uipusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "inj",
+            "ForeignName": "injusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "jst",
+            "ForeignName": "jstusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uma",
+            "ForeignName": "umaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "act",
+            "ForeignName": "acteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc1s",
+            "ForeignName": "btc1susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fair",
+            "ForeignName": "faireth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "value",
+            "ForeignName": "valueusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gt",
+            "ForeignName": "gtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vet",
+            "ForeignName": "vetbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trio",
+            "ForeignName": "trioeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cru",
+            "ForeignName": "crueth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nexo",
+            "ForeignName": "nexobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bnt",
+            "ForeignName": "bnteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil",
+            "ForeignName": "fileth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hit",
+            "ForeignName": "hitbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lba",
+            "ForeignName": "lbaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bags",
+            "ForeignName": "bagsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "knc",
+            "ForeignName": "kncusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chz",
+            "ForeignName": "chzusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ont",
+            "ForeignName": "onteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gnx",
+            "ForeignName": "gnxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zla",
+            "ForeignName": "zlabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ast",
+            "ForeignName": "asteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lol",
+            "ForeignName": "lolbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bot",
+            "ForeignName": "botbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lina",
+            "ForeignName": "linaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "powr",
+            "ForeignName": "powrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "stpt",
+            "ForeignName": "stptusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kava",
+            "ForeignName": "kavausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mex",
+            "ForeignName": "mexbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos3s",
+            "ForeignName": "eos3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hpt",
+            "ForeignName": "hptht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfi",
+            "ForeignName": "yfibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "em",
+            "ForeignName": "emusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uip",
+            "ForeignName": "uipbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "titan",
+            "ForeignName": "titanusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogo",
+            "ForeignName": "ogoht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vsys",
+            "ForeignName": "vsysht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iris",
+            "ForeignName": "iriseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ckb",
+            "ForeignName": "ckbht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bor",
+            "ForeignName": "borusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "woo",
+            "ForeignName": "wooeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcd",
+            "ForeignName": "bcdbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "idt",
+            "ForeignName": "idteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "blz",
+            "ForeignName": "blzbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gas",
+            "ForeignName": "gaseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dta",
+            "ForeignName": "dtabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fsn",
+            "ForeignName": "fsnusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skm",
+            "ForeignName": "skmht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pay",
+            "ForeignName": "payeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dbc",
+            "ForeignName": "dbceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "knc",
+            "ForeignName": "knchusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "avax",
+            "ForeignName": "avaxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tnb",
+            "ForeignName": "tnbusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1inch",
+            "ForeignName": "1inchbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "musk",
+            "ForeignName": "muskbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvnt",
+            "ForeignName": "cvnteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zil",
+            "ForeignName": "zilbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qash",
+            "ForeignName": "qasheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hpt",
+            "ForeignName": "hptusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni2s",
+            "ForeignName": "uni2susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "smt",
+            "ForeignName": "smteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ht",
+            "ForeignName": "hthusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pha",
+            "ForeignName": "phaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "soc",
+            "ForeignName": "socbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snx",
+            "ForeignName": "snxhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nas",
+            "ForeignName": "nasbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cre",
+            "ForeignName": "crebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pols",
+            "ForeignName": "polseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "stk",
+            "ForeignName": "stkbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gsc",
+            "ForeignName": "gscbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sun",
+            "ForeignName": "suneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "utk",
+            "ForeignName": "utkusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "neo",
+            "ForeignName": "neohusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lba",
+            "ForeignName": "lbausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link3l",
+            "ForeignName": "link3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ven",
+            "ForeignName": "venbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gnx",
+            "ForeignName": "gnxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "firo",
+            "ForeignName": "firousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "df",
+            "ForeignName": "dfusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etc",
+            "ForeignName": "etcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dat",
+            "ForeignName": "dateth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cmt",
+            "ForeignName": "cmtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atom",
+            "ForeignName": "atombtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pvt",
+            "ForeignName": "pvtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dcr",
+            "ForeignName": "dcrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ach",
+            "ForeignName": "achusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rdn",
+            "ForeignName": "rdneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gve",
+            "ForeignName": "gveeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mkr",
+            "ForeignName": "mkreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ast",
+            "ForeignName": "astusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dht",
+            "ForeignName": "dhteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fti",
+            "ForeignName": "ftieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcha",
+            "ForeignName": "bchabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swftc",
+            "ForeignName": "swftcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grs",
+            "ForeignName": "grsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogn",
+            "ForeignName": "ognht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ae",
+            "ForeignName": "aeeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc3l",
+            "ForeignName": "btc3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gxc",
+            "ForeignName": "gxcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uip",
+            "ForeignName": "uipeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "near",
+            "ForeignName": "nearusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvc",
+            "ForeignName": "cvcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfii",
+            "ForeignName": "yfiiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pearl",
+            "ForeignName": "pearleth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hot",
+            "ForeignName": "hoteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cova",
+            "ForeignName": "covabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ekt",
+            "ForeignName": "ekteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bot",
+            "ForeignName": "boteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zrx",
+            "ForeignName": "zrxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sushi",
+            "ForeignName": "sushiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "near",
+            "ForeignName": "nearbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aave",
+            "ForeignName": "aaveeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbc",
+            "ForeignName": "hbcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfii",
+            "ForeignName": "yfiibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ht",
+            "ForeignName": "htusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "usdt",
+            "ForeignName": "usdthusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iota",
+            "ForeignName": "iotaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sushi",
+            "ForeignName": "sushibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvc",
+            "ForeignName": "cvcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcv",
+            "ForeignName": "bcvbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cnns",
+            "ForeignName": "cnnsht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snx",
+            "ForeignName": "snxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gxc",
+            "ForeignName": "gxcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sol",
+            "ForeignName": "soleth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nkn",
+            "ForeignName": "nknusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "itc",
+            "ForeignName": "itceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iic",
+            "ForeignName": "iiceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pc",
+            "ForeignName": "pcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bt2",
+            "ForeignName": "bt2btc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "utk",
+            "ForeignName": "utkbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmx",
+            "ForeignName": "xmxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nkn",
+            "ForeignName": "nknbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dash",
+            "ForeignName": "dashusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "salt",
+            "ForeignName": "saltbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mln",
+            "ForeignName": "mlneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lba",
+            "ForeignName": "lbabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fsn",
+            "ForeignName": "fsnht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wpr",
+            "ForeignName": "wpreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "idt",
+            "ForeignName": "idtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "unieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "abt",
+            "ForeignName": "abteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ssp",
+            "ForeignName": "sspeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ring",
+            "ForeignName": "ringbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snc",
+            "ForeignName": "snceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "srn",
+            "ForeignName": "srnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "for",
+            "ForeignName": "forht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grt",
+            "ForeignName": "grteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cmt",
+            "ForeignName": "cmtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trx",
+            "ForeignName": "trxhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lsk",
+            "ForeignName": "lsketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ankr",
+            "ForeignName": "ankrht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "adx",
+            "ForeignName": "adxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbar",
+            "ForeignName": "hbareth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "oxt",
+            "ForeignName": "oxteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "crv",
+            "ForeignName": "crveth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mds",
+            "ForeignName": "mdsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nbs",
+            "ForeignName": "nbsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos3l",
+            "ForeignName": "eos3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "she",
+            "ForeignName": "sheeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "meet",
+            "ForeignName": "meeteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ycc",
+            "ForeignName": "ycceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ast",
+            "ForeignName": "astbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "new",
+            "ForeignName": "newbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "top",
+            "ForeignName": "topht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "blz",
+            "ForeignName": "blzusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hc",
+            "ForeignName": "hceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xvg",
+            "ForeignName": "xvgeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uma",
+            "ForeignName": "umabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aidoc",
+            "ForeignName": "aidocbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mtl",
+            "ForeignName": "mtlbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chr",
+            "ForeignName": "chrht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mana",
+            "ForeignName": "manaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zil",
+            "ForeignName": "zilusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "datx",
+            "ForeignName": "datxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "luna",
+            "ForeignName": "lunabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "npxs",
+            "ForeignName": "npxseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waves",
+            "ForeignName": "waveseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mtx",
+            "ForeignName": "mtxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mds",
+            "ForeignName": "mdsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "portal",
+            "ForeignName": "portalbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "poly",
+            "ForeignName": "polybtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ring",
+            "ForeignName": "ringusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ven",
+            "ForeignName": "venusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nbs",
+            "ForeignName": "nbsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fis",
+            "ForeignName": "fiseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "band",
+            "ForeignName": "bandbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dcr",
+            "ForeignName": "dcrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wbtc",
+            "ForeignName": "wbtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bor",
+            "ForeignName": "borbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "neo",
+            "ForeignName": "neousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ugas",
+            "ForeignName": "ugaseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mt",
+            "ForeignName": "mtht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot2s",
+            "ForeignName": "dot2susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dash",
+            "ForeignName": "dashbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lamb",
+            "ForeignName": "lambht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nest",
+            "ForeignName": "nesteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot",
+            "ForeignName": "dotbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sand",
+            "ForeignName": "sandht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvp",
+            "ForeignName": "cvpeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lxt",
+            "ForeignName": "lxtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chat",
+            "ForeignName": "chateth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btt",
+            "ForeignName": "btttrx",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "18c",
+            "ForeignName": "18ceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cre",
+            "ForeignName": "creusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zrx",
+            "ForeignName": "zrxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bix",
+            "ForeignName": "bixbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "node",
+            "ForeignName": "nodeht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mco",
+            "ForeignName": "mcobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "api3",
+            "ForeignName": "api3eth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lamb",
+            "ForeignName": "lambusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skl",
+            "ForeignName": "skleth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iost",
+            "ForeignName": "iosthusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pax",
+            "ForeignName": "paxhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rsr",
+            "ForeignName": "rsrhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "crv",
+            "ForeignName": "crvhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmx",
+            "ForeignName": "xmxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ruff",
+            "ForeignName": "ruffbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bal",
+            "ForeignName": "baleth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos",
+            "ForeignName": "eosht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pnt",
+            "ForeignName": "pnteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "datx",
+            "ForeignName": "datxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmr",
+            "ForeignName": "xmrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algohusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "storj",
+            "ForeignName": "storjusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grs",
+            "ForeignName": "grseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swrv",
+            "ForeignName": "swrveth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tnb",
+            "ForeignName": "tnbbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dock",
+            "ForeignName": "dockbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "titan",
+            "ForeignName": "titanbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "smt",
+            "ForeignName": "smtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dht",
+            "ForeignName": "dhtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xtz",
+            "ForeignName": "xtzhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp3l",
+            "ForeignName": "xrp3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "comp",
+            "ForeignName": "compusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lym",
+            "ForeignName": "lymeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lend",
+            "ForeignName": "lendeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yee",
+            "ForeignName": "yeeusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vet",
+            "ForeignName": "vethusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mds",
+            "ForeignName": "mdseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etc",
+            "ForeignName": "etcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chz",
+            "ForeignName": "chzbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvnt",
+            "ForeignName": "cvntbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atom",
+            "ForeignName": "atomusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "soc",
+            "ForeignName": "soceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iost",
+            "ForeignName": "iostusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qash",
+            "ForeignName": "qashbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bat",
+            "ForeignName": "batbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "matic",
+            "ForeignName": "maticbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ankr",
+            "ForeignName": "ankrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "firo",
+            "ForeignName": "firobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "one",
+            "ForeignName": "oneht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "stpt",
+            "ForeignName": "stptbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qun",
+            "ForeignName": "qunbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bft",
+            "ForeignName": "bftbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ncash",
+            "ForeignName": "ncashbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nas",
+            "ForeignName": "nasusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vet",
+            "ForeignName": "vetusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bsv3l",
+            "ForeignName": "bsv3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etc",
+            "ForeignName": "etchusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "let",
+            "ForeignName": "letusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xtz",
+            "ForeignName": "xtzusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iost",
+            "ForeignName": "iosteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mln",
+            "ForeignName": "mlnusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfi",
+            "ForeignName": "yfieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "glm",
+            "ForeignName": "glmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ae",
+            "ForeignName": "aebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "df",
+            "ForeignName": "dfht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "akro",
+            "ForeignName": "akrohusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "etn",
+            "ForeignName": "etnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gsc",
+            "ForeignName": "gsceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atp",
+            "ForeignName": "atpht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mco",
+            "ForeignName": "mcousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ring",
+            "ForeignName": "ringeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sol",
+            "ForeignName": "solusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "beth",
+            "ForeignName": "bethusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rcn",
+            "ForeignName": "rcnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bix",
+            "ForeignName": "bixusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bhd",
+            "ForeignName": "bhdbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hive",
+            "ForeignName": "hivebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "loom",
+            "ForeignName": "loometh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steem",
+            "ForeignName": "steemusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ctxc",
+            "ForeignName": "ctxceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvcoin",
+            "ForeignName": "cvcoinbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "blz",
+            "ForeignName": "blzeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "neo",
+            "ForeignName": "neobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ekt",
+            "ForeignName": "ektbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eko",
+            "ForeignName": "ekobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pay",
+            "ForeignName": "paybtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dta",
+            "ForeignName": "dtausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "unibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil3l",
+            "ForeignName": "fil3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trio",
+            "ForeignName": "triobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snx",
+            "ForeignName": "snxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "propy",
+            "ForeignName": "propyeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waxp",
+            "ForeignName": "waxpbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cdc",
+            "ForeignName": "cdcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zrx",
+            "ForeignName": "zrxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zrx",
+            "ForeignName": "zrxhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bts",
+            "ForeignName": "btsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tt",
+            "ForeignName": "ttusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbar",
+            "ForeignName": "hbarusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrt",
+            "ForeignName": "xrtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "man",
+            "ForeignName": "maneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth3l",
+            "ForeignName": "eth3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ocn",
+            "ForeignName": "ocneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ost",
+            "ForeignName": "ostbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "theta",
+            "ForeignName": "thetausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ht",
+            "ForeignName": "htbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "evx",
+            "ForeignName": "evxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rvn",
+            "ForeignName": "rvnht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ant",
+            "ForeignName": "anteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lamb",
+            "ForeignName": "lambeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dka",
+            "ForeignName": "dkaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xem",
+            "ForeignName": "xemusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "comp",
+            "ForeignName": "competh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gtc",
+            "ForeignName": "gtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rsr",
+            "ForeignName": "rsrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "egt",
+            "ForeignName": "egtht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot2l",
+            "ForeignName": "dot2lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mta",
+            "ForeignName": "mtabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "renbtc",
+            "ForeignName": "renbtceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nsure",
+            "ForeignName": "nsurebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trb",
+            "ForeignName": "trbbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "powr",
+            "ForeignName": "powreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "luna",
+            "ForeignName": "lunaht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bal",
+            "ForeignName": "balusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "crv",
+            "ForeignName": "crvusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lina",
+            "ForeignName": "linausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "seele",
+            "ForeignName": "seeleusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nest",
+            "ForeignName": "nestusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trx",
+            "ForeignName": "trxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dat",
+            "ForeignName": "datbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bor",
+            "ForeignName": "boreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "icx",
+            "ForeignName": "icxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mass",
+            "ForeignName": "masseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yee",
+            "ForeignName": "yeeeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kcash",
+            "ForeignName": "kcashht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hive",
+            "ForeignName": "hiveht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rvn",
+            "ForeignName": "rvnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "musk",
+            "ForeignName": "musketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lina",
+            "ForeignName": "linabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lxt",
+            "ForeignName": "lxteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "get",
+            "ForeignName": "getbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dbc",
+            "ForeignName": "dbcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth1s",
+            "ForeignName": "eth1susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waxp",
+            "ForeignName": "waxpusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth3s",
+            "ForeignName": "eth3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ksm",
+            "ForeignName": "ksmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "value",
+            "ForeignName": "valueeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fti",
+            "ForeignName": "ftibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dka",
+            "ForeignName": "dkausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmr",
+            "ForeignName": "xmreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nest",
+            "ForeignName": "nestbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "akro",
+            "ForeignName": "akrousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bsv",
+            "ForeignName": "bsvbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos",
+            "ForeignName": "eosbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atp",
+            "ForeignName": "atpbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zjlt",
+            "ForeignName": "zjlteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "box",
+            "ForeignName": "boxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "df",
+            "ForeignName": "dfbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "egcc",
+            "ForeignName": "egcceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrt",
+            "ForeignName": "xrtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltcht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kava",
+            "ForeignName": "kavaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zen",
+            "ForeignName": "zeneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "stpt",
+            "ForeignName": "stptht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "adx",
+            "ForeignName": "adxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "doge",
+            "ForeignName": "dogebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cnn",
+            "ForeignName": "cnnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bts",
+            "ForeignName": "btsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dgd",
+            "ForeignName": "dgdbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link3s",
+            "ForeignName": "link3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dta",
+            "ForeignName": "dtaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wan",
+            "ForeignName": "waneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bkbt",
+            "ForeignName": "bkbteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lol",
+            "ForeignName": "lolht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "loom",
+            "ForeignName": "loomusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mln",
+            "ForeignName": "mlnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snt",
+            "ForeignName": "sntusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ftt",
+            "ForeignName": "fttusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "let",
+            "ForeignName": "letbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "arpa",
+            "ForeignName": "arpabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "soc",
+            "ForeignName": "socusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wbtc",
+            "ForeignName": "wbtceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iic",
+            "ForeignName": "iicbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linkbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cnns",
+            "ForeignName": "cnnsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bhd",
+            "ForeignName": "bhdusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "utk",
+            "ForeignName": "utketh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skm",
+            "ForeignName": "skmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steem",
+            "ForeignName": "steemeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sol",
+            "ForeignName": "solbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ach",
+            "ForeignName": "acheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ctxc",
+            "ForeignName": "ctxcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "portal",
+            "ForeignName": "portaleth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bal",
+            "ForeignName": "balhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "glm",
+            "ForeignName": "glmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gof",
+            "ForeignName": "gofeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skm",
+            "ForeignName": "skmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "poly",
+            "ForeignName": "polyeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grt",
+            "ForeignName": "grtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uuu",
+            "ForeignName": "uuuusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "front",
+            "ForeignName": "fronteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cmt",
+            "ForeignName": "cmteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chat",
+            "ForeignName": "chatbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ant",
+            "ForeignName": "antusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ae",
+            "ForeignName": "aeusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mx",
+            "ForeignName": "mxht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mco",
+            "ForeignName": "mcoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wxt",
+            "ForeignName": "wxtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bcha",
+            "ForeignName": "bchausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil3s",
+            "ForeignName": "fil3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chr",
+            "ForeignName": "chrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ftt",
+            "ForeignName": "fttbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "beth",
+            "ForeignName": "betheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uuu",
+            "ForeignName": "uuubtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "egt",
+            "ForeignName": "egtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linkusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ocn",
+            "ForeignName": "ocnusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btm",
+            "ForeignName": "btmeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fsn",
+            "ForeignName": "fsnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvc",
+            "ForeignName": "cvceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yamv2",
+            "ForeignName": "yamv2btc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "one",
+            "ForeignName": "onebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fti",
+            "ForeignName": "ftiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ankr",
+            "ForeignName": "ankrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swrv",
+            "ForeignName": "swrvusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbar",
+            "ForeignName": "hbarbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nuls",
+            "ForeignName": "nulseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bix",
+            "ForeignName": "bixeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "swftc",
+            "ForeignName": "swftceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfi",
+            "ForeignName": "yfiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ela",
+            "ForeignName": "elaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gxc",
+            "ForeignName": "gxceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lend",
+            "ForeignName": "lendusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ksm",
+            "ForeignName": "ksmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "req",
+            "ForeignName": "reqbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "npxs",
+            "ForeignName": "npxsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "meet",
+            "ForeignName": "meetbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lrc",
+            "ForeignName": "lrcusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvp",
+            "ForeignName": "cvpbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "theta",
+            "ForeignName": "thetaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xtz",
+            "ForeignName": "xtzeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "knc",
+            "ForeignName": "kncbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aave",
+            "ForeignName": "aaveusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ycc",
+            "ForeignName": "yccbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mtn",
+            "ForeignName": "mtnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ugas",
+            "ForeignName": "ugasbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kan",
+            "ForeignName": "kanbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "node",
+            "ForeignName": "nodebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snx",
+            "ForeignName": "snxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "box",
+            "ForeignName": "boxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pond",
+            "ForeignName": "pondbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmr",
+            "ForeignName": "xmrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eko",
+            "ForeignName": "ekoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dgd",
+            "ForeignName": "dgdeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fair",
+            "ForeignName": "fairbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "abt",
+            "ForeignName": "abtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nkn",
+            "ForeignName": "nknht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cro",
+            "ForeignName": "croht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wicc",
+            "ForeignName": "wiccusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wpr",
+            "ForeignName": "wprbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ruff",
+            "ForeignName": "ruffusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ardr",
+            "ForeignName": "ardreth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lamb",
+            "ForeignName": "lambbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tt",
+            "ForeignName": "ttbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zec",
+            "ForeignName": "zechusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "near",
+            "ForeignName": "neareth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "theta",
+            "ForeignName": "thetabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrt",
+            "ForeignName": "xrteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dai",
+            "ForeignName": "daihusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "arpa",
+            "ForeignName": "arpaht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rte",
+            "ForeignName": "rteeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "topc",
+            "ForeignName": "topceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mass",
+            "ForeignName": "massusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ekt",
+            "ForeignName": "ektusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "glm",
+            "ForeignName": "glmeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dock",
+            "ForeignName": "dockusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dac",
+            "ForeignName": "daceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iost",
+            "ForeignName": "iostbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rsr",
+            "ForeignName": "rsrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "crv",
+            "ForeignName": "crvbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "badger",
+            "ForeignName": "badgerbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xem",
+            "ForeignName": "xembtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "storj",
+            "ForeignName": "storjbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wxt",
+            "ForeignName": "wxtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omgbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snc",
+            "ForeignName": "sncbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lsk",
+            "ForeignName": "lskbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btt",
+            "ForeignName": "btteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ssp",
+            "ForeignName": "sspbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ncc",
+            "ForeignName": "ncceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dai",
+            "ForeignName": "daiusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vidy",
+            "ForeignName": "vidyusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nano",
+            "ForeignName": "nanobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wan",
+            "ForeignName": "wanbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ont",
+            "ForeignName": "onthusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uuu",
+            "ForeignName": "uuueth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xvg",
+            "ForeignName": "xvgbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eng",
+            "ForeignName": "engeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogo",
+            "ForeignName": "ogousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hc",
+            "ForeignName": "hcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "seele",
+            "ForeignName": "seeleeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uc",
+            "ForeignName": "ucbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hive",
+            "ForeignName": "hiveusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "top",
+            "ForeignName": "topusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btm",
+            "ForeignName": "btmhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xmx",
+            "ForeignName": "xmxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vsys",
+            "ForeignName": "vsysusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cvcoin",
+            "ForeignName": "cvcoineth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zec",
+            "ForeignName": "zecusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "salt",
+            "ForeignName": "salteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbc",
+            "ForeignName": "hbcht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "elf",
+            "ForeignName": "elfbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ant",
+            "ForeignName": "antbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "uniusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bsv3s",
+            "ForeignName": "bsv3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btm",
+            "ForeignName": "btmusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "jst",
+            "ForeignName": "jsteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "evx",
+            "ForeignName": "evxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pvt",
+            "ForeignName": "pvtht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ven",
+            "ForeignName": "veneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "srn",
+            "ForeignName": "srneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ncash",
+            "ForeignName": "ncasheth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bft",
+            "ForeignName": "bfteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mkr",
+            "ForeignName": "mkrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btt",
+            "ForeignName": "bttusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hot",
+            "ForeignName": "hotbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dash",
+            "ForeignName": "dashht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "matic",
+            "ForeignName": "maticusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ar",
+            "ForeignName": "arbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atp",
+            "ForeignName": "atpusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mxc",
+            "ForeignName": "mxcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "arpa",
+            "ForeignName": "arpausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gof",
+            "ForeignName": "gofusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "front",
+            "ForeignName": "frontusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "new",
+            "ForeignName": "newht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kmd",
+            "ForeignName": "kmdbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "get",
+            "ForeignName": "geteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linkhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "inj",
+            "ForeignName": "injeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snt",
+            "ForeignName": "sntbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ksm",
+            "ForeignName": "ksmht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fis",
+            "ForeignName": "fisusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cru",
+            "ForeignName": "cruusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfii",
+            "ForeignName": "yfiieth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pearl",
+            "ForeignName": "pearlbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "comp",
+            "ForeignName": "compbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mt",
+            "ForeignName": "mteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tusd",
+            "ForeignName": "tusdhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iota",
+            "ForeignName": "iotausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qtum",
+            "ForeignName": "qtumbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cro",
+            "ForeignName": "crousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lym",
+            "ForeignName": "lymbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waves",
+            "ForeignName": "wavesusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ela",
+            "ForeignName": "elausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aac",
+            "ForeignName": "aacbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zec3l",
+            "ForeignName": "zec3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wicc",
+            "ForeignName": "wicceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sc",
+            "ForeignName": "sceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "waxp",
+            "ForeignName": "waxpeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ht",
+            "ForeignName": "hteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cdc",
+            "ForeignName": "cdceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rvn",
+            "ForeignName": "rvnusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "akro",
+            "ForeignName": "akrobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nest",
+            "ForeignName": "nestht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rdn",
+            "ForeignName": "rdnbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ncc",
+            "ForeignName": "nccbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "woo",
+            "ForeignName": "woousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mx",
+            "ForeignName": "mxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogn",
+            "ForeignName": "ognusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nuls",
+            "ForeignName": "nulsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nhbtc",
+            "ForeignName": "nhbtceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dgb",
+            "ForeignName": "dgbbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iris",
+            "ForeignName": "irisusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lrc",
+            "ForeignName": "lrceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dac",
+            "ForeignName": "dacbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qun",
+            "ForeignName": "quneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ckb",
+            "ForeignName": "ckbbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "loom",
+            "ForeignName": "loombtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "avax",
+            "ForeignName": "avaxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "qsp",
+            "ForeignName": "qspbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "avax",
+            "ForeignName": "avaxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "act",
+            "ForeignName": "actusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "knc",
+            "ForeignName": "knceth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "unihusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "seele",
+            "ForeignName": "seelebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "doge",
+            "ForeignName": "dogeusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "iris",
+            "ForeignName": "irisbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "phx",
+            "ForeignName": "phxbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "atom",
+            "ForeignName": "atometh",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "api3",
+            "ForeignName": "api3usdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btg",
+            "ForeignName": "btgbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogn",
+            "ForeignName": "ognbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc3s",
+            "ForeignName": "btc3susdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "usdc",
+            "ForeignName": "usdchusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nas",
+            "ForeignName": "naseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vet",
+            "ForeignName": "veteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lun",
+            "ForeignName": "luneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skl",
+            "ForeignName": "sklusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ont",
+            "ForeignName": "ontusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wnxm",
+            "ForeignName": "wnxmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "let",
+            "ForeignName": "leteth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bal",
+            "ForeignName": "balbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bkbt",
+            "ForeignName": "bkbtbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ardr",
+            "ForeignName": "ardrbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bnt",
+            "ForeignName": "bntusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni2l",
+            "ForeignName": "uni2lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trb",
+            "ForeignName": "trbusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "titan",
+            "ForeignName": "titaneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "woo",
+            "ForeignName": "woobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gas",
+            "ForeignName": "gasbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pols",
+            "ForeignName": "polsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "front",
+            "ForeignName": "frontbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ftt",
+            "ForeignName": "fttht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ckb",
+            "ForeignName": "ckbusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rccc",
+            "ForeignName": "rcccbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chz",
+            "ForeignName": "chzeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gof",
+            "ForeignName": "gofbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc3l",
+            "ForeignName": "ltc3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pha",
+            "ForeignName": "phausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mtn",
+            "ForeignName": "mtneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wtc",
+            "ForeignName": "wtcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "but",
+            "ForeignName": "butbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mta",
+            "ForeignName": "mtausdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nano",
+            "ForeignName": "nanousdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sun",
+            "ForeignName": "sunusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mkr",
+            "ForeignName": "mkrusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltchusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fil",
+            "ForeignName": "filhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ont",
+            "ForeignName": "ontbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tnb",
+            "ForeignName": "tnbeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "edu",
+            "ForeignName": "edueth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xtz",
+            "ForeignName": "xtzbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "appc",
+            "ForeignName": "appcbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "firo",
+            "ForeignName": "firoeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gt",
+            "ForeignName": "gtht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ksm",
+            "ForeignName": "ksmhusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "req",
+            "ForeignName": "reqeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "trx",
+            "ForeignName": "trxeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bts",
+            "ForeignName": "btseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cnn",
+            "ForeignName": "cnneth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ela",
+            "ForeignName": "elabtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ren",
+            "ForeignName": "renbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yamv2",
+            "ForeignName": "yamv2eth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omgusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bat",
+            "ForeignName": "batusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adahusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tos",
+            "ForeignName": "toseth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pols",
+            "ForeignName": "polsusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hb10",
+            "ForeignName": "hb10usdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nest",
+            "ForeignName": "nesthusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "act",
+            "ForeignName": "actbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "smt",
+            "ForeignName": "smtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kcash",
+            "ForeignName": "kcashbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dht",
+            "ForeignName": "dhtusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ar",
+            "ForeignName": "arusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "api3",
+            "ForeignName": "api3btc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ogo",
+            "ForeignName": "ogobtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bhd",
+            "ForeignName": "bhdht",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "kan",
+            "ForeignName": "kanusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btm",
+            "ForeignName": "btmbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "tnt",
+            "ForeignName": "tntbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pai",
+            "ForeignName": "paibtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "elf",
+            "ForeignName": "elfusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mx",
+            "ForeignName": "mxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mex",
+            "ForeignName": "mexeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yee",
+            "ForeignName": "yeebtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "nuls",
+            "ForeignName": "nulsbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "icx",
+            "ForeignName": "icxusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bnt",
+            "ForeignName": "bntbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch3l",
+            "ForeignName": "bch3lusdt",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zla",
+            "ForeignName": "zlaeth",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skl",
+            "ForeignName": "sklbtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eos",
+            "ForeignName": "eoshusd",
+            "Exchange": "Huobi",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steem",
+            "ForeignName": "steembtc",
+            "Exchange": "Huobi",
+            "Ignore": false
+        }
+    ]
 }

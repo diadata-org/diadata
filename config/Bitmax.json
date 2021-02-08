@@ -1339,12 +1339,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTC-PERP",
-            "ForeignName": "BTC-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "XNS",
             "ForeignName": "XNS/USDT",
             "Exchange": "Bitmax",

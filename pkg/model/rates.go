@@ -21,6 +21,21 @@ const (
 	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
 
+type InterestRate struct {
+	Symbol          string
+	Value           float64
+	PublicationTime time.Time
+	EffectiveDate   time.Time
+	Source          string
+}
+
+type InterestRateMeta struct {
+	Symbol    string
+	FirstDate time.Time
+	Decimals  int
+	Issuer    string
+}
+
 // ---------------------------------------------------------------------------------------
 // Setter and getter for interest rates
 // ---------------------------------------------------------------------------------------
