@@ -303,6 +303,20 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// }
 	// time.Sleep(5 * time.Minute)
 
+	// Pancakeswap Chart Point
+	rawPancake, err := getDEXFromDia("PanCakeSwap", "WBNB")
+	if err != nil {
+		log.Fatalf("Failed to retrieve PanCakeSwap from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawPancake, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update PanCakeSwap Oracle: %v", err)
+		return err
+	}
+	time.Sleep(5 * time.Minute)
+
 	// CREX24 Chart Point
 	rawCrex24, err := getDEXFromDia("CREX24", "CREX")
 	if err != nil {

@@ -25,5 +25,6 @@ As of now, the following list of exchanges is available in this oracle:
 - Kyber \(ETH\)  
 - Loopring \(ETH\)  
 - SushiSwap \(ETH\)  
-- Uniswap \(ETH\)
+- Uniswap \(ETH\)  
+- PanCakeSwap \(WBNB\)
 
