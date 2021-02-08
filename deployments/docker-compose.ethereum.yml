@@ -6,7 +6,7 @@ services:
       ethereum/client-go:stable
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3
+    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096
     ports: 
       - mode: host
         target: 8545
@@ -38,6 +38,20 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys
+
+  oracleservice-bsc-testnet:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc-testnet
+    networks:
+      - scrapers-network
+    command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc_testnet --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545"
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_bsc_testnet
 
   diacoingeckooracleservice:
     build:
@@ -87,6 +101,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
   oracle_keys:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
+  oracle_keys_bsc_testnet:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt.testnet
   Coinmarketcap-API.key:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
 
