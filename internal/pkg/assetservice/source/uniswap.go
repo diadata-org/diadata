@@ -129,8 +129,12 @@ func (uas *UniswapAssetSource) fetchAssets() {
 		asset1 := pair.Token1
 		asset0.Blockchain = blockchain
 		asset1.Blockchain = blockchain
-		uas.asset <- asset0
-		uas.asset <- asset1
+		if asset0.Symbol != "" {
+			uas.asset <- asset0
+		}
+		if asset1.Symbol != "" {
+			uas.asset <- asset1
+		}
 	}
 }
 

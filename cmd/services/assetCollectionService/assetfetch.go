@@ -16,21 +16,25 @@ fetch assets from various exchanges and save them in postgresql
 
 var blockchains map[string]dia.BlockChain
 
-var log = logrus.New()
-var feedRedis bool
+var (
+	log         = logrus.New()
+	assetSource *string
+	key         *string
+	secret      *string
+)
 
 func init() {
+	assetSource = flag.String("source", "Uniswap", "Data source for asset collection")
+	secret = flag.String("secret", "", "secret for asset source")
 
-	flag.BoolVar(&feedRedis, "feedRedis", false, "Feed Asset to redis")
 	flag.Parse()
 	blockchains = make(map[string]dia.BlockChain)
 	blockchains[dia.Bitcoin] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
 	blockchains[dia.Ethereum] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
-
 }
 
 // NewAssetScraper returns a scraper for assets on @exchange
-func NewAssetScraper(exchange string, key string, secret string) source.AssetSource {
+func NewAssetScraper(exchange string, secret string) source.AssetSource {
 	switch exchange {
 	case dia.UniswapExchange:
 		return source.NewUniswapAssetSource(dia.Exchange{Name: dia.UniswapExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f")})
@@ -41,21 +45,43 @@ func NewAssetScraper(exchange string, key string, secret string) source.AssetSou
 
 func main() {
 
-	data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
+	// data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
+	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=password")
 	if err != nil {
-		log.Errorln("Error connecting to data source", err)
+		log.Errorln("Error connecting to data source: ", err)
 		return
 	}
+	runAssetSource(data, *assetSource, *secret)
 
-	if feedRedis {
-		feedAssetToRedis(data)
-	} else {
-		fetchAssetFromSource(data)
+}
+
+func runAssetSource(data database.AssetStore, source, secret string) {
+
+	log.Println("Fetching asset from ", source)
+
+	asset := NewAssetScraper(source, secret)
+	for {
+		select {
+		case receivedAsset := <-asset.Asset():
+			log.Infoln("Received asset", receivedAsset)
+			// asset, err := data.GetByName(receivedAsset.Name)
+			// if err != nil {
+			// 	log.Errorf("error getting asset %s: %v\n", receivedAsset.Name, err)
+			// }
+			// log.Infof("asset %s already in DB \n", asset.Name)
+			err := data.Save(receivedAsset)
+			if err != nil {
+				log.Error("Error saving asset: ", err)
+			} else {
+				log.Infof("successfully stored %s \n", receivedAsset.Symbol)
+			}
+		}
+
 	}
 
 }
 
-func feedAssetToRedis(assetsaver database.AssetSaver) {
+func feedAssetToRedis(assetsaver database.AssetStore) {
 
 	assetCache := database.NewAssetcache()
 	totalAssets, err := assetsaver.Count()
@@ -81,29 +107,4 @@ func feedAssetToRedis(assetsaver database.AssetSaver) {
 		}
 		log.Infoln("updated cache with all assets")
 	}
-}
-
-func fetchAssetFromSource(data database.AssetSaver) {
-	// var wg sync.WaitGroup
-
-	log.Println("Fetching asset from ", dia.UniswapExchange)
-	// wg.Add(1)
-	asset := NewAssetScraper(dia.UniswapExchange, "", "")
-	for {
-		select {
-		case receivedAsset := <-asset.Asset():
-			log.Infoln("Received asset", receivedAsset)
-			asset, err := data.GetByName(receivedAsset.Name)
-			if err != nil {
-				log.Errorf("error getting asset %s: %v\n", receivedAsset.Name, err)
-			}
-			log.Infof("asset %s already in DB \n", asset.Name)
-			err = data.Save(receivedAsset)
-			if err != nil {
-				log.Error("Error saving asset: ", err)
-			}
-		}
-
-	}
-	// wg.Wait()
 }
