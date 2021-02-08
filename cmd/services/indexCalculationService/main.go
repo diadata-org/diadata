@@ -19,18 +19,14 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	//currentConstituents := periodicIndexRebalancingCalculation()
-	symbols := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
-	currentConstituents := getCurrentIndexComposition(symbols, ds)
+	indexSymbol := "SCIFI"
 	indexTicker := time.NewTicker(2 * 60 * time.Second)
-	rebalancingTicker := time.NewTicker(30 * 24 * time.Hour)
 	go func() {
 		for {
 			select {
-			case <-rebalancingTicker.C:
-				currentConstituents = periodicIndexRebalancingCalculation()
 			case <-indexTicker.C:
-				index := periodicIndexValueCalculation(currentConstituents, ds)
+				currentConstituents := getCurrentIndexCompositionForIndex(indexSymbol, ds)
+				index := periodicIndexValueCalculation(currentConstituents, indexSymbol, ds)
 				err := ds.SetCryptoIndex(&index)
 				if err != nil {
 					log.Error(err)
@@ -44,7 +40,7 @@ func main() {
 func getCurrentIndexComposition(constituentsSymbols []string, ds *models.DB) []models.CryptoIndexConstituent {
 	var constituents []models.CryptoIndexConstituent
 	for _, constituentSymbol := range constituentsSymbols {
-		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5*time.Hour), time.Now(), constituentSymbol)
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituentSymbol)
 		if err != nil {
 			log.Error(err)
 			return constituents
@@ -56,50 +52,56 @@ func getCurrentIndexComposition(constituentsSymbols []string, ds *models.DB) []m
 	return constituents
 }
 
-func periodicIndexRebalancingCalculation() []models.CryptoIndexConstituent {
-	symbols := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
-
-	// Get constituents information
-	constituents, err := indexCalculationService.GetIndexBasket(symbols)
+func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []models.CryptoIndexConstituent {
+	var constituents []models.CryptoIndexConstituent
+	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(),indexSymbol)
 	if err != nil {
 		log.Error(err)
+		return constituents
 	}
-
-	// Calculate relative weights
-	err = indexCalculationService.CalculateWeights(&constituents)
-	if err != nil {
-		log.Error(err)
+	for _, constituent := range cryptoIndex[0].Constituents {
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol)
+		if err != nil {
+			log.Error(err)
+			return constituents
+		}
+		if len(curr) > 0 {
+			constituents = append(constituents, curr[0])
+		}
 	}
-	log.Info(constituents)
 	return constituents
 }
 
-func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, ds *models.DB) models.CryptoIndex {
-	symbol := "SCIFI"
+func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, indexSymbol string, ds *models.DB) models.CryptoIndex {
 	err := indexCalculationService.UpdateConstituentsMarketData(&currentConstituents)
 	if err != nil {
 		log.Error(err)
 	}
 	quotation := 0.0
-	tradeObject, err := ds.GetTradeInflux(symbol, "", time.Now())
+	tradeObject, err := ds.GetTradeInflux(indexSymbol, "", time.Now())
 	if err == nil {
 		// Quotation does exist
 		quotation = tradeObject.EstimatedUSDPrice
 	}
 	supply := 0.0
-	supplyObject, err := ds.GetLatestSupply(symbol)
+	supplyObject, err := ds.GetLatestSupply(indexSymbol)
 	if err == nil {
 		// Supply does exist
 		supply = supplyObject.CirculatingSupply
 	}
 	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
+	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	if err != nil {
+		log.Error(err)
+	}
 	index := models.CryptoIndex{
-		Name:              symbol,
+		Name:              indexSymbol,
 		Price:             quotation,
 		CirculatingSupply: supply,
 		Value:             indexValue,
 		CalculationTime:   time.Now(),
 		Constituents:      currentConstituents,
+		Divisor:           currCryptoIndex[0].Divisor,
 	}
 	log.Info("Index: ", index)
 	return index

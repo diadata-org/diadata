@@ -14,6 +14,11 @@ import (
 
 type nothing struct{}
 
+var (
+	stablecoins = []string{"USDC", "USDT", "TUSD", "DAI", "PAX"}
+	tol         = float64(0.1)
+)
+
 type TradesBlockService struct {
 	pair            string
 	shutdown        chan nothing
@@ -104,6 +109,18 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	} else {
 		t.EstimatedUSDPrice = t.Price
 	}
+
+	// TO DO: Uncomment this in next deploy of TBS
+	// // If estimated price for stablecoin diverges too much ignore trade
+	// if utils.Contains(&stablecoins, t.Symbol) {
+	// 	if math.Abs(t.EstimatedUSDPrice-1) > tol {
+	// 		log.Errorf("price for stablecoin %s diverges by %v", t.Symbol, math.Abs(t.EstimatedUSDPrice-1))
+	// 		ignoreTrade = true
+	// 	}
+	// }
+	// Comment Philipp: We could make another check here. Store CG and/or CMC quotation in redis cache
+	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
+	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
 	if ignoreTrade == false {
 		s.datastore.SaveTradeInflux(&t)

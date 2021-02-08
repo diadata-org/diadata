@@ -32,8 +32,8 @@ const (
 	TopicTrades          = 2
 	TopicTradesBlock     = 3
 	TopicSuppliesBlock   = 7
-  TopicIndexBlock2     = 8
-  TopicIndexBlockDaily = 11
+	TopicIndexBlock2     = 8
+	TopicIndexBlockDaily = 11
 	retryDelay           = 2 * time.Second
 )
 
@@ -148,7 +148,7 @@ func NewSyncWriter(topic int) *kafka.Writer {
 		Topic:      getTopic(topic),
 		Balancer:   &kafka.LeastBytes{},
 		Async:      false,
-		BatchBytes: 4 * 1048576,
+		BatchBytes: 1e9, // 1GB
 	})
 }
 

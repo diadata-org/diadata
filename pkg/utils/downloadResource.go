@@ -135,6 +135,7 @@ func GraphQLGet(url string, query []byte, bearer string) ([]byte, error) {
 // GetCoinPrice Gets the price in USD of coin through our API.
 // Looks it up on coingecko in case it doesn't find it there.
 func GetCoinPrice(coin string) (float64, error) {
+	// TODO Add UNIV2DAIETH quotation
 	// log.Info("Get price for ", coin)
 	switch coin {
 	case "WETH":

@@ -11,8 +11,8 @@ import (
 
 const (
 	// Determine frequency of scraping
-	refreshRateDelay  = time.Second * 60 * 1
-	refreshStateDelay = time.Second * 60 * 1
+	refreshRateDelay  = time.Second * 60 * 5
+	refreshStateDelay = time.Second * 60 * 5
 )
 
 type nothing struct{}
@@ -220,6 +220,17 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			helper = NewBitfinex(s, protocol)
 		}
+	case "MAKERDAO":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "MAKERDAO",
+				Address:              "",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+			}
+			helper = NewMakerdao(s, protocol)
+		}
 
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")
@@ -277,6 +288,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "BITFINEX":
 		{
 			helper = NewBitfinex(s, protocol)
+		}
+	case "MAKERDAO":
+		{
+			helper = NewMakerdao(s, protocol)
 		}
 	default:
 		return errors.New("Error: " + defiType + " does not exist in database")

@@ -66,7 +66,6 @@ func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 		resubscribe:    make(chan nothing),
 		tokens:         make(map[string]*KyberToken),
 	}
-
 	wsClient, err := ethclient.Dial(kyberWsDial)
 	if err != nil {
 		log.Fatal(err)
@@ -80,6 +79,7 @@ func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 
 	scraper.loadTokens()
 
+	time.Sleep(5 * time.Second)
 	go scraper.mainLoop()
 	return scraper
 }
@@ -88,7 +88,7 @@ func (scraper *KyberScraper) loadTokens() {
 
 	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
 		Symbol:   "ETH",
-		Decimals: big.NewInt(18) ,
+		Decimals: big.NewInt(18),
 	}
 
 	// added by hand because the symbol method returns a bytes32 instead of string
@@ -238,15 +238,15 @@ func (scraper *KyberScraper) mainLoop() {
 		}
 	}()
 
-	for scraper.run {
+	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
 			scraper.error = errors.New("Kyber: No pairs to scrape provided")
 			log.Error(scraper.error.Error())
-			break
 		}
-
 	}
-	time.Sleep(time.Duration(10) * time.Second)
+
+	time.Sleep(10 * time.Second)
+
 	if scraper.error == nil {
 		scraper.error = errors.New("main loop terminated by Close()")
 	}

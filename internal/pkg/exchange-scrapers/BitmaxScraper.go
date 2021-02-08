@@ -3,13 +3,14 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	ws "github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
@@ -33,7 +34,6 @@ type BitMaxPair struct {
 	TickSize              string `json:"tickSize"`
 	LotSize               string `json:"lotSize"`
 }
-
 
 type BitMaxScraper struct {
 	// signaling channels for session initialization and finishing
@@ -108,14 +108,17 @@ func (s *BitMaxScraper) mainLoop() {
 				for _, trade := range message.Data {
 					priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-
+					pair := dia.Pair{
+						Symbol:      strings.Split(message.Symbol, "/")[0],
+						ForeignName: message.Symbol,
+					}
 					t := &dia.Trade{
-						Symbol:         strings.Split(message.Symbol, "/")[0],
-						Pair:           message.Symbol,
+						Symbol:         pair.Symbol,
+						Pair:           pair.ForeignName,
 						Price:          priceFloat,
 						Volume:         volumeFloat,
 						Time:           time.Unix(0, trade.Ts*int64(time.Millisecond)),
-						ForeignTradeID: strconv.FormatInt(trade.Seqnum,10),
+						ForeignTradeID: strconv.FormatInt(trade.Seqnum, 10),
 						Source:         s.exchangeName,
 					}
 					log.Infoln("Got Trade", t)
@@ -139,7 +142,7 @@ func (s *BitMaxScraper) mainLoop() {
 }
 
 func (s *BitMaxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+	return pair, nil
 }
 
 // closes all connected PairScrapers

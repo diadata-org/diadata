@@ -40,6 +40,8 @@ const (
 	ZeroxExchange     = "0x"
 	KyberExchange     = "Kyber"
 	BitMaxExchange    = "Bitmax"
+	CREX24Exchange    = "CREX24"
+	STEXExchange      = "STEX"
 )
 
 const (
@@ -77,6 +79,8 @@ func Exchanges() []string {
 		KyberExchange,
 		BitMaxExchange,
 		PanCakeSwap,
+		CREX24Exchange,
+		STEXExchange,
 	}
 }
 
@@ -100,6 +104,7 @@ type VerificationMechanism string
 
 const (
 	PROOF_OF_STAKE VerificationMechanism = "pos"
+	PROOF_OF_WORK  VerificationMechanism = "pow"
 )
 
 func GetConfig(exchange string) (*ConfigApi, error) {

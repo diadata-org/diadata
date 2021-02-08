@@ -316,25 +316,25 @@
             "Symbol": "mUSD",
             "ForeignName": "mUSD-USDT",
             "Exchange": "Gnosis",
-            "Ignore": true
+            "Ignore": false
         },
         {
             "Symbol": "USDT",
             "ForeignName": "USDT-mUSD",
             "Exchange": "Gnosis",
-            "Ignore": true
+            "Ignore": false
         },
         {
             "Symbol": "USDC",
             "ForeignName": "USDC-mUSD",
             "Exchange": "Gnosis",
-            "Ignore": true
+            "Ignore": false
         },
         {
             "Symbol": "mUSD",
             "ForeignName": "mUSD-USDC",
             "Exchange": "Gnosis",
-            "Ignore": true
+            "Ignore": false
         }
     ]
 }

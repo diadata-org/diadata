@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/diadata/pkg/model"
-	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
+
+	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -146,8 +147,12 @@ func main() {
 			if err != nil {
 				log.Printf(err.Error())
 			} else {
+				log.Info("get block from tradesBlock")
 				var tb dia.TradesBlock
 				err := tb.UnmarshalBinary(m.Value)
+				if err != nil {
+					log.Error("error unmarshalling trades block")
+				}
 				if err == nil {
 					f.ProcessTradesBlock(&tb)
 				}

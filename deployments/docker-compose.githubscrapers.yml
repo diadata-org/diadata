@@ -1,0 +1,40 @@
+version: '3.2'
+services:
+
+  diadatascraper:
+    depends_on: [genericgithubscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericgithubscraper:latest
+    command: /bin/githubScraper -username=diadata-org -repository=diadata
+    networks:
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    secrets:
+      - api_github
+    logging:
+      options:
+        max-size: "50m"
+
+
+  genericgithubscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-githubScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericgithubscraper:latest
+    restart: "no"
+    networks:
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
+
+secrets:
+  api_github:
+    file: ../secrets/github_key.txt

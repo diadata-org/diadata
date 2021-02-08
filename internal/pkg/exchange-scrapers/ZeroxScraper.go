@@ -238,15 +238,14 @@ func (scraper *ZeroxScraper) mainLoop() {
 		}
 	}()
 
-	for scraper.run {
+	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
 			scraper.error = errors.New("Zerox: No pairs to scrape provided")
 			log.Error(scraper.error.Error())
-			break
 		}
-
 	}
-	time.Sleep(time.Duration(10) * time.Second)
+
+	time.Sleep(10 * time.Second)
 	if scraper.error == nil {
 		scraper.error = errors.New("main loop terminated by Close()")
 	}

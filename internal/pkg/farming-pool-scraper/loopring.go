@@ -24,6 +24,7 @@ type LRCPool struct {
 
 const (
 	lrcStakingPoolAddress = "0xF4662bB1C4831fD411a95b8050B3A5998d8A4A5b"
+	lrcFeeVaultAddress    = "0x4b89f8996892d137c3dE1312d1dD4E4F4fFcA171"
 )
 
 func NewLRCPoolScraper(scraper *PoolScraper) *LRCPool {
@@ -72,11 +73,12 @@ func (cv *LRCPool) scrapePools() (err error) {
 	if err != nil {
 		return err
 	}
-	lrcFeeVaultAddress, err := stakingPool.ProtocolFeeVaultAddress(&bind.CallOpts{})
-	if err != nil {
-		return err
-	}
-	feevault, err := protocolfeevault.NewProtocolFeeVaultCaller(lrcFeeVaultAddress, cv.RestClient)
+	// 02/02/2021: The stakingPool contract emits zero address as fee vault address, therefore hard-coded above
+	// lrcFeeVaultAddress, err := stakingPool.ProtocolFeeVaultAddress(&bind.CallOpts{})
+	// if err != nil {
+	// 	return err
+	// }
+	feevault, err := protocolfeevault.NewProtocolFeeVaultCaller(common.HexToAddress(lrcFeeVaultAddress), cv.RestClient)
 	if err != nil {
 		return err
 	}

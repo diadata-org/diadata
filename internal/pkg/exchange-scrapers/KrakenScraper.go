@@ -3,16 +3,17 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"github.com/beldur/kraken-go-api-client"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"math"
 	"strconv"
 	"sync"
 	"time"
+
+	krakenapi "github.com/beldur/kraken-go-api-client"
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 const (
-	krakenRefreshDelay = time.Second * 60 * 3
+	krakenRefreshDelay = time.Second * 30 * 1
 )
 
 type KrakenScraper struct {
@@ -142,8 +143,32 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
-func (s *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+// NormalizePair accounts for the par
+func (ps *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	if len(pair.ForeignName) == 7 {
+		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
+			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
+			return pair, nil
+		}
+		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
+			pair.ForeignName = pair.ForeignName[1:]
+		}
+	}
+	if len(pair.ForeignName) == 8 {
+		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
+			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
+		}
+		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
+			pair.ForeignName = pair.ForeignName[1:]
+		}
+	}
+	if pair.ForeignName[len(pair.ForeignName)-3:] == "XBT" {
+		pair.ForeignName = pair.ForeignName[:len(pair.ForeignName)-3] + "BTC"
+	}
+	if pair.ForeignName[:3] == "XBT" {
+		pair.ForeignName = "BTC" + pair.ForeignName[len(pair.ForeignName)-3:]
+	}
+	return pair, nil
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
@@ -174,7 +199,6 @@ func NewTrade(pair dia.Pair, info krakenapi.TradeInfo, foreignTradeID string) *d
 	if info.Sell {
 		volume = -volume
 	}
-
 	t := &dia.Trade{
 		Pair:           pair.ForeignName,
 		Price:          info.PriceFloat,
@@ -200,8 +224,10 @@ func (s *KrakenScraper) Update() {
 			if r != nil {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
-					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
+					p, _ := s.NormalizePair(ps.pair)
+					t := NewTrade(p, ti, strconv.FormatInt(r.Last, 16))
 					ps.parent.chanTrades <- t
+					log.Info("got trade: ", t)
 				}
 			} else {
 				log.Printf("r nil")

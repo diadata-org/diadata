@@ -49,19 +49,19 @@ services:
       options:
         max-size: "50m"
 
-  itinservice:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-itinService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_itinservice:latest
-    networks:
-      - redis-network
-      - influxdb-network
-    environment:
-      - EXEC_MODE=production
-    logging:
-      options:
-        max-size: "50m"
+  # itinservice:
+  #   build:
+  #     context: ../../../..
+  #     dockerfile: github.com/diadata-org/diadata/build/Dockerfile-itinService
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_itinservice:latest
+  #   networks:
+  #     - redis-network
+  #     - influxdb-network
+  #   environment:
+  #     - EXEC_MODE=production
+  #   logging:
+  #     options:
+  #       max-size: "50m"
 
   indexcalculationservice:
     build:
