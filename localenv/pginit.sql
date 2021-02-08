@@ -4,6 +4,7 @@ create table asset (
                        name text not null,
                        address text,
                        decimals    text,
-                    unique (symbol, address)
+                       blockchain text,
+                       unique (symbol, address)
 
 );
