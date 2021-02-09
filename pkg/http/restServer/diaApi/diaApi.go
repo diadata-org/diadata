@@ -125,6 +125,32 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetLastPriceBeforeAllExchanges(c *gin.Context) {
+	symbol := c.Param("symbol")
+	filter := c.Param("filter")
+	timestampStr := c.Param("timestamp")
+
+	var timestamp time.Time
+	if timestampStr == "" {
+		timestamp = time.Now()
+	} else {
+		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		timestamp = time.Unix(timestampInt, 0)
+	}
+
+	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, "", timestamp)
+
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, price)
+	}
+}
+
 func (env *Env) GetLastPriceBefore(c *gin.Context) {
 	symbol := c.Param("symbol")
 	filter := c.Param("filter")
