@@ -125,6 +125,33 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetLastPriceBefore(c *gin.Context) {
+	symbol := c.Param("symbol")
+	filter := c.Param("filter")
+	exchange := c.Param("exchange")
+	timestampStr := c.Param("timestamp")
+
+	var timestamp time.Time
+	if timestampStr == "" {
+		timestamp = time.Now()
+	} else {
+		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		timestamp = time.Unix(timestampInt, 0)
+	}
+
+	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, exchange, timestamp)
+
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, price)
+	}
+}
+
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
@@ -1181,7 +1208,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24 * time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)

@@ -164,7 +164,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				if constituentSymbol == "COVER" {
 					continue
 				}
-				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-5 * time.Hour), endtime, constituentSymbol)
+				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24 * time.Hour), endtime, constituentSymbol)
 				if err != nil {
 					return retval, err
 				}
@@ -219,7 +219,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 }
 
 func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
-	startdate := date.Add(-5 * time.Hour)
+	startdate := date.Add(-24 * time.Hour)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {

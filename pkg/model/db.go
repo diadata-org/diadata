@@ -44,6 +44,7 @@ type Datastore interface {
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
+	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
