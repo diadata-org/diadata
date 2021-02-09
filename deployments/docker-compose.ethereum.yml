@@ -46,7 +46,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc-testnet
     networks:
       - scrapers-network
-    command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc_testnet --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545"
+    command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc_testnet --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=3600
     logging:
       options:
         max-size: "50m"

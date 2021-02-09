@@ -31,6 +31,8 @@ func main() {
 	var topCoins = flag.Int("topCoins", 15, "Number of coins to push with the oracle")
 	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
 	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
+	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
+	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
 	flag.Parse()
 
 	/*
@@ -76,29 +78,122 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
-	periodicOracleUpdateHelper(topCoins, auth, contract, conn)
+	periodicOracleUpdateHelper(topCoins, *sleepSeconds, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(topCoins, auth, contract, conn)
+				periodicOracleUpdateHelper(topCoins, *sleepSeconds, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+
+	// --------------------------------------------------------
+	// PRICE QUOTATIONS
+	// --------------------------------------------------------
+
+	// BTC quotation
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+	rawBTCQ, err := getQuotationFromDia("BTC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BTC quotation data from DIA: %v", err)
+		return err
+	}
+	rawBTCS, err := getSupplyFromDia("BTC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BTC supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawBTCQ, rawBTCS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update BTC Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
+	// BNB Quotation
+	rawBNBQ, err := getQuotationFromDia("BNB")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BNB quotation data from DIA: %v", err)
+		return err
+	}
+	rawBNBS, err := getSupplyFromDia("BNB")
+	if err != nil {
+		log.Fatalf("Failed to retrieve BNB supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawBNBQ, rawBNBS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update BNB Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
+	// ETH Quotation
+	rawETHQ, err := getQuotationFromDia("ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve ETH quotation data from DIA: %v", err)
+		return err
+	}
+	rawETHS, err := getSupplyFromDia("ETH")
+	if err != nil {
+		log.Fatalf("Failed to retrieve ETH supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawETHQ, rawETHS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update ETH Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
+	// USDT Quotation
+	rawUSDTQ, err := getQuotationFromDia("USDT")
+	if err != nil {
+		log.Fatalf("Failed to retrieve USDT quotation data from DIA: %v", err)
+		return err
+	}
+	rawUSDTS, err := getSupplyFromDia("USDT")
+	if err != nil {
+		log.Fatalf("Failed to retrieve USDT supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawUSDTQ, rawUSDTS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update USDT Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
+	// XRP Quotation
+	rawXRPQ, err := getQuotationFromDia("XRP")
+	if err != nil {
+		log.Fatalf("Failed to retrieve XRP quotation data from DIA: %v", err)
+		return err
+	}
+	rawXRPS, err := getSupplyFromDia("XRP")
+	if err != nil {
+		log.Fatalf("Failed to retrieve XRP supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawXRPQ, rawXRPS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update XRP Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// --------------------------------------------------------
 	// LENDING/BORROWING RATES
 	// --------------------------------------------------------
-
-	time.Sleep(2 * time.Minute)
 
 	// Maker Rate
 	rawMaker, err := getDefiRatesFromDia("MAKERDAO", "ETH-A")
@@ -111,7 +206,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Makerdao Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// CREAM Rates
 	rawCream, err := getDefiRatesFromDia("CREAM", "UNI")
@@ -124,7 +219,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update CREAM Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// fortube Rates
 	rawFortube, err := getDefiRatesFromDia("FORTUBE", "DAI")
@@ -137,7 +232,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Fortube Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// ddex Rates
 	rawDdex, err := getDefiRatesFromDia("DDEX", "DAI")
@@ -150,7 +245,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update ddex Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// nuo Rates
 	rawNuo, err := getDefiRatesFromDia("NUO", "DAI")
@@ -163,7 +258,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Nuo Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// bZx Rates
 	rawBzx, err := getDefiRatesFromDia("BZX", "DAI")
@@ -176,7 +271,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update bZx Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Compound Rates
 	rawCompound, err := getDefiRatesFromDia("COMPOUND", "DAI")
@@ -189,7 +284,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Compound Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// DYDX Rates
 	rawDydx, err := getDefiRatesFromDia("DYDX", "DAI")
@@ -202,7 +297,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update DYDX Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Aave Rates
 	rawAave, err := getDefiRatesFromDia("AAVE", "DAI")
@@ -215,7 +310,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Aave Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Aave Rates
 	rawBitfinex, err := getDefiRatesFromDia("BITFINEX", "DAI")
@@ -228,7 +323,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Bitfinex Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// -----------------------------------------------------------------------
 	// LENDING PROTOCOL STATES
@@ -245,7 +340,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Maker state Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// CREAM State Data
 	rawCreamState, err := getDefiStateFromDia("CREAM")
@@ -258,7 +353,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update CREAM state Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// DYDX State Data
 	rawDydxState, err := getDefiStateFromDia("DYDX")
@@ -271,7 +366,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update DYDX state Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Compound State Data
 	rawCompoundState, err := getDefiStateFromDia("COMPOUND")
@@ -284,24 +379,24 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Compound state Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// --------------------------------------------------------
 	// EXCHANGE CHART POINTS
 	// --------------------------------------------------------
 
-	// // ECB Chart Point
-	// rawECB, err := getECBRatesFromDia("EUR")
-	// if err != nil {
-	// 	log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
-	// 	return err
-	// }
-	// err = updateECBRate(rawECB, auth, contract)
-	// if err != nil {
-	// 	log.Fatalf("Failed to update ECB Oracle: %v", err)
-	// 	return err
-	// }
-	// time.Sleep(5 * time.Minute)
+	// ECB Chart Point
+	/*rawECB, err := getECBRatesFromDia("EUR")
+	if err != nil {
+		log.Fatalf("Failed to retrieve ECB from DIA: %v", err)
+		return err
+	}
+	err = updateECBRate(rawECB, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update ECB Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)*/
 
 	// Pancakeswap Chart Point
 	rawPancake, err := getDEXFromDia("PanCakeSwap", "WBNB")
@@ -315,7 +410,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update PanCakeSwap Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// CREX24 Chart Point
 	rawCrex24, err := getDEXFromDia("CREX24", "CREX")
@@ -329,7 +424,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update CREX24 Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Bitmax CEX Chart Point
 	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
@@ -343,7 +438,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Bitmax Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// // Maker DEX Chart Point
 	// rawMaker, err := getDEXFromDia("Maker", "ETH")
@@ -357,7 +452,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// 	log.Fatalf("Failed to update Maker Oracle: %v", err)
 	// 	return err
 	// }
-	// time.Sleep(5 * time.Minute)
+	// time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Curvefi DEX Chart Point
 	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
@@ -371,7 +466,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Curvefi Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Gnosis DEX Chart Point
 	rawGnosis, err := getDEXFromDia("Gnosis", "ETH")
@@ -385,7 +480,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Gnosis Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Uniswap Chart Point
 	rawUniswap, err := getDEXFromDia("Uniswap", "ETH")
@@ -399,7 +494,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Uniswap Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// // Loopring Chart Point
 	// rawLoopring, err := getDEXFromDia("Loopring", "ETH")
@@ -413,7 +508,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 	// 	log.Fatalf("Failed to update Loopring Oracle: %v", err)
 	// 	return err
 	// }
-	// time.Sleep(5 * time.Minute)
+	// time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Bancor Chart Point
 	rawBancor, err := getDEXFromDia("Bancor", "ETH")
@@ -427,7 +522,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Bancor Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// 0x Chart Point
 	raw0x, err := getDEXFromDia("0x", "ETH")
@@ -441,7 +536,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update 0x Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Kyber Chart Point
 	rawKyber, err := getDEXFromDia("Kyber", "ETH")
@@ -455,7 +550,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Kyber Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// Sushi Chart Point
 	rawSushi, err := getDEXFromDia("SushiSwap", "ETH")
@@ -469,7 +564,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Sushi Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// DIA token
 	diaToken, err := getCoinDetailsFromDia("DIA")
@@ -482,14 +577,14 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update DIA Token Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// --------------------------------------------------------
 	// FARMING POOL RATES
 	// --------------------------------------------------------
 
 	// Balancer WETH/WBTC pool rate
-	rawBalancer, err := getFarmingPoolFromDia("Balancer", "0x1efF8aF5D577060BA4ac8A29A13525bb0Ee2A3D5")
+	/*rawBalancer, err := getFarmingPoolFromDia("Balancer", "0x1efF8aF5D577060BA4ac8A29A13525bb0Ee2A3D5")
 	if err != nil {
 		log.Fatalf("Failed to retrieve Balancer pool from DIA: %v", err)
 		return err
@@ -500,7 +595,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update Balancer Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// CVAULT WETH pool rate
 	rawCvault, err := getFarmingPoolFromDia("Cvault", "0")
@@ -514,7 +609,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update CVAULT Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)*/
 
 	// YFI WETH pool rate
 	rawYFI, err := getFarmingPoolFromDia("yfi", "WETH")
@@ -528,7 +623,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update YFI Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// SYNTHETIX sETH total debt
 	rawSYNTHETIX, err := getFarmingPoolFromDia("Synthetix", "0xD0DC005d31C2979CC0d38718e23c82D1A50004C0")
@@ -542,7 +637,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update SYNTHETIX Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// LOOPRING total reward
 	rawLRC, err := getFarmingPoolFromDia("Loopring", "LRC")
@@ -556,7 +651,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update LOOPRING Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// CURVEFI virtual price
 	rawCURVEFI, err := getFarmingPoolFromDia("Curvefi", "3")
@@ -570,7 +665,7 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update CURVEFI Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	// BARNBRIDGE total reward
 	rawBARNBRIDGE, err := getFarmingPoolFromDia("BARNBRIDGE", "STABLECOIN")
@@ -584,33 +679,33 @@ func periodicOracleUpdateHelper(topCoins *int, auth *bind.TransactOpts, contract
 		log.Fatalf("Failed to update BARNBRIDGE Oracle: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Minute)
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
-	// // Top 15 coins
-	// rawCoins, err := getToplistFromDia()
-	// if err != nil {
-	// 	log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
-	// 	return err
-	// }
+	// Top 15 coins
+	/*rawCoins, err := getToplistFromDia()
+	if err != nil {
+		log.Fatalf("Failed to retrieve toplist from DIA: %v", err)
+		return err
+	}
 
-	// cleanedCoins := []models.Coin{}
+	cleanedCoins := []models.Coin{}
 
-	// for key := range rawCoins.Coins {
-	// 	if rawCoins.Coins[key].CirculatingSupply != nil {
-	// 		cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
-	// 	}
-	// }
-	// sort.Slice(cleanedCoins, func(i, j int) bool {
-	// 	return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
-	// })
-	// topCoinSlice := cleanedCoins[:*topCoins]
+	for key := range rawCoins.Coins {
+		if rawCoins.Coins[key].CirculatingSupply != nil {
+			cleanedCoins = append(cleanedCoins, rawCoins.Coins[key])
+		}
+	}
+	sort.Slice(cleanedCoins, func(i, j int) bool {
+		return cleanedCoins[i].Price**cleanedCoins[i].CirculatingSupply > cleanedCoins[j].Price**cleanedCoins[j].CirculatingSupply
+	})
+	topCoinSlice := cleanedCoins[:*topCoins]
 
-	// err = updateTopCoins(topCoinSlice, auth, contract)
-	// if err != nil {
-	// 	log.Fatalf("Failed to update Coins Oracle: %v", err)
-	// 	return err
-	// }
-	// time.Sleep(5 * time.Minute)
+	err = updateTopCoins(topCoinSlice, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update Coins Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)*/
 
 	return nil
 }
@@ -633,7 +728,7 @@ func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleServi
 	return nil
 }
 
-func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateTopCoins(topCoins []models.Coin, sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	for _, element := range topCoins {
 		symbol := strings.ToUpper(element.Symbol)
 		name := element.Name
@@ -645,7 +740,7 @@ func updateTopCoins(topCoins []models.Coin, auth *bind.TransactOpts, contract *o
 			log.Fatalf("Failed to update Oracle: %v", err)
 			return err
 		}
-		time.Sleep(5 * time.Minute)
+		time.Sleep(time.Duration(sleepSeconds) * time.Second)
 	}
 	return nil
 }
@@ -722,6 +817,20 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
 	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func updateQuotation(quotation *models.Quotation, supply *dia.Supply, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+	name := quotation.Name
+	symbol := quotation.Symbol
+	price := quotation.Price
+	circSupply := supply.CirculatingSupply
+	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), int64(circSupply))
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -949,6 +1058,50 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 		return nil, err
 	}
 	return &quotation, nil
+}
+
+func getQuotationFromDia(symbol string) (*models.Quotation, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var quotation models.Quotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &quotation, nil
+}
+
+func getSupplyFromDia(symbol string) (*dia.Supply, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/supply/" + symbol)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var supply dia.Supply
+	err = supply.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &supply, nil
 }
 
 func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool, error) {
