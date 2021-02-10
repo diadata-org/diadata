@@ -1,1204 +1,3136 @@
 {
-  "Coins": [
-    {
-      "Symbol": "ADK",
-      "ForeignName": "ADK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "AKA",
-      "ForeignName": "AKA_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ARDR",
-      "ForeignName": "ARDR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ATCC",
-      "ForeignName": "ATCC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ATH",
-      "ForeignName": "ATH_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "B2B",
-      "ForeignName": "B2B_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BBR",
-      "ForeignName": "BBR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BCA",
-      "ForeignName": "BCA_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BCI",
-      "ForeignName": "BCI_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BEET",
-      "ForeignName": "BEET_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BITG",
-      "ForeignName": "BITG_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BLOC",
-      "ForeignName": "BLOC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BNB",
-      "ForeignName": "BNB_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCN",
-      "ForeignName": "BTCN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCZ",
-      "ForeignName": "BTCZ_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTX",
-      "ForeignName": "BTX_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BURST",
-      "ForeignName": "BURST_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BYC",
-      "ForeignName": "BYC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CEEK",
-      "ForeignName": "CEEK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CLO",
-      "ForeignName": "CLO_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CLOAK",
-      "ForeignName": "CLOAK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "COVAL",
-      "ForeignName": "COVAL_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CSC",
-      "ForeignName": "CSC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASH_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DEB",
-      "ForeignName": "DEB_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DERO",
-      "ForeignName": "DERO_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DGB",
-      "ForeignName": "DGB_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DIVI",
-      "ForeignName": "DIVI_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DOGE",
-      "ForeignName": "DOGE_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DOT",
-      "ForeignName": "DOT_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DRS",
-      "ForeignName": "DRS_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DYN",
-      "ForeignName": "DYN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EAG",
-      "ForeignName": "EAG_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ECA",
-      "ForeignName": "ECA_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EGEM",
-      "ForeignName": "EGEM_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EGX",
-      "ForeignName": "EGX_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ELLA",
-      "ForeignName": "ELLA_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOS_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EPLUS",
-      "ForeignName": "EPLUS_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ETC",
-      "ForeignName": "ETC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ETHO",
-      "ForeignName": "ETHO_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "EVC",
-      "ForeignName": "EVC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "GBX",
-      "ForeignName": "GBX_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "GPKR",
-      "ForeignName": "GPKR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "GRFT",
-      "ForeignName": "GRFT_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "HELP",
-      "ForeignName": "HELP_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ICR",
-      "ForeignName": "ICR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "IGNIS",
-      "ForeignName": "IGNIS_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LCC",
-      "ForeignName": "LCC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LOG",
-      "ForeignName": "LOG_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LST",
-      "ForeignName": "LST_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LTHN",
-      "ForeignName": "LTHN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MAR",
-      "ForeignName": "MAR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MARS",
-      "ForeignName": "MARS_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MNC",
-      "ForeignName": "MNC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MNP",
-      "ForeignName": "MNP_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MSR",
-      "ForeignName": "MSR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NCP",
-      "ForeignName": "NCP_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NLG",
-      "ForeignName": "NLG_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NUKO",
-      "ForeignName": "NUKO_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NXT",
-      "ForeignName": "NXT_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "OK",
-      "ForeignName": "OK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ONION",
-      "ForeignName": "ONION_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ORE",
-      "ForeignName": "ORE_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "PART",
-      "ForeignName": "PART_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "PIRL",
-      "ForeignName": "PIRL_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "QAC",
-      "ForeignName": "QAC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "QUAN",
-      "ForeignName": "QUAN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "RTH",
-      "ForeignName": "RTH_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "RUPX",
-      "ForeignName": "RUPX_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SCRIV",
-      "ForeignName": "SCRIV_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SEM",
-      "ForeignName": "SEM_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SEQ",
-      "ForeignName": "SEQ_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SKB",
-      "ForeignName": "SKB_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SMART",
-      "ForeignName": "SMART_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SPK",
-      "ForeignName": "SPK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "STAK",
-      "ForeignName": "STAK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SURE",
-      "ForeignName": "SURE_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TNC",
-      "ForeignName": "TNC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRX_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "UFR",
-      "ForeignName": "UFR_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VITAE",
-      "ForeignName": "VITAE_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VLT",
-      "ForeignName": "VLT_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "WAVES",
-      "ForeignName": "WAVES_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "WXC",
-      "ForeignName": "WXC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XBI",
-      "ForeignName": "XBI_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLM_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRP_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XSH",
-      "ForeignName": "XSH_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XTZ",
-      "ForeignName": "XTZ_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XVG",
-      "ForeignName": "XVG_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "YOC",
-      "ForeignName": "YOC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZCL",
-      "ForeignName": "ZCL_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEC",
-      "ForeignName": "ZEC_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEL",
-      "ForeignName": "ZEL_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEN",
-      "ForeignName": "ZEN_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ANT",
-      "ForeignName": "ANT_NXT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_xEUR",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "FREE",
-      "ForeignName": "FREE_NXT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NLG",
-      "ForeignName": "NLG_NOVO",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SMART",
-      "ForeignName": "SMART_BC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VIT",
-      "ForeignName": "VIT_NXT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_DAI",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "COMP",
-      "ForeignName": "COMP_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "GNO",
-      "ForeignName": "GNO_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "HYDRO",
-      "ForeignName": "HYDRO_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LINK",
-      "ForeignName": "LINK_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LINK",
-      "ForeignName": "LINK_BTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MKR",
-      "ForeignName": "MKR_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NEC",
-      "ForeignName": "NEC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TKN",
-      "ForeignName": "TKN_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "UNI",
-      "ForeignName": "UNI_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "UNI",
-      "ForeignName": "UNI_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ADK",
-      "ForeignName": "ADK_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "AIB",
-      "ForeignName": "AIB_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BCN",
-      "ForeignName": "BCN_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BENZ",
-      "ForeignName": "BENZ_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BOT",
-      "ForeignName": "BOT_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCN",
-      "ForeignName": "BTCN_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCZ",
-      "ForeignName": "BTCZ_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CEEK",
-      "ForeignName": "CEEK_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DAPS",
-      "ForeignName": "DAPS_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DEB",
-      "ForeignName": "DEB_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DGTX",
-      "ForeignName": "DGTX_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DOW",
-      "ForeignName": "DOW_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DRS",
-      "ForeignName": "DRS_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DYN",
-      "ForeignName": "DYN_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ECA",
-      "ForeignName": "ECA_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ENJ",
-      "ForeignName": "ENJ_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "HTML",
-      "ForeignName": "HTML_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "KICK",
-      "ForeignName": "KICK_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LCC",
-      "ForeignName": "LCC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LST",
-      "ForeignName": "LST_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MASH",
-      "ForeignName": "MASH_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MNC",
-      "ForeignName": "MNC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NYC",
-      "ForeignName": "NYC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "QAC",
-      "ForeignName": "QAC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "RTH",
-      "ForeignName": "RTH_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SEQ",
-      "ForeignName": "SEQ_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SIC",
-      "ForeignName": "SIC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SURE",
-      "ForeignName": "SURE_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TNC",
-      "ForeignName": "TNC_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRX_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VITAE",
-      "ForeignName": "VITAE_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XCASH",
-      "ForeignName": "XCASH_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XRT",
-      "ForeignName": "XRT_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEL",
-      "ForeignName": "ZEL_ETH",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BC",
-      "ForeignName": "BC_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BENZ",
-      "ForeignName": "BENZ_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCZ",
-      "ForeignName": "BTCZ_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CLO",
-      "ForeignName": "CLO_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DOGE",
-      "ForeignName": "DOGE_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ETG",
-      "ForeignName": "ETG_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LCC",
-      "ForeignName": "LCC_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NCP",
-      "ForeignName": "NCP_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "PENG",
-      "ForeignName": "PENG_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "QAC",
-      "ForeignName": "QAC_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SHND",
-      "ForeignName": "SHND_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VITAE",
-      "ForeignName": "VITAE_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XCASH",
-      "ForeignName": "XCASH_LTC",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "BTCZ",
-      "ForeignName": "BTCZ_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "C2C",
-      "ForeignName": "C2C_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CDM",
-      "ForeignName": "CDM_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CEEK",
-      "ForeignName": "CEEK_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CHESS",
-      "ForeignName": "CHESS_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "CLO",
-      "ForeignName": "CLO_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DASH",
-      "ForeignName": "DASH_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DGB",
-      "ForeignName": "DGB_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DIVI",
-      "ForeignName": "DIVI_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "DRS",
-      "ForeignName": "DRS_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ELY",
-      "ForeignName": "ELY_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETH_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "FREE",
-      "ForeignName": "FREE_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "HELP",
-      "ForeignName": "HELP_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "KICK",
-      "ForeignName": "KICK_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LST",
-      "ForeignName": "LST_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "MNC",
-      "ForeignName": "MNC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NANJ",
-      "ForeignName": "NANJ_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NEXO",
-      "ForeignName": "NEXO_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NXT",
-      "ForeignName": "NXT_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "NYC",
-      "ForeignName": "NYC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "QURO",
-      "ForeignName": "QURO_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "RUPX",
-      "ForeignName": "RUPX_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SBTC",
-      "ForeignName": "sBTC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SIC",
-      "ForeignName": "SIC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "SKB",
-      "ForeignName": "SKB_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TNC",
-      "ForeignName": "TNC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "TUSD",
-      "ForeignName": "TUSD_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "USDC",
-      "ForeignName": "USDC_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "VIT",
-      "ForeignName": "VIT_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "WABI",
-      "ForeignName": "WABI_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XBI",
-      "ForeignName": "XBI_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRP_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEN",
-      "ForeignName": "ZEN_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    },
-    {
-      "Symbol": "ZEUS",
-      "ForeignName": "ZEUS_USDT",
-      "Exchange": "STEX",
-      "Ignore": true
-    }
-  ]
+    "Coins": [
+        {
+            "Symbol": "ABET",
+            "ForeignName": "ABET_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ABS",
+            "ForeignName": "ABS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ACRYL",
+            "ForeignName": "ACRYL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADK",
+            "ForeignName": "ADK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADL",
+            "ForeignName": "ADL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AFRO",
+            "ForeignName": "AFRO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AGNT",
+            "ForeignName": "AGNT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AKA",
+            "ForeignName": "AKA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANON",
+            "ForeignName": "ANON_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARDR",
+            "ForeignName": "ARDR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARDX",
+            "ForeignName": "ARDX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ATCC",
+            "ForeignName": "ATCC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ATH",
+            "ForeignName": "ATH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDAX",
+            "ForeignName": "AUDAX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AZT",
+            "ForeignName": "AZT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "B2B",
+            "ForeignName": "B2B_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "B2G",
+            "ForeignName": "B2G_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAK",
+            "ForeignName": "BAK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BBR",
+            "ForeignName": "BBR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCA",
+            "ForeignName": "BCA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCHA",
+            "ForeignName": "BCHA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCI",
+            "ForeignName": "BCI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCN",
+            "ForeignName": "BCN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCNA",
+            "ForeignName": "BCNA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BDX",
+            "ForeignName": "BDX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BEET",
+            "ForeignName": "BEET_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BGX",
+            "ForeignName": "BGX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BITC",
+            "ForeignName": "BITC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BITG",
+            "ForeignName": "BITG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BITSW",
+            "ForeignName": "BITSW_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLAST",
+            "ForeignName": "BLAST_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLOC",
+            "ForeignName": "BLOC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLTG",
+            "ForeignName": "BLTG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLURT",
+            "ForeignName": "BLURT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNB",
+            "ForeignName": "BNB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BRF",
+            "ForeignName": "BRF_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BST",
+            "ForeignName": "BST_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTCL",
+            "ForeignName": "BTCL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTCN",
+            "ForeignName": "BTCN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTH",
+            "ForeignName": "BTH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTX",
+            "ForeignName": "BTX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BURST",
+            "ForeignName": "BURST_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BYC",
+            "ForeignName": "BYC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BZX",
+            "ForeignName": "BZX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CBUCKS",
+            "ForeignName": "CBUCKS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CCX",
+            "ForeignName": "CCX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CEEK",
+            "ForeignName": "CEEK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CENT",
+            "ForeignName": "CENT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHBT",
+            "ForeignName": "CHBT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLO",
+            "ForeignName": "CLO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLOAK",
+            "ForeignName": "CLOAK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COVAL",
+            "ForeignName": "COVAL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CPTL",
+            "ForeignName": "CPTL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CR8",
+            "ForeignName": "CR8_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CROAT",
+            "ForeignName": "CROAT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRS",
+            "ForeignName": "CRS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRT",
+            "ForeignName": "CRT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CSPN",
+            "ForeignName": "CSPN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CUT",
+            "ForeignName": "CUT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CXC",
+            "ForeignName": "CXC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D4RK",
+            "ForeignName": "D4RK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DASH",
+            "ForeignName": "DASH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEB",
+            "ForeignName": "DEB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DERO",
+            "ForeignName": "DERO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DESH",
+            "ForeignName": "DESH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DGB",
+            "ForeignName": "DGB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIC",
+            "ForeignName": "DIC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIVI",
+            "ForeignName": "DIVI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGEC",
+            "ForeignName": "DOGEC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOOS",
+            "ForeignName": "DOOS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DQI",
+            "ForeignName": "DQI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DRS",
+            "ForeignName": "DRS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DVS",
+            "ForeignName": "DVS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXF",
+            "ForeignName": "DXF_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DYN",
+            "ForeignName": "DYN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EAG",
+            "ForeignName": "EAG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ECA",
+            "ForeignName": "ECA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ECR",
+            "ForeignName": "ECR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EDC",
+            "ForeignName": "EDC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGEM",
+            "ForeignName": "EGEM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGX",
+            "ForeignName": "EGX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ELLA",
+            "ForeignName": "ELLA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EOS",
+            "ForeignName": "EOS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EPLUS",
+            "ForeignName": "EPLUS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ESBC",
+            "ForeignName": "ESBC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ESH",
+            "ForeignName": "ESH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETC",
+            "ForeignName": "ETC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETHO",
+            "ForeignName": "ETHO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETI",
+            "ForeignName": "ETI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EUM",
+            "ForeignName": "EUM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EUNO",
+            "ForeignName": "EUNO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EVC",
+            "ForeignName": "EVC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EXO",
+            "ForeignName": "EXO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EXOR",
+            "ForeignName": "EXOR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLG",
+            "ForeignName": "FLG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLS",
+            "ForeignName": "FLS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FUSION",
+            "ForeignName": "FUSION_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GBX",
+            "ForeignName": "GBX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GFG",
+            "ForeignName": "GFG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GIT",
+            "ForeignName": "GIT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMC",
+            "ForeignName": "GMC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMCC",
+            "ForeignName": "GMCC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GPKR",
+            "ForeignName": "GPKR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GPS",
+            "ForeignName": "GPS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GPYX",
+            "ForeignName": "GPYX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRFT",
+            "ForeignName": "GRFT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEDG",
+            "ForeignName": "HEDG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HELP",
+            "ForeignName": "HELP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HIVE",
+            "ForeignName": "HIVE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HLIX",
+            "ForeignName": "HLIX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HMR",
+            "ForeignName": "HMR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HTA",
+            "ForeignName": "HTA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ICH",
+            "ForeignName": "ICH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ICR",
+            "ForeignName": "ICR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDX",
+            "ForeignName": "IDX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IGNIS",
+            "ForeignName": "IGNIS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ILC",
+            "ForeignName": "ILC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ION",
+            "ForeignName": "ION_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ISC",
+            "ForeignName": "ISC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IZE",
+            "ForeignName": "IZE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JOOS",
+            "ForeignName": "JOOS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JSC",
+            "ForeignName": "JSC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JUP",
+            "ForeignName": "JUP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LCC",
+            "ForeignName": "LCC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LMCH",
+            "ForeignName": "LMCH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LOG",
+            "ForeignName": "LOG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LOT",
+            "ForeignName": "LOT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LST",
+            "ForeignName": "LST_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTCP",
+            "ForeignName": "LTCP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTHN",
+            "ForeignName": "LTHN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MAR",
+            "ForeignName": "MAR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MARS",
+            "ForeignName": "MARS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MFC",
+            "ForeignName": "MFC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MINTME",
+            "ForeignName": "MINTME_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNC",
+            "ForeignName": "MNC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNP",
+            "ForeignName": "MNP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOX",
+            "ForeignName": "MOX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MSR",
+            "ForeignName": "MSR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "N8V",
+            "ForeignName": "N8V_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NBX",
+            "ForeignName": "NBX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NCP",
+            "ForeignName": "NCP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NILU",
+            "ForeignName": "NILU_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NLG",
+            "ForeignName": "NLG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NOVO",
+            "ForeignName": "NOVO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NUKO",
+            "ForeignName": "NUKO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NXT",
+            "ForeignName": "NXT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OBX",
+            "ForeignName": "OBX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OK",
+            "ForeignName": "OK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ONION",
+            "ForeignName": "ONION_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ORE",
+            "ForeignName": "ORE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWC",
+            "ForeignName": "OWC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWO",
+            "ForeignName": "OWO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PART",
+            "ForeignName": "PART_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAYT",
+            "ForeignName": "PAYT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PGC",
+            "ForeignName": "PGC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PHNX",
+            "ForeignName": "PHNX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PIRL",
+            "ForeignName": "PIRL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLEX",
+            "ForeignName": "PLEX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLF",
+            "ForeignName": "PLF_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNY",
+            "ForeignName": "PNY_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QAC",
+            "ForeignName": "QAC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QUAN",
+            "ForeignName": "QUAN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RDBX",
+            "ForeignName": "RDBX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REAK",
+            "ForeignName": "REAK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REOSC",
+            "ForeignName": "REOSC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RNDR",
+            "ForeignName": "RNDR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RTH",
+            "ForeignName": "RTH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RUPX",
+            "ForeignName": "RUPX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "S4F",
+            "ForeignName": "S4F_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SBE",
+            "ForeignName": "SBE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SCRIV",
+            "ForeignName": "SCRIV_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SEM",
+            "ForeignName": "SEM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SEQ",
+            "ForeignName": "SEQ_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SFX",
+            "ForeignName": "SFX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SICC",
+            "ForeignName": "SICC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIGN",
+            "ForeignName": "SIGN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIN",
+            "ForeignName": "SIN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SKB",
+            "ForeignName": "SKB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SMART",
+            "ForeignName": "SMART_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SMB",
+            "ForeignName": "SMB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPK",
+            "ForeignName": "SPK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SRY",
+            "ForeignName": "SRY_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STAK",
+            "ForeignName": "STAK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STREAM",
+            "ForeignName": "STREAM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STS",
+            "ForeignName": "STS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUM",
+            "ForeignName": "SUM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SURE",
+            "ForeignName": "SURE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SVR",
+            "ForeignName": "SVR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SWFL",
+            "ForeignName": "SWFL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SYO",
+            "ForeignName": "SYO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TENT",
+            "ForeignName": "TENT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TEO",
+            "ForeignName": "TEO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "THRN",
+            "ForeignName": "THRN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TLR",
+            "ForeignName": "TLR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TNC",
+            "ForeignName": "TNC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRX",
+            "ForeignName": "TRX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSF",
+            "ForeignName": "TSF_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSS",
+            "ForeignName": "TSS_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUP",
+            "ForeignName": "TUP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UCA",
+            "ForeignName": "UCA_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UCOIN",
+            "ForeignName": "UCOIN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UFR",
+            "ForeignName": "UFR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VDL",
+            "ForeignName": "VDL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VEIL",
+            "ForeignName": "VEIL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VEST",
+            "ForeignName": "VEST_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VEY",
+            "ForeignName": "VEY_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VITAE",
+            "ForeignName": "VITAE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VJC",
+            "ForeignName": "VJC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VLT",
+            "ForeignName": "VLT_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VRAB",
+            "ForeignName": "VRAB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VRSC",
+            "ForeignName": "VRSC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VTX",
+            "ForeignName": "VTX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WAVES",
+            "ForeignName": "WAVES_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WCC",
+            "ForeignName": "WCC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WEC",
+            "ForeignName": "WEC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WIFI",
+            "ForeignName": "WIFI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WXC",
+            "ForeignName": "WXC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "X42",
+            "ForeignName": "X42_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XAC",
+            "ForeignName": "XAC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBG",
+            "ForeignName": "XBG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBI",
+            "ForeignName": "XBI_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XLM",
+            "ForeignName": "XLM_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XNB",
+            "ForeignName": "XNB_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XQR",
+            "ForeignName": "XQR_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRP_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XSH",
+            "ForeignName": "XSH_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XTZ",
+            "ForeignName": "XTZ_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XVG",
+            "ForeignName": "XVG_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFX",
+            "ForeignName": "YFX_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YOC",
+            "ForeignName": "YOC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZANO",
+            "ForeignName": "ZANO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZCL",
+            "ForeignName": "ZCL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEC",
+            "ForeignName": "ZEC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEL",
+            "ForeignName": "ZEL_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEN",
+            "ForeignName": "ZEN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZNN",
+            "ForeignName": "ZNN_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZPAE",
+            "ForeignName": "ZPAE_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANT",
+            "ForeignName": "ANT_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BEVERAGE",
+            "ForeignName": "BEVERAGE_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_xEUR",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EUR",
+            "ForeignName": "EUR_xEUR",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FA",
+            "ForeignName": "FA_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FREE",
+            "ForeignName": "FREE_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LNK",
+            "ForeignName": "LNK_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NLG",
+            "ForeignName": "NLG_NOVO",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SMART",
+            "ForeignName": "SMART_BC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VIT",
+            "ForeignName": "VIT_NXT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AKRO",
+            "ForeignName": "AKRO_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAND",
+            "ForeignName": "BAND_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAND",
+            "ForeignName": "BAND_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_DAI",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETHV",
+            "ForeignName": "ETHV_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HYDRO",
+            "ForeignName": "HYDRO_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MKR",
+            "ForeignName": "MKR_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MTA",
+            "ForeignName": "MTA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEC",
+            "ForeignName": "NEC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OPM",
+            "ForeignName": "OPM_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ORN",
+            "ForeignName": "ORN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SFR",
+            "ForeignName": "SFR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SRK",
+            "ForeignName": "SRK_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TDEX",
+            "ForeignName": "TDEX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TKN",
+            "ForeignName": "TKN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC_BTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ABST",
+            "ForeignName": "ABST_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ACTN",
+            "ForeignName": "ACTN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ACU",
+            "ForeignName": "ACU_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADK",
+            "ForeignName": "ADK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AIB",
+            "ForeignName": "AIB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AMR",
+            "ForeignName": "AMR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ASY",
+            "ForeignName": "ASY_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCEO",
+            "ForeignName": "BCEO_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCN",
+            "ForeignName": "BCN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BENZ",
+            "ForeignName": "BENZ_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BHD",
+            "ForeignName": "BHD_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BHIG",
+            "ForeignName": "BHIG_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BITSW",
+            "ForeignName": "BITSW_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BLE",
+            "ForeignName": "BLE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNY",
+            "ForeignName": "BNY_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BOT",
+            "ForeignName": "BOT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BST",
+            "ForeignName": "BST_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTCN",
+            "ForeignName": "BTCN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTRL",
+            "ForeignName": "BTRL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BUL",
+            "ForeignName": "BUL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BZE",
+            "ForeignName": "BZE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CBUCKS",
+            "ForeignName": "CBUCKS_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CDEX",
+            "ForeignName": "CDEX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CEEK",
+            "ForeignName": "CEEK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CGMT",
+            "ForeignName": "CGMT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLM",
+            "ForeignName": "CLM_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CPTL",
+            "ForeignName": "CPTL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRBN",
+            "ForeignName": "CRBN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRDT",
+            "ForeignName": "CRDT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAPS",
+            "ForeignName": "DAPS_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEB",
+            "ForeignName": "DEB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DGTX",
+            "ForeignName": "DGTX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DGW",
+            "ForeignName": "DGW_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DMST",
+            "ForeignName": "DMST_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOW",
+            "ForeignName": "DOW_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DRS",
+            "ForeignName": "DRS_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DSC",
+            "ForeignName": "DSC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DSLA",
+            "ForeignName": "DSLA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DXF",
+            "ForeignName": "DXF_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DYN",
+            "ForeignName": "DYN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ECA",
+            "ForeignName": "ECA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EIB",
+            "ForeignName": "EIB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ELD",
+            "ForeignName": "ELD_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJ_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETHID",
+            "ForeignName": "EthID_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETHM",
+            "ForeignName": "ETHM_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EXOR",
+            "ForeignName": "EXOR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FA",
+            "ForeignName": "FA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GEX",
+            "ForeignName": "GEX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GHOST",
+            "ForeignName": "GHOST_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GIG",
+            "ForeignName": "GIG_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMCC",
+            "ForeignName": "GMCC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GPS",
+            "ForeignName": "GPS_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GVC",
+            "ForeignName": "GVC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HALO",
+            "ForeignName": "HALO_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HERB",
+            "ForeignName": "HERB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HMR",
+            "ForeignName": "HMR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HTML",
+            "ForeignName": "HTML_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDC",
+            "ForeignName": "IDC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDX",
+            "ForeignName": "IDX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "INVC",
+            "ForeignName": "INVC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ITN",
+            "ForeignName": "ITN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JSC",
+            "ForeignName": "JSC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KICK",
+            "ForeignName": "KICK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LCC",
+            "ForeignName": "LCC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LMCH",
+            "ForeignName": "LMCH_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LST",
+            "ForeignName": "LST_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUNES",
+            "ForeignName": "LUNES_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MASH",
+            "ForeignName": "MASH_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MBC",
+            "ForeignName": "MBC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "METP",
+            "ForeignName": "METP_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNC",
+            "ForeignName": "MNC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MPH",
+            "ForeignName": "MPH_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NBX",
+            "ForeignName": "NBX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NSOK",
+            "ForeignName": "NSOK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NYC",
+            "ForeignName": "NYC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OHC",
+            "ForeignName": "OHC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ORM",
+            "ForeignName": "ORM_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OWC",
+            "ForeignName": "OWC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PBC",
+            "ForeignName": "PBC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLF",
+            "ForeignName": "PLF_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PRKL",
+            "ForeignName": "PRKL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QAC",
+            "ForeignName": "QAC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RC20",
+            "ForeignName": "RC20_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RDBX",
+            "ForeignName": "RDBX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REEC",
+            "ForeignName": "REEC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RKN",
+            "ForeignName": "RKN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RNDR",
+            "ForeignName": "RNDR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RTH",
+            "ForeignName": "RTH_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "S4F",
+            "ForeignName": "S4F_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SEQ",
+            "ForeignName": "SEQ_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIC",
+            "ForeignName": "SIC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIN",
+            "ForeignName": "SIN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNL",
+            "ForeignName": "SNL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPRKL",
+            "ForeignName": "SPRKL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STP",
+            "ForeignName": "STP_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SURE",
+            "ForeignName": "SURE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SWACE",
+            "ForeignName": "SWACE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SWFL",
+            "ForeignName": "SWFL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TCNX",
+            "ForeignName": "TCNX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TELE",
+            "ForeignName": "TELE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TEO",
+            "ForeignName": "TEO_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TNC",
+            "ForeignName": "TNC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TOC",
+            "ForeignName": "TOC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRX",
+            "ForeignName": "TRX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSF",
+            "ForeignName": "TSF_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TTP",
+            "ForeignName": "TTP_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UPX",
+            "ForeignName": "UPX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VBIT",
+            "ForeignName": "VBIT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VITAE",
+            "ForeignName": "VITAE_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VRA",
+            "ForeignName": "VRA_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VRAB",
+            "ForeignName": "VRAB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VTX",
+            "ForeignName": "VTX_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XAC",
+            "ForeignName": "XAC_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XCASH",
+            "ForeignName": "XCASH_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XCUR",
+            "ForeignName": "XCUR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRT",
+            "ForeignName": "XRT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XTW",
+            "ForeignName": "XTW_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XZT",
+            "ForeignName": "XZT_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YOLK",
+            "ForeignName": "YOLK_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZCOR",
+            "ForeignName": "ZCOR_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEB",
+            "ForeignName": "ZEB_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEL",
+            "ForeignName": "ZEL_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZNN",
+            "ForeignName": "ZNN_ETH",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JNTR",
+            "ForeignName": "JNTR_BNB",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AER",
+            "ForeignName": "AER_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BC",
+            "ForeignName": "BC_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BENZ",
+            "ForeignName": "BENZ_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTCZ",
+            "ForeignName": "BTCZ_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTRL",
+            "ForeignName": "BTRL_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLASSY",
+            "ForeignName": "CLASSY_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CSC",
+            "ForeignName": "CSC_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATO",
+            "ForeignName": "DATO_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETG",
+            "ForeignName": "ETG_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FERMA",
+            "ForeignName": "FERMA_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ITL",
+            "ForeignName": "ITL_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LCC",
+            "ForeignName": "LCC_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LMO",
+            "ForeignName": "LMO_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTFG",
+            "ForeignName": "LTFG_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NCP",
+            "ForeignName": "NCP_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCUL",
+            "ForeignName": "OCUL_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PENG",
+            "ForeignName": "PENG_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PSD",
+            "ForeignName": "PSD_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QAC",
+            "ForeignName": "QAC_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RSCT",
+            "ForeignName": "RSCT_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SHND",
+            "ForeignName": "SHND_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SICC",
+            "ForeignName": "SICC_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIGN",
+            "ForeignName": "SIGN_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SLRM",
+            "ForeignName": "SLRM_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRIBE",
+            "ForeignName": "TRIBE_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VESTX",
+            "ForeignName": "VESTX_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VITAE",
+            "ForeignName": "VITAE_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XCASH",
+            "ForeignName": "XCASH_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XSM",
+            "ForeignName": "XSM_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XXA",
+            "ForeignName": "XXA_LTC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_USDC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USDC",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARDX",
+            "ForeignName": "ARDX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNZ",
+            "ForeignName": "BNZ_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTNT",
+            "ForeignName": "BTNT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "C2C",
+            "ForeignName": "C2C_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CBUCKS",
+            "ForeignName": "CBUCKS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CDM",
+            "ForeignName": "CDM_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CEEK",
+            "ForeignName": "CEEK_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHESS",
+            "ForeignName": "CHESS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLO",
+            "ForeignName": "CLO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CPTL",
+            "ForeignName": "CPTL_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRDT",
+            "ForeignName": "CRDT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAB",
+            "ForeignName": "DAB_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DASH",
+            "ForeignName": "DASH_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DASHG",
+            "ForeignName": "DASHG_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DESH",
+            "ForeignName": "DESH_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DGB",
+            "ForeignName": "DGB_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DIVI",
+            "ForeignName": "DIVI_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DRS",
+            "ForeignName": "DRS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EDC",
+            "ForeignName": "EDC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ELY",
+            "ForeignName": "ELY_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EXOR",
+            "ForeignName": "EXOR_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FREE",
+            "ForeignName": "FREE_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GIT",
+            "ForeignName": "GIT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GPYX",
+            "ForeignName": "GPYX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HBX",
+            "ForeignName": "HBX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HELP",
+            "ForeignName": "HELP_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HMR",
+            "ForeignName": "HMR_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HYD",
+            "ForeignName": "HYD_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDX",
+            "ForeignName": "IDX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "INNBC",
+            "ForeignName": "INNBC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JOOS",
+            "ForeignName": "JOOS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JUP",
+            "ForeignName": "JUP_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KICK",
+            "ForeignName": "KICK_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LMCH",
+            "ForeignName": "LMCH_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LONG",
+            "ForeignName": "LONG_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LST",
+            "ForeignName": "LST_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MBC",
+            "ForeignName": "MBC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNC",
+            "ForeignName": "MNC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NANJ",
+            "ForeignName": "NANJ_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEXO",
+            "ForeignName": "NEXO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NXT",
+            "ForeignName": "NXT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NYC",
+            "ForeignName": "NYC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLEX",
+            "ForeignName": "PLEX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLF",
+            "ForeignName": "PLF_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLTS",
+            "ForeignName": "PLTS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QURO",
+            "ForeignName": "QURO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REV",
+            "ForeignName": "REV_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RKN",
+            "ForeignName": "RKN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RNDR",
+            "ForeignName": "RNDR_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RUPX",
+            "ForeignName": "RUPX_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SBTC",
+            "ForeignName": "sBTC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIC",
+            "ForeignName": "SIC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SIN",
+            "ForeignName": "SIN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SINGH",
+            "ForeignName": "SINGH_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SKB",
+            "ForeignName": "SKB_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNL",
+            "ForeignName": "SNL_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPRKL",
+            "ForeignName": "SPRKL_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SWFL",
+            "ForeignName": "SWFL_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SYO",
+            "ForeignName": "SYO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TAN",
+            "ForeignName": "TAN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TEO",
+            "ForeignName": "TEO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TNC",
+            "ForeignName": "TNC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSF",
+            "ForeignName": "TSF_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TVT",
+            "ForeignName": "TVT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UCOIN",
+            "ForeignName": "UCOIN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDA",
+            "ForeignName": "USDA_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VIT",
+            "ForeignName": "VIT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VOCO",
+            "ForeignName": "VOCO_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VOLTZ",
+            "ForeignName": "VOLTZ_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VRA",
+            "ForeignName": "VRA_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WABI",
+            "ForeignName": "WABI_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBI",
+            "ForeignName": "XBI_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XDC",
+            "ForeignName": "XDC_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XGK",
+            "ForeignName": "XGK_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRP_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XZT",
+            "ForeignName": "XZT_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEN",
+            "ForeignName": "ZEN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEUS",
+            "ForeignName": "ZEUS_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZNN",
+            "ForeignName": "ZNN_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZUM",
+            "ForeignName": "ZUM_USDT",
+            "Exchange": "STEX",
+            "Ignore": false
+        }
+    ]
 }
