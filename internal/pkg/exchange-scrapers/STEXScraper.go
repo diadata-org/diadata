@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 	"sync"
@@ -18,6 +19,10 @@ import (
 
 var _socketURL string = "socket.stex.com"
 
+const (
+	apiBaseURL = "https://api3.stex.com/public"
+)
+
 type Trade struct {
 	Amount         string      `json:"amount"`
 	Amount2        float64     `json:"amount2"`
@@ -30,6 +35,14 @@ type Trade struct {
 	SellOrderID    int64       `json:"sell_order_id"`
 	Socket         interface{} `json:"socket"`
 	Timestamp      int64       `json:"timestamp"`
+}
+
+type STEXTrade struct {
+	ID        int        `json:"id"`
+	Price     *big.Float `json:"price"`
+	Amount    *big.Float `json:"amount"`
+	Type      string     `json:"type"`
+	TimeStamp string     `json:"timestamp"`
 }
 type Channel struct {
 	Channel string `json:"channel"`
@@ -46,24 +59,26 @@ type STEXScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers   map[string]*STEXPairScraper
-	pairSymbolToID map[string]int
-	pairIDToSymbol map[int]string
-	exchangeName   string
-	chanTrades     chan *dia.Trade
+	pairScrapers      map[string]*STEXPairScraper
+	pairSymbolToID    map[string]int
+	pairLastTimeStamp map[string]time.Time
+	pairIDToSymbol    map[int]string
+	exchangeName      string
+	chanTrades        chan *dia.Trade
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
 func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 	s := &STEXScraper{
-		shutdown:       make(chan nothing),
-		shutdownDone:   make(chan nothing),
-		pairScrapers:   make(map[string]*STEXPairScraper),
-		pairSymbolToID: make(map[string]int),
-		pairIDToSymbol: make(map[int]string),
-		exchangeName:   exchange.Name,
-		error:          nil,
-		chanTrades:     make(chan *dia.Trade),
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		pairScrapers:      make(map[string]*STEXPairScraper),
+		pairSymbolToID:    make(map[string]int),
+		pairIDToSymbol:    make(map[int]string),
+		pairLastTimeStamp: make(map[string]time.Time),
+		exchangeName:      exchange.Name,
+		error:             nil,
+		chanTrades:        make(chan *dia.Trade),
 	}
 
 	c, err := gosocketio.Dial(
@@ -72,7 +87,7 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 	if err != nil {
 		log.Printf("dial: %v", err)
 	}
- 	s.c = c
+	s.c = c
 	go s.mainLoop()
 	return s
 }
@@ -90,93 +105,105 @@ func (s *STEXScraper) reconnectToSocketIO() {
 	s.c = c
 }
 
-// Subscribe again to all channels
-func (s *STEXScraper) subscribeToALL() {
-
-	// FetchAvailablePairs fetches pair IDs needed for ws subscriptions
-	s.FetchAvailablePairs()
-
-	for _, pairScraper := range s.pairScrapers {
-
-		log.Info("pair: ", pairScraper.pair)
-		a := &Channel{
-			Channel: fmt.Sprintf("trade_c%s", strconv.Itoa(s.pairSymbolToID[pairScraper.pair.Symbol])),
-		}
-
-		b,_ := json.Marshal(a)
-		log.Info("subscribe: ", string(b))
-		if err := s.c.Emit("subscribe", a); err != nil {
-			fmt.Println(err.Error())
-		}
-
-		var err error
-
-		err = s.c.On(gosocketio.OnConnection, func(h *gosocketio.Channel) {
-			log.Println("Connected")
-		})
-		if err != nil {
-			log.Println(err)
-		}
-
-		err = s.c.On(gosocketio.OnDisconnection, func(h *gosocketio.Channel) {
-			s.closed = true
-			log.Info("socket is  closed, subscribe and reconnect")
-			s.reconnectToSocketIO()
-		})
-
-		err = s.c.On("App\\Events\\OrderFillCreated", func(h *gosocketio.Channel, message Trade) {
-			log.Info("Handle new trades...")
-			var pairID = message.CurrencyPairID
-			var forName = s.pairIDToSymbol[int(pairID)]
-			ps, ok := s.pairScrapers[forName]
-
-			if ok {
-				go func() {
-					f64Price, _ := strconv.ParseFloat(message.Price, 64)
-					f64Volume := message.Amount2
-					timeStamp := time.Now().UTC()
-
-					if message.OrderType == "SELL" {
-						f64Volume = -f64Volume
-					}
-					// element id is more than int64/uint64 in size
-					// leave the id in float64 format
-					t := &dia.Trade{
-						Symbol:         ps.pair.Symbol,
-						Pair:           forName,
-						Price:          f64Price,
-						Volume:         f64Volume,
-						Time:           timeStamp,
-						ForeignTradeID: fmt.Sprintf("%d", message.ID),
-						Source:         s.exchangeName,
-					}
-					ps.parent.chanTrades <- t
-					log.Info("got trade: ", t)
-				}()
-			} else {
-				log.Printf("Unknown Pair %v", forName)
-			}
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
+type StexTradeResponse struct {
+	SETXTrades []STEXTrade `json:"data"`
+	Success    bool        `json:"success"`
 }
 
 // runs in a goroutine until s is closed
 func (s *STEXScraper) mainLoop() {
 	log.Info("mainLoop() waiting for pairs to be added...")
 	time.Sleep(10 * time.Second)
+	for {
+		s.scrapeTrades()
+	}
+}
 
-	if s.closed {
-		log.Info("s closed, subscribe and reconnect")
-		s.reconnectToSocketIO()
+func (s *STEXScraper) scrapeTrades() {
+	var numRequests int
+	s.FetchAvailablePairs()
+	for _, pairScraper := range s.pairScrapers {
+		if numRequests > 180 {
+			// API limit is 180 requests per min.
+			log.Info("sleep for a minute due to STEX API rate limit")
+			time.Sleep(1 * time.Minute)
+			numRequests = 0
+		} else {
+			s.scrapePair(pairScraper.pair)
+			numRequests++
+		}
+	}
+	// Sleep after getting trades for all pairs
+	log.Info("Scraped all pairs. Wait for next iteration.")
+	time.Sleep(4 * time.Second)
+}
+
+// scrapePair scrapes the @pair associated to s.pairScraper
+func (s *STEXScraper) scrapePair(pair dia.Pair) {
+
+	if (s.pairLastTimeStamp[pair.Symbol] == time.Time{}) {
+		// Set last trade time to 10 mins ago for initial run
+		s.pairLastTimeStamp[pair.Symbol] = time.Now().Add(-10 * time.Minute)
+	}
+	trades, _ := s.GetNewTrades(strconv.Itoa(s.pairSymbolToID[pair.Symbol]), s.pairLastTimeStamp[pair.Symbol])
+	for _, trade := range trades {
+
+		f64Price, _ := trade.Price.Float64()
+		f64Volume, _ := trade.Amount.Float64()
+		timeStamp, _ := strconv.ParseInt(trade.TimeStamp, 10, 32)
+
+		if trade.Type == "SELL" {
+			f64Volume = -f64Volume
+		}
+
+		t := &dia.Trade{
+			Symbol:         strings.Split(pair.Symbol, "-")[0],
+			Pair:           pair.ForeignName,
+			Price:          f64Price,
+			Volume:         f64Volume,
+			Time:           time.Unix(timeStamp, 0),
+			ForeignTradeID: strconv.Itoa(trade.ID),
+			Source:         s.exchangeName,
+		}
+		s.chanTrades <- t
+		log.Info("got trade: ", t)
+	}
+}
+
+// GetNewTrades fetches new trades from the STEX restAPI dating back until @fromTimestamp
+func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]STEXTrade, error) {
+	var (
+		response StexTradeResponse
+		err      error
+		bytes    []byte
+		url      string
+	)
+	if (fromTimestamp == time.Time{}) {
+		url = apiBaseURL + "/trades/" + pairID + "?sort=DESC&limit=100"
 	} else {
-		s.subscribeToALL()
+		unixTime := strconv.Itoa(int(fromTimestamp.Unix()))
+		url = apiBaseURL + "/trades/" + pairID + "?sort=DESC&from=" + unixTime + "&limit=100"
 	}
 
-	s.cleanup(errors.New("main loop terminated by Close()"))
+	bytes, err = utils.GetRequest(url)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bytes, &response)
+	// Update timestamp
+	pairIDInt, _ := strconv.ParseInt(pairID, 10, 32)
+	symbol := s.pairIDToSymbol[int(pairIDInt)]
+
+	if len(response.SETXTrades) > 0 {
+		var lastTimestamp int64
+		lastTimestamp, err = strconv.ParseInt(response.SETXTrades[0].TimeStamp, 10, 64)
+		if err != nil {
+			log.Error("error parsing trade's timestamp")
+		}
+		s.pairLastTimeStamp[symbol] = time.Unix(lastTimestamp+1, 0)
+	}
+
+	return response.SETXTrades, nil
 }
 
 func (s *STEXScraper) cleanup(err error) {
@@ -272,12 +299,10 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			AmountMultiplier  int    `json:"amount_multiplier"`
 		} `json:"data"`
 	}
-	log.Println("sending req")
 	data, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
 	if err != nil {
 		return
 	}
-	log.Println("sending req done")
 	var response CurrencyPairs
 	err = json.Unmarshal(data, &response)
 	if err != nil {

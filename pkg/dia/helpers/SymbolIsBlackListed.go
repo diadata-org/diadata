@@ -159,6 +159,8 @@ func SymbolIsBlackListed(symbol string) bool {
 // AddressIsBlacklisted returns true if a token address is blacklisted
 func AddressIsBlacklisted(address common.Address) bool {
 	switch strings.ToLower(address.Hex()) {
+	case "0xb2a9a0f34e3140de9b9a489b33fc049102a1808e":
+		return true
 	case "0x3e191a6ef96f87092fe8dce0d3f01977b08d6acf":
 		return true
 	case "0x8870f11b5d16f1fd4ce26aff514566621dca4828":

@@ -27313,6 +27313,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MKR",
+            "ForeignName": "MKR-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "DAI",
             "ForeignName": "DAI-STV",
             "Exchange": "UniswapV2",
