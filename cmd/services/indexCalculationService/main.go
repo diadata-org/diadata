@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("datastore error: ", err)
 	}
 	indexSymbols := []string{"SCIFI", "GBI"}
-	indexTicker := time.NewTicker(2 * 60 * time.Second)
+	indexTicker := time.NewTicker(300 * time.Second)
 	firstRun := true
 	go func() {
 		for {
@@ -63,21 +63,6 @@ func main() {
 	select {}
 }
 
-func getCurrentIndexComposition(constituentsSymbols []string, ds *models.DB) []models.CryptoIndexConstituent {
-	var constituents []models.CryptoIndexConstituent
-	for _, constituentSymbol := range constituentsSymbols {
-		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituentSymbol)
-		if err != nil {
-			log.Error(err)
-			return constituents
-		}
-		if len(curr) > 0 {
-			constituents = append(constituents, curr[0])
-		}
-	}
-	return constituents
-}
-
 func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []models.CryptoIndexConstituent {
 	var constituents []models.CryptoIndexConstituent
 	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
@@ -86,7 +71,8 @@ func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []mod
 		return constituents
 	}
 	for _, constituent := range cryptoIndex[0].Constituents {
-		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol)
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol, indexSymbol)
+		//curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol)
 		if err != nil {
 			log.Error(err)
 			return constituents
