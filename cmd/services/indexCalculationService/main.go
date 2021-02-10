@@ -19,17 +19,43 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	indexSymbol := "SCIFI"
+	indexSymbols := []string{"SCIFI", "GBI"}
 	indexTicker := time.NewTicker(2 * 60 * time.Second)
+	firstRun := true
 	go func() {
 		for {
 			select {
 			case <-indexTicker.C:
-				currentConstituents := getCurrentIndexCompositionForIndex(indexSymbol, ds)
-				index := periodicIndexValueCalculation(currentConstituents, indexSymbol, ds)
-				err := ds.SetCryptoIndex(&index)
-				if err != nil {
-					log.Error(err)
+				for _, indexSymbol := range indexSymbols {
+					var currentConstituents []models.CryptoIndexConstituent
+					if indexSymbol == "GBI" && firstRun {
+						firstRun = false
+						symbols := []string{"WBTC", "ETH", "YFI", "UNI", "COMP", "MKR", "LINK", "SPICE"}
+
+						// Get constituents information
+						currentConstituents, err = indexCalculationService.GetIndexBasket(symbols)
+						if err != nil {
+							log.Error(err)
+						}
+
+						// Calculate relative weights
+						err = indexCalculationService.CalculateWeights(indexSymbol, &currentConstituents)
+						if err != nil {
+							log.Error(err)
+						}
+						for i, constituent := range currentConstituents {
+							currentConstituents[i].NumBaseTokens = ((constituent.Weight * 100) / constituent.Price) * 1e16 //((Weight * IndexPrice) / TokenPrice) * 1e18  (divided by 100 because index level is 100 = 1 usd)
+						}
+						log.Info(currentConstituents)
+					} else {
+						currentConstituents = getCurrentIndexCompositionForIndex(indexSymbol, ds)
+					}
+					log.Info(currentConstituents)
+					index := periodicIndexValueCalculation(currentConstituents, indexSymbol, ds)
+					err := ds.SetCryptoIndex(&index)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -54,7 +80,7 @@ func getCurrentIndexComposition(constituentsSymbols []string, ds *models.DB) []m
 
 func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []models.CryptoIndexConstituent {
 	var constituents []models.CryptoIndexConstituent
-	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(),indexSymbol)
+	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		return constituents
@@ -73,7 +99,7 @@ func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []mod
 }
 
 func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConstituent, indexSymbol string, ds *models.DB) models.CryptoIndex {
-	err := indexCalculationService.UpdateConstituentsMarketData(&currentConstituents)
+	err := indexCalculationService.UpdateConstituentsMarketData(indexSymbol, &currentConstituents)
 	if err != nil {
 		log.Error(err)
 	}
@@ -89,7 +115,7 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 		// Supply does exist
 		supply = supplyObject.CirculatingSupply
 	}
-	indexValue := indexCalculationService.GetIndexValue(currentConstituents)
+	indexValue := indexCalculationService.GetIndexValue(indexSymbol, currentConstituents)
 	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)

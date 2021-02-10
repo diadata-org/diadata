@@ -96,9 +96,12 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			currentIndex.Value = tmp
 			// Prices (actual, 1h, 24h, ...)
 			// TO DO: instead of log.Error return error as soon as we have long enough data trail
-			currentIndex.Price, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			currentPrice, err := res[0].Series[0].Values[i][3].(json.Number).Float64()
 			if err != nil {
-				return retval, err
+				log.Error("error current index price: ", err)
+				currentIndex.Price = 0
+			} else {
+				currentIndex.Price = currentPrice
 			}
 			price1h, err := db.GetTradePrice1h(currentIndex.Name, "")
 			if err != nil {
@@ -143,9 +146,11 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			// Circulating supply
 			diaSupply, err := db.GetLatestSupply(currentIndex.Name)
 			if err != nil {
-				return retval, err
+				log.Error(err)
+				currentIndex.CirculatingSupply = 0
+			} else {
+				currentIndex.CirculatingSupply = diaSupply.CirculatingSupply
 			}
-			currentIndex.CirculatingSupply = diaSupply.CirculatingSupply
 			// Calculation time
 			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {

@@ -1226,7 +1226,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Calculate relative weights
-	err = indexCalculationService.CalculateWeights(&constituents)
+	err = indexCalculationService.CalculateWeights(indexSymbol, &constituents)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1243,7 +1243,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 
 	// Determine new divisor
 	currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
-	newIndexRawValue := indexCalculationService.GetIndexValue(constituents)
+	newIndexRawValue := indexCalculationService.GetIndexValue(indexSymbol, constituents)
 	newDivisor := (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
 	newIndexValue := newIndexRawValue / newDivisor
 	//log.Info("New Index Value: ", newIndexValue)
