@@ -68,8 +68,9 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
-	cachingTimeShort = time.Minute * 2
-	cachingTimeLong  = time.Minute * 100
+	cachingTimeShort  = time.Minute * 2
+	cachingTimeMedium = time.Minute * 10
+	cachingTimeLong   = time.Minute * 100
 )
 
 var identityKey = "id"
@@ -246,7 +247,7 @@ func main() {
 		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndex))
+		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 	}
 
