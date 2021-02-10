@@ -141,11 +141,11 @@ func (s *STEXScraper) scrapeTrades() {
 // scrapePair scrapes the @pair associated to s.pairScraper
 func (s *STEXScraper) scrapePair(pair dia.Pair) {
 
-	if (s.pairLastTimeStamp[pair.Symbol] == time.Time{}) {
+	if (s.pairLastTimeStamp[pair.ForeignName] == time.Time{}) {
 		// Set last trade time to 10 mins ago for initial run
-		s.pairLastTimeStamp[pair.Symbol] = time.Now().Add(-10 * time.Minute)
+		s.pairLastTimeStamp[pair.ForeignName] = time.Now().Add(-10 * time.Minute)
 	}
-	trades, _ := s.GetNewTrades(strconv.Itoa(s.pairSymbolToID[pair.Symbol]), s.pairLastTimeStamp[pair.Symbol])
+	trades, _ := s.GetNewTrades(strconv.Itoa(s.pairSymbolToID[pair.ForeignName]), s.pairLastTimeStamp[pair.ForeignName])
 	for _, trade := range trades {
 
 		f64Price, _ := trade.Price.Float64()
@@ -320,8 +320,8 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		pair, serr := s.NormalizePair(pairToNormalize)
 		if serr == nil {
 			pairs = append(pairs, pair)
-			s.pairSymbolToID[pair.Symbol] = p.ID
-			s.pairIDToSymbol[p.ID] = pair.Symbol
+			s.pairSymbolToID[p.Symbol] = p.ID
+			s.pairIDToSymbol[p.ID] = p.Symbol
 		} else {
 			log.Println(serr)
 		}
