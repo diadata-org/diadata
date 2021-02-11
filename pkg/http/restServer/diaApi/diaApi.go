@@ -1241,12 +1241,19 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		return
 	}
 
-	// Determine new divisor
-	currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
-	newIndexRawValue := indexCalculationService.GetIndexValue(indexSymbol, constituents)
-	newDivisor := (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
-	newIndexValue := newIndexRawValue / newDivisor
-	//log.Info("New Index Value: ", newIndexValue)
+	var newIndexValue float64
+	var newIndexRawValue float64
+	newDivisor := 1.0
+	if indexSymbol == "SCIFI" {
+		// Determine new divisor
+		currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
+		newIndexRawValue = indexCalculationService.GetIndexValue(indexSymbol, constituents)
+		newDivisor = (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
+		newIndexValue = newIndexRawValue / newDivisor
+	} else {
+		newIndexValue = currIndex[0].Value
+		newIndexRawValue = currIndex[0].Value
+	}
 
 	// Calculate Base Amount for each constituent
 	for i, constituent := range constituents {

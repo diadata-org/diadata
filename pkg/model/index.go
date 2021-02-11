@@ -167,7 +167,6 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 					continue
 				}
 				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24 * time.Hour), endtime, constituentSymbol, name)
-				//curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24 * time.Hour), endtime, constituentSymbol)
 				if err != nil {
 					return retval, err
 				}
