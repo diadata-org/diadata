@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	log "github.com/sirupsen/logrus"
 )
 
 // > SELECT MEAN(value) FROM filters WHERE "symbol"='BTC' and "filter"='MA120' GROUP BY TIME(10m) ORDER by time desc limit 10;
@@ -80,7 +80,10 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 func (db *DB) GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error) {
 	exchangeQuery := "exchange='" + exchange + "'"
 	table := influxDbFiltersTable
-	q := fmt.Sprintf("SELECT LAST(value) FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time < %d",
+	// q := fmt.Sprintf("SELECT LAST(value) FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time < %d",
+	// 	table, filter, symbol, exchangeQuery, timestamp.UnixNano())
+
+	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time > %d ORDER BY ASC LIMIT 1",
 		table, filter, symbol, exchangeQuery, timestamp.UnixNano())
 
 	res, err := queryInfluxDB(db.influxClient, q)

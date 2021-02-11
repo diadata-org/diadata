@@ -69,7 +69,7 @@ func GetTrades(c *gin.Context) {
 
 const (
 	cachingTimeShort  = time.Minute * 2
-	cachingTimeMedium = time.Minute * 10
+	cachingTimeMedium = time.Minute * 20
 	cachingTimeLong   = time.Minute * 100
 )
 
