@@ -67,6 +67,20 @@ services:
     secrets:
       - oracle_keys_bsc
 
+  oracleservice-matic:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-matic
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x8e687a93a969f0bf125f1154738ca6dcc36af57f --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://rpc-mainnet.matic.network/" --sleepSeconds=20 --frequencySeconds=86400
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_matic
+
   diacoingeckooracleservice:
     build:
       context: $GOPATH
@@ -119,6 +133,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt.testnet
   oracle_keys_bsc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt
+  oracle_keys_matic:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt
   Coinmarketcap-API.key:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
 
