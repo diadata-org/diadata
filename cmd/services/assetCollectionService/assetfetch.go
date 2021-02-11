@@ -46,7 +46,7 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 func main() {
 
 	// data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
-	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=password")
+	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=" + getSecret())
 	if err != nil {
 		log.Errorln("Error connecting to data source: ", err)
 		return
@@ -107,4 +107,8 @@ func feedAssetToRedis(assetsaver database.AssetStore) {
 		}
 		log.Infoln("updated cache with all assets")
 	}
+}
+
+func getSecret() string {
+	return "blockstate2018"
 }

@@ -11,8 +11,12 @@ import (
 )
 
 const (
-	Diadata = "diadata.org"
+	Diadata                              = "diadata.org"
+	PROOF_OF_STAKE VerificationMechanism = "pos"
+	PROOF_OF_WORK  VerificationMechanism = "pow"
 )
+
+type VerificationMechanism string
 
 type Exchange struct {
 	Name        string
@@ -36,6 +40,39 @@ type Asset struct {
 	Address    string
 	Decimals   uint8
 	Blockchain BlockChain
+}
+
+type BlockChain struct {
+	Name                  string
+	GenesisDate           time.Time
+	NativeToken           string
+	VerificationMechanism VerificationMechanism
+}
+
+// MarshalBinary is a custom marshaller for BlockChain type
+func (bc *BlockChain) MarshalBinary() ([]byte, error) {
+	return json.Marshal(bc)
+}
+
+// UnmarshalBinary is a custom unmarshaller for BlockChain type
+func (bc *BlockChain) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &bc); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary is a custom marshaller for BlockChain type
+func (a *Asset) MarshalBinary() ([]byte, error) {
+	return json.Marshal(a)
+}
+
+// UnmarshalBinary is a custom unmarshaller for BlockChain type
+func (a *Asset) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &a); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Pair struct {

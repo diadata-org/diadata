@@ -3,7 +3,6 @@ package dia
 import (
 	"os/user"
 	"strings"
-	"time"
 
 	"github.com/tkanos/gonfig"
 )
@@ -92,20 +91,6 @@ type ConfigApi struct {
 type ConfigConnector struct {
 	Coins []Pair
 }
-
-type BlockChain struct {
-	Name                  string
-	GenesisDate           time.Time
-	NativeToken           string
-	VerificationMechanism VerificationMechanism
-}
-
-type VerificationMechanism string
-
-const (
-	PROOF_OF_STAKE VerificationMechanism = "pos"
-	PROOF_OF_WORK  VerificationMechanism = "pow"
-)
 
 func GetConfig(exchange string) (*ConfigApi, error) {
 	var configApi ConfigApi
