@@ -566,6 +566,20 @@ func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.Tran
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
+	// STEX Chart Point
+	rawSTEX, err := getDEXFromDia("STEX", "PLEX")
+	if err != nil {
+		log.Fatalf("Failed to retrieve STEX from DIA: %v", err)
+		return err
+	}
+
+	err = updateDEX(rawSTEX, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update STEX Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
 	// DIA token
 	diaToken, err := getCoinDetailsFromDia("DIA")
 	if err != nil {

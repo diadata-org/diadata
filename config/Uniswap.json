@@ -6739,12 +6739,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "EUR",
-            "ForeignName": "EUR-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "UGX",
             "ForeignName": "UGX-ETH",
             "Exchange": "UniswapV2",
@@ -27886,6 +27880,18 @@
         {
             "Symbol": "USDC",
             "ForeignName": "USDC-SCIFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GBI",
+            "ForeignName": "GBI-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GBI",
             "Exchange": "UniswapV2",
             "Ignore": false
         },

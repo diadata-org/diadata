@@ -8347,6 +8347,10 @@
     {
       "Address": "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4",
       "Name": "ScifiToken"
+    },
+    {
+      "Address": "0xcb67be5c54eab9462967ee3c03c35bfffeb801cd",
+      "Name": "GalacticBlueIndex"
     }
   ]
 }
