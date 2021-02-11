@@ -24,6 +24,7 @@ As of now, the following list of exchanges is available in this oracle:
 - Gnosis \(ETH\)  
 - Kyber \(ETH\)  
 - Loopring \(ETH\)  
+- STEX \(PLEX\)  
 - SushiSwap \(ETH\)  
 - Uniswap \(ETH\)  
 - PanCakeSwap \(WBNB\)
