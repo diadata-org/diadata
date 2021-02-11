@@ -8,10 +8,12 @@ import (
 
 var log = logrus.New()
 
+// Assetcache simply is a redis client. This can be moved into our db at some point
 type Assetcache struct {
 	redisClient *redis.Client
 }
 
+// NewAssetcache returns a redis client.
 func NewAssetcache() *Assetcache {
 
 	address := "localhost:6379"
@@ -30,9 +32,25 @@ func NewAssetcache() *Assetcache {
 
 }
 
-func (ac *Assetcache) SetAsset(asset dia.Asset) error {
-	key := "dia_asset_" + asset.Symbol + "_" + asset.Name
-	return ac.redisClient.Set(key, &asset, 0).Err()
+func getKeyAsset(symbol, name string) (key string) {
+	key = "dia_asset_" + symbol + "_" + name
+	return
 }
 
-// GetAvailablePairsForExchange a slice of all pairs available in the exchange in the internal redis db
+// SetAsset stores marshalled @asset in redis
+func (ac *Assetcache) SetAsset(asset dia.Asset) error {
+	return ac.redisClient.Set(getKeyAsset(asset.Symbol, asset.Name), &asset, 0).Err()
+}
+
+// GetAsset returns an asset by name and symbol
+func (ac *Assetcache) GetAsset(name, symbol string) (dia.Asset, error) {
+	asset := dia.Asset{}
+	err := ac.redisClient.Get(getKeyAsset(name, symbol)).Scan(&asset)
+	if err != nil {
+		if err != redis.Nil {
+			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
+		}
+		return asset, err
+	}
+	return asset, nil
+}

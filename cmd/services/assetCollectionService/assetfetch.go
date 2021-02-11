@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"flag"
+	"os"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/database"
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
@@ -21,6 +23,7 @@ var (
 	assetSource *string
 	key         *string
 	secret      *string
+	postgresKey = "postgres_key.txt"
 )
 
 func init() {
@@ -46,7 +49,7 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 func main() {
 
 	// data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
-	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=" + getSecret())
+	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
 	if err != nil {
 		log.Errorln("Error connecting to data source: ", err)
 		return
@@ -109,6 +112,33 @@ func feedAssetToRedis(assetsaver database.AssetStore) {
 	}
 }
 
-func getSecret() string {
-	return "blockstate2018"
+// getPostgresKeyFromSecrets returns the password for postgres db
+func getPostgresKeyFromSecrets() string {
+	var lines []string
+	executionMode := os.Getenv("EXEC_MODE")
+	var file *os.File
+	var err error
+	if executionMode == "production" {
+		file, err = os.Open("/run/secrets/" + postgresKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		file, err = os.Open("../../../secrets/" + postgresKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file should have exactly one line")
+	}
+	return lines[0]
 }
