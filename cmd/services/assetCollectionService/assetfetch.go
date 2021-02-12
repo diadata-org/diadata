@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"os"
+	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/database"
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
@@ -23,12 +24,18 @@ var (
 	assetSource *string
 	key         *string
 	secret      *string
-	postgresKey = "postgres_key.txt"
+	caching     *bool
+)
+
+const (
+	postgresKey        = "postgres_key.txt"
+	fetchPeriodMinutes = 24 * 60
 )
 
 func init() {
 	assetSource = flag.String("source", "Uniswap", "Data source for asset collection")
 	secret = flag.String("secret", "", "secret for asset source")
+	caching = flag.Bool("caching", true, "caching assets in redis")
 
 	flag.Parse()
 	blockchains = make(map[string]dia.BlockChain)
@@ -48,67 +55,56 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 
 func main() {
 
-	// data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
-	data, err := database.NewAssetDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
+	assetDB, err := database.NewAssetDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
 	if err != nil {
-		log.Errorln("Error connecting to data source: ", err)
+		log.Errorln("Error connecting to asset DB: ", err)
 		return
 	}
-	runAssetSource(data, *assetSource, *secret)
+	// Initial run:
+	runAssetSource(assetDB, *assetSource, *caching, *secret)
+	// Afterwards, run every @fetchPeriodMinutes
+	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				runAssetSource(assetDB, *assetSource, *caching, *secret)
+			}
+		}
+	}()
+	select {}
 
 }
 
-func runAssetSource(data database.AssetStore, source, secret string) {
+func runAssetSource(assetDB database.AssetStore, source string, caching bool, secret string) {
+
+	assetCache, err := database.NewAssetCache()
+	if err != nil {
+		log.Errorln("Error connecting to asset cache: ", err)
+		return
+	}
 
 	log.Println("Fetching asset from ", source)
-
 	asset := NewAssetScraper(source, secret)
 	for {
 		select {
 		case receivedAsset := <-asset.Asset():
-			log.Infoln("Received asset", receivedAsset)
-			// asset, err := data.GetByName(receivedAsset.Name)
-			// if err != nil {
-			// 	log.Errorf("error getting asset %s: %v\n", receivedAsset.Name, err)
-			// }
-			// log.Infof("asset %s already in DB \n", asset.Name)
-			err := data.SetAsset(receivedAsset)
+			// Set to persistent DB
+			err := assetDB.SetAsset(receivedAsset)
 			if err != nil {
-				log.Error("Error saving asset: ", err)
+				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
 			} else {
-				log.Infof("successfully stored %s \n", receivedAsset.Symbol)
+				log.Info("successfully set asset ", receivedAsset)
+			}
+
+			// Set to cache
+			if caching {
+				err := assetCache.SetAsset(receivedAsset)
+				if err != nil {
+					log.Error("Error caching asset: ", err)
+				}
 			}
 		}
-
-	}
-
-}
-
-func feedAssetToRedis(assetsaver database.AssetStore) {
-
-	assetCache := database.NewAssetCache()
-	totalAssets, err := assetsaver.Count()
-	if err != nil {
-		log.Errorln("Error Getting Asset counts", err)
-	}
-	log.Infoln("Total Assets", totalAssets)
-
-	// page size is 100
-	totalPage := totalAssets / 100
-
-	log.Infoln("Total Page", totalPage)
-	var i uint32
-	for i = 0; i <= totalPage; i++ {
-		assets, err := assetsaver.GetPage(i)
-		if err != nil {
-			log.Errorln("Error getting assets for page number", i, err)
-		}
-
-		for _, asset := range assets {
-			log.Println(asset)
-			assetCache.SetAsset(asset)
-		}
-		log.Infoln("updated cache with all assets")
 	}
 }
 
@@ -141,4 +137,34 @@ func getPostgresKeyFromSecrets() string {
 		log.Fatal("Secrets file should have exactly one line")
 	}
 	return lines[0]
+}
+
+func feedAssetToRedis(assetsaver database.AssetStore) {
+
+	assetCache, err := database.NewAssetCache()
+	if err != nil {
+		log.Errorln("Error connecting to asset cache: ", err)
+		return
+	}
+	totalAssets, err := assetsaver.Count()
+	if err != nil {
+		log.Errorln("Error Getting Asset counts", err)
+	}
+	log.Infoln("Total Assets: ", totalAssets)
+
+	pageIndex := uint32(0)
+	hasNextPage := true
+	for hasNextPage {
+		assets := []dia.Asset{}
+		assets, hasNextPage, err = assetsaver.GetPage(pageIndex)
+		if err != nil {
+			log.Errorln("Error getting assets for page number", pageIndex, err)
+		}
+		for _, asset := range assets {
+			assetCache.SetAsset(asset)
+		}
+		if hasNextPage {
+			pageIndex++
+		}
+	}
 }

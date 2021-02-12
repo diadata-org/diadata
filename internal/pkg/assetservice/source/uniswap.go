@@ -120,6 +120,7 @@ func (uas *UniswapAssetSource) fetchAssets() {
 		log.Fatal(err)
 	}
 	log.Info("Found ", numPairs, " pairs")
+	checkMap := make(map[string]struct{})
 	for i := 0; i < numPairs; i++ {
 		pair, err := uas.GetPairByID(int64(i))
 		if err != nil {
@@ -129,11 +130,18 @@ func (uas *UniswapAssetSource) fetchAssets() {
 		asset1 := pair.Token1
 		asset0.Blockchain = blockchain
 		asset1.Blockchain = blockchain
-		if asset0.Symbol != "" {
-			uas.asset <- asset0
+		// Don't repeat sending already sent assets
+		if _, ok := checkMap[asset0.Address]; !ok {
+			if asset0.Symbol != "" {
+				checkMap[asset0.Address] = struct{}{}
+				uas.asset <- asset0
+			}
 		}
-		if asset1.Symbol != "" {
-			uas.asset <- asset1
+		if _, ok := checkMap[asset1.Address]; !ok {
+			if asset1.Symbol != "" {
+				checkMap[asset1.Address] = struct{}{}
+				uas.asset <- asset1
+			}
 		}
 	}
 }

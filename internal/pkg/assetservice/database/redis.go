@@ -15,7 +15,7 @@ type AssetCache struct {
 }
 
 // NewAssetCache returns a redis client.
-func NewAssetCache() *AssetCache {
+func NewAssetCache() (*AssetCache, error) {
 
 	address := "localhost:6379"
 	r := redis.NewClient(&redis.Options{
@@ -27,9 +27,10 @@ func NewAssetCache() *AssetCache {
 	pong2, err := r.Ping().Result()
 	if err != nil {
 		log.Error("NewDataStore redis", err)
+		return &AssetCache{}, err
 	}
 	log.Debug("NewDB", pong2)
-	return &AssetCache{redisClient: r}
+	return &AssetCache{redisClient: r}, nil
 
 }
 
@@ -57,7 +58,7 @@ func (ac *AssetCache) GetAsset(symbol, name string) (dia.Asset, error) {
 }
 
 // GetPage returns
-func (ac *AssetCache) GetPage(pageNumber uint32) (assets []dia.Asset, err error) {
+func (ac *AssetCache) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {
 	// TO DO
 	return
 }

@@ -52,17 +52,8 @@ func (pg *AssetDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
 	return
 }
 
-// Count returns the number of assets stored in postgres
-func (pg *AssetDB) Count() (count uint32, err error) {
-	err = pg.conn.QueryRow(context.Background(), "select count(*) from asset").Scan(&count)
-	if err != nil {
-		return
-	}
-	return
-}
-
 // GetPage returns assets per page number. @hasNext is true iff there is a non-empty next page.
-func (pg *AssetDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNext bool, err error) {
+func (pg *AssetDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {
 
 	pagesize := pg.pagesize
 	skip := pagesize * pageNumber
@@ -78,15 +69,24 @@ func (pg *AssetDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNext bool,
 	}
 	// Last page (or empty page)
 	if len(rows.RawValues()) < int(pagesize) {
-		hasNext = false
+		hasNextPage = false
 		return
 	}
 	// No next page
 	nextPageRows, err := pg.conn.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset LIMIT $1 OFFSET $2 ", pagesize, skip+1)
 	if len(nextPageRows.RawValues()) == 0 {
-		hasNext = false
+		hasNextPage = false
 		return
 	}
-	hasNext = true
+	hasNextPage = true
+	return
+}
+
+// Count returns the number of assets stored in postgres
+func (pg *AssetDB) Count() (count uint32, err error) {
+	err = pg.conn.QueryRow(context.Background(), "select count(*) from asset").Scan(&count)
+	if err != nil {
+		return
+	}
 	return
 }
