@@ -1543,12 +1543,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "COMP",
-            "ForeignName": "COMP_ETH",
-            "Exchange": "STEX",
-            "Ignore": false
-        },
-        {
             "Symbol": "CREAM",
             "ForeignName": "CREAM_ETH",
             "Exchange": "STEX",

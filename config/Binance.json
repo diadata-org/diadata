@@ -14,6 +14,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "COMPUSDT",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "COMPBTC",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ADABNB",
             "Ignore": false,
             "Symbol": "ADA"
