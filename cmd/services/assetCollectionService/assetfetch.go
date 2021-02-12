@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/database"
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/assetstore"
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
@@ -55,20 +55,20 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 
 func main() {
 
-	assetDB, err := database.NewAssetDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
+	persistDB, err := assetstore.NewPersistDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
 	if err != nil {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
 	}
 	// Initial run:
-	runAssetSource(assetDB, *assetSource, *caching, *secret)
+	runAssetSource(*persistDB, *assetSource, *caching, *secret)
 	// Afterwards, run every @fetchPeriodMinutes
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				runAssetSource(assetDB, *assetSource, *caching, *secret)
+				runAssetSource(*persistDB, *assetSource, *caching, *secret)
 			}
 		}
 	}()
@@ -76,9 +76,9 @@ func main() {
 
 }
 
-func runAssetSource(assetDB database.AssetStore, source string, caching bool, secret string) {
+func runAssetSource(persistDB assetstore.PersistDB, source string, caching bool, secret string) {
 
-	assetCache, err := database.NewAssetCache()
+	assetCache, err := assetstore.NewAssetCache()
 	if err != nil {
 		log.Errorln("Error connecting to asset cache: ", err)
 		return
@@ -90,7 +90,7 @@ func runAssetSource(assetDB database.AssetStore, source string, caching bool, se
 		select {
 		case receivedAsset := <-asset.Asset():
 			// Set to persistent DB
-			err := assetDB.SetAsset(receivedAsset)
+			err := persistDB.SetAsset(receivedAsset)
 			if err != nil {
 				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
 			} else {
@@ -139,9 +139,9 @@ func getPostgresKeyFromSecrets() string {
 	return lines[0]
 }
 
-func feedAssetToRedis(assetsaver database.AssetStore) {
+func feedAssetToRedis(assetsaver assetstore.PersistDB) {
 
-	assetCache, err := database.NewAssetCache()
+	assetCache, err := assetstore.NewAssetCache()
 	if err != nil {
 		log.Errorln("Error connecting to asset cache: ", err)
 		return

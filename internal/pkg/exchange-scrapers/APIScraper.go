@@ -91,64 +91,64 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	switch exchange {
 	case dia.BinanceExchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange])
-	case dia.BitBayExchange:
-		return NewBitBayScraper(Exchanges[dia.BitBayExchange])
-	case dia.BitfinexExchange:
-		return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange])
-	case dia.BittrexExchange:
-		return NewBittrexScraper(Exchanges[dia.BittrexExchange])
-	case dia.CoinBaseExchange:
-		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange])
-	case dia.CREX24Exchange:
-		return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
-	case dia.KrakenExchange:
-		return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange])
-	case dia.HitBTCExchange:
-		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange])
-	case dia.SimexExchange:
-		return NewSimexScraper(Exchanges[dia.SimexExchange])
-	case dia.OKExExchange:
-		return NewOKExScraper(Exchanges[dia.OKExExchange])
-	case dia.HuobiExchange:
-		return NewHuobiScraper(Exchanges[dia.HuobiExchange])
-	case dia.LBankExchange:
-		return NewLBankScraper(Exchanges[dia.LBankExchange])
-	case dia.GateIOExchange:
-		return NewGateIOScraper(Exchanges[dia.GateIOExchange])
-	case dia.ZBExchange:
-		return NewZBScraper(Exchanges[dia.ZBExchange])
-	case dia.QuoineExchange:
-		return NewQuoineScraper(Exchanges[dia.QuoineExchange])
-	case dia.BancorExchange:
-		return NewBancorScraper(Exchanges[dia.BancorExchange])
-	case dia.UniswapExchange:
-		return NewUniswapScraper(Exchanges[dia.UniswapExchange])
-	case dia.PanCakeSwap:
-		return NewUniswapScraper(Exchanges[dia.PanCakeSwap])
-	case dia.SushiSwapExchange:
-		return NewUniswapScraper(Exchanges[dia.SushiSwapExchange])
-	case dia.LoopringExchange:
-		return NewLoopringScraper(Exchanges[dia.LoopringExchange])
-	case dia.CurveFIExchange:
-		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange])
-	case dia.GnosisExchange:
-		return NewGnosisScraper(Exchanges[dia.GnosisExchange])
-	case dia.BalancerExchange:
-		return NewBalancerScraper(Exchanges[dia.BalancerExchange])
-	case dia.MakerExchange:
-		return NewMakerScraper(Exchanges[dia.MakerExchange])
-	case dia.KuCoinExchange:
-		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange])
-	case dia.DforceExchange:
-		return NewDforceScraper(Exchanges[dia.DforceExchange])
-	case dia.ZeroxExchange:
-		return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
-	case dia.KyberExchange:
-		return NewKyberScraper(Exchanges[dia.KyberExchange])
-	case dia.BitMaxExchange:
-		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange])
-	case dia.STEXExchange:
-		return NewSTEXScraper(Exchanges[dia.STEXExchange])
+	// case dia.BitBayExchange:
+	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange])
+	// case dia.BitfinexExchange:
+	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange])
+	// case dia.BittrexExchange:
+	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange])
+	// case dia.CoinBaseExchange:
+	// 	return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange])
+	// case dia.CREX24Exchange:
+	// 	return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
+	// case dia.KrakenExchange:
+	// 	return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange])
+	// case dia.HitBTCExchange:
+	// 	return NewHitBTCScraper(Exchanges[dia.HitBTCExchange])
+	// case dia.SimexExchange:
+	// 	return NewSimexScraper(Exchanges[dia.SimexExchange])
+	// case dia.OKExExchange:
+	// 	return NewOKExScraper(Exchanges[dia.OKExExchange])
+	// case dia.HuobiExchange:
+	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange])
+	// case dia.LBankExchange:
+	// 	return NewLBankScraper(Exchanges[dia.LBankExchange])
+	// case dia.GateIOExchange:
+	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange])
+	// case dia.ZBExchange:
+	// 	return NewZBScraper(Exchanges[dia.ZBExchange])
+	// case dia.QuoineExchange:
+	// 	return NewQuoineScraper(Exchanges[dia.QuoineExchange])
+	// case dia.BancorExchange:
+	// 	return NewBancorScraper(Exchanges[dia.BancorExchange])
+	// case dia.UniswapExchange:
+	// 	return NewUniswapScraper(Exchanges[dia.UniswapExchange])
+	// case dia.PanCakeSwap:
+	// 	return NewUniswapScraper(Exchanges[dia.PanCakeSwap])
+	// case dia.SushiSwapExchange:
+	// 	return NewUniswapScraper(Exchanges[dia.SushiSwapExchange])
+	// case dia.LoopringExchange:
+	// 	return NewLoopringScraper(Exchanges[dia.LoopringExchange])
+	// case dia.CurveFIExchange:
+	// 	return NewCurveFIScraper(Exchanges[dia.CurveFIExchange])
+	// case dia.GnosisExchange:
+	// 	return NewGnosisScraper(Exchanges[dia.GnosisExchange])
+	// case dia.BalancerExchange:
+	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange])
+	// case dia.MakerExchange:
+	// 	return NewMakerScraper(Exchanges[dia.MakerExchange])
+	// case dia.KuCoinExchange:
+	// 	return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange])
+	// case dia.DforceExchange:
+	// 	return NewDforceScraper(Exchanges[dia.DforceExchange])
+	// case dia.ZeroxExchange:
+	// 	return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
+	// case dia.KyberExchange:
+	// 	return NewKyberScraper(Exchanges[dia.KyberExchange])
+	// case dia.BitMaxExchange:
+	// 	return NewBitMaxScraper(Exchanges[dia.BitMaxExchange])
+	// case dia.STEXExchange:
+	// 	return NewSTEXScraper(Exchanges[dia.STEXExchange])
 
 	default:
 		return nil

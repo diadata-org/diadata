@@ -1,12 +1,13 @@
-package database
+package assetstore
 
 import (
 	"context"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 type MongoDatabase struct {

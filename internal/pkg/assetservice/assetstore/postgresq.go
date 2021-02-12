@@ -1,4 +1,4 @@
-package database
+package assetstore
 
 import (
 	"context"
@@ -9,16 +9,16 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-// AssetDB is our single source of truth for assets
-type AssetDB struct {
+// PersistDB is our single source of truth for assets
+type PersistDB struct {
 	URI      string
 	conn     *pgx.Conn
 	pagesize uint32
 }
 
-// NewAssetDB returns a postres database connection
-func NewAssetDB(url string) (*AssetDB, error) {
-	pg := &AssetDB{}
+// NewAssetPG returns a postres database connection
+func NewPersistDB(url string) (*PersistDB, error) {
+	pg := &PersistDB{}
 	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func NewAssetDB(url string) (*AssetDB, error) {
 }
 
 // SetAsset stores an asset into postgres
-func (pg *AssetDB) SetAsset(asset dia.Asset) error {
+func (pg *PersistDB) SetAsset(asset dia.Asset) error {
 	_, err := pg.conn.Exec(context.Background(), "insert into asset(symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (pg *AssetDB) SetAsset(asset dia.Asset) error {
 }
 
 // GetAsset returns a dia.Asset by its symbol and name from postgres
-func (pg *AssetDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
+func (pg *PersistDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
 	var decimals string
 	err = pg.conn.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 	if err != nil {
@@ -53,7 +53,7 @@ func (pg *AssetDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
 }
 
 // GetPage returns assets per page number. @hasNext is true iff there is a non-empty next page.
-func (pg *AssetDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {
+func (pg *PersistDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {
 
 	pagesize := pg.pagesize
 	skip := pagesize * pageNumber
@@ -83,7 +83,7 @@ func (pg *AssetDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage b
 }
 
 // Count returns the number of assets stored in postgres
-func (pg *AssetDB) Count() (count uint32, err error) {
+func (pg *PersistDB) Count() (count uint32, err error) {
 	err = pg.conn.QueryRow(context.Background(), "select count(*) from asset").Scan(&count)
 	if err != nil {
 		return

@@ -1,4 +1,4 @@
-package database
+package assetstore
 
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
