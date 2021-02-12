@@ -8,13 +8,14 @@ import (
 
 var log = logrus.New()
 
-// Assetcache simply is a redis client. This can be moved into our db at some point
-type Assetcache struct {
+// AssetCache simply is a redis client. This can be moved into our db at some point
+type AssetCache struct {
 	redisClient *redis.Client
+	pagesize    uint32
 }
 
-// NewAssetcache returns a redis client.
-func NewAssetcache() *Assetcache {
+// NewAssetCache returns a redis client.
+func NewAssetCache() *AssetCache {
 
 	address := "localhost:6379"
 	r := redis.NewClient(&redis.Options{
@@ -28,7 +29,7 @@ func NewAssetcache() *Assetcache {
 		log.Error("NewDataStore redis", err)
 	}
 	log.Debug("NewDB", pong2)
-	return &Assetcache{redisClient: r}
+	return &AssetCache{redisClient: r}
 
 }
 
@@ -37,20 +38,33 @@ func getKeyAsset(symbol, name string) (key string) {
 	return
 }
 
-// SetAsset stores marshalled @asset in redis
-func (ac *Assetcache) SetAsset(asset dia.Asset) error {
+// SetAsset stores @asset in redis
+func (ac *AssetCache) SetAsset(asset dia.Asset) error {
 	return ac.redisClient.Set(getKeyAsset(asset.Symbol, asset.Name), &asset, 0).Err()
 }
 
 // GetAsset returns an asset by name and symbol
-func (ac *Assetcache) GetAsset(name, symbol string) (dia.Asset, error) {
+func (ac *AssetCache) GetAsset(symbol, name string) (dia.Asset, error) {
 	asset := dia.Asset{}
-	err := ac.redisClient.Get(getKeyAsset(name, symbol)).Scan(&asset)
+	err := ac.redisClient.Get(getKeyAsset(symbol, name)).Scan(&asset)
 	if err != nil {
 		if err != redis.Nil {
-			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
+			log.Errorf("Error: %v on GetAsset %v\n", err, symbol)
 		}
 		return asset, err
 	}
 	return asset, nil
+}
+
+// GetPage returns
+func (ac *AssetCache) GetPage(pageNumber uint32) (assets []dia.Asset, err error) {
+	// TO DO
+	return
+}
+
+// Count returns the number of assets in the cache
+func (ac *AssetCache) Count() (uint32, error) {
+	keysPattern := "dia_asset_*"
+	allAssets := ac.redisClient.Keys(keysPattern).Val()
+	return uint32(len(allAssets)), nil
 }

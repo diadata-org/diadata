@@ -49,7 +49,7 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 func main() {
 
 	// data, err := database.NewPostgres("postgres://postgres:example@localhost/postgres")
-	data, err := database.NewPostgres("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
+	data, err := database.NewAssetDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
 	if err != nil {
 		log.Errorln("Error connecting to data source: ", err)
 		return
@@ -72,7 +72,7 @@ func runAssetSource(data database.AssetStore, source, secret string) {
 			// 	log.Errorf("error getting asset %s: %v\n", receivedAsset.Name, err)
 			// }
 			// log.Infof("asset %s already in DB \n", asset.Name)
-			err := data.Save(receivedAsset)
+			err := data.SetAsset(receivedAsset)
 			if err != nil {
 				log.Error("Error saving asset: ", err)
 			} else {
@@ -86,7 +86,7 @@ func runAssetSource(data database.AssetStore, source, secret string) {
 
 func feedAssetToRedis(assetsaver database.AssetStore) {
 
-	assetCache := database.NewAssetcache()
+	assetCache := database.NewAssetCache()
 	totalAssets, err := assetsaver.Count()
 	if err != nil {
 		log.Errorln("Error Getting Asset counts", err)
@@ -97,7 +97,7 @@ func feedAssetToRedis(assetsaver database.AssetStore) {
 	totalPage := totalAssets / 100
 
 	log.Infoln("Total Page", totalPage)
-	var i int64
+	var i uint32
 	for i = 0; i <= totalPage; i++ {
 		assets, err := assetsaver.GetPage(i)
 		if err != nil {
