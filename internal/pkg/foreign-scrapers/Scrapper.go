@@ -1,17 +1,17 @@
 package foreignscrapers
 
 import (
-	models "github.com/diadata-org/diadata/pkg/model"
 	"sync"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type ForeignScrapperer interface {
 	UpdateQuotation() error
 	GetQuoteChannel() chan *models.ForeignQuotation
 }
-
-
 
 type ForeignScraper struct {
 	// signaling channels
@@ -26,7 +26,20 @@ type ForeignScraper struct {
 	tickerRate    *time.Ticker
 	tickerState   *time.Ticker
 	datastore     models.Datastore
-	chanQuotation  chan *models.ForeignQuotation
-
+	chanQuotation chan *models.ForeignQuotation
 }
 
+// The below generic scraper is an empty scraper used for the default case of the main function
+type genericScraper struct{}
+
+func (scraper *genericScraper) UpdateQuotation() error {
+	return nil
+}
+func (scraper *genericScraper) GetQuoteChannel() chan *models.ForeignQuotation {
+	return make(chan *models.ForeignQuotation)
+}
+func NewGenericForeignScraper() *genericScraper {
+	s := &genericScraper{}
+	log.Info("started genericforeignscraper")
+	return s
+}

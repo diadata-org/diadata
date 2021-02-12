@@ -44,6 +44,7 @@ type Datastore interface {
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
+	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
 	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
 	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
@@ -108,8 +109,8 @@ type Datastore interface {
 	// Crypto Index methods
 	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
-	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
+	GetCryptoIndexConstituents(time.Time, time.Time, string, string) ([]CryptoIndexConstituent, error)
+	SetCryptoIndexConstituent(*CryptoIndexConstituent, string) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
 	GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error)
 	// Token methods

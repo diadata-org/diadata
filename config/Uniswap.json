@@ -6739,12 +6739,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "EUR",
-            "ForeignName": "EUR-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "UGX",
             "ForeignName": "UGX-ETH",
             "Exchange": "UniswapV2",
@@ -27313,6 +27307,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MKR",
+            "ForeignName": "MKR-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "DAI",
             "ForeignName": "DAI-STV",
             "Exchange": "UniswapV2",
@@ -27880,6 +27880,30 @@
         {
             "Symbol": "USDC",
             "ForeignName": "USDC-SCIFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GBI",
+            "ForeignName": "GBI-USDC",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GBI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SFI",
+            "ForeignName": "SFI-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OPIUM",
+            "ForeignName": "OPIUM-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         }

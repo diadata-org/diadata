@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -74,4 +75,44 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 	return &Points{
 		DataPoints: res,
 	}, err
+}
+
+func (db *DB) GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error) {
+	exchangeQuery := "exchange='" + exchange + "'"
+	table := influxDbFiltersTable
+	// q := fmt.Sprintf("SELECT LAST(value) FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time < %d",
+	// 	table, filter, symbol, exchangeQuery, timestamp.UnixNano())
+
+	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time > %d ORDER BY ASC LIMIT 1",
+		table, filter, symbol, exchangeQuery, timestamp.UnixNano())
+
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("GetLastFilterPointBefore", err)
+	}
+
+	log.Info("GetLastFilterPointBefore query: ", q, " returned ", len(res))
+
+	var price Price
+	price.Symbol = symbol
+	price.Name = helpers.NameForSymbol(symbol)
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			price.Time, err = time.Parse(time.RFC3339, row[0].(string))
+			if err == nil {
+				value, ok := row[1].(json.Number)
+				if ok {
+					price.Price, _ = value.Float64()
+				} else {
+					log.Errorln("GetLastFilterPointBefore: error on parsing row price", row)
+				}
+			} else {
+				log.Errorln("GetLastFilterPointBefore: error on parsing row time", err, row)
+			}
+		}
+	} else {
+		log.Errorln("Empty response GetLastFilterPointBefore")
+	}
+
+	return price, err
 }

@@ -2,6 +2,8 @@
 
 {% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
 
+{% page-ref page="guest-quotations/coingecko-quotations.md" %}
+
 {% page-ref page="defi-protocol-rates-and-states.md" %}
 
 {% page-ref page="farming-pools.md" %}
@@ -24,7 +26,7 @@ DIA is capable of publishing financial data with such an oracle so that any smar
 
 ## Immutable Oracle Feeds
 
-The DIA oracle data is located in a [single smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price value, and – if applicable – supply data.
+The DIA oracle data can be accessed in an Ethereum [smart contract](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef). This smart contract holds mappings from an index to an asset's name, its price value, and – if applicable – supply data.
 
 By using the read function `getCoinInfo(coin_name)` it is possible to retrieve this data. Along with the actual data there is a metadata field for the timestamp of the last update.
 
@@ -36,5 +38,7 @@ As an example application, we implemented and deployed a [simple smart contract 
 
 Call `getAssetEurRate()` with a crypto asset name as argument in order to request the current crypto asset price from our oracle which is then converted to EUR by using the ECB exchange rate for EUR-USD, also published in the oracle contract.  In the above link, you can use the "Read Contract" tab for easy web access. The rate is displayed in a fix comma format with five decimal digits. The source code of that example contract can be found at the "Code" tab. This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address where the oracle is deployed afterwards. Ideally, this should be done in a way that allows updates if the oracle address changes at any time in the future.
 
+## Gas Estimation
 
+All DIA oracles use the go-ethereum gas estimation to estimate the gas costs for an update contract call. To ensure timely delivery of the transaction, the gas estimate is scaled to 110% of the original estimate.
 

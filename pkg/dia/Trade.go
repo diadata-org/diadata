@@ -52,7 +52,7 @@ func SwapTrade(t Trade) (Trade, error) {
 	baseToken := (&t).GetBaseToken()
 	t.Symbol = baseToken
 	t.Pair = baseToken + "-" + symbol
-	t.Volume = t.Price * t.Volume
+	t.Volume = -t.Price * t.Volume
 	t.Price = 1 / t.Price
 
 	return t, nil

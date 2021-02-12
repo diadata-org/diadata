@@ -125,6 +125,59 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetLastPriceBeforeAllExchanges(c *gin.Context) {
+	symbol := c.Param("symbol")
+	filter := c.Param("filter")
+	timestampStr := c.Param("timestamp")
+
+	var timestamp time.Time
+	if timestampStr == "" {
+		timestamp = time.Now()
+	} else {
+		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		timestamp = time.Unix(timestampInt, 0)
+	}
+
+	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, "", timestamp)
+
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, price)
+	}
+}
+
+func (env *Env) GetLastPriceBefore(c *gin.Context) {
+	symbol := c.Param("symbol")
+	filter := c.Param("filter")
+	exchange := c.Param("exchange")
+	timestampStr := c.Param("timestamp")
+
+	var timestamp time.Time
+	if timestampStr == "" {
+		timestamp = time.Now()
+	} else {
+		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		timestamp = time.Unix(timestampInt, 0)
+	}
+
+	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, exchange, timestamp)
+
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, price)
+	}
+}
+
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
@@ -1161,7 +1214,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Calculate relative weights
-	err = indexCalculationService.CalculateWeights(&constituents)
+	err = indexCalculationService.CalculateWeights(indexSymbol, &constituents)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1169,19 +1222,26 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24 * time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// Determine new divisor
-	currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
-	newIndexRawValue := indexCalculationService.GetIndexValue(constituents)
-	newDivisor := (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
-	newIndexValue := newIndexRawValue / newDivisor
-	//log.Info("New Index Value: ", newIndexValue)
+	var newIndexValue float64
+	var newIndexRawValue float64
+	newDivisor := 1.0
+	if indexSymbol == "SCIFI" {
+		// Determine new divisor
+		currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
+		newIndexRawValue = indexCalculationService.GetIndexValue(indexSymbol, constituents)
+		newDivisor = (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
+		newIndexValue = newIndexRawValue / newDivisor
+	} else {
+		newIndexValue = currIndex[0].Value
+		newIndexRawValue = currIndex[0].Value
+	}
 
 	// Calculate Base Amount for each constituent
 	for i, constituent := range constituents {

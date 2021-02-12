@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+      "Name": "Maker"
+    },
+    {
       "Address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "Name": "Tether USD"
     },
@@ -161,10 +165,6 @@
       "Name": "Tellor"
     },
     {
-      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-      "Name": "Maker"
-    },
-    {
       "Address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
       "Name": "Decentraland"
     },
@@ -243,6 +243,18 @@
     {
       "Address": "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b",
       "Name": "Nexus Mutual"
+    },
+    {
+      "Address": "0x0d438f3b5175bebc262bf23753c1e53d03432bde",
+      "Name": "Wrapped NXM"
+    },
+    {
+      "Address": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9",
+      "Name": "BoringDAO"
+    },
+    {
+      "Address": "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+      "Name": "Spice"
     },
     {
       "Address": "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
@@ -2571,6 +2583,10 @@
     {
       "Address":"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664",
       "Name":"Spice"
+    },
+    {
+      "Address": "0x888888888889c00c67689029d7856aac1065ec11",
+      "Name": "Opium Governance Token"
     },
     {
       "Address": "0x3fd8f39a962efda04956981c31ab89fab5fb8bc8",
@@ -6617,10 +6633,6 @@
       "Name": "Bitfex"
     },
     {
-      "Address": "0x2730d6fdc86c95a74253beffaa8306b40fedecbb",
-      "Name": "UNICORN Token"
-    },
-    {
       "Address": "0xa063341d10054188e3cb715bfb663b37c0c1515e",
       "Name": "Diagon Coin"
     },
@@ -7677,10 +7689,6 @@
       "Name": "Volume Network"
     },
     {
-      "Address": "0xe6877ea9c28fbdec631ffbc087956d0023a76bf2",
-      "Name": "UNI COIN"
-    },
-    {
       "Address": "0x19c9872640ec38c2cf36c0f04d1365ef067869b3",
       "Name": "Oath Protocol"
     },
@@ -8339,6 +8347,10 @@
     {
       "Address": "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4",
       "Name": "ScifiToken"
+    },
+    {
+      "Address": "0xcb67be5c54eab9462967ee3c03c35bfffeb801cd",
+      "Name": "GalacticBlueIndex"
     }
   ]
 }

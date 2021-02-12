@@ -23,6 +23,7 @@
   * [API Documentation](documentation/api-1/README.md)
     * [API Endpoints](documentation/api-1/api-endpoints.md)
   * [Oracle Documentation](documentation/oracle-documentation/README.md)
+    * [Deployed Contracts](documentation/oracle-documentation/deployed-contracts.md)
     * [Crypto Index Value](documentation/oracle-documentation/crypto-index-value.md)
     * [DeFi Protocol Lending and Borrowing Rates](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
     * [Farming Pools](documentation/oracle-documentation/farming-pools.md)
