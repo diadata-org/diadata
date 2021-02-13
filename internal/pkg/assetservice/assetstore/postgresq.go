@@ -153,8 +153,8 @@ func (rdb *RelDB) GetAvailablePairs(exchange string) (pairs []dia.Pair, err erro
 	return []dia.Pair{}, nil
 }
 
-// SetPair adds @pair to exchangepair table
-func (rdb *RelDB) SetPair(exchange string, pair dia.Pair) error {
+// SetExchangePair adds @pair to exchangepair table
+func (rdb *RelDB) SetExchangePair(exchange string, pair dia.Pair) error {
 	_, err := rdb.postgresClient.Exec(context.Background(), "insert into exchangepair(symbol,foreignname,exchange) values ($1,$2,$3)", pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err

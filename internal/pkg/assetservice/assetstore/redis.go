@@ -5,8 +5,12 @@ import (
 	"github.com/go-redis/redis"
 )
 
+const (
+	keyAssetCache = "dia_asset_"
+)
+
 func getKeyAsset(symbol, name string) (key string) {
-	key = "dia_asset_" + symbol + "_" + name
+	key = keyAssetCache + symbol + "_" + name
 	return
 }
 
@@ -30,7 +34,7 @@ func (rdb *RelDB) CacheGetAsset(symbol, name string) (dia.Asset, error) {
 
 // CacheCount returns the number of assets in the cache
 func (rdb *RelDB) CacheCount() (uint32, error) {
-	keysPattern := "dia_asset_*"
+	keysPattern := keyAssetCache + "*"
 	allAssets := rdb.redisClient.Keys(keysPattern).Val()
 	return uint32(len(allAssets)), nil
 }

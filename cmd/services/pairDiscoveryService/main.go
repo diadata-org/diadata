@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"os"
 	"os/signal"
 	"sync"
@@ -44,21 +43,17 @@ func main() {
 		ticker: time.NewTicker(time.Second * 60 * 60),
 	}
 
-	cache, err := assetstore.NewRedisDataStore()
+	relDB, err := assetstore.NewRedisDataStore()
 	if err != nil {
 		panic("Can not initialize cache, error: " + err.Error())
 	}
-	postgresDB, err := assetstore.NewPostgresDataStore()
-	if err != nil {
-		panic("Can not initialize postgres DB, error: " + err.Error())
-	}
 
-	updateExchangePairs(cache, postgresDB)
+	updateExchangePairs(relDB)
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run(cache, postgresDB) }()
+	go func() { defer task.wg.Done(); task.run(relDB) }()
 	select {
 	case <-c:
 		log.Info("Received stop signal.")
@@ -68,7 +63,7 @@ func main() {
 
 // updateExchangePairs fetches all exchange's trading pairs from postgres and writes them into redis caching layer (toggle == false)
 // Periodically, it connects to the exchange's API and checks for new pairs (toggle == true)
-func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
+func updateExchangePairs(relDB *assetstore.RelDB) {
 	toggle, err := getConfigTogglePairDiscovery()
 	if err != nil {
 		log.Errorf("updateExchangePairs GetConfigTogglePairDiscovery: %v", err)
@@ -82,13 +77,13 @@ func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
 				continue
 			}
 			// Fetch all pairs available for @exchange in our asset database
-			pairs, err := assetDB.GetAvailablePairs(exchange)
+			pairs, err := relDB.GetAvailablePairs(exchange)
 			if err != nil {
 				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
 				continue
 			}
 			// Set pairs in redis caching layer
-			err = cache.CacheSetAvailablePairs(exchange, pairs)
+			err = relDB.CacheSetAvailablePairs(exchange, pairs)
 			if err != nil {
 				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
 				continue
@@ -102,7 +97,7 @@ func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
 		for _, exchange := range dia.Exchanges() {
 
-			// Make API Scraper
+			// Make API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
 			var scraper scrapers.APIScraper
 			config, err := dia.GetConfig(exchange)
@@ -121,8 +116,8 @@ func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
 				if err != nil {
 					log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 				}
-				// Add pairs from assetDB
-				pairs, err = addPairsFromAssetDB(exchange, pairs, assetDB)
+				// Add pairs from relDB
+				pairs, err = addPairsFromAssetDB(exchange, pairs, relDB)
 				if err != nil {
 					log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)
 				}
@@ -131,15 +126,15 @@ func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
 				if err != nil {
 					log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 				}
-				// Set pairs to assetDB
+				// Set pairs to relDB
 				for _, pair := range pairs {
-					err = assetDB.SetPair(exchange, pair)
+					err = relDB.SetExchangePair(exchange, pair)
 					if err != nil {
 						log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
 					}
 				}
 				// Set pairs to redis caching layer
-				err = cache.CacheSetAvailablePairs(exchange, pairs)
+				err = relDB.CacheSetAvailablePairs(exchange, pairs)
 				if err != nil {
 					log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
 				}
@@ -191,13 +186,13 @@ func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
 	return coins.Coins, err
 }
 
-func (t *Task) run(cache *assetstore.RelDB, assetDB *assetstore.RelDB) {
+func (t *Task) run(relDB *assetstore.RelDB) {
 	for {
 		select {
 		case <-t.closed:
 			return
 		case <-t.ticker.C:
-			updateExchangePairs(cache, assetDB)
+			updateExchangePairs(relDB)
 		}
 	}
 }
@@ -209,34 +204,4 @@ func (t *Task) stop() {
 	log.Println("Thread stopped, cleaning...")
 	// Clean if required
 	log.Println("Done")
-}
-
-func getPostgresKeyFromSecrets() string {
-	var lines []string
-	executionMode := os.Getenv("EXEC_MODE")
-	var file *os.File
-	var err error
-	if executionMode == "production" {
-		file, err = os.Open("/run/secrets/" + postgresKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		file, err = os.Open("../../../secrets/" + postgresKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	if len(lines) != 1 {
-		log.Fatal("Secrets file should have exactly one line")
-	}
-	return lines[0]
 }
