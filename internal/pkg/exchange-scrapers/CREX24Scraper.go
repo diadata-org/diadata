@@ -163,7 +163,6 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		results[i] = dia.Pair{
 			Symbol:      parsedPairs[i].BaseCurrency,
 			ForeignName: parsedPairs[i].Symbol,
-			Ignore:      false,
 			Exchange:    s.exchangeName,
 		}
 	}

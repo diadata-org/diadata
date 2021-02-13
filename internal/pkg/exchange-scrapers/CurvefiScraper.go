@@ -416,7 +416,6 @@ func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -427,7 +426,6 @@ func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}

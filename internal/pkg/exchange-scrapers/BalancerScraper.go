@@ -383,7 +383,6 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err err
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -394,7 +393,6 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err err
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}

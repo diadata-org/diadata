@@ -296,7 +296,6 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -307,7 +306,6 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}

@@ -45,8 +45,8 @@ type Datastore interface {
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
-	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
-	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
+	SetAvailablePairs(exchange string, pairs []dia.Pair) error
+	GetAvailablePairs(exchange string) ([]dia.Pair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
@@ -54,7 +54,6 @@ type Datastore interface {
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
-	GetConfigTogglePairDiscovery() (bool, error)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)

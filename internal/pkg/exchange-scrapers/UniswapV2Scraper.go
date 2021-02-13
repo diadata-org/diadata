@@ -348,7 +348,6 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			Symbol:      pair.Token0.Symbol,
 			ForeignName: pair.ForeignName,
 			Exchange:    "UniswapV2",
-			Ignore:      false,
 		}
 		normalizedPair, _ := s.NormalizePair(pairToNormalise)
 		pairs = append(pairs, normalizedPair)

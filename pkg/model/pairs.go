@@ -12,22 +12,11 @@ type Pair struct {
 	BaseToken  dia.Asset
 	QuoteToken dia.Asset
 	Exchange   dia.Exchange
-	Ignore     bool
 }
 
 // ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
 func (p *Pair) ForeignName() string {
 	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
-}
-
-// ContainsPair returns true iff @pair is contained in remotePairs
-func ContainsPair(remotePairs []Pair, pair Pair) bool {
-	for _, remotePair := range remotePairs {
-		if pair == remotePair {
-			return true
-		}
-	}
-	return false
 }
 
 // exchange = "" for all exchanges

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"flag"
-	"os"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/assetstore"
@@ -55,34 +53,27 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 
 func main() {
 
-	persistDB, err := assetstore.NewPersistDB("postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets())
+	relDB, err := assetstore.NewRelDataStore()
 	if err != nil {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
 	}
 	// Initial run:
-	runAssetSource(*persistDB, *assetSource, *caching, *secret)
+	runAssetSource(relDB, *assetSource, *caching, *secret)
 	// Afterwards, run every @fetchPeriodMinutes
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				runAssetSource(*persistDB, *assetSource, *caching, *secret)
+				runAssetSource(relDB, *assetSource, *caching, *secret)
 			}
 		}
 	}()
 	select {}
-
 }
 
-func runAssetSource(persistDB assetstore.PersistDB, source string, caching bool, secret string) {
-
-	assetCache, err := assetstore.NewAssetCache()
-	if err != nil {
-		log.Errorln("Error connecting to asset cache: ", err)
-		return
-	}
+func runAssetSource(relDB *assetstore.RelDB, source string, caching bool, secret string) error {
 
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
@@ -90,7 +81,7 @@ func runAssetSource(persistDB assetstore.PersistDB, source string, caching bool,
 		select {
 		case receivedAsset := <-asset.Asset():
 			// Set to persistent DB
-			err := persistDB.SetAsset(receivedAsset)
+			err := relDB.SetAsset(receivedAsset)
 			if err != nil {
 				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
 			} else {
@@ -99,72 +90,11 @@ func runAssetSource(persistDB assetstore.PersistDB, source string, caching bool,
 
 			// Set to cache
 			if caching {
-				err := assetCache.SetAsset(receivedAsset)
+				err := relDB.CacheSetAsset(receivedAsset)
 				if err != nil {
 					log.Error("Error caching asset: ", err)
 				}
 			}
-		}
-	}
-}
-
-// getPostgresKeyFromSecrets returns the password for postgres db
-func getPostgresKeyFromSecrets() string {
-	var lines []string
-	executionMode := os.Getenv("EXEC_MODE")
-	var file *os.File
-	var err error
-	if executionMode == "production" {
-		file, err = os.Open("/run/secrets/" + postgresKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		file, err = os.Open("../../../secrets/" + postgresKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	if len(lines) != 1 {
-		log.Fatal("Secrets file should have exactly one line")
-	}
-	return lines[0]
-}
-
-func feedAssetToRedis(assetsaver assetstore.PersistDB) {
-
-	assetCache, err := assetstore.NewAssetCache()
-	if err != nil {
-		log.Errorln("Error connecting to asset cache: ", err)
-		return
-	}
-	totalAssets, err := assetsaver.Count()
-	if err != nil {
-		log.Errorln("Error Getting Asset counts", err)
-	}
-	log.Infoln("Total Assets: ", totalAssets)
-
-	pageIndex := uint32(0)
-	hasNextPage := true
-	for hasNextPage {
-		assets := []dia.Asset{}
-		assets, hasNextPage, err = assetsaver.GetPage(pageIndex)
-		if err != nil {
-			log.Errorln("Error getting assets for page number", pageIndex, err)
-		}
-		for _, asset := range assets {
-			assetCache.SetAsset(asset)
-		}
-		if hasNextPage {
-			pageIndex++
 		}
 	}
 }

@@ -1,24 +1,26 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"bufio"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/assetstore"
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
 
 var (
 	log *logrus.Logger
-	db  models.Datastore
+)
+
+const (
+	postgresKey = "postgres_key.txt"
 )
 
 type Pairs struct {
@@ -41,16 +43,22 @@ func main() {
 		/// Retrieve every hour
 		ticker: time.NewTicker(time.Second * 60 * 60),
 	}
-	var err error
-	db, err = models.NewDataStore()
+
+	cache, err := assetstore.NewRedisDataStore()
 	if err != nil {
-		panic("Can not initialize db, error: " + err.Error())
+		panic("Can not initialize cache, error: " + err.Error())
 	}
-	updateExchangePairs()
+	postgresDB, err := assetstore.NewPostgresDataStore()
+	if err != nil {
+		panic("Can not initialize postgres DB, error: " + err.Error())
+	}
+
+	updateExchangePairs(cache, postgresDB)
+
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run() }()
+	go func() { defer task.wg.Done(); task.run(cache, postgresDB) }()
 	select {
 	case <-c:
 		log.Info("Received stop signal.")
@@ -58,17 +66,43 @@ func main() {
 	}
 }
 
-func updateExchangePairs() {
-	toggle, err := db.GetConfigTogglePairDiscovery()
+// updateExchangePairs fetches all exchange's trading pairs from postgres and writes them into redis caching layer (toggle == false)
+// Periodically, it connects to the exchange's API and checks for new pairs (toggle == true)
+func updateExchangePairs(cache, assetDB *assetstore.RelDB) {
+	toggle, err := getConfigTogglePairDiscovery()
 	if err != nil {
-		log.Error("updateExchangePairs GetConfigTogglePairDiscovery: ", err.Error())
+		log.Errorf("updateExchangePairs GetConfigTogglePairDiscovery: %v", err)
 		return
 	}
 	if toggle == false {
-		log.Info("GetConfigTogglePairDiscovery = false, using default values")
-		getInitialExchangePairs()
-	} else {
+
+		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
 		for _, exchange := range dia.Exchanges() {
+			if exchange == "Unknown" {
+				continue
+			}
+			// Fetch all pairs available for @exchange in our asset database
+			pairs, err := assetDB.GetAvailablePairs(exchange)
+			if err != nil {
+				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
+				continue
+			}
+			// Set pairs in redis caching layer
+			err = cache.CacheSetAvailablePairs(exchange, pairs)
+			if err != nil {
+				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
+				continue
+			}
+			log.Infof("exchange %s updated\n", exchange)
+		}
+		log.Info("Update complete.")
+
+	} else {
+
+		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
+		for _, exchange := range dia.Exchanges() {
+
+			// Make API Scraper
 			log.Info("Updating exchange ", exchange)
 			var scraper scrapers.APIScraper
 			config, err := dia.GetConfig(exchange)
@@ -79,20 +113,37 @@ func updateExchangePairs() {
 				log.Info("Proceeding with no API secrets")
 				scraper = scrapers.NewAPIScraper(exchange, "", "")
 			}
+
+			// If no error, fetch pairs by method implemented for each scraper resp.
 			if scraper != nil {
-				// Fetch pairs by method implemented for each scraper resp.
+				// Fetch pairs using the API scraper
 				pairs, err := scraper.FetchAvailablePairs()
-				if err == nil {
-					pairs = addPairsFromConfig(exchange, pairs)
-					err := db.SetAvailablePairsForExchange(exchange, pairs)
-					if err == nil {
-						log.Info("Exchange: ", exchange, " updated")
-					} else {
-						log.Error("Error adding pairs to redis for exchange: ", exchange, " error: ", err.Error())
-					}
-				} else {
-					log.Error("Error fetching pairs for exchange: ", exchange, " error: ", err.Error())
+				if err != nil {
+					log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 				}
+				// Add pairs from assetDB
+				pairs, err = addPairsFromAssetDB(exchange, pairs, assetDB)
+				if err != nil {
+					log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)
+				}
+				// Optional addition of pairs from config file
+				pairs, err = addPairsFromConfig(exchange, pairs)
+				if err != nil {
+					log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
+				}
+				// Set pairs to assetDB
+				for _, pair := range pairs {
+					err = assetDB.SetPair(exchange, pair)
+					if err != nil {
+						log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
+					}
+				}
+				// Set pairs to redis caching layer
+				err = cache.CacheSetAvailablePairs(exchange, pairs)
+				if err != nil {
+					log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
+				}
+
 				go func(s scrapers.APIScraper, exchange string) {
 					time.Sleep(5 * time.Second)
 					log.Error("Closing scraper: ", exchange)
@@ -103,42 +154,35 @@ func updateExchangePairs() {
 			}
 		}
 		log.Info("Update complete.")
+
 	}
 }
 
-// getInitialExchangePairs fetches trading pairs from each exchange's config file
-// and saves them into redis.
-func getInitialExchangePairs() {
-	log.Info("Loading pairs from config...")
-	for _, e := range dia.Exchanges() {
-		if e == "Unknown" {
-			continue
-		}
-		p, err := getPairsFromConfig(e)
-		if err == nil {
-			pairsToSave := []dia.Pair{}
-			for _, pp := range p {
-				if !pp.Ignore {
-					pairsToSave = append(pairsToSave, pp)
-				} else {
-					log.Debug("ignoring", pp)
-				}
-			}
-			// savePairsToFile(e, p)
-			// save pairs in redis
-			err := db.SetAvailablePairsForExchange(e, pairsToSave)
-			if err == nil {
-				log.Info("Exchange: ", e, " set")
-			} else {
-				log.Error("Error setting pairs for exchange:", e, " error:", err.Error())
-			}
-		} else {
-			log.Error("Error processing config for exchange:", e, " error:", err.Error())
-		}
-	}
-	log.Info("Update complete.")
+func getConfigTogglePairDiscovery() (bool, error) {
+	// Activates periodically
+	return false, nil //TOFIX
 }
 
+// addPairsFromAssetDB adds all pairs available for @exchange in our persistent asset database
+func addPairsFromAssetDB(exchange string, pairs []dia.Pair, assetDB *assetstore.RelDB) ([]dia.Pair, error) {
+	persistentPairs, err := assetDB.GetAvailablePairs(exchange)
+	if err != nil {
+		return pairs, err
+	}
+	return dia.MergePairs(pairs, persistentPairs), nil
+
+}
+
+// addPairsFromConfig adds pairs from the config file to @pairs
+func addPairsFromConfig(exchange string, pairs []dia.Pair) ([]dia.Pair, error) {
+	pairsFromConfig, err := getPairsFromConfig(exchange)
+	if err != nil {
+		return pairs, err
+	}
+	return dia.MergePairs(pairs, pairsFromConfig), nil
+}
+
+// getPairsFromConfig returns pairs from exchange's config file
 func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
 	configFileAPI := configCollectors.ConfigFileConnectors(exchange)
 	// configFileAPI := "config/" + exchange + ".json"
@@ -147,35 +191,13 @@ func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
 	return coins.Coins, err
 }
 
-func savePairsToFile(exchange string, pairs []dia.Pair) {
-	log.Info("savePairsToFile: ", exchange)
-	b, err := json.Marshal(&Pairs{pairs})
-	if err != nil {
-		log.Error("error while saving pairs to file", err)
-	}
-	err = ioutil.WriteFile("/tmp/"+exchange+".json", b, 0644)
-}
-
-// addPairsFromConfig adds pairs from the config file to @remotePairs
-func addPairsFromConfig(exchange string, remotePairs []models.Pair) []dia.Pair {
-	pairsFromConfig, _ := getPairsFromConfig(exchange)
-	log.Info(exchange, " num remote: ", len(remotePairs), ", num pLocales: ", len(pairsFromConfig))
-	for _, pair := range remotePairs {
-		if ok := models.ContainsPair(remotePairs, pair); !ok {
-			remotePairs = append(remotePairs, pair)
-		}
-	}
-	savePairsToFile(exchange, remotePairs)
-	return remotePairs
-}
-
-func (t *Task) run() {
+func (t *Task) run(cache *assetstore.RelDB, assetDB *assetstore.RelDB) {
 	for {
 		select {
 		case <-t.closed:
 			return
 		case <-t.ticker.C:
-			updateExchangePairs()
+			updateExchangePairs(cache, assetDB)
 		}
 	}
 }
@@ -187,4 +209,34 @@ func (t *Task) stop() {
 	log.Println("Thread stopped, cleaning...")
 	// Clean if required
 	log.Println("Done")
+}
+
+func getPostgresKeyFromSecrets() string {
+	var lines []string
+	executionMode := os.Getenv("EXEC_MODE")
+	var file *os.File
+	var err error
+	if executionMode == "production" {
+		file, err = os.Open("/run/secrets/" + postgresKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		file, err = os.Open("../../../secrets/" + postgresKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file should have exactly one line")
+	}
+	return lines[0]
 }

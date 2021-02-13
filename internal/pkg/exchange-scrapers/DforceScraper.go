@@ -28,8 +28,8 @@ const (
 type DforceToken struct {
 	Symbol   string
 	Decimals uint8
-	Address string
-	Name string
+	Address  string
+	Name     string
 }
 
 type DforceScraper struct {
@@ -148,8 +148,8 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		dfToken := &DforceToken{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Uint64()),
-			Address: tokenAddress.String(),
-			Name: name,
+			Address:  tokenAddress.String(),
+			Name:     name,
 		}
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
@@ -295,7 +295,6 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -306,7 +305,6 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}

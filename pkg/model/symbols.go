@@ -13,7 +13,7 @@ func (db *DB) GetAllSymbols() []string {
 
 	// TODO: search in redis instead
 	for _, e := range dia.Exchanges() {
-		p, err := db.GetAvailablePairsForExchange(e)
+		p, err := db.GetAvailablePairs(e)
 		if err == nil {
 			for _, v := range p {
 				r[v.Symbol] = v.Symbol
@@ -32,7 +32,7 @@ func (db *DB) GetAllSymbols() []string {
 func (db *DB) GetSymbolsByExchange(e string) []string {
 	r := make(map[string]string)
 
-	p, err := db.GetAvailablePairsForExchange(e)
+	p, err := db.GetAvailablePairs(e)
 	if err == nil {
 		for _, v := range p {
 			r[v.Symbol] = v.Symbol

@@ -69,11 +69,11 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	}
 
-	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
+	pairsExchange, err := ds.GetAvailablePairs(*exchange)
 	log.Info("available pairs:", len(pairsExchange))
 
 	if err != nil || len(pairsExchange) == 0 {
-		log.Error("error on GetAvailablePairsForExchange", err)
+		log.Error("error on GetAvailablePairs", err)
 		cc := configCollectors.NewConfigCollectors(*exchange)
 		pairsExchange = cc.AllPairs()
 	}
