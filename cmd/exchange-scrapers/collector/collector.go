@@ -64,11 +64,13 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
+	// TO DO: Switch to RelDB
 	ds, err := models.NewRedisDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
 
+	// TO DO: Switch to RelDB Getter
 	pairsExchange, err := ds.GetAvailablePairs(*exchange)
 	log.Info("available pairs:", len(pairsExchange))
 

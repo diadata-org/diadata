@@ -4,9 +4,9 @@ import (
 	"flag"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/assetstore"
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 )
@@ -26,7 +26,6 @@ var (
 )
 
 const (
-	postgresKey        = "postgres_key.txt"
 	fetchPeriodMinutes = 24 * 60
 )
 
@@ -53,7 +52,7 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 
 func main() {
 
-	relDB, err := assetstore.NewRelDataStore()
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
@@ -73,7 +72,7 @@ func main() {
 	select {}
 }
 
-func runAssetSource(relDB *assetstore.RelDB, source string, caching bool, secret string) error {
+func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) error {
 
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
@@ -90,7 +89,7 @@ func runAssetSource(relDB *assetstore.RelDB, source string, caching bool, secret
 
 			// Set to cache
 			if caching {
-				err := relDB.CacheSetAsset(receivedAsset)
+				err := relDB.SetAssetCache(receivedAsset)
 				if err != nil {
 					log.Error("Error caching asset: ", err)
 				}

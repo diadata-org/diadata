@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/assetstore"
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
@@ -21,10 +21,6 @@ var (
 const (
 	postgresKey = "postgres_key.txt"
 )
-
-type Pairs struct {
-	Coins []dia.Pair
-}
 
 type Task struct {
 	closed chan struct{}
@@ -43,9 +39,9 @@ func main() {
 		ticker: time.NewTicker(time.Second * 60 * 60),
 	}
 
-	relDB, err := assetstore.NewRedisDataStore()
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
-		panic("Can not initialize cache, error: " + err.Error())
+		panic("Couldn't initialize relDB, error: " + err.Error())
 	}
 
 	updateExchangePairs(relDB)
@@ -63,7 +59,7 @@ func main() {
 
 // updateExchangePairs fetches all exchange's trading pairs from postgres and writes them into redis caching layer (toggle == false)
 // Periodically, it connects to the exchange's API and checks for new pairs (toggle == true)
-func updateExchangePairs(relDB *assetstore.RelDB) {
+func updateExchangePairs(relDB *models.RelDB) {
 	toggle, err := getConfigTogglePairDiscovery()
 	if err != nil {
 		log.Errorf("updateExchangePairs GetConfigTogglePairDiscovery: %v", err)
@@ -82,8 +78,8 @@ func updateExchangePairs(relDB *assetstore.RelDB) {
 				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
 				continue
 			}
-			// Set pairs in redis caching layer
-			err = relDB.CacheSetAvailablePairs(exchange, pairs)
+			// Set pairs in redis caching layer. For instance collector will fetch these.
+			err = relDB.SetAvailablePairsCache(exchange, pairs)
 			if err != nil {
 				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
 				continue
@@ -134,7 +130,7 @@ func updateExchangePairs(relDB *assetstore.RelDB) {
 					}
 				}
 				// Set pairs to redis caching layer
-				err = relDB.CacheSetAvailablePairs(exchange, pairs)
+				err = relDB.SetAvailablePairsCache(exchange, pairs)
 				if err != nil {
 					log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
 				}
@@ -159,7 +155,7 @@ func getConfigTogglePairDiscovery() (bool, error) {
 }
 
 // addPairsFromAssetDB adds all pairs available for @exchange in our persistent asset database
-func addPairsFromAssetDB(exchange string, pairs []dia.Pair, assetDB *assetstore.RelDB) ([]dia.Pair, error) {
+func addPairsFromAssetDB(exchange string, pairs []dia.Pair, assetDB *models.RelDB) ([]dia.Pair, error) {
 	persistentPairs, err := assetDB.GetAvailablePairs(exchange)
 	if err != nil {
 		return pairs, err
@@ -181,12 +177,12 @@ func addPairsFromConfig(exchange string, pairs []dia.Pair) ([]dia.Pair, error) {
 func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
 	configFileAPI := configCollectors.ConfigFileConnectors(exchange)
 	// configFileAPI := "config/" + exchange + ".json"
-	var coins Pairs
-	err := gonfig.GetConf(configFileAPI, &coins)
-	return coins.Coins, err
+	var pairs []dia.Pair
+	err := gonfig.GetConf(configFileAPI, &pairs)
+	return pairs, err
 }
 
-func (t *Task) run(relDB *assetstore.RelDB) {
+func (t *Task) run(relDB *models.RelDB) {
 	for {
 		select {
 		case <-t.closed:
