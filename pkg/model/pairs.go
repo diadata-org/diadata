@@ -20,8 +20,8 @@ func (p *Pair) ForeignName() string {
 }
 
 // exchange = "" for all exchanges
-func (db *DB) GetPairs(exchange string) ([]dia.Pair, error) {
-	var result []dia.Pair
+func (db *DB) GetPairs(exchange string) ([]dia.ExchangePair, error) {
+	var result []dia.ExchangePair
 	var cursor uint64
 	key := "dia_" + dia.FilterKing + "_"
 	for {
@@ -36,7 +36,7 @@ func (db *DB) GetPairs(exchange string) ([]dia.Pair, error) {
 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
 			if len(s) == 2 {
-				result = append(result, dia.Pair{
+				result = append(result, dia.ExchangePair{
 					Symbol:   s[0],
 					Exchange: s[1],
 				})

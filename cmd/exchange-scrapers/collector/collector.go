@@ -65,7 +65,7 @@ func init() {
 func main() {
 
 	// TO DO: Switch to RelDB
-	ds, err := models.NewRedisDataStore()
+	ds, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
@@ -103,7 +103,7 @@ func main() {
 			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 		} else {
 			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-			_, err := es.ScrapePair(dia.Pair{
+			_, err := es.ScrapePair(dia.ExchangePair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {

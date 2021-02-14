@@ -277,11 +277,11 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	return
 }
 
-func (scraper *KyberScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *KyberScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -292,7 +292,7 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -302,7 +302,7 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -322,7 +322,7 @@ func (t *KyberToken) normalizeETH() {
 	}
 }
 
-func (scraper *KyberScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -369,11 +369,11 @@ func (scraper *KyberScraper) Close() error {
 
 type KyberPairScraper struct {
 	parent *KyberScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *KyberPairScraper) Pair() dia.Pair {
+func (pairScraper *KyberPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

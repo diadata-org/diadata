@@ -68,15 +68,15 @@ type APIScraper interface {
 	io.Closer
 	// ScrapePair returns a PairScraper that continuously scrapes trades for a
 	// single pair from this APIScraper
-	ScrapePair(pair dia.Pair) (PairScraper, error)
+	ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	// FetchAvailablePairs returns a list with all available trade pairs
-	FetchAvailablePairs() (pairs []dia.Pair, err error)
-	NormalizePair(pair dia.Pair) (dia.Pair, error)
+	FetchAvailablePairs() (pairs []dia.ExchangePair, err error)
+	NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade
 }
 
-// PairScraper receives trades for a single pc.Pair from a single exchange.
+// PairScraper receives trades for a single pc.ExchangePair from a single exchange.
 type PairScraper interface {
 	io.Closer
 	// Error returns an error when the channel Channel() is closed
@@ -84,7 +84,7 @@ type PairScraper interface {
 	Error() error
 
 	// Pair returns the pair this scraper is subscribed to
-	Pair() dia.Pair
+	Pair() dia.ExchangePair
 }
 
 func NewAPIScraper(exchange string, key string, secret string) APIScraper {
@@ -109,8 +109,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewSimexScraper(Exchanges[dia.SimexExchange])
 	// case dia.OKExExchange:
 	// 	return NewOKExScraper(Exchanges[dia.OKExExchange])
-	// case dia.HuobiExchange:
-	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange])
+	case dia.HuobiExchange:
+		return NewHuobiScraper(Exchanges[dia.HuobiExchange])
 	// case dia.LBankExchange:
 	// 	return NewLBankScraper(Exchanges[dia.LBankExchange])
 	// case dia.GateIOExchange:

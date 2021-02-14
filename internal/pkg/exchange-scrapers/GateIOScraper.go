@@ -180,7 +180,7 @@ func (s *GateIOScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *GateIOScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -219,7 +219,7 @@ func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{
 	return symbol, nil
 }
 
-func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "_")
 	symbol := strings.ToUpper(str[0])
 	pair.Symbol = symbol
@@ -237,17 +237,15 @@ func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return pair, nil
 }
 
-
-
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
 	if err != nil {
 		return
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      "",
 			ForeignName: p,
 			Exchange:    s.exchangeName,
@@ -265,7 +263,7 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // GateIOPairScraper implements PairScraper for GateIO
 type GateIOPairScraper struct {
 	parent *GateIOScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -289,6 +287,6 @@ func (ps *GateIOPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *GateIOPairScraper) Pair() dia.Pair {
+func (ps *GateIOPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

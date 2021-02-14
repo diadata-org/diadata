@@ -154,7 +154,7 @@ func (s *LBankScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *LBankScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
@@ -179,7 +179,7 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *LBankScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *LBankScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "_")
 	symbol := strings.ToUpper(str[0])
 	pair.Symbol = symbol
@@ -195,7 +195,7 @@ func (s *LBankScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	data, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
 	if err != nil {
@@ -203,7 +203,7 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      "",
 			ForeignName: strings.ToUpper(p),
 			Exchange:    s.exchangeName,
@@ -222,7 +222,7 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // LBankPairScraper implements PairScraper for LBank exchange
 type LBankPairScraper struct {
 	parent *LBankScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -246,6 +246,6 @@ func (ps *LBankPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *LBankPairScraper) Pair() dia.Pair {
+func (ps *LBankPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

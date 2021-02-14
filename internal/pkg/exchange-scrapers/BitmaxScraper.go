@@ -3,13 +3,14 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	ws "github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
@@ -34,7 +35,6 @@ type BitMaxPair struct {
 	LotSize               string `json:"lotSize"`
 }
 
-
 type BitMaxScraper struct {
 	// signaling channels for session initialization and finishing
 	initDone     chan nothing
@@ -47,9 +47,9 @@ type BitMaxScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      map[string]*BitMaxPairScraper // dia.Pair -> BitMaxPairScraper
-	pairSubscriptions sync.Map                      // dia.Pair -> string (subscription ID)
-	pairLocks         sync.Map                      // dia.Pair -> sync.Mutex
+	pairScrapers      map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
+	pairSubscriptions sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	pairLocks         sync.Map                      // dia.ExchangePair -> sync.Mutex
 	exchangeName      string
 	chanTrades        chan *dia.Trade
 	wsClient          *ws.Conn
@@ -115,7 +115,7 @@ func (s *BitMaxScraper) mainLoop() {
 						Price:          priceFloat,
 						Volume:         volumeFloat,
 						Time:           time.Unix(0, trade.Ts*int64(time.Millisecond)),
-						ForeignTradeID: strconv.FormatInt(trade.Seqnum,10),
+						ForeignTradeID: strconv.FormatInt(trade.Seqnum, 10),
 						Source:         s.exchangeName,
 					}
 					log.Infoln("Got Trade", t)
@@ -138,8 +138,8 @@ func (s *BitMaxScraper) mainLoop() {
 
 }
 
-func (s *BitMaxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *BitMaxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 // closes all connected PairScrapers
@@ -177,7 +177,7 @@ type BitMaxRequest struct {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *BitMaxScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 
@@ -210,7 +210,7 @@ func (s *BitMaxScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	var bitmaxResponse BitMaxPairResponse
 	response, err := http.Get("https://bitmax.io/api/pro/v1/products")
 	if err != nil {
@@ -231,7 +231,7 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	}
 
 	for _, p := range bitmaxResponse.Data {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      strings.Split(p.Symbol, "/")[0],
 			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
@@ -244,7 +244,7 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // BitMax implements PairScraper for BitMax
 type BitMaxPairScraper struct {
 	parent *BitMaxScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -283,6 +283,6 @@ func (ps *BitMaxPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *BitMaxPairScraper) Pair() dia.Pair {
+func (ps *BitMaxPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

@@ -13,8 +13,8 @@ import (
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
-	GetAvailablePairs(exchange string) (pairs []dia.Pair, err error)
-	SetExchangePair(exchange string, pair dia.Pair)
+	GetAvailablePairs(exchange string) (pairs []dia.ExchangePair, err error)
+	SetExchangePair(exchange string, pair dia.ExchangePair)
 
 	// Assets methods
 	// Persistent
@@ -26,7 +26,7 @@ type RelDatastore interface {
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
 	CountCache() (uint32, error)
-	SetAvailablePairsCache(exchange string, pairs []dia.Pair) error
+	SetAvailablePairsCache(exchange string, pairs []dia.ExchangePair) error
 }
 
 const (
@@ -91,20 +91,20 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 }
 
 // GetAvailablePairs returns all trading pairs on @exchange from exchangepair table
-func (rdb *RelDB) GetAvailablePairs(exchange string) (pairs []dia.Pair, err error) {
+func (rdb *RelDB) GetAvailablePairs(exchange string) (pairs []dia.ExchangePair, err error) {
 
 	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,foreignname from exchangepair where exchange=$1", exchange)
 	for rows.Next() {
-		pair := dia.Pair{}
+		pair := dia.ExchangePair{}
 		rows.Scan(&pair.Symbol, &pair.ForeignName)
 		pairs = append(pairs, pair)
 	}
 
-	return []dia.Pair{}, nil
+	return []dia.ExchangePair{}, nil
 }
 
 // SetExchangePair adds @pair to exchangepair table
-func (rdb *RelDB) SetExchangePair(exchange string, pair dia.Pair) error {
+func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error {
 	_, err := rdb.postgresClient.Exec(context.Background(), "insert into exchangepair(symbol,foreignname,exchange) values ($1,$2,$3)", pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err

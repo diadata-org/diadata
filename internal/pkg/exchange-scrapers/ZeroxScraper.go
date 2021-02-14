@@ -277,7 +277,7 @@ func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (symbol string
 	return
 }
 
-func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -294,7 +294,7 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -304,7 +304,7 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -324,7 +324,7 @@ func (t *ZeroxToken) normalizeETH() {
 	}
 }
 
-func (scraper *ZeroxScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -368,17 +368,17 @@ func (scraper *ZeroxScraper) Close() error {
 	<-scraper.shutdownDone
 	return nil
 }
-func (s *ZeroxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *ZeroxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 type ZeroxPairScraper struct {
 	parent *ZeroxScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *ZeroxPairScraper) Pair() dia.Pair {
+func (pairScraper *ZeroxPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

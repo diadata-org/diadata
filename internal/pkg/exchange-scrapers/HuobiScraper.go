@@ -184,7 +184,7 @@ func (s *HuobiScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *HuobiScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -216,17 +216,16 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-
-func (s *HuobiScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *HuobiScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
+			if pair.Symbol == "IOTA" {
 				pair.Symbol = "MIOTA"
 			}
-			if pair.Symbol =="PROPY"{
+			if pair.Symbol == "PROPY" {
 				pair.Symbol = "PRO"
 			}
 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
@@ -240,7 +239,7 @@ func (s *HuobiScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type DataT struct {
 		Id           string `json:"symbol"`
 		BaseCurrency string `json:"base-currency"`
@@ -259,7 +258,7 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar.Data {
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
 				Exchange:    s.exchangeName,
@@ -278,7 +277,7 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // HuobiPairScraper implements PairScraper for Huobi exchange
 type HuobiPairScraper struct {
 	parent *HuobiScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -302,6 +301,6 @@ func (ps *HuobiPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *HuobiPairScraper) Pair() dia.Pair {
+func (ps *HuobiPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

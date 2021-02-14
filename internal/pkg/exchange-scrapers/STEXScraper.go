@@ -139,7 +139,7 @@ func (s *STEXScraper) scrapeTrades() {
 }
 
 // scrapePair scrapes the @pair associated to s.pairScraper
-func (s *STEXScraper) scrapePair(pair dia.Pair) {
+func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 
 	if (s.pairLastTimeStamp[pair.ForeignName] == time.Time{}) {
 		// Set last trade time to 10 mins ago for initial run
@@ -234,7 +234,7 @@ func (s *STEXScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *STEXScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *STEXScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -261,7 +261,7 @@ func (s *STEXScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *STEXScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *STEXScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 	if helpers.SymbolIsBlackListed(symbol) {
@@ -272,7 +272,7 @@ func (s *STEXScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type CurrencyPairs struct {
 		Success bool `json:"success"`
 		Data    []struct {
@@ -312,7 +312,7 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		return nil, errors.New("unsuccessful attempt to get currency pairs on STEX exchange")
 	}
 	for _, p := range response.Data {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      p.CurrencyCode,
 			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
@@ -332,7 +332,7 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // STEXPairScraper implements PairScraper for STEX
 type STEXPairScraper struct {
 	parent *STEXScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	id     int
 	closed bool
 }
@@ -357,6 +357,6 @@ func (ps *STEXPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *STEXPairScraper) Pair() dia.Pair {
+func (ps *STEXPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

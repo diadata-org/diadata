@@ -3,12 +3,13 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	ws "github.com/gorilla/websocket"
 )
 
 var ZBSocketURL string = "wss://api.zb.cn:9999/websocket"
@@ -72,8 +73,6 @@ func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 	return s
 }
 
-
-
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 
@@ -123,8 +122,8 @@ func (s *ZBScraper) mainLoop() {
 	s.cleanup(s.error)
 }
 
-func (s *ZBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *ZBScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (s *ZBScraper) cleanup(err error) {
@@ -157,7 +156,7 @@ func (s *ZBScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *ZBScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 
@@ -189,14 +188,14 @@ func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
+func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // ZBPairScraper implements PairScraper for ZB
 type ZBPairScraper struct {
 	parent *ZBScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -220,6 +219,6 @@ func (ps *ZBPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *ZBPairScraper) Pair() dia.Pair {
+func (ps *ZBPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

@@ -89,14 +89,14 @@ func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX.
 }
 
 // SetAvailablePairs stores @pairs in redis
-func (db *DB) SetAvailablePairs(exchange string, pairs []dia.Pair) error {
+func (db *DB) SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
 	return db.redisClient.Set(key, &p, 0).Err()
 }
 
 // GetAvailablePairs a slice of all pairs available in the exchange in the internal redis db
-func (db *DB) GetAvailablePairs(exchange string) ([]dia.Pair, error) {
+func (db *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, error) {
 	key := "dia_available_pairs_" + exchange
 	p := dia.Pairs{}
 	err := db.redisClient.Get(key).Scan(&p)

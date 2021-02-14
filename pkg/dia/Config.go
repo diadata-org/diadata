@@ -89,7 +89,7 @@ type ConfigApi struct {
 }
 
 type ConfigConnector struct {
-	Coins []Pair
+	Coins []ExchangePair
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {

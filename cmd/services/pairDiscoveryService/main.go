@@ -78,6 +78,11 @@ func updateExchangePairs(relDB *models.RelDB) {
 				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
 				continue
 			}
+			// Optional addition of pairs from config file
+			pairs, err = addPairsFromConfig(exchange, pairs)
+			if err != nil {
+				log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
+			}
 			// Set pairs in redis caching layer. For instance collector will fetch these.
 			err = relDB.SetAvailablePairsCache(exchange, pairs)
 			if err != nil {
@@ -155,7 +160,7 @@ func getConfigTogglePairDiscovery() (bool, error) {
 }
 
 // addPairsFromAssetDB adds all pairs available for @exchange in our persistent asset database
-func addPairsFromAssetDB(exchange string, pairs []dia.Pair, assetDB *models.RelDB) ([]dia.Pair, error) {
+func addPairsFromAssetDB(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
 	persistentPairs, err := assetDB.GetAvailablePairs(exchange)
 	if err != nil {
 		return pairs, err
@@ -165,7 +170,7 @@ func addPairsFromAssetDB(exchange string, pairs []dia.Pair, assetDB *models.RelD
 }
 
 // addPairsFromConfig adds pairs from the config file to @pairs
-func addPairsFromConfig(exchange string, pairs []dia.Pair) ([]dia.Pair, error) {
+func addPairsFromConfig(exchange string, pairs []dia.ExchangePair) ([]dia.ExchangePair, error) {
 	pairsFromConfig, err := getPairsFromConfig(exchange)
 	if err != nil {
 		return pairs, err
@@ -174,12 +179,14 @@ func addPairsFromConfig(exchange string, pairs []dia.Pair) ([]dia.Pair, error) {
 }
 
 // getPairsFromConfig returns pairs from exchange's config file
-func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
+func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	configFileAPI := configCollectors.ConfigFileConnectors(exchange)
-	// configFileAPI := "config/" + exchange + ".json"
-	var pairs []dia.Pair
-	err := gonfig.GetConf(configFileAPI, &pairs)
-	return pairs, err
+	type Pairs struct {
+		Coins []dia.ExchangePair
+	}
+	var coins Pairs
+	err := gonfig.GetConf(configFileAPI, &coins)
+	return coins.Coins, err
 }
 
 func (t *Task) run(relDB *models.RelDB) {

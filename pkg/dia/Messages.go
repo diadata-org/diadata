@@ -76,13 +76,15 @@ func (a *Asset) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-type Pair struct {
+// ExchangePair is the container for a pair as used by exchanges.
+// Across exchanges, these pairs cannot be uniquely mapped on asset pairs.
+type ExchangePair struct {
 	Symbol      string
 	ForeignName string
 	Exchange    string
 }
 
-type Pairs []Pair
+type Pairs []ExchangePair
 
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {

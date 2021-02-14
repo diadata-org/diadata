@@ -196,7 +196,7 @@ func (s *SimexScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *SimexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -219,7 +219,7 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *SimexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 	pair.ForeignName = symbol + pair.ForeignName
@@ -237,7 +237,7 @@ func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type NameT struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -261,7 +261,7 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	if err == nil {
 		for _, p := range ar.Data {
 
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.Base.Name,
 				ForeignName: p.Base.Name,
 				Exchange:    s.exchangeName,
@@ -280,7 +280,7 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // SimexPairScraper implements PairScraper for Simex
 type SimexPairScraper struct {
 	parent *SimexScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -304,6 +304,6 @@ func (ps *SimexPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *SimexPairScraper) Pair() dia.Pair {
+func (ps *SimexPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

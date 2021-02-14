@@ -159,9 +159,10 @@ func (s *LoopringScraper) subscribeToALL() {
 		}
 	}
 }
-func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *LoopringScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
+
 // runs in a goroutine until s is closed
 func (s *LoopringScraper) mainLoop() {
 	for true {
@@ -237,7 +238,7 @@ func (s *LoopringScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *LoopringScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -271,7 +272,7 @@ func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	data, err := utils.GetRequest("https://api.loopring.io/api/v2/exchange/markets")
 
 	if err != nil {
@@ -283,7 +284,7 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	if err == nil {
 		for _, p := range ar.Data {
 			symbols := strings.Split(p.Market, "-")
-			pairs = append(pairs, dia.Pair{
+			pairs = append(pairs, dia.ExchangePair{
 				Symbol:      symbols[0],
 				ForeignName: p.Market,
 				Exchange:    s.exchangeName,
@@ -296,7 +297,7 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // LoopringPairScraper implements PairScraper for Loopring exchange
 type LoopringPairScraper struct {
 	parent *LoopringScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -320,6 +321,6 @@ func (ps *LoopringPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *LoopringPairScraper) Pair() dia.Pair {
+func (ps *LoopringPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

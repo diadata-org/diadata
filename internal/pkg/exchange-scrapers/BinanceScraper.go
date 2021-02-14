@@ -30,9 +30,9 @@ type BinanceScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      sync.Map // dia.Pair -> binancePairScraperSet
-	pairSubscriptions sync.Map // dia.Pair -> string (subscription ID)
-	pairLocks         sync.Map // dia.Pair -> sync.Mutex
+	pairScrapers      sync.Map // dia.ExchangePair -> binancePairScraperSet
+	pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
+	pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
 	exchangeName      string
 	chanTrades        chan *dia.Trade
 }
@@ -65,7 +65,7 @@ func errorHandler(err error) {
 
 }
 
-func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	if pair.Symbol == "MIOTA" {
 		pair.ForeignName = "M" + pair.ForeignName
 	}
@@ -124,7 +124,7 @@ func (s *BinanceScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	<-s.initDone // wait until client is connected
 
 	if s.closed {
@@ -169,7 +169,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, err
 }
-func (s *BinanceScraper) normalizeSymbol(p dia.Pair, foreignName string, params ...string) (pair dia.Pair, err error) {
+func (s *BinanceScraper) normalizeSymbol(p dia.ExchangePair, foreignName string, params ...string) (pair dia.ExchangePair, err error) {
 	symbol := p.Symbol
 	status := params[0]
 	if status == "TRADING" {
@@ -193,7 +193,7 @@ func (s *BinanceScraper) normalizeSymbol(p dia.Pair, foreignName string, params 
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	data, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
 
@@ -205,7 +205,7 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	if err == nil {
 		for _, p := range ar.Symbols {
 
-			pairToNormalise := dia.Pair{
+			pairToNormalise := dia.ExchangePair{
 				Symbol:      p.Symbol,
 				ForeignName: p.Symbol,
 				Exchange:    s.exchangeName,
@@ -225,7 +225,7 @@ func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // BinancePairScraper implements PairScraper for Binance
 type BinancePairScraper struct {
 	parent *BinanceScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -264,6 +264,6 @@ func (ps *BinancePairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *BinancePairScraper) Pair() dia.Pair {
+func (ps *BinancePairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

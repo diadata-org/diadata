@@ -23,7 +23,7 @@ type CoinBaseScraper struct {
 	errorLock    sync.RWMutex
 	error        error
 	closed       bool
-	pairScrapers map[string]*CoinBasePairScraper // pc.Pair -> pairScraperSet
+	pairScrapers map[string]*CoinBasePairScraper // pc.ExchangePair -> pairScraperSet
 	wsConn       *ws.Conn
 	exchangeName string
 	chanTrades   chan *dia.Trade
@@ -141,7 +141,7 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, er
 	return symbol, nil
 }
 
-func (s *CoinBaseScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "-")
 	symbol := str[0]
 	pair.Symbol = symbol
@@ -156,7 +156,7 @@ func (s *CoinBaseScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	data, err := utils.GetRequest("https://api.pro.coinbase.com/products")
 	if err != nil {
@@ -166,7 +166,7 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			pairToNormalise := dia.Pair{
+			pairToNormalise := dia.ExchangePair{
 				Symbol:      "",
 				ForeignName: p.ID,
 				Exchange:    s.exchangeName,
@@ -185,14 +185,14 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // NewCoinBaseScraper implements PairScraper for GDax
 type CoinBasePairScraper struct {
 	parent     *CoinBaseScraper
-	pair       dia.Pair
+	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *CoinBaseScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *CoinBaseScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -253,6 +253,6 @@ func (ps *CoinBasePairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *CoinBasePairScraper) Pair() dia.Pair {
+func (ps *CoinBasePairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

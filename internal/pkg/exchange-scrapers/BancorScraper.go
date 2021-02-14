@@ -260,21 +260,21 @@ func (scraper *BancorScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
-func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {
 		log.Error("Couldn't obtain Bancor product ids:", err)
 	}
 	v := reflect.ValueOf(assets.Data)
 	typeOfS := v.Type()
-	pairs = make([]dia.Pair, v.NumField())
+	pairs = make([]dia.ExchangePair, v.NumField())
 
 	for i := 0; i < v.NumField(); i++ {
-		pairs = append(pairs, dia.Pair{
+		pairs = append(pairs, dia.ExchangePair{
 			Symbol:      typeOfS.Field(i).Name,
 			ForeignName: typeOfS.Field(i).Name + "-" + v.Field(i).Interface().(string),
 			Exchange:    scraper.exchangeName,
@@ -299,7 +299,7 @@ func (scraper *BancorScraper) readAssets() (BancorAssetPairs, error) {
 
 }
 
-func (scraper *BancorScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *BancorScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -344,11 +344,11 @@ func (scraper *BancorScraper) Close() error {
 
 type BancorPairScraper struct {
 	parent *BancorScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *BancorPairScraper) Pair() dia.Pair {
+func (pairScraper *BancorPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

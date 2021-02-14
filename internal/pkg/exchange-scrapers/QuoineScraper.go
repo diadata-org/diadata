@@ -126,7 +126,7 @@ func (scraper *QuoineScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
-func (s *QuoineScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *QuoineScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := pair.Symbol
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
@@ -140,7 +140,7 @@ func (s *QuoineScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 
 }
 
-func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	products, err := scraper.client.GetProducts(ctx)
@@ -148,10 +148,10 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 		return
 	}
 
-	pairs = make([]dia.Pair, len(products))
+	pairs = make([]dia.ExchangePair, len(products))
 
 	for _, prod := range products {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      prod.BaseCurrency,
 			ForeignName: prod.CurrencyPairCode,
 			Exchange:    scraper.exchangeName,
@@ -182,7 +182,7 @@ func (scraper *QuoineScraper) readProductIds() error {
 	return nil
 }
 
-func (scraper *QuoineScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *QuoineScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -227,11 +227,11 @@ func (scraper *QuoineScraper) Close() error {
 
 type QuoinePairScraper struct {
 	parent *QuoineScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *QuoinePairScraper) Pair() dia.Pair {
+func (pairScraper *QuoinePairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

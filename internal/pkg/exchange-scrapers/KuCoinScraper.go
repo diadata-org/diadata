@@ -56,9 +56,9 @@ type KuCoinScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      map[string]*KuCoinPairScraper // dia.Pair -> KuCoinPairScraper
-	pairSubscriptions sync.Map                      // dia.Pair -> string (subscription ID)
-	pairLocks         sync.Map                      // dia.Pair -> sync.Mutex
+	pairScrapers      map[string]*KuCoinPairScraper // dia.ExchangePair -> KuCoinPairScraper
+	pairSubscriptions sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	pairLocks         sync.Map                      // dia.ExchangePair -> sync.Mutex
 	exchangeName      string
 	chanTrades        chan *dia.Trade
 	apiService        *kucoin.ApiService
@@ -177,8 +177,8 @@ func (s *KuCoinScraper) mainLoop() {
 
 }
 
-func (s *KuCoinScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *KuCoinScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 // closes all connected PairScrapers
@@ -210,7 +210,7 @@ func (s *KuCoinScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *KuCoinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 
@@ -232,7 +232,7 @@ func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	response, err := s.apiService.Symbols("")
 	if err != nil {
 		logger.Println("Error Getting  Symbols for KuCoin Exchange", err)
@@ -244,7 +244,7 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		logger.Println("Error Reading  Symbols for KuCoin Exchange", err)
 	}
 	for _, p := range kep {
-		pairs = append(pairs, dia.Pair{
+		pairs = append(pairs, dia.ExchangePair{
 			Symbol:      strings.Split(p.Symbol, "-")[0],
 			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
@@ -256,7 +256,7 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // KuCoinPairScraper implements PairScraper for kuCoin
 type KuCoinPairScraper struct {
 	parent *KuCoinScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -295,6 +295,6 @@ func (ps *KuCoinPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *KuCoinPairScraper) Pair() dia.Pair {
+func (ps *KuCoinPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

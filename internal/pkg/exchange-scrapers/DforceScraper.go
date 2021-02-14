@@ -280,7 +280,7 @@ func (scraper *DforceScraper) getSwapDataDforce(s *dforce.DforceSwap) (symbol st
 	return
 }
 
-func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -291,7 +291,7 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -301,7 +301,7 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -315,11 +315,11 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	return
 }
 
-func (scraper *DforceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *DforceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *DforceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *DforceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -366,11 +366,11 @@ func (scraper *DforceScraper) Close() error {
 
 type DforcePairScraper struct {
 	parent *DforceScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *DforcePairScraper) Pair() dia.Pair {
+func (pairScraper *DforcePairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

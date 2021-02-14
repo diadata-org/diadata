@@ -29,7 +29,7 @@ type Datastore interface {
 	SetSupply(supply *dia.Supply) error
 	SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error
 	GetChartPoints7Days(symbol string) ([]Point, error)
-	GetPairs(exchange string) ([]dia.Pair, error)
+	GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	GetExchangesForSymbol(symbol string) ([]string, error)
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
@@ -45,8 +45,8 @@ type Datastore interface {
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
-	SetAvailablePairs(exchange string, pairs []dia.Pair) error
-	GetAvailablePairs(exchange string) ([]dia.Pair, error)
+	SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error
+	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
@@ -477,6 +477,7 @@ func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time
 			}
 			retval.Source = res[0].Series[0].Values[i][2].(string)
 			retval.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			// TO DO: Handle Pair. Which one is it gonna be?
 			retval.Pair = res[0].Series[0].Values[i][4].(string)
 			retval.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
 			if err != nil {

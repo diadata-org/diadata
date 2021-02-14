@@ -171,7 +171,7 @@ func (s *BitBayScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *BitBayScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	if s.closed {
 		return nil, errors.New("s.exchangeName+Scraper: Call ScrapePair on closed scraper")
 	}
@@ -189,8 +189,8 @@ func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
 	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
 }
-func (s *BitBayScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 //Channel returns the channel to get trades
@@ -199,8 +199,8 @@ func (s *BitBayScraper) Channel() chan *dia.Trade {
 }
 
 //FetchAvailablePairs returns a list with all available trade pairs
-func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New(s.exchangeName + "Scraper:FetchAvailablePairs() not implemented. No public API available")
+func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return []dia.ExchangePair{}, errors.New(s.exchangeName + "Scraper:FetchAvailablePairs() not implemented. No public API available")
 }
 
 // Error returns an error when the channel Channel() is closed
@@ -215,7 +215,7 @@ func (s *BitBayScraper) Error() error {
 type BitBayPairScraper struct {
 	apiEndPoint string
 	parent      *BitBayScraper
-	pair        dia.Pair
+	pair        dia.ExchangePair
 	closed      bool
 	latestTrade int
 }
@@ -235,6 +235,6 @@ func (ps *BitBayPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *BitBayPairScraper) Pair() dia.Pair {
+func (ps *BitBayPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

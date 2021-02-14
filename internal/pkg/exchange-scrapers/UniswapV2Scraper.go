@@ -334,8 +334,8 @@ func (s *UniswapScraper) normalizeUniswapSwap(swap uniswapcontract.UniswapV2Pair
 	return
 }
 
-// FetchAvailablePairs returns a list with all available trade pairs as dia.Pair for the pairDiscorvery service
-func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+// FetchAvailablePairs returns a list with all available trade pairs as dia.ExchangePair for the pairDiscorvery service
+func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	uniPairs, err := s.GetAllPairs()
 	if err != nil {
 		return
@@ -344,7 +344,7 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
 			continue
 		}
-		pairToNormalise := dia.Pair{
+		pairToNormalise := dia.ExchangePair{
 			Symbol:      pair.Token0.Symbol,
 			ForeignName: pair.ForeignName,
 			Exchange:    "UniswapV2",
@@ -356,7 +356,7 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return
 }
 
-// GetAllPairs is similar to FetchAvailablePairs. But instead of dia.Pairs it returns all pairs as UniswapPairs,
+// GetAllPairs is similar to FetchAvailablePairs. But instead of dia.ExchangePairs it returns all pairs as UniswapPairs,
 // i.e. including the pair's address
 func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	connection := s.RestClient
@@ -389,7 +389,7 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	return pairs, nil
 }
 
-func (up *UniswapScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	if pair.ForeignName == "WETH" {
 		pair.Symbol = "ETH"
 	}
@@ -590,7 +590,7 @@ func (s *UniswapScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *UniswapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *UniswapScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -611,7 +611,7 @@ func (s *UniswapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 // UniswapPairScraper implements PairScraper for Uniswap
 type UniswapPairScraper struct {
 	parent *UniswapScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -635,6 +635,6 @@ func (ps *UniswapPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *UniswapPairScraper) Pair() dia.Pair {
+func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

@@ -107,7 +107,7 @@ type CoinSymbolAndName struct {
 }
 
 type Pairs struct {
-	Pairs []dia.Pair
+	Pairs []dia.ExchangePair
 }
 
 // MarshalBinary -

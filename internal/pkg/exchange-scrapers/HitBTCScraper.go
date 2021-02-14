@@ -146,7 +146,7 @@ func (s *HitBTCScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *HitBTCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -192,7 +192,7 @@ func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string)
 	}
 	return symbol, nil
 }
-func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *HitBTCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 	if helpers.NameForSymbol(symbol) == symbol {
@@ -208,7 +208,7 @@ func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type APIResponse struct {
 		Id                   string  `json:"id"`
 		BaseCurrency         string  `json:"baseCurrency"`
@@ -228,7 +228,7 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
 				Exchange:    s.exchangeName,
@@ -247,7 +247,7 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // HitBTCPairScraper implements PairScraper for HitBTC
 type HitBTCPairScraper struct {
 	parent *HitBTCScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -271,6 +271,6 @@ func (ps *HitBTCPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *HitBTCPairScraper) Pair() dia.Pair {
+func (ps *HitBTCPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

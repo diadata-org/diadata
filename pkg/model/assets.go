@@ -117,7 +117,7 @@ func (rdb *RelDB) CountCache() (uint32, error) {
 }
 
 // SetAvailablePairsCache stores @pairs in redis
-func (rdb *RelDB) SetAvailablePairsCache(exchange string, pairs []dia.Pair) error {
+func (rdb *RelDB) SetAvailablePairsCache(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
 	return rdb.redisClient.Set(key, &p, 0).Err()

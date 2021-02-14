@@ -8,18 +8,20 @@ import (
 	logrus "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
+
 var log = logrus.New()
+
 func (c *ConfigCollectors) Exchanges() []string {
 	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
 }
 
 type ConfigCollectors struct {
-	Coins []dia.Pair
+	Coins []dia.ExchangePair
 }
 
-func (c *ConfigCollectors) AllPairs() []dia.Pair {
+func (c *ConfigCollectors) AllPairs() []dia.ExchangePair {
 	founds := map[string]bool{}
-	result := []dia.Pair{}
+	result := []dia.ExchangePair{}
 	for _, configPair := range c.Coins {
 		if _, ok := founds[configPair.ForeignName]; !ok {
 			founds[configPair.ForeignName] = true
@@ -52,7 +54,7 @@ func ConfigFileConnectors(exchange string) string {
 
 func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 	var connectorConfig = ConfigCollectors{
-		Coins: []dia.Pair{},
+		Coins: []dia.ExchangePair{},
 	}
 	if exchange == "" {
 		for _, e := range dia.Exchanges() {

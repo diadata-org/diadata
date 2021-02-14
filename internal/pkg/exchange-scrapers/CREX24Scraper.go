@@ -99,8 +99,8 @@ func (s *CREX24Scraper) Close() error {
 	return nil
 }
 
-func (s *CREX24Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *CREX24Scraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
@@ -145,7 +145,7 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 	}
 }
 
-func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	resp, err := http.Get("https://api.crex24.com/v2/public/instruments")
 	if err != nil {
 		return nil, err
@@ -158,9 +158,9 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		return nil, err
 	}
 
-	var results = make([]dia.Pair, len(parsedPairs))
+	var results = make([]dia.ExchangePair, len(parsedPairs))
 	for i := 0; i < len(parsedPairs); i++ {
-		results[i] = dia.Pair{
+		results[i] = dia.ExchangePair{
 			Symbol:      parsedPairs[i].BaseCurrency,
 			ForeignName: parsedPairs[i].Symbol,
 			Exchange:    s.exchangeName,
@@ -170,7 +170,7 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return results, nil
 }
 
-func (s *CREX24Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *CREX24Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	if s.closed {
 		return nil, errors.New("CREX24Scraper: Call ScrapePair on closed scraper")
 	}
@@ -210,7 +210,7 @@ func (s *CREX24Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 type CREX24PairScraper struct {
 	parent *CREX24Scraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 }
 
 func (ps *CREX24PairScraper) Close() error {
@@ -240,6 +240,6 @@ func (ps *CREX24PairScraper) Error() error {
 	}
 }
 
-func (ps *CREX24PairScraper) Pair() dia.Pair {
+func (ps *CREX24PairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

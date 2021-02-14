@@ -163,7 +163,7 @@ func (s *BittrexScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *BittrexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *BittrexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -201,7 +201,7 @@ func (s *BittrexScraper) normalizeSymbol(baseCurrency string, name string) (symb
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	allPairs := getAPICallBittrex("/getmarkets")
 	if len(allPairs) > 0 {
@@ -209,7 +209,7 @@ func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 			pairReturn := p.(map[string]interface{})
 			symbol, serr := s.normalizeSymbol(pairReturn["MarketCurrency"].(string), pairReturn["MarketCurrencyLong"].(string))
 			if serr == nil {
-				pairs = append(pairs, dia.Pair{
+				pairs = append(pairs, dia.ExchangePair{
 					Symbol:      symbol,
 					ForeignName: symbol + "-" + pairReturn["BaseCurrency"].(string),
 					Exchange:    s.exchangeName,
@@ -222,15 +222,15 @@ func (s *BittrexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return
 }
 
-func (s *BittrexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *BittrexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	//Normalise need more fields that Pair struct has
-	return dia.Pair{}, nil
+	return dia.ExchangePair{}, nil
 }
 
 // BittrexPairScraper implements PairScraper for Bittrex
 type BittrexPairScraper struct {
 	parent      *BittrexScraper
-	pair        dia.Pair
+	pair        dia.ExchangePair
 	closed      bool
 	lastIdTrade int
 }
@@ -255,6 +255,6 @@ func (ps *BittrexPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *BittrexPairScraper) Pair() dia.Pair {
+func (ps *BittrexPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

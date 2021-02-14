@@ -26,7 +26,7 @@ type ECBScraper struct {
 	errorLock    sync.RWMutex
 	error        error
 	closed       bool
-	pairScrapers map[string]*ECBPairScraper // dia.Pair -> pairScraperSet
+	pairScrapers map[string]*ECBPairScraper // dia.ExchangePair -> pairScraperSet
 	ticker       *time.Ticker
 	datastore    models.Datastore
 	chanTrades   chan *dia.Trade
@@ -71,8 +71,8 @@ func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 	return s
 }
 
-func (s *ECBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *ECBScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
@@ -122,13 +122,13 @@ func (s *ECBScraper) Close() error {
 // ECBPairScraper implements PairScraper for ECB
 type ECBPairScraper struct {
 	parent *ECBScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *ECBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *ECBScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -167,7 +167,7 @@ func (ps *ECBPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *ECBPairScraper) Pair() dia.Pair {
+func (ps *ECBPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 

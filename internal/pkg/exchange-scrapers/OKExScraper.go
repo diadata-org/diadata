@@ -221,7 +221,7 @@ func (s *OKExScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *OKExScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -272,16 +272,16 @@ func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (
 	return symbol, nil
 }
 
-func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *OKExScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
+			if pair.Symbol == "IOTA" {
 				pair.Symbol = "MIOTA"
 			}
-			if pair.Symbol =="YOYO"{
+			if pair.Symbol == "YOYO" {
 				pair.Symbol = "YOYOW"
 			}
 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
@@ -295,7 +295,7 @@ func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type APIResponse struct {
 		Id           string `json:"instrument_id"`
 		BaseCurrency string `json:"base_currency"`
@@ -311,7 +311,7 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
 				Exchange:    s.exchangeName,
@@ -330,7 +330,7 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // OKExPairScraper implements PairScraper for OKEx exchange
 type OKExPairScraper struct {
 	parent *OKExScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -354,6 +354,6 @@ func (ps *OKExPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *OKExPairScraper) Pair() dia.Pair {
+func (ps *OKExPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

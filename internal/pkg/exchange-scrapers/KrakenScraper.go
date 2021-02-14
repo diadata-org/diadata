@@ -25,7 +25,7 @@ type KrakenScraper struct {
 	errorLock    sync.RWMutex
 	error        error
 	closed       bool
-	pairScrapers map[string]*KrakenPairScraper // pc.Pair -> pairScraperSet
+	pairScrapers map[string]*KrakenPairScraper // pc.ExchangePair -> pairScraperSet
 	api          *krakenapi.KrakenApi
 	ticker       *time.Ticker
 	exchangeName string
@@ -110,14 +110,14 @@ func (s *KrakenScraper) Close() error {
 // KrakenPairScraper implements PairScraper for Kraken
 type KrakenPairScraper struct {
 	parent     *KrakenScraper
-	pair       dia.Pair
+	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -139,12 +139,12 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
+func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // NormalizePair accounts for the par
-func (ps *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (ps *KrakenScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	if len(pair.ForeignName) == 7 {
 		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
 			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
@@ -190,11 +190,11 @@ func (ps *KrakenPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *KrakenPairScraper) Pair() dia.Pair {
+func (ps *KrakenPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func NewTrade(pair dia.Pair, info krakenapi.TradeInfo, foreignTradeID string) *dia.Trade {
+func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID string) *dia.Trade {
 	volume := info.VolumeFloat
 	if info.Sell {
 		volume = -volume

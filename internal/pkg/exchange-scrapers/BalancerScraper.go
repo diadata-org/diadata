@@ -268,8 +268,8 @@ func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, pr
 	return
 }
 
-func (s *BalancerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *BalancerScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGNEWPOOLIterator, error) {
@@ -358,7 +358,7 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 
 // FetchAvailablePairs get pairs by geting all the LOGNEWPOOL contract events, and
 // calling the method getCurrentTokens from each pool contract
-func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	tokenMap, err := scraper.getAllTokensMap()
 	if err != nil {
@@ -379,7 +379,7 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err err
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -389,7 +389,7 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err err
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
@@ -478,7 +478,7 @@ func (bs *BalancerSwap) normalizeETH() {
 
 }
 
-func (scraper *BalancerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *BalancerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -525,11 +525,11 @@ func (scraper *BalancerScraper) Close() error {
 
 type BalancerPairScraper struct {
 	parent *BalancerScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *BalancerPairScraper) Pair() dia.Pair {
+func (pairScraper *BalancerPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 
