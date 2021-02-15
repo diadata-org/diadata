@@ -89,6 +89,7 @@ func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX.
 }
 
 // SetAvailablePairs stores @pairs in redis
+// TO DO: Setter and getter should act on RelDB
 func (db *DB) SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs

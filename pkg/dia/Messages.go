@@ -98,6 +98,7 @@ type Trade struct {
 	ForeignTradeID    string
 	EstimatedUSDPrice float64 // will be filled by the TradesBlockService
 	Source            string
+	VerifiedPair      bool // will be filled by the pairDiscoveryService
 }
 
 type ItinToken struct {
