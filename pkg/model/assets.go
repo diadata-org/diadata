@@ -14,16 +14,21 @@ const (
 	keyAssetCache = "dia_asset_"
 )
 
-func getKeyAsset(symbol, name string) (key string) {
-	key = keyAssetCache + symbol + "_" + name
-	return
+// GetKeyAsset returns an asset's key in the redis cache of the asset table.
+// @assetID refers to the primary key asset_id in the asset table.
+func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
+	ID, err := rdb.GetAssetID(asset)
+	if err != nil {
+		return "", err
+	}
+	return keyAssetCache + strconv.Itoa(ID), nil
 }
 
 // -------------------------------------------------------------
 // Postgres methods
 // -------------------------------------------------------------
 
-// SetAsset stores an asset into postgres
+// SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 	_, err := rdb.postgresClient.Exec(context.Background(), "insert into asset(symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
 	if err != nil {
@@ -32,10 +37,19 @@ func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 	return nil
 }
 
-// GetAsset returns a dia.Asset by its symbol and name from postgres
-func (rdb *RelDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
+// GetAssetID returns the unique identifier of @asset in postgres table asset, if the entry exists.
+func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID int, err error) {
+	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id from asset where address=$1 and blockchain=$2", asset.Address, asset.Blockchain.Name).Scan(&ID)
+	if err != nil {
+		return
+	}
+	return ID, nil
+}
+
+// GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
+func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
 	var decimals string
-	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where address=$1 and blockchain=$2", address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 	if err != nil {
 		return
 	}
@@ -45,6 +59,29 @@ func (rdb *RelDB) GetAsset(symbol, name string) (asset dia.Asset, err error) {
 	}
 	asset.Decimals = uint8(decimalsInt)
 	// TO DO: Get Blockchain by name from postgres and add to asset
+	return
+}
+
+// GetAssetsBySymbolName returns a (possibly multiple) dia.Asset by its symbol and name from postgres.
+func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset, err error) {
+	var decimals string
+	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		fmt.Println("---")
+		var asset dia.Asset
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, decimals, &asset.Blockchain.Name)
+		decimalsInt, err := strconv.Atoi(decimals)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
+		asset.Decimals = uint8(decimalsInt)
+		// TO DO: Get Blockchain by name from postgres and add to asset
+		assets = append(assets, asset)
+	}
+
 	return
 }
 
@@ -60,7 +97,7 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 	for rows.Next() {
 		fmt.Println("---")
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals)
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
 		assets = append(assets, asset)
 	}
 	// Last page (or empty page)
@@ -91,18 +128,24 @@ func (rdb *RelDB) Count() (count uint32, err error) {
 // Caching layer
 // -------------------------------------------------------------
 
-// SetAssetCache stores @asset in redis
+// SetAssetCache stores @asset in redis, using its primary key in postgres as key.
+// As a consequence, @asset is only cached iff it exists in postgres.
 func (rdb *RelDB) SetAssetCache(asset dia.Asset) error {
-	return rdb.redisClient.Set(getKeyAsset(asset.Symbol, asset.Name), &asset, 0).Err()
+	key, err := rdb.GetKeyAsset(asset)
+	fmt.Printf("cache asset %s with key %s\n ", asset.Symbol, key)
+	if err != nil {
+		return err
+	}
+	return rdb.redisClient.Set(key, &asset, 0).Err()
 }
 
-// GetAssetCache returns an asset by name and symbol
-func (rdb *RelDB) GetAssetCache(symbol, name string) (dia.Asset, error) {
+// GetAssetCache returns an asset by its asset_id as defined in asset table in postgres
+func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
 	asset := dia.Asset{}
-	err := rdb.redisClient.Get(getKeyAsset(symbol, name)).Scan(&asset)
+	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
 	if err != nil {
 		if err != redis.Nil {
-			log.Errorf("Error: %v on GetAsset %v\n", err, symbol)
+			log.Errorf("Error: %v on GetAsset with postgres asset_id %s\n", err, assetID)
 		}
 		return asset, err
 	}

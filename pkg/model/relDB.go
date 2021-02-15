@@ -19,9 +19,11 @@ type RelDatastore interface {
 	// Assets methods
 	// Persistent
 	SetAsset(asset dia.Asset) error
-	GetAsset(symbol, name string) (asset dia.Asset, err error)
-	GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error)
-	Count() (count uint32, err error)
+	GetAsset(address, blockchain string) (dia.Asset, error)
+	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
+	GetAssetID(asset dia.Asset) (int, error)
+	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
+	Count() (uint32, error)
 	// Caching
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)

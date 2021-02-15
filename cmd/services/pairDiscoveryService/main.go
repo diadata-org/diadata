@@ -72,7 +72,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 			if exchange == "Unknown" {
 				continue
 			}
-			// Fetch all pairs available for @exchange in our asset database
+			// Fetch all pairs available for @exchange from exchangepair table in postgres
 			pairs, err := relDB.GetAvailablePairs(exchange)
 			if err != nil {
 				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
@@ -83,7 +83,8 @@ func updateExchangePairs(relDB *models.RelDB) {
 			if err != nil {
 				log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 			}
-			// Set pairs in redis caching layer. For instance collector will fetch these.
+			// Set pairs in redis caching layer. The collector will fetch these in order to build
+			// the corresponding pair scrapers.
 			err = relDB.SetAvailablePairsCache(exchange, pairs)
 			if err != nil {
 				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
