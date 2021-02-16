@@ -15,6 +15,12 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Coinmarketcap Oracle | [0x48760771fEda4bE44A6ED3BfF13ecBC445159B1D](https://etherscan.io/address/0x48760771feda4be44a6ed3bff13ecbc445159b1d) |
 | DIA Index Oracle | [0x814712cC9Fa606A4b372B87cd27775959E052d9a](https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a) |
 
+### Ropsten Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0x1E27d6B118e2E618E1B902e85428a27F49EDd5eC](https://ropsten.etherscan.io/address/0xd05dc268263b8e8582eb8544e12310892db2534e) |
+
 ### Binance Smart Chain Mainnet
 
 | Contract Name | Contract Address |
