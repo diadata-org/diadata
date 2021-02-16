@@ -13,7 +13,7 @@ import (
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
-	GetAvailablePairs(exchange string) (pairs []dia.ExchangePair, err error)
+	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
 	SetExchangePair(exchange string, pair dia.ExchangePair)
 
 	// Assets methods
@@ -92,8 +92,8 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	return &RelDB{url, postgresClient, redisClient, 32}, nil
 }
 
-// GetAvailablePairs returns all trading pairs on @exchange from exchangepair table
-func (rdb *RelDB) GetAvailablePairs(exchange string) (pairs []dia.ExchangePair, err error) {
+// GetExchangePairs returns all trading pairs on @exchange from exchangepair table
+func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
 
 	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,foreignname from exchangepair where exchange=$1", exchange)
 	for rows.Next() {
@@ -102,7 +102,7 @@ func (rdb *RelDB) GetAvailablePairs(exchange string) (pairs []dia.ExchangePair, 
 		pairs = append(pairs, pair)
 	}
 
-	return []dia.ExchangePair{}, nil
+	return pairs, nil
 }
 
 // SetExchangePair adds @pair to exchangepair table

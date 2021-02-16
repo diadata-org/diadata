@@ -59,7 +59,7 @@ func Exchanges() []string {
 		// BinanceExchange,
 		// BitfinexExchange,
 		// BittrexExchange,
-		// CoinBaseExchange,
+		CoinBaseExchange,
 		// GateIOExchange,
 		// HitBTCExchange,
 		// HuobiExchange,

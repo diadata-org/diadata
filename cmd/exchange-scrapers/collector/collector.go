@@ -64,18 +64,17 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	// TO DO: Switch to RelDB
-	ds, err := models.NewRelDataStore()
+	// Comment: we could restrict to postgres here
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
 
-	// TO DO: Switch to RelDB Getter
-	pairsExchange, err := ds.GetAvailablePairs(*exchange)
-	log.Info("available pairs:", len(pairsExchange))
+	pairsExchange, err := relDB.GetExchangePairs(*exchange)
+	log.Info("available exchangePairs:", len(pairsExchange))
 
 	if err != nil || len(pairsExchange) == 0 {
-		log.Error("error on GetAvailablePairs", err)
+		log.Error("error on GetExchangePairs", err)
 		cc := configCollectors.NewConfigCollectors(*exchange)
 		pairsExchange = cc.AllPairs()
 	}
@@ -91,13 +90,13 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	pairs := make(map[string]string)
+	exchangePairs := make(map[string]string)
 
 	for _, configPair := range pairsExchange {
 		dontAddPair := false
 		if *onePairPerSymbol {
-			_, dontAddPair = pairs[configPair.Symbol]
-			pairs[configPair.Symbol] = configPair.Symbol
+			_, dontAddPair = exchangePairs[configPair.Symbol]
+			exchangePairs[configPair.Symbol] = configPair.Symbol
 		}
 		if dontAddPair {
 			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)

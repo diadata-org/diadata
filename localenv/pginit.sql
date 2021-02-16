@@ -1,8 +1,13 @@
+CREATE EXTENSION "pgcrypto";
+
+
 -- Table asset is the single source of truth for all assets handled at DIA.
 CREATE TABLE asset (
+    -- asset_id UUID DEFAULT gen_random_uuid(),
+    -- I think we can stick to integer primary key. The table is going to hold at most order 10^5 entries.
     asset_id integer primary key generated always as identity,
     symbol text not null,
-    name text not null,    
+    name text not null,
     decimals text,
     blockchain text,
     address text not null,
@@ -33,3 +38,11 @@ CREATE TABLE blockchain (
     nativetoken text,
 	verificationmechanism text
 );
+
+-- Comments:
+
+-- We use text instead of char:
+-- https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying
+
+-- For the use of primary keys and the advantage of integers. A bit old, but maybe still true?
+-- https://stackoverflow.com/questions/337503/whats-the-best-practice-for-primary-keys-in-tables

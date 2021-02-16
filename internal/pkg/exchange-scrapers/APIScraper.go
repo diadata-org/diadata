@@ -97,8 +97,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange])
 	// case dia.BittrexExchange:
 	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange])
-	// case dia.CoinBaseExchange:
-	// 	return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange])
+	case dia.CoinBaseExchange:
+		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange])
 	// case dia.CREX24Exchange:
 	// 	return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
 	// case dia.KrakenExchange:
