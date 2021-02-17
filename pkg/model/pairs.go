@@ -7,18 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Pair substitues the old dia.Pair. It includes the new asset type.
-type Pair struct {
-	BaseToken  dia.Asset
-	QuoteToken dia.Asset
-	Exchange   dia.Exchange
-}
-
-// ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
-func (p *Pair) ForeignName() string {
-	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
-}
-
 // exchange = "" for all exchanges
 func (db *DB) GetPairs(exchange string) ([]dia.ExchangePair, error) {
 	var result []dia.ExchangePair

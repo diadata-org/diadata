@@ -50,6 +50,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jinzhu/now v1.1.1

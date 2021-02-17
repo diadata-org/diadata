@@ -153,15 +153,15 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, er
 }
 
 func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	str := strings.Split(pair.ForeignName, "-")
-	symbol := str[0]
-	pair.Symbol = symbol
-	if helpers.NameForSymbol(symbol) == symbol {
-		return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return pair, errors.New("Symbol is black listed:" + symbol)
-	}
+	// str := strings.Split(pair.ForeignName, "-")
+	// symbol := str[0]
+	// pair.Symbol = symbol
+	// if helpers.NameForSymbol(symbol) == symbol {
+	// 	return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
+	// }
+	// if helpers.SymbolIsBlackListed(symbol) {
+	// 	return pair, errors.New("Symbol is black listed:" + symbol)
+	// }
 	return pair, nil
 
 }

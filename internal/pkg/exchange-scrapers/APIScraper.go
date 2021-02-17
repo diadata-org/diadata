@@ -76,7 +76,8 @@ type APIScraper interface {
 
 	// FetchTickerData collects information associated to the symbol ticker of an
 	// asset traded on the exchange associated to the APIScraper.
-	// This is only needed for CEX. For DEX the trade can be filled
+	// Ideally, data is returned as close to original (blockchain) notation as possible.
+	// This is only needed for CEX. For DEX the trade can be filled.
 	FetchTickerData(symbol string) (dia.Asset, error)
 
 	NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error)

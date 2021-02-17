@@ -3,6 +3,7 @@ package models
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -21,14 +22,19 @@ type RelDatastore interface {
 	SetAsset(asset dia.Asset) error
 	GetAsset(address, blockchain string) (dia.Asset, error)
 	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
+	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
+
 	// Caching
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
 	CountCache() (uint32, error)
 	SetExchangePairsCache(exchange string, pairs []dia.ExchangePair) error
+
+	// General methods
+	GetKeys(table string) ([]string, error)
 }
 
 const (
@@ -112,6 +118,23 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error 
 		return err
 	}
 	return nil
+}
+
+// GetKeys returns a slice of strings holding the names of the keys of @table in postgres
+func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
+	query := fmt.Sprintf("select column_name from information_schema.columns where table_name='%s'", table)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		val, err := rows.Values()
+		if err != nil {
+			return keys, err
+		}
+		keys = append(keys, val[0].(string))
+	}
+	return
 }
 
 func getPostgresKeyFromSecrets() string {

@@ -2,10 +2,11 @@ CREATE EXTENSION "pgcrypto";
 
 
 -- Table asset is the single source of truth for all assets handled at DIA.
+-- If a field is not case sensitive (such as address for Ethereum) it should
+-- be all lowercase for consistency reasons.
+-- Otherwise it must be as defined in the underlying contract.
 CREATE TABLE asset (
     asset_id UUID DEFAULT gen_random_uuid(),
-    -- I think we can stick to integer primary key. The table is going to hold at most order 10^5 entries.
-    -- asset_id integer primary key generated always as identity,
     symbol text not null,
     name text not null,
     decimals text,
@@ -20,7 +21,6 @@ CREATE TABLE asset (
 -- for the pair scrapers to be able to scrape trading data from the API.
 CREATE TABLE exchangepair (
     exchangepair_id UUID DEFAULT gen_random_uuid(),
-    -- exchangepair_id integer primary key generated always as identity,
     symbol text not null,
     foreignname text not null,
     exchange text not null,

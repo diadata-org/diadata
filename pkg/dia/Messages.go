@@ -50,6 +50,17 @@ type BlockChain struct {
 	VerificationMechanism VerificationMechanism
 }
 
+// Pair substitues the old dia.Pair. It includes the new asset type.
+type Pair struct {
+	BaseToken  Asset
+	QuoteToken Asset
+}
+
+// ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
+func (p *Pair) ForeignName() string {
+	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)
@@ -79,10 +90,11 @@ func (a *Asset) UnmarshalBinary(data []byte) error {
 // ExchangePair is the container for a pair as used by exchanges.
 // Across exchanges, these pairs cannot be uniquely mapped on asset pairs.
 type ExchangePair struct {
-	Symbol      string
-	ForeignName string
-	Exchange    string
-	Verified    bool
+	Symbol         string
+	ForeignName    string
+	Exchange       string
+	Verified       bool
+	UnderlyingPair Pair
 }
 
 type Pairs []ExchangePair

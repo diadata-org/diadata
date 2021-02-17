@@ -95,6 +95,52 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	return
 }
 
+// IdentifyAsset looks for all assets in postgres which match the non-null fields in @asset
+// Comment 1: The only critical field is @Decimals, as this is initialized with 0, while an
+// asset is allowed to have zero decimals as well.
+// Comment 2: Should we add a preprocessing step in which notation is corrected corresponding
+// to the notation in the underlying contract on the blockchain?
+func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error) {
+	query := "select symbol,name,address,decimals,blockchain from asset where "
+	var and string
+	if asset.Symbol != "" {
+		query += fmt.Sprintf("symbol='%s'", asset.Symbol)
+		and = " and "
+	}
+	if asset.Name != "" {
+		query += fmt.Sprintf(and+"name='%s'", asset.Name)
+		and = " and "
+	}
+	if asset.Address != "" {
+		query += fmt.Sprintf(and+"address='%s'", asset.Address)
+		and = " and "
+	}
+	if asset.Decimals != 0 {
+		query += fmt.Sprintf(and+"decimals='%d'", asset.Decimals)
+		and = " and "
+	}
+	if asset.Blockchain.Name != "" {
+		query += fmt.Sprintf(and+"blockchain='%s'", asset.Blockchain.Name)
+	}
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	var decimals string
+	for rows.Next() {
+		asset := dia.Asset{}
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+		intDecimals, err := strconv.Atoi(decimals)
+		if err != nil {
+			log.Error("error parsing decimals string")
+		}
+		asset.Decimals = uint8(intDecimals)
+		assets = append(assets, asset)
+	}
+
+	return
+}
+
 // GetPage returns assets per page number. @hasNext is true iff there is a non-empty next page.
 func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {
 

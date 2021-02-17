@@ -114,7 +114,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 			// If no error, fetch pairs by method implemented for each scraper resp.
 			if scraper != nil {
 
-				// --------- 1. Step: collect pairs from ExchangeAPI, DB and config ---------
+				// --------- 1. Step: collect pairs from Exchange API, DB and config file ---------
 				// Fetch pairs using the API scraper
 				pairs, err := scraper.FetchAvailablePairs()
 				if err != nil {
@@ -131,17 +131,38 @@ func updateExchangePairs(relDB *models.RelDB) {
 					log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 				}
 
-				// --------- 2. Step: Try to verifiy all pairs as collected above ---------
-				// TO DO: Check for all pairs whether the constituents can be uniquely identified
-				// for _, pair := range pairs {
-				//		symbol0 := pair.Symbol
-				// 		symbol1 := ...
-				// 		asset0, err := scraper.FetchTickerData(symbol0)
-				// 		assets, err := relDB.IdentifyAsset(asset)
-				// 		if len(assets) == 1 {
-				// 			pair.Verified = true
-				// 		}
-				// }
+				// --------- 2. Step: Try to verify all pairs collected above ---------
+				// TO DO: Use symbols, err := dia.GetAllSymbolsFromPairs(pairs) in order to verify/falsify
+				// all constituent assets. Subsequently they just have to be identified in the pair.
+				// This prevents multiple checking of assets appearing in multiple pairs.
+				for _, pair := range pairs {
+					symbols, err := dia.GetPairSymbols(pair)
+					if err != nil {
+						log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
+						continue
+					}
+					quoteToken, err := scraper.FetchTickerData(symbols[0])
+					baseToken, err := scraper.FetchTickerData(symbols[1])
+					if err != nil {
+						log.Errorf("error fetching ticker data for %s", pair.ForeignName)
+						continue
+					}
+					quoteTokenCandidates, err := relDB.IdentifyAsset(quoteToken)
+					if err != nil {
+						log.Errorf("error getting asset candidates for %s", quoteToken.Symbol)
+						continue
+					}
+					baseTokenCandidates, err := relDB.IdentifyAsset(baseToken)
+					if err != nil {
+						log.Errorf("error getting asset candidates for %s", baseToken.Symbol)
+						continue
+					}
+					if len(quoteTokenCandidates) == 1 && len(baseTokenCandidates) == 1 {
+						pair.Verified = true
+						pair.UnderlyingPair.QuoteToken = quoteTokenCandidates[0]
+						pair.UnderlyingPair.BaseToken = baseTokenCandidates[0]
+					}
+				}
 
 				// Set pairs to postgres
 				for _, pair := range pairs {
