@@ -7,6 +7,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
+	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,7 +22,7 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return keyAssetCache + strconv.Itoa(ID), nil
+	return keyAssetCache + ID, nil
 }
 
 // -------------------------------------------------------------
@@ -38,7 +39,7 @@ func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 }
 
 // GetAssetID returns the unique identifier of @asset in postgres table asset, if the entry exists.
-func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID int, err error) {
+func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id from asset where address=$1 and blockchain=$2", asset.Address, asset.Blockchain.Name).Scan(&ID)
 	if err != nil {
 		return
@@ -63,16 +64,25 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 }
 
 // GetAssetsBySymbolName returns a (possibly multiple) dia.Asset by its symbol and name from postgres.
+// If @name is an empty string, it returns all assets with @symbol.
+// If @symbol is an empty string, it returns all assets with @name.
 func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset, err error) {
 	var decimals string
-	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name)
+	var rows pgx.Rows
+	if name == "" {
+		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1", symbol)
+	} else if symbol == "" {
+		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where name=$1", name)
+	} else {
+		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name)
+	}
 	if err != nil {
 		return
 	}
 	for rows.Next() {
 		fmt.Println("---")
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, decimals, &asset.Blockchain.Name)
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 		decimalsInt, err := strconv.Atoi(decimals)
 		if err != nil {
 			return []dia.Asset{}, err
@@ -159,8 +169,8 @@ func (rdb *RelDB) CountCache() (uint32, error) {
 	return uint32(len(allAssets)), nil
 }
 
-// SetAvailablePairsCache stores @pairs in redis
-func (rdb *RelDB) SetAvailablePairsCache(exchange string, pairs []dia.ExchangePair) error {
+// SetExchangePairsCache stores @pairs in redis
+func (rdb *RelDB) SetExchangePairsCache(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
 	return rdb.redisClient.Set(key, &p, 0).Err()

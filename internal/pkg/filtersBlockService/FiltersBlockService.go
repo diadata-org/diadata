@@ -54,81 +54,19 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 	return s
 }
 
-func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
-	s.chanTradesBlock <- tradesBlock
-	log.Info("ProcessTradesBlock finito")
-}
-
-func (s *FiltersBlockService) Close() error {
-	if s.closed {
-		return errors.New("Filters: Already closed")
-	}
-	close(s.shutdown)
-	<-s.shutdownDone
-	return s.error
-}
-
-// must only be called from mainLoop
-func (s *FiltersBlockService) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.shutdownDone) // signal that shutdown is complete
-}
-
-func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
-	log.Debug("previousBlockFilters", previousBlockFilters)
-	log.Debug("newFilters:", newFilters)
-	missingPoints := 0
-	result := newFilters
-	newFiltersMap := make(map[string]*dia.FilterPoint)
-	for _, filter := range newFilters {
-		newFiltersMap[filter.Name+filter.Symbol] = &filter
-	}
-
-	for _, filter := range previousBlockFilters {
-
-		d := time.Now().Sub(filter.Time)
-		log.Info("filter:", filter, " age:", d)
-
-		if d > time.Hour*24 {
-			_, ok := newFiltersMap[filter.Name+filter.Symbol]
-			if !ok {
-				result = append(result, filter)
-				log.Debug("Adding", filter.Name+filter.Symbol)
-				missingPoints++
-			}
-		} else {
-			log.Info("ignoring old filter", filter.Symbol)
+// runs in a goroutine until s is closed
+func (s *FiltersBlockService) mainLoop() {
+	for {
+		log.Info("x FiltersBlockService mainloop")
+		select {
+		case <-s.shutdown:
+			log.Println("Filters shutting down")
+			s.cleanup(nil)
+			return
+		case tb, ok := <-s.chanTradesBlock:
+			log.Info("receive tradesBlock for further processing ok: ", ok)
+			s.processTradesBlock(tb)
 		}
-	}
-	if missingPoints != 0 {
-		log.Printf("Added %v missing point from previous block", missingPoints)
-	}
-	log.Debug("result:", result)
-	return result
-}
-
-func (s *FiltersBlockService) createFilters(symbol string, exchange string, BeginTime time.Time) {
-	_, ok := s.filters[symbol+exchange]
-	if !ok {
-		s.filters[symbol+exchange] = []Filter{
-			// Prices are written into redis in MA filter
-			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterTLT(symbol, exchange),
-			NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
-			NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-		}
-	}
-}
-
-func (s *FiltersBlockService) computeFilters(t dia.Trade, key string) {
-	for _, f := range s.filters[key] {
-		f.compute(t)
 	}
 }
 
@@ -196,18 +134,80 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	// }
 }
 
-// runs in a goroutine until s is closed
-func (s *FiltersBlockService) mainLoop() {
-	for {
-		log.Info("x FiltersBlockService mainloop")
-		select {
-		case <-s.shutdown:
-			log.Println("Filters shutting down")
-			s.cleanup(nil)
-			return
-		case tb, ok := <-s.chanTradesBlock:
-			log.Info("receive tradesBlock for further processing ok: ", ok)
-			s.processTradesBlock(tb)
+func (s *FiltersBlockService) createFilters(symbol string, exchange string, BeginTime time.Time) {
+	_, ok := s.filters[symbol+exchange]
+	if !ok {
+		s.filters[symbol+exchange] = []Filter{
+			// Prices are written into redis in MA filter
+			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterTLT(symbol, exchange),
+			NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
+			NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
 	}
+}
+
+func (s *FiltersBlockService) computeFilters(t dia.Trade, key string) {
+	for _, f := range s.filters[key] {
+		f.compute(t)
+	}
+}
+
+func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
+	log.Debug("previousBlockFilters", previousBlockFilters)
+	log.Debug("newFilters:", newFilters)
+	missingPoints := 0
+	result := newFilters
+	newFiltersMap := make(map[string]*dia.FilterPoint)
+	for _, filter := range newFilters {
+		newFiltersMap[filter.Name+filter.Symbol] = &filter
+	}
+
+	for _, filter := range previousBlockFilters {
+
+		d := time.Now().Sub(filter.Time)
+		log.Info("filter:", filter, " age:", d)
+
+		if d > time.Hour*24 {
+			_, ok := newFiltersMap[filter.Name+filter.Symbol]
+			if !ok {
+				result = append(result, filter)
+				log.Debug("Adding", filter.Name+filter.Symbol)
+				missingPoints++
+			}
+		} else {
+			log.Info("ignoring old filter", filter.Symbol)
+		}
+	}
+	if missingPoints != 0 {
+		log.Printf("Added %v missing point from previous block", missingPoints)
+	}
+	log.Debug("result:", result)
+	return result
+}
+
+func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
+	s.chanTradesBlock <- tradesBlock
+	log.Info("ProcessTradesBlock finito")
+}
+
+func (s *FiltersBlockService) Close() error {
+	if s.closed {
+		return errors.New("Filters: Already closed")
+	}
+	close(s.shutdown)
+	<-s.shutdownDone
+	return s.error
+}
+
+// must only be called from mainLoop
+func (s *FiltersBlockService) cleanup(err error) {
+	s.errorLock.Lock()
+	defer s.errorLock.Unlock()
+	if err != nil {
+		s.error = err
+	}
+	s.closed = true
+	close(s.shutdownDone) // signal that shutdown is complete
 }

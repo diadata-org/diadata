@@ -30,6 +30,7 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 	}
 	return s
 }
+
 func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0

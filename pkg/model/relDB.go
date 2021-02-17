@@ -21,14 +21,14 @@ type RelDatastore interface {
 	SetAsset(asset dia.Asset) error
 	GetAsset(address, blockchain string) (dia.Asset, error)
 	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
-	GetAssetID(asset dia.Asset) (int, error)
+	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
 	// Caching
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
 	CountCache() (uint32, error)
-	SetAvailablePairsCache(exchange string, pairs []dia.ExchangePair) error
+	SetExchangePairsCache(exchange string, pairs []dia.ExchangePair) error
 }
 
 const (

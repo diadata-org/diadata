@@ -50,48 +50,18 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *Tra
 	return s
 }
 
-func (s *TradesBlockService) ProcessTrade(trade *dia.Trade) {
-	s.chanTrades <- trade
-}
-
-func (s *TradesBlockService) Close() error {
-	if s.closed {
-		return errors.New("TradesBlockService: Already closed")
+// runs in a goroutine until s is closed
+func (s *TradesBlockService) mainLoop() {
+	for {
+		select {
+		case <-s.shutdown:
+			log.Println("TradesBlockService shutting down")
+			s.cleanup(nil)
+			return
+		case t, _ := <-s.chanTrades:
+			s.process(*t)
+		}
 	}
-	close(s.shutdown)
-	<-s.shutdownDone
-	return s.error
-}
-
-// must only be called from mainLoop
-func (s *TradesBlockService) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.shutdownDone) // signal that shutdown is complete
-}
-
-func (ps *TradesBlockService) Channel() chan *dia.TradesBlock {
-	return ps.chanTradesBlock
-}
-
-func (s *TradesBlockService) finaliseCurrentBlock() {
-
-	sort.Slice(s.currentBlock.TradesBlockData.Trades, func(i, j int) bool {
-		return s.currentBlock.TradesBlockData.Trades[i].Time.Before(s.currentBlock.TradesBlockData.Trades[j].Time)
-	})
-
-	hash, err := structhash.Hash(s.currentBlock.TradesBlockData, 1)
-	if err != nil {
-		log.Printf("error on hash")
-		hash = "hashError"
-	}
-	s.currentBlock.BlockHash = hash
-	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
-	s.chanTradesBlock <- s.currentBlock
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
@@ -158,16 +128,46 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	}
 }
 
-// runs in a goroutine until s is closed
-func (s *TradesBlockService) mainLoop() {
-	for {
-		select {
-		case <-s.shutdown:
-			log.Println("TradesBlockService shutting down")
-			s.cleanup(nil)
-			return
-		case t, _ := <-s.chanTrades:
-			s.process(*t)
-		}
+func (s *TradesBlockService) finaliseCurrentBlock() {
+
+	sort.Slice(s.currentBlock.TradesBlockData.Trades, func(i, j int) bool {
+		return s.currentBlock.TradesBlockData.Trades[i].Time.Before(s.currentBlock.TradesBlockData.Trades[j].Time)
+	})
+
+	hash, err := structhash.Hash(s.currentBlock.TradesBlockData, 1)
+	if err != nil {
+		log.Printf("error on hash")
+		hash = "hashError"
 	}
+	s.currentBlock.BlockHash = hash
+	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
+	s.chanTradesBlock <- s.currentBlock
+}
+
+func (s *TradesBlockService) ProcessTrade(trade *dia.Trade) {
+	s.chanTrades <- trade
+}
+
+func (s *TradesBlockService) Close() error {
+	if s.closed {
+		return errors.New("TradesBlockService: Already closed")
+	}
+	close(s.shutdown)
+	<-s.shutdownDone
+	return s.error
+}
+
+// must only be called from mainLoop
+func (s *TradesBlockService) cleanup(err error) {
+	s.errorLock.Lock()
+	defer s.errorLock.Unlock()
+	if err != nil {
+		s.error = err
+	}
+	s.closed = true
+	close(s.shutdownDone) // signal that shutdown is complete
+}
+
+func (s *TradesBlockService) Channel() chan *dia.TradesBlock {
+	return s.chanTradesBlock
 }

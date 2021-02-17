@@ -73,9 +73,9 @@ func updateExchangePairs(relDB *models.RelDB) {
 				continue
 			}
 			// Fetch all pairs available for @exchange from exchangepair table in postgres
-			pairs, err := relDB.GetAvailablePairs(exchange)
+			pairs, err := relDB.GetExchangePairs(exchange)
 			if err != nil {
-				log.Errorf("getting pairs from config for exchange %s: %v", exchange, err)
+				log.Errorf("getting pairs from postgres for exchange %s: %v", exchange, err)
 				continue
 			}
 			// Optional addition of pairs from config file
@@ -85,7 +85,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 			}
 			// Set pairs in redis caching layer. The collector will fetch these in order to build
 			// the corresponding pair scrapers.
-			err = relDB.SetAvailablePairsCache(exchange, pairs)
+			err = relDB.SetExchangePairsCache(exchange, pairs)
 			if err != nil {
 				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
 				continue
@@ -113,6 +113,8 @@ func updateExchangePairs(relDB *models.RelDB) {
 
 			// If no error, fetch pairs by method implemented for each scraper resp.
 			if scraper != nil {
+
+				// --------- 1. Step: collect pairs from ExchangeAPI, DB and config ---------
 				// Fetch pairs using the API scraper
 				pairs, err := scraper.FetchAvailablePairs()
 				if err != nil {
@@ -128,7 +130,20 @@ func updateExchangePairs(relDB *models.RelDB) {
 				if err != nil {
 					log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 				}
-				// Set pairs to relDB
+
+				// --------- 2. Step: Try to verifiy all pairs as collected above ---------
+				// TO DO: Check for all pairs whether the constituents can be uniquely identified
+				// for _, pair := range pairs {
+				//		symbol0 := pair.Symbol
+				// 		symbol1 := ...
+				// 		asset0, err := scraper.FetchTickerData(symbol0)
+				// 		assets, err := relDB.IdentifyAsset(asset)
+				// 		if len(assets) == 1 {
+				// 			pair.Verified = true
+				// 		}
+				// }
+
+				// Set pairs to postgres
 				for _, pair := range pairs {
 					err = relDB.SetExchangePair(exchange, pair)
 					if err != nil {
@@ -136,7 +151,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 					}
 				}
 				// Set pairs to redis caching layer
-				err = relDB.SetAvailablePairsCache(exchange, pairs)
+				err = relDB.SetExchangePairsCache(exchange, pairs)
 				if err != nil {
 					log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
 				}
@@ -155,14 +170,20 @@ func updateExchangePairs(relDB *models.RelDB) {
 	}
 }
 
+// identifyExchangePair maps an exchange pair to the unique postgres ids of its constituents
+func identifyExchangePair(dia.ExchangePair) (assetIDs [2]string, err error) {
+	// TO DO
+	return
+}
+
 func getConfigTogglePairDiscovery() (bool, error) {
 	// Activates periodically
 	return false, nil //TOFIX
 }
 
-// addPairsFromAssetDB adds all pairs available for @exchange in our persistent asset database
+// addPairsFromAssetDB adds all pairs available for @exchange in psotgres
 func addPairsFromAssetDB(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
-	persistentPairs, err := assetDB.GetAvailablePairs(exchange)
+	persistentPairs, err := assetDB.GetExchangePairs(exchange)
 	if err != nil {
 		return pairs, err
 	}

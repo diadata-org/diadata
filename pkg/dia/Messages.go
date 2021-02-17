@@ -82,14 +82,17 @@ type ExchangePair struct {
 	Symbol      string
 	ForeignName string
 	Exchange    string
+	Verified    bool
 }
 
 type Pairs []ExchangePair
 
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
-	Symbol            string
-	Pair              string
+	// TO DO: Deprecated fields. Delete as soon as token-to-type branch is deployed.
+	Symbol string
+	Pair   string
+	// Final fields for trade
 	QuoteToken        Asset
 	BaseToken         Asset
 	Price             float64

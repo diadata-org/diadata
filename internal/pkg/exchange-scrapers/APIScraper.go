@@ -69,8 +69,16 @@ type APIScraper interface {
 	// ScrapePair returns a PairScraper that continuously scrapes trades for a
 	// single pair from this APIScraper
 	ScrapePair(pair dia.ExchangePair) (PairScraper, error)
-	// FetchAvailablePairs returns a list with all available trade pairs
-	FetchAvailablePairs() (pairs []dia.ExchangePair, err error)
+	// FetchAvailablePairs returns a list with all trading pairs available on
+	// the exchange associated to the APIScraper. The format is such that it can
+	// be used by the corr. pairScraper in order to fetch trades.
+	FetchAvailablePairs() ([]dia.ExchangePair, error)
+
+	// FetchTickerData collects information associated to the symbol ticker of an
+	// asset traded on the exchange associated to the APIScraper.
+	// This is only needed for CEX. For DEX the trade can be filled
+	FetchTickerData(symbol string) (dia.Asset, error)
+
 	NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade
@@ -89,8 +97,8 @@ type PairScraper interface {
 
 func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	switch exchange {
-	case dia.BinanceExchange:
-		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange])
+	// case dia.BinanceExchange:
+	// 	return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange])
 	// case dia.BitBayExchange:
 	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange])
 	// case dia.BitfinexExchange:
@@ -109,8 +117,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewSimexScraper(Exchanges[dia.SimexExchange])
 	// case dia.OKExExchange:
 	// 	return NewOKExScraper(Exchanges[dia.OKExExchange])
-	case dia.HuobiExchange:
-		return NewHuobiScraper(Exchanges[dia.HuobiExchange])
+	// case dia.HuobiExchange:
+	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange])
 	// case dia.LBankExchange:
 	// 	return NewLBankScraper(Exchanges[dia.LBankExchange])
 	// case dia.GateIOExchange:

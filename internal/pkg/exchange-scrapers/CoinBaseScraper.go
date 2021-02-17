@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -61,6 +62,8 @@ func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
+	s.FetchTickerData("XRP")
+	time.Sleep(5 * time.Second)
 	var err error
 	for true {
 		message := gdax.Message{}
@@ -79,6 +82,12 @@ func (s *CoinBaseScraper) mainLoop() {
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
+							// TO DO: Add
+							// fullPair, err := relDB.GetUnderlyingPairFromCache(foreignName)
+							// Add baseAsset and quoteAsset to trade below, as well as Verified.
+							// In case not verified, baseAsset and/or quoteAsset are empty.
+							// Furthermore, we can then remove Symbol and Pair fields, as the
+							// information is contained in @fullPair.
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
 								Pair:           message.ProductID,
@@ -88,6 +97,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeID), 16),
 								Source:         s.exchangeName,
 							}
+							log.Info("got trade: ", t)
 							ps.parent.chanTrades <- t
 						}
 					} else {
@@ -129,6 +139,7 @@ func (s *CoinBaseScraper) Close() error {
 	defer s.errorLock.RUnlock()
 	return s.error
 }
+
 func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
 	str := strings.Split(foreignName, "-")
 	symbol = str[0]
@@ -167,7 +178,7 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	if err == nil {
 		for _, p := range ar {
 			pairToNormalise := dia.ExchangePair{
-				Symbol:      "",
+				Symbol:      p.BaseCurrency,
 				ForeignName: p.ID,
 				Exchange:    s.exchangeName,
 			}
@@ -182,7 +193,23 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	return
 }
 
-// NewCoinBaseScraper implements PairScraper for GDax
+// FetchTickerData collects all available information on an asset traded on CoinBase
+func (s *CoinBaseScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response gdax.Currency
+	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response.ID
+	asset.Name = response.Name
+	return asset, nil
+}
+
+// CoinBasePairScraper implements PairScraper for GDax
 type CoinBasePairScraper struct {
 	parent     *CoinBaseScraper
 	pair       dia.ExchangePair
