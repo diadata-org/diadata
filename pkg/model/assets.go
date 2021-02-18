@@ -29,6 +29,10 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 // Postgres methods
 // -------------------------------------------------------------
 
+// 		-------------------------------------------------------------
+// 		asset TABLE methods
+// 		-------------------------------------------------------------
+
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 	_, err := rdb.postgresClient.Exec(context.Background(), "insert into asset(symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
@@ -51,6 +55,22 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
 	var decimals string
 	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where address=$1 and blockchain=$2", address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	if err != nil {
+		return
+	}
+	decimalsInt, err := strconv.Atoi(decimals)
+	if err != nil {
+		return
+	}
+	asset.Decimals = uint8(decimalsInt)
+	// TO DO: Get Blockchain by name from postgres and add to asset
+	return
+}
+
+// GetAssetByID returns an asset by its uuid
+func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
+	var decimals string
+	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where asset_id=$1", assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 	if err != nil {
 		return
 	}
@@ -97,7 +117,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 
 // IdentifyAsset looks for all assets in postgres which match the non-null fields in @asset
 // Comment 1: The only critical field is @Decimals, as this is initialized with 0, while an
-// asset is allowed to have zero decimals as well.
+// asset is allowed to have zero decimals as well (for instance sngls, trxc).
 // Comment 2: Should we add a preprocessing step in which notation is corrected corresponding
 // to the notation in the underlying contract on the blockchain?
 func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error) {
@@ -133,6 +153,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 		intDecimals, err := strconv.Atoi(decimals)
 		if err != nil {
 			log.Error("error parsing decimals string")
+			continue
 		}
 		asset.Decimals = uint8(intDecimals)
 		assets = append(assets, asset)
@@ -140,6 +161,70 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 
 	return
 }
+
+// 		-------------------------------------------------------------
+// 		exchangesymbol TABLE methods
+// 		-------------------------------------------------------------
+
+// SetExchangeSymbol writes into exchangesymbol table. It sets verified to true in case
+// @asset is a unique asset in our asset database and hence @assetID is not the empty string.
+func (rdb *RelDB) SetExchangeSymbol(symbol string, exchange string, asset dia.Asset) error {
+	var verified bool
+	assetID, err := rdb.GetAssetID(asset)
+	if err != nil {
+		return err
+	}
+	if assetID != "" {
+		verified = true
+	}
+	query := "insert into exchangesymbol(symbol,exchange,verified,asset_id) values ($1,$2,$3,$4)"
+	_, err = rdb.postgresClient.Exec(context.Background(), query, symbol, exchange, verified, assetID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetExchangeSymbolID returns the ID of the unique asset associated to @symbol on @exchange
+// in case the symbol is verified. An empty string if not.
+func (rdb *RelDB) GetExchangeSymbolID(symbol string, exchange string) (assetID string, verified bool, err error) {
+	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id, verified from exchangesymbol where symbol=$1 and exchange=$2", symbol, exchange).Scan(&assetID, &verified)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// 		-------------------------------------------------------------
+// 		exchangepair TABLE methods
+// 		-------------------------------------------------------------
+
+// GetExchangePairs returns all trading pairs on @exchange from exchangepair table
+func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
+
+	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,foreignname from exchangepair where exchange=$1", exchange)
+	for rows.Next() {
+		pair := dia.ExchangePair{}
+		rows.Scan(&pair.Symbol, &pair.ForeignName)
+		pairs = append(pairs, pair)
+	}
+
+	return pairs, nil
+}
+
+// SetExchangePair adds @pair to exchangepair table
+// TO DO: extend by fields verified, id_basetoken and id_quotetoken
+func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error {
+	_, err := rdb.postgresClient.Exec(context.Background(), "insert into exchangepair(symbol,foreignname,exchange) values ($1,$2,$3)", pair.Symbol, pair.ForeignName, exchange)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// -------------------------------------------------------------
+// General methods
+// -------------------------------------------------------------
 
 // GetPage returns assets per page number. @hasNext is true iff there is a non-empty next page.
 func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bool, err error) {

@@ -32,6 +32,15 @@ CREATE TABLE exchangepair (
     id_quotetoken uuid REFERENCES asset(asset_id)
 );
 
+CREATE TABLE exchangesymbol (
+    exchangesymbol_id UUID DEFAULT gen_random_uuid(),
+    symbol text not null,
+    exchange text not null,
+    UNIQUE (symbol,exchange),
+    verified boolean default false,
+    asset_id uuid REFERENCES asset(asset_id)
+);
+
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id integer primary key generated always as identity,

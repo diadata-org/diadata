@@ -14,20 +14,25 @@ import (
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
-	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
-	SetExchangePair(exchange string, pair dia.ExchangePair)
 
-	// Assets methods
-	// Persistent
+	// --- Assets methods ---
+	// --------- Persistent ---------
 	SetAsset(asset dia.Asset) error
 	GetAsset(address, blockchain string) (dia.Asset, error)
+	GetAssetByID(ID string) (dia.Asset, error)
 	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
 	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
 
-	// Caching
+	// --------------- asset methods for exchanges ---------------
+	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
+	SetExchangePair(exchange string, pair dia.ExchangePair)
+	SetExchangeSymbol(symbol string, exchange string, verified bool, asset dia.Asset) error
+	GetExchangeSymbolID(symbol string, exchange string) (string, error)
+
+	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
 	CountCache() (uint32, error)
@@ -96,28 +101,6 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 		log.Debug("NewDB", pong2)
 	}
 	return &RelDB{url, postgresClient, redisClient, 32}, nil
-}
-
-// GetExchangePairs returns all trading pairs on @exchange from exchangepair table
-func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
-
-	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,foreignname from exchangepair where exchange=$1", exchange)
-	for rows.Next() {
-		pair := dia.ExchangePair{}
-		rows.Scan(&pair.Symbol, &pair.ForeignName)
-		pairs = append(pairs, pair)
-	}
-
-	return pairs, nil
-}
-
-// SetExchangePair adds @pair to exchangepair table
-func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error {
-	_, err := rdb.postgresClient.Exec(context.Background(), "insert into exchangepair(symbol,foreignname,exchange) values ($1,$2,$3)", pair.Symbol, pair.ForeignName, exchange)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // GetKeys returns a slice of strings holding the names of the keys of @table in postgres

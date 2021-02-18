@@ -65,6 +65,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 		log.Errorf("updateExchangePairs GetConfigTogglePairDiscovery: %v", err)
 		return
 	}
+	toggle = true
 	if toggle == false {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
@@ -132,35 +133,63 @@ func updateExchangePairs(relDB *models.RelDB) {
 				}
 
 				// --------- 2. Step: Try to verify all pairs collected above ---------
-				// TO DO: Use symbols, err := dia.GetAllSymbolsFromPairs(pairs) in order to verify/falsify
-				// all constituent assets. Subsequently they just have to be identified in the pair.
-				// This prevents multiple checking of assets appearing in multiple pairs.
+				// First get list of symbols available on exchange and verify/falsify those
+				symbols, err := dia.GetAllSymbolsFromPairs(pairs)
+				if err != nil {
+					log.Error(err)
+				}
+				verifCount := 0
+				for _, symbol := range symbols {
+					time.Sleep(1 * time.Second)
+					assetInfo, err := scraper.FetchTickerData(symbol)
+					if err != nil {
+						log.Errorf("error fetching ticker data for %s", symbol)
+						continue
+					}
+					assetCandidates, err := relDB.IdentifyAsset(assetInfo)
+					if err != nil {
+						log.Errorf("error getting asset candidates for %s", symbol)
+						continue
+					}
+					if len(assetCandidates) != 1 {
+						err = relDB.SetExchangeSymbol(symbol, exchange, dia.Asset{})
+						log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
+						continue
+					}
+					if len(assetCandidates) == 1 {
+						log.Infof("uniquely identified token ticker %s ", symbol)
+						verifCount++
+						err = relDB.SetExchangeSymbol(symbol, exchange, assetCandidates[0])
+						if err != nil {
+							log.Error(err)
+						}
+					}
+				}
+				log.Infof("verification of symbols on exchange %s done. Verified %d out of %d symbols.\n", exchange, verifCount, len(symbols))
+
+				// Verify/falsify exchange pairs using the exchangesymbol table in postgres
 				for _, pair := range pairs {
-					symbols, err := dia.GetPairSymbols(pair)
+					time.Sleep(1 * time.Second)
+					pairSymbols, err := dia.GetPairSymbols(pair)
 					if err != nil {
 						log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
 						continue
 					}
-					quoteToken, err := scraper.FetchTickerData(symbols[0])
-					baseToken, err := scraper.FetchTickerData(symbols[1])
-					if err != nil {
-						log.Errorf("error fetching ticker data for %s", pair.ForeignName)
-						continue
-					}
-					quoteTokenCandidates, err := relDB.IdentifyAsset(quoteToken)
-					if err != nil {
-						log.Errorf("error getting asset candidates for %s", quoteToken.Symbol)
-						continue
-					}
-					baseTokenCandidates, err := relDB.IdentifyAsset(baseToken)
-					if err != nil {
-						log.Errorf("error getting asset candidates for %s", baseToken.Symbol)
-						continue
-					}
-					if len(quoteTokenCandidates) == 1 && len(baseTokenCandidates) == 1 {
+					quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolID(pairSymbols[0], exchange)
+					basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolID(pairSymbols[1], exchange)
+
+					if quotetokenVerified && basetokenVerified {
 						pair.Verified = true
-						pair.UnderlyingPair.QuoteToken = quoteTokenCandidates[0]
-						pair.UnderlyingPair.BaseToken = baseTokenCandidates[0]
+						quotetoken, err := relDB.GetAssetByID(quotetokenID)
+						if err != nil {
+							log.Error(err)
+						}
+						basetoken, err := relDB.GetAssetByID(basetokenID)
+						if err != nil {
+							log.Error(err)
+						}
+						pair.UnderlyingPair.QuoteToken = quotetoken
+						pair.UnderlyingPair.BaseToken = basetoken
 					}
 				}
 
