@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
@@ -12,7 +13,8 @@ import (
 )
 
 const (
-	keyAssetCache = "dia_asset_"
+	keyAssetCache        = "dia_asset_"
+	keyExchangePairCache = "dia_exchangepair_"
 )
 
 // GetKeyAsset returns an asset's key in the redis cache of the asset table.
@@ -166,28 +168,36 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 // 		exchangesymbol TABLE methods
 // 		-------------------------------------------------------------
 
-// SetExchangeSymbol writes into exchangesymbol table. It sets verified to true in case
-// @asset is a unique asset in our asset database and hence @assetID is not the empty string.
-func (rdb *RelDB) SetExchangeSymbol(symbol string, exchange string, asset dia.Asset) error {
-	var verified bool
-	assetID, err := rdb.GetAssetID(asset)
-	if err != nil {
-		return err
-	}
-	if assetID != "" {
-		verified = true
-	}
-	query := "insert into exchangesymbol(symbol,exchange,verified,asset_id) values ($1,$2,$3,$4)"
-	_, err = rdb.postgresClient.Exec(context.Background(), query, symbol, exchange, verified, assetID)
+// SetExchangeSymbol writes unique data into exchangesymbol table.
+func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
+	query := "insert into exchangesymbol(symbol,exchange) values ($1,$2)"
+	_, err := rdb.postgresClient.Exec(context.Background(), query, symbol, exchange)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+// VerifyExchangeSymbol verifies @symbol on @exchange and maps it uniquely to @assetID in asset table.
+// It returns true if symbol,exchange is present and succesfully updated.
+func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error) {
+	query := "update exchangesymbol set verified=true,asset_id=$1 where symbol=$2 and exchange=$3"
+	resp, err := rdb.postgresClient.Exec(context.Background(), query, assetID, symbol, exchange)
+	if err != nil {
+		return false, err
+	}
+	var success bool
+	respSlice := strings.Split(string(resp), " ")
+	numUpdates := respSlice[1]
+	if numUpdates != "0" {
+		success = true
+	}
+	return success, nil
+}
+
 // GetExchangeSymbolID returns the ID of the unique asset associated to @symbol on @exchange
 // in case the symbol is verified. An empty string if not.
-func (rdb *RelDB) GetExchangeSymbolID(symbol string, exchange string) (assetID string, verified bool, err error) {
+func (rdb *RelDB) GetExchangeSymbolID(exchange string, symbol string) (assetID string, verified bool, err error) {
 	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id, verified from exchangesymbol where symbol=$1 and exchange=$2", symbol, exchange).Scan(&assetID, &verified)
 	if err != nil {
 		return
@@ -286,7 +296,7 @@ func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
 	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
 	if err != nil {
 		if err != redis.Nil {
-			log.Errorf("Error: %v on GetAsset with postgres asset_id %s\n", err, assetID)
+			log.Errorf("Error: %v on GetAssetCache with postgres asset_id %s\n", err, assetID)
 		}
 		return asset, err
 	}
@@ -300,9 +310,23 @@ func (rdb *RelDB) CountCache() (uint32, error) {
 	return uint32(len(allAssets)), nil
 }
 
-// SetExchangePairsCache stores @pairs in redis
-func (rdb *RelDB) SetExchangePairsCache(exchange string, pairs []dia.ExchangePair) error {
-	key := "dia_available_pairs_" + exchange
-	var p dia.Pairs = pairs
-	return rdb.redisClient.Set(key, &p, 0).Err()
+// -------------- Caching exchange pairs -------------------
+
+// SetExchangePairCache stores @pairs in redis
+func (rdb *RelDB) SetExchangePairCache(exchange string, pair dia.ExchangePair) error {
+	key := keyExchangePairCache + exchange + "_" + pair.ForeignName
+	return rdb.redisClient.Set(key, &pair, 0).Err()
+}
+
+// GetExchangePairCache returns an exchange pair by @exchange and @foreigName
+func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error) {
+	exchangePair := dia.ExchangePair{}
+	err := rdb.redisClient.Get(keyExchangePairCache + exchange + "_" + foreignName).Scan(&exchangePair)
+	if err != nil {
+		if err != redis.Nil {
+			log.Errorf("GetExchangePairCache on %s with foreign name %s: %v\n", exchange, foreignName, err)
+		}
+		return exchangePair, err
+	}
+	return exchangePair, nil
 }

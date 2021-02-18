@@ -57,6 +57,9 @@ func main() {
 	}
 }
 
+// TO DO: Refactor toggle==true case.
+// Amend such that we don't overwrite if data is already in DB/cache
+
 // updateExchangePairs fetches all exchange's trading pairs from postgres and writes them into redis caching layer (toggle == false)
 // Periodically, it connects to the exchange's API and checks for new pairs (toggle == true)
 func updateExchangePairs(relDB *models.RelDB) {
@@ -86,10 +89,12 @@ func updateExchangePairs(relDB *models.RelDB) {
 			}
 			// Set pairs in redis caching layer. The collector will fetch these in order to build
 			// the corresponding pair scrapers.
-			err = relDB.SetExchangePairsCache(exchange, pairs)
-			if err != nil {
-				log.Errorf("setting pairs to redis for exchange %s: %v", exchange, err)
-				continue
+			for _, pair := range pairs {
+				err = relDB.SetExchangePairCache(exchange, pair)
+				if err != nil {
+					log.Errorf("setting pair %s to redis for exchange %s: %v", pair.ForeignName, exchange, err)
+					continue
+				}
 			}
 			log.Infof("exchange %s updated\n", exchange)
 		}
@@ -133,6 +138,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 				}
 
 				// --------- 2. Step: Try to verify all pairs collected above ---------
+
 				// First get list of symbols available on exchange and verify/falsify those
 				symbols, err := dia.GetAllSymbolsFromPairs(pairs)
 				if err != nil {
@@ -141,6 +147,11 @@ func updateExchangePairs(relDB *models.RelDB) {
 				verifCount := 0
 				for _, symbol := range symbols {
 					time.Sleep(1 * time.Second)
+					err := relDB.SetExchangeSymbol(exchange, symbol)
+					if err != nil {
+						log.Errorf("error setting exchange symbol %s", symbol)
+						continue
+					}
 					assetInfo, err := scraper.FetchTickerData(symbol)
 					if err != nil {
 						log.Errorf("error fetching ticker data for %s", symbol)
@@ -152,16 +163,22 @@ func updateExchangePairs(relDB *models.RelDB) {
 						continue
 					}
 					if len(assetCandidates) != 1 {
-						err = relDB.SetExchangeSymbol(symbol, exchange, dia.Asset{})
 						log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
 						continue
 					}
 					if len(assetCandidates) == 1 {
-						log.Infof("uniquely identified token ticker %s ", symbol)
+
 						verifCount++
-						err = relDB.SetExchangeSymbol(symbol, exchange, assetCandidates[0])
+						assetID, err := relDB.GetAssetID(assetCandidates[0])
 						if err != nil {
 							log.Error(err)
+						}
+						ok, err := relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
+						if err != nil {
+							log.Error(err)
+						}
+						if ok {
+							log.Infof("verified token ticker %s ", symbol)
 						}
 					}
 				}
@@ -169,41 +186,43 @@ func updateExchangePairs(relDB *models.RelDB) {
 
 				// Verify/falsify exchange pairs using the exchangesymbol table in postgres
 				for _, pair := range pairs {
+					log.Info("handle pair ", pair)
 					time.Sleep(1 * time.Second)
 					pairSymbols, err := dia.GetPairSymbols(pair)
 					if err != nil {
 						log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
 						continue
 					}
-					quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolID(pairSymbols[0], exchange)
-					basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolID(pairSymbols[1], exchange)
+					quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolID(exchange, pairSymbols[0])
+					basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolID(exchange, pairSymbols[1])
 
-					if quotetokenVerified && basetokenVerified {
-						pair.Verified = true
+					if quotetokenVerified {
 						quotetoken, err := relDB.GetAssetByID(quotetokenID)
 						if err != nil {
 							log.Error(err)
 						}
+						pair.UnderlyingPair.QuoteToken = quotetoken
+					}
+					if basetokenVerified {
 						basetoken, err := relDB.GetAssetByID(basetokenID)
 						if err != nil {
 							log.Error(err)
 						}
-						pair.UnderlyingPair.QuoteToken = quotetoken
 						pair.UnderlyingPair.BaseToken = basetoken
 					}
-				}
-
-				// Set pairs to postgres
-				for _, pair := range pairs {
+					if quotetokenVerified && basetokenVerified {
+						pair.Verified = true
+					}
+					// Set pair to postgres
 					err = relDB.SetExchangePair(exchange, pair)
 					if err != nil {
 						log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
 					}
-				}
-				// Set pairs to redis caching layer
-				err = relDB.SetExchangePairsCache(exchange, pairs)
-				if err != nil {
-					log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
+					// Set pair to redis caching layer
+					err = relDB.SetExchangePairCache(exchange, pair)
+					if err != nil {
+						log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
+					}
 				}
 
 				go func(s scrapers.APIScraper, exchange string) {
@@ -231,7 +250,7 @@ func getConfigTogglePairDiscovery() (bool, error) {
 	return false, nil //TOFIX
 }
 
-// addPairsFromAssetDB adds all pairs available for @exchange in psotgres
+// addPairsFromAssetDB adds all pairs available for @exchange in postgres
 func addPairsFromAssetDB(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
 	persistentPairs, err := assetDB.GetExchangePairs(exchange)
 	if err != nil {

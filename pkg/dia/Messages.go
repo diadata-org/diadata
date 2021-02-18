@@ -74,12 +74,12 @@ func (bc *BlockChain) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// MarshalBinary is a custom marshaller for BlockChain type
+// MarshalBinary is a custom marshaller for Asset type
 func (a *Asset) MarshalBinary() ([]byte, error) {
 	return json.Marshal(a)
 }
 
-// UnmarshalBinary is a custom unmarshaller for BlockChain type
+// UnmarshalBinary is a custom unmarshaller for Asset type
 func (a *Asset) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &a); err != nil {
 		return err
@@ -95,6 +95,19 @@ type ExchangePair struct {
 	Exchange       string
 	Verified       bool
 	UnderlyingPair Pair
+}
+
+// MarshalBinary is a custom marshaller for ExchangePair type
+func (ep *ExchangePair) MarshalBinary() ([]byte, error) {
+	return json.Marshal(ep)
+}
+
+// UnmarshalBinary is a custom unmarshaller for ExchangePair type
+func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &ep); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Pairs []ExchangePair

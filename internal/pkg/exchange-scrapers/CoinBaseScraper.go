@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	gdax "github.com/preichenberger/go-coinbasepro/v2"
@@ -62,9 +62,12 @@ func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
-	s.FetchTickerData("XRP")
-	time.Sleep(5 * time.Second)
 	var err error
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
+
 	for true {
 		message := gdax.Message{}
 		if err = s.wsConn.ReadJSON(&message); err != nil {
@@ -82,12 +85,11 @@ func (s *CoinBaseScraper) mainLoop() {
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
-							// TO DO: Add
-							// fullPair, err := relDB.GetUnderlyingPairFromCache(foreignName)
-							// Add baseAsset and quoteAsset to trade below, as well as Verified.
-							// In case not verified, baseAsset and/or quoteAsset are empty.
-							// Furthermore, we can then remove Symbol and Pair fields, as the
-							// information is contained in @fullPair.
+
+							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, message.ProductID)
+							if err != nil {
+								log.Error(err)
+							}
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
 								Pair:           message.ProductID,
@@ -96,6 +98,9 @@ func (s *CoinBaseScraper) mainLoop() {
 								Time:           message.Time.Time(),
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeID), 16),
 								Source:         s.exchangeName,
+								VerifiedPair:   exchangepair.Verified,
+								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 							}
 							log.Info("got trade: ", t)
 							ps.parent.chanTrades <- t

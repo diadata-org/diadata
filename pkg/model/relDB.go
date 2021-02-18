@@ -27,16 +27,18 @@ type RelDatastore interface {
 	Count() (uint32, error)
 
 	// --------------- asset methods for exchanges ---------------
-	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
 	SetExchangePair(exchange string, pair dia.ExchangePair)
-	SetExchangeSymbol(symbol string, exchange string, verified bool, asset dia.Asset) error
-	GetExchangeSymbolID(symbol string, exchange string) (string, error)
+	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
+	SetExchangeSymbol(exchange string, symbol string) error
+	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
+	GetExchangeSymbolID(exchange string, symbol string) (string, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
 	CountCache() (uint32, error)
-	SetExchangePairsCache(exchange string, pairs []dia.ExchangePair) error
+	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
+	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
