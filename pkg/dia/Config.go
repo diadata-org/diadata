@@ -52,7 +52,7 @@ func Exchanges() []string {
 	return []string{
 		// KuCoinExchange,
 		// UniswapExchange,
-		// BalancerExchange,
+		BalancerExchange,
 		// MakerExchange,
 		// GnosisExchange,
 		// CurveFIExchange,

@@ -6,7 +6,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
-// GetPairSymbols returns the two symbol tickers of @pair
+// GetPairSymbols returns the two symbol tickers of @pair.
 func GetPairSymbols(pair ExchangePair) ([]string, error) {
 	foreignName := pair.ForeignName
 	quoteToken := pair.Symbol
@@ -27,7 +27,7 @@ func GetPairSymbols(pair ExchangePair) ([]string, error) {
 	return []string{quoteToken, baseToken}, nil
 }
 
-// GetAllSymbolsFromPairs returns a unique list of symbols which constitute @pairs
+// GetAllSymbolsFromPairs returns a unique list of symbols which constitute @pairs.
 func GetAllSymbolsFromPairs(pairs []ExchangePair) ([]string, error) {
 	var symbols []string
 	for _, pair := range pairs {
@@ -41,20 +41,21 @@ func GetAllSymbolsFromPairs(pairs []ExchangePair) ([]string, error) {
 	return uniqueSymbols, nil
 }
 
-// ContainsPair returns true iff @pair is contained in pairs
-func ContainsPair(pairs []ExchangePair, pair ExchangePair) bool {
+// ContainsExchangePair returns true iff @pair is contained in pairs.
+// Here, equality refers to the unique identifier (exchange,foreignName).
+func ContainsExchangePair(pairs []ExchangePair, pair ExchangePair) bool {
 	for _, p := range pairs {
-		if pair == p {
+		if pair.Exchange == p.Exchange && pair.ForeignName == p.ForeignName {
 			return true
 		}
 	}
 	return false
 }
 
-// MergePairs appends @pairs2 to @pairs1 without repetition
-func MergePairs(pairs1, pairs2 []ExchangePair) []ExchangePair {
+// MergeExchangePairs appends @pairs2 to @pairs1 without repetition.
+func MergeExchangePairs(pairs1, pairs2 []ExchangePair) []ExchangePair {
 	for _, pair := range pairs2 {
-		if ok := ContainsPair(pairs1, pair); !ok {
+		if ok := ContainsExchangePair(pairs1, pair); !ok {
 			pairs1 = append(pairs1, pair)
 		}
 	}

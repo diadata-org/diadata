@@ -27,8 +27,10 @@ const (
 	BalancerBatchDelay     = 60 * 1
 	BalancerLookBackBlocks = 6 * 60 * 24 * 20
 	factoryContract        = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
-	balancerRestDial       = "http://159.69.120.42:8545/"
-	balancerWsDial         = "ws://159.69.120.42:8546/"
+	// balancerRestDial       = "http://159.69.120.42:8545/"
+	// balancerWsDial         = "ws://159.69.120.42:8546/"
+	balancerRestDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	balancerWsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 )
 
 type BalancerSwap struct {
@@ -359,7 +361,6 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 // FetchAvailablePairs get pairs by geting all the LOGNEWPOOL contract events, and
 // calling the method getCurrentTokens from each pool contract
 func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-
 	tokenMap, err := scraper.getAllTokensMap()
 	if err != nil {
 		log.Error(err)
@@ -499,6 +500,11 @@ func (scraper *BalancerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, 
 
 	return pairScraper, nil
 }
+
+func (scraper *BalancerScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *BalancerScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()

@@ -12,11 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	keyAssetCache        = "dia_asset_"
-	keyExchangePairCache = "dia_exchangepair_"
-)
-
 // GetKeyAsset returns an asset's key in the redis cache of the asset table.
 // @assetID refers to the primary key asset_id in the asset table.
 func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
@@ -37,7 +32,8 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
-	_, err := rdb.postgresClient.Exec(context.Background(), "insert into asset(symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
+	query := fmt.Sprintf("insert into %s (symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", assetTable)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
 	if err != nil {
 		return err
 	}
@@ -46,7 +42,8 @@ func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 
 // GetAssetID returns the unique identifier of @asset in postgres table asset, if the entry exists.
 func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
-	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id from asset where address=$1 and blockchain=$2", asset.Address, asset.Blockchain.Name).Scan(&ID)
+	query := fmt.Sprintf("select asset_id from %s where address=$1 and blockchain=$2", assetTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain.Name).Scan(&ID)
 	if err != nil {
 		return
 	}
@@ -56,7 +53,8 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
 	var decimals string
-	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where address=$1 and blockchain=$2", address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where address=$1 and blockchain=$2", assetTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 	if err != nil {
 		return
 	}
@@ -72,7 +70,8 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 // GetAssetByID returns an asset by its uuid
 func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 	var decimals string
-	err = rdb.postgresClient.QueryRow(context.Background(), "select symbol,name,address,decimals,blockchain from asset where asset_id=$1", assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where asset_id=$1", assetTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 	if err != nil {
 		return
 	}
@@ -92,11 +91,14 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	var decimals string
 	var rows pgx.Rows
 	if name == "" {
-		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1", symbol)
+		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1", assetTable)
+		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	} else if symbol == "" {
-		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where name=$1", name)
+		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where name=$1", assetTable)
+		rows, err = rdb.postgresClient.Query(context.Background(), query, name)
 	} else {
-		rows, err = rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset where symbol=$1 and name=$2", symbol, name)
+		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 and name=$2", assetTable)
+		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol, name)
 	}
 	if err != nil {
 		return
@@ -122,8 +124,12 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 // asset is allowed to have zero decimals as well (for instance sngls, trxc).
 // Comment 2: Should we add a preprocessing step in which notation is corrected corresponding
 // to the notation in the underlying contract on the blockchain?
+// Comment 3: Can we improve this? How to treat cases like CoinBase emitting symbol name
+// 'Wrapped Bitcoin' instead of the correct 'Wrapped BTC', or 'United States Dollar' instead
+// of 'United States dollar'? On idea would be to add a table with alternative names for
+// symbol tickers, so WBTC -> [Wrapped Bitcoin, Wrapped bitcoin, Wrapped BTC,...]
 func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error) {
-	query := "select symbol,name,address,decimals,blockchain from asset where "
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where ", assetTable)
 	var and string
 	if asset.Symbol != "" {
 		query += fmt.Sprintf("symbol='%s'", asset.Symbol)
@@ -168,9 +174,9 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 // 		exchangesymbol TABLE methods
 // 		-------------------------------------------------------------
 
-// SetExchangeSymbol writes unique data into exchangesymbol table.
+// SetExchangeSymbol writes unique data into exchangesymbol table if not yet in there.
 func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
-	query := "insert into exchangesymbol(symbol,exchange) values ($1,$2)"
+	query := fmt.Sprintf("insert into %s (symbol,exchange) select $1,$2 where not exists (select 1 from exchangesymbol where symbol=$1 and exchange=$2)", exchangesymbolTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, symbol, exchange)
 	if err != nil {
 		return err
@@ -181,7 +187,7 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 // VerifyExchangeSymbol verifies @symbol on @exchange and maps it uniquely to @assetID in asset table.
 // It returns true if symbol,exchange is present and succesfully updated.
 func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error) {
-	query := "update exchangesymbol set verified=true,asset_id=$1 where symbol=$2 and exchange=$3"
+	query := fmt.Sprintf("update %s set verified=true,asset_id=$1 where symbol=$2 and exchange=$3", exchangesymbolTable)
 	resp, err := rdb.postgresClient.Exec(context.Background(), query, assetID, symbol, exchange)
 	if err != nil {
 		return false, err
@@ -195,13 +201,23 @@ func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID s
 	return success, nil
 }
 
-// GetExchangeSymbolID returns the ID of the unique asset associated to @symbol on @exchange
+// GetExchangeSymbolAssetID returns the ID of the unique asset associated to @symbol on @exchange
 // in case the symbol is verified. An empty string if not.
-func (rdb *RelDB) GetExchangeSymbolID(exchange string, symbol string) (assetID string, verified bool, err error) {
-	err = rdb.postgresClient.QueryRow(context.Background(), "select asset_id, verified from exchangesymbol where symbol=$1 and exchange=$2", symbol, exchange).Scan(&assetID, &verified)
+func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (assetID string, verified bool, err error) {
+	var checkUUID interface{}
+	query := fmt.Sprintf("select asset_id, verified from %s where symbol=$1 and exchange=$2", exchangesymbolTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&checkUUID, &verified)
 	if err != nil {
 		return
 	}
+	// Comment: This workaround is not so nice. Problem is, when asset_id is not set it is of
+	// type NULL and can't be scanned into golang string type.
+	if checkUUID != nil {
+		query := fmt.Sprintf("select asset_id, verified from %s where symbol=$1 and exchange=$2", exchangesymbolTable)
+		err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&assetID, &verified)
+		return
+	}
+	assetID = ""
 	return
 }
 
@@ -211,8 +227,8 @@ func (rdb *RelDB) GetExchangeSymbolID(exchange string, symbol string) (assetID s
 
 // GetExchangePairs returns all trading pairs on @exchange from exchangepair table
 func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
-
-	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,foreignname from exchangepair where exchange=$1", exchange)
+	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
 	for rows.Next() {
 		pair := dia.ExchangePair{}
 		rows.Scan(&pair.Symbol, &pair.ForeignName)
@@ -223,12 +239,35 @@ func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, e
 }
 
 // SetExchangePair adds @pair to exchangepair table
-// TO DO: extend by fields verified, id_basetoken and id_quotetoken
 func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error {
-	_, err := rdb.postgresClient.Exec(context.Background(), "insert into exchangepair(symbol,foreignname,exchange) values ($1,$2,$3)", pair.Symbol, pair.ForeignName, exchange)
+	query := fmt.Sprintf("insert into %s (symbol,foreignname,exchange,verified) select $1,$2,$3,$4 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3 and verified=$4)", exchangepairTable, exchangepairTable)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange, pair.Verified)
 	if err != nil {
 		return err
 	}
+	basetokenID, err := rdb.GetAssetID(pair.UnderlyingPair.BaseToken)
+	if err != nil {
+		log.Error(err)
+	}
+	quotetokenID, err := rdb.GetAssetID(pair.UnderlyingPair.QuoteToken)
+	if err != nil {
+		log.Error(err)
+	}
+	if basetokenID != "" {
+		query := fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
+		_, err = rdb.postgresClient.Exec(context.Background(), query)
+		if err != nil {
+			return err
+		}
+	}
+	if quotetokenID != "" {
+		query := fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
+		_, err = rdb.postgresClient.Exec(context.Background(), query)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

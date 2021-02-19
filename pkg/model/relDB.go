@@ -31,14 +31,14 @@ type RelDatastore interface {
 	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
 	SetExchangeSymbol(exchange string, symbol string) error
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
-	GetExchangeSymbolID(exchange string, symbol string) (string, error)
+	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
 	GetAssetCache(symbol, name string) (dia.Asset, error)
-	CountCache() (uint32, error)
 	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
+	CountCache() (uint32, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -46,6 +46,15 @@ type RelDatastore interface {
 
 const (
 	postgresKey = "postgres_key.txt"
+
+	// postgres tables
+	assetTable          = "asset"
+	exchangepairTable   = "exchangepair"
+	exchangesymbolTable = "exchangesymbol"
+
+	// cache keys
+	keyAssetCache        = "dia_asset_"
+	keyExchangePairCache = "dia_exchangepair_"
 )
 
 // RelDB is a relative database with redis caching layer

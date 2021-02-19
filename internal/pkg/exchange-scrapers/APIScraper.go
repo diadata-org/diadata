@@ -142,8 +142,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewCurveFIScraper(Exchanges[dia.CurveFIExchange])
 	// case dia.GnosisExchange:
 	// 	return NewGnosisScraper(Exchanges[dia.GnosisExchange])
-	// case dia.BalancerExchange:
-	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange])
+	case dia.BalancerExchange:
+		return NewBalancerScraper(Exchanges[dia.BalancerExchange])
 	// case dia.MakerExchange:
 	// 	return NewMakerScraper(Exchanges[dia.MakerExchange])
 	// case dia.KuCoinExchange:
