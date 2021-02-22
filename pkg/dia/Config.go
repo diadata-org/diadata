@@ -51,8 +51,8 @@ const (
 func Exchanges() []string {
 	return []string{
 		// KuCoinExchange,
-		// UniswapExchange,
-		BalancerExchange,
+		UniswapExchange,
+		// BalancerExchange,
 		// MakerExchange,
 		// GnosisExchange,
 		// CurveFIExchange,
@@ -74,7 +74,7 @@ func Exchanges() []string {
 		// LoopringExchange,
 		// SushiSwapExchange,
 		// DforceExchange,
-		// ZeroxExchange,
+		ZeroxExchange,
 		// KyberExchange,
 		// BitMaxExchange,
 		// PanCakeSwap,

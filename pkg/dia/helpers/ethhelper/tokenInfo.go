@@ -2,11 +2,15 @@ package ethhelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"math/big"
 	"os"
 	"os/user"
 	"strings"
+	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -60,26 +64,56 @@ func bindToken(address common.Address, caller bind.ContractCaller, transactor bi
 	return bind.NewBoundContract(address, parsed, caller, transactor, nil), nil
 }
 
-// GetDecimals returns the decimals of token with address @address
-//func GetDecimals(address common.Address) (int, error) {
-//	ethConn, err := NewETHClient()
-//	if err != nil {
-//		return 0, err
-//	}
-//	tc, err := NewTokenCaller(address, ethConn)
-//	if err != nil {
-//		log.Error("error: ", err)
-//	}
-// 	var decimals = new(*big.Int)
-//
-//
-//	err = tc.contract.Call(&bind.CallOpts{}, decimals, "decimals")
-//	if err != nil {
-//		return 0, err
-//	}
-//	return int((*decimals).Int64()), nil
-//
-//}
+// ETHAddressToAsset takes an Ethereum address and returns the underlying
+// token as a dia.Asset.
+func ETHAddressToAsset(address common.Address) (dia.Asset, error) {
+	var asset dia.Asset
+	ethConn, err := NewETHClient()
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	tc, err := NewTokenCaller(address, ethConn)
+	if err != nil {
+		log.Error("error: ", err)
+	}
+
+	asset.Address = address.Hex()
+
+	var symbol []interface{}
+	err = tc.Contract.Call(&bind.CallOpts{}, &symbol, "symbol")
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	asset.Symbol = symbol[0].(string)
+
+	var name []interface{}
+	err = tc.Contract.Call(&bind.CallOpts{}, &name, "name")
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	asset.Name = name[0].(string)
+
+	var decimals []interface{}
+	err = tc.Contract.Call(&bind.CallOpts{}, &decimals, "decimals")
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	aux := decimals[0].(*big.Int)
+	asset.Decimals = uint8(aux.Int64())
+
+	genesisDate, err := time.Parse("2006-01-02", "2015-07-30")
+	if err != nil {
+		fmt.Println(err)
+	}
+	blockchain := dia.BlockChain{
+		Name:                  "Ethereum",
+		NativeToken:           "ETH",
+		VerificationMechanism: dia.PROOF_OF_WORK,
+		GenesisDate:           genesisDate,
+	}
+	asset.Blockchain = blockchain
+	return asset, err
+}
 
 func ConfigFilePath(filename string) string {
 	usr, _ := user.Current()

@@ -239,7 +239,8 @@ func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, e
 }
 
 // SetExchangePair adds @pair to exchangepair table
-func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error {
+// If cache==true, it is also cached into redis
+func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error {
 	query := fmt.Sprintf("insert into %s (symbol,foreignname,exchange,verified) select $1,$2,$3,$4 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3 and verified=$4)", exchangepairTable, exchangepairTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange, pair.Verified)
 	if err != nil {
@@ -265,6 +266,12 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair) error 
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
+		}
+	}
+	if cache {
+		err = rdb.SetExchangePairCache(exchange, pair)
+		if err != nil {
+			log.Errorf("setting pair %s to redis for exchange %s: %v", pair.ForeignName, exchange, err)
 		}
 	}
 

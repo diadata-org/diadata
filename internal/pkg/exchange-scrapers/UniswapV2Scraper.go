@@ -30,6 +30,9 @@ const (
 	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 
+	// restDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	// wsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
+
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
 )
@@ -344,16 +347,36 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 		if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
 			continue
 		}
+		quotetoken := dia.Asset{
+			Symbol:     pair.Token0.Symbol,
+			Name:       pair.Token0.Name,
+			Address:    pair.Token0.Address.Hex(),
+			Decimals:   pair.Token0.Decimals,
+			Blockchain: dia.BlockChain{Name: "Ethereum"},
+		}
+		basetoken := dia.Asset{
+			Symbol:     pair.Token1.Symbol,
+			Name:       pair.Token1.Name,
+			Address:    pair.Token1.Address.Hex(),
+			Decimals:   pair.Token1.Decimals,
+			Blockchain: dia.BlockChain{Name: "Ethereum"},
+		}
 		pairToNormalise := dia.ExchangePair{
-			Symbol:      pair.Token0.Symbol,
-			ForeignName: pair.ForeignName,
-			Exchange:    "UniswapV2",
+			Symbol:         pair.Token0.Symbol,
+			ForeignName:    pair.ForeignName,
+			Exchange:       "UniswapV2",
+			Verified:       true,
+			UnderlyingPair: dia.Pair{BaseToken: basetoken, QuoteToken: quotetoken},
 		}
 		normalizedPair, _ := s.NormalizePair(pairToNormalise)
 		pairs = append(pairs, normalizedPair)
 	}
 
 	return
+}
+
+func (s *UniswapScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
 }
 
 // GetAllPairs is similar to FetchAvailablePairs. But instead of dia.ExchangePairs it returns all pairs as UniswapPairs,

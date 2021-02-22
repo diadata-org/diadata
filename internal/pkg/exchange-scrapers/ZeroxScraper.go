@@ -20,9 +20,11 @@ import (
 )
 
 const (
-	zeroxContract       = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxWsDial         = "ws://159.69.120.42:8546/"
-	zeroxRestDial       = "http://159.69.120.42:8545/"
+	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
+	// zeroxWsDial         = "ws://159.69.120.42:8546/"
+	// zeroxRestDial       = "http://159.69.120.42:8545/"
+	zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 	zeroxLookBackBlocks = 6 * 60 * 24
 )
 
@@ -126,6 +128,7 @@ func (scraper *ZeroxScraper) loadTokens() {
 }
 
 func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxToken, error) {
+
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
@@ -316,6 +319,10 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 		}
 	}
 	return
+}
+
+func (scraper *ZeroxScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
 }
 
 func (t *ZeroxToken) normalizeETH() {

@@ -59,7 +59,6 @@ func main() {
 }
 
 // TO DO: Refactor toggle==true case.
-// Amend such that we don't overwrite if data is already in DB/cache
 
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
@@ -91,14 +90,9 @@ func updateExchangePairs(relDB *models.RelDB) {
 			// Set pairs in postgres and redis caching layer. The collector will fetch these
 			// in order to build the corresponding pair scrapers.
 			for _, pair := range pairs {
-				err = relDB.SetExchangePair(exchange, pair)
+				err = relDB.SetExchangePair(exchange, pair, true)
 				if err != nil {
 					log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-				}
-				err = relDB.SetExchangePairCache(exchange, pair)
-				if err != nil {
-					log.Errorf("setting pair %s to redis for exchange %s: %v", pair.ForeignName, exchange, err)
-					continue
 				}
 			}
 			log.Infof("exchange %s updated\n", exchange)
@@ -134,7 +128,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 					}
 					// If not in postgres yet, add fetched pair
-					pairs, err = addNewPairsToPG(exchange, pairs, relDB)
+					pairs, err = addNewPairs(exchange, pairs, relDB)
 					if err != nil {
 						log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)
 					}
@@ -242,15 +236,10 @@ func updateExchangePairs(relDB *models.RelDB) {
 						if quotetokenVerified && basetokenVerified {
 							pair.Verified = true
 						}
-						// Set pair to postgres.
-						err = relDB.SetExchangePair(exchange, pair)
+						// Set pair to postgres and redis cache.
+						err = relDB.SetExchangePair(exchange, pair, true)
 						if err != nil {
 							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-						}
-						// Set pair to redis caching layer.
-						err = relDB.SetExchangePairCache(exchange, pair)
-						if err != nil {
-							log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
 						}
 					}
 
@@ -267,15 +256,10 @@ func updateExchangePairs(relDB *models.RelDB) {
 						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 					}
 					for _, pair := range pairs {
-						// Set pair to postgres.
-						err = relDB.SetExchangePair(exchange, pair)
+						// Set pair to postgres and redis cache
+						err = relDB.SetExchangePair(exchange, pair, true)
 						if err != nil {
 							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-						}
-						// Set pair to redis caching layer.
-						err = relDB.SetExchangePairCache(exchange, pair)
-						if err != nil {
-							log.Errorf("setting caching layer for pair on exchange %s: %v", exchange, err)
 						}
 					}
 					// For the sake of completeness/statistics we could also write the symbols into exchangesymbol table.
@@ -306,12 +290,12 @@ func getConfigTogglePairDiscovery() (bool, error) {
 
 // addNewPairsToPG adds pair from @pairs if it's not in our postgres DB yet.
 // Equality refers to the unique identifier (exchange,foreignName).
-func addNewPairsToPG(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
+func addNewPairs(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
 	persistentPairs, err := assetDB.GetExchangePairs(exchange)
 	if err != nil {
 		return pairs, err
 	}
-	// The order counts here. persistentPairs should have priority.
+	// The order counts here. persistentPairs have priority.
 	return dia.MergeExchangePairs(persistentPairs, pairs), nil
 }
 

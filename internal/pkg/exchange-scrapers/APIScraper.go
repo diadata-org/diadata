@@ -56,7 +56,7 @@ func init() {
 	Exchanges[dia.SushiSwapExchange] = dia.Exchange{Name: dia.SushiSwapExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.PanCakeSwap] = dia.Exchange{Name: dia.PanCakeSwap, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0xbcfccbde45ce874adcb698cc183debcf17952812"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.DforceExchange] = dia.Exchange{Name: dia.DforceExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2"), WatchdogDelay: watchdogDelayLong}
-	Exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: true, WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
@@ -130,8 +130,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewQuoineScraper(Exchanges[dia.QuoineExchange])
 	// case dia.BancorExchange:
 	// 	return NewBancorScraper(Exchanges[dia.BancorExchange])
-	// case dia.UniswapExchange:
-	// 	return NewUniswapScraper(Exchanges[dia.UniswapExchange])
+	case dia.UniswapExchange:
+		return NewUniswapScraper(Exchanges[dia.UniswapExchange])
 	// case dia.PanCakeSwap:
 	// 	return NewUniswapScraper(Exchanges[dia.PanCakeSwap])
 	// case dia.SushiSwapExchange:
@@ -142,16 +142,16 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewCurveFIScraper(Exchanges[dia.CurveFIExchange])
 	// case dia.GnosisExchange:
 	// 	return NewGnosisScraper(Exchanges[dia.GnosisExchange])
-	case dia.BalancerExchange:
-		return NewBalancerScraper(Exchanges[dia.BalancerExchange])
+	// case dia.BalancerExchange:
+	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange])
 	// case dia.MakerExchange:
 	// 	return NewMakerScraper(Exchanges[dia.MakerExchange])
 	// case dia.KuCoinExchange:
 	// 	return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange])
 	// case dia.DforceExchange:
 	// 	return NewDforceScraper(Exchanges[dia.DforceExchange])
-	// case dia.ZeroxExchange:
-	// 	return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
+	case dia.ZeroxExchange:
+		return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
 	// case dia.KyberExchange:
 	// 	return NewKyberScraper(Exchanges[dia.KyberExchange])
 	// case dia.BitMaxExchange:

@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+
 	factory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
 	pool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
 	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
@@ -358,48 +360,40 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 	return tokenMap, err
 }
 
-// FetchAvailablePairs get pairs by geting all the LOGNEWPOOL contract events, and
+// FetchAvailablePairs get pairs by getting all the LOGNEWPOOL contract events, and
 // calling the method getCurrentTokens from each pool contract
 func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	tokenMap, err := scraper.getAllTokensMap()
+	it, err := scraper.getAllLogNewPool()
 	if err != nil {
 		log.Error(err)
 	}
 
-	pairSet := make(map[string]struct{})
-	for _, token1 := range tokenMap {
-		for _, token2 := range tokenMap {
-
-			if token1 != token2 {
-				if token1.Symbol == "WETH" {
-					token1.Symbol = "ETH"
-				}
-				if token2.Symbol == "WETH" {
-					token2.Symbol = "ETH"
-				}
-
-				foreignName := token1.Symbol + "-" + token2.Symbol
-				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.ExchangePair{
-						Symbol:      token1.Symbol,
-						ForeignName: foreignName,
-						Exchange:    scraper.exchangeName,
-					})
-					pairSet[foreignName] = struct{}{}
-				}
-
-				foreignName = token2.Symbol + "-" + token1.Symbol
-				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.ExchangePair{
-						Symbol:      token2.Symbol,
-						ForeignName: foreignName,
-						Exchange:    scraper.exchangeName,
-					})
-					pairSet[foreignName] = struct{}{}
-				}
-
-			}
+	for it.Next() {
+		var pair dia.ExchangePair
+		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
 		}
+		tokens, err := poolCaller.GetCurrentTokens(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		fmt.Println("tokens: ", tokens)
+		asset0, err := ethhelper.ETHAddressToAsset(tokens[0])
+		if err != nil {
+			continue
+		}
+		asset1, err := ethhelper.ETHAddressToAsset(tokens[1])
+		if err != nil {
+			continue
+		}
+		pair.UnderlyingPair.QuoteToken = asset0
+		pair.UnderlyingPair.BaseToken = asset1
+		pair.ForeignName = asset0.Symbol + "-" + asset1.Symbol
+		pair.Verified = true
+		pair.Exchange = "Balancer"
+		pair.Symbol = asset0.Symbol
+		pairs = append(pairs, pair)
 	}
 
 	return
