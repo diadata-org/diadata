@@ -45,3 +45,9 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://explorer-mainnet.maticvigil.com/address/0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f) |
 
+### Moonbeam Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | 0xd5e1e0056bed90e46e1a58f0a09449cbebd0ff4a |
+
