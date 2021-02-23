@@ -13,6 +13,22 @@ func SymbolIsBlackListed(symbol string) bool {
 	switch symbol {
 	case "UNI-V2":
 		return true
+	case "BSC":
+		return true
+	case "ENG":
+		return true
+	case "MOON":
+		return true
+	case "VRA":
+		return true
+	case "COIN":
+		return true
+	case "XFI":
+		return true
+	case "DIP":
+		return true
+	case "CND":
+		return true
 	case "VET":
 		return true
 	case "ACC":
