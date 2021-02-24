@@ -119,6 +119,26 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	return
 }
 
+// GetFiatAssetBySymbol returns a fiat asset by its symbol. This is possible as
+// fiat currencies are uniquely defined by their symbol.
+func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error) {
+	var decimals string
+	query := fmt.Sprintf("select name,address,decimals from %s where symbol=$1 and blockchain='fiat'", assetTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol).Scan(&asset.Name, &asset.Address, &decimals)
+	if err != nil {
+		return
+	}
+	decimalsInt, err := strconv.Atoi(decimals)
+	if err != nil {
+		return
+	}
+	asset.Decimals = uint8(decimalsInt)
+	asset.Symbol = symbol
+	asset.Blockchain.Name = "fiat"
+	// TO DO: Get Blockchain by name from postgres and add to asset
+	return
+}
+
 // IdentifyAsset looks for all assets in postgres which match the non-null fields in @asset
 // Comment 1: The only critical field is @Decimals, as this is initialized with 0, while an
 // asset is allowed to have zero decimals as well (for instance sngls, trxc).

@@ -29,6 +29,19 @@ type InterestRate struct {
 	Source          string
 }
 
+// MarshalBinary for interest rates
+func (e *InterestRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for interest rates
+func (e *InterestRate) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
 type InterestRateMeta struct {
 	Symbol    string
 	FirstDate time.Time

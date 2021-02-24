@@ -25,32 +25,6 @@ const (
 	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
 )
 
-// MarshalBinary for quotations
-func (e *Quotation) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// MarshalBinary for interest rates
-func (e *InterestRate) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary for quotations
-func (e *Quotation) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// UnmarshalBinary for interest rates
-func (e *InterestRate) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
 func getKeyQuotation(value string) string {
 	return "dia_quotation_USD_" + value
 }
@@ -108,10 +82,10 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	} else {
 		db.addPoint(pt)
 	}
-	// err = db.WriteBatchInflux()
-	// if err != nil {
-	// 	log.Error("Write batch for SetAssetQuotation: ", err)
-	// }
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Error("Write batch for SetAssetQuotation: ", err)
+	}
 
 	// Write latest point to redis cache
 	return db.SetAssetQuotationCache(quotation)
@@ -167,7 +141,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 // SetAssetQuotationCache stores @quotation in redis cache
 func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) error {
 	key := getKeyAssetQuotation(quotation.Blockchain, quotation.Address)
-	return db.redisClient.Set(key, &quotation, 0).Err()
+	return db.redisClient.Set(key, quotation, 0).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.

@@ -24,6 +24,8 @@ type Datastore interface {
 	GetQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
 	SetQuotationEUR(quotation *Quotation) error
+	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
+	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
@@ -148,6 +150,7 @@ const (
 	influxDbName                         = "dia"
 	influxDbTradesTable                  = "trades"
 	influxDbFiltersTable                 = "filters"
+	influxDbFiatQuotationsTable          = "fiat"
 	influxDbOptionsTable                 = "options"
 	influxDbCVITable                     = "cvi"
 	influxDbSupplyTable                  = "supplies"

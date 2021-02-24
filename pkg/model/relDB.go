@@ -21,6 +21,7 @@ type RelDatastore interface {
 	GetAsset(address, blockchain string) (dia.Asset, error)
 	GetAssetByID(ID string) (dia.Asset, error)
 	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
+	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
 	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
