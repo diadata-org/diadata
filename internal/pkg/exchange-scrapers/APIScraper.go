@@ -85,6 +85,11 @@ type APIScraper interface {
 	Channel() chan *dia.Trade
 }
 
+type CEXAPIScraper interface {
+	APIScraper
+	FetchTickerData(symbol string) (dia.Asset, error)
+}
+
 // PairScraper receives trades for a single pc.ExchangePair from a single exchange.
 type PairScraper interface {
 	io.Closer
@@ -150,8 +155,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// 	return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange])
 	// case dia.DforceExchange:
 	// 	return NewDforceScraper(Exchanges[dia.DforceExchange])
-	case dia.ZeroxExchange:
-		return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
+	// case dia.ZeroxExchange:
+	// 	return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
 	// case dia.KyberExchange:
 	// 	return NewKyberScraper(Exchanges[dia.KyberExchange])
 	// case dia.BitMaxExchange:

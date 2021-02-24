@@ -66,18 +66,20 @@ func (s *TradesBlockService) mainLoop() {
 
 func (s *TradesBlockService) process(t dia.Trade) {
 
-	var ignoreTrade bool
-	baseToken := t.GetBaseToken()
-	if baseToken != "USD" {
-		val, err := s.datastore.GetPriceUSD(baseToken)
+	ignoreTrade := !t.VerifiedPair
+	// baseToken := t.GetBaseToken()
+	baseTokenSymbol := t.BaseToken.Symbol
+	if baseTokenSymbol == "USD" && t.BaseToken.Blockchain.Name == "fiat" {
+		// All prices are measured in US-Dollar, so just price for base token == USD
+		t.EstimatedUSDPrice = t.Price
+	} else {
+		val, err := s.datastore.GetAssetPriceUSD(t.BaseToken)
 		if err != nil {
-			log.Error("Cant find base token ", baseToken, " in redis ", err, " ignoring ", t)
+			log.Error("Cant find base token ", baseTokenSymbol, " in redis ", err, " ignoring ", t)
 			ignoreTrade = true
 		} else {
 			t.EstimatedUSDPrice = t.Price * val
 		}
-	} else {
-		t.EstimatedUSDPrice = t.Price
 	}
 
 	// TO DO: Uncomment this in next deploy of TBS

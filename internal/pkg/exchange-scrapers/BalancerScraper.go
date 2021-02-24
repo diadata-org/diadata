@@ -27,7 +27,8 @@ import (
 const (
 	BalancerApiDelay       = 20
 	BalancerBatchDelay     = 60 * 1
-	BalancerLookBackBlocks = 6 * 60 * 24 * 20
+	lookBackBlocksSwaps    = 6 * 60 * 24 * 10
+	startBlockPoolCreation = uint64(9600000)
 	factoryContract        = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 	// balancerRestDial       = "http://159.69.120.42:8545/"
 	// balancerWsDial         = "ws://159.69.120.42:8546/"
@@ -283,13 +284,13 @@ func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGN
 	if err != nil {
 		log.Fatal(err)
 	}
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+	// header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
 
-	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{})
+	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: startBlockPoolCreation}, []common.Address{}, []common.Address{})
 	if err != nil {
 		log.Error("error in getAllLogNewPool ", err)
 	}
@@ -367,7 +368,7 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 	if err != nil {
 		log.Error(err)
 	}
-
+	poolCount := 0
 	for it.Next() {
 		var pair dia.ExchangePair
 		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
@@ -378,22 +379,32 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 		if err != nil {
 			log.Error(err)
 		}
-		fmt.Println("tokens: ", tokens)
-		asset0, err := ethhelper.ETHAddressToAsset(tokens[0])
-		if err != nil {
+		if len(tokens) < 2 {
 			continue
 		}
-		asset1, err := ethhelper.ETHAddressToAsset(tokens[1])
-		if err != nil {
-			continue
+		for i := 0; i < len(tokens); i++ {
+			j := i + 1
+			for j < len(tokens) {
+				asset0, err := ethhelper.ETHAddressToAsset(tokens[i])
+				if err != nil {
+					continue
+				}
+				asset1, err := ethhelper.ETHAddressToAsset(tokens[j])
+				if err != nil {
+					continue
+				}
+				pair.UnderlyingPair.QuoteToken = asset0
+				pair.UnderlyingPair.BaseToken = asset1
+				pair.ForeignName = asset0.Symbol + "-" + asset1.Symbol
+				pair.Verified = true
+				pair.Exchange = "Balancer"
+				pair.Symbol = asset0.Symbol
+				pairs = append(pairs, pair)
+				j++
+			}
 		}
-		pair.UnderlyingPair.QuoteToken = asset0
-		pair.UnderlyingPair.BaseToken = asset1
-		pair.ForeignName = asset0.Symbol + "-" + asset1.Symbol
-		pair.Verified = true
-		pair.Exchange = "Balancer"
-		pair.Symbol = asset0.Symbol
-		pairs = append(pairs, pair)
+		log.Info("got pool number: ", poolCount)
+		poolCount++
 	}
 
 	return
@@ -453,7 +464,7 @@ func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.Balancerfa
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+	startblock := header.Number.Uint64() - uint64(lookBackBlocksSwaps)
 
 	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &startblock}, sink, nil, nil)
 	if err != nil {

@@ -127,7 +127,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 					if err != nil {
 						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 					}
-					// If not in postgres yet, add fetched pair
+					// If not in postgres yet, add fetched pairs to postgres pairs
 					pairs, err = addNewPairs(exchange, pairs, relDB)
 					if err != nil {
 						log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)

@@ -87,7 +87,7 @@ func main() {
 		defer sECB.Close()
 
 		for _, pair := range pairs {
-			_, err := sECB.ScrapePair(dia.Pair{
+			_, err := sECB.ScrapePair(dia.ExchangePair{
 				Symbol:      pair,
 				ForeignName: pair,
 			})

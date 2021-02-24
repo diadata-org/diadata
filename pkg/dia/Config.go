@@ -74,7 +74,7 @@ func Exchanges() []string {
 		// LoopringExchange,
 		// SushiSwapExchange,
 		// DforceExchange,
-		ZeroxExchange,
+		// ZeroxExchange,
 		// KyberExchange,
 		// BitMaxExchange,
 		// PanCakeSwap,

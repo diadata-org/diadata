@@ -17,6 +17,7 @@ type SymbolExchangeDetails struct {
 	LastTrades         []dia.Trade
 }
 
+// Quotation is deprecating. Going to be substituted by AssetQuotation
 type Quotation struct {
 	Symbol             string
 	Name               string
@@ -26,6 +27,19 @@ type Quotation struct {
 	Source             string
 	Time               time.Time
 	ITIN               string
+}
+
+// AssetQuotation is the most recent price point information on an asset.
+type AssetQuotation struct {
+	Symbol             string
+	Name               string
+	Address            string
+	Blockchain         string
+	Price              float64
+	PriceYesterday     float64
+	VolumeYesterdayUSD float64
+	Source             string
+	Time               time.Time
 }
 
 type Price struct {
