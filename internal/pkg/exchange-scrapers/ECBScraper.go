@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	refreshDelay = time.Second * 1 * 60
+	refreshDelay = time.Second * 20 * 60
 )
 
 type (
@@ -210,15 +210,33 @@ func Populate(datastore *models.DB, rdb *models.RelDB, pairs []string) {
 
 	// Populate every other currency
 	for _, p := range pairs {
-		p = p[3:]
-		if p != "USD" {
-			populateCurrency(datastore, rdb, p, xmlEurusd)
+		currency := p[3:]
+		if currency != "USD" {
+			populateCurrency(datastore, rdb, currency, xmlEurusd)
 		}
 	}
 }
 
 func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, xmlEurusd *XMLHistoricalEnvelope) *XMLHistoricalEnvelope {
-	log.Printf("Historical %s prices population starting", currency)
+	var asset dia.Asset
+	var err error
+	if currency == "USD" {
+		// TO DO: fiat assets have yet to be filled into the asset table
+		// by adding an asset source for fiat currencies in the asset service.
+		asset, err = rdb.GetFiatAssetBySymbol("EUR")
+		if err != nil {
+			log.Errorf("fetching fiat asset %s: %v", "EUR", err)
+			return &XMLHistoricalEnvelope{}
+		}
+	} else {
+		asset, err = rdb.GetFiatAssetBySymbol(currency)
+		if err != nil {
+			log.Errorf("fetching fiat asset %s: %v", currency, err)
+			return &XMLHistoricalEnvelope{}
+		}
+	}
+	log.Printf("Historical prices population starting for %s\n", asset.Symbol)
+	time.Sleep(5 * time.Second)
 
 	// Format url to fetch
 	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
@@ -237,9 +255,8 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		log.Errorf("error parsing xml %v\n", err)
 	}
 
-	var fqs []*models.FiatQuotation
-
 	// Format each value as a fiatQuotation struct and put them into the fqs slice
+	var quotations []*models.AssetQuotation
 	for _, o := range xmlSheet.Obs {
 		if o.Price.Value == "NaN" {
 			continue
@@ -249,33 +266,14 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)
 		}
-
 		price, err := strconv.ParseFloat(o.Price.Value, 64)
 		if err != nil {
 			log.Errorf("error parsing price %v %v", o.Price.Value, err)
 		}
 
-		if currency == "USD" {
-			// fq := &models.FiatQuotation{
-			// 	QuoteCurrency: "EUR",
-			// 	BaseCurrency:  "USD",
-			// 	Price:         price,
-			// 	Source:        "ECB",
-			// 	Time:          timestamp,
-			// }
-
-			// fqs = append(fqs, fq)
-			asset, err := rdb.GetFiatAssetBySymbol(currency)
-			if err != nil {
-				log.Errorf("fetching fiat asset %s: %v", currency, err)
-			}
-			err = datastore.SetAssetPriceUSD(asset, price, timestamp)
-			if err != nil {
-				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
-			}
-		} else { // If other than USD, conversion from EUR as a quote currency to USD as base currency is made
+		if currency != "USD" {
+			// If other than USD, conversion from EUR as a quote currency to USD as base currency is made
 			var usdFor1Euro float64
-
 			for _, eurusdObs := range xmlEurusd.Obs {
 				if eurusdObs.Timestamp.Value == o.Timestamp.Value {
 					usdFor1Euro, err = strconv.ParseFloat(eurusdObs.Price.Value, 64)
@@ -284,39 +282,27 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 					}
 				}
 			}
-
 			if usdFor1Euro == 0 {
 				continue
 			}
-
 			price = usdFor1Euro / price
-
-			// fq := &models.FiatQuotation{
-			// 	QuoteCurrency: currency,
-			// 	BaseCurrency:  "USD",
-			// 	Price:         price,
-			// 	Source:        "ECB",
-			// 	Time:          timestamp,
-			// }
-			// fqs = append(fqs, fq)
-			asset, err := rdb.GetFiatAssetBySymbol(currency)
-			if err != nil {
-				log.Errorf("fetching fiat asset %s: %v", currency, err)
-			}
-			err = datastore.SetAssetPriceUSD(asset, price, timestamp)
-			if err != nil {
-				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
-			}
-
 		}
-	}
 
+		assetquotation := models.AssetQuotation{
+			Asset:  asset,
+			Price:  price,
+			Source: dia.Diadata,
+			Time:   timestamp,
+		}
+		quotations = append(quotations, &assetquotation)
+	}
+	datastore.AddAssetQuotationsToBatch(quotations)
 	// Write quotations on influxdb
-	err = datastore.SetBatchFiatPriceInflux(fqs)
+	err = datastore.WriteBatchInflux()
 	if err != nil {
-		log.Printf("Error on SetBatchFiatPriceInflux: %v\n", err)
+		log.Printf("Error on asset quotations batch write: %v\n", err)
 	} else {
-		log.Printf("%s historical prices successfully populated", currency)
+		log.Printf("historical prices for %s successfully populated\n", currency)
 	}
 
 	return &xmlSheet

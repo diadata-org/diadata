@@ -72,7 +72,8 @@ type Datastore interface {
 	GetAssetPriceUSD(asset dia.Asset) (float64, error)
 	SetAssetQuotation(quotation *AssetQuotation) error
 	GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error)
-	SetAssetQuotationCache(quotation *AssetQuotation) error
+	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
+	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
 
 	// Interest rates' methods

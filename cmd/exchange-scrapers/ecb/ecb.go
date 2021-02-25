@@ -61,29 +61,30 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rd
 		}
 
 		symbol := t.Symbol[len(t.Pair)-3:]
-
 		if symbol == "USD" {
-			log.Println(symbol, t.Symbol)
+			// Set EUR price measured in USD
 			usdFor1Euro = t.Price
-
 			asset, err := rdb.GetFiatAssetBySymbol("EUR")
 			if err != nil {
-				log.Error("fetching fiat asset EUR: ", err)
-			}
-			err = ds.SetAssetPriceUSD(asset, t.Price, t.Time)
-			if err != nil {
-				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
+				log.Errorf("fetching fiat asset EUR: %v", err)
+			} else {
+				err = ds.SetAssetPriceUSD(asset, t.Price, t.Time)
+				if err != nil {
+					log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
+				}
 			}
 
 		} else {
 			if usdFor1Euro > 0 {
+				// Get Price for all other currencies measured in USD
 				asset, err := rdb.GetFiatAssetBySymbol(symbol)
 				if err != nil {
 					log.Errorf("fetching fiat asset %s: %v", symbol, err)
-				}
-				err = ds.SetAssetPriceUSD(asset, usdFor1Euro/t.Price, t.Time)
-				if err != nil {
-					log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
+				} else {
+					err = ds.SetAssetPriceUSD(asset, usdFor1Euro/t.Price, t.Time)
+					if err != nil {
+						log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
+					}
 				}
 			}
 		}
@@ -100,7 +101,7 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	} else {
 		// Populate historical prices
-		// go scrapers.Populate(ds, pairs)
+		go scrapers.Populate(ds, rdb, pairs)
 
 		sECB := scrapers.SpawnECBScraper(ds)
 		defer sECB.Close()

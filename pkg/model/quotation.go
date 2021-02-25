@@ -58,6 +58,29 @@ func (db *DB) GetAssetPriceUSD(asset dia.Asset) (price float64, err error) {
 	return
 }
 
+func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
+	for _, quotation := range quotations {
+		tags := map[string]string{
+			"symbol":     quotation.Asset.Symbol,
+			"name":       quotation.Asset.Name,
+			"address":    quotation.Asset.Address,
+			"blockchain": quotation.Asset.Blockchain.Name,
+		}
+		fields := map[string]interface{}{
+			"price":           quotation.Price,
+			"priceYesterday":  quotation.PriceYesterday,
+			"volumeYesterday": quotation.VolumeYesterdayUSD,
+		}
+		pt, err := clientInfluxdb.NewPoint(influxDBAssetQuotationsTable, tags, fields, quotation.Time)
+		if err != nil {
+			log.Errorln("addAssetQuotationsToBatch:", err)
+			return err
+		}
+		db.addPoint(pt)
+	}
+	return nil
+}
+
 // SetAssetQuotation stores the full quotation of @asset into influx and cache.
 func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	// Write to influx
@@ -75,7 +98,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 
 	pt, err := clientInfluxdb.NewPoint(influxDBAssetQuotationsTable, tags, fields, quotation.Time)
 	if err != nil {
-		log.Errorln("NewTradeInflux:", err)
+		log.Errorln("SetAssetQuotation:", err)
 	} else {
 		db.addPoint(pt)
 	}
@@ -85,8 +108,9 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	}
 
 	// Write latest point to redis cache
-	// TO DO: make check for timestamp of cache and only write if younger
-	return db.SetAssetQuotationCache(quotation)
+	log.Printf("write to cache: %s\n", quotation.Asset.Symbol)
+	_, err = db.SetAssetQuotationCache(quotation)
+	return err
 
 }
 
@@ -134,9 +158,19 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 }
 
 // SetAssetQuotationCache stores @quotation in redis cache
-func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) error {
+func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
+	// fetch current state of cache
+	cachestate, err := db.GetAssetQuotationCache(quotation.Asset)
+	if err != nil && err != redis.Nil {
+		return false, err
+	}
+	// Do not write to cache if more recent entry exists
+	if (quotation.Time).Before(cachestate.Time) {
+		return false, nil
+	}
+	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain.Name, quotation.Asset.Address)
-	return db.redisClient.Set(key, quotation, 0).Err()
+	return true, db.redisClient.Set(key, quotation, 0).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
