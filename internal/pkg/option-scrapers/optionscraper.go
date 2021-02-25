@@ -1,4 +1,4 @@
-package scrapers
+package optionscrapers
 
 import "github.com/sirupsen/logrus"
 

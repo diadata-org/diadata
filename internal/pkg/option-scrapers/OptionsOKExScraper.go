@@ -1,4 +1,4 @@
-package scrapers
+package optionscrapers
 
 import (
 	"encoding/json"
@@ -8,12 +8,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
-	"strconv"
+ 	"strconv"
 	"sync"
 	"time"
 )
 
 var logger = logrus.New()
+
+
 
 type OKExInstrumentDetails []OKExInstrumentDetail
 
@@ -104,9 +106,8 @@ type OKExInstruments struct {
 //	return all
 //}
 
-func NewOKExOptionsScraper(ds *models.DB, pollFreq int8) OKExOptionsScraper {
-	optionsScraper := OKExOptionsScraper{
-		DataStore:     ds,
+func NewOKExOptionsScraper( pollFreq int8) *OKExOptionsScraper {
+	optionsScraper := &OKExOptionsScraper{
 		PollFrequency: pollFreq, // if pollFreq = 1 second. can have 10 goroutines at the same time
 	}
 	return optionsScraper
@@ -232,22 +233,22 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 
 					log.Println("rawOB", rawOB)
 
-					var obEntry dia.OptionOrderbookDatum
-					obEntry, err = s.parseObDatum(&rawOB, market)
-					if err != nil {
-						logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-						restarted = true
-						return
-					}
+					//var obEntry dia.OptionOrderbookDatum
+					//obEntry, err = s.parseObDatum(&rawOB, market)
+					//if err != nil {
+					//	logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+					//	restarted = true
+					//	return
+					//}
 
-					err = s.DataStore.SaveOptionOrderbookDatumInflux(obEntry)
-					if err != nil {
-						logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-						restarted = true
-						return
-					}
-
-					logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Debug(obEntry)
+					//err = s.DataStore.SaveOptionOrderbookDatumInflux(obEntry)
+					//if err != nil {
+					//	logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+					//	restarted = true
+					//	return
+					//}
+					//
+					//logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Debug(obEntry)
 				}
 			}
 		}()
