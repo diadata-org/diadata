@@ -201,21 +201,23 @@ func (s *ECBScraper) Update() error {
 	return err
 }
 
+// TO DO: store historic data in assetQuotation format as well
+
 // Populate fetches historical daily datas from 1999 until today and saves them on the database
-func Populate(datastore *models.DB, pairs []string) {
+func Populate(datastore *models.DB, rdb *models.RelDB, pairs []string) {
 	// Start with USD to have conversion reference
-	xmlEurusd := populateCurrency(datastore, "USD", nil)
+	xmlEurusd := populateCurrency(datastore, rdb, "USD", nil)
 
 	// Populate every other currency
 	for _, p := range pairs {
 		p = p[3:]
 		if p != "USD" {
-			populateCurrency(datastore, p, xmlEurusd)
+			populateCurrency(datastore, rdb, p, xmlEurusd)
 		}
 	}
 }
 
-func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHistoricalEnvelope) *XMLHistoricalEnvelope {
+func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, xmlEurusd *XMLHistoricalEnvelope) *XMLHistoricalEnvelope {
 	log.Printf("Historical %s prices population starting", currency)
 
 	// Format url to fetch
@@ -254,15 +256,23 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 		}
 
 		if currency == "USD" {
-			fq := &models.FiatQuotation{
-				QuoteCurrency: "EUR",
-				BaseCurrency:  "USD",
-				Price:         price,
-				Source:        "ECB",
-				Time:          timestamp,
-			}
+			// fq := &models.FiatQuotation{
+			// 	QuoteCurrency: "EUR",
+			// 	BaseCurrency:  "USD",
+			// 	Price:         price,
+			// 	Source:        "ECB",
+			// 	Time:          timestamp,
+			// }
 
-			fqs = append(fqs, fq)
+			// fqs = append(fqs, fq)
+			asset, err := rdb.GetFiatAssetBySymbol(currency)
+			if err != nil {
+				log.Errorf("fetching fiat asset %s: %v", currency, err)
+			}
+			err = datastore.SetAssetPriceUSD(asset, price, timestamp)
+			if err != nil {
+				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
+			}
 		} else { // If other than USD, conversion from EUR as a quote currency to USD as base currency is made
 			var usdFor1Euro float64
 
@@ -281,15 +291,23 @@ func populateCurrency(datastore *models.DB, currency string, xmlEurusd *XMLHisto
 
 			price = usdFor1Euro / price
 
-			fq := &models.FiatQuotation{
-				QuoteCurrency: currency,
-				BaseCurrency:  "USD",
-				Price:         price,
-				Source:        "ECB",
-				Time:          timestamp,
+			// fq := &models.FiatQuotation{
+			// 	QuoteCurrency: currency,
+			// 	BaseCurrency:  "USD",
+			// 	Price:         price,
+			// 	Source:        "ECB",
+			// 	Time:          timestamp,
+			// }
+			// fqs = append(fqs, fq)
+			asset, err := rdb.GetFiatAssetBySymbol(currency)
+			if err != nil {
+				log.Errorf("fetching fiat asset %s: %v", currency, err)
+			}
+			err = datastore.SetAssetPriceUSD(asset, price, timestamp)
+			if err != nil {
+				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
 			}
 
-			fqs = append(fqs, fq)
 		}
 	}
 

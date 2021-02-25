@@ -68,7 +68,7 @@ type Datastore interface {
 	Sum24HoursExchange(exchange string) (float64, error)
 
 	// New Asset pricing methods: 23/02/2021
-	SetAssetPriceUSD(asset dia.Asset, price float64) error
+	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
 	GetAssetPriceUSD(asset dia.Asset) (float64, error)
 	SetAssetQuotation(quotation *AssetQuotation) error
 	GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error)

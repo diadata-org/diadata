@@ -43,15 +43,12 @@ func getKeyAssetQuotation(blockchain, address string) string {
 
 // SetAssetPriceUSD stores the price of @asset in influx and the caching layer.
 // The latter only holds the most recent price point.
-func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64) error {
+func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error {
 	return db.SetAssetQuotation(&AssetQuotation{
-		Symbol:     asset.Symbol,
-		Name:       asset.Name,
-		Address:    asset.Address,
-		Blockchain: asset.Blockchain.Name,
-		Price:      price,
-		Source:     dia.Diadata,
-		Time:       time.Now(),
+		Asset:  asset,
+		Price:  price,
+		Source: dia.Diadata,
+		Time:   timestamp,
 	})
 }
 
@@ -65,10 +62,10 @@ func (db *DB) GetAssetPriceUSD(asset dia.Asset) (price float64, err error) {
 func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	// Write to influx
 	tags := map[string]string{
-		"symbol":     quotation.Symbol,
-		"name":       quotation.Name,
-		"address":    quotation.Address,
-		"blockchain": quotation.Blockchain,
+		"symbol":     quotation.Asset.Symbol,
+		"name":       quotation.Asset.Name,
+		"address":    quotation.Asset.Address,
+		"blockchain": quotation.Asset.Blockchain.Name,
 	}
 	fields := map[string]interface{}{
 		"price":           quotation.Price,
@@ -88,6 +85,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	}
 
 	// Write latest point to redis cache
+	// TO DO: make check for timestamp of cache and only write if younger
 	return db.SetAssetQuotationCache(quotation)
 
 }
@@ -130,17 +128,14 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 	} else {
 		return quotation, errors.New("Error parsing Trade from Database")
 	}
-	quotation.Symbol = asset.Symbol
-	quotation.Name = asset.Name
-	quotation.Address = asset.Address
-	quotation.Blockchain = asset.Blockchain.Name
+	quotation.Asset = asset
 	quotation.Source = dia.Diadata
 	return quotation, nil
 }
 
 // SetAssetQuotationCache stores @quotation in redis cache
 func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) error {
-	key := getKeyAssetQuotation(quotation.Blockchain, quotation.Address)
+	key := getKeyAssetQuotation(quotation.Asset.Blockchain.Name, quotation.Asset.Address)
 	return db.redisClient.Set(key, quotation, 0).Err()
 }
 

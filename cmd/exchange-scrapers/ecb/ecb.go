@@ -70,7 +70,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rd
 			if err != nil {
 				log.Error("fetching fiat asset EUR: ", err)
 			}
-			err = ds.SetAssetPriceUSD(asset, t.Price)
+			err = ds.SetAssetPriceUSD(asset, t.Price, t.Time)
 			if err != nil {
 				log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
 			}
@@ -81,7 +81,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rd
 				if err != nil {
 					log.Errorf("fetching fiat asset %s: %v", symbol, err)
 				}
-				err = ds.SetAssetPriceUSD(asset, usdFor1Euro/t.Price)
+				err = ds.SetAssetPriceUSD(asset, usdFor1Euro/t.Price, t.Time)
 				if err != nil {
 					log.Errorf("setting asset quotation for asset %s: %v", asset.Symbol, err)
 				}
