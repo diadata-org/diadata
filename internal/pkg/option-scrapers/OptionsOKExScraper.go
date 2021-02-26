@@ -1,6 +1,7 @@
 package optionscrapers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -8,14 +9,13 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
- 	"strconv"
+	"golang.org/x/time/rate"
+	"strconv"
 	"sync"
 	"time"
 )
 
 var logger = logrus.New()
-
-
 
 type OKExInstrumentDetails []OKExInstrumentDetail
 
@@ -47,6 +47,8 @@ type OKExOptionsScraper struct {
 	ScraperIsRunningMu sync.Mutex
 	optionsWaitGroup   *sync.WaitGroup
 	DataStore          *models.DB
+	chanOrderBook      chan *dia.OptionOrderbookDatum
+	Ratelimiter        *rate.Limiter
 }
 
 type AllOKExOptionsScrapers struct {
@@ -106,9 +108,12 @@ type OKExInstruments struct {
 //	return all
 //}
 
-func NewOKExOptionsScraper( pollFreq int8) *OKExOptionsScraper {
+func NewOKExOptionsScraper(pollFreq int8) *OKExOptionsScraper {
+	rl := rate.NewLimiter(rate.Every(2*time.Second), 10) // 10 request every 2 seconds
 	optionsScraper := &OKExOptionsScraper{
-		PollFrequency: pollFreq, // if pollFreq = 1 second. can have 10 goroutines at the same time
+		PollFrequency: pollFreq,
+		chanOrderBook:  make(chan *dia.OptionOrderbookDatum),
+		Ratelimiter: rl,// if pollFreq = 1 second. can have 10 goroutines at the same time
 	}
 	return optionsScraper
 }
@@ -128,11 +133,13 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 		return
 	}
 	var resolvedBidPX float64
+if len(datum.Bids)>0 {
 	resolvedBidPX, err = strconv.ParseFloat(datum.Bids[0][0], 64)
 	if err != nil {
 		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
 		return
 	}
+}
 	var resolvedAskSize float64
 	resolvedAskSize, err = strconv.ParseFloat(datum.Asks[0][1], 64)
 	if err != nil {
@@ -140,10 +147,13 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 		return
 	}
 	var resolvedBidSize float64
-	resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
-	if err != nil {
-		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-		return
+	if len(datum.Bids)>0 {
+
+		resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+			return
+		}
 	}
 
 	resolvedDatum.InstrumentName = market
@@ -188,80 +198,55 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 func (s *OKExOptionsScraper) Scrape() {
 
 	for _, market := range s.Markets {
-		 s.ScrapeInstrument(market)
+		go s.ScrapeInstrument(market)
+
 	}
+
 }
 
 func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
+
+ 	ctx := context.Background()
+	err := s.Ratelimiter.Wait(ctx) // This is a blocking call. Honors the rate limit
+	if err != nil {
+		log.Errorln("Error on ratelimit",err)
+		return
+	}
+
+
 	logger.Formatter = new(prefixed.TextFormatter)
 	logger.Level = logrus.InfoLevel
 
-	var restarted bool = false
-
-	for {
-		if restarted {
-			logger.Warnf("issue occurred with OKEx %s options market scraping. restarting polling every %d seconds\n", market, s.PollFrequency)
-		} else {
-			logger.Infof("commencing OKEx %s options market scraping. polling every %d seconds\n", market, s.PollFrequency)
-		}
-		func() (err error) {
-			tick := time.NewTicker(time.Duration(s.PollFrequency) * time.Second)
-			defer tick.Stop()
-
-			var body []byte
-			var rawOB = rawOKExOBDatum{}
-
-			for {
-				select {
-				case <-tick.C:
-					url := fmt.Sprintf("https://www.okex.com/api/option/v3/instruments/%s/book?size=1", market)
-					log.Infoln("Requesting Url ", url)
-					// * change size query param to larger number for greater depth. the largest you can go to is 200
-					body, err = utils.GetRequest(url)
-					if err != nil {
-						logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-						restarted = true
-						return
-					}
-
-					err = json.Unmarshal(body, &rawOB)
-					if err != nil {
-						logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-						restarted = true
-						return
-					}
-
-					log.Println("rawOB", rawOB)
-
-					//var obEntry dia.OptionOrderbookDatum
-					//obEntry, err = s.parseObDatum(&rawOB, market)
-					//if err != nil {
-					//	logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-					//	restarted = true
-					//	return
-					//}
-
-					//err = s.DataStore.SaveOptionOrderbookDatumInflux(obEntry)
-					//if err != nil {
-					//	logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-					//	restarted = true
-					//	return
-					//}
-					//
-					//logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Debug(obEntry)
-				}
-			}
-		}()
+	var rawOB = rawOKExOBDatum{}
+	url := fmt.Sprintf("https://www.okex.com/api/option/v3/instruments/%s/book?size=1", market)
+	log.Infoln("Requesting Url ", url)
+	// * change size query param to larger number for greater depth. the largest you can go to is 200
+	body, err := utils.GetRequest(url)
+	if err != nil {
+		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+		return
 	}
+
+	err = json.Unmarshal(body, &rawOB)
+	if err != nil {
+		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+		return
+	}
+
+	log.Println("rawOB", rawOB)
+
+	var obEntry dia.OptionOrderbookDatum
+	obEntry, err = s.parseObDatum(&rawOB, market)
+	if err != nil {
+		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+		return
+	}
+
+	s.chanOrderBook <- &obEntry
+
 }
 
-//func (s *AllOKExOptionsScrapers) ScrapeMarkets() {
-//	for _, scraper := range s.Scrapers {
-//		s.owg.Add(1)
-//		go scraper.Scrape()
-//	}
-//	s.owg.Wait()
-//}
+
 
 func (s *AllOKExOptionsScrapers) MetaOnOptionIsAvailable(option OKExInstrument) (available bool, err error) {
 	available = false
@@ -335,4 +320,8 @@ func (s *AllOKExOptionsScrapers) GetAndStoreOptionsMeta() (err error) {
 	}
 
 	return nil
+}
+
+func (s *OKExOptionsScraper) Channel() chan *dia.OptionOrderbookDatum {
+	return s.chanOrderBook
 }
