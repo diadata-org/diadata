@@ -2,14 +2,11 @@ package main
 
 import (
 	"flag"
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"sync"
-
 	"time"
 
 	options "github.com/diadata-org/diadata/internal/pkg/option-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
-
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -20,9 +17,12 @@ func init() {
 	log = logrus.New()
 }
 
-func handleorderBook(datastore *models.DB,c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup, exchange string) {
+const (
+	watchdogDelay = 60 * 60
+)
+
+func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup, exchange string) {
 	lastTradeTime := time.Now()
-	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
 		select {
@@ -64,12 +64,10 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	ds, err := models.NewRedisDataStore()
+	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
-
-
 
 	configApi, err := dia.GetConfig(*exchange)
 	if err != nil {
@@ -80,12 +78,9 @@ func main() {
 	es.FetchInstruments()
 	es.Scrape()
 
-
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-
-
-	go handleorderBook(ds,es.Channel(), &wg,  *exchange)
+	go handleorderBook(ds, es.Channel(), &wg, *exchange)
 	wg.Wait()
 }
