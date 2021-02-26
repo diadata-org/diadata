@@ -28,8 +28,8 @@ CREATE TABLE exchangepair (
     -- These fields reference asset table and should be verified by pairdiscoveryservice.
     -- Only trades with verified pairs are processed further and thereby enter price calculation.
     verified boolean default false,
-    id_basetoken uuid REFERENCES asset(asset_id),
-    id_quotetoken uuid REFERENCES asset(asset_id)
+    id_quotetoken uuid REFERENCES asset(asset_id),
+    id_basetoken uuid REFERENCES asset(asset_id)
 );
 
 CREATE TABLE exchangesymbol (

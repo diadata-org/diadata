@@ -396,7 +396,8 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 	pairs := make([]UniswapPair, int(numPairs.Int64()))
-	for i := 0; i < int(numPairs.Int64()); i++ {
+	// for i := 0; i < int(numPairs.Int64()); i++ {
+	for i := 0; i < 500; i++ {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()

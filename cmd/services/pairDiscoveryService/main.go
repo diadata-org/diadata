@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -211,6 +212,16 @@ func updateExchangePairs(relDB *models.RelDB) {
 					for _, pair := range pairs {
 						log.Info("handle pair ", pair)
 						time.Sleep(1 * time.Second)
+						// Continue if pair is already verified
+						exchangepair, err := relDB.GetExchangePairCache(exchange, pair.ForeignName)
+						if err != nil {
+							log.Errorf("error getting pair %s from cache", pair.ForeignName)
+						}
+						if exchangepair.Verified {
+							fmt.Println("continue for ", pair.ForeignName)
+							continue
+						}
+						// if not yet verified, try do do so
 						pairSymbols, err := dia.GetPairSymbols(pair)
 						if err != nil {
 							log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
