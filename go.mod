@@ -89,6 +89,7 @@ require (
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924
 	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
 	golang.org/x/text v0.3.4 // indirect
+	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	golang.org/x/tools v0.0.0-20200729041821-df70183b1872 // indirect
 	gonum.org/v1/plot v0.7.0
 	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f // indirect
