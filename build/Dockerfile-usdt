@@ -1,4 +1,4 @@
-FROM golang:latest as build
+FROM golang:1.14 as build
 
 # Have to install chrome for this so had to use initial image not distroless
 RUN apt-get update
