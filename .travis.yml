@@ -2,6 +2,14 @@ dist: xenial
 
 language: go
 
+git:
+  depth: 1
+
+go:
+  - 1.13.x
+
+before_script:
+  - go install -mod vendor github.com/golangci/golangci-lint/cmd/golangci-lint
 before_install:
   - sudo apt-get install -y pkg-config
   - wget https://download.libsodium.org/libsodium/releases/old/unsupported/libsodium-1.0.12.tar.gz && tar -xf libsodium-1.0.12.tar.gz && cd libsodium-1.0.12 && ./configure && make && sudo make install && cd ../ && rm -rf libsodium-1.0.12 libsodium-1.0.12.tar.gz
@@ -9,3 +17,6 @@ addons:
   apt:
     update: true
 
+script:
+  - golangci-lint run
+  #- go test -v -race ./...  # Run all the tests with the race detector enabled
