@@ -155,7 +155,7 @@ func (s *LoopringScraper) subscribeToALL() {
 		wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
 
 		if err := s.wsClient.WriteJSON(wr); err != nil {
-			logger.Println(err.Error())
+			log.Error(err)
 		}
 	}
 }
@@ -179,11 +179,11 @@ func (s *LoopringScraper) mainLoop() {
 				f64Price, _ := strconv.ParseFloat(makemap.Data[0][4], 64)
 				timestamp, err := strconv.ParseInt(makemap.Data[0][0], 10, 64)
 				if err != nil {
-					logger.Println("Error Parsing time", err)
+					log.Error("Error Parsing time", err)
 				}
 				volume, err := strconv.ParseFloat(makemap.Data[0][3], 64)
 				if err != nil {
-					logger.Println("Error Parsing time", err)
+					log.Error("Error Parsing time", err)
 				}
 				volume = volume / math.Pow(10, s.decimalsAsset[asset[0]])
 				if makemap.Data[0][2] == "SELL" {
@@ -198,10 +198,10 @@ func (s *LoopringScraper) mainLoop() {
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- t
-				logger.Println("-Got trade--", t)
+				log.Error("-Got trade--", t)
 
 			} else {
-				// logger.Println("No data is received")
+				// log.Info("No data is received")
 			}
 		}
 	}
@@ -264,7 +264,7 @@ func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
 
 	if err := s.wsClient.WriteJSON(wr); err != nil {
-		logger.Println(err.Error())
+		log.Error(err)
 	}
 
 	return ps, nil
