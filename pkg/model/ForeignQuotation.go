@@ -8,7 +8,6 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 const influxDbForeignQuotationTable = "foreignquotation"

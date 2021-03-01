@@ -13,7 +13,6 @@ import (
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 )
 
 const (

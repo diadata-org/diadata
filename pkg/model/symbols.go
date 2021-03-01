@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 )
 
 func (db *DB) GetAllSymbols() []string {

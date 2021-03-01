@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 )
 
 // exchange = "" for all exchanges

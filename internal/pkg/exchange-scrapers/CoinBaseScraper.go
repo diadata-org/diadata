@@ -102,7 +102,12 @@ func (s *CoinBaseScraper) mainLoop() {
 								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
 								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 							}
-							log.Info("got trade: ", t)
+							if t.VerifiedPair {
+								log.Info("got verified trade: ", t)
+							}
+							// } else {
+							// 	log.Info("got unverified trade: ", t)
+							// }
 							ps.parent.chanTrades <- t
 						}
 					} else {

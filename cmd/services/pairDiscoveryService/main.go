@@ -38,10 +38,10 @@ func main() {
 	task := &Task{
 		closed: make(chan struct{}),
 		/// Retrieve every hour
-		ticker: time.NewTicker(time.Second * 60 * 60),
+		ticker: time.NewTicker(time.Second * 5 * 60),
 	}
-
 	relDB, err := models.NewRelDataStore()
+	log.Info("error message setting up relDB: ", err)
 	if err != nil {
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}

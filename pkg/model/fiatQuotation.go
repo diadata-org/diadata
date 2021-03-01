@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 func (db *DB) SetBatchFiatPriceInflux(fiatQuotations []*FiatQuotation) error {

@@ -445,3 +445,6 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  postgres-network:
+    external:
+        name: postgres_postgres-network

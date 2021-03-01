@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetExchanges returns all available trading places.

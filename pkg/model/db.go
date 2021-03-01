@@ -11,7 +11,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 type Datastore interface {

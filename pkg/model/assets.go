@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetKeyAsset returns an asset's key in the redis cache of the asset table.

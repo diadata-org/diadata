@@ -1,10 +1,10 @@
 package models
 
 import (
-  log "github.com/sirupsen/logrus"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"errors"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 func (db *DB) SetOptionMeta(optionMeta *dia.OptionMeta) error {

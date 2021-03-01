@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
-	log "github.com/sirupsen/logrus"
 )
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
@@ -46,7 +45,7 @@ type RelDatastore interface {
 }
 
 const (
-	postgresKey = "postgres_key.txt"
+	postgresKey = "postgres_credentials.txt"
 
 	// postgres tables
 	assetTable          = "asset"
@@ -58,7 +57,7 @@ const (
 	keyExchangePairCache = "dia_exchangepair_"
 )
 
-// RelDB is a relative database with redis caching layer
+// RelDB is a relative database with redis caching layer.
 type RelDB struct {
 	URI            string
 	postgresClient *pgx.Conn
@@ -66,18 +65,23 @@ type RelDB struct {
 	pagesize       uint32
 }
 
+// NewRelDataStore returns a datastore with postgres client and redis cache.
 func NewRelDataStore() (*RelDB, error) {
+	log.Info("new rel datastore-------------------------")
 	return NewRelDataStoreWithOptions(true, true)
 }
 
+// NewPostgresDataStore returns a datastore with postgres client and without redis caching layer.
 func NewPostgresDataStore() (*RelDB, error) {
 	return NewRelDataStoreWithOptions(true, false)
 }
 
+// NewCachingLayer returns a datastore with redis caching layer and without postgres client.
 func NewCachingLayer() (*RelDB, error) {
 	return NewRelDataStoreWithOptions(false, true)
 }
 
+// NewRelDataStoreWithOptions returns a postgres datastore and/or redis caching layer.
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
 	var postgresClient *pgx.Conn
 	var redisClient *redis.Client
@@ -85,13 +89,14 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
 	address := ""
-	url := "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets()
+	url := getPostgresURL(executionMode)
 	if withPostgres {
-
+		log.Info("connect to postgres server...")
 		postgresClient, err = pgx.Connect(context.Background(), url)
 		if err != nil {
 			return nil, err
 		}
+		log.Info("...connection to postgres server established.")
 	}
 	if withRedis {
 		// Run localhost for testing and server for production
@@ -132,13 +137,23 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 	return
 }
 
-func getPostgresKeyFromSecrets() string {
+func getPostgresURL(executionMode string) (url string) {
+	if executionMode == "production" {
+		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+	} else {
+		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+	}
+	return
+}
+
+func getPostgresKeyFromSecrets(executionMode string) string {
 	var lines []string
-	executionMode := os.Getenv("EXEC_MODE")
 	var file *os.File
 	var err error
 	if executionMode == "production" {
-		file, err = os.Open("/run/secrets/" + postgresKey)
+		pwd, _ := os.Getwd()
+		log.Info("current directory: ", pwd)
+		file, err = os.Open("/run/secrets/" + "postgres_credentials")
 		if err != nil {
 			log.Fatal(err)
 		}

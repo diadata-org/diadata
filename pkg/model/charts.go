@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	log "github.com/sirupsen/logrus"
 )
 
 // > SELECT MEAN(value) FROM filters WHERE "symbol"='BTC' and "filter"='MA120' GROUP BY TIME(10m) ORDER by time desc limit 10;
