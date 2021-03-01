@@ -90,6 +90,7 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	executionMode := os.Getenv("EXEC_MODE")
 	address := ""
 	url := getPostgresURL(executionMode)
+	fmt.Println("postgres URL: ", url)
 	if withPostgres {
 		log.Info("connect to postgres server...")
 		postgresClient, err = pgx.Connect(context.Background(), url)
@@ -139,7 +140,8 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 
 func getPostgresURL(executionMode string) (url string) {
 	if executionMode == "production" {
-		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+		url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+		// url = "postgresql://postgres:postgres@10.0.0.2510.0.10.51:5432/postgres"
 	} else {
 		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
 	}
