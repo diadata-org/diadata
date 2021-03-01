@@ -92,12 +92,12 @@ func (s *KuCoinScraper) mainLoop() {
 	rsp, err := s.apiService.WebSocketPublicToken()
 	if err != nil {
 		// Handle error
-		logger.Println("Error WebSocketPublicToken", err)
+		log.Error("Error WebSocketPublicToken", err)
 	}
 
 	tk := &kucoin.WebSocketTokenModel{}
 	if err := rsp.ReadData(tk); err != nil {
-		logger.Println("Error Reading data", err)
+		log.Error("Error Reading data", err)
 
 	}
 
@@ -107,13 +107,13 @@ func (s *KuCoinScraper) mainLoop() {
 	client1DownStream, _, err := client1.Connect()
 	if err != nil {
 		// Handle error
-		logger.Println("Error Reading data", err)
+		log.Error("Error Reading data", err)
 
 	}
 	client2DownStream, _, err := client2.Connect()
 	if err != nil {
 		// Handle error
-		logger.Println("Error Reading data", err)
+		log.Error("Error Reading data", err)
 
 	}
 	pairs, _ := s.FetchAvailablePairs()
@@ -129,11 +129,11 @@ func (s *KuCoinScraper) mainLoop() {
 
 	if err := client1.Subscribe(channelsForClient1...); err != nil {
 		// Handle error
-		logger.Error("Error while subscribing client1 ", err)
+		log.Error("Error while subscribing client1 ", err)
 	}
 	if err := client2.Subscribe(channelsForClient2...); err != nil {
 		// Handle error
-		logger.Error("Error while subscribing client2 ", err)
+		log.Error("Error while subscribing client2 ", err)
 	}
 
 	go func() {
@@ -144,7 +144,7 @@ func (s *KuCoinScraper) mainLoop() {
 			case msg = <-client1DownStream:
 				t := &KucoinMarketMatch{}
 				if err := msg.ReadData(t); err != nil {
-					logger.Printf("Failure to read: %s", err.Error())
+					log.Printf("Failure to read: %s", err.Error())
 					return
 				}
 				asset := strings.Split(t.Symbol, "-")
@@ -164,10 +164,10 @@ func (s *KuCoinScraper) mainLoop() {
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- trade
-				logger.Println("Got trade: ", trade)
+				log.Println("Got trade: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
-				logger.Println("KuCoin shutting down")
+				log.Println("KuCoin shutting down")
 				s.cleanup(nil)
 				return
 			}
@@ -235,13 +235,13 @@ func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	response, err := s.apiService.Symbols("")
 	if err != nil {
-		logger.Println("Error Getting  Symbols for KuCoin Exchange", err)
+		log.Println("Error Getting  Symbols for KuCoin Exchange", err)
 	}
 
 	var kep KuExchangePairs
 	err = response.ReadData(&kep)
 	if err != nil {
-		logger.Println("Error Reading  Symbols for KuCoin Exchange", err)
+		log.Println("Error Reading  Symbols for KuCoin Exchange", err)
 	}
 	for _, p := range kep {
 		pairs = append(pairs, dia.Pair{
