@@ -440,12 +440,14 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 	return retval, nil
 }
 
+// SaveTradeInflux stores a trade in influx. Flushed when more than maxPoints in batch.
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	// Create a point and add to batch
 	tags := map[string]string{
 		"symbol":   t.Symbol,
 		"exchange": t.Source,
 		"pair":     t.Pair,
+		"verified": strconv.FormatBool(t.VerifiedPair),
 	}
 	fields := map[string]interface{}{
 		"price":             t.Price,

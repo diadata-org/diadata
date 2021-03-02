@@ -8,6 +8,10 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ecb:latest
     networks:
       - redis-network
+      - influxdb-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -100,6 +104,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -311,6 +318,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -434,6 +444,8 @@ secrets:
     file: ../secrets/api_bitfinex.json
   api_kraken:
     file: ../secrets/api_kraken.json
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
 
 networks:
   kafka-network:

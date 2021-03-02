@@ -27,11 +27,11 @@ var (
 )
 
 const (
-	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 
-	// restDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	// wsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
+	restDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	wsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -232,6 +232,7 @@ func (s *UniswapScraper) mainLoop() {
 							Time:           time.Unix(swap.Timestamp, 0),
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
+							VerifiedPair:   true,
 						}
 						// If we need quotation of a base token, reverse pair
 						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
