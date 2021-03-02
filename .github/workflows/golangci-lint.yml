@@ -22,6 +22,7 @@ jobs:
           # Optional: working directory, useful for monorepos
           # working-directory: somedir
 
+          args: --config=./.golangci.yml
           # Optional: golangci-lint command line arguments.
           # args: --issues-exit-code=0
 
