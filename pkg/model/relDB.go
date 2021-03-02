@@ -141,7 +141,6 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 func getPostgresURL(executionMode string) (url string) {
 	if executionMode == "production" {
 		url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
-		// url = "postgresql://postgres:postgres@10.0.0.2510.0.10.51:5432/postgres"
 	} else {
 		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
 	}
