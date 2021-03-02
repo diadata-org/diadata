@@ -124,6 +124,22 @@ services:
       options:
         max-size: "50m"
 
+  assetcollectionservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-assetCollectionService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_assetcollectionservice:latest
+    networks:
+      - redis-network
+      - postgres-network
+    environment:
+      - EXEC_MODE=production
+    secrets:
+      - postgres_credentials
+    logging:
+      options:
+        max-size: "50m"
+
 networks:
   kafka-network:
     external:
