@@ -25,7 +25,7 @@ run:
   # "/" will be replaced by current OS file path separator to properly work
   # on Windows.
   skip-dirs:
-    - internal/pkg/blockchain-scrapers/blockchains/ethereum/scrapers
+    - ./internal/pkg/blockchain-scrapers/blockchains/ethereum/scrapers/*
 
   # default is true. Enables skipping of directories:
   #   vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
@@ -135,6 +135,13 @@ linters-settings:
     # By default list of stable checks is used.
     enabled-checks:
       - rangeValCopy
+      - hugeParam
+      - underef
+      - nestingReduce
+      - rangeExprCopy
+      - captLocal
+      - elseif
+      - truncateCmp
 
     # Which checks should be disabled; can't be combined with 'enabled-checks'; default is empty
     #disabled-checks:
@@ -306,7 +313,7 @@ linters-settings:
       - github.com/sirupsen/logrus
     packages-with-error-message:
       # specify an error message to output when a blacklisted package is used
-      github.com/sirupsen/logrus: "logging is allowed only by logutils.Log"
+      - github.com/sirupsen/logrus: "logging is allowed only by logutils.Log"
   ifshort:
     # Maximum length of variable declaration measured in number of lines, after which linter won't suggest using short syntax.
     # Has higher priority than max-decl-chars.
@@ -447,15 +454,15 @@ linters-settings:
 
   # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
   #  for more info.
-  custom:
+  #custom:
     # Each custom linter should have a unique name.
-    example:
+    #example:
       # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
-      path: /path/to/example.so
+      #path: /path/to/example.so
       # The description of the linter. Optional, just for documentation purposes.
-      description: This is an example usage of a plugin linter.
+      #description: This is an example usage of a plugin linter.
       # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
-      original-url: github.com/golangci/example-linter
+      #original-url: github.com/golangci/example-linter
 
 linters:
   enable:
