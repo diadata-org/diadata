@@ -25,7 +25,7 @@ run:
   # "/" will be replaced by current OS file path separator to properly work
   # on Windows.
   skip-dirs:
-    - ./internal/pkg/blockchain-scrapers/blockchains/ethereum/scrapers/*
+    - /internal/pkg/blockchain-scrapers/blockchains/ethereum/scrapers/*
 
   # default is true. Enables skipping of directories:
   #   vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
