@@ -101,7 +101,9 @@ type PairScraper interface {
 	Pair() dia.ExchangePair
 }
 
-func NewAPIScraper(exchange string, key string, secret string) APIScraper {
+// NewAPIScraper returns an API scraper for @exchange. If scrape==true it actually does
+// scraping. Otherwise can be used for pairdiscovery.
+func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIScraper {
 	switch exchange {
 	// case dia.BinanceExchange:
 	// 	return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange])
@@ -112,7 +114,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// case dia.BittrexExchange:
 	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange])
 	case dia.CoinBaseExchange:
-		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange])
+		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape)
 	// case dia.CREX24Exchange:
 	// 	return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
 	// case dia.KrakenExchange:
@@ -136,7 +138,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 	// case dia.BancorExchange:
 	// 	return NewBancorScraper(Exchanges[dia.BancorExchange])
 	case dia.UniswapExchange:
-		return NewUniswapScraper(Exchanges[dia.UniswapExchange])
+		return NewUniswapScraper(Exchanges[dia.UniswapExchange], scrape)
 	// case dia.PanCakeSwap:
 	// 	return NewUniswapScraper(Exchanges[dia.PanCakeSwap])
 	// case dia.SushiSwapExchange:

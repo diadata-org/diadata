@@ -178,9 +178,8 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
 func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
-	log.Info("get asset quotation from cache for asset: ", asset.Symbol, asset.Address)
+	log.Infof("get asset quotation from cache for asset %s with address %s \n", asset.Symbol, asset.Address)
 	key := getKeyAssetQuotation(asset.Blockchain.Name, asset.Address)
-	log.Info("resulting key: ", key)
 	quotation := &AssetQuotation{}
 	err := db.redisClient.Get(key).Scan(quotation)
 	if err != nil {

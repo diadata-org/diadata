@@ -41,7 +41,7 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
+func NewCoinBaseScraper(exchange dia.Exchange, scrape bool) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -56,7 +56,9 @@ func NewCoinBaseScraper(exchange dia.Exchange) *CoinBaseScraper {
 		println(err.Error())
 	}
 	s.wsConn = SwConn
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

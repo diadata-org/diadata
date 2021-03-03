@@ -111,11 +111,11 @@ func updateExchangePairs(relDB *models.RelDB) {
 			var scraper scrapers.APIScraper
 			config, err := dia.GetConfig(exchange)
 			if err == nil {
-				scraper = scrapers.NewAPIScraper(exchange, config.ApiKey, config.SecretKey)
+				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey)
 			} else {
 				log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
 				log.Info("Proceeding with no API secrets")
-				scraper = scrapers.NewAPIScraper(exchange, "", "")
+				scraper = scrapers.NewAPIScraper(exchange, false, "", "")
 			}
 
 			// If no error, fetch pairs by method implemented for each scraper resp.

@@ -22,6 +22,14 @@ func getFilterKey(t dia.Trade) string {
 	return t.QuoteToken.Symbol + "-" + t.QuoteToken.Address
 }
 
+// filtersAsset is only used in the filters package. It is the auxilliary
+// structure enabling us to compute prices for both, an asset on one exchange
+// and an asset across all exchanges.
+type filtersAsset struct {
+	Asset  dia.Asset
+	Source string
+}
+
 // FiltersBlockService is the data structure containing all objects
 // necessary for the processing of a tradesBlock.
 type FiltersBlockService struct {
@@ -34,7 +42,7 @@ type FiltersBlockService struct {
 	closed               bool
 	started              bool
 	currentTime          time.Time
-	filters              map[string][]Filter
+	filters              map[filtersAsset][]Filter
 	lastLog              time.Time
 	calculationValues    []int
 	previousBlockFilters []dia.FilterPoint
@@ -51,7 +59,7 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 		chanFiltersBlock:     chanFiltersBlock,
 		error:                nil,
 		started:              false,
-		filters:              make(map[string][]Filter),
+		filters:              make(map[filtersAsset][]Filter),
 		lastLog:              time.Now(),
 		calculationValues:    make([]int, 0),
 		previousBlockFilters: previousBlockFilters,
@@ -86,10 +94,10 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	log.Infoln("processTradesBlock starting")
 
 	for _, trade := range tb.TradesBlockData.Trades {
-		s.createFilters(trade.Symbol, "", tb.TradesBlockData.BeginTime)
-		s.createFilters(trade.Symbol, trade.Source, tb.TradesBlockData.BeginTime)
-		s.computeFilters(trade, trade.Symbol)
-		s.computeFilters(trade, trade.Symbol+trade.Source)
+		s.createFilters(trade.QuoteToken, "", tb.TradesBlockData.BeginTime)
+		s.createFilters(trade.QuoteToken, trade.Source, tb.TradesBlockData.BeginTime)
+		s.computeFilters(trade, "")
+		s.computeFilters(trade, trade.Source)
 	}
 
 	log.Info("------------------------------------------------------------------------")
@@ -147,22 +155,30 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	// }
 }
 
-func (s *FiltersBlockService) createFilters(symbol string, exchange string, BeginTime time.Time) {
-	_, ok := s.filters[symbol+exchange]
+func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {
+	fa := filtersAsset{
+		Asset:  asset,
+		Source: exchange,
+	}
+	_, ok := s.filters[fa]
 	if !ok {
-		s.filters[symbol+exchange] = []Filter{
+		s.filters[fa] = []Filter{
 			// Prices are written into redis in MA filter
-			NewFilterMA(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterTLT(symbol, exchange),
-			NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
-			NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			// NewFilterTLT(symbol, exchange),
+			// NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
+			// NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			// NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
 	}
 }
 
-func (s *FiltersBlockService) computeFilters(t dia.Trade, key string) {
-	for _, f := range s.filters[key] {
+func (s *FiltersBlockService) computeFilters(t dia.Trade, exchange string) {
+	fa := filtersAsset{
+		Asset:  t.QuoteToken,
+		Source: exchange,
+	}
+	for _, f := range s.filters[fa] {
 		f.compute(t)
 	}
 }

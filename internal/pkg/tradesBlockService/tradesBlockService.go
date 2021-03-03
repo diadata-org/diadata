@@ -77,12 +77,15 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
 		} else {
+			// Get price of base token
 			val, err := s.datastore.GetAssetPriceUSD(t.BaseToken)
 			if err != nil {
-				log.Errorf("Cannot use trade %s. Can't find quotation for base token %s: %v.", baseTokenSymbol, err, t.Pair)
+				log.Errorf("Cannot use trade %s. Can't find quotation for base token", t.Pair)
 			} else {
-				t.EstimatedUSDPrice = t.Price * val
-				verifiedTrade = true
+				if val != 0 {
+					t.EstimatedUSDPrice = t.Price * val
+					verifiedTrade = true
+				}
 			}
 		}
 	}
