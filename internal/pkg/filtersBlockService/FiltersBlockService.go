@@ -17,6 +17,13 @@ const (
 
 type nothing struct{}
 
+// getFilterKey returns the key for trade @t in the filters maps.
+func getFilterKey(t dia.Trade) string {
+	return t.QuoteToken.Symbol + "-" + t.QuoteToken.Address
+}
+
+// FiltersBlockService is the data structure containing all objects
+// necessary for the processing of a tradesBlock.
 type FiltersBlockService struct {
 	shutdown             chan nothing
 	shutdownDone         chan nothing
@@ -34,6 +41,8 @@ type FiltersBlockService struct {
 	datastore            models.Datastore
 }
 
+// NewFiltersBlockService returns a new FiltersBlockService and
+// runs mainLoop() in a go routine.
 func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *FiltersBlockService {
 	s := &FiltersBlockService{
 		shutdown:             make(chan nothing),
@@ -54,7 +63,7 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 	return s
 }
 
-// runs in a goroutine until s is closed
+// mainLoop runs processTradesBlock until FiltersBlockService @s is shut down.
 func (s *FiltersBlockService) mainLoop() {
 	for {
 		log.Info("x FiltersBlockService mainloop")
@@ -82,6 +91,10 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		s.computeFilters(trade, trade.Symbol)
 		s.computeFilters(trade, trade.Symbol+trade.Source)
 	}
+
+	log.Info("------------------------------------------------------------------------")
+	log.Info("created filters: ", s.filters)
+	log.Info("------------------------------------------------------------------------")
 
 	resultFilters := []dia.FilterPoint{}
 	for _, filters := range s.filters {
@@ -187,11 +200,13 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	return result
 }
 
+// ProcessTradesBlock sends a filled tradesBlock into the filtersBlock channel.
 func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
 	s.chanTradesBlock <- tradesBlock
-	log.Info("ProcessTradesBlock finito")
+	log.Info("Processing TradesBlock done.")
 }
 
+// Close gracefully closes the Filtersblockservice
 func (s *FiltersBlockService) Close() error {
 	if s.closed {
 		return errors.New("Filters: Already closed")
@@ -201,7 +216,7 @@ func (s *FiltersBlockService) Close() error {
 	return s.error
 }
 
-// must only be called from mainLoop
+// cleanup must only be called from mainLoop
 func (s *FiltersBlockService) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()

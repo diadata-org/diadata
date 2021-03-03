@@ -101,8 +101,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	s.datastore.SaveTradeInflux(&t)
 
-	if s.currentBlock != nil &&
-		s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
+	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debugf("ignore trade should be in previous block %v", t)
 		verifiedTrade = false
 	}

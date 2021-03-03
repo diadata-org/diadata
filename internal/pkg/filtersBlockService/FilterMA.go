@@ -34,9 +34,8 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
-	} else {
-		s.fill(t, s.lastTrade.EstimatedUSDPrice)
 	}
+	s.fill(t, s.lastTrade.EstimatedUSDPrice)
 
 	var total float64 = 0
 	for _, v := range s.previousPrices {
@@ -91,9 +90,8 @@ func (s *FilterMA) compute(trade dia.Trade) {
 		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
-		} else {
-			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
 		}
+		s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
 	}
 	s.fill(trade.Time, trade.EstimatedUSDPrice)
 	s.lastTrade = &trade
