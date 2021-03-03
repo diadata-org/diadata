@@ -25,6 +25,22 @@ type Event struct {
 	Id     int         `json:"id"`
 }
 
+type HitBTCAsset struct {
+	ID                 string `json:"id"`
+	FullName           string `json:"fullName"`
+	Crypto             bool   `json:"crypto"`
+	PayinEnabled       bool   `json:"payinEnabled"`
+	PayinPaymentID     bool   `json:"payinPaymentId"`
+	PayinConfirmations int    `json:"payinConfirmations"`
+	PayoutEnabled      bool   `json:"payoutEnabled"`
+	PayoutIsPaymentID  bool   `json:"payoutIsPaymentId"`
+	TransferEnabled    bool   `json:"transferEnabled"`
+	Delisted           bool   `json:"delisted"`
+	PayoutFee          string `json:"payoutFee"`
+	PrecisionPayout    int    `json:"precisionPayout"`
+	PrecisionTransfer  int    `json:"precisionTransfer"`
+}
+
 type HitBTCScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
@@ -259,6 +275,22 @@ func (ps *HitBTCPairScraper) Close() error {
 // Channel returns a channel that can be used to receive trades
 func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
+}
+
+// FetchTickerData collects all available information on an asset traded on HitBTC
+func (ps *HitBTCScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response HitBTCAsset
+	data, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response.ID
+	asset.Name = response.FullName
+	return asset, nil
 }
 
 // Error returns an error when the channel Channel() is closed

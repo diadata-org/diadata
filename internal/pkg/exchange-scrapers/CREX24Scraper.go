@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,6 +25,21 @@ type CREX24ApiTrade struct {
 	Volume    string `json:"V"`
 	Side      string `json:"S"`
 	Timestamp int64  `json:"T"`
+}
+
+type CREX4Asset []struct {
+	Symbol                   string      `json:"symbol"`
+	Name                     string      `json:"name"`
+	IsFiat                   bool        `json:"isFiat"`
+	DepositsAllowed          bool        `json:"depositsAllowed"`
+	DepositConfirmationCount int         `json:"depositConfirmationCount"`
+	MinDeposit               float64     `json:"minDeposit"`
+	WithdrawalsAllowed       bool        `json:"withdrawalsAllowed"`
+	WithdrawalPrecision      int         `json:"withdrawalPrecision"`
+	MinWithdrawal            float64     `json:"minWithdrawal"`
+	MaxWithdrawal            float64     `json:"maxWithdrawal"`
+	IsDelisted               bool        `json:"isDelisted"`
+	Transports               interface{} `json:"transports"`
 }
 
 type CREX24ApiTradeUpdate struct {
@@ -168,6 +184,22 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 
 	return results, nil
+}
+
+// FetchTickerData collects all available information on an asset traded on HitBTC
+func (s *CREX24Scraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response CREX4Asset
+	data, err := utils.GetRequest("https://api.crex24.com/v2/public/currencies?filter=" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response[0].Symbol
+	asset.Name = response[0].Name
+	return asset, nil
 }
 
 func (s *CREX24Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
