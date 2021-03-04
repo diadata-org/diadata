@@ -83,7 +83,7 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
+	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	defer w.Close()

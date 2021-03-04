@@ -9,6 +9,10 @@ import (
 // TO DO (20/11/2020): This method is no longer needed once we switch to new Token/Trade structs
 func (t *Trade) GetBaseToken() string {
 
+	if t.BaseToken.Symbol != "" {
+		return t.BaseToken.Symbol
+	}
+
 	pair := strings.ToUpper(t.Pair)
 	if len(pair) > 3 {
 		switch t.Source {

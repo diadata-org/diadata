@@ -1,12 +1,13 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type FilterVOL struct {
@@ -31,6 +32,11 @@ func NewFilterVOL(symbol string, exchange string, memory int) *FilterVOL {
 	return s
 }
 
+func (s *FilterVOL) compute(trade dia.Trade) {
+	s.volumeUSD += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
+	s.currentTime = trade.Time
+}
+
 func (s *FilterVOL) finalCompute(time time.Time) float64 {
 	s.value = s.volumeUSD
 	s.volumeUSD = 0.0
@@ -39,11 +45,6 @@ func (s *FilterVOL) finalCompute(time time.Time) float64 {
 
 func (s *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 	return nil
-}
-
-func (s *FilterVOL) compute(trade dia.Trade) {
-	s.volumeUSD += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
-	s.currentTime = trade.Time
 }
 
 func (s *FilterVOL) save(ds models.Datastore) error {

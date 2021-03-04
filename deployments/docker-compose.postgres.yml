@@ -10,7 +10,7 @@ services:
     environment:
         EXEC_MODE: production
     env_file:
-      - ./config/.env
+      - ../secrets/postgres.env
     networks:
       - postgres-network
     volumes:

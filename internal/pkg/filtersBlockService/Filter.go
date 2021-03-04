@@ -9,7 +9,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
-// Filter defines a filter's methods processing trades from the tradesBlockService
+// Filter interface defines a filter's methods processing trades from the tradesBlockService.
 type Filter interface {
 	compute(trade dia.Trade)
 	finalCompute(t time.Time) float64
@@ -39,7 +39,7 @@ func removeOutliers(samples []float64) []float64 {
 	return samples[lowerIndex:upperIndex]
 }
 
-// ------------ Auxilliary function for removeQoutliers -------------
+// ------------ Auxilliary functions for removeOutliers -------------
 
 func computeMean(samples []float64) (mean float64) {
 	var total float64

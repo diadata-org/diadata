@@ -9,8 +9,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// FilterMA is the struct for a moving average filter implementing
+// the Filter interface.
 type FilterMA struct {
-	symbol         string
+	asset          dia.Asset
 	exchange       string
 	currentTime    time.Time
 	previousPrices []float64
@@ -20,9 +22,11 @@ type FilterMA struct {
 	modified       bool
 }
 
-func NewFilterMA(symbol string, exchange string, currentTime time.Time, param int) *FilterMA {
+// NewFilterMA returns a moving average filter.
+// @currentTime is the begin time of the filtersBlock.
+func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterMA {
 	s := &FilterMA{
-		symbol:         symbol,
+		asset:          asset,
 		exchange:       exchange,
 		previousPrices: []float64{},
 		currentTime:    currentTime,
@@ -31,39 +35,22 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 	return s
 }
 
-func (s *FilterMA) finalCompute(t time.Time) float64 {
-	if s.lastTrade == nil {
-		return 0.0
-	} else {
-		s.fill(t, s.lastTrade.EstimatedUSDPrice)
-	}
-
-	var total float64 = 0
-	for _, v := range s.previousPrices {
-		total += v
-	}
-	div := s.param
-	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
-		div = len(s.previousPrices)
-	}
-	s.value = total / float64(div)
-	return s.value
-}
-
-func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" {
-		return nil
-	} else {
-		return &dia.FilterPoint{
-			Symbol: s.symbol,
-			Value:  s.value,
-			Name:   "MA" + strconv.Itoa(s.param),
-			Time:   s.currentTime,
+func (s *FilterMA) compute(trade dia.Trade) {
+	s.modified = true
+	if s.lastTrade != nil {
+		if trade.Time.Before(s.currentTime) {
+			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
+			return
 		}
+		s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
 	}
+	s.fill(trade.Time, trade.EstimatedUSDPrice)
+	s.lastTrade = &trade
 }
 
 func (s *FilterMA) fill(t time.Time, price float64) {
+	// Time difference of trade time and @currentTime in seconds.
+	// Initially, @currentTime is the begin time of the filtersBlock.
 	diff := int(t.Sub(s.currentTime).Seconds())
 	if diff > 1 {
 		for diff > 1 {
@@ -85,36 +72,51 @@ func (s *FilterMA) fill(t time.Time, price float64) {
 	s.currentTime = t
 }
 
-func (s *FilterMA) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
-			return
-		} else {
-			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
-		}
+func (s *FilterMA) finalCompute(t time.Time) float64 {
+	if s.lastTrade == nil {
+		return 0.0
 	}
-	s.fill(trade.Time, trade.EstimatedUSDPrice)
-	s.lastTrade = &trade
+	s.fill(t, s.lastTrade.EstimatedUSDPrice)
+
+	var total float64 = 0
+	for _, v := range s.previousPrices {
+		total += v
+	}
+	div := s.param
+	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
+		div = len(s.previousPrices)
+	}
+	s.value = total / float64(div)
+	return s.value
+}
+
+func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
+	if s.exchange != "" {
+		return nil
+	}
+	return &dia.FilterPoint{
+		Symbol: s.asset.Symbol,
+		Value:  s.value,
+		Name:   "MA" + strconv.Itoa(s.param),
+		Time:   s.currentTime,
+	}
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {
-	log.Infof("save called on symbol %s on exchange %s", s.symbol, s.exchange)
+	log.Infof("save called on symbol %s on exchange %s", s.asset.Symbol, s.exchange)
 	if s.modified {
 		s.modified = false
-		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetPriceZSET(s.asset.Symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}
 		if s.exchange == "" {
-			err = ds.SetPriceUSD(s.symbol, s.value)
+			err = ds.SetAssetPriceUSD(s.asset, s.value, s.currentTime)
 			if err != nil {
 				log.Errorln("FilterMA: Error:", err)
 			}
 		}
 		return err
-	} else {
-		return nil
 	}
+	return nil
 }

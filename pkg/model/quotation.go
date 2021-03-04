@@ -53,7 +53,11 @@ func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Ti
 
 // GetAssetPriceUSD returns the last price of @asset.
 func (db *DB) GetAssetPriceUSD(asset dia.Asset) (price float64, err error) {
-	// TO DO
+	assetQuotation, err := db.GetAssetQuotation(asset)
+	if err != nil {
+		return
+	}
+	price = assetQuotation.Price
 	return
 }
 
@@ -174,6 +178,7 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
 func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
+	log.Infof("get asset quotation from cache for asset %s with address %s \n", asset.Symbol, asset.Address)
 	key := getKeyAssetQuotation(asset.Blockchain.Name, asset.Address)
 	quotation := &AssetQuotation{}
 	err := db.redisClient.Get(key).Scan(quotation)

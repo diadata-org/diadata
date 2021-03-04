@@ -66,19 +66,27 @@ func (s *TradesBlockService) mainLoop() {
 
 func (s *TradesBlockService) process(t dia.Trade) {
 
-	ignoreTrade := !t.VerifiedPair
-	// baseToken := t.GetBaseToken()
-	baseTokenSymbol := t.BaseToken.Symbol
-	if baseTokenSymbol == "USD" && t.BaseToken.Blockchain.Name == "fiat" {
-		// All prices are measured in US-Dollar, so just price for base token == USD
-		t.EstimatedUSDPrice = t.Price
-	} else {
-		val, err := s.datastore.GetAssetPriceUSD(t.BaseToken)
-		if err != nil {
-			log.Error("Cant find base token ", baseTokenSymbol, " in redis ", err, " ignoring ", t)
-			ignoreTrade = true
+	var verifiedTrade bool
+	// baseTokenSymbol := t.GetBaseToken()
+
+	// Price estimation can only be done for verified pairs.
+	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
+	if t.VerifiedPair {
+		baseTokenSymbol := t.BaseToken.Symbol
+		if baseTokenSymbol == "USD" && t.BaseToken.Blockchain.Name == "fiat" {
+			// All prices are measured in US-Dollar, so just price for base token == USD
+			t.EstimatedUSDPrice = t.Price
 		} else {
-			t.EstimatedUSDPrice = t.Price * val
+			// Get price of base token
+			val, err := s.datastore.GetAssetPriceUSD(t.BaseToken)
+			if err != nil {
+				log.Errorf("Cannot use trade %s. Can't find quotation for base token", t.Pair)
+			} else {
+				if val != 0 {
+					t.EstimatedUSDPrice = t.Price * val
+					verifiedTrade = true
+				}
+			}
 		}
 	}
 
@@ -94,17 +102,14 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
-	if ignoreTrade == false {
-		s.datastore.SaveTradeInflux(&t)
-	}
+	s.datastore.SaveTradeInflux(&t)
 
-	if s.currentBlock != nil &&
-		s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
+	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debugf("ignore trade should be in previous block %v", t)
-		ignoreTrade = true
+		verifiedTrade = false
 	}
 
-	if ignoreTrade == false {
+	if verifiedTrade {
 
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {

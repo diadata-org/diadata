@@ -23,6 +23,54 @@ func init() {
 	log.Println("replayInflux=", *replayInflux)
 }
 
+func main() {
+
+	if *replayInflux {
+		s, err := models.NewInfluxDataStore()
+		if err != nil {
+			log.Errorln("NewDataStore", err)
+		}
+		f := filters.NewFiltersBlockService(nil, s, nil)
+		createTradeBlockFromInflux(s, f)
+	} else {
+		s, err := models.NewDataStore()
+		if err != nil {
+			log.Errorln("NewDataStore", err)
+		}
+		channel := make(chan *dia.FiltersBlock)
+
+		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
+
+		w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicFiltersBlock)
+
+		defer w.Close()
+
+		wg := sync.WaitGroup{}
+
+		go handler(channel, &wg, w)
+
+		r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTradesBlock)
+		defer r.Close()
+
+		for {
+			m, err := r.ReadMessage(context.Background())
+			if err != nil {
+				log.Printf(err.Error())
+			} else {
+				log.Info("get block from tradesBlock")
+				var tb dia.TradesBlock
+				err := tb.UnmarshalBinary(m.Value)
+				if err != nil {
+					log.Error("error unmarshalling trades block")
+				}
+				if err == nil {
+					f.ProcessTradesBlock(&tb)
+				}
+			}
+		}
+	}
+}
+
 func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer) {
 	var block int
 	for {
@@ -52,8 +100,10 @@ func loadFilterPointsFromPreviousBlock() []dia.FilterPoint {
 	return lastFilterPoints
 }
 
-//  docker exec -it <cointainer> filtersBlockService -replayInflux
+// docker exec -it <cointainer> filtersBlockService -replayInflux
 
+// createTradeBlockFromInflux is executed if replayInflux==true.
+// In this case, it makes a tradeBlock from past trades.
 func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockService) {
 	//now := time.Now()
 	//then := now.AddDate(0, -1, 0)
@@ -107,54 +157,6 @@ func createTradeBlockFromInflux(d models.Datastore, f *filters.FiltersBlockServi
 					trades = []dia.Trade{}
 				} else {
 					trades = append(trades, v)
-				}
-			}
-		}
-	}
-}
-
-func main() {
-
-	if *replayInflux {
-		s, err := models.NewInfluxDataStore()
-		if err != nil {
-			log.Errorln("NewDataStore", err)
-		}
-		f := filters.NewFiltersBlockService(nil, s, nil)
-		createTradeBlockFromInflux(s, f)
-	} else {
-		s, err := models.NewDataStore()
-		if err != nil {
-			log.Errorln("NewDataStore", err)
-		}
-		channel := make(chan *dia.FiltersBlock)
-
-		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
-
-		w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicFiltersBlock)
-
-		defer w.Close()
-
-		wg := sync.WaitGroup{}
-
-		go handler(channel, &wg, w)
-
-		r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTradesBlock)
-		defer r.Close()
-
-		for {
-			m, err := r.ReadMessage(context.Background())
-			if err != nil {
-				log.Printf(err.Error())
-			} else {
-				log.Info("get block from tradesBlock")
-				var tb dia.TradesBlock
-				err := tb.UnmarshalBinary(m.Value)
-				if err != nil {
-					log.Error("error unmarshalling trades block")
-				}
-				if err == nil {
-					f.ProcessTradesBlock(&tb)
 				}
 			}
 		}

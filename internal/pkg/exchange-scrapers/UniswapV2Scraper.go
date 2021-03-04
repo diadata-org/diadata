@@ -27,11 +27,14 @@ var (
 )
 
 const (
-	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 
-	// restDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	// wsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
+	// wsDial   = "ws://159.69.120.42:8546/"
+	// restDial = "http://159.69.120.42:8545/"
+
+	restDial = "https://mainnet.infura.io/v3/3c7bc809e9174a85ad56ee9abcb68d32"
+	wsDial   = "wss://mainnet.infura.io/ws/v3/3c7bc809e9174a85ad56ee9abcb68d32"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -81,7 +84,7 @@ type UniswapScraper struct {
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
-func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
+func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var err error
@@ -137,8 +140,9 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 
 	s.WsClient = wsClient
 	s.RestClient = restClient
-
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -232,6 +236,7 @@ func (s *UniswapScraper) mainLoop() {
 							Time:           time.Unix(swap.Timestamp, 0),
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
+							VerifiedPair:   true,
 						}
 						// If we need quotation of a base token, reverse pair
 						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
