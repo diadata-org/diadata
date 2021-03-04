@@ -62,7 +62,7 @@ func main() {
 				s[configPair.Exchange] = aPIScraper
 				go handleTrades(aPIScraper.Channel(), &wg)
 			} else {
-				fmt.Println("Couldnt create APIScraper for ", configPair.Exchange)
+				fmt.Println("Couldn't create APIScraper for ", configPair.Exchange)
 			}
 		}
 		es := s[configPair.Exchange]
