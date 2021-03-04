@@ -65,12 +65,10 @@ func (fq *FiatQuotation) UnmarshalBinary(data []byte) error {
 
 // AssetQuotation is the most recent price point information on an asset.
 type AssetQuotation struct {
-	Asset              dia.Asset
-	Price              float64
-	PriceYesterday     float64
-	VolumeYesterdayUSD float64
-	Source             string
-	Time               time.Time
+	Asset  dia.Asset
+	Price  float64
+	Source string
+	Time   time.Time
 }
 
 // MarshalBinary for quotations

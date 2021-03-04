@@ -14,9 +14,10 @@ import (
 )
 
 type Datastore interface {
-	SetVolume(symbol string, exchange string, volume float64, t time.Time) error
-	GetVolume(symbol string) (*float64, error)
+	GetVolume(asset dia.Asset) (*float64, error)
 	SymbolsWithASupply() ([]string, error)
+
+	// Deprecating
 	SetPriceUSD(symbol string, price float64) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
@@ -25,10 +26,10 @@ type Datastore interface {
 	SetQuotationEUR(quotation *Quotation) error
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
+
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
-	SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error
 	GetChartPoints7Days(symbol string) ([]Point, error)
 	GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
@@ -37,21 +38,21 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
-	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
+	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
-	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
+	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
 	SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error
 	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
-	GetSymbolsByExchange(string) []string
+	// GetSymbolsByExchange(string) []string
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	UpdateSymbolDetails(symbol string, rank int)
@@ -61,9 +62,10 @@ type Datastore interface {
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
 	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
-	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
+	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
 	// Get24VolumeExchange(exchange string) (float64, error)
+	Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error)
 	Sum24HoursExchange(exchange string) (float64, error)
 
 	// New Asset pricing methods: 23/02/2021
@@ -270,8 +272,8 @@ func (db *DB) Flush() error {
 	return err
 }
 
-func getKey(filter string, symbol string, exchange string) string {
-	key := filter + "_" + symbol
+func getKey(filter string, asset dia.Asset, exchange string) string {
+	key := filter + "_" + asset.Blockchain.Name + "_" + asset.Address
 	if exchange != "" {
 		key = key + "_" + exchange
 	}
@@ -282,11 +284,11 @@ func getKeyFilterZSET(key string) string {
 	return "dia_" + key + "_ZSET"
 }
 
-func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange string) string {
+func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange string) string {
 	if exchange == "" {
-		return "dia_" + filter + "_" + symbol + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain.Name + "_" + asset.Address + "_ZSET"
 	} else {
-		return "dia_" + filter + "_" + symbol + "_" + exchange + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain.Name + "_" + asset.Address + "_ZSET"
 	}
 }
 
@@ -359,9 +361,10 @@ select * from filters where  symbol='BTC' and filter='VOL120' and time > now() -
 select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
 */
 
-// Sum24HoursInflux returns the 24h  volume of @symbol on @exchange using the filter @filter.
-func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
-	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)
+// Sum24HoursInflux returns the 24h  volume of @asset on @exchange using the filter @filter.
+func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error) {
+	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and exchange='%s' and filter='%s' and time > now() - 1d"
+	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, exchange, filter)
 	var errorString string
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -391,32 +394,36 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 
 // Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
 // using VOL120 filtered data from influx.
+// TO DO: Rewrite for assets
 func (db *DB) Sum24HoursExchange(exchange string) (float64, error) {
-	allSymbols := db.GetSymbolsByExchange(exchange)
-	filter := "VOL120"
+	// allSymbols := db.GetSymbolsByExchange(exchange)
+	// filter := "VOL120"
+	// var TVL float64
+	// for _, symbol := range allSymbols {
+	// 	volumeUSD, err := db.Sum24HoursInflux(symbol, exchange, filter)
+	// 	if err != nil {
+	// 		log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
+	// 		continue
+	// 	}
+	// 	TVL += *volumeUSD
+	// }
 	var TVL float64
-	for _, symbol := range allSymbols {
-		volumeUSD, err := db.Sum24HoursInflux(symbol, exchange, filter)
-		if err != nil {
-			log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
-			continue
-		}
-		TVL += *volumeUSD
-	}
 	return TVL, nil
 
 }
 
-// GetVolumeInflux returns the trade volume of @symbol in the time range @starttime - @endtime.
+// GetVolumeInflux returns the trade volume of @asset in the time range @starttime - @endtime.
 // It uses the VOL filter from the filter services.
-func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.Time) (float64, error) {
+func (db *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time.Time) (float64, error) {
 	var retval float64
 	var q string
 	filter := "VOL120"
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, filter)
+		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and time > now() - 1d"
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, filter)
 	} else {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > %d and time < %d", influxDbFiltersTable, symbol, filter, starttime.UnixNano(), endtime.UnixNano())
+		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and time > %d and time < %d"
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, filter, starttime.UnixNano(), endtime.UnixNano())
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -444,10 +451,14 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	// Create a point and add to batch
 	tags := map[string]string{
-		"symbol":   t.Symbol,
-		"exchange": t.Source,
-		"pair":     t.Pair,
-		"verified": strconv.FormatBool(t.VerifiedPair),
+		"symbol":               t.Symbol,
+		"pair":                 t.Pair,
+		"exchange":             t.Source,
+		"verified":             strconv.FormatBool(t.VerifiedPair),
+		"quotetokenaddress":    t.QuoteToken.Address,
+		"basetokenaddress":     t.BaseToken.Address,
+		"quotetokenblockchain": t.QuoteToken.Blockchain.Name,
+		"basetokenblockchain":  t.BaseToken.Blockchain.Name,
 	}
 	fields := map[string]interface{}{
 		"price":             t.Price,
@@ -465,13 +476,16 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 	return err
 }
 
-func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time) (*dia.Trade, error) {
+// GetTradeInflux returns
+func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Time) (*dia.Trade, error) {
 	retval := dia.Trade{}
 	var q string
 	if exchange != "" {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and echange='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, exchange, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and echange='%s' and time < %d order by desc limit 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain.Name, exchange, timestamp.UnixNano())
 	} else {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and time < %d order by desc limit 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain.Name, timestamp.UnixNano())
 	}
 
 	/// TODO
@@ -943,12 +957,18 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 	return retval, nil
 }
 
-func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error {
+// SaveFilterInflux stores a filter point in influx.
+func (db *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
-	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
+	tags := map[string]string{
+		"filter":     filter,
+		"symbol":     asset.Symbol,
+		"address":    asset.Address,
+		"blockchain": asset.Blockchain.Name,
+		"exchange":   exchange,
+	}
 	fields := map[string]interface{}{
 		"value":        value,
-		"ignore":       false,
 		"allExchanges": exchange == "",
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
@@ -961,11 +981,9 @@ func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, va
 }
 
 func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
-
 	if db.redisClient == nil {
 		return nil
 	}
-
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
 	err := db.redisClient.ZAdd(key, redis.Z{
@@ -981,7 +999,6 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-
 	if err := db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?

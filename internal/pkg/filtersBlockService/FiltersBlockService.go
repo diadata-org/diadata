@@ -165,10 +165,10 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 		s.filters[fa] = []Filter{
 			// Prices are written into redis in MA filter
 			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds),
-			// NewFilterTLT(symbol, exchange),
-			// NewFilterVOL(symbol, exchange, dia.BlockSizeSeconds),
-			// NewFilterMAIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
-			// NewFilterMEDIR(symbol, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterTLT(asset, exchange),
+			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
+			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
 	}
 }
@@ -188,25 +188,32 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	log.Debug("newFilters:", newFilters)
 	missingPoints := 0
 	result := newFilters
-	newFiltersMap := make(map[string]*dia.FilterPoint)
+	newFiltersMap := make(map[filtersAsset]*dia.FilterPoint)
 	for _, filter := range newFilters {
-		newFiltersMap[filter.Name+filter.Symbol] = &filter
+		fa := filtersAsset{
+			Asset:  filter.Asset,
+			Source: filter.Name,
+		}
+		newFiltersMap[fa] = &filter
 	}
 
 	for _, filter := range previousBlockFilters {
 
 		d := time.Now().Sub(filter.Time)
 		log.Info("filter:", filter, " age:", d)
-
+		fa := filtersAsset{
+			Asset:  filter.Asset,
+			Source: filter.Name,
+		}
 		if d > time.Hour*24 {
-			_, ok := newFiltersMap[filter.Name+filter.Symbol]
+			_, ok := newFiltersMap[fa]
 			if !ok {
 				result = append(result, filter)
-				log.Debug("Adding", filter.Name+filter.Symbol)
+				log.Debug("Adding", filter.Name+filter.Asset.Symbol)
 				missingPoints++
 			}
 		} else {
-			log.Info("ignoring old filter", filter.Symbol)
+			log.Info("ignoring old filter", filter.Asset.Symbol)
 		}
 	}
 	if missingPoints != 0 {

@@ -61,6 +61,8 @@ func (db *DB) GetAssetPriceUSD(asset dia.Asset) (price float64, err error) {
 	return
 }
 
+// AddAssetQuotationsToBatch is a helper function that adds a slice of
+// quotations to an influx batch.
 func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 	for _, quotation := range quotations {
 		tags := map[string]string{
@@ -70,9 +72,7 @@ func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 			"blockchain": quotation.Asset.Blockchain.Name,
 		}
 		fields := map[string]interface{}{
-			"price":           quotation.Price,
-			"priceYesterday":  quotation.PriceYesterday,
-			"volumeYesterday": quotation.VolumeYesterdayUSD,
+			"price": quotation.Price,
 		}
 		pt, err := clientInfluxdb.NewPoint(influxDBAssetQuotationsTable, tags, fields, quotation.Time)
 		if err != nil {
@@ -94,9 +94,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 		"blockchain": quotation.Asset.Blockchain.Name,
 	}
 	fields := map[string]interface{}{
-		"price":           quotation.Price,
-		"priceYesterday":  quotation.PriceYesterday,
-		"volumeYesterday": quotation.VolumeYesterdayUSD,
+		"price": quotation.Price,
 	}
 
 	pt, err := clientInfluxdb.NewPoint(influxDBAssetQuotationsTable, tags, fields, quotation.Time)
@@ -127,10 +125,9 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 	}
 
 	// if not in cache, get quotation from influx
-	var query string
-	query = fmt.Sprintf("SELECT price,priceYesterday,volumeYesterday FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
+	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
 
-	res, err := queryInfluxDB(db.influxClient, query)
+	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return quotation, err
 	}
@@ -143,14 +140,6 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 		quotation.Price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
 		if err != nil {
 			return quotation, err
-		}
-		quotation.PriceYesterday, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
-		if err != nil {
-			return quotation, err
-		}
-		quotation.VolumeYesterdayUSD, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
-		if err != nil {
-			log.Errorf("no 24h volume available for %s: %v", asset.Symbol, err)
 		}
 	} else {
 		return quotation, errors.New("Error parsing Trade from Database")
@@ -240,12 +229,16 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 		return nil, err
 	}
 	value.Name = helpers.NameForSymbol(symbol) // in case we updated the helper functions ;)
-	v, err2 := db.GetPriceYesterday(symbol, "")
+	// TO DO: Switch to GetAssetQuotation
+	preliminaryAsset := dia.Asset{
+		Symbol: symbol,
+	}
+	v, err2 := db.GetPriceYesterday(preliminaryAsset, "")
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}
-	v2, err2 := db.GetVolume(symbol)
-	value.VolumeYesterdayUSD = v2
+	// v2, err2 := db.GetVolume(symbol)
+	// value.VolumeYesterdayUSD = v2
 	itin, err := db.GetItinBySymbol(symbol)
 	if err != nil {
 		value.ITIN = "undefined"

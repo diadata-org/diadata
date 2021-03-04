@@ -1,18 +1,19 @@
-// FilterMAIR implements a trimmed moving average. Outliers are eliminated using interquartile range
-// see: https://en.wikipedia.org/wiki/Interquartile_range
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
-// FilterMAIR contains the configuration parameters of the filter
+// FilterMAIR implements a trimmed moving average.
+// Outliers are eliminated using interquartile range.
+// see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMAIR struct {
-	symbol         string
+	asset          dia.Asset
 	exchange       string
 	currentTime    time.Time
 	previousPrices []float64
@@ -23,10 +24,10 @@ type FilterMAIR struct {
 	modified       bool
 }
 
-//NewFilterMAIR creates a FilterMAIR
-func NewFilterMAIR(symbol string, exchange string, currentTime time.Time, memory int) *FilterMAIR {
+//NewFilterMAIR returns a FilterMAIR
+func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
 	s := &FilterMAIR{
-		symbol:         symbol,
+		asset:          asset,
 		exchange:       exchange,
 		previousPrices: []float64{},
 		currentTime:    currentTime,
@@ -59,10 +60,10 @@ func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Symbol: s.symbol,
-		Value:  s.value,
-		Name:   s.filterName,
-		Time:   s.currentTime,
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
 	}
 }
 func (s *FilterMAIR) fill(t time.Time, price float64) {
@@ -98,7 +99,7 @@ func (s *FilterMAIR) compute(trade dia.Trade) {
 func (s *FilterMAIR) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}

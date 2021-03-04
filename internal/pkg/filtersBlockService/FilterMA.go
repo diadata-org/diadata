@@ -20,6 +20,7 @@ type FilterMA struct {
 	param          int
 	value          float64
 	modified       bool
+	filterName     string
 }
 
 // NewFilterMA returns a moving average filter.
@@ -31,6 +32,7 @@ func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, param 
 		previousPrices: []float64{},
 		currentTime:    currentTime,
 		param:          param,
+		filterName:     "MA" + strconv.Itoa(param),
 	}
 	return s
 }
@@ -95,10 +97,10 @@ func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Symbol: s.asset.Symbol,
-		Value:  s.value,
-		Name:   "MA" + strconv.Itoa(s.param),
-		Time:   s.currentTime,
+		Asset: s.asset,
+		Value: s.value,
+		Name:  "MA" + strconv.Itoa(s.param),
+		Time:  s.currentTime,
 	}
 }
 
@@ -106,10 +108,12 @@ func (s *FilterMA) save(ds models.Datastore) error {
 	log.Infof("save called on symbol %s on exchange %s", s.asset.Symbol, s.exchange)
 	if s.modified {
 		s.modified = false
-		err := ds.SetPriceZSET(s.asset.Symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}
+		// Additionally, the price across exchanges is saved in influx as a quotation.
+		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
 		if s.exchange == "" {
 			err = ds.SetAssetPriceUSD(s.asset, s.value, s.currentTime)
 			if err != nil {

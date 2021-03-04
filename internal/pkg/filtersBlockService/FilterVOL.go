@@ -11,7 +11,7 @@ import (
 )
 
 type FilterVOL struct {
-	symbol      string
+	asset       dia.Asset
 	exchange    string
 	currentTime time.Time
 	volumeUSD   float64
@@ -21,9 +21,9 @@ type FilterVOL struct {
 	memory      int
 }
 
-func NewFilterVOL(symbol string, exchange string, memory int) *FilterVOL {
+func NewFilterVOL(asset dia.Asset, exchange string, memory int) *FilterVOL {
 	s := &FilterVOL{
-		symbol:     symbol,
+		asset:      asset,
 		exchange:   exchange,
 		volumeUSD:  0.0,
 		filterName: "VOL" + strconv.Itoa(memory),
@@ -48,7 +48,7 @@ func (s *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 }
 
 func (s *FilterVOL) save(ds models.Datastore) error {
-	err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+	err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
 	if err != nil {
 		log.Errorln("FilterVOL Error:", err)
 	}

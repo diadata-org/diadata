@@ -228,11 +228,12 @@ type FiltersBlockData struct {
 	FiltersNumber   int
 }
 
+// FilterPoint contains the resulting value of a filter applied to an asset.
 type FilterPoint struct {
-	Symbol string
-	Value  float64
-	Name   string
-	Time   time.Time
+	Asset Asset
+	Value float64
+	Name  string
+	Time  time.Time
 }
 
 type IndexBlock struct {

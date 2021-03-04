@@ -2,7 +2,6 @@ package models
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
@@ -15,14 +14,7 @@ var (
 	volumeKey = "VOL" + strconv.Itoa(dia.BlockSizeSeconds)
 )
 
-func (db *DB) SetVolume(symbol string, exchange string, volume float64, t time.Time) error {
-	return db.SetFilter(volumeKey, symbol, exchange, volume, t)
-}
-
-func (db *DB) GetVolume(symbol string) (*float64, error) {
-	return db.Sum24HoursInflux(symbol, "", volumeKey)
-}
-
-func (db *DB) GetVolumeExchange(symbol string, exchange string) (*float64, error) {
-	return db.Sum24HoursInflux(symbol, exchange, volumeKey)
+// GetVolume returns the 24h trading volume of @asset across exchanges.
+func (db *DB) GetVolume(asset dia.Asset) (*float64, error) {
+	return db.Sum24HoursInflux(asset, "", volumeKey)
 }

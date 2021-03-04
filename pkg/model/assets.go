@@ -203,6 +203,21 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 	return nil
 }
 
+// GetExchangeSymbols returns all symbols traded on @exchange
+func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err error) {
+	query := fmt.Sprintf("select symbol from %s where exchange=$1", exchangesymbolTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		symbol := ""
+		rows.Scan(&symbol)
+		symbols = append(symbols, symbol)
+	}
+	return
+}
+
 // VerifyExchangeSymbol verifies @symbol on @exchange and maps it uniquely to @assetID in asset table.
 // It returns true if symbol,exchange is present and succesfully updated.
 func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error) {
@@ -248,6 +263,9 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
 	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+	if err != nil {
+		return
+	}
 	for rows.Next() {
 		pair := dia.ExchangePair{}
 		rows.Scan(&pair.Symbol, &pair.ForeignName)
