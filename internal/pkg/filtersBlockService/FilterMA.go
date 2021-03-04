@@ -108,7 +108,7 @@ func (s *FilterMA) save(ds models.Datastore) error {
 	log.Infof("save called on symbol %s on exchange %s", s.asset.Symbol, s.exchange)
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

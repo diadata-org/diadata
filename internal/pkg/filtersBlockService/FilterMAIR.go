@@ -99,7 +99,7 @@ func (s *FilterMAIR) compute(trade dia.Trade) {
 func (s *FilterMAIR) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}

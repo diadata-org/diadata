@@ -48,7 +48,7 @@ func (s *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 }
 
 func (s *FilterVOL) save(ds models.Datastore) error {
-	err := ds.SetFilter(s.filterName, s.asset.Symbol, s.exchange, s.value, s.currentTime)
+	err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
 	if err != nil {
 		log.Errorln("FilterVOL Error:", err)
 	}

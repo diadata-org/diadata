@@ -39,7 +39,7 @@ type Datastore interface {
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
-	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
+	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
@@ -55,7 +55,7 @@ type Datastore interface {
 	// GetSymbolsByExchange(string) []string
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
-	UpdateSymbolDetails(symbol string, rank int)
+	// UpdateSymbolDetails(symbol string, rank int)
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
