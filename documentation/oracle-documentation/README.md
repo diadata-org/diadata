@@ -1,5 +1,7 @@
 # Oracle Documentation
 
+{% page-ref page="deployed-contracts.md" %}
+
 {% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
 
 {% page-ref page="guest-quotations/coingecko-quotations.md" %}
