@@ -14,6 +14,7 @@ var (
 	MAX_RELATIVE_CAP float64 = 0.3
 )
 
+// TO DO: Update to GetIndexBasket(assets []dia.Asset)
 // Get supply and price information for the index constituents
 func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, error) {
 	db, err := models.NewDataStore()
@@ -25,6 +26,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 	var constituents []models.CryptoIndexConstituent
 
 	for _, symbol := range symbolsList {
+		// TO DO: update this to GetAssetQuotation(asset)
 		currQuotation, err := db.GetQuotation(strings.ToUpper(symbol))
 		if err != nil {
 			log.Error("Error when retrieveing quotation for ", symbol)

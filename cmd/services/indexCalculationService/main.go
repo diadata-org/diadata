@@ -32,7 +32,8 @@ func main() {
 					if indexSymbol == "GBI" && firstRun {
 						firstRun = false
 						symbols := []string{"WBTC", "ETH", "YFI", "UNI", "COMP", "MKR", "LINK", "SPICE"}
-
+						// TO DO: Make this to []dia.Asset{...} and add addresses and blockchains
+						// The below methods then have to be rewritten accordingly.
 						// Get constituents information
 						currentConstituents, err = indexCalculationService.GetIndexBasket(symbols)
 						if err != nil {
