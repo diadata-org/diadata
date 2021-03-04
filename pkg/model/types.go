@@ -39,10 +39,10 @@ type Quotation struct {
 }
 
 type Price struct {
-	Symbol     string
-	Name       string
-	Price      float64
-	Time       time.Time
+	Symbol string
+	Name   string
+	Price  float64
+	Time   time.Time
 }
 
 type InterestRate struct {

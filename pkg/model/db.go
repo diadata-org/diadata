@@ -138,13 +138,13 @@ type DB struct {
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbSupplyTable                  = "supplies"
-	influxDbSupplyTableOld               = "supply"
+	influxDbName         = "dia"
+	influxDbTradesTable  = "trades"
+	influxDbFiltersTable = "filters"
+	influxDbOptionsTable = "options"
+	influxDbCVITable     = "cvi"
+	influxDbSupplyTable  = "supplies"
+	//	influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"
 	influxDbPoolTable                    = "defiPools"

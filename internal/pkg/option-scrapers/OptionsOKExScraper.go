@@ -112,8 +112,8 @@ func NewOKExOptionsScraper(pollFreq int8) *OKExOptionsScraper {
 	rl := rate.NewLimiter(rate.Every(2*time.Second), 10) // 10 request every 2 seconds
 	optionsScraper := &OKExOptionsScraper{
 		PollFrequency: pollFreq,
-		chanOrderBook:  make(chan *dia.OptionOrderbookDatum),
-		Ratelimiter: rl,// if pollFreq = 1 second. can have 10 goroutines at the same time
+		chanOrderBook: make(chan *dia.OptionOrderbookDatum),
+		Ratelimiter:   rl, // if pollFreq = 1 second. can have 10 goroutines at the same time
 	}
 	return optionsScraper
 }
@@ -133,13 +133,13 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 		return
 	}
 	var resolvedBidPX float64
-if len(datum.Bids)>0 {
-	resolvedBidPX, err = strconv.ParseFloat(datum.Bids[0][0], 64)
-	if err != nil {
-		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-		return
+	if len(datum.Bids) > 0 {
+		resolvedBidPX, err = strconv.ParseFloat(datum.Bids[0][0], 64)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+			return
+		}
 	}
-}
 	var resolvedAskSize float64
 	resolvedAskSize, err = strconv.ParseFloat(datum.Asks[0][1], 64)
 	if err != nil {
@@ -147,7 +147,7 @@ if len(datum.Bids)>0 {
 		return
 	}
 	var resolvedBidSize float64
-	if len(datum.Bids)>0 {
+	if len(datum.Bids) > 0 {
 
 		resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
 		if err != nil {
@@ -206,13 +206,12 @@ func (s *OKExOptionsScraper) Scrape() {
 
 func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 
- 	ctx := context.Background()
+	ctx := context.Background()
 	err := s.Ratelimiter.Wait(ctx) // This is a blocking call. Honors the rate limit
 	if err != nil {
-		log.Errorln("Error on ratelimit",err)
+		log.Errorln("Error on ratelimit", err)
 		return
 	}
-
 
 	logger.Formatter = new(prefixed.TextFormatter)
 	logger.Level = logrus.InfoLevel
@@ -245,8 +244,6 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 	s.chanOrderBook <- &obEntry
 
 }
-
-
 
 func (s *AllOKExOptionsScrapers) MetaOnOptionIsAvailable(option OKExInstrument) (available bool, err error) {
 	available = false

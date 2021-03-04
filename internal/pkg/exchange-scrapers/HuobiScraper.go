@@ -216,17 +216,16 @@ func (s *HuobiScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-
 func (s *HuobiScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
+			if pair.Symbol == "IOTA" {
 				pair.Symbol = "MIOTA"
 			}
-			if pair.Symbol =="PROPY"{
+			if pair.Symbol == "PROPY" {
 				pair.Symbol = "PRO"
 			}
 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)

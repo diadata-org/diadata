@@ -72,8 +72,6 @@ func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 	return s
 }
 
-
-
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 

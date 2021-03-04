@@ -45,21 +45,21 @@ func (db *DB) GetTradePriceBefore(symbol string, exchange string, timestamp time
 }
 
 func (db *DB) GetTradePrice1h(symbol string, exchange string) (*dia.Trade, error) {
-	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-1 * time.Hour))
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-1*time.Hour))
 }
 
 func (db *DB) GetTradePrice24h(symbol string, exchange string) (*dia.Trade, error) {
-	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-24 * time.Hour))
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-24*time.Hour))
 }
 
 func (db *DB) GetTradePrice7d(symbol string, exchange string) (*dia.Trade, error) {
-	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-7 * 24 * time.Hour))
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-7*24*time.Hour))
 }
 
 func (db *DB) GetTradePrice14d(symbol string, exchange string) (*dia.Trade, error) {
-	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-14 * 24 * time.Hour))
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-14*24*time.Hour))
 }
 
 func (db *DB) GetTradePrice30d(symbol string, exchange string) (*dia.Trade, error) {
-	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-30 * 24 * time.Hour))
+	return db.GetTradePriceBefore(symbol, exchange, time.Now().Add(-30*24*time.Hour))
 }

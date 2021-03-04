@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+/*
 var (
 	daiTokenAddress   = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
 	usdTokenAddress   = common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
@@ -22,6 +23,7 @@ var (
 	uniLPTokenAddress = common.HexToAddress("0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244")
 	stakingAddress    = common.HexToAddress("0xb0fa2beee3cf36a7ac7e99b885b48538ab364853")
 )
+*/
 
 type BARNBRIDGEScraper struct {
 	scraper    *PoolScraper

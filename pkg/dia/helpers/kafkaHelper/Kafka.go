@@ -35,8 +35,7 @@ const (
 	TopicIndexBlock2     = 8
 	TopicIndexBlockDaily = 11
 	retryDelay           = 2 * time.Second
-	TopicOptionOrderBook          = 13
-
+	TopicOptionOrderBook = 13
 )
 
 type Config struct {

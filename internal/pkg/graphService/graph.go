@@ -95,7 +95,7 @@ func PriceGraph(prices []float64, times []int64, path string) error {
 
 	// Draw and save graph
 	c := vgimg.PngCanvas{vgimg.NewWith(
-		vgimg.UseWH(IMAGE_WIDTH * vg.Centimeter, IMAGE_HEIGHT * vg.Centimeter),
+		vgimg.UseWH(IMAGE_WIDTH*vg.Centimeter, IMAGE_HEIGHT*vg.Centimeter),
 		vgimg.UseBackgroundColor(color.Transparent),
 	)}
 	graph.Draw(draw.New(c))

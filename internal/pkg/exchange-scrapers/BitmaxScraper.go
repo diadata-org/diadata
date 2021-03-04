@@ -34,7 +34,6 @@ type BitMaxPair struct {
 	LotSize               string `json:"lotSize"`
 }
 
-
 type BitMaxScraper struct {
 	// signaling channels for session initialization and finishing
 	initDone     chan nothing
@@ -115,7 +114,7 @@ func (s *BitMaxScraper) mainLoop() {
 						Price:          priceFloat,
 						Volume:         volumeFloat,
 						Time:           time.Unix(0, trade.Ts*int64(time.Millisecond)),
-						ForeignTradeID: strconv.FormatInt(trade.Seqnum,10),
+						ForeignTradeID: strconv.FormatInt(trade.Seqnum, 10),
 						Source:         s.exchangeName,
 					}
 					log.Infoln("Got Trade", t)

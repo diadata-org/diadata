@@ -1,12 +1,12 @@
 package filters
 
 import (
+	"errors"
 	"fmt"
 	"math"
-	"time"
-	"errors"
 	"sort"
 	"strings"
+	"time"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -181,11 +181,11 @@ func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error)
 	// Create date so late it is out of target range
 	earliestDate := time.Now().Add(62 * 24 * time.Hour)
 	// Determine date of NextTerm
-	for _, optionMeta := range(optionsMeta) {
-		if optionMeta.ExpirationTime.Sub(time.Now()) > 62 * 24 * time.Hour {
+	for _, optionMeta := range optionsMeta {
+		if optionMeta.ExpirationTime.Sub(time.Now()) > 62*24*time.Hour {
 			continue
 		}
-		if optionMeta.ExpirationTime.Sub(time.Now()) < 20 * 24 * time.Hour {
+		if optionMeta.ExpirationTime.Sub(time.Now()) < 20*24*time.Hour {
 			continue
 		}
 		if optionMeta.ExpirationTime.Unix() < earliestDate.Unix() {
@@ -218,7 +218,7 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 		return result, err
 	}
 	latestFoundDate := time.Now().Add(1 * time.Second)
-	for _, optionMeta := range(optionsMeta) {
+	for _, optionMeta := range optionsMeta {
 		if optionMeta.ExpirationTime.Unix() >= expirationNextTerm.Unix() {
 			continue
 		}
@@ -241,16 +241,16 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 	result := []dia.OptionMetaForward{}
 	type OptionMetaOrderbook struct {
 		generalizedInstrumentName string
-		orderbookDataPut  dia.OptionOrderbookDatum
-		orderbookDataCall dia.OptionOrderbookDatum
-		optionMetaPut     dia.OptionMeta
-		optionMetaCall    dia.OptionMeta
+		orderbookDataPut          dia.OptionOrderbookDatum
+		orderbookDataCall         dia.OptionOrderbookDatum
+		optionMetaPut             dia.OptionMeta
+		optionMetaCall            dia.OptionMeta
 	}
 
 	orderbookDataStore := make(map[string]OptionMetaOrderbook)
 
 	// Add all options that expire at the same date into one object of type OptionMetaOrderbook
-	for _, optionMeta := range(optionsMeta) {
+	for _, optionMeta := range optionsMeta {
 		if optionMeta.ExpirationTime.Equal(timeResult.ExpirationTime) {
 			orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
 			if err != nil {
@@ -261,7 +261,7 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 				switch optionMeta.OptionType {
 				case dia.CallOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							generalizedInstrumentName: generalizedInstrumentName,
 							orderbookDataCall:         orderbookData,
 							optionMetaCall:            optionMeta,
@@ -269,14 +269,14 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 							optionMetaPut:             val.optionMetaPut,
 						}
 					} else {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							orderbookDataCall: orderbookData,
 							optionMetaCall:    optionMeta,
 						}
 					}
 				case dia.PutOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							generalizedInstrumentName: generalizedInstrumentName,
 							orderbookDataPut:          orderbookData,
 							optionMetaPut:             optionMeta,
@@ -284,7 +284,7 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 							optionMetaCall:            val.optionMetaCall,
 						}
 					} else {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							orderbookDataPut: orderbookData,
 							optionMetaPut:    optionMeta,
 						}
@@ -299,12 +299,12 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 			log.Error("StrikePrice == 0 ", orderbookData)
 			continue
 		}
-		result = append(result, dia.OptionMetaForward {
+		result = append(result, dia.OptionMetaForward{
 			GeneralizedInstrumentName: orderbookData.generalizedInstrumentName,
-			ExpirationTime: orderbookData.optionMetaCall.ExpirationTime,
-			StrikePrice: orderbookData.optionMetaCall.StrikePrice,
-			CallPrice:   math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
-			PutPrice:    math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
+			ExpirationTime:            orderbookData.optionMetaCall.ExpirationTime,
+			StrikePrice:               orderbookData.optionMetaCall.StrikePrice,
+			CallPrice:                 math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
+			PutPrice:                  math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
 		})
 	}
 	return result, nil
@@ -324,16 +324,16 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 			continue
 		}
 		orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
-		if err != nil  || orderbookData.BidSize == 0{
+		if err != nil || orderbookData.BidSize == 0 {
 			log.Error("Error retrieving OptionOrderbookData: ", err)
 			continue
 		}
-		result = append(result, dia.OptionMetaIndex {
+		result = append(result, dia.OptionMetaIndex{
 			optionMeta,
 			orderbookData,
 		})
 	}
-	sort.Slice(result, func (i, j int) bool {
+	sort.Slice(result, func(i, j int) bool {
 		return result[i].StrikePrice > result[j].StrikePrice
 	})
 	return result, nil
@@ -365,7 +365,7 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		log.Info("this option: ", optionsMeta[ix])
 		log.Info("next option: ", optionsMeta[ix+1])
 		log.Info("deltaK: ", deltaK)
-		log.Info("midpoint: ", (option.AskPrice + option.BidPrice) / 2)
+		log.Info("midpoint: ", (option.AskPrice+option.BidPrice)/2)
 		lh += deltaK * ((option.AskPrice + option.BidPrice) / 2)
 	}
 

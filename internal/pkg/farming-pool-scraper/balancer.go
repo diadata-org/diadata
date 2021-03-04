@@ -26,8 +26,8 @@ import (
 var (
 	// Balancer: BFactory
 	// https://etherscan.io/address/0x9424b1412450d0f8fc2255faf6046b98213b76bd
-	balFactoryAddress      = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
-	firstFactoryBlock      = uint64(9562480)
+	balFactoryAddress = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
+	//firstFactoryBlock      = uint64(9562480)
 	balancerLookBackBlocks = 6 * 60 * 24
 )
 

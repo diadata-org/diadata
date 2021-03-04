@@ -11,22 +11,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+/*
 const (
 	filtersParam = dia.BlockSizeSeconds
 )
+*/
 
 type nothing struct{}
 
 type FiltersBlockService struct {
-	shutdown             chan nothing
-	shutdownDone         chan nothing
-	chanTradesBlock      chan *dia.TradesBlock
-	chanFiltersBlock     chan *dia.FiltersBlock
-	errorLock            sync.RWMutex
-	error                error
-	closed               bool
-	started              bool
-	currentTime          time.Time
+	shutdown         chan nothing
+	shutdownDone     chan nothing
+	chanTradesBlock  chan *dia.TradesBlock
+	chanFiltersBlock chan *dia.FiltersBlock
+	errorLock        sync.RWMutex
+	error            error
+	closed           bool
+	started          bool
+	//	currentTime          time.Time
 	filters              map[string][]Filter
 	lastLog              time.Time
 	calculationValues    []int

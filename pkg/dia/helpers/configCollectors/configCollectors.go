@@ -8,7 +8,9 @@ import (
 	logrus "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
+
 var log = logrus.New()
+
 func (c *ConfigCollectors) Exchanges() []string {
 	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
 }

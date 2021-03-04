@@ -1,14 +1,16 @@
 package indexCalculationService
 
 import (
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"sort"
 	"strings"
-	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 )
 
-var (MAX_RELATIVE_CAP float64 = 0.3)
+var (
+	MAX_RELATIVE_CAP float64 = 0.3
+)
 
 // Get supply and price information for the index constituents
 func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, error) {
@@ -37,14 +39,14 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 			return nil, err
 		}
 		newConstituent := models.CryptoIndexConstituent{
-			Address:            "-",
-			Name:								currQuotation.Name,
-			Symbol:							currSupply.Symbol,
-			Price:							currLastTrade[0].EstimatedUSDPrice,
-			CirculatingSupply:	currSupply.CirculatingSupply,
-			Weight:             0.0,
-			CappingFactor:      0.0,
-			NumBaseTokens:      0.0,
+			Address:           "-",
+			Name:              currQuotation.Name,
+			Symbol:            currSupply.Symbol,
+			Price:             currLastTrade[0].EstimatedUSDPrice,
+			CirculatingSupply: currSupply.CirculatingSupply,
+			Weight:            0.0,
+			CappingFactor:     0.0,
+			NumBaseTokens:     0.0,
 		}
 		constituents = append(constituents, newConstituent)
 	}
@@ -86,7 +88,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 		offendor := marketCaps[numOffendors]
 		uncappedConstituentsMc := 0.0
 
-		for (offendor.RawMarketCap * math.Pow((1 - MAX_RELATIVE_CAP), float64(numOffendors)) > MAX_RELATIVE_CAP * sumMarketCap) {
+		for offendor.RawMarketCap*math.Pow((1-MAX_RELATIVE_CAP), float64(numOffendors)) > MAX_RELATIVE_CAP*sumMarketCap {
 			marketCaps[numOffendors].RelativeCap = MAX_RELATIVE_CAP
 			sumMarketCap -= offendor.RawMarketCap
 			numOffendors += 1
@@ -99,16 +101,16 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 
 		// 3. Go through all non-offending constitutes and fix their relative cap
 		for i, constituent := range marketCaps[numOffendors:] {
-			marketCaps[i + numOffendors].RelativeCap = constituent.RawMarketCap / sumMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors))
-			marketCaps[i + numOffendors].CappingFactor = 1.0
+			marketCaps[i+numOffendors].RelativeCap = constituent.RawMarketCap / sumMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors))
+			marketCaps[i+numOffendors].CappingFactor = 1.0
 			uncappedConstituentsMc += constituent.RawMarketCap
 		}
 		// 4. Go through all offending constitutes and set a capping factor (i.e. factor to multiply their MC)
 		for i, constituent := range marketCaps[:numOffendors] {
 			if uncappedConstituentsMc != 0 {
-				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors))) * uncappedConstituentsMc
+				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors))) * uncappedConstituentsMc
 			} else {
-				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors)))
+				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors)))
 			}
 		}
 
@@ -157,7 +159,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 			if "SPICE" == constituent.Symbol {
 				(*constituents)[i].Weight = 0.025
 			} else {
-				(*constituents)[i].Weight = (1-0.025) / (numConstituents - 1)
+				(*constituents)[i].Weight = (1 - 0.025) / (numConstituents - 1)
 			}
 		}
 		return nil

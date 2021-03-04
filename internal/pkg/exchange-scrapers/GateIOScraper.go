@@ -237,8 +237,6 @@ func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return pair, nil
 }
 
-
-
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")

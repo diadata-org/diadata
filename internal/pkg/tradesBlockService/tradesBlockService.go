@@ -14,13 +14,15 @@ import (
 
 type nothing struct{}
 
+/*
 var (
 	stablecoins = []string{"USDC", "USDT", "TUSD", "DAI", "PAX"}
 	tol         = float64(0.1)
 )
+*/
 
 type TradesBlockService struct {
-	pair            string
+	//	pair            string
 	shutdown        chan nothing
 	shutdownDone    chan nothing
 	chanTrades      chan *dia.Trade

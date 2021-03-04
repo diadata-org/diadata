@@ -2,10 +2,10 @@ package itinService
 
 import (
 	"encoding/json"
+	dia "github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	log "github.com/sirupsen/logrus"
-	dia "github.com/diadata-org/diadata/pkg/dia"
 )
 
 type ItinTokens []dia.ItinToken

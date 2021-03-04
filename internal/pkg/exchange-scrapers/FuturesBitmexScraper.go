@@ -11,8 +11,8 @@ import (
 
 	zap "go.uber.org/zap"
 
-	"github.com/gorilla/websocket"
 	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
+	"github.com/gorilla/websocket"
 )
 
 const scrapeDataSaveLocationBitmex = ""

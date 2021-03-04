@@ -45,8 +45,9 @@ func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg 
 }
 
 var (
-	exchange         = flag.String("exchange", "", "which exchange")
-	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
+	exchange = flag.String("exchange", "", "which exchange")
+
+//	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
 )
 
 func init() {

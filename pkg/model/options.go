@@ -1,9 +1,9 @@
 package models
 
 import (
-  log "github.com/sirupsen/logrus"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/dia"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

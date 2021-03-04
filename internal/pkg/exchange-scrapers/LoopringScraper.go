@@ -162,6 +162,7 @@ func (s *LoopringScraper) subscribeToALL() {
 func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
+
 // runs in a goroutine until s is closed
 func (s *LoopringScraper) mainLoop() {
 	for true {

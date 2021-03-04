@@ -278,10 +278,10 @@ func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
+			if pair.Symbol == "IOTA" {
 				pair.Symbol = "MIOTA"
 			}
-			if pair.Symbol =="YOYO"{
+			if pair.Symbol == "YOYO" {
 				pair.Symbol = "YOYOW"
 			}
 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
