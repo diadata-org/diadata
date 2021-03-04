@@ -826,19 +826,6 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
-	name := foreignQuotation.Source + "-" + foreignQuotation.Name
-	symbol := foreignQuotation.Symbol
-	price := foreignQuotation.Price
-	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
-	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
-		return err
-	}
-
-	return nil
-}
-
 func updateQuotation(quotation *models.Quotation, supply *dia.Supply, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	name := quotation.Name
 	symbol := quotation.Symbol
