@@ -266,6 +266,14 @@ _Remark:_ Careful! Successful responses can be rather large.
 {% api-method-spec %}
 {% api-method-request %}
 {% api-method-path-parameters %}
+{% api-method-parameter name="starttime" type="integer" required=false %}
+Unix timestamp setting the start of the return array
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="endtime" type="integer" required=false %}
+Unix timestamp setting the end of the return array
+{% endapi-method-parameter %}
+
 {% api-method-parameter name="filter" type="string" required=true %}
 Which filter should be applied \(Available options: MEDIR120 and MAIR120\).
 {% endapi-method-parameter %}
