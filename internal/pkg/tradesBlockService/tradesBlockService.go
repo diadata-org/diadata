@@ -79,6 +79,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		} else {
 			// Get price of base token
 			val, err := s.datastore.GetAssetPriceUSD(t.BaseToken)
+			log.Infof("estimated price of %s: %v", t.BaseToken.Symbol, val)
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token", t.Pair)
 			} else {
@@ -109,6 +110,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		verifiedTrade = false
 	}
 
+	// Only verified trades of verified pairs are added to the tradesBlock
 	if verifiedTrade {
 
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {

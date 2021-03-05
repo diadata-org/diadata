@@ -261,6 +261,7 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 
 // GetExchangePairs returns all trading pairs on @exchange from exchangepair table
 func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
+	// TO DO: Should we also return verified?
 	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {

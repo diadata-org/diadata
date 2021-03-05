@@ -109,7 +109,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	}
 
 	// Write latest point to redis cache
-	log.Printf("write to cache: %s\n", quotation.Asset.Symbol)
+	log.Printf("write to cache: %s", quotation.Asset.Symbol)
 	_, err = db.SetAssetQuotationCache(quotation)
 	return err
 
@@ -121,10 +121,12 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 	// First attempt to get latest quotation from redis cache
 	quotation, err := db.GetAssetQuotationCache(asset)
 	if err == nil {
+		log.Infof("got asset quotation for %s from cache.", asset.Symbol)
 		return quotation, nil
 	}
 
 	// if not in cache, get quotation from influx
+	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
 	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
 
 	res, err := queryInfluxDB(db.influxClient, q)
@@ -167,7 +169,7 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
 func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
-	log.Infof("get asset quotation from cache for asset %s with address %s \n", asset.Symbol, asset.Address)
+	log.Infof("get asset quotation from cache for asset %s with address %s ", asset.Symbol, asset.Address)
 	key := getKeyAssetQuotation(asset.Blockchain.Name, asset.Address)
 	quotation := &AssetQuotation{}
 	err := db.redisClient.Get(key).Scan(quotation)

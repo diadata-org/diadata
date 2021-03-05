@@ -30,11 +30,13 @@ const (
 	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
 
-	// wsDial   = "ws://159.69.120.42:8546/"
-	// restDial = "http://159.69.120.42:8545/"
+	wsDial   = "ws://159.69.120.42:8546/"
+	restDial = "http://159.69.120.42:8545/"
 
-	restDial = "https://mainnet.infura.io/v3/3c7bc809e9174a85ad56ee9abcb68d32"
-	wsDial   = "wss://mainnet.infura.io/ws/v3/3c7bc809e9174a85ad56ee9abcb68d32"
+	// restDial = "https://mainnet.infura.io/v3/3c7bc809e9174a85ad56ee9abcb68d32"
+	// wsDial   = "wss://mainnet.infura.io/ws/v3/3c7bc809e9174a85ad56ee9abcb68d32"
+	// restDial = "https://mainnet.infura.io/v3/9020e59e34ca4cf59cb243ecefb4e39e"
+	// wsDial   = "wss://mainnet.infura.io/ws/v3/9020e59e34ca4cf59cb243ecefb4e39e"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -193,7 +195,6 @@ func (s *UniswapScraper) mainLoop() {
 			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 			continue
 		}
-		pair.normalizeUniPair()
 		ps, ok := s.pairScrapers[pair.ForeignName]
 		if ok {
 			log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
@@ -214,16 +215,18 @@ func (s *UniswapScraper) mainLoop() {
 						if err != nil {
 							log.Error("error getting swap data: ", err)
 						}
-
+						pair.normalizeUniPair()
 						token0 := dia.Asset{
-							Address: pair.Token0.Address.String(),
-							Symbol:  pair.Token0.Symbol,
-							Name:    pair.Token0.Name,
+							Address:    strings.ToLower(pair.Token0.Address.String()),
+							Symbol:     pair.Token0.Symbol,
+							Name:       pair.Token0.Name,
+							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
 						token1 := dia.Asset{
-							Address: pair.Token0.Address.String(),
-							Symbol:  pair.Token0.Symbol,
-							Name:    pair.Token0.Name,
+							Address:    strings.ToLower(pair.Token1.Address.String()),
+							Symbol:     pair.Token1.Symbol,
+							Name:       pair.Token1.Name,
+							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
 
 						t := &dia.Trade{
@@ -355,14 +358,14 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 		quotetoken := dia.Asset{
 			Symbol:     pair.Token0.Symbol,
 			Name:       pair.Token0.Name,
-			Address:    pair.Token0.Address.Hex(),
+			Address:    strings.ToLower(pair.Token0.Address.Hex()),
 			Decimals:   pair.Token0.Decimals,
 			Blockchain: dia.BlockChain{Name: "Ethereum"},
 		}
 		basetoken := dia.Asset{
 			Symbol:     pair.Token1.Symbol,
 			Name:       pair.Token1.Name,
-			Address:    pair.Token1.Address.Hex(),
+			Address:    strings.ToLower(pair.Token1.Address.Hex()),
 			Decimals:   pair.Token1.Decimals,
 			Blockchain: dia.BlockChain{Name: "Ethereum"},
 		}
@@ -387,6 +390,7 @@ func (s *UniswapScraper) FetchTickerData(symbol string) (dia.Asset, error) {
 // GetAllPairs is similar to FetchAvailablePairs. But instead of dia.ExchangePairs it returns all pairs as UniswapPairs,
 // i.e. including the pair's address
 func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
+	time.Sleep(20 * time.Millisecond)
 	connection := s.RestClient
 	var contract *uniswapcontract.IUniswapV2FactoryCaller
 	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
@@ -401,8 +405,7 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 	pairs := make([]UniswapPair, int(numPairs.Int64()))
-	// for i := 0; i < int(numPairs.Int64()); i++ {
-	for i := 0; i < 500; i++ {
+	for i := 0; i < int(numPairs.Int64()); i++ {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
@@ -419,9 +422,9 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 }
 
 func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	if pair.ForeignName == "WETH" {
-		pair.Symbol = "ETH"
-	}
+	// if pair.ForeignName == "WETH" {
+	// 	pair.Symbol = "ETH"
+	// }
 	return pair, nil
 }
 
@@ -429,10 +432,12 @@ func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 func (up *UniswapPair) normalizeUniPair() {
 	if up.Token0.Symbol == "WETH" {
 		up.Token0.Symbol = "ETH"
+		up.Token0.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
 	if up.Token1.Symbol == "WETH" {
 		up.Token1.Symbol = "ETH"
+		up.Token1.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
 }
