@@ -11,8 +11,6 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef) |
-| Coingecko Oracle | [0x07e4120dd7411a49e091a20fa0be33a183c35d60](https://etherscan.io/address/0x07e4120dd7411a49e091a20fa0be33a183c35d60) |
-| Coinmarketcap Oracle | [0x48760771fEda4bE44A6ED3BfF13ecBC445159B1D](https://etherscan.io/address/0x48760771feda4be44a6ed3bff13ecbc445159b1d) |
 | DIA Index Oracle | [0x814712cC9Fa606A4b372B87cd27775959E052d9a](https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a) |
 
 ### Ropsten Testnet
@@ -32,6 +30,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://www.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) |
+| Coinmarketcap Oracle | [0xbAFEe71d40baBC12a3D0B2b8937ee62D3A070835](https://bscscan.com/address/0xbafee71d40babc12a3d0b2b8937ee62d3a070835) |
 
 ### Binance Smart Chain Testnet
 
@@ -44,6 +43,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://explorer-mainnet.maticvigil.com/address/0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f) |
+| Coingecko Oracle | [0xa14ce6091786a708cDe547E1bf53911C78777ede](https://explorer-mainnet.maticvigil.com/address/0xa14ce6091786a708cDe547E1bf53911C78777ede) |
 
 ### Moonbeam Testnet
 
