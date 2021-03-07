@@ -100,10 +100,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		s.computeFilters(trade, trade.Source)
 	}
 
-	log.Info("------------------------------------------------------------------------")
-	log.Info("created filters: ", s.filters)
-	log.Info("------------------------------------------------------------------------")
-
 	resultFilters := []dia.FilterPoint{}
 	for _, filters := range s.filters {
 		for _, f := range filters {

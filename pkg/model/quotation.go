@@ -127,7 +127,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 
 	// if not in cache, get quotation from influx
 	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
-	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
+	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain.Name)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -143,6 +143,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 		if err != nil {
 			return quotation, err
 		}
+		log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
 	} else {
 		return quotation, errors.New("Error parsing Trade from Database")
 	}

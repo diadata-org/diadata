@@ -228,14 +228,16 @@ func (s *UniswapScraper) mainLoop() {
 							Name:       pair.Token1.Name,
 							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
-
+						log.Info("pair: ", ps.pair.ForeignName)
+						log.Info("token0: ", token0.Symbol)
+						log.Info("token1: ", token1.Symbol)
 						t := &dia.Trade{
 							Symbol:         ps.pair.Symbol,
 							Pair:           ps.pair.ForeignName,
 							Price:          price,
 							Volume:         volume,
-							BaseToken:      token0,
-							QuoteToken:     token1,
+							BaseToken:      token1,
+							QuoteToken:     token0,
 							Time:           time.Unix(swap.Timestamp, 0),
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
@@ -249,7 +251,9 @@ func (s *UniswapScraper) mainLoop() {
 							}
 						}
 						if price > 0 {
-							log.Info("Got trade: ", t)
+							log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
+							log.Info("base token: ", t.BaseToken.Symbol)
+							log.Info("quote token: ", t.QuoteToken.Symbol)
 							ps.parent.chanTrades <- t
 						}
 					}
@@ -588,7 +592,6 @@ func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
 		price = swap.Amount1In / swap.Amount0Out
 		return
 	}
-
 	volume = -swap.Amount0In
 	price = swap.Amount1Out / swap.Amount0In
 	return
@@ -597,19 +600,16 @@ func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
 func (s *UniswapScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
-
 	if err != nil {
 		s.error = err
 	}
 	s.closed = true
-
 	close(s.shutdownDone)
 }
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *UniswapScraper) Close() error {
-
 	if s.closed {
 		return errors.New("UniswapScraper: Already closed")
 	}
@@ -625,7 +625,6 @@ func (s *UniswapScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *UniswapScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
-
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
