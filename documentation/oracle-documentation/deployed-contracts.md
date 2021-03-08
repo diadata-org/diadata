@@ -45,6 +45,12 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | DIA Oracle | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://explorer-mainnet.maticvigil.com/address/0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f) |
 | Coingecko Oracle | [0xa14ce6091786a708cDe547E1bf53911C78777ede](https://explorer-mainnet.maticvigil.com/address/0xa14ce6091786a708cDe547E1bf53911C78777ede) |
 
+### Matic Mumbai Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) |
+
 ### Moonbeam Testnet
 
 | Contract Name | Contract Address |
