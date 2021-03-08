@@ -119,20 +119,18 @@ func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.Tran
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
-	// BNB Quotation
-	rawBNBQ, err := getQuotationFromDia("BNB")
+	// DOT Quotation
+	rawDOTQ, err := getQuotationFromDia("DOT")
 	if err != nil {
-		log.Fatalf("Failed to retrieve BNB quotation data from DIA: %v", err)
+		log.Fatalf("Failed to retrieve DOT quotation data from DIA: %v", err)
 		return err
 	}
-	rawBNBS, err := getSupplyFromDia("BNB")
+	rawDOTQ.Name = "DOT"
+	var rawDOTS dia.Supply
+	rawDOTS.CirculatingSupply = 0.0
+	err = updateQuotation(rawDOTQ, &rawDOTS, auth, contract, conn)
 	if err != nil {
-		log.Fatalf("Failed to retrieve BNB supply data from DIA: %v", err)
-		return err
-	}
-	err = updateQuotation(rawBNBQ, rawBNBS, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update BNB Oracle: %v", err)
+		log.Fatalf("Failed to update DOT Oracle: %v", err)
 		return err
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
@@ -385,34 +383,6 @@ func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.Tran
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)*/
 
-	// Pancakeswap Chart Point
-	rawPancake, err := getDEXFromDia("PanCakeSwap", "WBNB")
-	if err != nil {
-		log.Fatalf("Failed to retrieve PanCakeSwap from DIA: %v", err)
-		return err
-	}
-
-	err = updateDEX(rawPancake, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update PanCakeSwap Oracle: %v", err)
-		return err
-	}
-	time.Sleep(time.Duration(sleepSeconds) * time.Second)
-
-	// CREX24 Chart Point
-	rawCrex24, err := getDEXFromDia("CREX24", "CREX")
-	if err != nil {
-		log.Fatalf("Failed to retrieve CREX24 from DIA: %v", err)
-		return err
-	}
-
-	err = updateDEX(rawCrex24, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update CREX24 Oracle: %v", err)
-		return err
-	}
-	time.Sleep(time.Duration(sleepSeconds) * time.Second)
-
 	// Bitmax CEX Chart Point
 	rawBitmax, err := getDEXFromDia("Bitmax", "ETH")
 	if err != nil {
@@ -423,34 +393,6 @@ func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.Tran
 	err = updateDEX(rawBitmax, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update Bitmax Oracle: %v", err)
-		return err
-	}
-	time.Sleep(time.Duration(sleepSeconds) * time.Second)
-
-	// // Maker DEX Chart Point
-	// rawMaker, err := getDEXFromDia("Maker", "ETH")
-	// if err != nil {
-	// 	log.Fatalf("Failed to retrieve Maker from DIA: %v", err)
-	// 	return err
-	// }
-
-	// err = updateDEX(rawMaker, auth, contract)
-	// if err != nil {
-	// 	log.Fatalf("Failed to update Maker Oracle: %v", err)
-	// 	return err
-	// }
-	// time.Sleep(time.Duration(sleepSeconds) * time.Second)
-
-	// Curvefi DEX Chart Point
-	rawCurvefi, err := getDEXFromDia("Curvefi", "DAI")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Curvefi from DIA: %v", err)
-		return err
-	}
-
-	err = updateDEX(rawCurvefi, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update Curvefi Oracle: %v", err)
 		return err
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
