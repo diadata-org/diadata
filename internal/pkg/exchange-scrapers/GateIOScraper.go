@@ -286,8 +286,8 @@ func (s *GateIOScraper) FetchTickerData(symbol string) (asset dia.Asset, err err
 			return
 		}
 
-		for _,gateIOasset := range response.Data{
-			s.currencySymbolName[gateIOasset.Symbol] = gateIOasset.Name
+		for _,gateioasset := range response.Data{
+			s.currencySymbolName[gateioasset.Symbol] = gateioasset.Name
 		}
 		s.isTickerMapInitialised = true
 

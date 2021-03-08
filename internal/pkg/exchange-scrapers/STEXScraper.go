@@ -37,6 +37,21 @@ type Trade struct {
 	Timestamp      int64       `json:"timestamp"`
 }
 
+
+type STEXTickerData struct {
+	Success bool `json:"success"`
+	Data    [] STEXAsset `json:"data"`
+}
+
+type STEXAsset struct {
+	ID                        int         `json:"id"`
+	Code                      string      `json:"code"`
+	Name                      string      `json:"name"`
+	Active                    bool        `json:"active"`
+	Delisted                  bool        `json:"delisted"`
+	Precision                 int         `json:"precision"`
+}
+
 type STEXTrade struct {
 	ID        int        `json:"id"`
 	Price     *big.Float `json:"price"`
@@ -65,6 +80,8 @@ type STEXScraper struct {
 	pairIDToSymbol    map[int]string
 	exchangeName      string
 	chanTrades        chan *dia.Trade
+	currencySymbolName map[string]string
+	isTickerMapInitialised bool
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
@@ -79,6 +96,8 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 		exchangeName:      exchange.Name,
 		error:             nil,
 		chanTrades:        make(chan *dia.Trade),
+		currencySymbolName: make(map[string]string),
+		isTickerMapInitialised:false,
 	}
 
 	c, err := gosocketio.Dial(
@@ -170,22 +189,32 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 	}
 }
 
-// FetchTickerData collects all available information on an asset traded on STEX
 func (s *STEXScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
-	var response HuobiCurrency
-	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		return
+
+	// Fetch Data
+	if !s.isTickerMapInitialised {
+		var (
+			response STEXTickerData
+			data     []byte
+		)
+		data, err = utils.GetRequest("https://api3.stex.com/public/currencies")
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return
+		}
+
+		for _, asset := range response.Data {
+			s.currencySymbolName[asset.Code] = asset.Name
+		}
+		s.isTickerMapInitialised = true
+
 	}
 
-	// Loop through chain if ETH is available put ETH chain details
-
-	asset.Symbol = response.Data[0].Currency
-	asset.Name = response.Data[0].Currency
+	asset.Symbol = symbol
+	asset.Name = s.currencySymbolName[symbol]
 	return asset, nil
 }
 
