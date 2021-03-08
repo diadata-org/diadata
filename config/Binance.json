@@ -2,6 +2,18 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "NEARUSDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NEARBTC",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MKRBNB",
             "Ignore": false,
             "Symbol": "MKR"
