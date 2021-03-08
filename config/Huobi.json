@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "NEARUSDT",
+      "Ignore": false,
+      "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ADABTC",
       "Ignore": false,
       "Symbol": "ADA"

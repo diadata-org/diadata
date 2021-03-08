@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "NEAR_ETH",
+      "Ignore": false,
+      "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "NEAR_USDT",
+      "Ignore": false,
+      "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ABT_ETH",
       "Ignore": true,
       "Symbol": "ABT"

@@ -164,6 +164,9 @@ func (s *UniswapScraper) mainLoop() {
 		log.Error(s.error.Error())
 	}
 	for i := 0; i < numPairs; i++ {
+		if s.exchangeName == "PanCakeSwap" {
+			time.Sleep(200 * time.Millisecond)
+		}
 
 		pair, err := s.GetPairByID(int64(i))
 		if err != nil {

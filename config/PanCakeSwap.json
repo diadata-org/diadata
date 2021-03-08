@@ -1,273 +1,285 @@
 {
     "Coins": [
         {
+            "Symbol": "D100",
+            "ForeignName": "D100-WBNB",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D100",
+            "ForeignName": "D100-BUSD",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
             "Symbol": "BAKE",
             "ForeignName": "BAKE-BUSD",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "SYRUP",
             "ForeignName": "SYRUP-ETH",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "ROMS",
             "ForeignName": "ROMS-ETH",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "Cake",
             "ForeignName": "Cake-DAI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "RFIBSC",
             "ForeignName": "RFIBSC-DAI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TWT",
             "ForeignName": "TWT-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "SPAD",
             "ForeignName": "SPAD-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "UTAR",
             "ForeignName": "UTAR-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BSCX",
             "ForeignName": "BSCX-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "KUN",
             "ForeignName": "KUN-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "CWD",
             "ForeignName": "CWD-USDC",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "Cake",
             "ForeignName": "Cake-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "SOUL",
             "ForeignName": "SOUL-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TWT",
             "ForeignName": "TWT-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TUNA",
             "ForeignName": "TUNA-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "STAX",
             "ForeignName": "STAX-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "DEGO",
             "ForeignName": "DEGO-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BSC",
             "ForeignName": "BSC-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "FIL",
             "ForeignName": "FIL-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "CRP",
             "ForeignName": "CRP-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BOLO",
             "ForeignName": "BOLO-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "XLM",
             "ForeignName": "XLM-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "DITTO",
             "ForeignName": "DITTO-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "ZD",
             "ForeignName": "ZD-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BLOK",
             "ForeignName": "BLOK-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "VAI",
             "ForeignName": "VAI-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BINCH",
             "ForeignName": "BINCH-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BZDX",
             "ForeignName": "BZDX-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TAR",
             "ForeignName": "TAR-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BUTT",
             "ForeignName": "BUTT-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "JDTK",
             "ForeignName": "JDTK-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "UST",
             "ForeignName": "UST-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "ELT",
             "ForeignName": "ELT-USDT",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "Cake",
             "ForeignName": "Cake-EOS",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "WBNB",
             "ForeignName": "WBNB-BUSD",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "WBNB",
             "ForeignName": "WBNB-UNI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "MASK",
             "ForeignName": "MASK-UNI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TWT",
             "ForeignName": "TWT-UNI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BAMBOO",
             "ForeignName": "BAMBOO-UNI",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "BAMBOO",
             "ForeignName": "BAMBOO-LINK",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "ADA",
             "ForeignName": "ADA-BAND",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "TWT",
             "ForeignName": "TWT-BAND",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "Cake",
             "ForeignName": "Cake-BAND",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "WBNB",
             "ForeignName": "WBNB-MATH",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         },
         {
             "Symbol": "Cake",
             "ForeignName": "Cake-CREAM",
-            "Exchange": "UniswapV2",
+            "Exchange": "PanCakeSwap",
             "Ignore": false
         }
     ]
