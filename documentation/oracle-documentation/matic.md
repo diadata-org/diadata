@@ -10,16 +10,13 @@ DIA supports assets from various categories to be included into the oracle. A se
 
 |              Data Feed Name           | Data Type |
 | :-----------------------------------: | :----: |
-|             Binance Coin              |  Crypto Price   |
+|             MATIC Token               |  Crypto Price   |
 |                Bitcoin                |  Crypto Price  |
 |               Ethereum                |  Crypto Price   |
 |                Tether                 |  Crypto Price  |
 |                  XRP                  |  Crypto price   |
 |              Barnbridge Protocol      |  Farming Pool Data |
 |              yearn.finance            |  Farming Pool Data |
-|              CREX on Crex            |  Chart Point on Exchange |
-|              DAI on CurveFi            |  Chart Point on Exchange |
-|              WBNB on PancakeSwap           |  Chart Point on Exchange |
 
 ## Data Access
 
@@ -42,7 +39,7 @@ struct CoinInfo {
 }
 ```
 
-The following snippet shows how to retrieve the BTC price of an asset (e.g. `Binance Coin`) using a smart contract.
+The following snippet shows how to retrieve the BTC price of an asset (e.g. `MATIC`) using a smart contract.
 
 ```
 pragma solidity ^0.4.24;
@@ -119,5 +116,6 @@ contract DiaAssetBtcOracle {
 | Chain name    |        Oracle Contract Address          | Update Frequency |
 | :------------ | :------------------------------------------: | :----------: |
 | Matic | `0x8e687a93a969f0bf125f1154738ca6dcc36af57f` |    1/day    |
+| Matic Mumbai Testnet | `0xA3d2127F85041729fec05Ca483b302ddb806d50a` |    1/day    |
 
 The full documentation of the DIA oracle is located [here](https://docs.diadata.org/documentation/oracle-documentation).
