@@ -14,7 +14,7 @@ services:
     networks:
       - postgres-network
     volumes:
-      - ./config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
+      - /home/srv/config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
 
 networks:
   postgres-network:

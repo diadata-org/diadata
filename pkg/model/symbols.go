@@ -28,24 +28,22 @@ func (db *DB) GetAllSymbols() []string {
 	return s
 }
 
-func (db *DB) GetSymbolsByExchange(e string) []string {
-	r := make(map[string]string)
-
-	p, err := db.GetAvailablePairs(e)
-	if err == nil {
-		for _, v := range p {
-			r[v.Symbol] = v.Symbol
-		}
-	} else {
-		log.Error("GetAllSymbols", err)
-	}
-
-	s := []string{}
-	for _, value := range r {
-		s = append(s, value)
-	}
-	return s
-}
+// func (db *DB) GetSymbolsByExchange(e string) []string {
+// 	r := make(map[string]string)
+// 	p, err := db.GetAvailablePairs(e)
+// 	if err == nil {
+// 		for _, v := range p {
+// 			r[v.Symbol] = v.Symbol
+// 		}
+// 	} else {
+// 		log.Error("GetAllSymbols", err)
+// 	}
+// 	s := []string{}
+// 	for _, value := range r {
+// 		s = append(s, value)
+// 	}
+// 	return s
+// }
 
 func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
@@ -84,18 +82,22 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 	result := &SymbolExchangeDetails{
 		Name: exchange,
 	}
-	v, err := db.GetPrice(symbol, exchange)
+	// TO DO: adapt to dia.Asset
+	preliminaryAsset := dia.Asset{
+		Symbol: symbol,
+	}
+	v, err := db.GetPrice(preliminaryAsset, exchange)
 	if err == nil {
 		result.Price = v
 	}
 
-	py, err2 := db.GetPriceYesterday(symbol, exchange)
+	py, err2 := db.GetPriceYesterday(preliminaryAsset, exchange)
 	if err2 == nil {
 		result.PriceYesterday = &py
 	}
 
-	v2, _ := db.GetVolumeExchange(symbol, exchange)
-	result.VolumeYesterdayUSD = v2
+	// v2, _ := db.GetVolumeExchange(symbol, exchange)
+	// result.VolumeYesterdayUSD = v2
 	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
 	result.Time = d
 
@@ -105,23 +107,27 @@ func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolE
 	return result, err
 }
 
-func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
-	key := getKey("symbol", "details", symbol)
-	r, err := db.getSymbolDetails(symbol)
-	if err == nil {
-		r.Rank = rank
-		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
-		if err != nil {
-			log.Error("UpdateSymbolDetails setting cache", err)
-		}
-	} else {
-		log.Error("UpdateSymbolDetails", err)
-	}
-}
+// func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
+// 	key := getKey("symbol", "details", symbol)
+// 	r, err := db.getSymbolDetails(symbol)
+// 	if err == nil {
+// 		r.Rank = rank
+// 		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
+// 		if err != nil {
+// 			log.Error("UpdateSymbolDetails setting cache", err)
+// 		}
+// 	} else {
+// 		log.Error("UpdateSymbolDetails", err)
+// 	}
+// }
 
 func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
 	r := &SymbolDetails{}
-	key := getKey("symbol", "details", symbol)
+	// TO DO: adapt to dia.Asset
+	preliminaryAsset := dia.Asset{
+		Symbol: symbol,
+	}
+	key := getKey("symbol", preliminaryAsset, "")
 	err := db.redisClient.Get(key).Scan(r)
 	if err != nil {
 		return db.getSymbolDetails(symbol)

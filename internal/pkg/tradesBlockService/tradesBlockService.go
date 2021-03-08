@@ -83,6 +83,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token", t.Pair)
 			} else {
 				if val != 0 {
+					log.Infof("price of trade %s: %v", t.Pair, t.Price)
+					log.Info("price of base token: ", val)
 					t.EstimatedUSDPrice = t.Price * val
 					verifiedTrade = true
 				}
@@ -109,6 +111,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		verifiedTrade = false
 	}
 
+	// Only verified trades of verified pairs are added to the tradesBlock
 	if verifiedTrade {
 
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {

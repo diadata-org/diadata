@@ -1,10 +1,11 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"math"
 	"testing"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 func TestFilterMAIRInternalMean(t *testing.T) {
@@ -91,7 +92,11 @@ func TestFilterMAIRIgnore(t *testing.T) {
 	firstPrice := 50.0
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
 	steps := filterParam
-	f := NewFilterMAIR("XRP", "", d, filterParam)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	for i := 0; i <= steps; i++ {
@@ -109,7 +114,11 @@ func TestFilterMAIRAverage(t *testing.T) {
 	firstPrice := 50.0
 	avg := 0.
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMAIR("XRP", "", d, filterParam)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -132,7 +141,11 @@ func TestFilterMAIRAverageOutsideRange(t *testing.T) {
 	firstPrice := 50.0
 	avg := 0.
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMAIR("XRP", "", d, memory)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, memory)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -169,7 +182,11 @@ func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 	for i, c := range cases {
 		memory := 20
 		d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-		f := NewFilterMAIR("XRP", "", d, memory)
+		assetXRP := dia.Asset{
+			Symbol: "XRP",
+			Name:   "XRP",
+		}
+		f := NewFilterMAIR(assetXRP, "", d, memory)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)

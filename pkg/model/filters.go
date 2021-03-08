@@ -2,10 +2,13 @@ package models
 
 import (
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func (db *DB) SetFilter(filter string, symbol string, exchange string, volume float64, t time.Time) error {
-	db.SaveFilterInflux(filter, symbol, exchange, volume, t)
-	err := db.setZSETValue(getKeyFilterZSET(getKey(filter, symbol, exchange)), volume, t.Unix(), BiggestWindow)
+// SetFilter stores a filter point
+func (db *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+	db.SaveFilterInflux(filter, asset, exchange, value, t)
+	err := db.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
 	return err
 }

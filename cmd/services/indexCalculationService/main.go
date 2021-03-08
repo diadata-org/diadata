@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -31,7 +32,8 @@ func main() {
 					if indexSymbol == "GBI" && firstRun {
 						firstRun = false
 						symbols := []string{"WBTC", "ETH", "YFI", "UNI", "COMP", "MKR", "LINK", "SPICE"}
-
+						// TO DO: Make this to []dia.Asset{...} and add addresses and blockchains
+						// The below methods then have to be rewritten accordingly.
 						// Get constituents information
 						currentConstituents, err = indexCalculationService.GetIndexBasket(symbols)
 						if err != nil {
@@ -65,13 +67,13 @@ func main() {
 
 func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []models.CryptoIndexConstituent {
 	var constituents []models.CryptoIndexConstituent
-	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	cryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		return constituents
 	}
 	for _, constituent := range cryptoIndex[0].Constituents {
-		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol, indexSymbol)
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5*time.Hour), time.Now(), constituent.Asset.Symbol, indexSymbol)
 		//curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol)
 		if err != nil {
 			log.Error(err)
@@ -90,7 +92,13 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 		log.Error(err)
 	}
 	quotation := 0.0
-	tradeObject, err := ds.GetTradeInflux(indexSymbol, "", time.Now())
+	// TO DO: Get Index address and blockchain in order to query trade from influx
+	preliminaryIndex := dia.Asset{
+		Symbol:     indexSymbol,
+		Address:    "TO DO",
+		Blockchain: dia.BlockChain{Name: "TO DO"},
+	}
+	tradeObject, err := ds.GetTradeInflux(preliminaryIndex, "", time.Now())
 	if err == nil {
 		// Quotation does exist
 		quotation = tradeObject.EstimatedUSDPrice
@@ -102,12 +110,12 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 		supply = supplyObject.CirculatingSupply
 	}
 	indexValue := indexCalculationService.GetIndexValue(indexSymbol, currentConstituents)
-	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 	}
 	index := models.CryptoIndex{
-		Name:              indexSymbol,
+		Asset:             preliminaryIndex,
 		Price:             quotation,
 		CirculatingSupply: supply,
 		Value:             indexValue,

@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -260,7 +260,11 @@ func (env *Env) GetVolume(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	v, err := env.DataStore.GetVolumeInflux(symbol, starttime, endtime)
+	// TO DO: Adapt to new asset struct
+	preliminaryAsset := dia.Asset{
+		Symbol: symbol,
+	}
+	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
@@ -1222,7 +1226,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24 * time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)

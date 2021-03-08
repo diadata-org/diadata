@@ -3,6 +3,7 @@ package source
 import (
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
@@ -20,8 +21,10 @@ type UniswapPair struct {
 }
 
 const (
-	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	wsDial   = "ws://159.69.120.42:8546/"
+	restDial = "http://159.69.120.42:8545/"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -220,13 +223,13 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 		return UniswapPair{}, err
 	}
 	token0 := dia.Asset{
-		Address:  address0.String(),
+		Address:  strings.ToLower(address0.String()),
 		Symbol:   symbol0,
 		Name:     name0,
 		Decimals: decimals0,
 	}
 	token1 := dia.Asset{
-		Address:  address1.String(),
+		Address:  strings.ToLower(address1.String()),
 		Symbol:   symbol1,
 		Name:     name1,
 		Decimals: decimals1,

@@ -10,6 +10,7 @@ const (
 	coinsPerPage = 50
 )
 
+// TO DO: Rewrite this method with new asset struct.
 func (db *DB) GetCoins() (*Coins, error) {
 	symbols := db.GetAllSymbols()
 
@@ -30,9 +31,10 @@ func (db *DB) GetCoins() (*Coins, error) {
 			var c1 Coin
 			log.Debug("Adding symbol", symbol)
 			price, _ := db.GetQuotation(symbol)
-			itin, itinErr := db.GetItinBySymbol(symbol)
+
 			if price != nil {
-				volume, _ := db.GetVolume(symbol)
+				// volume, _ := db.GetVolume(symbol)
+				var volume *float64
 				if volume != nil {
 					if *volume < 1.0 {
 						log.Warning("GetCoins: skipping ", symbol, "because <1.0 volume")
@@ -53,11 +55,6 @@ func (db *DB) GetCoins() (*Coins, error) {
 					}
 					if supply != nil {
 						c1.CirculatingSupply = &supply.CirculatingSupply
-					}
-					if itinErr == nil {
-						c1.ITIN = itin.Itin
-					} else {
-						c1.ITIN = "undefined"
 					}
 					coins.Coins = append(coins.Coins, c1)
 				}

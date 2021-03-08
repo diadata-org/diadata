@@ -3,21 +3,22 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type FilterTLT struct {
-	symbol        string
+	asset         dia.Asset
 	exchange      string
 	lastTradeTime time.Time
 }
 
-func NewFilterTLT(symbol string, exchange string) *FilterTLT {
+func NewFilterTLT(asset dia.Asset, exchange string) *FilterTLT {
 	s := &FilterTLT{
-		symbol:   symbol,
+		asset:    asset,
 		exchange: exchange,
 	}
 	return s
@@ -32,7 +33,7 @@ func (s *FilterTLT) compute(trade dia.Trade) {
 }
 
 func (s *FilterTLT) save(ds models.Datastore) error {
-	err := ds.SetLastTradeTimeForExchange(s.symbol, s.exchange, s.lastTradeTime)
+	err := ds.SetLastTradeTimeForExchange(s.asset.Symbol, s.exchange, s.lastTradeTime)
 	if err != nil {
 		log.Errorln("FilterTLT Error:", err)
 	}

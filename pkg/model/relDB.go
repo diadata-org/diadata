@@ -30,6 +30,7 @@ type RelDatastore interface {
 	SetExchangePair(exchange string, pair dia.ExchangePair)
 	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
 	SetExchangeSymbol(exchange string, symbol string) error
+	GetExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 

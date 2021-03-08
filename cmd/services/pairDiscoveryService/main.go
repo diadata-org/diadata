@@ -38,7 +38,7 @@ func main() {
 	task := &Task{
 		closed: make(chan struct{}),
 		/// Retrieve every hour
-		ticker: time.NewTicker(time.Second * 5 * 60),
+		ticker: time.NewTicker(time.Second * 30 * 60),
 	}
 	relDB, err := models.NewRelDataStore()
 	log.Info("error message setting up relDB: ", err)
@@ -253,7 +253,8 @@ func updateExchangePairs(relDB *models.RelDB) {
 							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
 						}
 					}
-
+					log.Infof("updated exchange %s", exchange)
+					time.Sleep(60 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
