@@ -1,7 +1,9 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
+	gdax "github.com/preichenberger/go-coinbasepro/v2"
 	"strconv"
 	"strings"
 	"sync"
@@ -237,6 +239,22 @@ func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 	return pair, nil
 }
 
+// FetchTickerData collects all available information on an asset traded on GateIO
+func (s *GateIOScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response gdax.Currency
+	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response.ID
+	asset.Name = response.Name
+	return asset, nil
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
@@ -271,6 +289,9 @@ type GateIOPairScraper struct {
 func (ps *GateIOPairScraper) Close() error {
 	return nil
 }
+
+
+
 
 // Channel returns a channel that can be used to receive trades
 func (ps *GateIOScraper) Channel() chan *dia.Trade {

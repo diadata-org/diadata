@@ -170,6 +170,25 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 	}
 }
 
+// FetchTickerData collects all available information on an asset traded on STEX
+func (s *STEXScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response HuobiCurrency
+	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+
+	// Loop through chain if ETH is available put ETH chain details
+
+	asset.Symbol = response.Data[0].Currency
+	asset.Name = response.Data[0].Currency
+	return asset, nil
+}
+
 // GetNewTrades fetches new trades from the STEX restAPI dating back until @fromTimestamp
 func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]STEXTrade, error) {
 	var (

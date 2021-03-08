@@ -34,6 +34,37 @@ type ResponseType struct {
 	Tick   interface{} `json:"tick,omitempty"`
 }
 
+type HuobiCurrency struct {
+	Code int `json:"code"`
+	Data []struct {
+		Currency  string `json:"currency"`
+		AssetType int    `json:"assetType"`
+		Chains    []struct {
+			Chain                  string      `json:"chain"`
+			DisplayName            string      `json:"displayName"`
+			BaseChain              string      `json:"baseChain"`
+			BaseChainProtocol      string      `json:"baseChainProtocol"`
+			IsDynamic              bool        `json:"isDynamic"`
+			NumOfConfirmations     int         `json:"numOfConfirmations"`
+			NumOfFastConfirmations int         `json:"numOfFastConfirmations"`
+			DepositStatus          string      `json:"depositStatus"`
+			MinDepositAmt          string      `json:"minDepositAmt"`
+			WithdrawStatus         string      `json:"withdrawStatus"`
+			MinWithdrawAmt         string      `json:"minWithdrawAmt"`
+			WithdrawPrecision      int         `json:"withdrawPrecision"`
+			MaxWithdrawAmt         string      `json:"maxWithdrawAmt"`
+			WithdrawQuotaPerDay    string      `json:"withdrawQuotaPerDay"`
+			WithdrawQuotaPerYear   interface{} `json:"withdrawQuotaPerYear"`
+			WithdrawQuotaTotal     interface{} `json:"withdrawQuotaTotal"`
+			WithdrawFeeType        string      `json:"withdrawFeeType"`
+			TransactFeeWithdraw    string      `json:"transactFeeWithdraw"`
+			AddrWithTag            bool        `json:"addrWithTag"`
+			AddrDepositTag         bool        `json:"addrDepositTag"`
+		} `json:"chains"`
+		InstStatus string `json:"instStatus"`
+	} `json:"data"`
+}
+
 type HuobiScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
@@ -153,6 +184,25 @@ func (s *HuobiScraper) mainLoop() {
 		}
 	}
 	s.cleanup(nil)
+}
+
+// FetchTickerData collects all available information on an asset traded on huobi
+func (s *HuobiScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+	var response HuobiCurrency
+	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+
+	// Loop through chain if ETH is available put ETH chain details
+
+	asset.Symbol = response.Data[0].Currency
+	asset.Name = response.Data[0].Currency
+	return asset, nil
 }
 
 func (s *HuobiScraper) cleanup(err error) {
