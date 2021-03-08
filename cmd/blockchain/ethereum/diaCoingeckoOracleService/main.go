@@ -31,13 +31,17 @@ func main() {
 	 */
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
 	var numCoins = flag.Int("numCoins", 100, "Number of coins to push with the oracle")
+	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
+	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
+	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
+	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
 	flag.Parse()
 
 	/*
 	 * Read secrets for unlocking the ETH account
 	 */
 	var lines []string
-	file, err := os.Open("/run/secrets/oracle_keys") // Read in key information
+	file, err := os.Open(*secretsFile) // Read in key information
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +63,7 @@ func main() {
 	 * Setup connection to contract, deploy if necessary
 	 */
 
-	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
+	conn, err := ethclient.Dial(*blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
@@ -74,41 +78,28 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, auth, contract, conn)
+	periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, auth, contract, conn)
+				periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(numCoins *int, sleepSeconds int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
 
 	topCoins, err := getTopCoinsFromCoingecko(*numCoins)
 	if err != nil {
 		log.Fatalf("Failed to get top %d coins from Coingecko: %v", numCoins, err)
 	}
-
-	// Get quotation for JOOS coin and update Oracle
-	rawQuot, err := getForeignQuotationByAddress("0x05f9abf4b0c5661e83b92c056a8791d5ccd7ca52")
-	if err != nil {
-		log.Fatalf("Failed to retrieve Coingecko data for JOOS: %v", err)
-		return err
-	}
-	err = updateForeignQuotation(rawQuot, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update Coingecko Oracle for JOOS: %v", err)
-		return err
-	}
-	time.Sleep(5 * time.Minute)
 
 	// Get quotation for topCoins and update Oracle
 	for _, symbol := range topCoins {
@@ -122,7 +113,7 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 			log.Fatalf("Failed to update Coingecko Oracle: %v", err)
 			return err
 		}
-		time.Sleep(5 * time.Minute)
+		time.Sleep(time.Duration(sleepSeconds) * time.Second)
 	}
 
 	return nil
