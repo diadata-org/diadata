@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	gdax "github.com/preichenberger/go-coinbasepro/v2"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,6 +28,30 @@ type ResponseGate struct {
 	Id     interface{}   `json:"id,omitempty"`
 }
 
+type GateIOTickerData struct {
+	Result string `json:"result"`
+	Data  []GateIOCurrency `json:"data"`
+}
+
+type GateIOCurrency  struct {
+	No          int    `json:"no"`
+	Symbol      string `json:"symbol"`
+	Name        string `json:"name"`
+	NameEn      string `json:"name_en"`
+	NameCn      string `json:"name_cn"`
+	Pair        string `json:"pair"`
+	Rate        string `json:"rate"`
+	VolA        string `json:"vol_a"`
+	VolB        string `json:"vol_b"`
+	CurrA       string `json:"curr_a"`
+	CurrB       string `json:"curr_b"`
+	CurrSuffix  string `json:"curr_suffix"`
+	RatePercent string `json:"rate_percent"`
+	Trend       string `json:"trend"`
+	Lq          string `json:"lq"`
+	PRate       int    `json:"p_rate"`
+}
+
 type GateIOScraper struct {
 	wsClient *ws.Conn
 	// signaling channels for session initialization and finishing
@@ -44,6 +67,9 @@ type GateIOScraper struct {
 	pairScrapers map[string]*GateIOPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	currencySymbolName map[string]string
+	isTickerMapInitialised bool
+
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
@@ -56,6 +82,8 @@ func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		currencySymbolName: make(map[string]string),
+		isTickerMapInitialised:false,
 	}
 
 	var wsDialer ws.Dialer
@@ -241,17 +269,32 @@ func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 
 // FetchTickerData collects all available information on an asset traded on GateIO
 func (s *GateIOScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
-	var response gdax.Currency
-	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
-	if err != nil {
-		return
+
+	// Fetch Data
+	if !s.isTickerMapInitialised {
+		var (
+			response GateIOTickerData
+			data []byte
+
+		)
+		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist" )
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return
+		}
+
+		for _,gateIOasset := range response.Data{
+			s.currencySymbolName[gateIOasset.Symbol] = gateIOasset.Name
+		}
+		s.isTickerMapInitialised = true
+
 	}
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		return
-	}
-	asset.Symbol = response.ID
-	asset.Name = response.Name
+
+	asset.Symbol = symbol
+	asset.Name = s.currencySymbolName[symbol]
 	return asset, nil
 }
 

@@ -129,8 +129,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange])
 	// case dia.LBankExchange:
 	// 	return NewLBankScraper(Exchanges[dia.LBankExchange])
-	// case dia.GateIOExchange:
-	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange])
+	case dia.GateIOExchange:
+		return NewGateIOScraper(Exchanges[dia.GateIOExchange])
 	// case dia.ZBExchange:
 	// 	return NewZBScraper(Exchanges[dia.ZBExchange])
 	// case dia.QuoineExchange:
