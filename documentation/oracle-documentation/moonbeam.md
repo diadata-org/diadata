@@ -117,4 +117,5 @@ contract DiaAssetBtcOracle {
 | :------------ | :------------------------------------------: | :----------: |
 | Moonbeam Alphanet | `0xd5e1e0056bed90e46e1a58f0a09449cbebd0ff4a` |    1/day    |
 
-The full documentation of the DIA oracle is located [here](https://docs.diadata.org/documentation/oracle-documentation).
+DIA provides a broad range of assets. You can find an overview in the DIA documentation [here](https://docs.diadata.org/documentation/oracle-documentation).
+For the deployment of specific oracles (source/methodology/frequency) please [contact the DIA team](mailto:bd@diadata.org).

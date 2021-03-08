@@ -118,4 +118,5 @@ contract DiaAssetBtcOracle {
 | Matic | `0x8e687a93a969f0bf125f1154738ca6dcc36af57f` |    1/day    |
 | Matic Mumbai Testnet | `0xA3d2127F85041729fec05Ca483b302ddb806d50a` |    1/day    |
 
-The full documentation of the DIA oracle is located [here](https://docs.diadata.org/documentation/oracle-documentation).
+DIA provides a broad range of assets. You can find an overview in the DIA documentation [here](https://docs.diadata.org/documentation/oracle-documentation).
+For the deployment of specific oracles (source/methodology/frequency) please [contact the DIA team](mailto:bd@diadata.org).
