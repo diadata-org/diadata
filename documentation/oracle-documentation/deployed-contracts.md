@@ -57,3 +57,9 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | 0xd5e1e0056bed90e46e1a58f0a09449cbebd0ff4a |
 
+### NEAR Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Request Oracle | [@contract.dia-test.testnet](https://explorer.testnet.near.org/accounts/contract.dia-test.testnet) |
+
