@@ -41,7 +41,7 @@ func main() {
 		ticker: time.NewTicker(time.Second * 30 * 60),
 	}
 	relDB, err := models.NewRelDataStore()
-	log.Info("error message setting up relDB: ", err)
+	log.Error("setting up relDB: ", err)
 	if err != nil {
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}

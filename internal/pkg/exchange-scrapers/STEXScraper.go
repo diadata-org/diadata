@@ -37,6 +37,21 @@ type Trade struct {
 	Timestamp      int64       `json:"timestamp"`
 }
 
+
+type STEXTickerData struct {
+	Success bool `json:"success"`
+	Data    [] STEXAsset `json:"data"`
+}
+
+type STEXAsset struct {
+	ID                        int         `json:"id"`
+	Code                      string      `json:"code"`
+	Name                      string      `json:"name"`
+	Active                    bool        `json:"active"`
+	Delisted                  bool        `json:"delisted"`
+	Precision                 int         `json:"precision"`
+}
+
 type STEXTrade struct {
 	ID        int        `json:"id"`
 	Price     *big.Float `json:"price"`
@@ -65,6 +80,8 @@ type STEXScraper struct {
 	pairIDToSymbol    map[int]string
 	exchangeName      string
 	chanTrades        chan *dia.Trade
+	currencySymbolName map[string]string
+	isTickerMapInitialised bool
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
@@ -79,6 +96,8 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 		exchangeName:      exchange.Name,
 		error:             nil,
 		chanTrades:        make(chan *dia.Trade),
+		currencySymbolName: make(map[string]string),
+		isTickerMapInitialised:false,
 	}
 
 	c, err := gosocketio.Dial(
@@ -168,6 +187,35 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 		s.chanTrades <- t
 		log.Info("got trade: ", t)
 	}
+}
+
+func (s *STEXScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+
+	// Fetch Data
+	if !s.isTickerMapInitialised {
+		var (
+			response STEXTickerData
+			data     []byte
+		)
+		data, err = utils.GetRequest("https://api3.stex.com/public/currencies")
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return
+		}
+
+		for _, asset := range response.Data {
+			s.currencySymbolName[asset.Code] = asset.Name
+		}
+		s.isTickerMapInitialised = true
+
+	}
+
+	asset.Symbol = symbol
+	asset.Name = s.currencySymbolName[symbol]
+	return asset, nil
 }
 
 // GetNewTrades fetches new trades from the STEX restAPI dating back until @fromTimestamp
