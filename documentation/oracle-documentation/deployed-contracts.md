@@ -44,6 +44,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://explorer-mainnet.maticvigil.com/address/0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f) |
 | Coingecko Oracle | [0xa14ce6091786a708cDe547E1bf53911C78777ede](https://explorer-mainnet.maticvigil.com/address/0xa14ce6091786a708cDe547E1bf53911C78777ede) |
+| Coinmarketcap Oracle | [0xF7CD0F8a9D1FD0dF200Cf8a0A6875126457676B8](https://explorer-mainnet.maticvigil.com/address/0xF7CD0F8a9D1FD0dF200Cf8a0A6875126457676B8) |
 
 ### Matic Mumbai Testnet
 
