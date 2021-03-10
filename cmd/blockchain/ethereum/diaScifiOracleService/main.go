@@ -28,13 +28,17 @@ func main() {
 	 * Read in Oracle address
 	 */
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
+	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
+	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
+	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
+	var chainId = flag.Int64("chainId", 1, "Chain-ID of the network to connect to")
 	flag.Parse()
 
 	/*
 	 * Read secrets for unlocking the ETH account
 	 */
 	var lines []string
-	file, err := os.Open("/run/secrets/oracle_keys") // Read in key information
+	file, err := os.Open(*secretsFile) // Read in key information
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,12 +60,12 @@ func main() {
 	 * Setup connection to contract, deploy if necessary
 	 */
 
-	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
+	conn, err := ethclient.Dial(*blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	auth, err := bind.NewTransactor(strings.NewReader(key), key_password)
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(*chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
@@ -76,7 +80,7 @@ func main() {
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for {
 			select {
@@ -89,7 +93,6 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
-	time.Sleep(13 * time.Minute)
 	rawIndex, err := getIndexValueFromDia(indexName)
 	if err != nil {
 		log.Fatalf("Failed to retrieve crypto index data from DIA: %v", err)
@@ -97,7 +100,7 @@ func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contr
 	}
 	err = updateIndexValue(rawIndex, auth, contract)
 	if err != nil {
-		log.Fatalf("Failed to update Coinmarketcap Oracle: %v", err)
+		log.Fatalf("Failed to update Scifi index Oracle: %v", err)
 		return err
 	}
 

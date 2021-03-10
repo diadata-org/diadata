@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -37,6 +39,7 @@ func main() {
 	var blockchainNode = flag.String("blockchainNode", "https://bsc-dataseed.binance.org/", "Node address for blockchain connection")
 	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
 	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
+	var chainId = flag.Int64("chainId", 1, "Chain-ID of the network to connect to")
 	flag.Parse()
 
 	/*
@@ -70,7 +73,7 @@ func main() {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	auth, err := bind.NewTransactor(strings.NewReader(key), key_password)
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(*chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
@@ -98,6 +101,7 @@ func main() {
 
 func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaDefi100OracleService.DIADefi100Oracle, conn *ethclient.Client) error {
 
+	// Defi100 data on CG
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 	// Get fresh market cap data and update Oracle
 	marketcap, err := getDefiMCFromCoingecko()
@@ -110,6 +114,22 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 		log.Fatalf("Failed to update Defi100 Oracle: %v", err)
 		return err
 	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
+	// D100 token information from DIA
+	// D100 Quotation
+	rawD100Q, err := getQuotationFromDia("D100")
+	if err != nil {
+		log.Fatalf("Failed to retrieve D100 quotation data from DIA: %v", err)
+		return err
+	}
+	rawD100Q.Name = "D100"
+	err = updateQuotation(rawD100Q, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update D100 Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
 	return nil
 }
@@ -155,6 +175,28 @@ func getDefiMCFromCoingecko() (float64, error) {
 	return marketCap, nil
 }
 
+func getQuotationFromDia(symbol string) (*models.Quotation, error) {
+	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var quotation models.Quotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &quotation, nil
+}
+
 func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaDefi100OracleService.DIADefi100Oracle) error {
 	var err error
 	if deployedContract != "" {
@@ -182,6 +224,19 @@ func updateMarketCap(marketCap float64, auth *bind.TransactOpts, contract *diaDe
 	symbol := "Defi100"
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(marketCap*100000), timestamp)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaDefi100OracleService.DIADefi100Oracle, conn *ethclient.Client) error {
+	symbol := quotation.Symbol
+	price := quotation.Price
+	timestamp := time.Now().Unix()
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err

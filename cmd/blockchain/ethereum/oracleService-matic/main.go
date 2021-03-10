@@ -33,6 +33,7 @@ func main() {
 	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
 	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
 	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
+	var chainId = flag.Int64("chainId", 137, "Chain-ID of the network to connect to")
 	flag.Parse()
 
 	/*
@@ -67,7 +68,7 @@ func main() {
 		log.Fatalf("Failed to connect to the EVM client: %v", err)
 	}
 
-	auth, err := bind.NewTransactor(strings.NewReader(key), key_password)
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(*chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
