@@ -45,24 +45,24 @@ func (s *FilterMEDIR) compute(trade dia.Trade) {
 			return
 		}
 	}
-	s.processDataPoint(trade.EstimatedUSDPrice)
+	s.processDataPoint(trade)
 	s.currentTime = trade.Time
 	s.lastTrade = &trade
 }
 
-func (s *FilterMEDIR) processDataPoint(price float64) {
+func (s *FilterMEDIR) processDataPoint(trade dia.Trade) {
 	/// first remove extra value from buffer if already full
 	if len(s.previousPrices) >= s.memory {
 		s.previousPrices = s.previousPrices[0 : s.memory-1]
 	}
-	s.previousPrices = append([]float64{price}, s.previousPrices...)
+	s.previousPrices = append([]float64{trade.EstimatedUSDPrice}, s.previousPrices...)
 }
 
 func (s *FilterMEDIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
 	}
-	cleanPrices := removeOutliers(s.previousPrices)
+	cleanPrices, _ := removeOutliers(s.previousPrices)
 	s.value = computeMedian(cleanPrices)
 	s.previousPrices = []float64{}
 	return s.value

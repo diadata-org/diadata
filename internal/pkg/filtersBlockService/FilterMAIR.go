@@ -13,48 +13,90 @@ import (
 // Outliers are eliminated using interquartile range.
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMAIR struct {
-	asset          dia.Asset
-	exchange       string
-	currentTime    time.Time
-	previousPrices []float64
-	lastTrade      *dia.Trade
-	memory         int
-	value          float64
-	filterName     string
-	modified       bool
+	asset           dia.Asset
+	exchange        string
+	currentTime     time.Time
+	previousPrices  []float64
+	previousVolumes []float64
+	lastTrade       *dia.Trade
+	memory          int
+	value           float64
+	filterName      string
+	modified        bool
 }
 
 //NewFilterMAIR returns a FilterMAIR
 func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
 	s := &FilterMAIR{
-		asset:          asset,
-		exchange:       exchange,
-		previousPrices: []float64{},
-		currentTime:    currentTime,
-		memory:         memory,
-		filterName:     "MAIR" + strconv.Itoa(memory),
+		asset:           asset,
+		exchange:        exchange,
+		previousPrices:  []float64{},
+		previousVolumes: []float64{},
+		currentTime:     currentTime,
+		memory:          memory,
+		filterName:      "MAIR" + strconv.Itoa(memory),
 	}
 	return s
 }
 
-func (s *FilterMAIR) processDataPoint(price float64) {
+func (s *FilterMAIR) compute(trade dia.Trade) {
+	s.modified = true
+	if s.lastTrade != nil {
+		if trade.Time.Before(s.currentTime) {
+			log.Errorln("FilterMAIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
+			return
+		}
+	}
+	s.fill(trade.Time, trade)
+	s.lastTrade = &trade
+}
+
+func (s *FilterMAIR) fill(t time.Time, trade dia.Trade) {
+	diff := int(t.Sub(s.currentTime).Seconds())
+	if diff > 1 {
+		for diff > 1 {
+			s.processDataPoint(trade)
+			diff--
+		}
+	} else {
+		if diff == 0.0 {
+			if len(s.previousPrices) >= 1 {
+				/// Remove latest data point and update with newer
+				s.previousPrices = s.previousPrices[1:]
+				s.previousVolumes = s.previousVolumes[1:]
+			}
+		}
+		s.processDataPoint(trade)
+	}
+	s.currentTime = t
+}
+
+func (s *FilterMAIR) processDataPoint(trade dia.Trade) {
 	/// first remove extra value from buffer if already full
 	if len(s.previousPrices) >= s.memory {
 		s.previousPrices = s.previousPrices[0 : s.memory-1]
+		s.previousVolumes = s.previousVolumes[0 : s.memory-1]
 	}
-	s.previousPrices = append([]float64{price}, s.previousPrices...)
+	s.previousPrices = append([]float64{trade.EstimatedUSDPrice}, s.previousPrices...)
+	s.previousVolumes = append([]float64{trade.Volume}, s.previousVolumes...)
 }
+
 func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
 	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
-	s.processDataPoint(s.lastTrade.EstimatedUSDPrice)
-	cleanPrices := removeOutliers(s.previousPrices)
-	s.value = computeMean(cleanPrices)
+	s.processDataPoint(*s.lastTrade)
+	cleanPrices, bounds := removeOutliers(s.previousPrices)
+	mean, err := computeMean(cleanPrices, s.previousVolumes[bounds[0]:bounds[1]])
+	if err != nil {
+		return 0.0
+	}
+	s.value = mean
 	return s.value
 }
+
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return nil
@@ -66,35 +108,6 @@ func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 		Time:  s.currentTime,
 	}
 }
-func (s *FilterMAIR) fill(t time.Time, price float64) {
-	diff := int(t.Sub(s.currentTime).Seconds())
-	if diff > 1 {
-		for diff > 1 {
-			s.processDataPoint(price)
-			diff--
-		}
-	} else {
-		if diff == 0.0 {
-			if len(s.previousPrices) >= 1 {
-				/// Remove latest data point and update with newer
-				s.previousPrices = s.previousPrices[1:]
-			}
-		}
-		s.processDataPoint(price)
-	}
-	s.currentTime = t
-}
-func (s *FilterMAIR) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterMAIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
-			return
-		}
-	}
-	s.fill(trade.Time, trade.EstimatedUSDPrice)
-	s.lastTrade = &trade
-}
 
 func (s *FilterMAIR) save(ds models.Datastore) error {
 	if s.modified {
@@ -104,7 +117,6 @@ func (s *FilterMAIR) save(ds models.Datastore) error {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
 		return err
-	} else {
-		return nil
 	}
+	return nil
 }
