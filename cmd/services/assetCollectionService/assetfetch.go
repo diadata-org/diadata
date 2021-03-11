@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/internal/pkg/datasource"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,22 +29,30 @@ const (
 	fetchPeriodMinutes = 24 * 60
 )
 
+var exchanges map[string]dia.Exchange
+
 func init() {
 	assetSource = flag.String("source", "Uniswap", "Data source for asset collection")
 	secret = flag.String("secret", "", "secret for asset source")
 	caching = flag.Bool("caching", true, "caching assets in redis")
-
 	flag.Parse()
-	blockchains = make(map[string]dia.BlockChain)
-	blockchains[dia.Bitcoin] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
-	blockchains[dia.Ethereum] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
+
+	source, err := datasource.InitSource()
+	if err != nil {
+		panic(err)
+	}
+	exchanges = source.GetExchanges()
 }
 
 // NewAssetScraper returns a scraper for assets on @exchange
 func NewAssetScraper(exchange string, secret string) source.AssetSource {
 	switch exchange {
 	case dia.UniswapExchange:
-		return source.NewUniswapAssetSource(dia.Exchange{Name: dia.UniswapExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f")})
+		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange])
+	case dia.PanCakeSwap:
+		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
+	case dia.SushiSwapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
 	default:
 		return nil
 	}

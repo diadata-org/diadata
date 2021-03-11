@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+
 const (
 	Diadata                              = "diadata.org"
 	PROOF_OF_STAKE VerificationMechanism = "pos"
@@ -19,11 +20,11 @@ const (
 type VerificationMechanism string
 
 type Exchange struct {
-	Name          string
-	Centralized   bool
-	Contract      common.Address
-	BlockChain    BlockChain
-	WatchdogDelay int
+	Name          string `json:"Name"`
+	Centralized   bool `json:"Centralized"`
+	Contract      common.Address `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	WatchdogDelay int `json:"WatchdogDelay"`
 }
 
 type Supply struct {
@@ -44,10 +45,10 @@ type Asset struct {
 }
 
 type BlockChain struct {
-	Name                  string
-	GenesisDate           time.Time
-	NativeToken           string
-	VerificationMechanism VerificationMechanism
+	Name                  string `json:"Name"`
+	GenesisDate           time.Time `json:"GenesisDate"`
+	NativeToken           string `json:"NativeToken"`
+	VerificationMechanism VerificationMechanism `json:"VerificationMechanism"`
 }
 
 // Pair substitues the old dia.Pair. It includes the new asset type.
