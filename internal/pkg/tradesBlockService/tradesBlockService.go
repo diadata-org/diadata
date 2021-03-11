@@ -20,7 +20,6 @@ var (
 )
 
 type TradesBlockService struct {
-	pair            string
 	shutdown        chan nothing
 	shutdownDone    chan nothing
 	chanTrades      chan *dia.Trade

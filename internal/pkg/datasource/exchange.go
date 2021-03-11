@@ -2,11 +2,19 @@ package datasource
 
 import (
 	"encoding/json"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"go/build"
 	"io/ioutil"
 	"os"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/sirupsen/logrus"
 )
+
+var log *logrus.Logger
+
+func init() {
+	log = logrus.New()
+}
 
 type Source struct {
 	Exchanges []dia.Exchange `json:"exchanges"`
@@ -22,7 +30,15 @@ func InitSource() (source *Source, err error) {
 		jsonFile  *os.File
 		fileBytes []byte
 	)
-	jsonFile, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/internal/pkg/datasource/exchange.json")
+	executionMode := os.Getenv("EXEC_MODE")
+	log.Info("executionMode: ", gopath)
+	dir, _ := os.Getwd()
+	log.Info("pwd: ", dir)
+	if executionMode == "production" {
+		jsonFile, err = os.Open("/config/exchanges.json")
+	} else {
+		jsonFile, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/config/exchanges.json")
+	}
 	if err != nil {
 		return
 	}

@@ -1,6 +1,7 @@
 package filters
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -12,27 +13,29 @@ import (
 // FilterMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterMA struct {
-	asset          dia.Asset
-	exchange       string
-	currentTime    time.Time
-	previousPrices []float64
-	lastTrade      *dia.Trade
-	param          int
-	value          float64
-	modified       bool
-	filterName     string
+	asset           dia.Asset
+	exchange        string
+	currentTime     time.Time
+	previousPrices  []float64
+	previousVolumes []float64
+	lastTrade       *dia.Trade
+	param           int
+	value           float64
+	modified        bool
+	filterName      string
 }
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
 func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterMA {
 	s := &FilterMA{
-		asset:          asset,
-		exchange:       exchange,
-		previousPrices: []float64{},
-		currentTime:    currentTime,
-		param:          param,
-		filterName:     "MA" + strconv.Itoa(param),
+		asset:           asset,
+		exchange:        exchange,
+		previousPrices:  []float64{},
+		previousVolumes: []float64{},
+		currentTime:     currentTime,
+		param:           param,
+		filterName:      "MA" + strconv.Itoa(param),
 	}
 	return s
 }
@@ -44,32 +47,41 @@ func (s *FilterMA) compute(trade dia.Trade) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
 		}
-		s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
+		s.fill(trade.Time, *s.lastTrade)
 	}
-	s.fill(trade.Time, trade.EstimatedUSDPrice)
+	s.fill(trade.Time, trade)
 	s.lastTrade = &trade
 }
 
-func (s *FilterMA) fill(t time.Time, price float64) {
+func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 	// Time difference of trade time and @currentTime in seconds.
 	// Initially, @currentTime is the begin time of the filtersBlock.
 	diff := int(t.Sub(s.currentTime).Seconds())
+	log.Infof("diff for asset %s: %v ", s.asset.Symbol, diff)
+	currPrice := trade.EstimatedUSDPrice
+	currVolume := trade.Volume
 	if diff > 1 {
 		for diff > 1 {
-			s.previousPrices = append([]float64{price}, s.previousPrices...)
+			s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
+			s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 			diff--
 		}
 	} else {
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]
+				s.previousVolumes = s.previousVolumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{price}, s.previousPrices...)
+		s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
+		s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 	}
 
 	if len(s.previousPrices) > s.param {
 		s.previousPrices = s.previousPrices[0:s.param]
+	}
+	if len(s.previousVolumes) > s.param {
+		s.previousVolumes = s.previousVolumes[0:s.param]
 	}
 	s.currentTime = t
 }
@@ -78,17 +90,14 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
 	}
-	s.fill(t, s.lastTrade.EstimatedUSDPrice)
-
-	var total float64 = 0
-	for _, v := range s.previousPrices {
-		total += v
+	s.fill(t, *s.lastTrade)
+	var totalVolume float64
+	var totalPrice float64
+	for priceIndex, price := range s.previousPrices {
+		totalPrice += price * math.Abs(s.previousVolumes[priceIndex])
+		totalVolume += math.Abs(s.previousVolumes[priceIndex])
 	}
-	div := s.param
-	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
-		div = len(s.previousPrices)
-	}
-	s.value = total / float64(div)
+	s.value = totalPrice / totalVolume
 	return s.value
 }
 

@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/diadata/internal/pkg/datasource"
 	"io"
+
+	"github.com/diadata-org/diadata/internal/pkg/datasource"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
