@@ -152,7 +152,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
-						time.Sleep(1 * time.Second)
+						// time.Sleep(1 * time.Second)
 						// First set all symbols traded on the exchange. These are subsequently
 						// matched with assets from the asset table.
 
@@ -173,7 +173,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 							log.Errorf("error setting exchange symbol %s: %v", symbol, err)
 						}
 						// Gather as much information on @symbol as available on the exchange's API.
-						assetInfo, err := scraper.FetchTickerData(symbol)
+						assetInfo, err := scraper.FillSymbolData(symbol)
 						if err != nil {
 							log.Errorf("error fetching ticker data for %s: %v", symbol, err)
 							continue
@@ -211,7 +211,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 					// 2.b Verify/falsify exchange pairs using the exchangesymbol table in postgres.
 					for _, pair := range pairs {
 						log.Info("handle pair ", pair)
-						time.Sleep(1 * time.Second)
+						// time.Sleep(1 * time.Second)
 						// Continue if pair is already verified
 						exchangepair, err := relDB.GetExchangePairCache(exchange, pair.ForeignName)
 						if err != nil {

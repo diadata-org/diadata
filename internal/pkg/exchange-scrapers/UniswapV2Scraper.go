@@ -387,7 +387,8 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 	return
 }
 
-func (s *UniswapScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+// FillSymbolData is not used by DEX scrapers.
+func (s *UniswapScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil
 }
 

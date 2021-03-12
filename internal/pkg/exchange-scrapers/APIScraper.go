@@ -40,20 +40,15 @@ type APIScraper interface {
 	// be used by the corr. pairScraper in order to fetch trades.
 	FetchAvailablePairs() ([]dia.ExchangePair, error)
 
-	// FetchTickerData collects information associated to the symbol ticker of an
+	// FillSymbolData collects information associated to the symbol ticker of an
 	// asset traded on the exchange associated to the APIScraper.
 	// Ideally, data is returned as close to original (blockchain) notation as possible.
 	// This is only needed for CEX. For DEX the trade can be filled.
-	FetchTickerData(symbol string) (dia.Asset, error)
+	FillSymbolData(symbol string) (dia.Asset, error)
 
 	NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error)
 	// Channel returns a channel that can be used to receive trades
 	Channel() chan *dia.Trade
-}
-
-type CEXAPIScraper interface {
-	APIScraper
-	FetchTickerData(symbol string) (dia.Asset, error)
 }
 
 // PairScraper receives trades for a single pc.ExchangePair from a single exchange.
@@ -78,15 +73,15 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// case dia.BitfinexExchange:
 	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange])
 	// case dia.BittrexExchange:
-	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange])
+	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape)
 	case dia.CoinBaseExchange:
 		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape)
-	// case dia.CREX24Exchange:
-	// 	return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
+	case dia.CREX24Exchange:
+		return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
 	// case dia.KrakenExchange:
 	// 	return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange])
-	// case dia.HitBTCExchange:
-	// 	return NewHitBTCScraper(Exchanges[dia.HitBTCExchange])
+	case dia.HitBTCExchange:
+		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape)
 	// case dia.SimexExchange:
 	// 	return NewSimexScraper(Exchanges[dia.SimexExchange])
 	// case dia.OKExExchange:
@@ -95,8 +90,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange])
 	// case dia.LBankExchange:
 	// 	return NewLBankScraper(Exchanges[dia.LBankExchange])
-	case dia.GateIOExchange:
-		return NewGateIOScraper(Exchanges[dia.GateIOExchange])
+	// case dia.GateIOExchange:
+	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange])
 	// case dia.ZBExchange:
 	// 	return NewZBScraper(Exchanges[dia.ZBExchange])
 	// case dia.QuoineExchange:
@@ -127,8 +122,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// 	return NewZeroxScraper(Exchanges[dia.ZeroxExchange])
 	// case dia.KyberExchange:
 	// 	return NewKyberScraper(Exchanges[dia.KyberExchange])
-	// case dia.BitMaxExchange:
-	// 	return NewBitMaxScraper(Exchanges[dia.BitMaxExchange])
+	case dia.BitMaxExchange:
+		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape)
 	// case dia.STEXExchange:
 	// 	return NewSTEXScraper(Exchanges[dia.STEXExchange])
 

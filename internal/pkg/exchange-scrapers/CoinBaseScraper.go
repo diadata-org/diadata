@@ -205,8 +205,8 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	return
 }
 
-// FetchTickerData collects all available information on an asset traded on CoinBase
-func (s *CoinBaseScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on CoinBase
+func (s *CoinBaseScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response gdax.Currency
 	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
 	if err != nil {

@@ -3,12 +3,14 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/carterjones/signalr"
 	"github.com/carterjones/signalr/hubs"
@@ -137,6 +139,11 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 }
 
 func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
+
 	ps := s.pairScrapers[update.I]
 	pair := ps.Pair()
 	for _, trade := range update.NT {
@@ -146,6 +153,10 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 			volume *= -1
 		}
 		if pok == nil && vok == nil {
+			exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Pair:           pair.ForeignName,
 				Price:          price,
@@ -154,9 +165,14 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 				Time:           time.Unix(trade.Timestamp, 0),
 				ForeignTradeID: "",
 				Source:         dia.CREX24Exchange,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			s.chanTrades <- t
-			log.Info("got trade: ", t)
 		}
 	}
 }
@@ -186,8 +202,8 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	return results, nil
 }
 
-// FetchTickerData collects all available information on an asset traded on HitBTC
-func (s *CREX24Scraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on CREX24
+func (s *CREX24Scraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response CREX4Asset
 	data, err := utils.GetRequest("https://api.crex24.com/v2/public/currencies?filter=" + symbol)
 	if err != nil {

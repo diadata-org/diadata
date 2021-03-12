@@ -11,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -58,7 +59,7 @@ type HitBTCScraper struct {
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper(exchange dia.Exchange) *HitBTCScraper {
+func NewHitBTCScraper(exchange dia.Exchange, scrape bool) *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),
@@ -71,19 +72,23 @@ func NewHitBTCScraper(exchange dia.Exchange) *HitBTCScraper {
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_socketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
-	var err error
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
+
 	for true {
 		message := &Event{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -108,6 +113,11 @@ func (s *HitBTCScraper) mainLoop() {
 								if mdElement["side"] == "sell" {
 									f64Volume = -f64Volume
 								}
+
+								exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+								if err != nil {
+									log.Error(err)
+								}
 								t := &dia.Trade{
 									Symbol:         ps.pair.Symbol,
 									Pair:           md["symbol"].(string),
@@ -116,6 +126,12 @@ func (s *HitBTCScraper) mainLoop() {
 									Time:           timeStamp,
 									ForeignTradeID: strconv.FormatInt(int64(mdElement["id"].(float64)), 16),
 									Source:         s.exchangeName,
+									VerifiedPair:   exchangepair.Verified,
+									BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+									QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+								}
+								if exchangepair.Verified {
+									log.Infoln("Got verified trade", t)
 								}
 								ps.parent.chanTrades <- t
 							}
@@ -277,8 +293,8 @@ func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
 }
 
-// FetchTickerData collects all available information on an asset traded on HitBTC
-func (ps *HitBTCScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on HitBTC
+func (ps *HitBTCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response HitBTCAsset
 	data, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
 	if err != nil {

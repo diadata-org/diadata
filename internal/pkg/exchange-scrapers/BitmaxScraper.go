@@ -3,13 +3,15 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	ws "github.com/gorilla/websocket"
 
@@ -72,7 +74,7 @@ type BitMaxScraper struct {
 	isTickerMapInitialised bool
 }
 
-func NewBitMaxScraper(exchange dia.Exchange) *BitMaxScraper {
+func NewBitMaxScraper(exchange dia.Exchange, scrape bool) *BitMaxScraper {
 	var bitmaxSocketURL = "wss://bitmax.io/0/api/pro/v1/stream"
 	s := &BitMaxScraper{
 		initDone:               make(chan nothing),
@@ -94,8 +96,9 @@ func NewBitMaxScraper(exchange dia.Exchange) *BitMaxScraper {
 		println(err.Error())
 	}
 	s.wsClient = SwConn
-
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -113,7 +116,10 @@ type BitMaxTradeResponse struct {
 
 // runs in a goroutine until s is closed
 func (s *BitMaxScraper) mainLoop() {
-	var err error
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
 	for true {
 		message := &BitMaxTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -127,7 +133,10 @@ func (s *BitMaxScraper) mainLoop() {
 				for _, trade := range message.Data {
 					priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-
+					exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, message.Symbol)
+					if err != nil {
+						log.Error(err)
+					}
 					t := &dia.Trade{
 						Symbol:         strings.Split(message.Symbol, "/")[0],
 						Pair:           message.Symbol,
@@ -136,8 +145,13 @@ func (s *BitMaxScraper) mainLoop() {
 						Time:           time.Unix(0, trade.Ts*int64(time.Millisecond)),
 						ForeignTradeID: strconv.FormatInt(trade.Seqnum, 10),
 						Source:         s.exchangeName,
+						VerifiedPair:   exchangepair.Verified,
+						BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 					}
-					log.Infoln("Got Trade", t)
+					if exchangepair.Verified {
+						log.Infoln("Got verified trade", t)
+					}
 					s.chanTrades <- t
 				}
 
@@ -157,7 +171,8 @@ func (s *BitMaxScraper) mainLoop() {
 
 }
 
-func (s *BitMaxScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on Bitmax
+func (s *BitMaxScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
 	// Fetch Data
 	if !s.isTickerMapInitialised {
@@ -228,33 +243,26 @@ type BitMaxRequest struct {
 func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("LoopringScraper: Call ScrapePair on closed scraper")
 	}
-
 	ps := &BitMaxPairScraper{
 		parent: s,
 		pair:   pair,
 	}
-
 	a := &BitMaxRequest{
 		Op: "sub",
 		Ch: "trades:" + pair.ForeignName,
 		ID: string(time.Now().Unix()),
 	}
-
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
 	}
 	log.Info("Subscribed to get trades for ", pair.ForeignName)
-
 	s.pairScrapers[pair.ForeignName] = ps
-
 	return ps, nil
 }
 
