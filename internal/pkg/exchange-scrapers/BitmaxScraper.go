@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -18,6 +19,20 @@ import (
 type BitMaxPairResponse struct {
 	Code int          `json:"code"`
 	Data []BitMaxPair `json:"data"`
+}
+
+type BitMaxAssets struct {
+	Code int           `json:"code"`
+	Data []BitMaxAsset `json:"data"`
+}
+type BitMaxAsset struct {
+	AssetCode        string `json:"assetCode"`
+	AssetName        string `json:"assetName"`
+	PrecisionScale   int    `json:"precisionScale"`
+	NativeScale      int    `json:"nativeScale"`
+	WithdrawalFee    string `json:"withdrawalFee"`
+	MinWithdrawalAmt string `json:"minWithdrawalAmt"`
+	Status           string `json:"status"`
 }
 
 type BitMaxPair struct {
@@ -47,24 +62,28 @@ type BitMaxScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
-	pairSubscriptions sync.Map                      // dia.ExchangePair -> string (subscription ID)
-	pairLocks         sync.Map                      // dia.ExchangePair -> sync.Mutex
-	exchangeName      string
-	chanTrades        chan *dia.Trade
-	wsClient          *ws.Conn
+	pairScrapers           map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
+	pairSubscriptions      sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	pairLocks              sync.Map                      // dia.ExchangePair -> sync.Mutex
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	wsClient               *ws.Conn
+	currencySymbolName     map[string]string
+	isTickerMapInitialised bool
 }
 
 func NewBitMaxScraper(exchange dia.Exchange) *BitMaxScraper {
 	var bitmaxSocketURL = "wss://bitmax.io/0/api/pro/v1/stream"
 	s := &BitMaxScraper{
-		initDone:     make(chan nothing),
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		exchangeName: exchange.Name,
-		pairScrapers: make(map[string]*BitMaxPairScraper),
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
+		initDone:               make(chan nothing),
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		exchangeName:           exchange.Name,
+		pairScrapers:           make(map[string]*BitMaxPairScraper),
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		currencySymbolName:     make(map[string]string),
+		isTickerMapInitialised: false,
 	}
 
 	// establish connection in the background
@@ -136,6 +155,35 @@ func (s *BitMaxScraper) mainLoop() {
 		}
 	}
 
+}
+
+func (s *BitMaxScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+
+	// Fetch Data
+	if !s.isTickerMapInitialised {
+		var (
+			response BitMaxAssets
+			data     []byte
+		)
+		data, err = utils.GetRequest("https://bitmax.io/api/pro/v1/assets")
+		if err != nil {
+			return
+		}
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return
+		}
+
+		for _, asset := range response.Data {
+			s.currencySymbolName[asset.AssetCode] = asset.AssetName
+		}
+		s.isTickerMapInitialised = true
+
+	}
+
+	asset.Symbol = symbol
+	asset.Name = s.currencySymbolName[symbol]
+	return asset, nil
 }
 
 func (s *BitMaxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
