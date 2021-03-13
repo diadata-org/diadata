@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"sync"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
@@ -57,7 +58,7 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			}
-			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, configExchangeApi.ApiKey, configExchangeApi.SecretKey)
+			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey)
 			if s != nil {
 				s[configPair.Exchange] = aPIScraper
 				go handleTrades(aPIScraper.Channel(), &wg)
@@ -67,7 +68,7 @@ func main() {
 		}
 		es := s[configPair.Exchange]
 		if es != nil {
-			_, err := es.ScrapePair(dia.Pair{
+			_, err := es.ScrapePair(dia.ExchangePair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {

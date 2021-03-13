@@ -28,22 +28,22 @@ func (db *DB) GetAllSymbols() []string {
 	return s
 }
 
-// func (db *DB) GetSymbolsByExchange(e string) []string {
-// 	r := make(map[string]string)
-// 	p, err := db.GetAvailablePairs(e)
-// 	if err == nil {
-// 		for _, v := range p {
-// 			r[v.Symbol] = v.Symbol
-// 		}
-// 	} else {
-// 		log.Error("GetAllSymbols", err)
-// 	}
-// 	s := []string{}
-// 	for _, value := range r {
-// 		s = append(s, value)
-// 	}
-// 	return s
-// }
+func (db *DB) GetSymbolsByExchange(e string) []string {
+	r := make(map[string]string)
+	p, err := db.GetAvailablePairs(e)
+	if err == nil {
+		for _, v := range p {
+			r[v.Symbol] = v.Symbol
+		}
+	} else {
+		log.Error("GetAllSymbols", err)
+	}
+	s := []string{}
+	for _, value := range r {
+		s = append(s, value)
+	}
+	return s
+}
 
 func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string

@@ -67,7 +67,7 @@ func main() {
 func updateExchangePairs(relDB *models.RelDB) {
 	toggle := getTogglePairDiscovery(updateTime)
 	
-	// toggle = true
+	toggle = true
 	if toggle == false {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
@@ -103,6 +103,9 @@ func updateExchangePairs(relDB *models.RelDB) {
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
+			if exchange == "Uniswap" {
+				continue
+			}
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)

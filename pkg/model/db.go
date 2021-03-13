@@ -52,7 +52,7 @@ type Datastore interface {
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 	GetAllSymbols() []string
-	// GetSymbolsByExchange(string) []string
+	GetSymbolsByExchange(string) []string
 	GetCoins() (*Coins, error)
 	GetSymbolDetails(symbol string) (*SymbolDetails, error)
 	// UpdateSymbolDetails(symbol string, rank int)

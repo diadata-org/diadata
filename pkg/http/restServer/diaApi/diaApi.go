@@ -22,6 +22,7 @@ import (
 
 type Env struct {
 	DataStore models.Datastore
+	RelDB     models.RelDB
 }
 
 // PostSupply godoc
@@ -1253,7 +1254,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	var newIndex models.CryptoIndex
-	newIndex.Name = indexSymbol
+	newIndex.Asset.Name = indexSymbol
 	newIndex.Constituents = constituents
 	newIndex.Value = newIndexRawValue
 	newIndex.Price = currIndex[0].Price

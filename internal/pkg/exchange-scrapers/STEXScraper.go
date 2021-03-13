@@ -37,19 +37,18 @@ type Trade struct {
 	Timestamp      int64       `json:"timestamp"`
 }
 
-
 type STEXTickerData struct {
-	Success bool `json:"success"`
-	Data    [] STEXAsset `json:"data"`
+	Success bool        `json:"success"`
+	Data    []STEXAsset `json:"data"`
 }
 
 type STEXAsset struct {
-	ID                        int         `json:"id"`
-	Code                      string      `json:"code"`
-	Name                      string      `json:"name"`
-	Active                    bool        `json:"active"`
-	Delisted                  bool        `json:"delisted"`
-	Precision                 int         `json:"precision"`
+	ID        int    `json:"id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Active    bool   `json:"active"`
+	Delisted  bool   `json:"delisted"`
+	Precision int    `json:"precision"`
 }
 
 type STEXTrade struct {
@@ -74,30 +73,30 @@ type STEXScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers      map[string]*STEXPairScraper
-	pairSymbolToID    map[string]int
-	pairLastTimeStamp map[string]time.Time
-	pairIDToSymbol    map[int]string
-	exchangeName      string
-	chanTrades        chan *dia.Trade
-	currencySymbolName map[string]string
+	pairScrapers           map[string]*STEXPairScraper
+	pairSymbolToID         map[string]int
+	pairLastTimeStamp      map[string]time.Time
+	pairIDToSymbol         map[int]string
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
 func NewSTEXScraper(exchange dia.Exchange, scrape bool) *STEXScraper {
 	s := &STEXScraper{
-		shutdown:          make(chan nothing),
-		shutdownDone:      make(chan nothing),
-		pairScrapers:      make(map[string]*STEXPairScraper),
-		pairSymbolToID:    make(map[string]int),
-		pairIDToSymbol:    make(map[int]string),
-		pairLastTimeStamp: make(map[string]time.Time),
-		exchangeName:      exchange.Name,
-		error:             nil,
-		chanTrades:        make(chan *dia.Trade),
-		currencySymbolName: make(map[string]string),
-		isTickerMapInitialised:false,
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		pairScrapers:           make(map[string]*STEXPairScraper),
+		pairSymbolToID:         make(map[string]int),
+		pairIDToSymbol:         make(map[int]string),
+		pairLastTimeStamp:      make(map[string]time.Time),
+		exchangeName:           exchange.Name,
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		currencySymbolName:     make(map[string]string),
+		isTickerMapInitialised: false,
 	}
 
 	c, err := gosocketio.Dial(

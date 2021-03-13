@@ -91,7 +91,6 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	executionMode := os.Getenv("EXEC_MODE")
 	address := ""
 	url := getPostgresURL(executionMode)
-	fmt.Println("postgres URL: ", url)
 	if withPostgres {
 		log.Info("connect to postgres server...")
 		postgresClient, err = pgx.Connect(context.Background(), url)
@@ -160,7 +159,8 @@ func getPostgresKeyFromSecrets(executionMode string) string {
 			log.Fatal(err)
 		}
 	} else {
-		file, err = os.Open("../../../secrets/" + postgresKey)
+		gopath := os.Getenv("GOPATH")
+		file, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
 		if err != nil {
 			log.Fatal(err)
 		}

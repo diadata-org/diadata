@@ -183,7 +183,14 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
-	diaApiEnv := &diaApi.Env{store}
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore", err)
+	}
+	diaApiEnv := &diaApi.Env{
+		DataStore: store,
+		RelDB:     *relDB,
+	}
 
 	diaAuth := r.Group("/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())

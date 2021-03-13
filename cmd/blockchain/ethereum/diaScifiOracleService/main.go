@@ -105,10 +105,10 @@ func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contr
 }
 
 func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
-	symbol := iv.Name
+	symbol := iv.Asset.Name
 	value := iv.Value
 	timestamp := iv.CalculationTime.Unix()
-	err := updateOracle(contract, auth, symbol, int64(value * 10000), timestamp)
+	err := updateOracle(contract, auth, symbol, int64(value*10000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -118,7 +118,7 @@ func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract 
 }
 
 func getIndexValueFromDia(symbol string) (*models.CryptoIndex, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200 * time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
+	response, err := http.Get(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200*time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
 	if err != nil {
 		return nil, err
 	}
