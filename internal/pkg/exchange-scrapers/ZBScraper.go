@@ -50,7 +50,7 @@ type ZBScraper struct {
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper(exchange dia.Exchange) *ZBScraper {
+func NewZBScraper(exchange dia.Exchange, scrape bool) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
@@ -60,16 +60,16 @@ func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
-
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(ZBSocketURL, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

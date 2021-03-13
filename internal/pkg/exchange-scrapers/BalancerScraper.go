@@ -74,7 +74,7 @@ type BalancerScraper struct {
 	pools       map[string]struct{}
 }
 
-func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
+func NewBalancerScraper(exchange dia.Exchange, scrape bool) *BalancerScraper {
 	scraper := &BalancerScraper{
 		exchangeName:      exchange.Name,
 		initDone:          make(chan nothing),
@@ -99,7 +99,9 @@ func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
 	}
 	scraper.RestClient = restClient
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

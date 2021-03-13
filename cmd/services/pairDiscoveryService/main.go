@@ -18,6 +18,7 @@ import (
 
 var (
 	log *logrus.Logger
+	updateTime = time.Second * 60 * 60
 )
 
 const (
@@ -64,12 +65,9 @@ func main() {
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
 func updateExchangePairs(relDB *models.RelDB) {
-	toggle, err := getConfigTogglePairDiscovery()
-	if err != nil {
-		log.Errorf("updateExchangePairs GetConfigTogglePairDiscovery: %v", err)
-		return
-	}
-	toggle = true
+	toggle := getTogglePairDiscovery(updateTime)
+	
+	// toggle = true
 	if toggle == false {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
@@ -152,7 +150,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
-						// time.Sleep(1 * time.Second)
+						time.Sleep(200 * time.Millisecond)
 						// First set all symbols traded on the exchange. These are subsequently
 						// matched with assets from the asset table.
 
@@ -295,9 +293,14 @@ func updateExchangePairs(relDB *models.RelDB) {
 	}
 }
 
-func getConfigTogglePairDiscovery() (bool, error) {
-	// Activates periodically
-	return false, nil //TOFIX
+// getTogglePairDiscovery switches to true between midnight and midnight + duration
+func getTogglePairDiscovery(d time.Duration) bool {
+	t := time.Now()
+	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
+	if float64(secondsAfterMidnight) < d.Seconds()+10 {
+		return true
+	}
+	return false
 }
 
 // addNewPairsToPG adds pair from @pairs if it's not in our postgres DB yet.

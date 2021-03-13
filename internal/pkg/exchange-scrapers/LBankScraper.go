@@ -47,7 +47,7 @@ type LBankScraper struct {
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
+func NewLBankScraper(exchange dia.Exchange, scrape bool) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
@@ -60,13 +60,14 @@ func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_LBankSocketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

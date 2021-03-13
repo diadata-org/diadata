@@ -188,7 +188,7 @@ type BancorScraper struct {
 	chanTrades     chan *dia.Trade
 }
 
-func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
+func NewBancorScraper(exchange dia.Exchange, scrape bool) *BancorScraper {
 	scraper := &BancorScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -199,7 +199,9 @@ func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
 		chanTrades:     make(chan *dia.Trade),
 	}
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

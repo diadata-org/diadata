@@ -74,7 +74,7 @@ func Exchanges() []string {
 		// PanCakeSwap,
 		// QuoineExchange,
 		// SimexExchange,
-		// STEXExchange,
+		STEXExchange,
 		// SushiSwapExchange,
 		UniswapExchange,
 		// ZBExchange,

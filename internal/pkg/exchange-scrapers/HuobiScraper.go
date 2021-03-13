@@ -12,6 +12,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -83,7 +84,7 @@ type HuobiScraper struct {
 }
 
 // NewHuobiScraper returns a new HuobiScraper for the given pair
-func NewHuobiScraper(exchange dia.Exchange) *HuobiScraper {
+func NewHuobiScraper(exchange dia.Exchange, scrape bool) *HuobiScraper {
 
 	s := &HuobiScraper{
 		shutdown:     make(chan nothing),
@@ -96,18 +97,23 @@ func NewHuobiScraper(exchange dia.Exchange) *HuobiScraper {
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_HuobiSocketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+	
+	if scrape { 
+		go s.mainLoop()
+	}
 	return s
 }
 
 // runs in a goroutine until s is closed
 func (s *HuobiScraper) mainLoop() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
 	for true {
 		message := &ResponseType{}
 		_, testRead, err := s.wsClient.NextReader()
@@ -162,6 +168,10 @@ func (s *HuobiScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
+							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+							if err != nil {
+								log.Error(err)
+							}
 							// element id is more than int64/uint64 in size
 							// leave the id in float64 format
 							t := &dia.Trade{
@@ -172,9 +182,14 @@ func (s *HuobiScraper) mainLoop() {
 								Time:           timeStamp,
 								ForeignTradeID: strconv.FormatFloat(md_element["id"].(float64), 'E', -1, 64),
 								Source:         s.exchangeName,
+								VerifiedPair:   exchangepair.Verified,
+								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 							}
 							ps.parent.chanTrades <- t
-							log.Info("got trade: ", t)
+							if exchangepair.Verified {
+								log.Infoln("Got verified trade", t)
+							}
 						}
 					} else {
 						log.Printf("Unknown Pair %v", forName)
@@ -186,8 +201,8 @@ func (s *HuobiScraper) mainLoop() {
 	s.cleanup(nil)
 }
 
-// FetchTickerData collects all available information on an asset traded on huobi
-func (s *HuobiScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on huobi
+func (s *HuobiScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response HuobiCurrency
 	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
 	if err != nil {
@@ -199,7 +214,7 @@ func (s *HuobiScraper) FetchTickerData(symbol string) (asset dia.Asset, err erro
 	}
 
 	// Loop through chain if ETH is available put ETH chain details
-
+	// TO DO: This has to be extended. So far, we only have symbol, which we already had before.
 	asset.Symbol = response.Data[0].Currency
 	asset.Name = response.Data[0].Currency
 	return asset, nil
@@ -235,14 +250,11 @@ func (s *HuobiScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *HuobiScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
-
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("HuobiScraper: Call ScrapePair on closed scraper")
 	}
@@ -251,18 +263,14 @@ func (s *HuobiScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		parent: s,
 		pair:   pair,
 	}
-
 	s.pairScrapers[pair.ForeignName] = ps
-
 	a := &EventType{
 		Sub: "market." + strings.ToLower(pair.ForeignName) + ".trade.detail",
 		Id:  "id1",
 	}
-
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		fmt.Println(err.Error())
 	}
-
 	return ps, nil
 }
 

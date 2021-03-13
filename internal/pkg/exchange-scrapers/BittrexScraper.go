@@ -38,7 +38,7 @@ type BittrexScraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-func NewBittrexScraper(exchange dia.Exchange) *BittrexScraper {
+func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
 	s := &BittrexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -47,8 +47,9 @@ func NewBittrexScraper(exchange dia.Exchange) *BittrexScraper {
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
-
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

@@ -85,7 +85,7 @@ type STEXScraper struct {
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
-func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
+func NewSTEXScraper(exchange dia.Exchange, scrape bool) *STEXScraper {
 	s := &STEXScraper{
 		shutdown:          make(chan nothing),
 		shutdownDone:      make(chan nothing),
@@ -107,7 +107,9 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 		log.Printf("dial: %v", err)
 	}
 	s.c = c
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -189,7 +191,8 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 	}
 }
 
-func (s *STEXScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+// FillSymbolData collects all available information on an asset traded on STEX
+func (s *STEXScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
 	// Fetch Data
 	if !s.isTickerMapInitialised {
@@ -212,9 +215,11 @@ func (s *STEXScraper) FetchTickerData(symbol string) (asset dia.Asset, err error
 		s.isTickerMapInitialised = true
 
 	}
-
 	asset.Symbol = symbol
 	asset.Name = s.currencySymbolName[symbol]
+
+	fmt.Printf("name for symbol %s on exchange STEX: %s\n", symbol, asset.Name)
+
 	return asset, nil
 }
 

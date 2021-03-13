@@ -53,7 +53,7 @@ type BitBayScraper struct {
 }
 
 //NewBitBayScraper get a scrapper for BitBay exchange
-func NewBitBayScraper(exchange dia.Exchange) *BitBayScraper {
+func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -63,7 +63,9 @@ func NewBitBayScraper(exchange dia.Exchange) *BitBayScraper {
 		chanTrades:   make(chan *dia.Trade),
 		closed:       false,
 	}
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

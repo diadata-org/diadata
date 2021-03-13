@@ -78,7 +78,7 @@ type LoopringScraper struct {
 }
 
 // NewLoopringScraper returns a new LoopringScraper for the given pair
-func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
+func NewLoopringScraper(exchange dia.Exchange, scrape bool) *LoopringScraper {
 
 	decimalAsset := make(map[string]float64)
 	decimalAsset["ETH"] = 18
@@ -126,12 +126,14 @@ func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_LoopringSocketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

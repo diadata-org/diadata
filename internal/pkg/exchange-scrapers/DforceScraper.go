@@ -56,7 +56,7 @@ type DforceScraper struct {
 	contract    common.Address
 }
 
-func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
+func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
 	scraper := &DforceScraper{
 		contract:       exchange.Contract,
 		exchangeName:   exchange.Name,
@@ -83,7 +83,9 @@ func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

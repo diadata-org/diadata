@@ -38,7 +38,7 @@ type BinanceScraper struct {
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -51,7 +51,9 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange) *
 	}
 
 	// establish connection in the background
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

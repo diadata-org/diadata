@@ -92,7 +92,7 @@ type CurveFIScraper struct {
 	contract    common.Address
 }
 
-func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	scraper := &CurveFIScraper{
 		exchangeName:   exchange.Name,
 		contract:       exchange.Contract,
@@ -122,7 +122,9 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 
 	scraper.loadPoolsAndCoins()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

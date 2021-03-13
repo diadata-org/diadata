@@ -64,7 +64,7 @@ type KuCoinScraper struct {
 	apiService        *kucoin.ApiService
 }
 
-func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange) *KuCoinScraper {
+func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool) *KuCoinScraper {
 	apiService := kucoin.NewApiService()
 
 	s := &KuCoinScraper{
@@ -79,7 +79,9 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange) *K
 	}
 
 	// establish connection in the background
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

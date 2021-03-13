@@ -36,7 +36,7 @@ type QuoineScraper struct {
 	chanTrades     chan *dia.Trade
 }
 
-func NewQuoineScraper(exchange dia.Exchange) *QuoineScraper {
+func NewQuoineScraper(exchange dia.Exchange, scrape bool) *QuoineScraper {
 	qClient, err := quoinex.NewClient("x", "x", nil)
 	if err != nil {
 		log.Error("Couldn't create Quoine client:", err)
@@ -53,13 +53,14 @@ func NewQuoineScraper(exchange dia.Exchange) *QuoineScraper {
 		pairScrapers:   make(map[string]*QuoinePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 	}
-
 	err = scraper.readProductIds()
 	if err != nil {
 		log.Error("Couldn't obtain Quoine product ids:", err)
 	}
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

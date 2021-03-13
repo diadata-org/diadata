@@ -56,7 +56,7 @@ type GnosisScraper struct {
 	contract    common.Address
 }
 
-func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
+func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
 	scraper := &GnosisScraper{
 		exchangeName:   exchange.Name,
 		contract:       exchange.Contract,
@@ -83,7 +83,9 @@ func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 func (scraper *GnosisScraper) loadTokens() {

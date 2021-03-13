@@ -52,7 +52,7 @@ type OKExScraper struct {
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
+func NewOKExScraper(exchange dia.Exchange, scrape bool) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
@@ -62,15 +62,15 @@ func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 	}
-
 	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketURL.String(), nil)
-
 	if err != nil {
 		log.Error("dial:", err)
 	}
 
 	s.wsClient = SwConn
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

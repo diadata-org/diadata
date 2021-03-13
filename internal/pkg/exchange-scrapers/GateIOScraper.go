@@ -73,7 +73,7 @@ type GateIOScraper struct {
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
-func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
+func NewGateIOScraper(exchange dia.Exchange, scrape bool) *GateIOScraper {
 
 	s := &GateIOScraper{
 		shutdown:     make(chan nothing),
@@ -85,16 +85,16 @@ func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
 		currencySymbolName: make(map[string]string),
 		isTickerMapInitialised:false,
 	}
-
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

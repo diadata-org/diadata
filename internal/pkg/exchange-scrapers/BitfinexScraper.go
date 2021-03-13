@@ -42,7 +42,7 @@ type BitfinexScraper struct {
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape bool) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -64,7 +64,9 @@ func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *Bitfi
 	}
 
 	// establish connection in the background
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

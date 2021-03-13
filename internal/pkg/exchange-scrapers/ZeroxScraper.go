@@ -21,10 +21,10 @@ import (
 
 const (
 	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	// zeroxWsDial         = "ws://159.69.120.42:8546/"
-	// zeroxRestDial       = "http://159.69.120.42:8545/"
-	zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
+	zeroxWsDial         = "ws://159.69.120.42:8546/"
+	zeroxRestDial       = "http://159.69.120.42:8545/"
+	// zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	// zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 	zeroxLookBackBlocks = 6 * 60 * 24
 )
 
@@ -56,7 +56,7 @@ type ZeroxScraper struct {
 	tokens      map[string]*ZeroxToken
 }
 
-func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
+func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
 	scraper := &ZeroxScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -81,7 +81,9 @@ func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 

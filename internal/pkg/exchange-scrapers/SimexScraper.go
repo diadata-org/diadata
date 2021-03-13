@@ -55,7 +55,7 @@ type SimexScraper struct {
 	isTickerMapInitialised bool
 }
 
-func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
+func NewSimexScraper(exchange dia.Exchange, scrape bool) *SimexScraper {
 	s := &SimexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -85,7 +85,9 @@ func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
 		pairMap[base+quote] = pim
 	}
 	s.pairIdTrade = pairMap
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 

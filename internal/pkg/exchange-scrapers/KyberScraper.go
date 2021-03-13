@@ -54,7 +54,7 @@ type KyberScraper struct {
 	tokens      map[string]*KyberToken
 }
 
-func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
+func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
 	scraper := &KyberScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -78,9 +78,11 @@ func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 	scraper.RestClient = restClient
 
 	scraper.loadTokens()
-
 	time.Sleep(5 * time.Second)
-	go scraper.mainLoop()
+
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
