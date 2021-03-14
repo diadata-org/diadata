@@ -103,10 +103,6 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	} else {
 		db.addPoint(pt)
 	}
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Error("Write batch for SetAssetQuotation: ", err)
-	}
 
 	// Write latest point to redis cache
 	log.Printf("write to cache: %s", quotation.Asset.Symbol)
