@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"strconv"
 	"strings"
 	"sync"
@@ -70,6 +71,10 @@ func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
 
 // runs in a goroutine until s is closed
 func (s *BittrexScraper) mainLoop() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
 
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
@@ -112,6 +117,11 @@ func (s *BittrexScraper) mainLoop() {
 						if tradeReturn["OrderType"] == "SELL" {
 							f64Volume = -f64Volume
 						}
+						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["MarketName"].(string))
+						if err != nil {
+							log.Error("Error Getting ExchangePair from cache",err)
+						}
+
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["TimeStamp"].(string))
 						t := &dia.Trade{
@@ -122,6 +132,12 @@ func (s *BittrexScraper) mainLoop() {
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["Id"].(float64)), 16),
 							Source:         s.exchangeName,
+							VerifiedPair:   exchangepair.Verified,
+							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+						}
+						if exchangepair.Verified {
+							log.Infoln("Got verified trade", t)
 						}
 						el.parent.chanTrades <- t
 					}
