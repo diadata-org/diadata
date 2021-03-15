@@ -27852,6 +27852,12 @@
             "ForeignName": "OPIUM-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SNOW",
+            "Exchange": "UniswapV2",
+            "Ignore": false
         }
     ]
 }

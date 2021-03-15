@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Bitfinex",
+      "ForeignName": "fttusd",
+      "Ignore": true,
+      "Symbol": "FTX Token"
+    },
+    {
+      "Exchange": "Bitfinex",
       "ForeignName": "agibtc",
       "Ignore": true,
       "Symbol": "AGI"

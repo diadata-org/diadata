@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SNOW_ETH",
+      "Ignore": false,
+      "Symbol": "SNOW"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SNOW_USDT",
+      "Ignore": false,
+      "Symbol": "SNOW"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "NEAR_ETH",
       "Ignore": false,
       "Symbol": "NEAR"

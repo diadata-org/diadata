@@ -31,6 +31,10 @@
     {
       "Address": "0xdc9ac3c20d1ed0b540df9b1fedc10039df13f99c",
       "Symbol": "UTK"
+    },
+    {
+      "Address": "0xfe9a29ab92522d14fc65880d817214261d8479ae",
+      "Symbol": "SNOW"
     }
   ]
 }

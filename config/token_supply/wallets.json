@@ -1507,7 +1507,16 @@
             "0x5a2c04a3976a2a85efd5769b043e838c2448cc8a",
             "0x50f7f46cadd792dff830056b0357955677b2f8c1"
           ]
+        },
+        {
+          "asset": "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9",
+          "wallets":[
+            "0xd769010d3813bafaf4addbfe258eafd07828bb83",
+            "0x772589e99bc9c54dd40acb7d73f88ccbc9d9cf47"
+          ]
         }
+
+       
 
   ]
 }
