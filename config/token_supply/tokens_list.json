@@ -8351,6 +8351,26 @@
     {
       "Address": "0xcb67be5c54eab9462967ee3c03c35bfffeb801cd",
       "Name": "GalacticBlueIndex"
-    }
+    },
+    {
+      "Address": "0xfe9a29ab92522d14fc65880d817214261d8479ae",
+      "Name": "SnowSwap"
+    },
+    {
+      "Address": "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
+      "Name": "SuperFarm"
+    },
+    {
+      "Address": "0xffffffff2ba8f66d4e51811c5190992176930278",
+      "Name": "Furucombo"
+    },
+    {
+      "Address": "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9",
+      "Name": "FTT"
+    },
+    {
+      "Address": "0x3a880652f47bfaa771908c07dd8673a787daed3a",
+      "Name": "DerivaDAO"
+    }    
   ]
 }
