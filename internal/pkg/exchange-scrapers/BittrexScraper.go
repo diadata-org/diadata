@@ -20,6 +20,21 @@ type ConfirmData struct {
 	Message string        `json:"message"`
 }
 
+type BittrexAsset struct {
+	Symbol                   string        `json:"symbol"`
+	Name                     string        `json:"name"`
+	CoinType                 string        `json:"coinType"`
+	Status                   string        `json:"status"`
+	MinConfirmations         int           `json:"minConfirmations"`
+	Notice                   string        `json:"notice"`
+	TxFee                    string        `json:"txFee"`
+	LogoURL                  string        `json:"logoUrl"`
+	ProhibitedIn             []interface{} `json:"prohibitedIn"`
+	BaseAddress              string        `json:"baseAddress"`
+	AssociatedTermsOfService []interface{} `json:"associatedTermsOfService"`
+	Tags                     []interface{} `json:"tags"`
+}
+
 var _bittrexapiurl string = "https://api.bittrex.com/api/v1.1/public"
 
 type BittrexScraper struct {
@@ -121,6 +136,22 @@ func (s *BittrexScraper) mainLoop() {
 		s.error = errors.New("BittrexScraper: terminated by Close()")
 	}
 	s.cleanup(s.error)
+}
+
+
+func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	var response BittrexAsset
+	data, err := utils.GetRequest("https://api.bittrex.com/v3/currencies/" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response.Symbol
+	asset.Name = response.Name
+	return asset, nil
 }
 
 func getAPICallBittrex(params ...string) []interface{} {
