@@ -50,13 +50,13 @@ const (
 
 func Exchanges() []string {
 	return []string{
-		// KuCoinExchange,
+		KuCoinExchange,
 		// BalancerExchange,
 		// BancorExchange,
 		// BinanceExchange,
 		// BitfinexExchange,
 		BitMaxExchange,
-		// BittrexExchange,
+		BittrexExchange,
 		CoinBaseExchange,
 		CREX24Exchange,
 		// CurveFIExchange,

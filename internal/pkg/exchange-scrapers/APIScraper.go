@@ -6,6 +6,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/datasource"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 // The collector kills a scraper after @watchdogDelayXXX seconds of inactivity
@@ -64,38 +65,38 @@ type PairScraper interface {
 
 // NewAPIScraper returns an API scraper for @exchange. If scrape==true it actually does
 // scraping. Otherwise can be used for pairdiscovery.
-func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIScraper {
+func NewAPIScraper(exchange string, scrape bool, key string, secret string, relDB *models.RelDB) APIScraper {
 	switch exchange {
 	// case dia.BinanceExchange:
-	// 	return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape)
+	// 	return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
 	// case dia.BitBayExchange:
-	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape)
+	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
 	// case dia.BitfinexExchange:
-	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape)
-	// case dia.BittrexExchange:
-	// 	return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape)
+	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
+	case dia.BittrexExchange:
+		return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape, relDB)
 	case dia.CoinBaseExchange:
-		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape)
+		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape, relDB)
 	case dia.CREX24Exchange:
-		return NewCREX24Scraper(Exchanges[dia.CREX24Exchange])
+		return NewCREX24Scraper(Exchanges[dia.CREX24Exchange], relDB)
 	// case dia.KrakenExchange:
-	// 	return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape)
+	// 	return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape, relDB)
 	case dia.HitBTCExchange:
-		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape)
+		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape, relDB)
 	// case dia.SimexExchange:
-	// 	return NewSimexScraper(Exchanges[dia.SimexExchange], scrape)
+	// 	return NewSimexScraper(Exchanges[dia.SimexExchange], scrape, relDB)
 	// case dia.OKExExchange:
-	// 	return NewOKExScraper(Exchanges[dia.OKExExchange], scrape)
+	// 	return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
 	// case dia.HuobiExchange:
-	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape)
+	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape, relDB)
 	// case dia.LBankExchange:
-	// 	return NewLBankScraper(Exchanges[dia.LBankExchange], scrape)
+	// 	return NewLBankScraper(Exchanges[dia.LBankExchange], scrape, relDB)
 	// case dia.GateIOExchange:
-	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange], scrape)
+	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange], scrape, relDB)
 	// case dia.ZBExchange:
-	// 	return NewZBScraper(Exchanges[dia.ZBExchange], scrape)
+	// 	return NewZBScraper(Exchanges[dia.ZBExchange], scrape, relDB)
 	// case dia.QuoineExchange:
-	// 	return NewQuoineScraper(Exchanges[dia.QuoineExchange], scrape)
+	// 	return NewQuoineScraper(Exchanges[dia.QuoineExchange], scrape, relDB)
 	// case dia.BancorExchange:
 	// 	return NewBancorScraper(Exchanges[dia.BancorExchange], scrape)
 	case dia.UniswapExchange:
@@ -114,8 +115,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
 	// case dia.MakerExchange:
 	// 	return NewMakerScraper(Exchanges[dia.MakerExchange], scrape)
-	// case dia.KuCoinExchange:
-	// 	return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape)
+	case dia.KuCoinExchange:
+		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
 	// case dia.DforceExchange:
 	// 	return NewDforceScraper(Exchanges[dia.DforceExchange], scrape)
 	// case dia.ZeroxExchange:
@@ -123,9 +124,9 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string) APIS
 	// case dia.KyberExchange:
 	// 	return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
 	case dia.BitMaxExchange:
-		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape)
+		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.STEXExchange:
-		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape)
+		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape, relDB)
 
 	default:
 		return nil

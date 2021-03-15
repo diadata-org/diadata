@@ -12,6 +12,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	gosocketio "github.com/graarh/golang-socketio"
 	"github.com/graarh/golang-socketio/transport"
@@ -81,10 +82,11 @@ type STEXScraper struct {
 	chanTrades             chan *dia.Trade
 	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
 // NewSTEXScraper returns a new STEXScraper for the given pair
-func NewSTEXScraper(exchange dia.Exchange, scrape bool) *STEXScraper {
+func NewSTEXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *STEXScraper {
 	s := &STEXScraper{
 		shutdown:               make(chan nothing),
 		shutdownDone:           make(chan nothing),
@@ -97,6 +99,7 @@ func NewSTEXScraper(exchange dia.Exchange, scrape bool) *STEXScraper {
 		chanTrades:             make(chan *dia.Trade),
 		currencySymbolName:     make(map[string]string),
 		isTickerMapInitialised: false,
+		db:                     relDB,
 	}
 
 	c, err := gosocketio.Dial(
@@ -112,18 +115,18 @@ func NewSTEXScraper(exchange dia.Exchange, scrape bool) *STEXScraper {
 	return s
 }
 
-// Reconnect to socketIO when the connection is down.
-func (s *STEXScraper) reconnectToSocketIO() {
-	c, err := gosocketio.Dial(
-		gosocketio.GetUrl(_socketURL, 443, true),
-		transport.GetDefaultWebsocketTransport())
-	if err != nil {
-		log.Printf("dial: %v", err)
-	} else {
-		log.Info("successfully reconnected.")
-	}
-	s.c = c
-}
+// // Reconnect to socketIO when the connection is down.
+// func (s *STEXScraper) reconnectToSocketIO() {
+// 	c, err := gosocketio.Dial(
+// 		gosocketio.GetUrl(_socketURL, 443, true),
+// 		transport.GetDefaultWebsocketTransport())
+// 	if err != nil {
+// 		log.Printf("dial: %v", err)
+// 	} else {
+// 		log.Info("successfully reconnected.")
+// 	}
+// 	s.c = c
+// }
 
 type StexTradeResponse struct {
 	SETXTrades []STEXTrade `json:"data"`
@@ -140,6 +143,7 @@ func (s *STEXScraper) mainLoop() {
 }
 
 func (s *STEXScraper) scrapeTrades() {
+
 	var numRequests int
 	s.FetchAvailablePairs()
 	for _, pairScraper := range s.pairScrapers {
@@ -175,7 +179,10 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 		if trade.Type == "SELL" {
 			f64Volume = -f64Volume
 		}
-
+		exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+		if err != nil {
+			log.Error(err)
+		}
 		t := &dia.Trade{
 			Symbol:         strings.Split(pair.Symbol, "-")[0],
 			Pair:           pair.ForeignName,
@@ -184,9 +191,14 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 			Time:           time.Unix(timeStamp, 0),
 			ForeignTradeID: strconv.Itoa(trade.ID),
 			Source:         s.exchangeName,
+			VerifiedPair:   exchangepair.Verified,
+			BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+			QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+		}
+		if exchangepair.Verified {
+			log.Infoln("Got verified trade", t)
 		}
 		s.chanTrades <- t
-		log.Info("got trade: ", t)
 	}
 }
 

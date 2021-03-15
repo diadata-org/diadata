@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"strconv"
 	"strings"
 	"sync"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -52,9 +52,10 @@ type BittrexScraper struct {
 	pairScrapers map[string]*BittrexPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
-func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
+func NewBittrexScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BittrexScraper {
 	s := &BittrexScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -62,6 +63,7 @@ func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 	if scrape {
 		go s.mainLoop()
@@ -71,10 +73,6 @@ func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
 
 // runs in a goroutine until s is closed
 func (s *BittrexScraper) mainLoop() {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
 
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
@@ -117,11 +115,10 @@ func (s *BittrexScraper) mainLoop() {
 						if tradeReturn["OrderType"] == "SELL" {
 							f64Volume = -f64Volume
 						}
-						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["MarketName"].(string))
+						exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, key)
 						if err != nil {
-							log.Error("Error Getting ExchangePair from cache",err)
+							log.Error("Error Getting ExchangePair from cache", err)
 						}
-
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["TimeStamp"].(string))
 						t := &dia.Trade{
@@ -154,7 +151,6 @@ func (s *BittrexScraper) mainLoop() {
 	s.cleanup(s.error)
 }
 
-
 func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response BittrexAsset
 	data, err := utils.GetRequest("https://api.bittrex.com/v3/currencies/" + symbol)
@@ -171,7 +167,6 @@ func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err err
 }
 
 func getAPICallBittrex(params ...string) []interface{} {
-
 	body, err := utils.GetRequest(_bittrexapiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
@@ -197,7 +192,6 @@ func (s *BittrexScraper) cleanup(err error) {
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *BittrexScraper) Close() error {
-
 	if s.closed {
 		return errors.New("BittrexScraper: Already closed")
 	}
@@ -212,14 +206,11 @@ func (s *BittrexScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *BittrexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
-
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("BittrexScraper: Call ScrapePair on closed scraper")
 	}
@@ -229,9 +220,7 @@ func (s *BittrexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		pair:        pair,
 		lastIdTrade: 0,
 	}
-
 	s.pairScrapers[pair.ForeignName] = ps
-
 	return ps, nil
 }
 

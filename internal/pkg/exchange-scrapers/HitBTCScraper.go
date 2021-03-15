@@ -56,10 +56,11 @@ type HitBTCScraper struct {
 	pairScrapers map[string]*HitBTCPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper(exchange dia.Exchange, scrape bool) *HitBTCScraper {
+func NewHitBTCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),
@@ -68,6 +69,7 @@ func NewHitBTCScraper(exchange dia.Exchange, scrape bool) *HitBTCScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -84,11 +86,7 @@ func NewHitBTCScraper(exchange dia.Exchange, scrape bool) *HitBTCScraper {
 
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
-
+	var err error
 	for true {
 		message := &Event{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -114,7 +112,7 @@ func (s *HitBTCScraper) mainLoop() {
 									f64Volume = -f64Volume
 								}
 
-								exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+								exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
 								if err != nil {
 									log.Error(err)
 								}

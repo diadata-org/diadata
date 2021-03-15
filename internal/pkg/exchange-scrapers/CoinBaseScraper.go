@@ -28,6 +28,7 @@ type CoinBaseScraper struct {
 	wsConn       *ws.Conn
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 const (
@@ -41,7 +42,7 @@ const (
 
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewCoinBaseScraper(exchange dia.Exchange, scrape bool) *CoinBaseScraper {
+func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *CoinBaseScraper {
 	s := &CoinBaseScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -49,6 +50,7 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool) *CoinBaseScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial("wss://ws-feed.pro.coinbase.com", nil)
@@ -65,11 +67,6 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool) *CoinBaseScraper {
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
 	var err error
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
-
 	for true {
 		message := gdax.Message{}
 		if err = s.wsConn.ReadJSON(&message); err != nil {
@@ -88,7 +85,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
-							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, message.ProductID)
+							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
 							if err != nil {
 								log.Error(err)
 							}

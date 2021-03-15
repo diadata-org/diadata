@@ -9,6 +9,7 @@ import (
 
 	"github.com/Kucoin/kucoin-go-sdk"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 type KuExchangePairs []KuExchangePair
@@ -62,9 +63,10 @@ type KuCoinScraper struct {
 	exchangeName      string
 	chanTrades        chan *dia.Trade
 	apiService        *kucoin.ApiService
+	db                *models.RelDB
 }
 
-func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool) *KuCoinScraper {
+func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KuCoinScraper {
 	apiService := kucoin.NewApiService()
 
 	s := &KuCoinScraper{
@@ -76,6 +78,7 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, sc
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		apiService:   apiService,
+		db:           relDB,
 	}
 
 	// establish connection in the background
@@ -157,16 +160,26 @@ func (s *KuCoinScraper) mainLoop() {
 				if t.Side == "sell" {
 					f64Volume = -f64Volume
 				}
+
+				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, t.Symbol)
+				if err != nil {
+					log.Error(err)
+				}
 				trade := &dia.Trade{
-					Symbol: asset[0],
-					Pair:   t.Symbol,
-					Price:  f64Price,
-					Time:   time.Unix(0, timeOrder),
-					Volume: f64Volume,
-					Source: s.exchangeName,
+					Symbol:       asset[0],
+					Pair:         t.Symbol,
+					Price:        f64Price,
+					Time:         time.Unix(0, timeOrder),
+					Volume:       f64Volume,
+					Source:       s.exchangeName,
+					VerifiedPair: exchangepair.Verified,
+					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+				}
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade", t)
 				}
 				s.chanTrades <- trade
-				logger.Println("Got trade: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
 				logger.Println("KuCoin shutting down")
@@ -215,11 +228,9 @@ func (s *KuCoinScraper) Close() error {
 func (s *KuCoinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("LoopringScraper: Call ScrapePair on closed scraper")
 	}
@@ -228,9 +239,7 @@ func (s *KuCoinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		parent: s,
 		pair:   pair,
 	}
-
 	s.pairScrapers[pair.ForeignName] = ps
-
 	return ps, nil
 }
 
@@ -247,11 +256,16 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 	for _, p := range kep {
 		pairs = append(pairs, dia.ExchangePair{
-			Symbol:      strings.Split(p.Symbol, "-")[0],
+			Symbol:      p.BaseCurrency,
 			ForeignName: p.Symbol,
 			Exchange:    s.exchangeName,
 		})
 	}
+	return
+}
+
+func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	asset.Symbol = symbol
 	return
 }
 

@@ -72,9 +72,10 @@ type BitMaxScraper struct {
 	wsClient               *ws.Conn
 	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
-func NewBitMaxScraper(exchange dia.Exchange, scrape bool) *BitMaxScraper {
+func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitMaxScraper {
 	var bitmaxSocketURL = "wss://bitmax.io/0/api/pro/v1/stream"
 	s := &BitMaxScraper{
 		initDone:               make(chan nothing),
@@ -86,6 +87,7 @@ func NewBitMaxScraper(exchange dia.Exchange, scrape bool) *BitMaxScraper {
 		chanTrades:             make(chan *dia.Trade),
 		currencySymbolName:     make(map[string]string),
 		isTickerMapInitialised: false,
+		db:                     relDB,
 	}
 
 	// establish connection in the background
@@ -116,10 +118,7 @@ type BitMaxTradeResponse struct {
 
 // runs in a goroutine until s is closed
 func (s *BitMaxScraper) mainLoop() {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
+	var err error
 	for true {
 		message := &BitMaxTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -133,7 +132,7 @@ func (s *BitMaxScraper) mainLoop() {
 				for _, trade := range message.Data {
 					priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-					exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, message.Symbol)
+					exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
 					if err != nil {
 						log.Error(err)
 					}

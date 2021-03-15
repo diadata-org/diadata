@@ -64,7 +64,6 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	// Comment: we could restrict to postgres here
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
@@ -83,7 +82,7 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey)
+	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	defer w.Close()

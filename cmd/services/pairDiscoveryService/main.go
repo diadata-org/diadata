@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	log *logrus.Logger
+	log        *logrus.Logger
 	updateTime = time.Second * 60 * 60
 )
 
@@ -66,7 +66,7 @@ func main() {
 // toggle == true:  connect to all exchange's APIs and check for new pairs
 func updateExchangePairs(relDB *models.RelDB) {
 	toggle := getTogglePairDiscovery(updateTime)
-	
+
 	toggle = true
 	if toggle == false {
 
@@ -103,6 +103,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
+			// TO DO: the next cond is only for testing. Remove when deploying.
 			if exchange == "Uniswap" {
 				continue
 			}
@@ -112,11 +113,11 @@ func updateExchangePairs(relDB *models.RelDB) {
 			var scraper scrapers.APIScraper
 			config, err := dia.GetConfig(exchange)
 			if err == nil {
-				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey)
+				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
 			} else {
 				log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
 				log.Info("Proceeding with no API secrets")
-				scraper = scrapers.NewAPIScraper(exchange, false, "", "")
+				scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
 			}
 
 			// If no error, fetch pairs by method implemented for each scraper resp.

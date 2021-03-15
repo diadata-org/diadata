@@ -62,9 +62,10 @@ type CREX24Scraper struct {
 	pairScrapers map[string]*CREX24PairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
-func NewCREX24Scraper(exchange dia.Exchange) *CREX24Scraper {
+func NewCREX24Scraper(exchange dia.Exchange, relDB *models.RelDB) *CREX24Scraper {
 	s := &CREX24Scraper{
 		pairScrapers: make(map[string]*CREX24PairScraper),
 		exchangeName: exchange.Name,
@@ -72,6 +73,7 @@ func NewCREX24Scraper(exchange dia.Exchange) *CREX24Scraper {
 		connected:    false,
 		closed:       false,
 		msgId:        1,
+		db:           relDB,
 	}
 	return s
 }
@@ -139,10 +141,6 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 }
 
 func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
 
 	ps := s.pairScrapers[update.I]
 	pair := ps.Pair()
@@ -153,7 +151,7 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 			volume *= -1
 		}
 		if pok == nil && vok == nil {
-			exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
 			if err != nil {
 				log.Error(err)
 			}
