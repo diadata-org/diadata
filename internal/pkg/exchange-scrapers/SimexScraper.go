@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"strconv"
 	"strings"
 	"sync"
@@ -93,6 +94,11 @@ func NewSimexScraper(exchange dia.Exchange, scrape bool) *SimexScraper {
 
 // runs in a goroutine until s is closed
 func (s *SimexScraper) mainLoop() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
+
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
 	layout := "2006-01-02 15:04:05"
@@ -145,6 +151,11 @@ func (s *SimexScraper) mainLoop() {
 						}
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["created_at"].(string))
+						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["name"].(string))
+						if err != nil {
+							log.Error("Error Getting ExchangePair from cache",err)
+						}
+
 						t := &dia.Trade{
 							Symbol:         s.pairIdTrade[key].Symbol,
 							Pair:           key,
@@ -153,7 +164,14 @@ func (s *SimexScraper) mainLoop() {
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["id"].(float64)), 16),
 							Source:         s.exchangeName,
+							VerifiedPair:   exchangepair.Verified,
+							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 						}
+						if exchangepair.Verified {
+							log.Infoln("Got verified trade", t)
+						}
+
 						el.parent.chanTrades <- t
 					}
 				}

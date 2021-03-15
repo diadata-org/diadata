@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"strconv"
 	"strings"
 	"sync"
@@ -18,6 +19,21 @@ type ConfirmData struct {
 	Result  []interface{} `json:"result"`
 	Success bool          `json:"success"`
 	Message string        `json:"message"`
+}
+
+type BittrexAsset struct {
+	Symbol                   string        `json:"symbol"`
+	Name                     string        `json:"name"`
+	CoinType                 string        `json:"coinType"`
+	Status                   string        `json:"status"`
+	MinConfirmations         int           `json:"minConfirmations"`
+	Notice                   string        `json:"notice"`
+	TxFee                    string        `json:"txFee"`
+	LogoURL                  string        `json:"logoUrl"`
+	ProhibitedIn             []interface{} `json:"prohibitedIn"`
+	BaseAddress              string        `json:"baseAddress"`
+	AssociatedTermsOfService []interface{} `json:"associatedTermsOfService"`
+	Tags                     []interface{} `json:"tags"`
 }
 
 var _bittrexapiurl string = "https://api.bittrex.com/api/v1.1/public"
@@ -55,6 +71,10 @@ func NewBittrexScraper(exchange dia.Exchange, scrape bool) *BittrexScraper {
 
 // runs in a goroutine until s is closed
 func (s *BittrexScraper) mainLoop() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
 
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
@@ -97,6 +117,11 @@ func (s *BittrexScraper) mainLoop() {
 						if tradeReturn["OrderType"] == "SELL" {
 							f64Volume = -f64Volume
 						}
+						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["MarketName"].(string))
+						if err != nil {
+							log.Error("Error Getting ExchangePair from cache",err)
+						}
+
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["TimeStamp"].(string))
 						t := &dia.Trade{
@@ -107,6 +132,12 @@ func (s *BittrexScraper) mainLoop() {
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["Id"].(float64)), 16),
 							Source:         s.exchangeName,
+							VerifiedPair:   exchangepair.Verified,
+							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+						}
+						if exchangepair.Verified {
+							log.Infoln("Got verified trade", t)
 						}
 						el.parent.chanTrades <- t
 					}
@@ -121,6 +152,22 @@ func (s *BittrexScraper) mainLoop() {
 		s.error = errors.New("BittrexScraper: terminated by Close()")
 	}
 	s.cleanup(s.error)
+}
+
+
+func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	var response BittrexAsset
+	data, err := utils.GetRequest("https://api.bittrex.com/v3/currencies/" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response.Symbol
+	asset.Name = response.Name
+	return asset, nil
 }
 
 func getAPICallBittrex(params ...string) []interface{} {
