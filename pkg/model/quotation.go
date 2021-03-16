@@ -141,7 +141,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 		}
 		log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
 	} else {
-		return quotation, errors.New("Error parsing Trade from Database")
+		return quotation, errors.New("error parsing trade from database")
 	}
 	quotation.Asset = asset
 	quotation.Source = dia.Diadata
@@ -177,6 +177,74 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 		return quotation, err
 	}
 	return quotation, nil
+}
+
+// ------------------------------------------------------------------------------
+// MARKET MEASURES
+// ------------------------------------------------------------------------------
+
+// GetAssetsMarketCap returns the actual market cap of @asset.
+func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
+	price, err := db.GetAssetPriceUSD(asset)
+	if err != nil {
+		return 0, err
+	}
+	circSupply, err := db.GetSupplyInflux(asset, time.Time{}, time.Time{})
+	if err != nil {
+		return 0, err
+	}
+	if len(circSupply) > 0 {
+		return price * circSupply[0].CirculatingSupply, nil
+	}
+	return 0, errors.New("no circulating supply available")
+}
+
+// GetTopAsset returns the asset with highest market cap among all assets with symbol @symbol.
+// This method allows us to use all API endpoints called on a symbol.
+func (db *DB) GetTopAsset(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
+	assets, err := relDB.GetAssetsBySymbolName(symbol, "")
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	if len(assets) == 0 {
+		return dia.Asset{}, errors.New("no matching asset")
+	}
+	var mcap float64
+	for _, asset := range assets {
+		value, err := db.GetAssetsMarketCap(asset)
+		if mcap == 0 {
+			continue
+		}
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		if value > mcap {
+			mcap = value
+			topAsset = asset
+		}
+	}
+	return
+}
+
+// ------------------------------------------------------------------------------
+// GOLD Derivatives
+// ------------------------------------------------------------------------------
+
+func (db *DB) GetPaxgQuotationOunces() (*Quotation, error) {
+	return db.GetQuotation("PAXG")
+}
+
+func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
+	q, err := db.GetQuotation("PAXG")
+	if err != nil {
+		return nil, err
+	}
+	q.Symbol = q.Symbol + "-gram"
+	q.Name = q.Name + "-gram"
+	q.Price = q.Price / 31.1034768
+	*q.PriceYesterday = *q.PriceYesterday / 31.1034768
+	return q, err
 }
 
 // ------------------------------------------------------------------------------
@@ -272,20 +340,4 @@ func (db *DB) SetQuotationEUR(quotation *Quotation) error {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
 	return err
-}
-
-func (db *DB) GetPaxgQuotationOunces() (*Quotation, error) {
-	return db.GetQuotation("PAXG")
-}
-
-func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
-	q, err := db.GetQuotation("PAXG")
-	if err != nil {
-		return nil, err
-	}
-	q.Symbol = q.Symbol + "-gram"
-	q.Name = q.Name + "-gram"
-	q.Price = q.Price / 31.1034768
-	*q.PriceYesterday = *q.PriceYesterday / 31.1034768
-	return q, err
 }

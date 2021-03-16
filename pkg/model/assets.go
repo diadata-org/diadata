@@ -114,7 +114,6 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		// TO DO: Get Blockchain by name from postgres and add to asset
 		assets = append(assets, asset)
 	}
-
 	return
 }
 

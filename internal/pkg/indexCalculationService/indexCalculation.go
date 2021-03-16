@@ -43,7 +43,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 			return nil, err
 		}
 		asset := dia.Asset{
-			Symbol:  currSupply.Symbol,
+			Symbol:  currSupply.Asset.Symbol,
 			Name:    currQuotation.Name,
 			Address: "-",
 		}

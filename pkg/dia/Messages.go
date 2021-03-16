@@ -10,7 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
 const (
 	Diadata                              = "diadata.org"
 	PROOF_OF_STAKE VerificationMechanism = "pos"
@@ -20,16 +19,15 @@ const (
 type VerificationMechanism string
 
 type Exchange struct {
-	Name          string `json:"Name"`
-	Centralized   bool `json:"Centralized"`
+	Name          string         `json:"Name"`
+	Centralized   bool           `json:"Centralized"`
 	Contract      common.Address `json:"Contract"`
-	BlockChain    BlockChain `json:"BlockChain"`
-	WatchdogDelay int `json:"WatchdogDelay"`
+	BlockChain    BlockChain     `json:"BlockChain"`
+	WatchdogDelay int            `json:"WatchdogDelay"`
 }
 
 type Supply struct {
-	Symbol            string
-	Name              string
+	Asset             Asset
 	Supply            float64
 	CirculatingSupply float64
 	Source            string
@@ -45,9 +43,9 @@ type Asset struct {
 }
 
 type BlockChain struct {
-	Name                  string `json:"Name"`
-	GenesisDate           time.Time `json:"GenesisDate"`
-	NativeToken           string `json:"NativeToken"`
+	Name                  string                `json:"Name"`
+	GenesisDate           time.Time             `json:"GenesisDate"`
+	NativeToken           string                `json:"NativeToken"`
 	VerificationMechanism VerificationMechanism `json:"VerificationMechanism"`
 }
 

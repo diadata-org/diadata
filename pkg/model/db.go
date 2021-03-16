@@ -15,7 +15,7 @@ import (
 
 type Datastore interface {
 	GetVolume(asset dia.Asset) (*float64, error)
-	SymbolsWithASupply() ([]string, error)
+	// SymbolsWithASupply() ([]string, error)
 
 	// Deprecating
 	SetPriceUSD(symbol string, price float64) error
@@ -61,7 +61,7 @@ type Datastore interface {
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
-	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
+	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
 	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
 	// Get24VolumeExchange(exchange string) (float64, error)
@@ -76,6 +76,9 @@ type Datastore interface {
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
+
+	// Market Measures
+	GetAssetsMarketCap(asset dia.Asset) (float64, error)
 
 	// Interest rates' methods
 	SetInterestRate(ir *InterestRate) error
@@ -894,8 +897,10 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 		"source":            supply.Source,
 	}
 	tags := map[string]string{
-		"symbol": supply.Symbol,
-		"name":   supply.Name,
+		"symbol":     supply.Asset.Symbol,
+		"name":       supply.Asset.Name,
+		"address":    supply.Asset.Address,
+		"blockchain": supply.Asset.Blockchain.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
 	if err != nil {
@@ -912,13 +917,17 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
-func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
+// GetSupplyInflux returns supply and circulating supply of @asset. Needs asset.Address and asset.Blockchain.Name.
+// If no time range is given it returns the latest supply.
+func (db *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' and \"blockchain\"='%s' ORDER BY time DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain.Name)
 	} else {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'"
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain.Name)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -926,7 +935,7 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentSupply := dia.Supply{}
+			currentSupply := dia.Supply{Asset: asset}
 			currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
 				return retval, err
@@ -943,12 +952,14 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.Name = res[0].Series[0].Values[i][4].(string)
+			currentSupply.Asset.Name = res[0].Series[0].Values[i][4].(string)
 			if err != nil {
 				log.Error("error getting symbol name from influx: ", err)
 			}
-
-			currentSupply.Symbol = symbol
+			currentSupply.Asset.Symbol = res[0].Series[0].Values[i][5].(string)
+			if err != nil {
+				log.Error("error getting symbol name from influx: ", err)
+			}
 			retval = append(retval, currentSupply)
 		}
 	} else {

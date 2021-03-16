@@ -138,10 +138,15 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	asset := dia.Asset{
+		Symbol:     symbol,
+		Name:       name,
+		Decimals:   decimals,
+		Address:    common.HexToAddress(tokenAddress).String(),
+		Blockchain: dia.BlockChain{Name: "Ethereum"},
+	}
 	supply = dia.Supply{
-		Symbol:            symbol,
-		Name:              name,
+		Asset:             asset,
 		Supply:            totalSupp,
 		CirculatingSupply: circulatingSupply,
 		Source:            "diadata.org",

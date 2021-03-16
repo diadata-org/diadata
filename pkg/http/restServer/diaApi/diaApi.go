@@ -11,7 +11,6 @@ import (
 
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -47,7 +46,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		} else {
-			if t.Symbol == "" || t.CirculatingSupply == 0.0 {
+			if t.Asset.Symbol == "" || t.CirculatingSupply == 0.0 {
 				log.Errorln("received supply:", t)
 				restApi.SendError(c, http.StatusInternalServerError, errors.New("Missing Symbol or CirculatingSupply value"))
 			} else {
@@ -58,8 +57,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 				}
 				s := &dia.Supply{
 					Time:              t.Time,
-					Name:              helpers.NameForSymbol(t.Symbol),
-					Symbol:            t.Symbol,
+					Asset:             t.Asset,
 					Source:            source,
 					CirculatingSupply: t.CirculatingSupply}
 
@@ -220,7 +218,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	s, err := env.DataStore.GetSupplyInflux(symbol, starttime, endtime)
+	s, err := env.DataStore.GetSupply(symbol, starttime, endtime)
 	if len(s) == 0 {
 		c.JSON(http.StatusOK, make([]string, 0))
 		return

@@ -1,38 +1,38 @@
 package models
 
 import (
-	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 )
 
-func getKeySupply(value string) string {
-	return "dia_supply_" + value
+func getKeySupply(asset dia.Asset) string {
+	return "dia_supply_" + asset.Blockchain.Name + "_" + asset.Address
 }
 
-func (db *DB) SymbolsWithASupply() ([]string, error) {
-	result := []string{}
-	var cursor uint64
-	key := getKeySupply("")
-	for {
-		var keys []string
-		var err error
-		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 10).Result()
-		if err != nil {
-			log.Error("SymbolsWithASupply err", err)
-			return result, err
-		}
-		for _, value := range keys {
-			result = append(result, strings.Replace(value, key, "", 1))
-		}
-		if cursor == 0 {
-			log.Debugf("SymbolsWithASupply %v returns %v", key, result)
-			return result, nil
-		}
-	}
-}
+// Deprecating
+// func (db *DB) SymbolsWithASupply() ([]string, error) {
+// 	result := []string{}
+// 	var cursor uint64
+// 	key := getKeySupply("")
+// 	for {
+// 		var keys []string
+// 		var err error
+// 		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 10).Result()
+// 		if err != nil {
+// 			log.Error("SymbolsWithASupply err", err)
+// 			return result, err
+// 		}
+// 		for _, value := range keys {
+// 			result = append(result, strings.Replace(value, key, "", 1))
+// 		}
+// 		if cursor == 0 {
+// 			log.Debugf("SymbolsWithASupply %v returns %v", key, result)
+// 			return result, nil
+// 		}
+// 	}
+// }
 
 func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
 	val, err := db.GetSupply(symbol, time.Time{}, time.Time{})
@@ -44,20 +44,30 @@ func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
 }
 
 func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supply, error) {
+	relDB, err := NewRelDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore:", err)
+	}
+	// First get asset with @symbol with largest market cap.
+	topAsset, err := db.GetTopAsset(symbol, relDB)
+	if err != nil {
+		log.Error(err)
+		return []dia.Supply{}, err
+	}
+
 	switch symbol {
 	case "MIOTA":
 		retArray := []dia.Supply{}
 		s := dia.Supply{
-			Symbol:            "MIOTA",
+			Asset:             dia.Asset{Name: helpers.NameForSymbol("MIOTA"), Symbol: "MIOTA"},
 			CirculatingSupply: 2779530283.0,
-			Name:              helpers.NameForSymbol("MIOTA"),
 			Time:              time.Now(),
 			Source:            dia.Diadata,
 		}
 		retArray = append(retArray, s)
 		return retArray, nil
 	default:
-		value, err := db.GetSupplyInflux(symbol, starttime, endtime)
+		value, err := db.GetSupplyInflux(topAsset, starttime, endtime)
 		if err != nil {
 			log.Errorf("Error: %v on GetSupply %v\n", err, symbol)
 			return []dia.Supply{}, err
@@ -67,15 +77,15 @@ func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supp
 }
 
 func (db *DB) SetSupply(supply *dia.Supply) error {
-	key := getKeySupply(supply.Symbol)
+	key := getKeySupply(supply.Asset)
 	log.Debug("setting ", key, supply)
 	err := db.redisClient.Set(key, supply, 0).Err()
 	if err != nil {
-		log.Errorf("Error: %v on SetSupply (redis) %v\n", err, supply.Symbol)
+		log.Errorf("Error: %v on SetSupply (redis) %v\n", err, supply.Asset.Symbol)
 	}
 	err = db.SaveSupplyInflux(supply)
 	if err != nil {
-		log.Errorf("Error: %v on SetSupply (influx) %v\n", err, supply.Symbol)
+		log.Errorf("Error: %v on SetSupply (influx) %v\n", err, supply.Asset.Symbol)
 	}
 	return err
 }
