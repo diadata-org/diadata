@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
@@ -83,6 +84,34 @@ func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 	return
 }
 
+// GetAllAssets returns all assets on @blockchain from asset table.
+func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error) {
+	var rows pgx.Rows
+	query := fmt.Sprintf("select symbol,name,address,decimals from %s where blockchain=$1", assetTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain)
+	if err != nil {
+		return
+	}
+
+	var decimals string
+	for rows.Next() {
+		var asset dia.Asset
+		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals)
+		if err != nil {
+			log.Error(err)
+		}
+		decimalsInt, err := strconv.Atoi(decimals)
+		if err != nil {
+			continue
+		}
+		asset.Decimals = uint8(decimalsInt)
+		asset.Blockchain.Name = blockchain
+		// TO DO: Get Blockchain by name from postgres and add to asset
+		assets = append(assets, asset)
+	}
+	return
+}
+
 // GetAssetsBySymbolName returns a (possibly multiple) dia.Asset by its symbol and name from postgres.
 // If @name is an empty string, it returns all assets with @symbol.
 // If @symbol is an empty string, it returns all assets with @name.
@@ -103,7 +132,6 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		return
 	}
 	for rows.Next() {
-		fmt.Println("---")
 		var asset dia.Asset
 		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
 		decimalsInt, err := strconv.Atoi(decimals)
@@ -318,6 +346,26 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 	}
 
 	return nil
+}
+
+// -------------------------------------------------------------
+// Blockchain methods
+// -------------------------------------------------------------
+
+func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err error) {
+	var genesisdateString string
+	query := fmt.Sprintf("select genesisdate,nativetoken,verificationmechanism from %s where name=$1", blockchainTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, name).Scan(&genesisdateString, &blockchain.NativeToken, &blockchain.VerificationMechanism)
+	if err != nil {
+		return
+	}
+	blockchain.Name = name
+	genesisDate, err := time.Parse("2006-01-02", genesisdateString)
+	if err != nil {
+		log.Error(err)
+	}
+	blockchain.GenesisDate = genesisDate
+	return
 }
 
 // -------------------------------------------------------------

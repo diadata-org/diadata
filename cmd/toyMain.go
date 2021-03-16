@@ -13,10 +13,10 @@ func main() {
 		fmt.Println(err)
 	}
 
-	db, err := models.NewDataStore()
-	if err != nil {
-		fmt.Println(err)
-	}
+	// db, err := models.NewDataStore()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
 	asset1 := dia.Asset{
 		Symbol:     "BTC",
@@ -31,13 +31,13 @@ func main() {
 	relDB.SetAsset(asset1)
 	relDB.SetAsset(asset2)
 
-	assets, err := relDB.GetAssetsBySymbolName("BTC", "")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("assets: ", assets)
+	// assets, err := relDB.GetAssetsBySymbolName("BTC", "")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println("assets: ", assets)
 
-	price, err := db.GetAssetPriceUSD(asset1)
-	fmt.Println("price, err: ", price, err)
+	assets, err := relDB.GetAllAssets("Ethereum")
+	fmt.Println("assets, err: ", assets, err)
 
 }

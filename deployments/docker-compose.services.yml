@@ -118,6 +118,8 @@ services:
       - redis-network
       - influxdb-network
       - postgres-network
+    secrets:
+      - postgres_credentials
     environment:
       - EXEC_MODE=production
     logging:

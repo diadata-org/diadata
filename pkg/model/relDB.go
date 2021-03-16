@@ -20,6 +20,7 @@ type RelDatastore interface {
 	GetAsset(address, blockchain string) (dia.Asset, error)
 	GetAssetByID(ID string) (dia.Asset, error)
 	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
+	GetAllAssets(blockchain string) ([]dia.Asset, error)
 	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
 	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
@@ -33,6 +34,9 @@ type RelDatastore interface {
 	GetExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
+
+	// ----------------- blockchain methods -------------------
+	GetBlockchain(name string) (dia.BlockChain, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
@@ -52,10 +56,14 @@ const (
 	assetTable          = "asset"
 	exchangepairTable   = "exchangepair"
 	exchangesymbolTable = "exchangesymbol"
+	blockchainTable     = "blockchain"
 
 	// cache keys
 	keyAssetCache        = "dia_asset_"
 	keyExchangePairCache = "dia_exchangepair_"
+
+	// time format for blockchain genesis dates
+	timeFormatBlockchain = "2006-01-02"
 )
 
 // RelDB is a relative database with redis caching layer.

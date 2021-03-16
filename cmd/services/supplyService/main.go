@@ -7,6 +7,7 @@ import (
 	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 )
@@ -22,6 +23,10 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Fatal("relational datastore error: ", err)
+	}
 	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	// conn, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
 	if err != nil {
@@ -32,6 +37,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Infof("got %v assets from json", len(tokenAddresses))
+	// Fetch all assets from postgres asset table
+	assetTableAssets, err := relDB.GetAllAssets("Ethereum")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Infof("got %v assets from postgres", len(assetTableAssets))
+	time.Sleep(1 * time.Minute)
+	var moreAddresses []string
+	for _, asset := range assetTableAssets {
+		moreAddresses = append(moreAddresses, asset.Address)
+	}
+	tokenAddresses = append(tokenAddresses, moreAddresses...)
+	tokenAddressesFinal := utils.UniqueStrings(tokenAddresses)
+	log.Infof("got %v assets in total", len(tokenAddressesFinal))
 
 	// Get map for locked wallets per asset
 	lockedWalletsMap, err := supplyservice.GetLockedWalletsFromConfig(lockedWalletsFilename)
@@ -39,7 +59,7 @@ func main() {
 		log.Error(err)
 	}
 	// Initial run
-	err = setSupplies(tokenAddresses, lockedWalletsMap, ds, conn)
+	err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
 	if err != nil {
 		log.Error(err)
 	}
@@ -50,7 +70,7 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				err = setSupplies(tokenAddresses, lockedWalletsMap, ds, conn)
+				err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
 				if err != nil {
 					log.Error(err)
 				}
