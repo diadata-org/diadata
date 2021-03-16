@@ -140,11 +140,6 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 	if err != nil {
 		return nil, err
 	} else {
-		itin, err := db.GetItinBySymbol(q.Symbol)
-		if err != nil {
-			log.Error("Error retrieving ITIN:", err)
-			itin.Itin = "undefined"
-		}
 		r := &SymbolDetails{
 			Coin: Coin{
 				Symbol:             q.Symbol,
@@ -153,7 +148,6 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
 				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
-				ITIN:               itin.Itin,
 			},
 			Exchanges: []SymbolExchangeDetails{},
 		}
@@ -162,19 +156,20 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 		if err == nil {
 			r.Coin.CirculatingSupply = &s.CirculatingSupply
 		}
-		exs, err := db.GetExchangesForSymbol(symbol)
-		if err == nil {
-			for _, e := range exs {
-				s, err2 := db.GetSymbolExchangeDetails(symbol, e)
-				if err2 == nil {
-					if s.VolumeYesterdayUSD != nil {
-						r.Exchanges = append(r.Exchanges, *s)
-					} else {
-						log.Warning("getSymbolDetails: VolumeYesterdayUSD nil on", e, "for", symbol, " skipping exchange in exchange list.")
-					}
-				}
-			}
-		}
+		// TO DO: Fill in according to new asset type
+		// exs, err := db.GetExchangesForSymbol(symbol)
+		// if err == nil {
+		// 	for _, e := range exs {
+		// 		s, err2 := db.GetSymbolExchangeDetails(symbol, e)
+		// 		if err2 == nil {
+		// 			if s.VolumeYesterdayUSD != nil {
+		// 				r.Exchanges = append(r.Exchanges, *s)
+		// 			} else {
+		// 				log.Warning("getSymbolDetails: VolumeYesterdayUSD nil on", e, "for", symbol, " skipping exchange in exchange list.")
+		// 			}
+		// 		}
+		// 	}
+		// }
 		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "", time.Time{}, time.Now())
 		if r.Gfx1 == nil || err != nil {
 			log.Error("Couldnt fetch points for ", symbol, err)

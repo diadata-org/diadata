@@ -29,7 +29,8 @@ type RelDatastore interface {
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair)
-	GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error)
+	GetExchangePairs(exchange string) ([]dia.ExchangePair, error)
+	GetPairs(exchange string) ([]dia.ExchangePair, error)
 	SetExchangeSymbol(exchange string, symbol string) error
 	GetExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)

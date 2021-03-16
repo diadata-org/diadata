@@ -27,13 +27,15 @@ type Datastore interface {
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
+	// TO DO: Adapt to new asset type using underlying asset with
+	// biggest market cap -> getTopAsset(symbol)
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
 	GetChartPoints7Days(symbol string) ([]Point, error)
-	GetPairs(exchange string) ([]dia.ExchangePair, error)
+	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
-	GetExchangesForSymbol(symbol string) ([]string, error)
+	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
@@ -76,6 +78,7 @@ type Datastore interface {
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
+	GetTopAsset(symbol string, relDB *RelDB) (dia.Asset, error)
 
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)

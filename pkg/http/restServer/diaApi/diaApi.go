@@ -86,7 +86,12 @@ func (env *Env) PostSupply(c *gin.Context) {
 // @Router /v1/quotation/:symbol: [get]
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetQuotation(symbol)
+	// Fetch underlying asset for symbol
+	asset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+	}
+	q, err := env.DataStore.GetAssetQuotation(asset)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -310,7 +315,7 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 
 // GetPairs returns all pairs
 func (env *Env) GetPairs(c *gin.Context) {
-	p, err := env.DataStore.GetPairs("")
+	p, err := env.RelDB.GetPairs("")
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
