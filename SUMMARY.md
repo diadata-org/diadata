@@ -34,6 +34,7 @@
     * [Guest Quotations](documentation/oracle-documentation/guest-quotations/README.md)
       * [CoinMarketCap Quotations](documentation/oracle-documentation/guest-quotations/coinmarketcap-quotations.md)
       * [Coingecko Quotations](documentation/oracle-documentation/guest-quotations/coingecko-quotations.md)
+    * [Polkadot Offchain Worker](documentation/oracle-documentation/polkadot-offchain-worker.md)
     * [NEAR Request Oracle](documentation/oracle-documentation/near-request-oracle.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code_of_conduct.md)
