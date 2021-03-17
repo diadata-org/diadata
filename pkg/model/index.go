@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 // CryptoIndex is the container for API endpoint CryptoIndex
 type CryptoIndex struct {
 	// The index has a price, hence is traded, hence must(?) correspond to some underlying asset
+	// In case there is no underlying token, just fill the field @Symbol.
 	Asset             dia.Asset
 	Value             float64
 	Price             float64
@@ -33,10 +35,6 @@ type CryptoIndex struct {
 }
 
 type CryptoIndexConstituent struct {
-	// Name              string
-	// Symbol            string
-	// Address           string
-	// Blockchain        string
 	Asset             dia.Asset
 	Price             float64
 	PriceYesterday    float64
@@ -72,7 +70,7 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor,\"blockchain\" from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -162,15 +160,21 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				return retval, err
 			}
 			constituentsSerial := res[0].Series[0].Values[i][1].(string)
+			blockchain := res[0].Series[0].Values[i][6].(string)
 
 			// Get constituents
 			var constituents []CryptoIndexConstituent
-			for _, constituentSymbol := range strings.Split(constituentsSerial, ",") {
-				if constituentSymbol == "" {
-					log.Info("Skipping empty Symbol")
+			for _, constituentAddress := range strings.Split(constituentsSerial, ",") {
+				if constituentAddress == "" {
+					log.Info("Skipping empty Address")
 					continue
 				}
-				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentSymbol, name)
+				// Address and blockchain is sufficient information for constituent getter.
+				constituentAsset := dia.Asset{
+					Address:    constituentAddress,
+					Blockchain: dia.BlockChain{Name: blockchain},
+				}
+				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
 				if err != nil {
 					return retval, err
 				}
@@ -191,7 +195,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		if constituentsSerial != "" {
 			constituentsSerial += ","
 		}
-		constituentsSerial += c.Asset.Symbol
+		constituentsSerial += c.Asset.Address
 	}
 	fields := map[string]interface{}{
 		"price":        index.Price,
@@ -199,9 +203,12 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		"constituents": constituentsSerial,
 		"divisor":      index.Divisor,
 	}
-	// We can stick to serials here as we do not expect duplicate ticker symbols inside an index.
 	tags := map[string]string{
-		"name": index.Asset.Name,
+		"symbol":     index.Asset.Symbol,
+		"name":       index.Asset.Name,
+		"address":    index.Asset.Address,
+		"decimals":   strconv.Itoa(int(index.Asset.Decimals)),
+		"blockchain": index.Asset.Blockchain.Name,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexTable, tags, fields, index.CalculationTime)
 	if err != nil {
@@ -217,7 +224,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	}
 
 	for _, constituent := range index.Constituents {
-		err = db.SetCryptoIndexConstituent(&constituent, index.Asset.Name)
+		err = db.SetCryptoIndexConstituent(&constituent, index.Asset)
 		if err != nil {
 			return err
 		}
@@ -240,11 +247,14 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 
 }
 
-func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string, indexSymbol string) ([]CryptoIndexConstituent, error) {
+// GetCryptoIndexConstituents returns the constituent corresponding to @asset along with underlying information.
+// Necessary and sufficient information is asset's address and blockchain.
+func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, asset dia.Asset, indexSymbol string) ([]CryptoIndexConstituent, error) {
 	//func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
-
-	q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol, indexSymbol)
+	queryString := "SELECT \"address\",cappingfactor,circulatingsupply,\"name\",percentage,price,\"symbol\",weight,numbasetokens,\"decimals\",\"blockchain\"" +
+		" from %s WHERE time > %d and time < %d and address = '%s' and blockchain = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1"
+	q := fmt.Sprintf(queryString, influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain.Name, indexSymbol)
 	//q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
@@ -286,6 +296,13 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 		} else {
 			currentConstituent.NumBaseTokens = 0
 		}
+		decimals, err := res[0].Series[0].Values[0][10].(json.Number).Int64()
+		if err != nil {
+			return retval, err
+		}
+		currentConstituent.Asset.Decimals = uint8(decimals)
+		currentConstituent.Asset.Blockchain.Name = res[0].Series[0].Values[0][11].(string)
+
 		// Get price yesterday
 		priceYesterday, err := db.GetLastPriceBefore(strings.ToUpper(currentConstituent.Asset.Symbol), "MAIR120", "", endtime.AddDate(0, 0, -1))
 		if err != nil {
@@ -307,7 +324,7 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 	return retval, nil
 }
 
-func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, indexSymbol string) error {
+func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset) error {
 	log.Error("Const ", constituent)
 	fields := map[string]interface{}{
 		"percentage":        constituent.Percentage,
@@ -321,8 +338,9 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 		"name":        constituent.Asset.Name,
 		"symbol":      constituent.Asset.Symbol,
 		"address":     constituent.Asset.Address,
+		"decimals":    strconv.Itoa(int(constituent.Asset.Decimals)),
 		"blockchain":  constituent.Asset.Blockchain.Name,
-		"cryptoindex": indexSymbol,
+		"cryptoindex": index.Symbol,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())
 	if err != nil {
@@ -338,34 +356,16 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 	return err
 }
 
-// WIP: Returns the amounts of constituents tokens needed to mint an index token
-// For now we hard-code amounts. TO DO: Set and Get data to and from influx/config
-func (db *DB) GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error) {
-
-	constituents := []string{"SUSHI", "REN", "KP3R", "UTK", "AXS", "Yf-DAI", "DIA", "STAKE", "POLS", "PICKLE", "EASY", "IDLE", "SPICE"}
-	amounts := []uint64{102504643110709000, 907990711110561000, 206329281567188, 461546152853883000, 56696968122059100, 4185582958247, 26215696618443200, 3778532359289460, 38656197930994700, 972363917807713, 2038967220923070, 952603382004964, 16697065735724400}
-	addresses := []string{
-		"0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
-		"0x408e41876cccdc0f92210600ef50372656052a38",
-		"0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
-		"0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c",
-		"0xF5D669627376EBd411E34b98F19C868c8ABA5ADA",
-		"0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577",
-		"0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
-		"0x0Ae055097C6d159879521C384F1D2123D1f195e6",
-		"0x83e6f1E41cdd28eAcEB20Cb649155049Fac3D5Aa",
-		"0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5",
-		"0x913D8ADf7CE6986a8CbFee5A54725D9Eea4F0729",
-		"0x875773784Af8135eA0ef43b5a374AaD105c5D39e",
-		"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664"}
-	var mintAmounts []CryptoIndexMintAmount
-	for i, constituent := range constituents {
-		var mintAmount CryptoIndexMintAmount
-		mintAmount.Symbol = constituent
-		mintAmount.Address = addresses[i]
-		mintAmount.Amount = amounts[i]
-		mintAmount.RebalanceTime = time.Unix(0, 1608403933000000000)
-		mintAmounts = append(mintAmounts, mintAmount)
+// GetIndexPrice returns the price of index represented by @asset.
+// If @asset only consists of a symbol, a different method for price retrieval has to be implemented.
+func (db *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
+	if asset.Address != "" && asset.Blockchain.Name != "" {
+		trade, err = db.GetTradeInflux(asset, "", time)
+		if err != nil {
+			return
+		}
+		return
 	}
-	return mintAmounts, nil
+	// In case no address/blockchain is given, implement getPrice method for asset here.
+	return
 }

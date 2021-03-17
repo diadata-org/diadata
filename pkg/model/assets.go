@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
 )
@@ -186,7 +187,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 		and = " and "
 	}
 	if asset.Address != "" {
-		query += fmt.Sprintf(and+"address='%s'", asset.Address)
+		query += fmt.Sprintf(and+"address='%s'", strings.ToLower(common.HexToAddress(asset.Address).String()))
 		and = " and "
 	}
 	if asset.Decimals != 0 {

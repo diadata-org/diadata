@@ -28,8 +28,9 @@ type KucoinMarketMatch struct {
 }
 
 type KucoinCurrency struct {
-	Symbol string `json:"currency"`
-	Name   string `json:"fullName"`
+	Symbol  string `json:"currency"`
+	Name    string `json:"fullName"`
+	Address string `json:"contractAddress"`
 }
 
 type KuExchangePair struct {
@@ -284,6 +285,7 @@ func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 	}
 	asset.Symbol = symbol
 	asset.Name = kc.Name
+	asset.Address = kc.Address
 	return
 }
 

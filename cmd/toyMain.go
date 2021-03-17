@@ -39,5 +39,8 @@ func main() {
 
 	assets, err := relDB.GetAllAssets("Ethereum")
 	fmt.Println("assets, err: ", assets, err)
+	str := "onw string" +
+		"another string:"
+	fmt.Println(str)
 
 }

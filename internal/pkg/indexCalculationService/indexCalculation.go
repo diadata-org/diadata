@@ -3,9 +3,8 @@ package indexCalculationService
 import (
 	"math"
 	"sort"
-	"strings"
+	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,41 +15,46 @@ var (
 
 // TO DO: Update to GetIndexBasket(assets []dia.Asset)
 // Get supply and price information for the index constituents
-func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, error) {
+func GetIndexBasket(constituentsAddresses []string) ([]models.CryptoIndexConstituent, error) {
 	db, err := models.NewDataStore()
+	if err != nil {
+		log.Error("Error connecting to datastore")
+		return nil, err
+	}
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Error("Error connecting to datastore")
 		return nil, err
 	}
 
 	var constituents []models.CryptoIndexConstituent
+	// fetch Ethereum assets by address
+	for _, address := range constituentsAddresses {
+		asset, err := relDB.GetAsset(address, "Ethereum")
+		if err != nil {
+			log.Error("error fetching asset from asset table")
+			return nil, err
+		}
+		constituent := models.CryptoIndexConstituent{Asset: asset}
+		constituents = append(constituents, constituent)
+	}
 
-	for _, symbol := range symbolsList {
-		// TO DO: update this to GetAssetQuotation(asset)
-		currQuotation, err := db.GetQuotation(strings.ToUpper(symbol))
+	for _, constituent := range constituents {
+
+		currSupply, err := db.GetSupplyInflux(constituent.Asset, time.Time{}, time.Time{})
 		if err != nil {
-			log.Error("Error when retrieveing quotation for ", symbol)
+			log.Error("Error when retrieveing supply for ", constituent.Asset.Symbol)
 			return nil, err
 		}
-		currSupply, err := db.GetLatestSupply(symbol)
+		currLastTrade, err := db.GetLastTrades(constituent.Asset, "", 1)
 		if err != nil {
-			log.Error("Error when retrieveing supply for ", symbol)
+			log.Error("Error when retrieveing lst trades for ", constituent.Asset.Symbol)
 			return nil, err
-		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(symbol), 1)
-		if err != nil {
-			log.Error("Error when retrieveing lst trades for ", symbol)
-			return nil, err
-		}
-		asset := dia.Asset{
-			Symbol:  currSupply.Asset.Symbol,
-			Name:    currQuotation.Name,
-			Address: "-",
 		}
 		newConstituent := models.CryptoIndexConstituent{
-			Asset:             asset,
+			Asset:             constituent.Asset,
 			Price:             currLastTrade[0].EstimatedUSDPrice,
-			CirculatingSupply: currSupply.CirculatingSupply,
+			CirculatingSupply: currSupply[0].CirculatingSupply,
 			Weight:            0.0,
 			CappingFactor:     0.0,
 			NumBaseTokens:     0.0,
@@ -173,37 +177,37 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 	}
 }
 
-func UpdateConstituentsMarketData(indexSymbol string, currentConstituents *[]models.CryptoIndexConstituent) error {
+func UpdateConstituentsMarketData(index string, currentConstituents *[]models.CryptoIndexConstituent) error {
 	db, err := models.NewDataStore()
 	if err != nil {
 		log.Error("Error connecting to datastore")
 		return err
 	}
 	for i, c := range *currentConstituents {
-		currSupply, err := db.GetLatestSupply(c.Asset.Symbol)
+		currSupply, err := db.GetSupplyInflux(c.Asset, time.Time{}, time.Time{})
 		if err != nil {
 			log.Error("Error when retrieveing supply for ", c.Asset.Symbol)
 			return err
 		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(c.Asset.Symbol), 1)
+		currLastTrade, err := db.GetLastTrades(c.Asset, "", 1)
 		if err != nil {
 			log.Error("Error when retrieveing last trades for ", c.Asset.Symbol)
 			return err
 		}
 		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice
-		(*currentConstituents)[i].CirculatingSupply = currSupply.CirculatingSupply
+		(*currentConstituents)[i].CirculatingSupply = currSupply[0].CirculatingSupply
 	}
 
 	// Calculate current percentages: 1. get index value 2. Determine percentage of each asset
-	currIndexValue := GetIndexValue(indexSymbol, *currentConstituents)
-	if indexSymbol == "SCIFI" {
-		for i, _ := range *currentConstituents {
+	currIndexValue := GetIndexValue(index, *currentConstituents)
+	if index == "SCIFI" {
+		for i := range *currentConstituents {
 			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].CirculatingSupply * (*currentConstituents)[i].CappingFactor) / currIndexValue
 			(*currentConstituents)[i].Percentage = currPercentage
 		}
 	} else {
 		// GBI
-		for i, _ := range *currentConstituents {
+		for i := range *currentConstituents {
 			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].NumBaseTokens * 1e-16) / currIndexValue //1e-16 because index value is 100 at start
 			(*currentConstituents)[i].Percentage = currPercentage
 		}

@@ -36,14 +36,13 @@ type Datastore interface {
 	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
-	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
+	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
-	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
-	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
+	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -126,10 +125,10 @@ type Datastore interface {
 	// Crypto Index methods
 	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
-	GetCryptoIndexConstituents(time.Time, time.Time, string, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent, string) error
+	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
+	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
-	GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error)
+	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)

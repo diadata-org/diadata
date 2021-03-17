@@ -78,34 +78,34 @@ func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	}
 }
 
-func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error) {
-	result := &SymbolExchangeDetails{
-		Name: exchange,
-	}
-	// TO DO: adapt to dia.Asset
-	preliminaryAsset := dia.Asset{
-		Symbol: symbol,
-	}
-	v, err := db.GetPrice(preliminaryAsset, exchange)
-	if err == nil {
-		result.Price = v
-	}
+// func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error) {
+// 	result := &SymbolExchangeDetails{
+// 		Name: exchange,
+// 	}
+// 	// TO DO: adapt to dia.Asset
+// 	preliminaryAsset := dia.Asset{
+// 		Symbol: symbol,
+// 	}
+// 	v, err := db.GetPrice(preliminaryAsset, exchange)
+// 	if err == nil {
+// 		result.Price = v
+// 	}
 
-	py, err2 := db.GetPriceYesterday(preliminaryAsset, exchange)
-	if err2 == nil {
-		result.PriceYesterday = &py
-	}
+// 	py, err2 := db.GetPriceYesterday(preliminaryAsset, exchange)
+// 	if err2 == nil {
+// 		result.PriceYesterday = &py
+// 	}
 
-	// v2, _ := db.GetVolumeExchange(symbol, exchange)
-	// result.VolumeYesterdayUSD = v2
-	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
-	result.Time = d
+// 	// v2, _ := db.GetVolumeExchange(symbol, exchange)
+// 	// result.VolumeYesterdayUSD = v2
+// 	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
+// 	result.Time = d
 
-	t, _ := db.GetLastTrades(symbol, exchange, 10)
-	result.LastTrades = t
+// 	t, _ := db.GetLastTrades(symbol, exchange, 10)
+// 	result.LastTrades = t
 
-	return result, err
-}
+// 	return result, err
+// }
 
 // func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
 // 	key := getKey("symbol", "details", symbol)

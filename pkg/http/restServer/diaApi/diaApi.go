@@ -1171,24 +1171,17 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-func (env *Env) GetCryptoIndexMintAmounts(c *gin.Context) {
-	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetCryptoIndexMintAmounts(symbol)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
-	}
-}
-
 // Get last 1000 trades of an asset
 func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetLastTradesAllExchanges(symbol, 1000)
+
+	// First get asset with @symbol with largest market cap.
+	topAsset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+	}
+
+	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000)
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1200,6 +1193,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	}
 }
 
+// Post data must now be a slice of (EThereum-)addresses
 func (env *Env) PostIndexRebalance(c *gin.Context) {
 	indexSymbol := c.Param("symbol")
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -1207,14 +1201,14 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
 		return
 	}
-	var constituentsSymbols []string
-	err = json.Unmarshal(body, &constituentsSymbols)
+	var constituentsAddresses []string
+	err = json.Unmarshal(body, &constituentsAddresses)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
 	// Get constituents information
-	constituents, err := indexCalculationService.GetIndexBasket(constituentsSymbols)
+	constituents, err := indexCalculationService.GetIndexBasket(constituentsAddresses)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
