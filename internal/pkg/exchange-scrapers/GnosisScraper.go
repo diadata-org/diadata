@@ -137,6 +137,11 @@ func (scraper *GnosisScraper) loadTokens() {
 	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
 }
 
+// FillSymbolData is not used by DEX scrapers.
+func (s *GnosisScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *GnosisScraper) subscribeToTrades() error {
 	filterer, err := gnosis.NewGnosisFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {

@@ -138,6 +138,10 @@ func (s *LBankScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
+func (s *LBankScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *LBankScraper) Close() error {

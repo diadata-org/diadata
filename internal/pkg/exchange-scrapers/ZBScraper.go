@@ -138,6 +138,11 @@ func (s *ZBScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
+
+// FillSymbolData is not used by DEX scrapers.
+func (s *ZBScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *ZBScraper) Close() error {

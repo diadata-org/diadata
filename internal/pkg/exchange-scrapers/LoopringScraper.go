@@ -211,6 +211,10 @@ func (s *LoopringScraper) mainLoop() {
 	s.cleanup(nil)
 }
 
+func (s *LoopringScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (s *LoopringScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()

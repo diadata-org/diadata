@@ -508,7 +508,9 @@ func (scraper *BalancerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, 
 	return pairScraper, nil
 }
 
-func (scraper *BalancerScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+
+
+func (scraper *BalancerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil
 }
 

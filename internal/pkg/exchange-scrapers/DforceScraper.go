@@ -228,6 +228,10 @@ func (scraper *DforceScraper) processTrade(trade *dforce.DforceSwap) {
 
 }
 
+func (scraper *DforceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *DforceScraper) mainLoop() {
 
 	scraper.run = true

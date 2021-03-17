@@ -140,6 +140,10 @@ func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
+func (s *KrakenScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
