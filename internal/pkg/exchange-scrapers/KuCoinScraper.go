@@ -26,6 +26,12 @@ type KucoinMarketMatch struct {
 	MakerOrderID string `json:"makerOrderId"`
 	TradeID      string `json:"tradeId"`
 }
+
+type KucoinCurrency struct {
+	Symbol string `json:"currency"`
+	Name   string `json:"fullName"`
+}
+
 type KuExchangePair struct {
 	Symbol          string `json:"symbol"`
 	Name            string `json:"name"`
@@ -243,6 +249,7 @@ func (s *KuCoinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
+// FetchAvailablePairs returns all traded pairs on kucoin.
 func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	response, err := s.apiService.Symbols("")
 	if err != nil {
@@ -264,8 +271,19 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	return
 }
 
+// FillSymbolData adds the name to the asset underlying @symbol on kucoin.
 func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	resp, err := s.apiService.Currency(symbol, "")
+	if err != nil {
+		logger.Printf("error fetching %s from kucoin api: %v\n", symbol, err)
+	}
+	var kc KucoinCurrency
+	err = resp.ReadData(&kc)
+	if err != nil {
+		logger.Printf("error reading data for %s: %v\n", symbol, err)
+	}
 	asset.Symbol = symbol
+	asset.Name = kc.Name
 	return
 }
 
