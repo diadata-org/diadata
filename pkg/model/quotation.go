@@ -296,7 +296,6 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 		return nil, err
 	}
 	value.Name = helpers.NameForSymbol(symbol) // in case we updated the helper functions ;)
-	// TO DO: Switch to GetAssetQuotation
 	preliminaryAsset := dia.Asset{
 		Symbol: symbol,
 	}

@@ -278,16 +278,6 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 	return t
 }
 
-// GetCoins godoc
-func (env *Env) GetCoins(c *gin.Context) {
-	coins, err := env.DataStore.GetCoins()
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, coins)
-	}
-}
-
 // GetExchanges is the delegate method for fetching all
 // available trading places.
 func (env *Env) GetExchanges(c *gin.Context) {
@@ -411,24 +401,30 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	}
 }
 
-// GetAllSymbols returns all symbols available in our (redis) database.
-// Optional query parameter exchange returns only symbols available on this exchange.
+// GetAllSymbols returns all Symbols on @exchange.
+// If @exchange is not set, it returns all symbols across all exchanges.
+// TO DO: store all symbols for DEXes in postgres
 func (env *Env) GetAllSymbols(c *gin.Context) {
+	var s []string
+	var err error
 	exchange := c.DefaultQuery("exchange", "noRange")
 	if exchange == "noRange" {
-		s := env.DataStore.GetAllSymbols()
-		if len(s) == 0 {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
-		} else {
-			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		exchanges := env.DataStore.GetExchanges()
+		for _, exch := range exchanges {
+			sExch, err := env.RelDB.GetExchangeSymbols(exch)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+			}
+			s = append(s, sExch...)
 		}
+
 	} else {
-		s := env.DataStore.GetSymbolsByExchange(exchange)
-		if len(s) == 0 {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
-		} else {
-			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
-		}
+		s, err = env.RelDB.GetExchangeSymbols(exchange)
+	}
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+	} else {
+		c.JSON(http.StatusOK, s)
 	}
 
 }

@@ -49,9 +49,6 @@ type Datastore interface {
 	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
-	GetAllSymbols() []string
-	GetSymbolsByExchange(string) []string
-	GetCoins() (*Coins, error)
 
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
@@ -505,7 +502,6 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 			}
 			retval.Source = res[0].Series[0].Values[i][2].(string)
 			retval.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
-			// TO DO: Handle Pair. Which one is it gonna be?
 			retval.Pair = res[0].Series[0].Values[i][4].(string)
 			retval.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
 			if err != nil {

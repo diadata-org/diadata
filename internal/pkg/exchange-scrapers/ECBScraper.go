@@ -201,8 +201,6 @@ func (s *ECBScraper) Update() error {
 	return err
 }
 
-// TO DO: store historic data in assetQuotation format as well
-
 // Populate fetches historical daily datas from 1999 until today and saves them on the database
 func Populate(datastore *models.DB, rdb *models.RelDB, pairs []string) {
 	// Start with USD to have conversion reference

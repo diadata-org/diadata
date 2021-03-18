@@ -6,44 +6,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func (db *DB) GetAllSymbols() []string {
-	r := make(map[string]string)
-
-	// TODO: search in redis instead
-	for _, e := range dia.Exchanges() {
-		p, err := db.GetAvailablePairs(e)
-		if err == nil {
-			for _, v := range p {
-				r[v.Symbol] = v.Symbol
-			}
-		} else {
-			log.Errorf("Error %v in GetAllSymbols for %s\n", err, e)
-		}
-	}
-	s := []string{}
-	for _, value := range r {
-		s = append(s, value)
-	}
-	return s
-}
-
-func (db *DB) GetSymbolsByExchange(e string) []string {
-	r := make(map[string]string)
-	p, err := db.GetAvailablePairs(e)
-	if err == nil {
-		for _, v := range p {
-			r[v.Symbol] = v.Symbol
-		}
-	} else {
-		log.Error("GetAllSymbols", err)
-	}
-	s := []string{}
-	for _, value := range r {
-		s = append(s, value)
-	}
-	return s
-}
-
 func (db *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
 	var cursor uint64

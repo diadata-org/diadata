@@ -13,7 +13,6 @@ var (
 	MAX_RELATIVE_CAP float64 = 0.3
 )
 
-// TO DO: Update to GetIndexBasket(assets []dia.Asset)
 // Get supply and price information for the index constituents
 func GetIndexBasket(constituentsAddresses []string) ([]models.CryptoIndexConstituent, error) {
 	db, err := models.NewDataStore()
