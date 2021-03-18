@@ -63,32 +63,7 @@ func getTopic(topic int) string {
 }
 
 func init() {
-	KafkaConfig.KafkaUrl = []string{}
-	var kafkaCount = 0
-	for {
-		kafkaName := fmt.Sprintf("kafka%d", kafkaCount)
-		ip, err := net.LookupIP(kafkaName)
-		if err != nil {
-			log.Println("found", kafkaCount, "kafkas by name resolution")
-			break
-		} else {
-			log.Println(kafkaName, " -> ", ip)
-			kafkaName = fmt.Sprintf("kafka%d:9094", kafkaCount)
-			KafkaConfig.KafkaUrl = append(KafkaConfig.KafkaUrl, kafkaName)
-			kafkaCount++
-		}
-	}
-	if kafkaCount == 0 {
-		l := os.Getenv("LOCALHOST_KAFKA")
-		if l == "" {
-			log.Warning("could not find the kafka0 names, using kafka0")
-			KafkaConfig.KafkaUrl = []string{"kafka0:9094"}
-		} else {
-			log.Println("LOCALHOST_KAFKA is set, Adding localhost, probably runned outside of kafka")
-			KafkaConfig.KafkaUrl = []string{"localhost:9094"}
-		}
-	}
-	log.Printf("brokers: %v", KafkaConfig.KafkaUrl)
+	KafkaConfig.KafkaUrl = []string{os.Getenv("KAFKAURL")}
 }
 
 // WithRetryOnError
