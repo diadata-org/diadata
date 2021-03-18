@@ -304,14 +304,14 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 		currentConstituent.Asset.Blockchain.Name = res[0].Series[0].Values[0][11].(string)
 
 		// Get price yesterday
-		priceYesterday, err := db.GetLastPriceBefore(strings.ToUpper(currentConstituent.Asset.Symbol), "MAIR120", "", endtime.AddDate(0, 0, -1))
+		priceYesterday, err := db.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -1))
 		if err != nil {
 			currentConstituent.PriceYesterday = float64(0)
 		} else {
 			currentConstituent.PriceYesterday = priceYesterday.Price
 		}
 		// Get price yesterweek
-		priceYesterweek, err := db.GetLastPriceBefore(strings.ToUpper(currentConstituent.Asset.Symbol), "MAIR120", "", endtime.AddDate(0, 0, -7))
+		priceYesterweek, err := db.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -7))
 		if err != nil {
 			currentConstituent.PriceYesterweek = float64(0)
 		} else {

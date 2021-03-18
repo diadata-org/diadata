@@ -142,13 +142,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	s.datastore.Flush()
-	// c, err := s.datastore.GetCoins()
-	// if err == nil {
-	// for i, v := range c.Coins {
-	// 	log.Info("UpdateSymbolDetails on ", v.Symbol)
-	// 	s.datastore.UpdateSymbolDetails(v.Symbol, i+1)
-	// }
-	// }
 }
 
 func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {

@@ -22,17 +22,17 @@ func (db *DB) GetExchanges() (allExchanges []string) {
 	return
 }
 
-func getKeyLastTradeTimeForExchange(symbol string, exchange string) string {
+func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
 	if exchange == "" {
-		return "dia_TLT_" + symbol
+		return "dia_TLT_" + asset.Blockchain.Name + "_" + asset.Address
 
 	} else {
-		return "dia_TLT_" + symbol + "_" + exchange
+		return "dia_TLT_" + asset.Blockchain.Name + "_" + asset.Address + "_" + exchange
 	}
 }
 
-func (db *DB) GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error) {
-	key := getKeyLastTradeTimeForExchange(symbol, exchange)
+func (db *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
+	key := getKeyLastTradeTimeForExchange(asset, exchange)
 	t, err := db.redisClient.Get(key).Result()
 	if err != nil {
 		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
@@ -47,15 +47,15 @@ func (db *DB) GetLastTradeTimeForExchange(symbol string, exchange string) (*time
 	}
 }
 
-func (db *DB) SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error {
+func (db *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
 	if db.redisClient == nil {
 		return nil
 	}
-	key := getKeyLastTradeTimeForExchange(symbol, exchange)
+	key := getKeyLastTradeTimeForExchange(asset, exchange)
 	log.Debug("setting ", key, t)
 	err := db.redisClient.Set(key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
-		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, symbol)
+		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
 	return err
 }

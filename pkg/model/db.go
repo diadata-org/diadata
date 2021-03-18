@@ -15,7 +15,6 @@ import (
 
 type Datastore interface {
 	GetVolume(asset dia.Asset) (*float64, error)
-	// SymbolsWithASupply() ([]string, error)
 
 	// Deprecating
 	SetPriceUSD(symbol string, price float64) error
@@ -27,18 +26,16 @@ type Datastore interface {
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
-	// TO DO: Adapt to new asset type using underlying asset with
-	// biggest market cap -> getTopAsset(symbol)
 	GetLatestSupply(string) (*dia.Supply, error)
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
-	GetChartPoints7Days(symbol string) ([]Point, error)
+	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
 	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
 	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
-	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
-	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
+	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
+	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
@@ -47,7 +44,7 @@ type Datastore interface {
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
-	GetLastPriceBefore(symbol string, filter string, exchange string, timestamp time.Time) (Price, error)
+	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
 	SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error
 	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
@@ -55,14 +52,12 @@ type Datastore interface {
 	GetAllSymbols() []string
 	GetSymbolsByExchange(string) []string
 	GetCoins() (*Coins, error)
-	GetSymbolDetails(symbol string) (*SymbolDetails, error)
-	// UpdateSymbolDetails(symbol string, rank int)
+
 	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
-	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
 	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
 	// Get24VolumeExchange(exchange string) (float64, error)

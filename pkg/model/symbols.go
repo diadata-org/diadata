@@ -2,7 +2,6 @@ package models
 
 import (
 	"strings"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
@@ -75,105 +74,5 @@ func (db *DB) GetSymbols(exchange string) ([]string, error) {
 			log.Debugf("GetSymbols %v returns %v", key, result)
 			return result, nil
 		}
-	}
-}
-
-// func (db *DB) GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error) {
-// 	result := &SymbolExchangeDetails{
-// 		Name: exchange,
-// 	}
-// 	// TO DO: adapt to dia.Asset
-// 	preliminaryAsset := dia.Asset{
-// 		Symbol: symbol,
-// 	}
-// 	v, err := db.GetPrice(preliminaryAsset, exchange)
-// 	if err == nil {
-// 		result.Price = v
-// 	}
-
-// 	py, err2 := db.GetPriceYesterday(preliminaryAsset, exchange)
-// 	if err2 == nil {
-// 		result.PriceYesterday = &py
-// 	}
-
-// 	// v2, _ := db.GetVolumeExchange(symbol, exchange)
-// 	// result.VolumeYesterdayUSD = v2
-// 	d, _ := db.GetLastTradeTimeForExchange(symbol, exchange)
-// 	result.Time = d
-
-// 	t, _ := db.GetLastTrades(symbol, exchange, 10)
-// 	result.LastTrades = t
-
-// 	return result, err
-// }
-
-// func (db *DB) UpdateSymbolDetails(symbol string, rank int) {
-// 	key := getKey("symbol", "details", symbol)
-// 	r, err := db.getSymbolDetails(symbol)
-// 	if err == nil {
-// 		r.Rank = rank
-// 		err = db.redisClient.Set(key, r, timeOutRedisOneBlock).Err()
-// 		if err != nil {
-// 			log.Error("UpdateSymbolDetails setting cache", err)
-// 		}
-// 	} else {
-// 		log.Error("UpdateSymbolDetails", err)
-// 	}
-// }
-
-func (db *DB) GetSymbolDetails(symbol string) (*SymbolDetails, error) {
-	r := &SymbolDetails{}
-	// TO DO: adapt to dia.Asset
-	preliminaryAsset := dia.Asset{
-		Symbol: symbol,
-	}
-	key := getKey("symbol", preliminaryAsset, "")
-	err := db.redisClient.Get(key).Scan(r)
-	if err != nil {
-		return db.getSymbolDetails(symbol)
-	}
-	return r, err
-}
-
-func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
-	q, err := db.GetQuotation(symbol)
-	if err != nil {
-		return nil, err
-	} else {
-		r := &SymbolDetails{
-			Coin: Coin{
-				Symbol:             q.Symbol,
-				Name:               q.Name,
-				Price:              q.Price,
-				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
-				Time:               q.Time,
-				PriceYesterday:     q.PriceYesterday,
-			},
-			Exchanges: []SymbolExchangeDetails{},
-		}
-		r.Change, _ = db.GetCurrencyChange()
-		s, err := db.GetLatestSupply(symbol)
-		if err == nil {
-			r.Coin.CirculatingSupply = &s.CirculatingSupply
-		}
-		// TO DO: Fill in according to new asset type
-		// exs, err := db.GetExchangesForSymbol(symbol)
-		// if err == nil {
-		// 	for _, e := range exs {
-		// 		s, err2 := db.GetSymbolExchangeDetails(symbol, e)
-		// 		if err2 == nil {
-		// 			if s.VolumeYesterdayUSD != nil {
-		// 				r.Exchanges = append(r.Exchanges, *s)
-		// 			} else {
-		// 				log.Warning("getSymbolDetails: VolumeYesterdayUSD nil on", e, "for", symbol, " skipping exchange in exchange list.")
-		// 			}
-		// 		}
-		// 	}
-		// }
-		r.Gfx1, err = db.GetFilterPoints("MA120", "", symbol, "", time.Time{}, time.Now())
-		if r.Gfx1 == nil || err != nil {
-			log.Error("Couldnt fetch points for ", symbol, err)
-		}
-		return r, err
 	}
 }

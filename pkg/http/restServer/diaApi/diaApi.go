@@ -129,59 +129,6 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
-func (env *Env) GetLastPriceBeforeAllExchanges(c *gin.Context) {
-	symbol := c.Param("symbol")
-	filter := c.Param("filter")
-	timestampStr := c.Param("timestamp")
-
-	var timestamp time.Time
-	if timestampStr == "" {
-		timestamp = time.Now()
-	} else {
-		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		timestamp = time.Unix(timestampInt, 0)
-	}
-
-	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, "", timestamp)
-
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, price)
-	}
-}
-
-func (env *Env) GetLastPriceBefore(c *gin.Context) {
-	symbol := c.Param("symbol")
-	filter := c.Param("filter")
-	exchange := c.Param("exchange")
-	timestampStr := c.Param("timestamp")
-
-	var timestamp time.Time
-	if timestampStr == "" {
-		timestamp = time.Now()
-	} else {
-		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		timestamp = time.Unix(timestampInt, 0)
-	}
-
-	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, exchange, timestamp)
-
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, price)
-	}
-}
-
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
@@ -323,32 +270,6 @@ func (env *Env) GetPairs(c *gin.Context) {
 	}
 }
 
-// GetSymbolDetails godoc
-// @Summary Get Symbol Details
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} models.SymbolDetails "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/symbol/:symbol: [get]
-func (env *Env) GetSymbolDetails(c *gin.Context) {
-	symbol := c.Param("symbol")
-
-	s, err := env.DataStore.GetSymbolDetails(symbol)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, s)
-	}
-}
-
 func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 	t = t.Round(roundOn)
 	if time.Since(t) >= 0 {
@@ -358,14 +279,6 @@ func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
 }
 
 // GetCoins godoc
-// @Summary Get coins
-// @Description GetCoins
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} models.Coins "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/coins [get]
 func (env *Env) GetCoins(c *gin.Context) {
 	coins, err := env.DataStore.GetCoins()
 	if err != nil {

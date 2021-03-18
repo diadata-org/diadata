@@ -11,29 +11,6 @@ func getKeySupply(asset dia.Asset) string {
 	return "dia_supply_" + asset.Blockchain.Name + "_" + asset.Address
 }
 
-// Deprecating
-// func (db *DB) SymbolsWithASupply() ([]string, error) {
-// 	result := []string{}
-// 	var cursor uint64
-// 	key := getKeySupply("")
-// 	for {
-// 		var keys []string
-// 		var err error
-// 		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 10).Result()
-// 		if err != nil {
-// 			log.Error("SymbolsWithASupply err", err)
-// 			return result, err
-// 		}
-// 		for _, value := range keys {
-// 			result = append(result, strings.Replace(value, key, "", 1))
-// 		}
-// 		if cursor == 0 {
-// 			log.Debugf("SymbolsWithASupply %v returns %v", key, result)
-// 			return result, nil
-// 		}
-// 	}
-// }
-
 func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
 	val, err := db.GetSupply(symbol, time.Time{}, time.Time{})
 	if err != nil {
