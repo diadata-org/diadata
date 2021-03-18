@@ -201,7 +201,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	if withRedis {
 		// Run localhost for testing and server for production
 		if executionMode == "production" {
-			address = "redis:6379"
+			address = os.Getenv("REDISURL")
 		} else {
 			address = "localhost:6379"
 		}
@@ -219,7 +219,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		if executionMode == "production" {
-			address = "http://influxdb:8086"
+			address = os.Getenv("INFLUXURL")
 		} else {
 			address = "http://localhost:8086"
 		}
