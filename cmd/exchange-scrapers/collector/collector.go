@@ -69,11 +69,11 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	}
 
-	pairsExchange, err := relDB.GetExchangePairs(*exchange)
+	pairsExchange, err := relDB.GetExchangePairSymbols(*exchange)
 	log.Info("available exchangePairs:", len(pairsExchange))
 
 	if err != nil || len(pairsExchange) == 0 {
-		log.Error("error on GetExchangePairs", err)
+		log.Error("error on GetExchangePairSymbols", err)
 		cc := configCollectors.NewConfigCollectors(*exchange)
 		pairsExchange = cc.AllPairs()
 	}
@@ -91,6 +91,8 @@ func main() {
 
 	exchangePairs := make(map[string]string)
 
+	// TO DO: Add check for new pairs. i.e. put a ticker around the following loop
+	// and add a control whether new pairs are there.
 	for _, configPair := range pairsExchange {
 		dontAddPair := false
 		if *onePairPerSymbol {

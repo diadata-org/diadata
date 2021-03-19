@@ -93,7 +93,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
 		if err != nil {
 			log.Fatal(err)
@@ -106,7 +106,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 
 		break
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
 		if err != nil {
 			log.Fatal(err)
@@ -128,7 +128,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
 
 	s := &UniswapScraper{
@@ -217,13 +217,13 @@ func (s *UniswapScraper) mainLoop() {
 						}
 						pair.normalizeUniPair()
 						token0 := dia.Asset{
-							Address:    strings.ToLower(pair.Token0.Address.String()),
+							Address:    pair.Token0.Address.Hex(),
 							Symbol:     pair.Token0.Symbol,
 							Name:       pair.Token0.Name,
 							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
 						token1 := dia.Asset{
-							Address:    strings.ToLower(pair.Token1.Address.String()),
+							Address:    pair.Token1.Address.Hex(),
 							Symbol:     pair.Token1.Symbol,
 							Name:       pair.Token1.Name,
 							Blockchain: dia.BlockChain{Name: "Ethereum"},
@@ -252,8 +252,6 @@ func (s *UniswapScraper) mainLoop() {
 						}
 						if price > 0 {
 							log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
-							log.Info("base token: ", t.BaseToken.Symbol)
-							log.Info("quote token: ", t.QuoteToken.Symbol)
 							ps.parent.chanTrades <- t
 						}
 					}
@@ -362,14 +360,14 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 		quotetoken := dia.Asset{
 			Symbol:     pair.Token0.Symbol,
 			Name:       pair.Token0.Name,
-			Address:    strings.ToLower(pair.Token0.Address.Hex()),
+			Address:    pair.Token0.Address.Hex(),
 			Decimals:   pair.Token0.Decimals,
 			Blockchain: dia.BlockChain{Name: "Ethereum"},
 		}
 		basetoken := dia.Asset{
 			Symbol:     pair.Token1.Symbol,
 			Name:       pair.Token1.Name,
-			Address:    strings.ToLower(pair.Token1.Address.Hex()),
+			Address:    pair.Token1.Address.Hex(),
 			Decimals:   pair.Token1.Decimals,
 			Blockchain: dia.BlockChain{Name: "Ethereum"},
 		}

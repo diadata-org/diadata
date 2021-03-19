@@ -10,6 +10,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
+	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -93,6 +94,7 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 	if err != nil {
 		return
 	}
+	defer rows.Close()
 
 	var decimals string
 	for rows.Next() {
@@ -132,6 +134,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	if err != nil {
 		return
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var asset dia.Asset
 		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
@@ -187,7 +190,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 		and = " and "
 	}
 	if asset.Address != "" {
-		query += fmt.Sprintf(and+"address='%s'", strings.ToLower(common.HexToAddress(asset.Address).String()))
+		query += fmt.Sprintf(and+"address='%s'", common.HexToAddress(asset.Address).Hex())
 		and = " and "
 	}
 	if asset.Decimals != 0 {
@@ -201,6 +204,8 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	var decimals string
 	for rows.Next() {
 		asset := dia.Asset{}
@@ -238,6 +243,8 @@ func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err err
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		symbol := ""
 		rows.Scan(&symbol)
@@ -266,20 +273,19 @@ func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID s
 // GetExchangeSymbolAssetID returns the ID of the unique asset associated to @symbol on @exchange
 // in case the symbol is verified. An empty string if not.
 func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (assetID string, verified bool, err error) {
-	var checkUUID interface{}
+	var uuid pgtype.UUID
 	query := fmt.Sprintf("select asset_id, verified from %s where symbol=$1 and exchange=$2", exchangesymbolTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&checkUUID, &verified)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&uuid, &verified)
 	if err != nil {
 		return
 	}
-	// Comment: This workaround is not so nice. Problem is, when asset_id is not set it is of
-	// type NULL and can't be scanned into golang string type.
-	if checkUUID != nil {
-		query := fmt.Sprintf("select asset_id, verified from %s where symbol=$1 and exchange=$2", exchangesymbolTable)
-		err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&assetID, &verified)
-		return
+	val, err := uuid.Value()
+	if err != nil {
+		log.Error(err)
 	}
-	assetID = ""
+	if val != nil {
+		assetID = val.(string)
+	}
 	return
 }
 
@@ -287,14 +293,62 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 // 		exchangepair TABLE methods
 // 		-------------------------------------------------------------
 
-// GetExchangePairs returns all trading pairs on @exchange from exchangepair table
-func (rdb *RelDB) GetExchangePairs(exchange string) (pairs []dia.ExchangePair, err error) {
+// GetExchangePair returns the unique exchange pair given by @exchange and @foreignname from postgres.
+// It also returns the underlying pair if existent.
+func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.ExchangePair, error) {
+	var exchangepair dia.ExchangePair
+	var err error
+	exchangepair.Exchange = exchange
+	exchangepair.ForeignName = foreignname
+	var verified bool
+	var uuid_quotetoken pgtype.UUID
+	var uuid_basetoken pgtype.UUID
+
+	query := fmt.Sprintf("select symbol,verified,id_quotetoken,id_basetoken from %s where exchange=$1 and foreignname=$2", exchangepairTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
+	if err != nil {
+		return dia.ExchangePair{}, err
+	}
+	exchangepair.Verified = verified
+
+	// Decode uuids and fetch corresponding assets
+	val1, err := uuid_quotetoken.Value()
+	if err != nil {
+		log.Error(err)
+	}
+	if val1 != nil {
+		quotetoken, err := rdb.GetAssetByID(val1.(string))
+		if err != nil {
+			return dia.ExchangePair{}, err
+		}
+		exchangepair.UnderlyingPair.QuoteToken = quotetoken
+	}
+
+	val2, err := uuid_basetoken.Value()
+	if err != nil {
+		log.Error(err)
+	}
+	if val2 != nil {
+		basetoken, err := rdb.GetAssetByID(val2.(string))
+		if err != nil {
+			return dia.ExchangePair{}, err
+		}
+		exchangepair.UnderlyingPair.BaseToken = basetoken
+	}
+
+	return exchangepair, nil
+}
+
+// GetExchangePairSymbols returns all foreign names on @exchange from exchangepair table.
+func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangePair, err error) {
 	// TO DO: Should we also return verified?
 	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		pair := dia.ExchangePair{}
 		rows.Scan(&pair.Symbol, &pair.ForeignName)
@@ -345,7 +399,6 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 			log.Errorf("setting pair %s to redis for exchange %s: %v", pair.ForeignName, exchange, err)
 		}
 	}
-
 	return nil
 }
 
@@ -382,6 +435,8 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		fmt.Println("---")
 		var asset dia.Asset
@@ -399,6 +454,7 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 		hasNextPage = false
 		return
 	}
+	defer nextPageRows.Close()
 	hasNextPage = true
 	return
 }

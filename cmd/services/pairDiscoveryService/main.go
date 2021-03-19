@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/diadata-org/diadata/cmd/services/assetCollectionService/verifiedTokens"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/cmd/services/assetCollectionService/verifiedTokens"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -40,8 +41,8 @@ func init() {
 
 type ExchangeTicker struct {
 	Assets                map[string][]dia.Asset `json:"assets"`
-	VerifiedAssetsCount   int                  `json:"verifiedAssets"`
-	UnverifiedAssetsCount int                  `json:"unverifiedAssets"`
+	VerifiedAssetsCount   int                    `json:"verifiedAssets"`
+	UnverifiedAssetsCount int                    `json:"unverifiedAssets"`
 }
 
 func main() {
@@ -87,7 +88,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	toggle := getTogglePairDiscovery(updateTime)
 
 	toggle = true
-	if toggle == false {
+	if !toggle {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
 		for _, exchange := range dia.Exchanges() {
@@ -96,18 +97,31 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 				continue
 			}
 			// Fetch all pairs available for @exchange from exchangepair table in postgres
-			pairs, err := relDB.GetExchangePairs(exchange)
+			simplePairs, err := relDB.GetExchangePairSymbols(exchange)
 			if err != nil {
 				log.Errorf("getting pairs from postgres for exchange %s: %v", exchange, err)
 				continue
 			}
+
+			// Get filled version with verification and underlying dia.Pair if existent.
+			var pairs []dia.ExchangePair
+			for _, pair := range simplePairs {
+				fullPair, err := relDB.GetExchangePair(exchange, pair.ForeignName)
+				if err != nil {
+					log.Error("error fetching exchangepair: ", err)
+					continue
+				}
+				pairs = append(pairs, fullPair)
+			}
+
 			// Optional addition of pairs from config file
 			pairs, err = addPairsFromConfig(exchange, pairs)
 			if err != nil {
 				log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 			}
+
 			// Set pairs in postgres and redis caching layer. The collector will fetch these
-			// in order to build the corresponding pair scrapers.
+			// from the cache in order to build verified trades.
 			for _, pair := range pairs {
 				err = relDB.SetExchangePair(exchange, pair, true)
 				if err != nil {
@@ -124,12 +138,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
 			dataTowrite := make(map[string][]dia.Asset)
-		 
-
 			// TO DO: the next cond is only for testing. Remove when deploying.
-			//if exchange == "Uniswap" {
-			//	continue
-			//}
+			if exchange == "Uniswap" {
+				continue
+			}
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
@@ -153,6 +165,8 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					if err != nil {
 						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
 					}
+					log.Infof("fetched %v pairs for exchange %s.", len(pairs), exchange)
+					time.Sleep(60 * time.Second)
 					// If not in postgres yet, add fetched pairs to postgres pairs
 					pairs, err = addNewPairs(exchange, pairs, relDB)
 					if err != nil {
@@ -206,7 +220,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						// Using the gathered information, find matching assets in asset table.
 						assetCandidates, err := relDB.IdentifyAsset(assetInfo)
 						if err != nil {
-
 							log.Errorf("error getting asset candidates for %s: %v", symbol, err)
 							continue
 						}
@@ -222,6 +235,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						// In case of a unique match, verify symbol in postgres and
 						// assign it the corresponding foreign key from the asset table.
 						if len(assetCandidates) == 1 {
+							log.Infof("found asset candidate for %s on %s: %v", symbol, exchange, assetCandidates[0])
 							// Verify if this asset is in our verified asset list
 							isVerified := verifiedTokens.IsExists(assetCandidates[0])
 							if isVerified {
@@ -257,7 +271,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							log.Errorf("error getting pair %s from cache", pair.ForeignName)
 						}
 						if exchangepair.Verified {
-							fmt.Println("continue for ", pair.ForeignName)
+							fmt.Printf("pair %s already verified. Continue.\n", pair.ForeignName)
 							continue
 						}
 						// if not yet verified, try do do so
@@ -294,7 +308,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 
 					dataforfile := &ExchangeTicker{
-						Assets: dataTowrite,
+						Assets:              dataTowrite,
 						VerifiedAssetsCount: verificationCount,
 					}
 					file, _ := json.MarshalIndent(dataforfile, "", " ")
@@ -353,10 +367,10 @@ func getTogglePairDiscovery(d time.Duration) bool {
 	return false
 }
 
-// addNewPairsToPG adds pair from @pairs if it's not in our postgres DB yet.
+// addNewPairs adds pair from @pairs if it's not in our postgres DB yet.
 // Equality refers to the unique identifier (exchange,foreignName).
 func addNewPairs(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
-	persistentPairs, err := assetDB.GetExchangePairs(exchange)
+	persistentPairs, err := assetDB.GetExchangePairSymbols(exchange)
 	if err != nil {
 		return pairs, err
 	}

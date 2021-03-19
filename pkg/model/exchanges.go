@@ -61,9 +61,8 @@ func (db *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t ti
 }
 
 func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err error) {
-	// GetExchangePairs returns all trading pairs on @exchange from exchangepair table
 
-	query := fmt.Sprintf("select distinct(exchange) from exchangesymbol where symbol=$1", exchangesymbolTable)
+	query := fmt.Sprintf("select distinct(exchange) from %s where symbol=$1", exchangesymbolTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
 		return

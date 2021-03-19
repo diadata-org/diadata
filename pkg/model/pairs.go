@@ -9,14 +9,14 @@ import (
 func (rdb *RelDB) GetPairs(exchange string) (pairs []dia.ExchangePair, err error) {
 	if exchange == "" {
 		for _, exch := range dia.Exchanges() {
-			exchangepairs, err := rdb.GetExchangePairs(exch)
+			exchangepairs, err := rdb.GetExchangePairSymbols(exch)
 			if err != nil {
 				log.Error(err)
 			}
 			pairs = append(pairs, exchangepairs...)
 		}
 	} else {
-		pairs, err = rdb.GetExchangePairs(exchange)
+		pairs, err = rdb.GetExchangePairSymbols(exchange)
 		if err != nil {
 			log.Error(err)
 		}

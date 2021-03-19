@@ -2,9 +2,11 @@ package verifiedTokens
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"time"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type TokenList struct {
@@ -46,7 +48,7 @@ func New() (*VerifiedTokens, error) {
 
 	tokenMap := make(map[string]dia.Asset)
 	for _, token := range tokenList.Tokens {
-		tokenMap[token.Name] = dia.Asset{Symbol: token.Symbol, Name: token.Name, Decimals: uint8(token.Decimals), Address: token.Address}
+		tokenMap[token.Symbol] = dia.Asset{Symbol: token.Symbol, Name: token.Name, Decimals: uint8(token.Decimals), Address: common.HexToAddress(token.Address).Hex()}
 	}
 	vt := &VerifiedTokens{tokenList: tokenList, tokenMap: tokenMap}
 	return vt, nil
@@ -61,7 +63,7 @@ func (vt *VerifiedTokens) IsExists(asset dia.Asset) bool {
 
 	verifiedAsset, ok := vt.tokenMap[asset.Symbol]
 	if ok {
-		if verifiedAsset.Name == asset.Name && verifiedAsset.Address == asset.Address{
+		if verifiedAsset.Address == asset.Address {
 			return true
 		}
 	}

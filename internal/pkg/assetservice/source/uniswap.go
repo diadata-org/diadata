@@ -3,7 +3,6 @@ package source
 import (
 	"fmt"
 	"math/big"
-	"strings"
 	"time"
 
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
@@ -46,7 +45,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
 		if err != nil {
 			log.Fatal(err)
@@ -58,7 +57,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		}
 		break
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
 		if err != nil {
 			log.Fatal(err)
@@ -80,7 +79,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
 
 	uas := &UniswapAssetSource{WsClient: wsClient, RestClient: restClient, asset: asset}
@@ -223,13 +222,13 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 		return UniswapPair{}, err
 	}
 	token0 := dia.Asset{
-		Address:  strings.ToLower(address0.String()),
+		Address:  address0.Hex(),
 		Symbol:   symbol0,
 		Name:     name0,
 		Decimals: decimals0,
 	}
 	token1 := dia.Asset{
-		Address:  strings.ToLower(address1.String()),
+		Address:  address1.Hex(),
 		Symbol:   symbol1,
 		Name:     name1,
 		Decimals: decimals1,
