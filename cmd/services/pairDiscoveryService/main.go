@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/diadata-org/diadata/cmd/services/assetCollectionService/verifiedTokens"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"sync"
@@ -35,24 +38,40 @@ func init() {
 	log = logrus.New()
 }
 
+type ExchangeTicker struct {
+	Assets                map[string][]dia.Asset `json:"assets"`
+	VerifiedAssetsCount   int                  `json:"verifiedAssets"`
+	UnverifiedAssetsCount int                  `json:"unverifiedAssets"`
+}
+
 func main() {
+	var (
+		err           error
+		relDB         *models.RelDB
+		verifiedToken *verifiedTokens.VerifiedTokens
+	)
 	task := &Task{
 		closed: make(chan struct{}),
 		/// Retrieve every hour
 		ticker: time.NewTicker(time.Second * 30 * 60),
 	}
-	relDB, err := models.NewRelDataStore()
-	log.Error("setting up relDB: ", err)
+	relDB, err = models.NewRelDataStore()
 	if err != nil {
+		log.Error("setting up relDB: ", err)
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}
 
-	updateExchangePairs(relDB)
+	verifiedToken, err = verifiedTokens.New()
+	if err != nil {
+		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
+	}
+
+	updateExchangePairs(relDB, verifiedToken)
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run(relDB) }()
+	go func() { defer task.wg.Done(); task.run(relDB, verifiedToken) }()
 	select {
 	case <-c:
 		log.Info("Received stop signal.")
@@ -64,7 +83,7 @@ func main() {
 
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
-func updateExchangePairs(relDB *models.RelDB) {
+func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
 	toggle := getTogglePairDiscovery(updateTime)
 
 	toggle = true
@@ -72,6 +91,7 @@ func updateExchangePairs(relDB *models.RelDB) {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
 		for _, exchange := range dia.Exchanges() {
+
 			if exchange == "Unknown" {
 				continue
 			}
@@ -103,10 +123,13 @@ func updateExchangePairs(relDB *models.RelDB) {
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
+			dataTowrite := make(map[string][]dia.Asset)
+		 
+
 			// TO DO: the next cond is only for testing. Remove when deploying.
-			if exchange == "Uniswap" {
-				continue
-			}
+			//if exchange == "Uniswap" {
+			//	continue
+			//}
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
@@ -183,29 +206,43 @@ func updateExchangePairs(relDB *models.RelDB) {
 						// Using the gathered information, find matching assets in asset table.
 						assetCandidates, err := relDB.IdentifyAsset(assetInfo)
 						if err != nil {
+
 							log.Errorf("error getting asset candidates for %s: %v", symbol, err)
 							continue
 						}
 						if len(assetCandidates) != 1 {
+							if dataTowrite[symbol] == nil {
+								dataTowrite[symbol] = []dia.Asset{}
+
+							}
+							dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
 							log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
 							continue
 						}
 						// In case of a unique match, verify symbol in postgres and
 						// assign it the corresponding foreign key from the asset table.
 						if len(assetCandidates) == 1 {
+							// Verify if this asset is in our verified asset list
+							isVerified := verifiedTokens.IsExists(assetCandidates[0])
+							if isVerified {
+								verificationCount++
+								assetID, err := relDB.GetAssetID(assetCandidates[0])
+								if err != nil {
+									log.Error(err)
+								}
+								ok, err := relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
+								if err != nil {
+									log.Error(err)
+								}
+								if ok {
+									log.Infof("verified token ticker %s ", symbol)
+								}
 
-							verificationCount++
-							assetID, err := relDB.GetAssetID(assetCandidates[0])
-							if err != nil {
-								log.Error(err)
 							}
-							ok, err := relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
-							if err != nil {
-								log.Error(err)
-							}
-							if ok {
-								log.Infof("verified token ticker %s ", symbol)
-							}
+
+						} else {
+							dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
+							log.Errorf("could not verify identify token ticker %s on verified List %s. Please identify manually.", symbol, exchange)
 						}
 					}
 					log.Infof("verification of symbols on exchange %s done. Verified %d out of %d symbols.\n", exchange, verificationCount, len(symbols))
@@ -255,6 +292,13 @@ func updateExchangePairs(relDB *models.RelDB) {
 							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
 						}
 					}
+
+					dataforfile := &ExchangeTicker{
+						Assets: dataTowrite,
+						VerifiedAssetsCount: verificationCount,
+					}
+					file, _ := json.MarshalIndent(dataforfile, "", " ")
+					ioutil.WriteFile(exchange+".json", file, 0644)
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
@@ -291,6 +335,8 @@ func updateExchangePairs(relDB *models.RelDB) {
 			} else {
 				log.Error("Error creating APIScraper for exchange: ", exchange)
 			}
+			// Write exchange file
+
 		}
 		log.Info("Update complete.")
 
@@ -339,13 +385,13 @@ func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	return coins.Coins, err
 }
 
-func (t *Task) run(relDB *models.RelDB) {
+func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
 	for {
 		select {
 		case <-t.closed:
 			return
 		case <-t.ticker.C:
-			updateExchangePairs(relDB)
+			updateExchangePairs(relDB, verifiedTokens)
 		}
 	}
 }

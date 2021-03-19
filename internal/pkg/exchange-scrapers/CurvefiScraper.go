@@ -214,6 +214,10 @@ func (scraper *CurveFIScraper) watchNewPools() {
 
 }
 
+func (scraper *CurveFIScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 // contract.poolList.map(contract.GetPoolCoins(pool).)
 func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 	contract, err := curvefi.NewCurvefiCaller(scraper.contract, scraper.RestClient)

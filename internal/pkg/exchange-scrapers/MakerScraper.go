@@ -174,6 +174,11 @@ func (scraper *MakerScraper) getPairs() (pairs []dia.ExchangePair, err error) {
 	return
 }
 
+// FillSymbolData is not used by DEX scrapers.
+func (scraper *MakerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return scraper.getPairs()
 }

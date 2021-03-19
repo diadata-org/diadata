@@ -324,6 +324,10 @@ func (t *KyberToken) normalizeETH() {
 	}
 }
 
+func (scraper *KyberScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()

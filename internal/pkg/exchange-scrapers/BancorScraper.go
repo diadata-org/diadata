@@ -266,6 +266,10 @@ func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.Exchange
 	return dia.ExchangePair{}, nil
 }
 
+func (scraper *BancorScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	assets, err := scraper.readAssets()
 	if err != nil {

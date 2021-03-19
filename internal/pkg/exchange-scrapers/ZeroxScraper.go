@@ -129,6 +129,11 @@ func (scraper *ZeroxScraper) loadTokens() {
 
 }
 
+// FillSymbolData is not used by DEX scrapers.
+func (scraper *ZeroxScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxToken, error) {
 
 	tokenStr := tokenAddress.Hex()

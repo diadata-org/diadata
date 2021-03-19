@@ -268,7 +268,7 @@ func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 }
 
 // FetchTickerData collects all available information on an asset traded on GateIO
-func (s *GateIOScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
 	// Fetch Data
 	if !s.isTickerMapInitialised {
