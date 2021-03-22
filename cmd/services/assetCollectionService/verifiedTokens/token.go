@@ -55,6 +55,15 @@ func New() (*VerifiedTokens, error) {
 
 }
 
+func (vt *VerifiedTokens) AppendVerifiedTokens(assets []dia.Asset) {
+	for _, asset := range assets {
+		vt.tokenMap[asset.Symbol] = asset
+
+	}
+}
+
+
+
 func (vt *VerifiedTokens) Get() map[string]dia.Asset {
 	return vt.tokenMap
 }

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -66,6 +67,25 @@ func main() {
 	if err != nil {
 		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
 	}
+
+	// load gitcoin files
+	currentDirectory, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	gitcoinfiles := iterateDirectory(currentDirectory + "/gitcoinverified")
+
+	for _, file := range gitcoinfiles {
+
+		path := "/gitcoinverified/" + file
+		assets, err := readFile(currentDirectory+ path)
+		if err != nil {
+			log.Errorln("Error while reading  file", path,err)
+			continue
+		}
+		verifiedToken.AppendVerifiedTokens(assets)
+	}
+
 
 	updateExchangePairs(relDB, verifiedToken)
 
@@ -417,4 +437,43 @@ func (t *Task) stop() {
 	log.Println("Thread stopped, cleaning...")
 	// Clean if required
 	log.Println("Done")
+}
+
+func iterateDirectory(path string) (files []string) {
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fileExtension := filepath.Ext(path)
+
+		if fileExtension == ".json" {
+			files = append(files, info.Name())
+			fmt.Printf("File Name: %s\n", info.Name())
+		}
+
+		return nil
+	})
+	return
+}
+
+func readFile(path string) (assets []dia.Asset, err error) {
+	var (
+		jsonFile  *os.File
+		filebytes []byte
+	)
+	jsonFile, err = os.Open(path)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		return
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	filebytes, err = ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+	json.Unmarshal(filebytes, assets)
+	return
+
 }
