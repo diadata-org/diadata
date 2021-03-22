@@ -46,7 +46,6 @@ If you want to dive into our API without further ado, feel free to take the belo
 
 Based on the data we collect at DIA we build products an excerpt of which can be found below.
 
-* [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
 * [CVI](https://diadata.org/crypto-volatility-index/) - An interactive chart of the Crypto Volatility Index
 * [Rates Calculator](https://diadata.org/compounded-rates-calculator/) - An interactive chart for the calculation of customized indices
 
