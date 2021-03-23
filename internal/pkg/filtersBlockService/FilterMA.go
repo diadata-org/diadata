@@ -57,7 +57,7 @@ func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 	// Time difference of trade time and @currentTime in seconds.
 	// Initially, @currentTime is the begin time of the filtersBlock.
 	diff := int(t.Sub(s.currentTime).Seconds())
-	log.Infof("diff for asset %s: %v ", s.asset.Symbol, diff)
+	// log.Infof("diff for asset %s: %v ", s.asset.Symbol, diff)
 	currPrice := trade.EstimatedUSDPrice
 	currVolume := trade.Volume
 	if diff > 1 {
@@ -96,6 +96,19 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 	for priceIndex, price := range s.previousPrices {
 		totalPrice += price * math.Abs(s.previousVolumes[priceIndex])
 		totalVolume += math.Abs(s.previousVolumes[priceIndex])
+	}
+	if s.asset.Symbol == "USDT" || s.asset.Symbol == "USDC" {
+		log.Infof("total price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice)
+		log.Infof("total Volume for %s on %s: %v", s.asset.Symbol, s.exchange, totalVolume)
+		log.Infof("resulting price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice/totalVolume)
+		var nonweightedPrice float64
+		for _, price := range s.previousPrices {
+			nonweightedPrice += price
+		}
+		log.Infof("average on non-volume-weighted prices for %s on %s: %v", s.asset.Symbol, s.exchange, nonweightedPrice/float64(len(s.previousPrices)))
+		log.Info("prices in filtersblock: ", s.previousPrices)
+		log.Info("volumes in filtersblock: ", s.previousVolumes)
+		log.Info("-------------------------------------------------------------------------")
 	}
 	s.value = totalPrice / totalVolume
 	return s.value

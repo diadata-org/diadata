@@ -10,6 +10,7 @@ import (
 
 	krakenapi "github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
@@ -30,11 +31,12 @@ type KrakenScraper struct {
 	ticker       *time.Ticker
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape bool) *KrakenScraper {
+func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KrakenScraper {
 	s := &KrakenScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -44,6 +46,7 @@ func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape b
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 	if scrape {
 		go s.mainLoop()
@@ -200,10 +203,14 @@ func (ps *KrakenPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID string) *dia.Trade {
+func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID string, relDB *models.RelDB) *dia.Trade {
 	volume := info.VolumeFloat
 	if info.Sell {
 		volume = -volume
+	}
+	exchangepair, err := relDB.GetExchangePairCache(dia.KrakenExchange, pair.ForeignName)
+	if err != nil {
+		log.Error(err)
 	}
 	t := &dia.Trade{
 		Pair:           pair.ForeignName,
@@ -213,6 +220,12 @@ func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID st
 		Time:           time.Unix(info.Time, 0),
 		ForeignTradeID: foreignTradeID,
 		Source:         dia.KrakenExchange,
+		VerifiedPair:   exchangepair.Verified,
+		BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+		QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+	}
+	if exchangepair.Verified {
+		log.Infoln("Got verified trade", t)
 	}
 	return t
 }
@@ -230,10 +243,9 @@ func (s *KrakenScraper) Update() {
 			if r != nil {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
-					p, _ := s.NormalizePair(ps.pair)
-					t := NewTrade(p, ti, strconv.FormatInt(r.Last, 16))
+					// p, _ := s.NormalizePair(ps.pair)
+					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16), s.db)
 					ps.parent.chanTrades <- t
-					log.Info("got trade: ", t)
 				}
 			} else {
 				log.Printf("r nil")

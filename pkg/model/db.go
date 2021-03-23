@@ -69,6 +69,7 @@ type Datastore interface {
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
+	GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error)
 	GetTopAsset(symbol string, relDB *RelDB) (dia.Asset, error)
 
 	// Market Measures

@@ -13,15 +13,16 @@ import (
 )
 
 const (
-	WindowYesterday = 24 * 60 * 60
-	Window1h        = 60 * 60
-	Window7d        = 7 * 24 * 60 * 60
-	Window14d       = 7 * 24 * 60 * 60
-	Window30d       = 30 * 24 * 60 * 60
-	Window2         = 24 * 60 * 60 * 8
-	BufferTTL       = 60 * 60
-	BiggestWindow   = Window2
-	TimeOutRedis    = time.Duration(time.Second * (BiggestWindow + BufferTTL))
+	WindowYesterday       = 24 * 60 * 60
+	Window1h              = 60 * 60
+	Window7d              = 7 * 24 * 60 * 60
+	Window14d             = 7 * 24 * 60 * 60
+	Window30d             = 30 * 24 * 60 * 60
+	Window2               = 24 * 60 * 60 * 8
+	BufferTTL             = 60 * 60
+	BiggestWindow         = Window2
+	TimeOutRedis          = time.Duration(time.Second * (BiggestWindow + BufferTTL))
+	TimeOutAssetQuotation = time.Duration(time.Second * WindowYesterday)
 )
 
 func getKeyQuotation(value string) string {
@@ -161,7 +162,7 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 	}
 	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain.Name, quotation.Asset.Address)
-	return true, db.redisClient.Set(key, quotation, 0).Err()
+	return true, db.redisClient.Set(key, quotation, TimeOutAssetQuotation).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
@@ -177,6 +178,18 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 		return quotation, err
 	}
 	return quotation, nil
+}
+
+// GetAssetPriceUSDCache returns the last price of @asset from the cache.
+func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
+	// First attempt to get latest quotation from redis cache
+	quotation, err := db.GetAssetQuotationCache(asset)
+	if err == nil {
+		log.Infof("got asset quotation for %s from cache.", asset.Symbol)
+		return
+	}
+	price = quotation.Price
+	return
 }
 
 // ------------------------------------------------------------------------------

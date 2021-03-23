@@ -17,17 +17,19 @@ const (
 
 type nothing struct{}
 
-// getFilterKey returns the key for trade @t in the filters maps.
-func getFilterKey(t dia.Trade) string {
-	return t.QuoteToken.Symbol + "-" + t.QuoteToken.Address
+// getIdentifier returns the unique identifier for asset @a.
+// It is used as a part of a filter's map's key.
+func getIdentifier(a dia.Asset) string {
+	return a.Blockchain.Name + "-" + a.Address
 }
 
 // filtersAsset is only used in the filters package. It is the auxilliary
 // structure enabling us to compute prices for both, an asset on one exchange
 // and an asset across all exchanges.
+// @Identifier is the asset's unique identifier blockchain+Address
 type filtersAsset struct {
-	Asset  dia.Asset
-	Source string
+	Identifier string
+	Source     string
 }
 
 // FiltersBlockService is the data structure containing all objects
@@ -101,6 +103,12 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 
 	resultFilters := []dia.FilterPoint{}
+	log.Info("all filter keys: ")
+	for key := range s.filters {
+		log.Info(key)
+	}
+	log.Info("--------------------------")
+
 	for _, filters := range s.filters {
 		for _, f := range filters {
 			f.finalCompute(tb.TradesBlockData.EndTime)
@@ -146,8 +154,8 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {
 	fa := filtersAsset{
-		Asset:  asset,
-		Source: exchange,
+		Identifier: getIdentifier(asset),
+		Source:     exchange,
 	}
 	_, ok := s.filters[fa]
 	if !ok {
@@ -164,8 +172,8 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 
 func (s *FiltersBlockService) computeFilters(t dia.Trade, exchange string) {
 	fa := filtersAsset{
-		Asset:  t.QuoteToken,
-		Source: exchange,
+		Identifier: getIdentifier(t.QuoteToken),
+		Source:     exchange,
 	}
 	for _, f := range s.filters[fa] {
 		f.compute(t)
@@ -180,19 +188,19 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	newFiltersMap := make(map[filtersAsset]*dia.FilterPoint)
 	for _, filter := range newFilters {
 		fa := filtersAsset{
-			Asset:  filter.Asset,
-			Source: filter.Name,
+			Identifier: getIdentifier(filter.Asset),
+			Source:     filter.Name,
 		}
 		newFiltersMap[fa] = &filter
 	}
 
 	for _, filter := range previousBlockFilters {
 
-		d := time.Now().Sub(filter.Time)
+		d := time.Since(filter.Time)
 		log.Info("filter:", filter, " age:", d)
 		fa := filtersAsset{
-			Asset:  filter.Asset,
-			Source: filter.Name,
+			Identifier: getIdentifier(filter.Asset),
+			Source:     filter.Name,
 		}
 		if d > time.Hour*24 {
 			_, ok := newFiltersMap[fa]
@@ -221,7 +229,7 @@ func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
 // Close gracefully closes the Filtersblockservice
 func (s *FiltersBlockService) Close() error {
 	if s.closed {
-		return errors.New("Filters: Already closed")
+		return errors.New("filters: Already closed")
 	}
 	close(s.shutdown)
 	<-s.shutdownDone

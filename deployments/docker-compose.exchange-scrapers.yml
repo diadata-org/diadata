@@ -377,20 +377,22 @@ services:
   #   environment:
   #     - EXEC_MODE=production
 
-  # krakencollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=Kraken
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   secrets:
-  #     - api_kraken
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  krakencollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Kraken
+    networks:
+      - kafka-network
+      - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
+      - api_kraken
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   # zbcollector:
   #   depends_on: [genericcollector]

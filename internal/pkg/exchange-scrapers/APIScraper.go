@@ -79,8 +79,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape, relDB)
 	case dia.CREX24Exchange:
 		return NewCREX24Scraper(Exchanges[dia.CREX24Exchange], relDB)
-	// case dia.KrakenExchange:
-	// 	return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape, relDB)
+	case dia.KrakenExchange:
+		return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape, relDB)
 	case dia.HitBTCExchange:
 		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape, relDB)
 	// case dia.SimexExchange:

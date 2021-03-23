@@ -170,7 +170,7 @@ func (s *UniswapScraper) mainLoop() {
 	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
 
 	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("Uniswap: No pairs to scrap provided")
+		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
 	for i := 0; i < numPairs; i++ {
@@ -179,22 +179,10 @@ func (s *UniswapScraper) mainLoop() {
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
-		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-			log.Info("skip pair: ", pair.ForeignName)
+		if !pair.pairHealthCheck() {
 			continue
 		}
-		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-			} else {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-			}
-			continue
-		}
-		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
-			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
-			continue
-		}
+
 		ps, ok := s.pairScrapers[pair.ForeignName]
 		if ok {
 			log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
@@ -220,12 +208,14 @@ func (s *UniswapScraper) mainLoop() {
 							Address:    pair.Token0.Address.Hex(),
 							Symbol:     pair.Token0.Symbol,
 							Name:       pair.Token0.Name,
+							Decimals:   pair.Token0.Decimals,
 							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
 						token1 := dia.Asset{
 							Address:    pair.Token1.Address.Hex(),
 							Symbol:     pair.Token1.Symbol,
 							Name:       pair.Token1.Name,
+							Decimals:   pair.Token1.Decimals,
 							Blockchain: dia.BlockChain{Name: "Ethereum"},
 						}
 						log.Info("pair: ", ps.pair.ForeignName)
@@ -347,14 +337,35 @@ func (s *UniswapScraper) normalizeUniswapSwap(swap uniswapcontract.UniswapV2Pair
 	return
 }
 
+// pairHealthCheck returns true if the involved tokens are not blacklisted and do not have zero entries
+func (up *UniswapPair) pairHealthCheck() bool {
+	if up.Token0.Symbol == "" || up.Token1.Symbol == "" || up.Token0.Address.Hex() == "" || up.Token1.Address.Hex() == "" {
+		return false
+	}
+	if helpers.SymbolIsBlackListed(up.Token0.Symbol) || helpers.SymbolIsBlackListed(up.Token1.Symbol) {
+		if helpers.SymbolIsBlackListed(up.Token0.Symbol) {
+			log.Infof("skip pair %s. symbol %s is blacklisted", up.ForeignName, up.Token0.Symbol)
+		} else {
+			log.Infof("skip pair %s. symbol %s is blacklisted", up.ForeignName, up.Token1.Symbol)
+		}
+		return false
+	}
+	if helpers.AddressIsBlacklisted(up.Token0.Address) || helpers.AddressIsBlacklisted(up.Token1.Address) {
+		log.Info("skip pair ", up.ForeignName, ", address is blacklisted")
+		return false
+	}
+	return true
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs as dia.ExchangePair for the pairDiscorvery service
 func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	time.Sleep(100 * time.Millisecond)
 	uniPairs, err := s.GetAllPairs()
 	if err != nil {
 		return
 	}
 	for _, pair := range uniPairs {
-		if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
+		if !pair.pairHealthCheck() {
 			continue
 		}
 		quotetoken := dia.Asset{

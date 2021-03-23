@@ -184,7 +184,7 @@ func (s *KuCoinScraper) mainLoop() {
 					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
 				}
 				if exchangepair.Verified {
-					log.Infoln("Got verified trade", t)
+					log.Infoln("Got verified trade", trade)
 				}
 				s.chanTrades <- trade
 

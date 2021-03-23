@@ -65,7 +65,7 @@ func Exchanges() []string {
 		// GnosisExchange,
 		HitBTCExchange,
 		// HuobiExchange,
-		// KrakenExchange,
+		KrakenExchange,
 		// KyberExchange,
 		// LBankExchange,
 		// LoopringExchange,
