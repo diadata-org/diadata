@@ -271,7 +271,7 @@ func (db *DB) Flush() error {
 }
 
 func getKey(filter string, asset dia.Asset, exchange string) string {
-	key := filter + "_" + asset.Blockchain.Name + "_" + asset.Address
+	key := filter + "_" + asset.Blockchain + "_" + asset.Address
 	if exchange != "" {
 		key = key + "_" + exchange
 	}
@@ -284,9 +284,9 @@ func getKeyFilterZSET(key string) string {
 
 func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange string) string {
 	if exchange == "" {
-		return "dia_" + filter + "_" + asset.Blockchain.Name + "_" + asset.Address + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain + "_" + asset.Address + "_ZSET"
 	} else {
-		return "dia_" + filter + "_" + asset.Blockchain.Name + "_" + asset.Address + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain + "_" + asset.Address + "_ZSET"
 	}
 }
 
@@ -362,7 +362,7 @@ select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time 
 // Sum24HoursInflux returns the 24h  volume of @asset on @exchange using the filter @filter.
 func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error) {
 	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and exchange='%s' and filter='%s' and time > now() - 1d"
-	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, exchange, filter)
+	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, exchange, filter)
 	var errorString string
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -418,10 +418,10 @@ func (db *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time
 	filter := "VOL120"
 	if starttime.IsZero() || endtime.IsZero() {
 		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and time > now() - 1d"
-		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, filter)
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter)
 	} else {
 		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and time > %d and time < %d"
-		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain.Name, filter, starttime.UnixNano(), endtime.UnixNano())
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter, starttime.UnixNano(), endtime.UnixNano())
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -455,8 +455,8 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		"verified":             strconv.FormatBool(t.VerifiedPair),
 		"quotetokenaddress":    t.QuoteToken.Address,
 		"basetokenaddress":     t.BaseToken.Address,
-		"quotetokenblockchain": t.QuoteToken.Blockchain.Name,
-		"basetokenblockchain":  t.BaseToken.Blockchain.Name,
+		"quotetokenblockchain": t.QuoteToken.Blockchain,
+		"basetokenblockchain":  t.BaseToken.Blockchain,
 	}
 	fields := map[string]interface{}{
 		"price":             t.Price,
@@ -480,10 +480,10 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 	var q string
 	if exchange != "" {
 		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and echange='%s' and time < %d order by desc limit 1"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain.Name, exchange, timestamp.UnixNano())
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, exchange, timestamp.UnixNano())
 	} else {
 		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and time < %d order by desc limit 1"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain.Name, timestamp.UnixNano())
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
 	}
 
 	/// TODO
@@ -894,7 +894,7 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 		"symbol":     supply.Asset.Symbol,
 		"name":       supply.Asset.Name,
 		"address":    supply.Asset.Address,
-		"blockchain": supply.Asset.Blockchain.Name,
+		"blockchain": supply.Asset.Blockchain,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
 	if err != nil {
@@ -911,17 +911,17 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
-// GetSupplyInflux returns supply and circulating supply of @asset. Needs asset.Address and asset.Blockchain.Name.
+// GetSupplyInflux returns supply and circulating supply of @asset. Needs asset.Address and asset.Blockchain.
 // If no time range is given it returns the latest supply.
 func (db *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
 		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' and \"blockchain\"='%s' ORDER BY time DESC LIMIT 1"
-		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain.Name)
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain)
 	} else {
-		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'"
-		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain.Name)
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d and time < %d and \"address\" = '%s' and \"blockchain\"='%s'"
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -969,7 +969,7 @@ func (db *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, 
 		"filter":     filter,
 		"symbol":     asset.Symbol,
 		"address":    asset.Address,
-		"blockchain": asset.Blockchain.Name,
+		"blockchain": asset.Blockchain,
 		"exchange":   exchange,
 	}
 	fields := map[string]interface{}{

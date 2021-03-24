@@ -18,14 +18,14 @@ func main() {
 		Symbol:     "USDT",
 		Name:       "Tether USD",
 		Decimals:   uint8(6),
-		Blockchain: dia.BlockChain{Name: "Ethereum"},
+		Blockchain: dia.ETHEREUM,
 		Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
 	}
 	quoteToken := dia.Asset{
 		Symbol:     "YFI",
 		Name:       "yearn.finance",
 		Decimals:   uint8(18),
-		Blockchain: dia.BlockChain{Name: "Ethereum"},
+		Blockchain: dia.ETHEREUM,
 		Address:    "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
 	}
 	// relDB.SetAsset(baseToken)

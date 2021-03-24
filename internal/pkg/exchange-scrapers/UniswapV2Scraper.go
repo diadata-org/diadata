@@ -209,14 +209,14 @@ func (s *UniswapScraper) mainLoop() {
 							Symbol:     pair.Token0.Symbol,
 							Name:       pair.Token0.Name,
 							Decimals:   pair.Token0.Decimals,
-							Blockchain: dia.BlockChain{Name: "Ethereum"},
+							Blockchain: dia.ETHEREUM,
 						}
 						token1 := dia.Asset{
 							Address:    pair.Token1.Address.Hex(),
 							Symbol:     pair.Token1.Symbol,
 							Name:       pair.Token1.Name,
 							Decimals:   pair.Token1.Decimals,
-							Blockchain: dia.BlockChain{Name: "Ethereum"},
+							Blockchain: dia.ETHEREUM,
 						}
 						log.Info("pair: ", ps.pair.ForeignName)
 						log.Info("token0: ", token0.Symbol)
@@ -373,14 +373,14 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 			Name:       pair.Token0.Name,
 			Address:    pair.Token0.Address.Hex(),
 			Decimals:   pair.Token0.Decimals,
-			Blockchain: dia.BlockChain{Name: "Ethereum"},
+			Blockchain: dia.ETHEREUM,
 		}
 		basetoken := dia.Asset{
 			Symbol:     pair.Token1.Symbol,
 			Name:       pair.Token1.Name,
 			Address:    pair.Token1.Address.Hex(),
 			Decimals:   pair.Token1.Decimals,
-			Blockchain: dia.BlockChain{Name: "Ethereum"},
+			Blockchain: dia.ETHEREUM,
 		}
 		pairToNormalise := dia.ExchangePair{
 			Symbol:         pair.Token0.Symbol,

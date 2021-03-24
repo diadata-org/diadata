@@ -24,10 +24,10 @@ func (db *DB) GetExchanges() (allExchanges []string) {
 
 func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
 	if exchange == "" {
-		return "dia_TLT_" + asset.Blockchain.Name + "_" + asset.Address
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address
 
 	} else {
-		return "dia_TLT_" + asset.Blockchain.Name + "_" + asset.Address + "_" + exchange
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address + "_" + exchange
 	}
 }
 

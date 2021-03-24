@@ -43,11 +43,6 @@ const (
 	STEXExchange      = "STEX"
 )
 
-const (
-	Bitcoin  = "Bitcoin"
-	Ethereum = "Ethereum"
-)
-
 func Exchanges() []string {
 	return []string{
 		KuCoinExchange,

@@ -35,7 +35,7 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 	query := fmt.Sprintf("insert into %s (symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", assetTable)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain.Name)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 // GetAssetID returns the unique identifier of @asset in postgres table asset, if the entry exists.
 func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	query := fmt.Sprintf("select asset_id from %s where address=$1 and blockchain=$2", assetTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain.Name).Scan(&ID)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain).Scan(&ID)
 	if err != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
 	var decimals string
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where address=$1 and blockchain=$2", assetTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 	if err != nil {
 		return
 	}
@@ -73,7 +73,7 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 	var decimals string
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where asset_id=$1", assetTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 	if err != nil {
 		return
 	}
@@ -108,7 +108,7 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 			continue
 		}
 		asset.Decimals = uint8(decimalsInt)
-		asset.Blockchain.Name = blockchain
+		asset.Blockchain = blockchain
 		// TO DO: Get Blockchain by name from postgres and add to asset
 		assets = append(assets, asset)
 	}
@@ -137,7 +137,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	defer rows.Close()
 	for rows.Next() {
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		decimalsInt, err := strconv.Atoi(decimals)
 		if err != nil {
 			return []dia.Asset{}, err
@@ -164,7 +164,7 @@ func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err erro
 	}
 	asset.Decimals = uint8(decimalsInt)
 	asset.Symbol = symbol
-	asset.Blockchain.Name = "fiat"
+	asset.Blockchain = "fiat"
 	// TO DO: Get Blockchain by name from postgres and add to asset
 	return
 }
@@ -197,8 +197,8 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 		query += fmt.Sprintf(and+"decimals='%d'", asset.Decimals)
 		and = " and "
 	}
-	if asset.Blockchain.Name != "" {
-		query += fmt.Sprintf(and+"blockchain='%s'", asset.Blockchain.Name)
+	if asset.Blockchain != "" {
+		query += fmt.Sprintf(and+"blockchain='%s'", asset.Blockchain)
 	}
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
@@ -209,7 +209,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 	var decimals string
 	for rows.Next() {
 		asset := dia.Asset{}
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain.Name)
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		intDecimals, err := strconv.Atoi(decimals)
 		if err != nil {
 			log.Error("error parsing decimals string")

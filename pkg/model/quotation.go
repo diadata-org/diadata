@@ -70,7 +70,7 @@ func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 			"symbol":     quotation.Asset.Symbol,
 			"name":       quotation.Asset.Name,
 			"address":    quotation.Asset.Address,
-			"blockchain": quotation.Asset.Blockchain.Name,
+			"blockchain": quotation.Asset.Blockchain,
 		}
 		fields := map[string]interface{}{
 			"price": quotation.Price,
@@ -92,7 +92,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 		"symbol":     quotation.Asset.Symbol,
 		"name":       quotation.Asset.Name,
 		"address":    quotation.Asset.Address,
-		"blockchain": quotation.Asset.Blockchain.Name,
+		"blockchain": quotation.Asset.Blockchain,
 	}
 	fields := map[string]interface{}{
 		"price": quotation.Price,
@@ -124,7 +124,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 
 	// if not in cache, get quotation from influx
 	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
-	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain.Name)
+	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -161,14 +161,14 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 		return false, nil
 	}
 	// Otherwise write to cache
-	key := getKeyAssetQuotation(quotation.Asset.Blockchain.Name, quotation.Asset.Address)
+	key := getKeyAssetQuotation(quotation.Asset.Blockchain, quotation.Asset.Address)
 	return true, db.redisClient.Set(key, quotation, TimeOutAssetQuotation).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
 func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 	log.Infof("get asset quotation from cache for asset %s with address %s ", asset.Symbol, asset.Address)
-	key := getKeyAssetQuotation(asset.Blockchain.Name, asset.Address)
+	key := getKeyAssetQuotation(asset.Blockchain, asset.Address)
 	quotation := &AssetQuotation{}
 	err := db.redisClient.Get(key).Scan(quotation)
 	if err != nil {

@@ -108,11 +108,11 @@ func (db *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]
 	if exchange == "" {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
 			" FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain.Name, maxTrades)
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
 	} else {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
 			" FROM %s WHERE exchange='%s' and quotetokenaddress='%s' and quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain.Name, maxTrades)
+		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {

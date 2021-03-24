@@ -2,13 +2,11 @@ package ethhelper
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math/big"
 	"os"
 	"os/user"
 	"strings"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -100,18 +98,7 @@ func ETHAddressToAsset(address common.Address) (dia.Asset, error) {
 	}
 	aux := decimals[0].(*big.Int)
 	asset.Decimals = uint8(aux.Int64())
-
-	genesisDate, err := time.Parse("2006-01-02", "2015-07-30")
-	if err != nil {
-		fmt.Println(err)
-	}
-	blockchain := dia.BlockChain{
-		Name:                  "Ethereum",
-		NativeToken:           "ETH",
-		VerificationMechanism: dia.PROOF_OF_WORK,
-		GenesisDate:           genesisDate,
-	}
-	asset.Blockchain = blockchain
+	asset.Blockchain = dia.ETHEREUM
 	return asset, err
 }
 

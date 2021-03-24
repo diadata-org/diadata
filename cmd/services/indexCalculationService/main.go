@@ -26,14 +26,14 @@ func main() {
 			Name:       "ScifiToken",
 			Address:    "0xfDC4a3FC36df16a78edCAf1B837d3ACAaeDB2CB4",
 			Decimals:   18,
-			Blockchain: dia.BlockChain{Name: "Ethereum"},
+			Blockchain: dia.ETHEREUM,
 		},
 		{
 			Symbol:     "GBI",
 			Name:       "GalacticBlueIndex",
 			Address:    "0xCB67bE5c54eab9462967eE3C03C35bfFfeB801cD",
 			Decimals:   18,
-			Blockchain: dia.BlockChain{Name: "Ethereum"},
+			Blockchain: dia.ETHEREUM,
 		},
 	}
 	indexTicker := time.NewTicker(300 * time.Second)

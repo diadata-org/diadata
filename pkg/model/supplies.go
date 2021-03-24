@@ -8,7 +8,7 @@ import (
 )
 
 func getKeySupply(asset dia.Asset) string {
-	return "dia_supply_" + asset.Blockchain.Name + "_" + asset.Address
+	return "dia_supply_" + asset.Blockchain + "_" + asset.Address
 }
 
 func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {

@@ -81,7 +81,7 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 
 	walletBal, err := instance.BalanceOf(&bind.CallOpts{}, common.HexToAddress(walletAddr))
 	if err != nil {
-		log.Errorf("Failed to retrieve token owner balance from wallet %s: %v \n", walletAddr, err)
+		log.Errorf("failed to retrieve token owner balance from wallet %s: %v \n", walletAddr, err)
 		return
 	}
 
@@ -143,7 +143,7 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 		Name:       name,
 		Decimals:   decimals,
 		Address:    common.HexToAddress(tokenAddress).Hex(),
-		Blockchain: dia.BlockChain{Name: "Ethereum"},
+		Blockchain: dia.ETHEREUM,
 	}
 	supply = dia.Supply{
 		Asset:             asset,

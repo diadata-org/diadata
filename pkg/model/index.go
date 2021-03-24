@@ -172,7 +172,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				// Address and blockchain is sufficient information for constituent getter.
 				constituentAsset := dia.Asset{
 					Address:    constituentAddress,
-					Blockchain: dia.BlockChain{Name: blockchain},
+					Blockchain: blockchain,
 				}
 				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
 				if err != nil {
@@ -208,7 +208,7 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		"name":       index.Asset.Name,
 		"address":    index.Asset.Address,
 		"decimals":   strconv.Itoa(int(index.Asset.Decimals)),
-		"blockchain": index.Asset.Blockchain.Name,
+		"blockchain": index.Asset.Blockchain,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexTable, tags, fields, index.CalculationTime)
 	if err != nil {
@@ -254,7 +254,7 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 	var retval []CryptoIndexConstituent
 	queryString := "SELECT \"address\",cappingfactor,circulatingsupply,\"name\",percentage,price,\"symbol\",weight,numbasetokens,\"decimals\",\"blockchain\"" +
 		" from %s WHERE time > %d and time < %d and address = '%s' and blockchain = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1"
-	q := fmt.Sprintf(queryString, influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain.Name, indexSymbol)
+	q := fmt.Sprintf(queryString, influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain, indexSymbol)
 	//q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
@@ -301,7 +301,7 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 			return retval, err
 		}
 		currentConstituent.Asset.Decimals = uint8(decimals)
-		currentConstituent.Asset.Blockchain.Name = res[0].Series[0].Values[0][11].(string)
+		currentConstituent.Asset.Blockchain = res[0].Series[0].Values[0][11].(string)
 
 		// Get price yesterday
 		priceYesterday, err := db.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -1))
@@ -339,7 +339,7 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 		"symbol":      constituent.Asset.Symbol,
 		"address":     constituent.Asset.Address,
 		"decimals":    strconv.Itoa(int(constituent.Asset.Decimals)),
-		"blockchain":  constituent.Asset.Blockchain.Name,
+		"blockchain":  constituent.Asset.Blockchain,
 		"cryptoindex": index.Symbol,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())
@@ -359,7 +359,7 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 // GetIndexPrice returns the price of index represented by @asset.
 // If @asset only consists of a symbol, a different method for price retrieval has to be implemented.
 func (db *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
-	if asset.Address != "" && asset.Blockchain.Name != "" {
+	if asset.Address != "" && asset.Blockchain != "" {
 		trade, err = db.GetTradeInflux(asset, "", time)
 		if err != nil {
 			return

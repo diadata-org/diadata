@@ -11,9 +11,12 @@ import (
 )
 
 const (
-	Diadata                              = "diadata.org"
-	PROOF_OF_STAKE VerificationMechanism = "pos"
-	PROOF_OF_WORK  VerificationMechanism = "pow"
+	Diadata                                 = "diadata.org"
+	PROOF_OF_STAKE    VerificationMechanism = "pos"
+	PROOF_OF_WORK     VerificationMechanism = "pow"
+	BITCOIN                                 = "Bitcoin"
+	ETHEREUM                                = "Ethereum"
+	BINANCESMARTCHAIN                       = "Binance Smart Chain"
 )
 
 type VerificationMechanism string
@@ -34,14 +37,16 @@ type Supply struct {
 	Time              time.Time
 }
 
+// Asset is the data type for all assets, ranging from fiat to crypto.
 type Asset struct {
 	Symbol     string
 	Name       string
 	Address    string
 	Decimals   uint8
-	Blockchain BlockChain
+	Blockchain string
 }
 
+// BlockChain is the type for blockchains. Uniquely defined by its @Name.
 type BlockChain struct {
 	Name                  string                `json:"Name"`
 	GenesisDate           time.Time             `json:"GenesisDate"`

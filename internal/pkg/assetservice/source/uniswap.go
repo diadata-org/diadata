@@ -108,7 +108,7 @@ func (uas *UniswapAssetSource) getNumPairs() (int, error) {
 
 func (uas *UniswapAssetSource) fetchAssets() {
 	var blockchain dia.BlockChain
-	blockchain.Name = dia.Ethereum
+	blockchain.Name = dia.ETHEREUM
 	genesisDate, err := time.Parse("2006-01-02", "2015-07-30")
 	if err != nil {
 		fmt.Println(err)
@@ -130,8 +130,8 @@ func (uas *UniswapAssetSource) fetchAssets() {
 		}
 		asset0 := pair.Token0
 		asset1 := pair.Token1
-		asset0.Blockchain = blockchain
-		asset1.Blockchain = blockchain
+		asset0.Blockchain = dia.ETHEREUM
+		asset1.Blockchain = dia.ETHEREUM
 		// Don't repeat sending already sent assets
 		if _, ok := checkMap[asset0.Address]; !ok {
 			if asset0.Symbol != "" {
