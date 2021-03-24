@@ -182,10 +182,9 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 
 // GetAssetPriceUSDCache returns the last price of @asset from the cache.
 func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
-	// First attempt to get latest quotation from redis cache
 	quotation, err := db.GetAssetQuotationCache(asset)
-	if err == nil {
-		log.Infof("got asset quotation for %s from cache.", asset.Symbol)
+	if err != nil {
+		log.Infof("get asset quotation for %s from cache.", asset.Symbol)
 		return
 	}
 	price = quotation.Price
