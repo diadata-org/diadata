@@ -9,10 +9,16 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type nothing struct{}
+
+var log *logrus.Logger
+
+func init() {
+	log = logrus.New()
+}
 
 var (
 	stablecoins = []string{"USDC", "USDT", "TUSD", "DAI", "PAX"}
@@ -57,7 +63,7 @@ func (s *TradesBlockService) mainLoop() {
 			log.Println("TradesBlockService shutting down")
 			s.cleanup(nil)
 			return
-		case t, _ := <-s.chanTrades:
+		case t := <-s.chanTrades:
 			s.process(*t)
 		}
 	}
@@ -71,10 +77,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
 	if t.VerifiedPair {
-		baseTokenSymbol := t.BaseToken.Symbol
-		if baseTokenSymbol == "USD" && t.BaseToken.Blockchain.Name == "fiat" {
+		if t.BaseToken.Symbol == "USD" && t.BaseToken.Blockchain == "fiat" {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
+			verifiedTrade = true
 		} else {
 			// Get price of base token.
 			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
@@ -113,7 +119,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	// Only verified trades of verified pairs are added to the tradesBlock
 	if verifiedTrade {
-
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
 				s.finaliseCurrentBlock()

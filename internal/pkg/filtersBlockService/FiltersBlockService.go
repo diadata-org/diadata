@@ -20,7 +20,7 @@ type nothing struct{}
 // getIdentifier returns the unique identifier for asset @a.
 // It is used as a part of a filter's map's key.
 func getIdentifier(a dia.Asset) string {
-	return a.Blockchain.Name + "-" + a.Address
+	return a.Blockchain + "-" + a.Address
 }
 
 // filtersAsset is only used in the filters package. It is the auxilliary

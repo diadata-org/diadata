@@ -96,6 +96,7 @@ func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *ECBScraper) mainLoop() {
+	s.Update()
 	for {
 		select {
 		case <-s.ticker.C:
