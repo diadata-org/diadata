@@ -237,6 +237,38 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 }
 
 // GetExchangeSymbols returns all symbols traded on @exchange
+func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 ", assetTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, symbol)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		asset := dia.Asset{}
+		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		assets = append(assets, asset)
+	}
+	return
+}
+
+
+func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
+	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false", exchangesymbolTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		symbol := ""
+		rows.Scan(&symbol)
+		symbols = append(symbols, symbol)
+	}
+	return
+}
 func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err error) {
 	query := fmt.Sprintf("select symbol from %s where exchange=$1", exchangesymbolTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
