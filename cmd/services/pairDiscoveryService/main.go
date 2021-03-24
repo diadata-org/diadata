@@ -26,10 +26,6 @@ var (
 	updateTime = time.Second * 60 * 60
 )
 
-const (
-	postgresKey = "postgres_key.txt"
-)
-
 type Task struct {
 	closed chan struct{}
 	wg     sync.WaitGroup
@@ -63,6 +59,7 @@ func main() {
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}
 
+	// verifiedToken come from a tokenlist: https://uniswap.org/blog/token-lists/
 	verifiedToken, err = verifiedTokens.New()
 	if err != nil {
 		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
@@ -78,14 +75,16 @@ func main() {
 	for _, file := range gitcoinfiles {
 
 		path := "/gitcoinverified/" + file
-		assets, err := readFile(currentDirectory+ path)
+		gitcoinSymbols, err := readFile(currentDirectory + path)
 		if err != nil {
-			log.Errorln("Error while reading  file", path,err)
+			log.Errorln("Error while reading  file", path, err)
 			continue
 		}
-		verifiedToken.AppendVerifiedTokens(assets)
+		err = setGitcoinSymbols(gitcoinSymbols, relDB)
+		if err != nil {
+			log.Error("error writing gitcoin submissions: ", err)
+		}
 	}
-
 
 	updateExchangePairs(relDB, verifiedToken)
 
@@ -246,7 +245,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						if len(assetCandidates) != 1 {
 							if dataTowrite[symbol] == nil {
 								dataTowrite[symbol] = []dia.Asset{}
-
 							}
 							dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
 							log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
@@ -456,13 +454,42 @@ func iterateDirectory(path string) (files []string) {
 	return
 }
 
-func readFile(path string) (assets []dia.Asset, err error) {
+// ----------------------------------------------------------------------------
+// This functionality might be worth to extend and to put into a separate main.
+// ----------------------------------------------------------------------------
+
+type GitcoinSubmission struct {
+	AllItems []SubmissionItem `json:"Tokens"`
+}
+
+type SubmissionItem struct {
+	Symbol     string `json:"Symbol"`
+	Exchange   string `json:"Exchange"`
+	Address    string `json:"Address"`
+	Blockchain string `json:"Blockchain"`
+}
+
+// MarshalBinary is a custom marshaller for BlockChain type
+func (gcs *GitcoinSubmission) MarshalBinary() ([]byte, error) {
+	return json.Marshal(gcs)
+}
+
+// UnmarshalBinary is a custom unmarshaller for BlockChain type
+func (gcs *GitcoinSubmission) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &gcs); err != nil {
+		return err
+	}
+	return nil
+}
+
+// readFile reads a gitcoin submission json file and returns the slice of items.
+func readFile(path string) (items GitcoinSubmission, err error) {
 	var (
 		jsonFile  *os.File
 		filebytes []byte
 	)
 	jsonFile, err = os.Open(path)
-	// if we os.Open returns an error then handle it
+	// if os.Open returns an error then handle it
 	if err != nil {
 		return
 	}
@@ -473,7 +500,31 @@ func readFile(path string) (assets []dia.Asset, err error) {
 	if err != nil {
 		return
 	}
-	json.Unmarshal(filebytes, assets)
+	json.Unmarshal(filebytes, &items)
 	return
+}
 
+// TO DO: At some point we can add a consensus mechanism involving several submissions
+// for the same bounty.
+
+// setGitcoinSymbols writes all mappings from submissions into exchangesymbol table.
+func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error {
+	for _, submission := range submissions.AllItems {
+		// Get ID of underlying asset
+		asset, err := relDB.GetAsset(submission.Address, submission.Blockchain)
+		if err != nil {
+			return err
+		}
+		assetID, err := relDB.GetAssetID(asset)
+		if err != nil {
+			return err
+		}
+		// Write into exchangesymbol table
+		success, err := relDB.VerifyExchangeSymbol(submission.Exchange, submission.Symbol, assetID)
+		if err != nil || !success {
+			return err
+		}
+		fmt.Printf("success is %v for %s \n", success, submission.Symbol)
+	}
+	return nil
 }
