@@ -66,16 +66,10 @@ func main() {
 	}
 
 	// load gitcoin files
-	currentDirectory, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	gitcoinfiles := iterateDirectory(currentDirectory + "/gitcoinverified")
-
+	gitcoinfiles := iterateDirectory("gitcoinverified")
 	for _, file := range gitcoinfiles {
-
-		path := "/gitcoinverified/" + file
-		gitcoinSymbols, err := readFile(currentDirectory + path)
+		path := "gitcoinverified/" + file
+		gitcoinSymbols, err := readFile(path)
 		if err != nil {
 			log.Errorln("Error while reading  file", path, err)
 			continue
@@ -138,6 +132,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 			if err != nil {
 				log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 			}
+			time.Sleep(20 * time.Second)
 
 			// Set pairs in postgres and redis caching layer. The collector will fetch these
 			// from the cache in order to build verified trades.
@@ -408,7 +403,7 @@ func addPairsFromConfig(exchange string, pairs []dia.ExchangePair) ([]dia.Exchan
 
 // getPairsFromConfig returns pairs from exchange's config file.
 func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
-	configFileAPI := configCollectors.ConfigFileConnectors(exchange)
+	configFileAPI := configCollectors.ConfigFileConnectors(exchange, ".json")
 	type Pairs struct {
 		Coins []dia.ExchangePair
 	}
@@ -435,23 +430,6 @@ func (t *Task) stop() {
 	log.Println("Thread stopped, cleaning...")
 	// Clean if required
 	log.Println("Done")
-}
-
-func iterateDirectory(path string) (files []string) {
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fileExtension := filepath.Ext(path)
-
-		if fileExtension == ".json" {
-			files = append(files, info.Name())
-			fmt.Printf("File Name: %s\n", info.Name())
-		}
-
-		return nil
-	})
-	return
 }
 
 // ----------------------------------------------------------------------------
@@ -483,11 +461,12 @@ func (gcs *GitcoinSubmission) UnmarshalBinary(data []byte) error {
 }
 
 // readFile reads a gitcoin submission json file and returns the slice of items.
-func readFile(path string) (items GitcoinSubmission, err error) {
+func readFile(filename string) (items GitcoinSubmission, err error) {
 	var (
 		jsonFile  *os.File
 		filebytes []byte
 	)
+	path := configCollectors.ConfigFileConnectors(filename, "")
 	jsonFile, err = os.Open(path)
 	// if os.Open returns an error then handle it
 	if err != nil {
@@ -524,7 +503,24 @@ func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error
 		if err != nil || !success {
 			return err
 		}
-		fmt.Printf("success is %v for %s \n", success, submission.Symbol)
 	}
 	return nil
+}
+
+func iterateDirectory(foldername string) (files []string) {
+	path := configCollectors.ConfigFileConnectors(foldername, "")
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fileExtension := filepath.Ext(path)
+
+		if fileExtension == ".json" {
+			files = append(files, info.Name())
+			fmt.Printf("File Name: %s\n", info.Name())
+		}
+
+		return nil
+	})
+	return
 }

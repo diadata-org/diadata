@@ -43,7 +43,7 @@ func main() {
 
 	s := map[string]scrapers.APIScraper{}
 
-	cc := configCollectors.NewConfigCollectors(*exchange)
+	cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 
 	wg := sync.WaitGroup{}
 
