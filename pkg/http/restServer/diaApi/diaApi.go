@@ -1174,3 +1174,29 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, constituents)
 }
+
+
+
+// GetMissingExchangeSymbol returns all unverified symbol
+func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
+	exchange := c.Param("exchange")
+
+	symbols, err := env.RelDB.GetUnverifiedExchangeSymbols(exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, symbols)
+	}
+}
+
+func (env *Env) GetAsset(c *gin.Context) {
+	symbol := c.Param("symbol")
+
+	symbols, err := env.RelDB.GetAssets(symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, symbols)
+	}
+}
+
