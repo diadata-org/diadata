@@ -184,7 +184,7 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
 	quotation, err := db.GetAssetQuotationCache(asset)
 	if err != nil {
-		log.Infof("get asset quotation for %s from cache.", asset.Symbol)
+		log.Errorf("get asset quotation for %s from cache: %v", asset.Symbol, err)
 		return
 	}
 	price = quotation.Price
