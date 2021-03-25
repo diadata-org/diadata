@@ -23,6 +23,10 @@ const (
 
 // TopicInfo stores all necessary information on topics used for hashing.
 // Could be stored in json config file as well.
+
+// TO DO: This information - TopicInfo and GetHashTopics - should go into postgres.
+// It can then be queried by the hashing services even if fields are added during execution.
+// Also TO DO: Think about system how to numerate kafka channels.
 var TopicInfo = []struct {
 	ID         uint32
 	KafkaID    uint32
@@ -93,6 +97,10 @@ func GetNumTopics() int {
 }
 
 type nothing struct{}
+
+// -------------------------------------------------------------------------------------------------
+// CONTINUOUS HASHING FUNCTIONALITY
+// -------------------------------------------------------------------------------------------------
 
 // KafkaChannel (rename) is basically a channel for kafka messages
 type KafkaChannel struct {
@@ -225,6 +233,90 @@ func HashPoolLoop(topic string, lenPool, sizeBucket uint64, ds models.AuditStore
 	defer wg.Wait()
 }
 
+// -------------------------------------------------------------------------------------------------
+// MASTER TREE FUNCTIONALITY
+// -------------------------------------------------------------------------------------------------
+
+// MasterTree returns the master merkle tree resulting from the (daily) hashing procedure.
+// In particular, it retrieves daily trees
+func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err error) {
+	level := "0"
+
+	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
+	// collected from last timestamp until now
+	timestamp := time.Now()
+	dailyTree, err := DailyTree(timestamp, ds)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	dailyRootHash := dailyTree.MerkleRoot
+
+	// Get last master tree
+	lastID, err := ds.GetLastIDMerkle("", level)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	ID := strconv.Itoa(int(lastID))
+	masterTree, err = ds.GetDailyTreeByID("", level, ID)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// Extend master tree by today's merkle root
+	newHash := merkletree.StorageBucket{Content: dailyRootHash}
+	fmt.Println("new Hash: ", newHash)
+	if !masterTree.Isempty() {
+		err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		// Save new Master Tree
+		ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+		return
+	}
+	// If master tree is empty, make it from the root hash of level 1 tree.
+	// This should only occurr for the very beginning of hashing
+	mT, err := merkletree.NewTree([]merkletree.Content{newHash})
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	masterTree = *mT
+	ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+	return
+
+}
+
+// DailyTree returns a merkle tree which is constructed from the root hashes of the DailyTopicTrees.
+// It includes all Level2 trees which have not been hashed into a Level1 tree yet, up to timeFinal.
+// This functionality implements Level1 from the Merkle Documentation
+func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree.MerkleTree, err error) {
+	level := "1"
+	var dailyTrees []merkletree.MerkleTree
+
+	// Retrieve daily trees for all topics
+	topicMap := GetHashTopics()
+	for key := range topicMap {
+		dailyTopicTree, err := DailyTreeTopic(topicMap[key], timeFinal, ds)
+		if err != nil {
+			log.Error(err)
+		}
+		dailyTrees = append(dailyTrees, *dailyTopicTree)
+	}
+	dailyTree, err = merkletree.ForestToTree(dailyTrees)
+	if err != nil {
+		return
+	}
+
+	err = ds.SetDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
+	fmt.Println("daily tree built at level 1")
+	return
+}
+
 // DailyTreeTopic retrieves all merkle trees corresponding to @topic from influx and
 // hashes them in a merkle tree. The tree's (influx-)timestamps are ranging until at most @timeFinal.
 // The root hash of the resulting merkle tree is returned.
@@ -304,86 +396,6 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 
 	err = ds.SetDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
 	return
-}
-
-// DailyTree returns a merkle tree which is constructed from the root hashes of the DailyTopicTrees.
-// It includes all Level2 trees which have not been hashed into a Level1 tree yet, up to timeFinal.
-// This functionality implements Level1 from the Merkle Documentation
-func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree.MerkleTree, err error) {
-	level := "1"
-	var dailyTrees []merkletree.MerkleTree
-
-	// Retrieve daily trees for all topics
-	topicMap := GetHashTopics()
-	for key := range topicMap {
-		dailyTopicTree, err := DailyTreeTopic(topicMap[key], timeFinal, ds)
-		if err != nil {
-			log.Error(err)
-		}
-		dailyTrees = append(dailyTrees, *dailyTopicTree)
-	}
-	dailyTree, err = merkletree.ForestToTree(dailyTrees)
-	if err != nil {
-		return
-	}
-
-	err = ds.SetDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
-	fmt.Println("daily tree built at level 1")
-	return
-}
-
-// MasterTree returns the master merkle tree resulting from the (daily) hashing procedure.
-// In particular, it retrieves daily trees
-func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err error) {
-	level := "0"
-
-	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
-	// collected from last timestamp until now
-	timestamp := time.Now()
-	dailyTree, err := DailyTree(timestamp, ds)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	dailyRootHash := dailyTree.MerkleRoot
-
-	// Get last master tree
-	lastID, err := ds.GetLastIDMerkle("", level)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	ID := strconv.Itoa(int(lastID))
-	masterTree, err = ds.GetDailyTreeByID("", level, ID)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	// Extend master tree by today's merkle root
-	newHash := merkletree.StorageBucket{Content: dailyRootHash}
-	fmt.Println("new Hash: ", newHash)
-	if !masterTree.Isempty() {
-		err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		// Save new Master Tree
-		ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
-		return
-	}
-	// If master tree is empty, make it from the root hash of level 1 tree.
-	// This should only occurr for the very beginning of hashing
-	mT, err := merkletree.NewTree([]merkletree.Content{newHash})
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	masterTree = *mT
-	ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
-	return
-
 }
 
 // Close closes the channel of KafkaChannel @kc if not done yet

@@ -220,7 +220,12 @@ func HashingLayer(topic string, content []byte) error {
 	return nil
 }
 
+// ---------------------------------------------------------------------------------------------
 // Saving and retrieving from storage Table (hashed bucket pools) ------------------------------
+// ---------------------------------------------------------------------------------------------
+
+// TO DO: Can we increase speed by not flushing the batch on every single write operation?
+// Can we manually flush before building the master tree?
 
 // SetStorageTreeInflux stores a tree from the merkletree package in Influx.
 // It is mainly used when flushing the bucket pools.
@@ -303,7 +308,7 @@ func (db *DBAudit) GetStorageTreeInflux(topic string, timeLower time.Time) (merk
 // More precisely, the two-dimensional interface val is returned. It has length 5 and can be cast as follows:
 // val[0]:(influx-)timestamp, val[1]:firstDate, val[2]:lastDate, val[3]:topic, val[4]:Content/MerkleTree
 func (db *DBAudit) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
-
+	// TO DO: Substitute SELECT * FROM with more specific query.
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time <= %d", influxDBStorageTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
@@ -357,7 +362,9 @@ func (db *DBAudit) GetLastID(topic string) (string, error) {
 	return "0", errors.New("empty response")
 }
 
+// -----------------------------------------------------------------------------------------
 // Saving and retrieving from Merkle Table (hashed trees) ----------------------------------
+// -----------------------------------------------------------------------------------------
 
 // SetDailyTreeInflux stores the trees which are produced on a daily basis in order to publish
 // the master root hash.
@@ -440,7 +447,7 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 
 // SetPoolID sets a key value map for retrieval of parent trees of hashed pools.
 // It is important to notice that this just facilitates the retrieval. The map can be reconstructed
-// by id information stored in influx. Hence, the system does not rely on correct function/constant
+// by id information stored in influx. Hence, the system does not rely on correct function/constant.
 func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
 	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
 	poolMap := make(map[string]interface{})

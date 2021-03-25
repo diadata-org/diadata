@@ -86,6 +86,7 @@ func (s *KrakenScraper) Update() {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
 					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16))
+					fmt.Println("got trade: ", t)
 					ps.parent.chanTrades <- t
 				}
 			} else {

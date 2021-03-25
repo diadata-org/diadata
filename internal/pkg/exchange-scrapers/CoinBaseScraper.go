@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -88,6 +89,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeID), 16),
 								Source:         s.exchangeName,
 							}
+							fmt.Println("got trade: ", t)
 							ps.parent.chanTrades <- t
 						}
 					} else {
