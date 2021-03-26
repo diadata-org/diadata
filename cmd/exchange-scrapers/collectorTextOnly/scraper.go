@@ -8,6 +8,7 @@ import (
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -41,6 +42,10 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Error(err)
+	}
 	s := map[string]scrapers.APIScraper{}
 
 	cc := configCollectors.NewConfigCollectors(*exchange, ".json")
@@ -52,13 +57,13 @@ func main() {
 		fmt.Println("Adding pair:", configPair.Symbol, "(", configPair.ForeignName, ") on exchange", configPair.Exchange)
 
 		_, ok := s[configPair.Exchange]
-		if ok == false {
+		if !ok {
 
 			configExchangeApi, err := dia.GetConfig(configPair.Exchange)
 			if err != nil {
 				fmt.Println(err)
 			}
-			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey)
+			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey, relDB)
 			if s != nil {
 				s[configPair.Exchange] = aPIScraper
 				go handleTrades(aPIScraper.Channel(), &wg)

@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/datasource"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/datasource"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"

@@ -1,9 +1,7 @@
 package source
 
 import (
-	"fmt"
 	"math/big"
-	"time"
 
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -30,9 +28,10 @@ const (
 )
 
 type UniswapAssetSource struct {
-	WsClient   *ethclient.Client
-	RestClient *ethclient.Client
-	asset      chan dia.Asset
+	WsClient     *ethclient.Client
+	RestClient   *ethclient.Client
+	assetChannel chan dia.Asset
+	blockchain   string
 }
 
 var exchangeFactoryContractAddress string
@@ -41,7 +40,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 
 	var wsClient, restClient *ethclient.Client
 	var err error
-	var asset = make(chan dia.Asset)
+	var assetChannel = make(chan dia.Asset)
+	var uas *UniswapAssetSource
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
@@ -55,7 +55,12 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
-		break
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.ETHEREUM,
+		}
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
@@ -67,8 +72,12 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.ETHEREUM,
+		}
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(wsDialBSC)
@@ -79,20 +88,24 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.BINANCESMARTCHAIN,
+		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
 
-	uas := &UniswapAssetSource{WsClient: wsClient, RestClient: restClient, asset: asset}
 	go func() {
 		uas.fetchAssets()
-
 	}()
 	return uas
 
 }
 
 func (uas *UniswapAssetSource) Asset() chan dia.Asset {
-	return uas.asset
+	return uas.assetChannel
 }
 
 func (uas *UniswapAssetSource) getNumPairs() (int, error) {
@@ -107,15 +120,6 @@ func (uas *UniswapAssetSource) getNumPairs() (int, error) {
 }
 
 func (uas *UniswapAssetSource) fetchAssets() {
-	var blockchain dia.BlockChain
-	blockchain.Name = dia.ETHEREUM
-	genesisDate, err := time.Parse("2006-01-02", "2015-07-30")
-	if err != nil {
-		fmt.Println(err)
-	}
-	blockchain.GenesisDate = genesisDate
-	blockchain.NativeToken = "ETH"
-	blockchain.VerificationMechanism = dia.PROOF_OF_WORK
 
 	numPairs, err := uas.getNumPairs()
 	if err != nil {
@@ -130,19 +134,19 @@ func (uas *UniswapAssetSource) fetchAssets() {
 		}
 		asset0 := pair.Token0
 		asset1 := pair.Token1
-		asset0.Blockchain = dia.ETHEREUM
-		asset1.Blockchain = dia.ETHEREUM
+		asset0.Blockchain = uas.blockchain
+		asset1.Blockchain = uas.blockchain
 		// Don't repeat sending already sent assets
 		if _, ok := checkMap[asset0.Address]; !ok {
 			if asset0.Symbol != "" {
 				checkMap[asset0.Address] = struct{}{}
-				uas.asset <- asset0
+				uas.assetChannel <- asset0
 			}
 		}
 		if _, ok := checkMap[asset1.Address]; !ok {
 			if asset1.Symbol != "" {
 				checkMap[asset1.Address] = struct{}{}
-				uas.asset <- asset1
+				uas.assetChannel <- asset1
 			}
 		}
 	}

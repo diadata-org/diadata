@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diadata-org/diadata/cmd/services/assetCollectionService/verifiedTokens"
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/verifiedTokens"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"

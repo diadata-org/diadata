@@ -4,7 +4,7 @@ WORKDIR $GOPATH/src/
 
 COPY . .
 
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/services/assetCollectionService
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/assetCollectionService
 
 RUN go install
 

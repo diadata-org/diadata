@@ -16,7 +16,7 @@ const (
 	PROOF_OF_WORK     VerificationMechanism = "pow"
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
-	BINANCESMARTCHAIN                       = "Binance Smart Chain"
+	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 )
 
 type VerificationMechanism string
