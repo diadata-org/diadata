@@ -310,7 +310,6 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 }
 
 func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, indexSymbol string) error {
-	log.Error("Const ", constituent)
 	fields := map[string]interface{}{
 		"percentage":        constituent.Percentage,
 		"price":             constituent.Price,

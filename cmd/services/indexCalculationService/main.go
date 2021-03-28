@@ -21,35 +21,13 @@ func main() {
 	}
 	indexSymbols := []string{"SCIFI", "GBI"}
 	indexTicker := time.NewTicker(300 * time.Second)
-	firstRun := true
 	go func() {
 		for {
 			select {
 			case <-indexTicker.C:
 				for _, indexSymbol := range indexSymbols {
 					var currentConstituents []models.CryptoIndexConstituent
-					if indexSymbol == "GBI" && firstRun {
-						firstRun = false
-						symbols := []string{"WBTC", "ETH", "YFI", "UNI", "COMP", "MKR", "LINK", "SPICE"}
-
-						// Get constituents information
-						currentConstituents, err = indexCalculationService.GetIndexBasket(symbols)
-						if err != nil {
-							log.Error(err)
-						}
-
-						// Calculate relative weights
-						err = indexCalculationService.CalculateWeights(indexSymbol, &currentConstituents)
-						if err != nil {
-							log.Error(err)
-						}
-						for i, constituent := range currentConstituents {
-							currentConstituents[i].NumBaseTokens = ((constituent.Weight * 100) / constituent.Price) * 1e16 //((Weight * IndexPrice) / TokenPrice) * 1e18  (divided by 100 because index level is 100 = 1 usd)
-						}
-						log.Info(currentConstituents)
-					} else {
-						currentConstituents = getCurrentIndexCompositionForIndex(indexSymbol, ds)
-					}
+					currentConstituents = getCurrentIndexCompositionForIndex(indexSymbol, ds)
 					log.Info(currentConstituents)
 					index := periodicIndexValueCalculation(currentConstituents, indexSymbol, ds)
 					err := ds.SetCryptoIndex(&index)
