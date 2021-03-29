@@ -45,7 +45,8 @@ func init() {
 	exchanges = source.GetExchanges()
 }
 
-// NewAssetScraper returns a scraper for assets on @exchange
+// NewAssetScraper returns a scraper for assets on @exchange.
+// For NewJSONReader @exchange is the folder in the config folder and @secret the filename.
 func NewAssetScraper(exchange string, secret string) source.AssetSource {
 	switch exchange {
 	case dia.UniswapExchange:
@@ -54,6 +55,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
 	case dia.SushiSwapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
+	case "assetlists":
+		return source.NewJSONReader(exchange, secret)
 	default:
 		return nil
 	}

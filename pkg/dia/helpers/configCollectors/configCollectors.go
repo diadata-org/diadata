@@ -40,6 +40,8 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	return false
 }
 
+// ConfigFileConnectors returns a path to folder @exchange in config folder if @filteype is empty.
+// If @filteype is a filetype it returns the path to file @exchange as a @filteype file.
 func ConfigFileConnectors(exchange string, fileteype string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
