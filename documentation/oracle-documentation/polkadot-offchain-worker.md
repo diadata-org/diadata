@@ -8,22 +8,22 @@ DIA offers a flexible oracle solution for Polkadot. Our offchain worker can be i
 
 ### How it works
 
-The DIA offchain worker is a component that can be ported to parachains and is located in [this repository](https://github.com/diadata-org/dia-substrate).
+The DIA offchain worker \(ocw\) is a component that can be ported to parachains and is located in [this repository](https://github.com/diadata-org/dia-substrate).
 
-This offchain worker \(ocw\) gets data from an endpoint and writes an event as signed transaction for all local keys with subkey type `dia!`.
+This offchain worker \(ocw\) gets data from a [DIA API endpoint](../api-1/api-endpoints.md) and writes an event as signed transaction for all local keys with subkey type `dia!`. It can be used to retrieve any data from the DIA API. The offchain worker "lives" in a node deployed to a parachain and needs an active Internet connection. It acts as an oracle that provides data for any application inside the specific parachain.
 
 ### Installation
 
 To add the ocw \(offchain worker\) pallet to your node, add it to your runtime like this \(in this repository already done\):
 
-1. Edit [`runtime/Cargo.toml`](https://github.com/diadata-org/dia-substrate/blob/dia/bin/node/runtime/Cargo.toml):
-   * Add the following under `[dependencies]`:
+1. Edit your [`runtime/Cargo.toml`](https://github.com/diadata-org/dia-substrate/blob/dia/bin/node/runtime/Cargo.toml):
+   * Add this section specifying the ocw path under `[dependencies]`:
 
      ```text
      pallet-dia-ocw = { version = "2.0.0", default-features = false, path = "../../../frame/dia-ocw" }
      ```
 
-   * Add `"pallet-dia-ocw/std",` at `[features]`:
+   * Add `"pallet-dia-ocw/std",` at the `[features]`section:
 
      ```text
      [features]
@@ -33,7 +33,7 @@ To add the ocw \(offchain worker\) pallet to your node, add it to your runtime l
      ]
      ```
 2. Edit [`runtime/src/lib.rs`](https://github.com/diadata-org/dia-substrate/blob/dia/bin/node/runtime/src/lib.rs) like this:
-   * Add the following:
+   * Add the ocw trait:
 
      ```text
      impl pallet_dia_ocw::Trait for Runtime {
@@ -43,7 +43,7 @@ To add the ocw \(offchain worker\) pallet to your node, add it to your runtime l
      }
      ```
 
-   * Insert `DIAOCW: pallet_dia_ocw::{Module, Call, Event<T>},` to `Runtime` enum:
+   * Insert `DIAOCW: pallet_dia_ocw::{Module, Call, Event<T>},` to the `Runtime` enum:
 
      ```text
      construct_runtime!(
@@ -60,7 +60,7 @@ To add the ocw \(offchain worker\) pallet to your node, add it to your runtime l
 
 ### Usage
 
-For each block, this offchain worker automatically adds a signed transaction. The signer account needs to pay the fees.
+For each block, this offchain worker automatically adds a signed transaction of the endpoint specified in its source code. The signer account needs to be funded appropriately to pay the transaction fees.
 
 #### Local development mode
 
@@ -80,4 +80,6 @@ For each block, this offchain worker automatically adds a signed transaction. Th
       ]
     }'
   ```
+
+The ocw should now write values from the DIA API to the parachain.
 
