@@ -60,7 +60,7 @@ To add the ocw \(offchain worker\) pallet to your node, add it to your runtime l
 
 ### Usage
 
-For each block, this offchain worker automatically adds a signed transaction of the endpoint specified in its source code. The signer account needs to be funded appropriately to pay the transaction fees.
+For each block, this offchain worker automatically adds a signed transaction of the [endpoint specified in its source code](https://github.com/diadata-org/dia-substrate/blob/b33de6325e326c299b9c87fafd440ef63efe095b/frame/dia-ocw/src/lib.rs#L133). The signer account needs to be funded appropriately to pay the transaction fees.
 
 #### Local development mode
 
