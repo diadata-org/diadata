@@ -66,7 +66,7 @@ func (s *BlockchainScraper) Run() {
 			log.Println("ElapsedTime block:", l, circulatingSupply)
 			if l < s.elapsedTime {
 				err = s.client.SendSupply(&dia.Supply{
-					Symbol:            s.symbol,
+					Asset:             dia.Asset{Symbol: s.symbol},
 					CirculatingSupply: circulatingSupply,
 				})
 				if err != nil {

@@ -1,10 +1,11 @@
 package blockchainscrapers
 
 import (
-	"github.com/blockstatecom/go-bitcoind"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"log"
 	"time"
+
+	"github.com/blockstatecom/go-bitcoind"
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 const (
@@ -55,7 +56,7 @@ func RunScraper(host string, port int, user, password, symbol string, elapsedTim
 				lastSupply = txOutSetInfo.TotalAmount
 
 				err = client.SendSupply(&dia.Supply{
-					Symbol:            symbol,
+					Asset:             dia.Asset{Symbol: symbol},
 					CirculatingSupply: lastSupply,
 				})
 				if err != nil {
