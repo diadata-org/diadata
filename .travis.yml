@@ -6,7 +6,7 @@ git:
   depth: 1
 
 go:
-  - 1.13.x
+  - 1.14.x
 
 before_script:
   - go install -mod vendor github.com/golangci/golangci-lint/cmd/golangci-lint
