@@ -29,11 +29,11 @@ type ResponseGate struct {
 }
 
 type GateIOTickerData struct {
-	Result string `json:"result"`
-	Data  []GateIOCurrency `json:"data"`
+	Result string           `json:"result"`
+	Data   []GateIOCurrency `json:"data"`
 }
 
-type GateIOCurrency  struct {
+type GateIOCurrency struct {
 	No          int    `json:"no"`
 	Symbol      string `json:"symbol"`
 	Name        string `json:"name"`
@@ -64,26 +64,25 @@ type GateIOScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*GateIOPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	currencySymbolName map[string]string
+	pairScrapers           map[string]*GateIOPairScraper
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
-
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
 func NewGateIOScraper(exchange dia.Exchange, scrape bool) *GateIOScraper {
 
 	s := &GateIOScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*GateIOPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		currencySymbolName: make(map[string]string),
-		isTickerMapInitialised:false,
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		pairScrapers:           make(map[string]*GateIOPairScraper),
+		exchangeName:           exchange.Name,
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		currencySymbolName:     make(map[string]string),
+		isTickerMapInitialised: false,
 	}
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
@@ -274,10 +273,9 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 	if !s.isTickerMapInitialised {
 		var (
 			response GateIOTickerData
-			data []byte
-
+			data     []byte
 		)
-		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist" )
+		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
 		if err != nil {
 			return
 		}
@@ -286,7 +284,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 			return
 		}
 
-		for _,gateioasset := range response.Data{
+		for _, gateioasset := range response.Data {
 			s.currencySymbolName[gateioasset.Symbol] = gateioasset.Name
 		}
 		s.isTickerMapInitialised = true
@@ -332,9 +330,6 @@ type GateIOPairScraper struct {
 func (ps *GateIOPairScraper) Close() error {
 	return nil
 }
-
-
-
 
 // Channel returns a channel that can be used to receive trades
 func (ps *GateIOScraper) Channel() chan *dia.Trade {

@@ -101,8 +101,8 @@ func NewHuobiScraper(exchange dia.Exchange, scrape bool) *HuobiScraper {
 		println(err.Error())
 	}
 	s.wsClient = SwConn
-	
-	if scrape { 
+
+	if scrape {
 		go s.mainLoop()
 	}
 	return s

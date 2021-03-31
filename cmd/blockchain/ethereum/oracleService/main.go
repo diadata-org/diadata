@@ -742,8 +742,9 @@ func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleServi
 	return nil
 }
 
+/*
 func updateTopCoins(topCoins []models.Coin, sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
-	for _, element := range topCoins {
+ 	for _, element := range topCoins {
 		symbol := strings.ToUpper(element.Symbol)
 		name := element.Name
 		supply := element.CirculatingSupply
@@ -758,6 +759,7 @@ func updateTopCoins(topCoins []models.Coin, sleepSeconds int, auth *bind.Transac
 	}
 	return nil
 }
+*/
 
 func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	if len(dexData.DataPoints[0].Series) > 0 && len(dexData.DataPoints[0].Series[0].Values) > 0 {
@@ -782,6 +784,7 @@ func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracle
 	return nil
 }
 
+/*
 func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(ecbRate.Symbol)
 	name := strings.ToUpper(ecbRate.Symbol)
@@ -796,7 +799,7 @@ func updateECBRate(ecbRate *models.CurrencyChange, auth *bind.TransactOpts, cont
 
 	return nil
 }
-
+*/
 func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(defiRate.Asset)
 	name := strings.ToUpper(defiRate.Protocol)
@@ -817,19 +820,6 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 	name := strings.ToUpper(defiState.Protocol.Name) + "-state"
 	price := defiState.TotalUSD
 	// Get 5 digits after the comma by multiplying price with 100000
-	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
-	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
-	name := foreignQuotation.Source + "-" + foreignQuotation.Name
-	symbol := foreignQuotation.Symbol
-	price := foreignQuotation.Price
 	err := updateOracle(conn, contract, auth, name, symbol, int64(price*100000), 0)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
@@ -918,6 +908,7 @@ func getCoinDetailsFromDia(symbol string) (*models.Coin, error) {
 	}
 }
 
+/*
 func getToplistFromDia() (*models.Coins, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/coins")
 	if err != nil {
@@ -974,6 +965,7 @@ func getECBRatesFromDia(symbol string) (*models.CurrencyChange, error) {
 		return nil, nil
 	}
 }
+*/
 
 // Getting defi rate
 func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) {
@@ -1052,6 +1044,7 @@ func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
 	}
 }
 
+/*
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
 	if err != nil {
@@ -1073,6 +1066,7 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	}
 	return &quotation, nil
 }
+*/
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))

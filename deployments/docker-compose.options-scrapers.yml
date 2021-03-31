@@ -1,23 +1,27 @@
 version: '3.2'
 services:
 
-  deribitscraper:
+  optioncollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-deribitScraper
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_deribitscraper:latest
-    restart: "no"
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-optioncollector
+#    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}-optioncollector:latest
+    networks:
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  okexCollector:
+    depends_on: [optioncollector]
+    command: /bin/collector -exchange=OKEx
     networks:
       - influxdb-network
       - redis-network
     logging:
       options:
         max-size: "50m"
-
-networks:
-  redis-network:
-    external:
-        name: redis_redis-network
-  influxdb-network:
-    external:
-        name: influxdb_influxdb-network
+    environment:
+      - EXEC_MODE=production

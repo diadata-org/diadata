@@ -253,6 +253,8 @@ func (s *OKExScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	return ps, nil
 }
+
+/*
 func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
 	symbol = strings.ToUpper(baseCurrency)
 	if helpers.NameForSymbol(symbol) == symbol {
@@ -271,6 +273,7 @@ func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (
 	}
 	return symbol, nil
 }
+*/
 
 func (s *OKExScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)

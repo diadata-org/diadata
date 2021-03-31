@@ -270,6 +270,7 @@ func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]ST
 	return response.SETXTrades, nil
 }
 
+/*
 func (s *STEXScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
@@ -281,6 +282,7 @@ func (s *STEXScraper) cleanup(err error) {
 
 	close(s.shutdownDone)
 }
+*/
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair

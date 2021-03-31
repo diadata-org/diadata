@@ -9,7 +9,7 @@ In order to add your own scraper for a blockchain supply source, you must adhere
 The working directory for blockchain scrapers is `diadata/internal/pkg/blockchain-scrapers/blockchains`. Each scrapper should comply with the following folder structure `currencyName/scrappers/currencySymbol/currencySymbol.go` for example for bitcoin will look like `bitcoin/scrapers/btc/btc.go`. You must provide a Dockerfile for your blockchain client and for the Go wrapper that connects to our database. An example dockerfile is provided for the Go bindings with a `bitcoind` client scraping the Bitcoin blockchain. The file should be named `build/Dockerfile-symbol` for this example `build/Dockerfile-btc`
 
 ```text
-FROM golang:latest as build
+FROM golang:1.14 as build
 
 WORKDIR $GOPATH
 

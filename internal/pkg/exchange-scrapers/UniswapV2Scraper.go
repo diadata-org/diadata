@@ -607,6 +607,7 @@ func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
 	return
 }
 
+/*
 func (s *UniswapScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
@@ -616,6 +617,7 @@ func (s *UniswapScraper) cleanup(err error) {
 	s.closed = true
 	close(s.shutdownDone)
 }
+*/
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair

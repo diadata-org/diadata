@@ -204,6 +204,7 @@ func (s *BitMaxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 	return dia.ExchangePair{}, nil
 }
 
+/*
 // closes all connected PairScrapers
 // must only be called from mainLoop
 func (s *BitMaxScraper) cleanup(err error) {
@@ -217,7 +218,7 @@ func (s *BitMaxScraper) cleanup(err error) {
 
 	close(s.shutdownDone)
 }
-
+*/
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *BitMaxScraper) Close() error {
@@ -269,20 +270,20 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	var bitmaxResponse BitMaxPairResponse
 	response, err := http.Get("https://bitmax.io/api/pro/v1/products")
 	if err != nil {
-		logger.Println("Error Getting  Symbols for Bitmax Exchange", err)
+		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
 	}
 
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		logger.Println("Error Getting  Symbols for Bitmax Exchange", err)
+		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
 	}
 
 	err = json.Unmarshal(body, &bitmaxResponse)
 
 	if err != nil {
-		logger.Println("Error Unmarshalling  Symbols for Bitmax Exchange", err)
+		log.Errorf("Error Unmarshalling  Symbols for Bitmax Exchange", err)
 	}
 
 	for _, p := range bitmaxResponse.Data {

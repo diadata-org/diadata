@@ -11,9 +11,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+/*
 const (
 	filtersParam = dia.BlockSizeSeconds
 )
+*/
 
 type nothing struct{}
 

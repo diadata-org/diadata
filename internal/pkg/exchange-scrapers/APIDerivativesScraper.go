@@ -20,11 +20,11 @@ const (
 
 // DeribitScraper - used in conjunction with the DeribitScraperKind in a new struct to define futures and options scrapers
 type DeribitScraper struct {
-	Markets					[]string
-	WaitGroup				*sync.WaitGroup
-	Logger					*zap.SugaredLogger
-	DataStore       *models.DB
-	WsConnection    *websocket.Conn
+	Markets      []string
+	WaitGroup    *sync.WaitGroup
+	Logger       *zap.SugaredLogger
+	DataStore    *models.DB
+	WsConnection *websocket.Conn
 
 	// required for deribit to:
 	// 1. authenticate (trades is a private channel)
