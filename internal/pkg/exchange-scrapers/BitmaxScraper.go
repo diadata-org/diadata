@@ -141,6 +141,7 @@ func (s *BitMaxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
 
+/*
 // closes all connected PairScrapers
 // must only be called from mainLoop
 func (s *BitMaxScraper) cleanup(err error) {
@@ -154,7 +155,7 @@ func (s *BitMaxScraper) cleanup(err error) {
 
 	close(s.shutdownDone)
 }
-
+*/
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *BitMaxScraper) Close() error {

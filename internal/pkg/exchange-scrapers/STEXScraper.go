@@ -92,6 +92,7 @@ func NewSTEXScraper(exchange dia.Exchange) *STEXScraper {
 	return s
 }
 
+/*
 // Reconnect to socketIO when the connection is down.
 func (s *STEXScraper) reconnectToSocketIO() {
 	c, err := gosocketio.Dial(
@@ -104,7 +105,7 @@ func (s *STEXScraper) reconnectToSocketIO() {
 	}
 	s.c = c
 }
-
+*/
 type StexTradeResponse struct {
 	SETXTrades []STEXTrade `json:"data"`
 	Success    bool        `json:"success"`
@@ -206,6 +207,7 @@ func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]ST
 	return response.SETXTrades, nil
 }
 
+/*
 func (s *STEXScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
@@ -217,6 +219,7 @@ func (s *STEXScraper) cleanup(err error) {
 
 	close(s.shutdownDone)
 }
+*/
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair

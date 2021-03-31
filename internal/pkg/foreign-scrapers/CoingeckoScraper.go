@@ -135,6 +135,7 @@ func getCoingeckoData() (coins []CoingeckoCoin, err error) {
 	return
 }
 
+/*
 // closes all connected Scrapers. Must only be called from mainLoop
 func (scraper *CoingeckoScraper) cleanup(err error) {
 
@@ -151,7 +152,7 @@ func (scraper *CoingeckoScraper) cleanup(err error) {
 
 	close(scraper.foreignScrapper.shutdownDone) // signal that shutdown is complete
 }
-
+*/
 // Close closes any existing API connections
 func (scraper *CoingeckoScraper) Close() error {
 	if scraper.foreignScrapper.closed {

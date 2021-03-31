@@ -15,9 +15,9 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _socketurl string = "wss://api.hitbtc.com/api/2/ws"
+var _socketurl = "wss://api.hitbtc.com/api/2/ws"
 
-const WS_TIMEOUT = 10 * time.Second
+//const WS_TIMEOUT = 10 * time.Second
 
 type Event struct {
 	Method string      `json:"method"`
@@ -180,6 +180,8 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
+
+/*
 func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
 	symbol = strings.ToUpper(baseCurrency)
 	if helpers.NameForSymbol(symbol) == symbol {
@@ -192,6 +194,8 @@ func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string)
 	}
 	return symbol, nil
 }
+*/
+
 func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol

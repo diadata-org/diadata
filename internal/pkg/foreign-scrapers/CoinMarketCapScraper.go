@@ -206,6 +206,7 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	return
 }
 
+/*
 // closes all connected Scrapers. Must only be called from mainLoop
 func (scraper *CoinMarketCapScraper) cleanup(err error) {
 
@@ -222,7 +223,7 @@ func (scraper *CoinMarketCapScraper) cleanup(err error) {
 
 	close(scraper.foreignScrapper.shutdownDone) // signal that shutdown is complete
 }
-
+*/
 // Close closes any existing API connections
 func (scraper *CoinMarketCapScraper) Close() error {
 	if scraper.foreignScrapper.closed {

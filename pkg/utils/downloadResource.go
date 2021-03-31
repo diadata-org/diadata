@@ -19,18 +19,24 @@ func DownloadResource(filepath, url string) error {
 
 	log.Printf("Downloading data")
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	err = resp.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	err = out.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
@@ -42,7 +48,7 @@ func DownloadResource(filepath, url string) error {
 func GetRequest(url string) ([]byte, error) {
 
 	// Get url
-	response, err := http.Get(url)
+	response, err := http.Get(url) //nolint:gosec
 
 	// Check, whether the request was successful
 	if err != nil {
@@ -51,8 +57,10 @@ func GetRequest(url string) ([]byte, error) {
 	}
 
 	// Close response body after function
-	defer response.Body.Close()
-
+	err = response.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
@@ -84,7 +92,10 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	}
 
 	// Close response body after function
-	defer response.Body.Close()
+	err = response.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -154,13 +165,13 @@ func GetCoinPrice(coin string) (float64, error) {
 		Time               time.Time
 		ITIN               string
 	}
-
-	type QuotationGecko struct {
-		ID struct {
-			Price string `json:"vs_currencies"`
-		} `json:"ids"`
-	}
-
+	/*
+		type QuotationGecko struct {
+			ID struct {
+				Price string `json:"vs_currencies"`
+			} `json:"ids"`
+		}
+	*/
 	type QuotationCrptcmp struct {
 		Price float64 `json:"USD"`
 	}

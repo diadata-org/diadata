@@ -2,7 +2,6 @@ package defiscrapers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -56,6 +55,7 @@ func NewNuo(scraper *DefiScraper, protocol dia.DefiProtocol) *NuoProtocol {
 	return &NuoProtocol{scraper: scraper, protocol: protocol}
 }
 
+/*
 func (proto *NuoProtocol) fetch(asset string) (rate NuoRate, err error) {
 	res, _ := proto.fetchALL()
 	for _, v := range res.Data.Reserves {
@@ -68,7 +68,7 @@ func (proto *NuoProtocol) fetch(asset string) (rate NuoRate, err error) {
 	return
 
 }
-
+*/
 func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 	//curl 'https://api.nuo.network/reserves/all?primary_currency_short_name=USD&markets=USDC' \
 	//-H 'authority: api.nuo.network' \

@@ -129,6 +129,8 @@ func (s *CoinBaseScraper) Close() error {
 	defer s.errorLock.RUnlock()
 	return s.error
 }
+
+/*
 func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
 	str := strings.Split(foreignName, "-")
 	symbol = str[0]
@@ -140,6 +142,7 @@ func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, er
 	}
 	return symbol, nil
 }
+*/
 
 func (s *CoinBaseScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	str := strings.Split(pair.ForeignName, "-")
