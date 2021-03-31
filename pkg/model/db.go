@@ -196,19 +196,31 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var err error
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
-	address := ""
+	address := "localhost:6379"
+	password := ""
+	defaultDB := 0
 
 	if withRedis {
 		// Run localhost for testing and server for production
 		if executionMode == "production" {
 			address = os.Getenv("REDISURL")
-		} else {
-			address = "localhost:6379"
 		}
+
+		if executionMode == "production" {
+			password = os.Getenv("REDISPASSWORD")
+		}
+
+		if executionMode == "production" {
+			defaultDB, err = strconv.Atoi(os.Getenv("REDISUSEDEFAULTDB"))
+			if err != nil {
+				log.Error("wrong value for redis default db", err)
+			}
+		}
+
 		r = redis.NewClient(&redis.Options{
 			Addr:     address,
-			Password: "", // no password set
-			DB:       0,  // use default DB
+			Password: password,  // no password set
+			DB:       defaultDB, // use default DB
 		})
 
 		pong2, err := r.Ping().Result()
@@ -994,6 +1006,7 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 	return result, err
 }
 
+/*
 func (db *DB) getZSETSum(key string) (*float64, error) {
 
 	log.Debugf("getZSETSum: %v \n", key)
@@ -1012,6 +1025,7 @@ func (db *DB) getZSETSum(key string) (*float64, error) {
 		return &result, err
 	}
 }
+*/
 
 func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	value := 0.0
