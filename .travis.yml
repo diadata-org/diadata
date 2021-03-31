@@ -18,5 +18,7 @@ addons:
     update: true
 
 script:
+  - pwd
+  - ls
   - golangci-lint run
   #- go test -v -race ./...  # Run all the tests with the race detector enabled
