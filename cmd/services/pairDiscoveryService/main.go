@@ -263,8 +263,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 								}
 								if ok {
 									log.Infof("verified token ticker %s ", symbol)
+								} else {
+									dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
+									log.Errorf("could not verify identify token ticker %s on verified List %s. Please identify manually.", symbol, exchange)
 								}
-
 							}
 
 						} else {

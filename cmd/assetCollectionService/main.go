@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/datasource"
+	"github.com/jackc/pgconn"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -93,7 +95,17 @@ func runAssetSource(relDB *models.RelDB, source string, caching bool, secret str
 			// Set to persistent DB
 			err := relDB.SetAsset(receivedAsset)
 			if err != nil {
-				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
+				var pgErr *pgconn.PgError
+				if errors.As(err, &pgErr) {
+					if pgErr.Code == "23505" {
+						log.Infof("asset %v already in db. continue.", receivedAsset)
+						continue
+					} else {
+						log.Errorf("postgres error saving asset %v: %v", receivedAsset, err)
+					}
+				} else {
+					log.Errorf("Error saving asset %v: %v", receivedAsset, err)
+				}
 			} else {
 				log.Info("successfully set asset ", receivedAsset)
 			}
