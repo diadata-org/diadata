@@ -5,8 +5,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// AssetSource is the interface that must be implemented by an asset scraper.
 type AssetSource interface {
 	Asset() chan dia.Asset
+	Close() chan bool
 }
 
 var log *logrus.Logger

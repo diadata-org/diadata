@@ -31,6 +31,7 @@ type UniswapAssetSource struct {
 	WsClient     *ethclient.Client
 	RestClient   *ethclient.Client
 	assetChannel chan dia.Asset
+	closed       chan bool
 	blockchain   string
 }
 
@@ -41,6 +42,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 	var wsClient, restClient *ethclient.Client
 	var err error
 	var assetChannel = make(chan dia.Asset)
+	var closed = make(chan bool)
 	var uas *UniswapAssetSource
 
 	switch exchange.Name {
@@ -59,6 +61,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			closed:       closed,
 			blockchain:   dia.ETHEREUM,
 		}
 	case dia.SushiSwapExchange:
@@ -76,6 +79,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			closed:       closed,
 			blockchain:   dia.ETHEREUM,
 		}
 	case dia.PanCakeSwap:
@@ -92,6 +96,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			closed:       closed,
 			blockchain:   dia.BINANCESMARTCHAIN,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
@@ -106,6 +111,10 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 
 func (uas *UniswapAssetSource) Asset() chan dia.Asset {
 	return uas.assetChannel
+}
+
+func (uas *UniswapAssetSource) Close() chan bool {
+	return uas.closed
 }
 
 func (uas *UniswapAssetSource) getNumPairs() (int, error) {
@@ -150,6 +159,9 @@ func (uas *UniswapAssetSource) fetchAssets() {
 			}
 		}
 	}
+
+	// Gracefully close channel after iterating through all assets
+	uas.closed <- true
 }
 
 // GetPairByID returns the UniswapPair with the integer id @num
