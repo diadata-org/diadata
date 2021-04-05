@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -13,18 +14,19 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _GateIOsocketurl string = "wss://ws.gate.io/v3"
-
-type SubscribeGate struct {
-	Id     int      `json:"id"`
-	Method string   `json:"method"`
-	Params []string `json:"params"`
-}
+var _GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
 
 type ResponseGate struct {
 	Method string        `json:"method,omitempty"`
 	Params []interface{} `json:"params,omitempty"`
 	Id     interface{}   `json:"id,omitempty"`
+}
+
+type SubscribeGate struct {
+	Time    int64    `json:"time"`
+	Channel string   `json:"channel"`
+	Event   string   `json:"event"`
+	Payload []string `json:"payload"`
 }
 
 type GateIOScraper struct {
@@ -68,85 +70,104 @@ func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
 	return s
 }
 
+type GateIPPairResponse []GateIOPair
+type GateIOPair struct {
+	ID              string `json:"id"`
+	Base            string `json:"base"`
+	Quote           string `json:"quote"`
+	Fee             string `json:"fee"`
+	MinQuoteAmount  string `json:"min_quote_amount,omitempty"`
+	AmountPrecision int    `json:"amount_precision"`
+	Precision       int    `json:"precision"`
+	TradeStatus     string `json:"trade_status"`
+	SellStart       int    `json:"sell_start"`
+	BuyStart        int    `json:"buy_start"`
+	MinBaseAmount   string `json:"min_base_amount,omitempty"`
+}
+
+type GateIOResponseTrade struct {
+	Time    int    `json:"time"`
+	Channel string `json:"channel"`
+	Event   string `json:"event"`
+	Result  struct {
+		ID           int    `json:"id"`
+		CreateTime   int    `json:"create_time"`
+		CreateTimeMs string `json:"create_time_ms"`
+		Side         string `json:"side"`
+		CurrencyPair string `json:"currency_pair"`
+		Amount       string `json:"amount"`
+		Price        string `json:"price"`
+	} `json:"result"`
+}
+
 // runs in a goroutine until s is closed
 func (s *GateIOScraper) mainLoop() {
+	var (
+		gresponse GateIPPairResponse
+		allPairs  []string
+	)
 
-	// wait for all pairs have added into s.PairScrapers
-	time.Sleep(4 * time.Second)
-	allPairs := make([]string, len(s.pairScrapers))
-	var index = 0
-	for key, _ := range s.pairScrapers {
-		allPairs[index] = key
-		index += 1
+
+	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
+	json.Unmarshal(b, &gresponse)
+
+	for _, v := range gresponse {
+		allPairs = append(allPairs, v.ID)
 	}
 
-	// Only one subscribe for all pairs
 	a := &SubscribeGate{
-		Id:     12312,
-		Method: "trades.subscribe",
-		Params: allPairs,
+		Event:   "subscribe",
+		Time:    time.Now().Unix(),
+		Channel: "spot.trades",
+		Payload: allPairs,
 	}
 	var err error
+	log.Infoln("subscribed", allPairs)
 	if err = s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
 	}
 
 	for true {
 
-		message := &ResponseGate{}
+		var message GateIOResponseTrade
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
 			break
 		}
-		var pairRetrieved string
-		for key, v := range message.Params {
-			// key 0 -> pair
-			// key 1 -> datas
-			if key == 0 {
-				pairRetrieved = v.(string)
+
+		ps, ok := s.pairScrapers[message.Result.CurrencyPair]
+		if ok {
+
+			f64Price, err := strconv.ParseFloat(message.Result.Price, 64)
+			if err != nil {
+				log.Errorln("error parsing float Price", err)
+				continue
 			}
-			if key == 1 {
-				ps, ok := s.pairScrapers[pairRetrieved]
-				if ok {
 
-					md := v.([]interface{})
-					for _, v := range md {
-
-						md_inner := v.(map[string]interface{})
-						f64Price_string := md_inner["price"].(string)
-						f64Price, err := strconv.ParseFloat(f64Price_string, 64)
-
-						if err == nil {
-
-							f64Volume_string := md_inner["amount"].(string)
-							f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
-
-							if err == nil {
-								if md_inner["type"] == "sell" {
-									f64Volume = -f64Volume
-								}
-								timestamp_temp := int64(md_inner["time"].(float64))
-								timestamp := time.Unix(timestamp_temp, 0).UTC()
-								t := &dia.Trade{
-									Symbol:         ps.pair.Symbol,
-									Pair:           pairRetrieved,
-									Price:          f64Price,
-									Volume:         f64Volume,
-									Time:           timestamp,
-									ForeignTradeID: strconv.FormatInt(int64(md_inner["id"].(float64)), 16),
-									Source:         s.exchangeName,
-								}
-								ps.parent.chanTrades <- t
-							} else {
-								log.Error("error parsing volume %v " + md_inner["amount"].(string))
-							}
-						} else {
-							log.Error("error parsing price %v " + md_inner["price"].(string))
-						}
-					}
-				}
+			f64Volume, err := strconv.ParseFloat(message.Result.Amount, 64)
+			if err != nil {
+				log.Errorln("error parsing float Price", err)
+				continue
 			}
+
+			if message.Result.Side == "sell" {
+				f64Volume = -f64Volume
+			}
+
+			t := &dia.Trade{
+				Symbol:         ps.pair.Symbol,
+				Pair:           message.Result.CurrencyPair,
+				Price:          f64Price,
+				Volume:         f64Volume,
+				Time:           time.Unix(int64(message.Result.CreateTime), 0),
+				ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
+				Source:         s.exchangeName,
+			}
+			ps.parent.chanTrades <- t
+			log.Infoln("got trade",t)
+
 		}
+
 	}
 	s.cleanup(err)
 }
@@ -236,8 +257,6 @@ func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	}
 	return pair, nil
 }
-
-
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {

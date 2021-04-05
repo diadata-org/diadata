@@ -1,16 +1,72 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	"github.com/jjjjpppp/quoinex-go-client/v2"
-	"golang.org/x/net/context"
 )
+
+var pingPeriod = 60*time.Second*2 - 1
+
+var LiquidSocketURL string = "wss://tap.liquid.com/app/LiquidTapClient"
+var LiquidSocketRestURL string = "http://api.liquid.com"
+
+type LiquidSubscribe struct {
+	Event string        `json:"event"`
+	Data  LiquidChannel `json:"data"`
+}
+
+type LiquidChannel struct {
+	Channel string `json:"channel"`
+}
+
+type LiquidProducts []LiquidProduct
+
+type LiquidProduct struct {
+	ID                      string      `json:"id"`
+	ProductType             string      `json:"product_type"`
+	Code                    string      `json:"code"`
+	Name                    interface{} `json:"name"`
+	MarketAsk               float64     `json:"market_ask"`
+	MarketBid               float64     `json:"market_bid"`
+	Indicator               interface{} `json:"indicator"`
+	Currency                string      `json:"currency"`
+	CurrencyPairCode        string      `json:"currency_pair_code"`
+	Symbol                  interface{} `json:"symbol"`
+	BtcMinimumWithdraw      interface{} `json:"btc_minimum_withdraw"`
+	FiatMinimumWithdraw     interface{} `json:"fiat_minimum_withdraw"`
+	PusherChannel           string      `json:"pusher_channel"`
+	TakerFee                string      `json:"taker_fee"`
+	MakerFee                string      `json:"maker_fee"`
+	LowMarketBid            string      `json:"low_market_bid"`
+	HighMarketAsk           string      `json:"high_market_ask"`
+	Volume24H               string      `json:"volume_24h"`
+	LastPrice24H            string      `json:"last_price_24h"`
+	LastTradedPrice         string      `json:"last_traded_price"`
+	LastTradedQuantity      string      `json:"last_traded_quantity"`
+	AveragePrice            string      `json:"average_price"`
+	QuotedCurrency          string      `json:"quoted_currency"`
+	BaseCurrency            string      `json:"base_currency"`
+	TickSize                string      `json:"tick_size"`
+	Disabled                bool        `json:"disabled"`
+	MarginEnabled           bool        `json:"margin_enabled"`
+	CfdEnabled              bool        `json:"cfd_enabled"`
+	PerpetualEnabled        bool        `json:"perpetual_enabled"`
+	LastEventTimestamp      string      `json:"last_event_timestamp"`
+	Timestamp               string      `json:"timestamp"`
+	MultiplierUp            string      `json:"multiplier_up"`
+	MultiplierDown          string      `json:"multiplier_down"`
+	AverageTimeInterval     int         `json:"average_time_interval"`
+	ProgressiveTierEligible bool        `json:"progressive_tier_eligible"`
+}
 
 const (
 	API_DELAY       = 1*time.Second + 500*time.Millisecond
@@ -18,7 +74,8 @@ const (
 )
 
 type QuoineScraper struct {
-	client       *quoinex.Client
+	wsClient *ws.Conn
+
 	exchangeName string
 
 	// channels to signal events
@@ -32,93 +89,128 @@ type QuoineScraper struct {
 	closed    bool
 
 	pairScrapers   map[string]*QuoinePairScraper
-	productPairIds map[string]int
-	chanTrades     chan *dia.Trade
+	productPairIds map[string]string
+
+	chanTrades chan *dia.Trade
 }
 
 func NewQuoineScraper(exchange dia.Exchange) *QuoineScraper {
-	qClient, err := quoinex.NewClient("x", "x", nil)
-	if err != nil {
-		log.Error("Couldn't create Quoine client:", err)
-		return nil
-	}
+	var err error
+
+
 
 	scraper := &QuoineScraper{
-		client:         qClient,
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
-		productPairIds: make(map[string]int),
+		productPairIds: make(map[string]string),
 		pairScrapers:   make(map[string]*QuoinePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 	}
 
 	err = scraper.readProductIds()
+
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(LiquidSocketURL, nil)
+
+	if err != nil {
+		println(err.Error())
+	}
+
+	scraper.wsClient = SwConn
 	if err != nil {
 		log.Error("Couldn't obtain Quoine product ids:", err)
 	}
+	go scraper.sendPing()
 
 	go scraper.mainLoop()
+
 	return scraper
 }
 
+func (scraper *QuoineScraper) sendPing() {
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			ls := &LiquidSubscribe{
+				Event: "pusher:ping",
+			}
+			scraper.wsClient.WriteJSON(ls)
+
+		}
+	}
+
+}
+
+type LiquidResponseTrade struct {
+	CreatedAt int     `json:"created_at"`
+	ID        int     `json:"id"`
+	Price     float64 `json:"price"`
+	Quantity  float64 `json:"quantity"`
+	TakerSide string  `json:"taker_side"`
+	Timestamp string  `json:"timestamp"`
+}
+
+type LiquidResponse struct {
+	Channel string `json:"channel,omitempty"`
+	Data    string `json:"data,omitempty"`
+	Event   string `json:"event,omitempty"`
+}
+
 func (scraper *QuoineScraper) mainLoop() {
-	scraper.run = true
-	for scraper.run {
-		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("QuoineScraper: No pairs to scrap provided")
-			log.Error(scraper.error.Error())
-			break
+	for true {
+
+		var m interface{}
+
+		err := scraper.wsClient.ReadJSON(&m)
+		if err != nil {
+			log.Errorln("Error reading socket", err)
 		}
-		for pair, pairScraper := range scraper.pairScrapers {
-			time.Sleep(API_DELAY)
 
-			productId, present := scraper.productPairIds[pair]
-			if !present {
-				log.Error("Unknown product id for pair", pair)
+		log.Println("Message From websocket", m)
+		//
+
+		switch m.(type) {
+		case LiquidResponse:
+			message := m.(LiquidResponse)
+			switch message.Event {
+			case "updated":
+				log.Infoln("updated", message.Data)
+
+			case "created":
+				var data LiquidResponseTrade
+				e := json.Unmarshal([]byte(message.Data), &data)
+				if err != nil {
+					log.Errorln("Error Unmarshalling Trade", e)
+					continue
+				}
+
+				pairScraper := scraper.pairScrapers[message.Channel]
+
+				volume := data.Quantity
+
+				if data.TakerSide == "sell" {
+					volume = -volume
+				}
+
+				trade := &dia.Trade{
+					Symbol:         pairScraper.pair.Symbol,
+					Pair:           strings.TrimSuffix(message.Channel, "executions_cash_"),
+					Price:          data.Price,
+					Volume:         volume,
+					Time:           time.Unix(int64(data.CreatedAt), 0),
+					ForeignTradeID: strconv.Itoa(int(data.ID)),
+					Source:         scraper.exchangeName,
+				}
+
+				pairScraper.parent.chanTrades <- trade
 			}
 
-			ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-			executions, err := scraper.client.GetExecutions(ctx, productId, EXECUTION_LIMIT, 1)
-			if err != nil {
-				log.Error("Couldn't get executions:", err)
-				continue
-			}
-
-			if len(executions.Models) <= 0 {
-				continue
-			}
-
-			price, err := strconv.ParseFloat(executions.Models[0].Price, 64)
-			if err != nil {
-				log.Error("Price isn't parseable float")
-				continue
-			}
-
-			volume, err := strconv.ParseFloat(executions.Models[0].Quantity, 64)
-			if err != nil {
-				log.Error("Volume isn't parseable float")
-				continue
-			}
-
-			if executions.Models[0].TakerSide == "sell" {
-				volume = -volume
-			}
-
-			trade := &dia.Trade{
-				Symbol:         pairScraper.pair.Symbol,
-				Pair:           pair,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(int64(executions.Models[0].CreatedAt), 0),
-				ForeignTradeID: strconv.Itoa(int(executions.Models[0].ID)),
-				Source:         scraper.exchangeName,
-			}
-
-			pairScraper.parent.chanTrades <- trade
 		}
+
 	}
 	if scraper.error == nil {
 		scraper.error = errors.New("Main loop terminated by Close()")
@@ -140,10 +232,20 @@ func (s *QuoineScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 
 }
 
-func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+func getLiquidProducts() (products LiquidProducts, err error) {
+	var response []byte
+	response, err = utils.GetRequest(LiquidSocketRestURL + "/products")
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(response, &products)
+	return
 
-	products, err := scraper.client.GetProducts(ctx)
+}
+
+func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+	var products LiquidProducts
+	products, err = getLiquidProducts()
 	if err != nil {
 		return
 	}
@@ -167,16 +269,16 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 }
 
 func (scraper *QuoineScraper) readProductIds() error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	products, err := scraper.client.GetProducts(ctx)
+	products, err := getLiquidProducts()
 	if err != nil {
 		return err
 	}
 
 	for _, prod := range products {
 		// create a pair -> id mapping
-		scraper.productPairIds[prod.CurrencyPairCode] = int(prod.ID)
+		scraper.productPairIds[prod.CurrencyPairCode] = prod.PusherChannel
+
 	}
 
 	return nil
@@ -199,7 +301,21 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		pair:   pair,
 	}
 
-	scraper.pairScrapers[pair.ForeignName] = pairScraper
+	channelName := "executions_cash_" + strings.ToLower(pair.ForeignName)
+
+	channel := LiquidChannel{
+		Channel: channelName,
+	}
+
+	a := &LiquidSubscribe{
+		Event: "pusher:subscribe",
+		Data:  channel,
+	}
+
+	if err := scraper.wsClient.WriteJSON(a); err != nil {
+		log.Errorln(err.Error())
+	}
+	scraper.pairScrapers[channelName] = pairScraper
 
 	return pairScraper, nil
 }
