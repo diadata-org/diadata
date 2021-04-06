@@ -278,18 +278,18 @@ services:
     environment:
       - EXEC_MODE=production
 
-  # okexcollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=OKEx -onePairPerSymbol
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  okexcollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=OKEx -onePairPerSymbol
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   huobicollector:
     depends_on: [genericcollector]
@@ -362,31 +362,31 @@ services:
     environment:
       - EXEC_MODE=production
 
-  # zbcollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=ZB
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  zbcollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=ZB
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
-  # quoinecollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=Quoine
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  quoinecollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Quoine
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   # bitbaycollector:
   #   depends_on: [genericcollector]
