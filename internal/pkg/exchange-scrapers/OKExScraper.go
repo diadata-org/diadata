@@ -5,9 +5,7 @@ import (
 	"compress/flate"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
-	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -19,7 +17,9 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _OKExSocketURL = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
+var _OKExSocketURL = "wss://ws.okex.com:8443/ws/v5/public"
+
+//var _OKExSocketURL = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
 
 type Response struct {
 	Channel string     `json:"channel"`
@@ -30,8 +30,13 @@ type Response struct {
 type Responses []Response
 
 type Subscribe struct {
-	Event   string `json:"event"`
+	OP   string     `json:"op"`
+	Args []OKEXArgs `json:"args"`
+}
+
+type OKEXArgs struct {
 	Channel string `json:"channel"`
+	InstID  string `json:"instId"`
 }
 
 type OKExScraper struct {
@@ -63,8 +68,8 @@ func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 		chanTrades:   make(chan *dia.Trade),
 	}
 
-	SwConn, _, err := ws.DefaultDialer.Dial(_OKExSocketURL.String(), nil)
-
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(_OKExSocketURL, nil)
 	if err != nil {
 		log.Error("dial:", err)
 	}
@@ -77,27 +82,92 @@ func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 // Useful to reconnect to ws when the connection is down
 func (s *OKExScraper) reconnectToWS() {
 
-	SwConnNew, _, err := ws.DefaultDialer.Dial(_OKExSocketURL.String(), nil)
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(_OKExSocketURL, nil)
 
 	if err != nil {
 		log.Error("dial:", err)
 	}
 
-	s.wsClient = SwConnNew
+	s.wsClient = SwConn
+}
+
+type OKEXMarket struct {
+	Alias     string `json:"alias"`
+	BaseCcy   string `json:"baseCcy"`
+	Category  string `json:"category"`
+	CtMult    string `json:"ctMult"`
+	CtType    string `json:"ctType"`
+	CtVal     string `json:"ctVal"`
+	CtValCcy  string `json:"ctValCcy"`
+	ExpTime   string `json:"expTime"`
+	InstID    string `json:"instId"`
+	InstType  string `json:"instType"`
+	Lever     string `json:"lever"`
+	ListTime  string `json:"listTime"`
+	LotSz     string `json:"lotSz"`
+	MinSz     string `json:"minSz"`
+	OptType   string `json:"optType"`
+	QuoteCcy  string `json:"quoteCcy"`
+	SettleCcy string `json:"settleCcy"`
+	State     string `json:"state"`
+	Stk       string `json:"stk"`
+	TickSz    string `json:"tickSz"`
+	Uly       string `json:"uly"`
+}
+
+type AllOKEXMarketResponse struct {
+	Code string       `json:"code"`
+	Data []OKEXMarket `json:"data"`
+	Msg  string       `json:"msg"`
 }
 
 // Subscribe again to all channels
 func (s *OKExScraper) subscribeToALL() {
 
-	for key := range s.pairScrapers {
-		a := &Subscribe{
-			Event:   "addChannel",
-			Channel: "ok_sub_spot_" + strings.ToLower(key) + "_deals",
-		}
-		if err := s.wsClient.WriteJSON(a); err != nil {
-			fmt.Println(err.Error())
-		}
+	var (
+		resp     AllOKEXMarketResponse
+		allPairs []OKEXArgs
+	)
+
+	b, err := utils.GetRequest("https://aws.okex.com/api/v5/public/instruments?instType=SPOT")
+	if err != nil {
+		log.Errorln("Error getting OKex market", err)
 	}
+
+	err = json.Unmarshal(b, &resp)
+	if err != nil {
+		log.Errorln("Error Unmarshalling OKex market json", err)
+	}
+
+	for _, v := range resp.Data {
+		allPairs = append(allPairs, OKEXArgs{Channel: "trades", InstID: v.InstID})
+	}
+
+	a := &Subscribe{
+		OP:   "subscribe",
+		Args: allPairs,
+	}
+
+	if err := s.wsClient.WriteJSON(a); err != nil {
+		log.Errorln(err.Error())
+	}
+
+}
+
+type OKEXWSResponse struct {
+	Arg struct {
+		Channel string `json:"channel"`
+		InstID  string `json:"instId"`
+	} `json:"arg"`
+	Data []struct {
+		InstID  string `json:"instId"`
+		TradeID string `json:"tradeId"`
+		Px      string `json:"px"`
+		Sz      string `json:"sz"`
+		Side    string `json:"side"`
+		Ts      string `json:"ts"`
+	} `json:"data"`
 }
 
 // runs in a goroutine until s is closed
@@ -105,7 +175,7 @@ func (s *OKExScraper) mainLoop() {
 
 	s.run = true
 	for s.run {
-		var message Responses
+		var message OKEXWSResponse
 		messageType, messageTemp, err := s.wsClient.ReadMessage()
 		if err != nil {
 			log.Warning("reconnect the scraping to ws, ", err, ":", message)
@@ -115,64 +185,51 @@ func (s *OKExScraper) mainLoop() {
 			switch messageType {
 			case ws.TextMessage:
 				// no need uncompressed
-				fmt.Printf("recv text: %s", messageTemp)
-			case ws.BinaryMessage:
-				// uncompressed
-				text, err := GzipDecode(messageTemp)
+				err := json.Unmarshal(messageTemp, &message)
 				if err != nil {
-					log.Error("err", err)
-					return
+					log.Errorln("Error parsing response")
 				}
-				err = json.Unmarshal(text, &message)
-				if err != nil {
-					log.Error("err", err)
-					return
-				}
+				ps, ok := s.pairScrapers[message.Arg.InstID]
 
-				//skip subscribe channel confirm data
-				if message[0].Binary == 0 {
+				if ok && len(message.Data) > 0 {
 
-					var splitString = strings.Split(message[0].Channel, "_")
-					var forName = strings.ToUpper(splitString[3] + "_" + splitString[4])
-					ps, ok := s.pairScrapers[forName]
+					f64PriceString := message.Data[0].Px
+					f64Price, err := strconv.ParseFloat(f64PriceString, 64)
 
-					if ok {
+					if err == nil {
 
-						f64PriceString := message[0].Data[0][1]
-						f64Price, err := strconv.ParseFloat(f64PriceString, 64)
+						f64VolumeString := message.Data[0].Sz
+						f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
 
 						if err == nil {
 
-							f64VolumeString := message[0].Data[0][2]
-							f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
-
-							if err == nil {
-
-								timeStamp := time.Now().UTC()
-								if message[0].Data[0][4] == "ask" {
-									f64Volume = -f64Volume
-								}
-
-								t := &dia.Trade{
-									Symbol:         ps.pair.Symbol,
-									Pair:           forName,
-									Price:          f64Price,
-									Volume:         f64Volume,
-									Time:           timeStamp,
-									ForeignTradeID: message[0].Data[0][0],
-									Source:         s.exchangeName,
-								}
-								ps.parent.chanTrades <- t
-
-							} else {
-								log.Errorf("parsing volume %v", f64VolumeString)
+							ts, _ := strconv.ParseInt(message.Data[0].Ts, 10, 64)
+							timeStamp := time.Unix(int64(ts)/1e3, 0)
+							if message.Data[0].Side == "sell" {
+								f64Volume = -f64Volume
 							}
 
+							t := &dia.Trade{
+								Symbol:         ps.pair.Symbol,
+								Pair:           message.Arg.InstID,
+								Price:          f64Price,
+								Volume:         f64Volume,
+								Time:           timeStamp,
+								ForeignTradeID: message.Data[0].TradeID,
+								Source:         s.exchangeName,
+							}
+							ps.parent.chanTrades <- t
+							log.Infoln("Got trade", t)
+
 						} else {
-							log.Errorf("parsing price %v", f64PriceString)
+							log.Errorf("parsing volume %v", f64VolumeString)
 						}
+
+					} else {
+						log.Errorf("parsing price %v", f64PriceString)
 					}
 				}
+
 			}
 		}
 	}
@@ -241,15 +298,15 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	s.pairScrapers[pair.ForeignName] = ps
 
-	a := &Subscribe{
-		Event:   "addChannel",
-		Channel: "ok_sub_spot_" + strings.ToLower(pair.ForeignName) + "_deals",
-	}
-
-	subByteString := `{"channel":` + `"` + a.Channel + `"` + `,"event":` + `"` + a.Event + `"}`
-	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(subByteString)); err != nil {
-		fmt.Println(err.Error())
-	}
+	//a := &Subscribe{
+	//	OP:      "addChannel",
+	//	Args: "ok_sub_spot_" + strings.ToLower(pair.ForeignName) + "_deals",
+	//}
+	//
+	//subByteString := `{"channel":` + `"` + a.Channel + `"` + `,"event":` + `"` + a.Event + `"}`
+	//if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(subByteString)); err != nil {
+	//	fmt.Println(err.Error())
+	//}
 
 	return ps, nil
 }
@@ -278,10 +335,10 @@ func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 
 	if helpers.NameForSymbol(symbol) == symbol {
 		if !helpers.SymbolIsName(symbol) {
-			if pair.Symbol =="IOTA"{
+			if pair.Symbol == "IOTA" {
 				pair.Symbol = "MIOTA"
 			}
-			if pair.Symbol =="YOYO"{
+			if pair.Symbol == "YOYO" {
 				pair.Symbol = "YOYOW"
 			}
 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)

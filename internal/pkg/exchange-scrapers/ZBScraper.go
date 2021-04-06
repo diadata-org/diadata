@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var ZBSocketURL string = "wss://api.zb.cn:9999/websocket"
+var ZBSocketURL string = "wss://api.zb.today/websocket"
 
 type ZBSubscribe struct {
 	Event   string `json:"event"`
@@ -80,10 +80,12 @@ func (s *ZBScraper) mainLoop() {
 	for true {
 
 		message := &ZBTradeResponse{}
+
 		if s.error = s.wsClient.ReadJSON(&message); s.error != nil {
 			log.Error(s.error.Error())
 			break
 		}
+
 
 		for _, trade := range message.Data {
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
@@ -118,6 +120,8 @@ func (s *ZBScraper) mainLoop() {
 				Source:         s.exchangeName,
 			}
 			ps.parent.chanTrades <- t
+			log.Infoln("Trade recieved", t)
+
 		}
 	}
 	s.cleanup(s.error)

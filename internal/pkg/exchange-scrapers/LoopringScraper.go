@@ -14,7 +14,7 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _LoopringSocketurl string = "wss://ws.loopring.io/v2/ws"
+var _LoopringSocketurl string = "wss://ws.api3.loopring.io/v3/ws"
 
 type WebSocketRequest struct {
 	Op       string          `json:"op"`
@@ -75,8 +75,12 @@ type LoopringScraper struct {
 	pairScrapers map[string]*LoopringPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	wsURL string
 }
 
+type LoopringKey struct {
+	Key string `json:"key"`
+}
 // NewLoopringScraper returns a new LoopringScraper for the given pair
 func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 
@@ -124,11 +128,21 @@ func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 		decimalsAsset: decimalAsset,
 	}
 
+	// Get Loopring Key
+	resp,err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	if err != nil {
+		log.Error("Error getting loopring key : ",err.Error())
+	}
+	var lkResponse LoopringKey
+	json.Unmarshal(resp, &lkResponse)
+
+	s.wsURL = _LoopringSocketurl+"?wsApiKey="+lkResponse.Key
+
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(_LoopringSocketurl, nil)
+	SwConn, _, err := wsDialer.Dial(s.wsURL , nil)
 
 	if err != nil {
-		println(err.Error())
+		log.Error("Error connecting to ws: ",err.Error())
 	}
 	s.wsClient = SwConn
 	go s.mainLoop()
@@ -136,8 +150,22 @@ func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 }
 
 func (s *LoopringScraper) reconnectToWS() {
+
+	log.Info("Reconnecting ws")
+
+
+	// Get Loopring Key
+	resp,err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	if err != nil {
+		log.Error("Error getting loopring key : ",err.Error())
+	}
+	var lkResponse LoopringKey
+	json.Unmarshal(resp, &lkResponse)
+
+	s.wsURL = _LoopringSocketurl+"?wsApiKey="+lkResponse.Key
+
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(_LoopringSocketurl, nil)
+	SwConn, _, err := wsDialer.Dial(s.wsURL, nil)
 
 	if err != nil {
 		println(err.Error())
@@ -146,6 +174,7 @@ func (s *LoopringScraper) reconnectToWS() {
 }
 
 func (s *LoopringScraper) subscribeToALL() {
+	log.Info("Subscribing To all pairs again")
 
 	for key := range s.pairScrapers {
 		lptopic := LoopringTopic{Market: key, Topic: "trade", Count: 20, Snapshot: true}
