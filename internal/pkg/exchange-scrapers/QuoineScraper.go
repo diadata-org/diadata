@@ -97,8 +97,6 @@ type QuoineScraper struct {
 func NewQuoineScraper(exchange dia.Exchange) *QuoineScraper {
 	var err error
 
-
-
 	scraper := &QuoineScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -163,52 +161,41 @@ type LiquidResponse struct {
 func (scraper *QuoineScraper) mainLoop() {
 	for true {
 
-		var m interface{}
+		var message LiquidResponse
 
-		err := scraper.wsClient.ReadJSON(&m)
+		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorln("Error reading socket", err)
+			log.Errorln("Error reading JSON", err)
 		}
+		switch message.Event {
 
-		log.Println("Message From websocket", m)
-		//
-
-		switch m.(type) {
-		case LiquidResponse:
-			message := m.(LiquidResponse)
-			switch message.Event {
-			case "updated":
-				log.Infoln("updated", message.Data)
-
-			case "created":
-				var data LiquidResponseTrade
-				e := json.Unmarshal([]byte(message.Data), &data)
-				if err != nil {
-					log.Errorln("Error Unmarshalling Trade", e)
-					continue
-				}
-
-				pairScraper := scraper.pairScrapers[message.Channel]
-
-				volume := data.Quantity
-
-				if data.TakerSide == "sell" {
-					volume = -volume
-				}
-
-				trade := &dia.Trade{
-					Symbol:         pairScraper.pair.Symbol,
-					Pair:           strings.TrimSuffix(message.Channel, "executions_cash_"),
-					Price:          data.Price,
-					Volume:         volume,
-					Time:           time.Unix(int64(data.CreatedAt), 0),
-					ForeignTradeID: strconv.Itoa(int(data.ID)),
-					Source:         scraper.exchangeName,
-				}
-
-				pairScraper.parent.chanTrades <- trade
+		case "created":
+			var data LiquidResponseTrade
+			e := json.Unmarshal([]byte(message.Data), &data)
+			if err != nil {
+				log.Errorln("Error Unmarshalling Trade", e)
+				continue
 			}
 
+			pairScraper := scraper.pairScrapers[message.Channel]
+
+			volume := data.Quantity
+
+			if data.TakerSide == "sell" {
+				volume = -volume
+			}
+
+			trade := &dia.Trade{
+				Symbol:         pairScraper.pair.Symbol,
+				Pair:           pairScraper.pair.ForeignName,
+				Price:          data.Price,
+				Volume:         volume,
+				Time:           time.Unix(int64(data.CreatedAt), 0),
+				ForeignTradeID: strconv.Itoa(int(data.ID)),
+				Source:         scraper.exchangeName,
+			}
+
+			pairScraper.parent.chanTrades <- trade
 		}
 
 	}
