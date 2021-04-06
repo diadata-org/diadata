@@ -10,15 +10,21 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
 type nothing struct{}
 
 var (
-	stablecoins = []string{"USDC", "USDT", "TUSD", "DAI", "PAX", "BUSD"}
-	tol         = float64(0.1)
+	stablecoins = map[string]interface{}{
+		"USDC": "",
+		"USDT": "",
+		"TUSD": "",
+		"DAI":  "",
+		"PAX":  "",
+		"BUSD": "",
+	}
+	tol = float64(0.1)
 )
 
 type TradesBlockService struct {
@@ -113,7 +119,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	}
 
 	// // If estimated price for stablecoin diverges too much ignore trade
-	if utils.Contains(&stablecoins, t.Symbol) {
+	if _, ok := stablecoins[t.Symbol]; ok {
 		if math.Abs(t.EstimatedUSDPrice-1) > tol {
 			log.Errorf("price for stablecoin %s diverges by %v", t.Symbol, math.Abs(t.EstimatedUSDPrice-1))
 			ignoreTrade = true
@@ -123,7 +129,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
-	if ignoreTrade == false {
+	if !ignoreTrade {
 		s.datastore.SaveTradeInflux(&t)
 	}
 
@@ -133,7 +139,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		ignoreTrade = true
 	}
 
-	if ignoreTrade == false {
+	if !ignoreTrade {
 
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
@@ -167,7 +173,7 @@ func (s *TradesBlockService) mainLoop() {
 			log.Println("TradesBlockService shutting down")
 			s.cleanup(nil)
 			return
-		case t, _ := <-s.chanTrades:
+		case t := <-s.chanTrades:
 			s.process(*t)
 		}
 	}
