@@ -3671,7 +3671,7 @@ func NameForSymbol(symbol string) string {
 	case "ABX":
 		return "Arbidex"
 	case "COMP":
-		return "Compound Coin"
+		return "Compound"
 	case "HAND":
 		return "ShowHand"
 	case "HIT":
