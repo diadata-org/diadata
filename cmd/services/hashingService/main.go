@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"sync"
+	"time"
 
 	merklehashing "github.com/diadata-org/diadata/internal/pkg/merkle-trees"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	key = flag.Int("topic-key", 0, "which topic to hash")
+	key = flag.Int("topic-key", -1, "which topic to hash")
 )
 
 func init() {
@@ -20,6 +21,12 @@ func init() {
 
 func main() {
 	// TO DO: fetch topics from postgres
+	if *key < 0 {
+		for {
+			log.Info("generic hashing service sleeps all the time.")
+			time.Sleep(24 * 60 * time.Minute)
+		}
+	}
 
 	topics := merklehashing.TopicInfo
 	fmt.Println("flagged key: ", *key)

@@ -1,0 +1,84 @@
+version: '3.2'
+services:
+
+  generichashingservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericHashingService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    restart: "no"
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  hashingtradesservice:
+    depends_on: [generichashingservice]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    command: /bin/hashingService -topic-key=0
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  hashingratesservice:
+    depends_on: [generichashingservice]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    command: /bin/hashingService -topic-key=1
+    networks:
+        - kafka-network
+        - redis-network
+        - influxdb-network
+    environment:
+        - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  hashinglendingratesservice:
+    depends_on: [generichashingservice]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    command: /bin/hashingService -topic-key=2
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+    
+  hashinglendingstatesservice:
+    depends_on: [generichashingservice]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    command: /bin/hashingService -topic-key=3
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+        
+networks:
+  kafka-network:
+    external:
+        name: kafka_kafka-network
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network

@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -158,21 +159,140 @@ func (t TestSHA256Content) Equals(other merkletree.Content) (bool, error) {
 	return t.x == other.(TestSHA256Content).x, nil
 }
 
+// makeTestTree makes a tree with two nodes
+func makeTestTree(numpools uint64, ContentNode1, ContentNode2 []string) (*merkletree.MerkleTree, error) {
+	bp := merkletree.NewBucketPool(numpools, 216, "test")
+	bucket1, err := bp.Get()
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	for _, content := range ContentNode1 {
+		bucket1.WriteContent([]byte(content))
+	}
+	bucket2, err := bp.Get()
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	for _, content := range ContentNode2 {
+		bucket2.WriteContent([]byte(content))
+	}
+	if bp.Put(bucket1) {
+		fmt.Println("put bucket p")
+	}
+	if bp.Put(bucket2) {
+		fmt.Println("put bucket p2")
+	}
+	return merkletree.MakeTree(bp)
+}
+
+func marshAndUnmarshTree(tree merkletree.MerkleTree) (merkletree.MerkleTree, error) {
+	marshTree, err := json.Marshal(&tree)
+	if err != nil {
+		return merkletree.MerkleTree{}, err
+	}
+	var recoveredTree merkletree.MerkleTree
+	err = json.Unmarshal(marshTree, &recoveredTree)
+	if err != nil {
+		return merkletree.MerkleTree{}, err
+	}
+	return recoveredTree, nil
+}
+
 func main() {
 
-	bp := merkletree.NewBucketPool(1, 16, "test")
-	p, err := bp.Get()
-	fmt.Println(p, err)
-	fmt.Printf("%T\n", p.Content)
-	p.Content.Write([]byte("hello"))
-	fmt.Printf("%T\n", p.Content)
+	// unmarshalling from influx
 
-	p2 := merkletree.Bucket{}
-	fmt.Println("content: ", p2.Content)
-	p2.Content.Write([]byte("bye"))
-	fmt.Println(p2)
+	ds, err := models.NewAuditStore()
+	if err != nil {
+		log.Error("NewAuditStore: ", err)
+	}
 
-	// // Test verification ----------------------------------------------
+	tree0, err := makeTestTree(2, []string{"hello ", "world."}, []string{"how ", "are ", "you?"})
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+
+	err = ds.SetStorageTreeInflux(*tree0, "test")
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+
+	time.Sleep(10 * time.Second)
+	vals, err := ds.GetStorageTreesInflux("test", time.Now().Add(-20*time.Second), time.Now())
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	log.Infof("got %v trees: ", len(vals))
+	if len(vals) > 0 {
+		var auxTree merkletree.MerkleTree
+		err = json.Unmarshal([]byte(vals[0][4].(string)), &auxTree)
+		if err != nil {
+			fmt.Println("error: ", err)
+		}
+		fmt.Println("tree: ", auxTree)
+	}
+
+	// // marshalling and unmarshalling trees ----------
+
+	// tree1, err := makeTestTree(2, []string{"hello ", "world."}, []string{"how ", "are ", "you?"})
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+	// fmt.Println("tree: ", tree1)
+
+	// recoveredTree, err := marshAndUnmarshTree(*tree1)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("recovered tree: ", recoveredTree)
+
+	// node1 := recoveredTree.Leafs[0]
+	// storageBucket1 := node1.C.(*merkletree.StorageBucket)
+	// data1, err := storageBucket1.ReadContent()
+
+	// node2 := recoveredTree.Leafs[1]
+	// storageBucket2 := node2.C.(*merkletree.StorageBucket)
+	// data2, err := storageBucket2.ReadContent()
+
+	// for _, word := range data1 {
+	// 	fmt.Println(string(word))
+	// }
+	// for _, word := range data2 {
+	// 	fmt.Println(string(word))
+	// }
+
+	// // second tree
+	// tree2, err := makeTestTree(2, []string{"this ", "is "}, []string{"just  ", "another ", "tree."})
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+
+	// forest, err := merkletree.ForestToTree([]merkletree.MerkleTree{*tree1, *tree2})
+	// recoveredForest, err := marshAndUnmarshTree(*forest)
+	// fmt.Println("recovered Forest: ", hex.EncodeToString(recoveredForest.Leafs[0].C.(*merkletree.ByteContent).Content))
+	// fmt.Println("tree1 root: ", hex.EncodeToString(tree1.MerkleRoot))
+
+	// // Marshaling and Unmarshaling mixed tree, i.e. with ByteContent and StorageBucket
+	// mixedTree, err := merkletree.NewTree([]merkletree.Content{storageBucket1, merkletree.ByteContent{Content: tree2.MerkleRoot}})
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+	// fmt.Println("mixedTree leaf 0: ", hex.EncodeToString(mixedTree.Leafs[0].C.(*merkletree.StorageBucket).Content))
+	// fmt.Println("mixedTree leaf 1: ", hex.EncodeToString(mixedTree.Leafs[1].C.(merkletree.ByteContent).Content))
+
+	// recoveredMixedTree, err := marshAndUnmarshTree(*mixedTree)
+	// fmt.Println("recoveredMixedTree leaf 0: ", hex.EncodeToString(recoveredMixedTree.Leafs[0].C.(*merkletree.StorageBucket).Content))
+	// fmt.Println("recoveredMixedTree leaf 1: ", hex.EncodeToString(recoveredMixedTree.Leafs[1].C.(*merkletree.ByteContent).Content))
+
+	// ---------------------------------------------------------------------
+	// ---------------------------------------------------------------------
+	// p2 := merkletree.Bucket{}
+	// fmt.Println("content: ", p2.Content)
+	// n, err := p2.Content.Write([]byte("bye"))
+	// fmt.Println("n, err: ", n, err)
+	// fmt.Println(p2)
+
+	// // Test verification ------------------------------------------------
 	// dataType := flag.String("type", "hash-interestrates", "Type of data")
 	// flag.Parse()
 
@@ -181,30 +301,30 @@ func main() {
 	// 	log.Error("NewAuditStore: ", err)
 	// }
 
-	// poolNum := "10"
+	// poolNum := "0"
 	// tree, err := ds.GetStorageTreeByID(*dataType, poolNum)
 	// if err != nil {
 	// 	log.Error(err)
 	// }
-	// num := 3
+	// num := 0
 	// fmt.Printf("bucket type %T and value %v\n", tree.Leafs[num].C.(merkletree.StorageBucket).ID, tree.Leafs[num].C.(merkletree.StorageBucket).ID)
-	// verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket))
+	// verif, _ := merklehashing.VerifyBucket(tree.Leafs[num].C.(merkletree.StorageBucket), ds)
 	// fmt.Println("verification: ", verif)
 	// newBucket := tree.Leafs[num].C.(merkletree.StorageBucket)
-	// verifInterm, _ := merklehashing.VerifyBucket(newBucket)
+	// verifInterm, _ := merklehashing.VerifyBucket(newBucket, ds)
 	// fmt.Println("verification before modification: ", verifInterm)
 	// newBucket.Content[0] = 1
-	// verifnew, _ := merklehashing.VerifyBucket(newBucket)
+	// verifnew, _ := merklehashing.VerifyBucket(newBucket, ds)
 	// fmt.Println("new verification: ", verifnew)
 
-	// verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0")
+	// verif2, _ := merklehashing.VerifyPool(tree, *dataType, "0", ds)
 	// fmt.Println("verification of pool: ", verif2)
 
 	// level2Tree, err := ds.GetDailyTreeByID(*dataType, "2", "0")
 	// if err != nil {
 	// 	log.Error(err)
 	// }
-	// verif3, err := merklehashing.VerifyTree(level2Tree, "2", "0")
+	// verif3, err := merklehashing.VerifyTree(level2Tree, "2", "0", ds)
 	// fmt.Println(verif3, err)
 
 	// level1Tree, err := ds.GetDailyTreeByID("", "1", "0")
@@ -212,7 +332,7 @@ func main() {
 	// 	log.Error(err)
 	// }
 	// fmt.Println("level1tree root: ", level1Tree.MerkleRoot)
-	// verif4, err := merklehashing.VerifyTree(level1Tree, "1", "1")
+	// verif4, err := merklehashing.VerifyTree(level1Tree, "1", "1", ds)
 	// fmt.Println(verif4, err)
 
 	// level0Tree, err := ds.GetDailyTreeByID("", "0", "0")

@@ -28,11 +28,11 @@ func VerifyBucket(sb merkletree.StorageBucket, ds models.AuditStore) (bool, erro
 func VerifyBuckets(tree merkletree.MerkleTree, topic string, ds models.AuditStore) (bool, error) {
 	// Get all buckets
 	for _, leaf := range tree.Leafs {
-		verif, err := tree.VerifyContent(leaf.C.(merkletree.StorageBucket))
+		verif, err := tree.VerifyContent(leaf.C.(*merkletree.StorageBucket))
 		if err != nil {
 			return false, err
 		}
-		if verif == false {
+		if !verif {
 			return false, nil
 		}
 	}
@@ -53,7 +53,7 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditSto
 	if err != nil {
 		return false, err
 	}
-	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
+	cont := merkletree.ByteContent{Content: tree.MerkleRoot}
 	return parentTree.VerifyContent(cont)
 }
 
@@ -72,7 +72,10 @@ func VerifyTree(tree merkletree.MerkleTree, level, ID string, ds models.AuditSto
 	levelBelow := strconv.Itoa(int(levelInt))
 	// Get parent tree by ID
 	parentTree, err := ds.GetDailyTreeByID("", levelBelow, ID)
-	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
+	if err != nil {
+		return false, err
+	}
+	cont := merkletree.ByteContent{Content: tree.MerkleRoot}
 	return parentTree.VerifyContent(cont)
 }
 
@@ -95,7 +98,7 @@ func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, err
 	if err != nil {
 		return false, err
 	}
-	if val == false {
+	if !val {
 		return false, nil
 	}
 
@@ -111,12 +114,12 @@ func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, err
 		return false, err
 	}
 	// Verify root hash of pool in level 2 tree
-	cont := merkletree.StorageBucket{Content: tree.MerkleRoot}
+	cont := merkletree.ByteContent{Content: tree.MerkleRoot}
 	val, err = level2Tree.VerifyContent(cont)
 	if err != nil {
 		return false, err
 	}
-	if val == false {
+	if !val {
 		return false, nil
 	}
 
@@ -131,7 +134,7 @@ func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, err
 	if err != nil {
 		return false, err
 	}
-	if val == false {
+	if !val {
 		return false, nil
 	}
 
@@ -144,7 +147,7 @@ func VerifyContent(sb merkletree.StorageBucket, ds models.AuditStore) (bool, err
 	if err != nil {
 		return false, err
 	}
-	if val == false {
+	if !val {
 		return false, nil
 	}
 

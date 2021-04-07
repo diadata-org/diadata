@@ -266,7 +266,7 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 	}
 
 	// Extend master tree by today's merkle root
-	newHash := merkletree.StorageBucket{Content: dailyRootHash}
+	newHash := merkletree.ByteContent{Content: dailyRootHash}
 	fmt.Println("new Hash: ", newHash)
 	if !masterTree.Isempty() {
 		err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
