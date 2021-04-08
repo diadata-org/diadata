@@ -43,7 +43,7 @@ type Config struct {
 
 var KafkaConfig Config
 
-// GetTopic returns a topic's name. Topics in kafka are indexed by integers.
+// GetTopic returns a topic's name.
 func GetTopic(topic int) string {
 	return getTopic(topic)
 }

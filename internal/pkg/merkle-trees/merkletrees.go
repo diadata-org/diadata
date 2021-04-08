@@ -341,7 +341,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	var IDs []string
 
 	if len(vals) > 0 {
-		log.Infof("new content available for topic %s on level 2\n", topic)
+		log.Infof("new content available for topic %s on level 2.", topic)
 		// If new content is available, make daily tree
 		for i := range vals {
 			// Collect storage trees
@@ -361,7 +361,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 			IDs = append(IDs, strconv.FormatInt(tstamp.UnixNano(), 10))
 		}
 	} else {
-		log.Infof("no new content available for topic %s on level 2. store tree with nil content.\n", topic)
+		log.Infof("no new content available for topic %s on level 2. store tree with nil content.", topic)
 		// If no content is available, make tree from empty bucket and store to storage table for consistency of IDs
 		emptyBucket := merkletree.StorageBucket{
 			Content:   []byte{},

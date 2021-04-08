@@ -30,7 +30,7 @@ func verifyContent(topic string, id string, ds models.AuditStore, wg *sync.WaitG
 		if err != nil {
 			log.Fatal("error verifying content: ", err)
 		}
-		if verif == false {
+		if !verif {
 			log.Errorf("could not verify content with ID %v in tree with ID %s, topic: %s\n", cnt.ID, id, topic)
 			break
 		}
@@ -59,6 +59,9 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 	for _, val := range storageTreesToVerify {
 		tree := merkletree.MerkleTree{}
 		err = json.Unmarshal([]byte(val[4].(string)), &tree)
+		if err != nil {
+			log.Fatalf("could not unmarshal storage tree for topic %s", topic)
+		}
 		tstamp, _ := time.Parse(time.RFC3339, val[0].(string))
 
 		// Verify buckets in pool
@@ -66,8 +69,8 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if err != nil {
 			log.Fatal(err)
 		}
-		if verif == false {
-			log.Fatal("could not verify bucket in pool ")
+		if !verif {
+			log.Fatalf("could not verify bucket in pool for topic %s", topic)
 		}
 
 		// Verify pools in daily trees
@@ -76,8 +79,8 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if err != nil {
 			log.Fatal(err)
 		}
-		if verif == false {
-			log.Fatal("could not verify pool in daily tree")
+		if !verif {
+			log.Fatalf("could not verify pool in daily tree. topic, id: %s, %s", topic, id)
 		}
 	}
 	log.Infof("successfully verified all storage trees for %s.", topic)
@@ -90,13 +93,16 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 	for _, val := range dailyTrees {
 		dailyTree := merkletree.MerkleTree{}
 		err = json.Unmarshal([]byte(val[6].(string)), &dailyTree)
+		if err != nil {
+			log.Fatalf("could not unmarshal daily tree for topic %s", topic)
+		}
 		id := val[2].(string)
 		verif, err := merklehashing.VerifyTree(dailyTree, "2", id, ds)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if verif == false {
-			log.Fatalf("could not verify level %s tree \n", "2")
+		if !verif {
+			log.Fatalf("could not verify level %s tree for topic %s", "2", topic)
 		}
 	}
 	log.Infof("Successfully verified %d daily trees from topic %s.", len(dailyTrees), topic)
@@ -119,7 +125,7 @@ func main() {
 				// Verify all data related to topics
 				topicMap := merklehashing.GetHashTopics()
 				for key := range topicMap {
-					log.Infof("verifying topic %s ... \n", topicMap[key])
+					log.Infof("verifying topic %s ... ", topicMap[key])
 					go verifyTopic(topicMap[key], verificationTime, ds, &wg)
 				}
 				// Verify daily trees for level 1
@@ -130,18 +136,21 @@ func main() {
 				for _, val := range dailyTrees {
 					dailyTree := merkletree.MerkleTree{}
 					err = json.Unmarshal([]byte(val[6].(string)), &dailyTree)
+					if err != nil {
+						log.Fatalf("could not unmarshal daily tree on level %s\n", "1")
+					}
 					id := val[2].(string)
 					verif, err := merklehashing.VerifyTree(dailyTree, "1", id, ds)
 					if err != nil {
 						log.Fatal(err)
 					}
-					if verif == false {
-						log.Fatalf("could not verify level %s tree \n", "1")
+					if !verif {
+						log.Fatalf("could not verify level %s tree", "1")
 					}
 				}
 				log.Infof("Successfully verified %d daily trees at level 1.", len(dailyTrees))
 
-				log.Infof("%s -- All content in storage successfully verified. \n", time.Now().String())
+				log.Infof("%s -- All content in storage successfully verified.", time.Now().String())
 			}
 		}
 	}()
@@ -166,7 +175,7 @@ func mainOld() {
 				var wg sync.WaitGroup
 				topicMap := merklehashing.GetHashTopics()
 				for key := range topicMap {
-					log.Infof("verifying topic %s ... \n", topicMap[key])
+					log.Infof("verifying topic %s ...", topicMap[key])
 					// Get highest ID from storage table which is already hashed in merkle table.
 					// There may be higher IDs in the storage table which are not hashed into daily trees yet.
 					// For this reason they cannot be verified (or falsified).
@@ -191,7 +200,7 @@ func mainOld() {
 
 					log.Infof("Successfully verified %v storage trees.", len(storageTreesToVerify))
 				}
-				log.Infof("%s -- All content in storage successfully verified. \n", time.Now().String())
+				log.Infof("%s -- All content in storage successfully verified.", time.Now().String())
 			}
 		}
 	}()
