@@ -430,6 +430,18 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 }
 
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := t.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-trades", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	// Create a point and add to batch
 	tags := map[string]string{
 		"symbol":   t.Symbol,
@@ -598,6 +610,18 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 }
 
 func (db *DB) SetFarmingPool(pool *FarmingPool) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := pool.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-farmingpools", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"rate":        pool.Rate,
 		"balance":     pool.Balance,
@@ -736,6 +760,18 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 }
 
 func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := rate.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-lendingrates", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
 		"borrowRate":  rate.BorrowingRate,
@@ -798,6 +834,18 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 }
 
 func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
+
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := state.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-lendingstates", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	fields := map[string]interface{}{
 		"totalUSD": state.TotalUSD,
 		"totalETH": state.TotalETH,

@@ -54,6 +54,17 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
 	}
 
+	// Send data through kafka for Merkle Audit Trail ---------------------
+	content, err := ir.MarshalBinary()
+	if err != nil {
+		log.Error(err)
+	}
+	err = HashingLayer("hash-interestrates", content)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	// --------------------------------------------------------------------
+
 	return err
 }
 

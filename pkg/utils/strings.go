@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"strconv"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,6 +29,18 @@ func Contains(s *[]string, str string) bool {
 		}
 	}
 	return false
+}
+
+// StringsliceToInt casts a slice of strings to a slice of ints, if possible
+func StringsliceToInt(sl []string) (sli []int, err error) {
+	for _, item := range sl {
+		num, err := strconv.Atoi(item)
+		if err != nil {
+			return sli, err
+		}
+		sli = append(sli, num)
+	}
+	return
 }
 
 // SliceDifference returns the elements in @slice1 that aren't in @slice2.

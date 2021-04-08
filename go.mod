@@ -18,6 +18,7 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/carterjones/signalr v0.3.5
+	github.com/cbergoon/merkletree v0.2.0
 	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b // indirect
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
@@ -33,6 +34,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-redis/redis/v8 v8.8.0
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.0.3 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
@@ -69,11 +71,11 @@ require (
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924
-	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
-	golang.org/x/tools v0.0.0-20200729041821-df70183b1872 // indirect
 	gonum.org/v1/netlib v0.0.0-20201012070519-2390d26c3658 // indirect
 	gonum.org/v1/plot v0.7.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/cbergoon/merkletree v0.2.0 => ../merkletree

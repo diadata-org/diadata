@@ -27,16 +27,11 @@ type KafkaMessageWithAHash interface {
 }
 
 const (
-	TopicIndexBlock      = 0
 	TopicFiltersBlock    = 1
 	TopicTrades          = 2
 	TopicTradesBlock     = 3
-	TopicSuppliesBlock   = 7
-	TopicIndexBlock2     = 8
-	TopicIndexBlockDaily = 11
 	retryDelay           = 2 * time.Second
-	TopicOptionOrderBook          = 13
-
+	TopicOptionOrderBook = 13
 )
 
 type Config struct {
@@ -54,12 +49,37 @@ func getTopic(topic int) string {
 		1: "filtersBlock",
 		2: "trades",
 		3: "tradesBlock",
+		4: "hash-trades",
+		5: "hash-interestrates",
+		6: "hash-lendingrates",
+		7: "hash-lendingstates",
+		8: "hash-farmingpools",
+		9: "hash-foreignscraper",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
-		log.Error("getTopic cant fine topic", topic)
+		log.Error("getTopic cant find topic", topic)
 	}
 	return result
+}
+
+// GetTopicNumber returns the integer number kafka uses for @topicName
+// in case @topicName exists.
+func GetTopicNumber(topicName string) (int, error) {
+	index := 1
+	top := true
+	for top {
+		t := GetTopic(index)
+		if t == "" {
+			top = false
+		}
+		if t == topicName {
+			return index, nil
+		}
+		index++
+	}
+	errorstring := fmt.Sprintf("topic %s does not exist \n", topicName)
+	return 0, errors.New(errorstring)
 }
 
 func init() {
