@@ -10,12 +10,17 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
+
+func init() {
+	log = logrus.New()
+}
 
 type nothing struct{}
 
 var (
+	log         *logrus.Logger
 	stablecoins = map[string]interface{}{
 		"USDC": "",
 		"USDT": "",

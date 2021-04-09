@@ -11,14 +11,16 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 var (
 	replayInflux = flag.Bool("replayInflux", false, "replayInflux ?")
+	log          *logrus.Logger
 )
 
 func init() {
+	log = logrus.New()
 	flag.Parse()
 	log.Println("replayInflux=", *replayInflux)
 }

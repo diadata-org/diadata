@@ -2,8 +2,8 @@ package filters
 
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	models "github.com/diadata-org/diadata/pkg/model"
+
 	"math"
 	"strconv"
 	"time"

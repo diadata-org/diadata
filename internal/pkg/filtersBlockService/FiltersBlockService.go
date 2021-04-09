@@ -8,7 +8,6 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
