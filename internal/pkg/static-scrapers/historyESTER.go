@@ -11,6 +11,7 @@ import (
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -59,7 +60,7 @@ func GetHistoricESTER() error {
 
 // WriteHistoricESTER makes a GET request to fetch the historic data of the SOFR index
 // and writes it into the redis database.
-func WriteHistoricESTER(ds models.Datastore) error {
+func WriteHistoricESTER(ds models.Datastore, hashWriter *kafka.Writer) error {
 
 	log.Printf("Writing historic ESTER data")
 
@@ -109,7 +110,7 @@ func WriteHistoricESTER(ds models.Datastore) error {
 			Source:          "ECB",
 		}
 
-		ds.SetInterestRate(&t)
+		ds.SetInterestRate(&t, hashWriter)
 
 	}
 

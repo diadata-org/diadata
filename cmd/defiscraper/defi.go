@@ -5,6 +5,8 @@ import (
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/segmentio/kafka-go"
 
 	defiscraper "github.com/diadata-org/diadata/internal/pkg/defiscrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -12,7 +14,7 @@ import (
 )
 
 // handleDefiInterestRate delegates rate information to Kafka
-func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.Datastore) {
+func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.Datastore, hashWriter *kafka.Writer) {
 	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
@@ -21,12 +23,12 @@ func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.
 			log.Error("error")
 			return
 		}
-		ds.SetDefiRateInflux(t)
+		ds.SetDefiRateInflux(t, hashWriter)
 	}
 }
 
 // handleDefiState delegates rate information to Kafka
-func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds models.Datastore) {
+func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds models.Datastore, hashWriter *kafka.Writer) {
 	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
@@ -35,7 +37,7 @@ func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds model
 			log.Error("error")
 			return
 		}
-		ds.SetDefiStateInflux(t)
+		ds.SetDefiStateInflux(t, hashWriter)
 	}
 }
 
@@ -44,8 +46,16 @@ func main() {
 	flag.Parse()
 
 	wg := sync.WaitGroup{}
-	ds, err := models.NewDataStore()
+	hashWriterRates, err := kafkaHelper.NewHashWriter("hash-lendingrates", true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hashWriterStates, err := kafkaHelper.NewHashWriter("hash-lendingstates", true)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
@@ -55,8 +65,8 @@ func main() {
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(2)
-		go handleDefiInterestRate(sRate.RateChannel(), &wg, ds)
-		go handleDefiState(sRate.StateChannel(), &wg, ds)
+		go handleDefiInterestRate(sRate.RateChannel(), &wg, ds, hashWriterRates)
+		go handleDefiState(sRate.StateChannel(), &wg, ds, hashWriterStates)
 
 		defer wg.Wait()
 	}

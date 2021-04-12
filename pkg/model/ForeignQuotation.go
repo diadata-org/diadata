@@ -8,20 +8,21 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
 const influxDbForeignQuotationTable = "foreignquotation"
 
 // SaveForeignQuotationInflux stores a quotation which is not from DIA to an influx batch
-func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
+func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation, hashWriter *kafka.Writer) error {
 
 	// Send data through kafka for Merkle Audit Trail ---------------------
 	content, err := fq.MarshalBinary()
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-farmingpools", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}

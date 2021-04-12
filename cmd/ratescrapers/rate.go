@@ -6,12 +6,14 @@ import (
 
 	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
 	staticscrapers "github.com/diadata-org/diadata/internal/pkg/static-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
 // handleInterestRate delegates rate information to Kafka
-func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds models.Datastore) {
+func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds models.Datastore, hashWriter *kafka.Writer) {
 	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
@@ -20,7 +22,7 @@ func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds mode
 			log.Error("error")
 			return
 		}
-		ds.SetInterestRate(t)
+		ds.SetInterestRate(t, hashWriter)
 	}
 }
 
@@ -32,9 +34,12 @@ func main() {
 	rateType := flag.String("type", "SOFR", "Type of interest rate")
 	flag.Parse()
 
+	hashWriter, err := kafkaHelper.NewHashWriter("hash-interestrates", true)
+	if err != nil {
+		log.Fatal(err)
+	}
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
-
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
@@ -46,7 +51,7 @@ func main() {
 		}
 
 		// Writing historic data into database
-		err = staticscrapers.WriteHistoricRate(ds, *rateType)
+		err = staticscrapers.WriteHistoricRate(ds, *rateType, hashWriter)
 		if err != nil {
 			log.Errorf("Error writing rate %s: %v", *rateType, err)
 		}
@@ -57,7 +62,7 @@ func main() {
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(1)
-		go handleInterestRate(sRate.Channel(), &wg, ds)
+		go handleInterestRate(sRate.Channel(), &wg, ds, hashWriter)
 		defer wg.Wait()
 	}
 }

@@ -4,7 +4,9 @@ import (
 	"flag"
 	"sync"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
 	log "github.com/sirupsen/logrus"
@@ -14,6 +16,10 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
+	hashWriter, err := kafkaHelper.NewHashWriter("hash-foreignscraper", true)
+	if err != nil {
+		log.Fatal(err)
+	}
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)
@@ -35,12 +41,12 @@ func main() {
 	}
 
 	wg.Add(1)
-	go handleQuotation(sc.GetQuoteChannel(), &wg, ds)
+	go handleQuotation(sc.GetQuoteChannel(), &wg, ds, hashWriter)
 	defer wg.Wait()
 
 }
 
-func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup, ds models.Datastore) {
+func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup, ds models.Datastore, hashWriter *kafka.Writer) {
 	defer wg.Done()
 
 	for {
@@ -50,7 +56,7 @@ func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup
 			return
 		}
 
-		ds.SaveForeignQuotationInflux(*fq)
+		ds.SaveForeignQuotationInflux(*fq, hashWriter)
 	}
 
 }

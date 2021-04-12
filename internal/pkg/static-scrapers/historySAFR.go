@@ -10,6 +10,7 @@ import (
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -55,7 +56,7 @@ type (
 
 // WriteHistoricSAFR makes a GET request to fetch the historic data of the SOFR
 // average index and writes it into the redis database.
-func WriteHistoricSAFR(ds models.Datastore) error {
+func WriteHistoricSAFR(ds models.Datastore, hashWriter *kafka.Writer) error {
 	log.Printf("Writing historic SAFR values")
 
 	// Get rss from fed webpage
@@ -109,7 +110,7 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t)
+		ds.SetInterestRate(&t, hashWriter)
 
 	}
 

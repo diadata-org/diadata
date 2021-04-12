@@ -5,7 +5,9 @@ import (
 	"sync"
 
 	pool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -13,9 +15,15 @@ import (
 func main() {
 	poolName := flag.String("type", "CVAULT", "Name of Pool")
 	flag.Parse()
-	ds, err := models.NewDataStore()
+
+	hashWriter, err := kafkaHelper.NewHashWriter("hash-farmingpools", true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	wg := sync.WaitGroup{}
 
+	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
@@ -24,13 +32,13 @@ func main() {
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(2)
-		go handlerate(sRate.RateChannel(), &wg, ds)
+		go handlerate(sRate.RateChannel(), &wg, ds, hashWriter)
 
 		defer wg.Wait()
 	}
 
 }
-func handlerate(c chan *models.FarmingPool, wg *sync.WaitGroup, ds models.Datastore) {
+func handlerate(c chan *models.FarmingPool, wg *sync.WaitGroup, ds models.Datastore, hashWriter *kafka.Writer) {
 	defer wg.Done()
 	// Pull from channel as long as not empty
 	for {
@@ -40,6 +48,6 @@ func handlerate(c chan *models.FarmingPool, wg *sync.WaitGroup, ds models.Datast
 			return
 		}
 		log.Print("Write pool info: ", pr)
-		ds.SetFarmingPool(pr)
+		ds.SetFarmingPool(pr, hashWriter)
 	}
 }

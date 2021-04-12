@@ -174,6 +174,19 @@ func NewSyncWriter(topic int) *kafka.Writer {
 	})
 }
 
+func NewHashWriter(topic string, async bool) (hashWriter *kafka.Writer, err error) {
+	topicNumber, err := GetTopicNumber(topic)
+	if err != nil {
+		return
+	}
+	if async {
+		hashWriter = NewWriter(topicNumber)
+		return
+	}
+	hashWriter = NewSyncWriter(topicNumber)
+	return
+}
+
 func NewReader(topic int) *kafka.Reader {
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:   KafkaConfig.KafkaUrl,

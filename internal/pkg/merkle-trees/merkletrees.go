@@ -149,7 +149,7 @@ func ActivateKafkaChannel(topic string) *KafkaChannel {
 		chanMessage:  make(chan *kafka.Message),
 	}
 
-	log.Info("KafkaReader is built and triggered")
+	log.Infof("KafkaReader for %s is built and triggered", topic)
 	go kc.StartKafkaReader(topic)
 	return kc
 }

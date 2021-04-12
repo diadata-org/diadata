@@ -9,7 +9,9 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -45,9 +47,15 @@ type TradesBlockService struct {
 	BlockDuration   int64
 	currentBlock    *dia.TradesBlock
 	datastore       models.Datastore
+	hashWriter      *kafka.Writer
 }
 
 func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *TradesBlockService {
+	hashWriter, err := kafkaHelper.NewHashWriter("hash-trades", true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	s := &TradesBlockService{
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
@@ -58,6 +66,7 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *Tra
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
 		datastore:       datastore,
+		hashWriter:      hashWriter,
 	}
 	go s.mainLoop()
 	return s
@@ -108,7 +117,6 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
-
 	var ignoreTrade bool
 	baseToken := t.BaseToken()
 	if baseToken != "USD" {
@@ -135,7 +143,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
 	if !ignoreTrade {
-		s.datastore.SaveTradeInflux(&t)
+		s.datastore.SaveTradeInflux(&t, s.hashWriter)
 	}
 
 	if s.currentBlock != nil &&

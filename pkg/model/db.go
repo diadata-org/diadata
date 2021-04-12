@@ -11,6 +11,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,7 +36,7 @@ type Datastore interface {
 	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
-	SaveTradeInflux(t *dia.Trade) error
+	SaveTradeInflux(t *dia.Trade, hashWriter *kafka.Writer) error
 	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
 	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
@@ -67,7 +68,7 @@ type Datastore interface {
 	Sum24HoursExchange(exchange string) (float64, error)
 
 	// Interest rates' methods
-	SetInterestRate(ir *InterestRate) error
+	SetInterestRate(ir *InterestRate, hashWriter *kafka.Writer) error
 	GetInterestRate(symbol, date string) (*InterestRate, error)
 	GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error)
 	GetRatesMeta() (RatesMeta []InterestRateMeta, err error)
@@ -78,7 +79,7 @@ type Datastore interface {
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 
 	// Pool  methods
-	SetFarmingPool(pr *FarmingPool) error
+	SetFarmingPool(pr *FarmingPool, hashWriter *kafka.Writer) error
 	GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error)
 	GetFarmingPools() ([]FarmingPoolType, error)
 
@@ -92,13 +93,13 @@ type Datastore interface {
 	GetDefiProtocols() ([]dia.DefiProtocol, error)
 
 	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
-	SetDefiRateInflux(rate *dia.DefiRate) error
+	SetDefiRateInflux(rate *dia.DefiRate, hashWriter *kafka.Writer) error
 
 	GetDefiStateInflux(time.Time, time.Time, string) ([]dia.DefiProtocolState, error)
-	SetDefiStateInflux(state *dia.DefiProtocolState) error
+	SetDefiStateInflux(state *dia.DefiProtocolState, hashWriter *kafka.Writer) error
 
 	// Foreign quotation methods
-	SaveForeignQuotationInflux(fq ForeignQuotation) error
+	SaveForeignQuotationInflux(fq ForeignQuotation, hashWriter *kafka.Writer) error
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
@@ -371,7 +372,7 @@ func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*
 
 		}
 	} else {
-		errorString = "Empty response in Sum24HoursInflux"
+		errorString = "empty response in Sum24HoursInflux"
 		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 	}
@@ -424,19 +425,19 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Volume value from Database")
+		return retval, errors.New("error parsing volume value from database")
 	}
 	return retval, nil
 }
 
-func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+func (db *DB) SaveTradeInflux(t *dia.Trade, hashWriter *kafka.Writer) error {
 
 	// Send data through kafka for Merkle Audit Trail ---------------------
 	content, err := t.MarshalBinary()
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-trades", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
@@ -609,14 +610,14 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	return retval, nil
 }
 
-func (db *DB) SetFarmingPool(pool *FarmingPool) error {
+func (db *DB) SetFarmingPool(pool *FarmingPool, hashWriter *kafka.Writer) error {
 
 	// Send data through kafka for Merkle Audit Trail ---------------------
 	content, err := pool.MarshalBinary()
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-farmingpools", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
@@ -759,14 +760,14 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 
 }
 
-func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
+func (db *DB) SetDefiRateInflux(rate *dia.DefiRate, hashWriter *kafka.Writer) error {
 
 	// Send data through kafka for Merkle Audit Trail ---------------------
 	content, err := rate.MarshalBinary()
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-lendingrates", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
@@ -828,19 +829,19 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			retval = append(retval, currentRate)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("error parsing Defi Lending Rate from database")
 	}
 	return retval, nil
 }
 
-func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
+func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState, hashWriter *kafka.Writer) error {
 
 	// Send data through kafka for Merkle Audit Trail ---------------------
 	content, err := state.MarshalBinary()
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-lendingstates", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}

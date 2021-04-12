@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -29,35 +30,36 @@ func LoadHistoricRate(rateType string) error {
 }
 
 // WriteHistoricRate writes the historic rate data into the redis database.
-func WriteHistoricRate(ds models.Datastore, rateType string) error {
+func WriteHistoricRate(ds models.Datastore, rateType string, hashWriter *kafka.Writer) error {
+	// TO DO: Add hashing layer for historic data
 
 	switch rateType {
 	case "PRE-ESTER":
-		err := WriteHistoricPreESTER(ds)
+		err := WriteHistoricPreESTER(ds, hashWriter)
 		if err != nil {
 			log.Errorln("Error on writing historic Pre-ESTER data: ", err)
 			return err
 		}
 	case "ESTER":
-		err := WriteHistoricESTER(ds)
+		err := WriteHistoricESTER(ds, hashWriter)
 		if err != nil {
 			log.Errorln("Error on writing historic ESTER data: ", err)
 			return err
 		}
 	case "SOFR":
-		err := WriteHistoricSOFR(ds)
+		err := WriteHistoricSOFR(ds, hashWriter)
 		if err != nil {
 			log.Errorln("Error on writing historic SOFR data: ", err)
 			return err
 		}
 	case "SAFR":
-		err := WriteHistoricSAFR(ds)
+		err := WriteHistoricSAFR(ds, hashWriter)
 		if err != nil {
 			log.Errorln("Error on writing historic SAFR data: ", err)
 			return err
 		}
 	case "SAFR-AVGS":
-		err := WriteHistoricSAFRAvgs(ds)
+		err := WriteHistoricSAFRAvgs(ds, hashWriter)
 		if err != nil {
 			log.Errorln("Error on writing historic SAFR Average data: ", err)
 			return err
@@ -65,7 +67,7 @@ func WriteHistoricRate(ds models.Datastore, rateType string) error {
 	case "SONIA":
 		log.Info("No historic scraper for SONIA")
 	default:
-		err := errors.New("Error: Rate type not recognized")
+		err := errors.New("error: Rate type not recognized")
 		log.Errorln(err)
 		return err
 	}

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/cbergoon/merkletree"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis/v8"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
@@ -199,15 +198,8 @@ func (db *DBAudit) addAuditPoint(pt *clientInfluxdb.Point) {
 // @topic is the category of hashed data in the merkle tree. This list of contents can be
 // 		  found in Kafka.go
 // @content is a marshalled data point of the corresponding category
-func HashingLayer(topic string, content []byte) error {
-	// Determine topic index for kafka writer...
-	topicNumber, err := kafkaHelper.GetTopicNumber(topic)
-	if err != nil {
-		return err
-	}
-	// ...and write into corresponding channel.
-	writer := kafkaHelper.NewSyncWriter(topicNumber)
-	err = writer.WriteMessages(context.Background(),
+func HashingLayer(hashWriter *kafka.Writer, content []byte) error {
+	err := hashWriter.WriteMessages(context.Background(),
 		kafka.Message{
 			Key:   []byte{},
 			Value: content,

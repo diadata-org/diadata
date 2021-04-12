@@ -13,6 +13,7 @@ import (
 	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
+	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,7 +35,7 @@ func getKeyInterestRate(symbol string, date time.Time) string {
 
 // SetInterestRate writes the interest rate struct ir into the Redis database
 // and writes rate type into a set of all available rates (if not done yet).
-func (db *DB) SetInterestRate(ir *InterestRate) error {
+func (db *DB) SetInterestRate(ir *InterestRate, hashWriter *kafka.Writer) error {
 
 	if db.redisClient == nil {
 		return nil
@@ -59,7 +60,7 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 	if err != nil {
 		log.Error(err)
 	}
-	err = HashingLayer("hash-interestrates", content)
+	err = HashingLayer(hashWriter, content)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
