@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	ws "github.com/gorilla/websocket"
 	"strconv"
 	"strings"
@@ -11,7 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 // API base url
@@ -127,7 +126,7 @@ func (s *BitBayScraper) subscribe() {
 		log.Println("subscribing", a)
 
 		if err := s.wsClient.WriteJSON(a); err != nil {
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 		}
 
 	}
