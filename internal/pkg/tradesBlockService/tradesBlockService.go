@@ -9,7 +9,6 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
@@ -50,11 +49,7 @@ type TradesBlockService struct {
 	hashWriter      *kafka.Writer
 }
 
-func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *TradesBlockService {
-	hashWriter, err := kafkaHelper.NewHashWriter("hash-trades", true)
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hashWriter *kafka.Writer) *TradesBlockService {
 
 	s := &TradesBlockService{
 		shutdown:        make(chan nothing),

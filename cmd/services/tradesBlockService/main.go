@@ -41,12 +41,18 @@ func main() {
 	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
 	defer r.Close()
 
+	hashWriter, err := kafkaHelper.NewHashWriter("hash-trades", true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer hashWriter.Close()
+
 	s, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
 
-	tradesBlockService := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds)
+	tradesBlockService := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds, hashWriter)
 
 	wg := sync.WaitGroup{}
 	go handleBlocks(tradesBlockService, &wg, w)

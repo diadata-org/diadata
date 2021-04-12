@@ -50,10 +50,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer hashWriterRates.Close()
+
 	hashWriterStates, err := kafkaHelper.NewHashWriter("hash-lendingstates", true)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer hashWriterStates.Close()
 
 	ds, err := models.NewDataStore()
 	if err != nil {

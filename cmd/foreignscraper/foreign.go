@@ -20,6 +20,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer hashWriter.Close()
+
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)

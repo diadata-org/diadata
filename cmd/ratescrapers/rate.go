@@ -38,6 +38,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer hashWriter.Close()
+
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
 	if err != nil {

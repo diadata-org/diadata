@@ -133,31 +133,31 @@ services:
       - EXEC_MODE=production
 
     
-  gnosiscollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Gnosis
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production  
+  # gnosiscollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Gnosis
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production  
 
-  curveficollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Curvefi
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # curveficollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Curvefi
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   # kucoincollector:
   #   depends_on: [genericcollector]
@@ -239,31 +239,31 @@ services:
     environment:
       - EXEC_MODE=production
 
-  balancercollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Balancer
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # balancercollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Balancer
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
-  dforcecollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Dforce
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # dforcecollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Dforce
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   lbankcollector:
     depends_on: [genericcollector]
