@@ -111,6 +111,19 @@ func (s *BitBayScraper) getMarkets() (markets []string) {
 	return
 }
 
+func (s *BitBayScraper) ping() {
+
+	a := &BitBaySubscribe{
+		Action: "ping",
+	}
+
+	log.Infoln("Ping", a)
+
+	if err := s.wsClient.WriteJSON(a); err != nil {
+		log.Println(err.Error())
+	}
+}
+
 func (s *BitBayScraper) subscribe() {
 
 	markets := s.getMarkets()
@@ -136,6 +149,16 @@ func (s *BitBayScraper) subscribe() {
 func (s *BitBayScraper) mainLoop() {
 
 	s.subscribe()
+
+	pingTimer := time.NewTicker(10 * time.Second)
+	go func() {
+		for {
+			select {
+			case <-pingTimer.C:
+				go s.ping()
+			}
+		}
+	}()
 
 	for true {
 
