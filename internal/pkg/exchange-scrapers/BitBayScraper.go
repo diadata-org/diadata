@@ -3,11 +3,12 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	ws "github.com/gorilla/websocket"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -282,7 +283,31 @@ func (s *BitBayScraper) Channel() chan *dia.Trade {
 
 //FetchAvailablePairs returns a list with all available trade pairs
 func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New(s.exchangeName + "Scraper:FetchAvailablePairs() not implemented. No public API available")
+	type items struct {
+		Status  string                 `json:"status"`
+		Markets map[string]interface{} `json:"items"`
+	}
+	var bitbayResponse items
+
+	data, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &bitbayResponse)
+	if err != nil {
+		return
+	}
+	pairmap := bitbayResponse.Markets
+	for key := range pairmap {
+		pairslice := strings.Split(key, "-")
+		pairs = append(pairs, dia.Pair{
+			Symbol:      pairslice[0],
+			ForeignName: pairslice[0] + pairslice[1],
+			Exchange:    s.exchangeName,
+			Ignore:      false,
+		})
+	}
+	return pairs, err
 }
 
 // Error returns an error when the channel Channel() is closed

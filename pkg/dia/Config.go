@@ -58,6 +58,7 @@ func Exchanges() []string {
 		GnosisExchange,
 		CurveFIExchange,
 		BinanceExchange,
+		BitBayExchange,
 		BitfinexExchange,
 		BittrexExchange,
 		CoinBaseExchange,
