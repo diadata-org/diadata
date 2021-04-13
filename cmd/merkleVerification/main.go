@@ -62,7 +62,7 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if err != nil {
 			log.Fatalf("could not unmarshal storage tree for topic %s", topic)
 		}
-		tstamp, _ := time.Parse(time.RFC3339, val[0].(string))
+		tstamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
 
 		// Verify buckets in pool
 		verif, err := merklehashing.VerifyBuckets(tree, topic, ds)
@@ -194,7 +194,7 @@ func mainOld() {
 					for _, val := range storageTreesToVerify {
 						tree := merkletree.MerkleTree{}
 						err = json.Unmarshal([]byte(val[4].(string)), &tree)
-						tstamp, _ := time.Parse(time.RFC3339, val[0].(string))
+						tstamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
 						go verifyContent(topicMap[key], strconv.FormatInt(tstamp.UnixNano(), 10), ds, &wg)
 					}
 

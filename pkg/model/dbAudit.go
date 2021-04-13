@@ -275,7 +275,7 @@ func (db *DBAudit) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string
 	if err != nil {
 		log.Errorln("SaveRate: ", err)
 	}
-	log.Infof("Batch written for topic: %s\n", topic)
+	log.Infof("Batch written for topic: %s", topic)
 	return err
 }
 
@@ -348,7 +348,7 @@ func (db *DBAudit) GetLastID(topic string) (string, error) {
 	}
 	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 		val := res[0].Series[0].Values[0]
-		tstamp, _ := time.Parse(time.RFC3339, val[0].(string))
+		tstamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
 		return strconv.FormatInt(tstamp.UnixNano(), 10), nil
 	}
 	return "0", errors.New("empty response")
@@ -396,7 +396,7 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 	fields := map[string]interface{}{
 		"value":         string(marshTree),
 		"children":      string(childrenData),
-		"lastTimestamp": strconv.Itoa(int(lastTimestamp.Unix())),
+		"lastTimestamp": strconv.Itoa(int(lastTimestamp.UnixNano())),
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDBMerkleTable, tags, fields, time.Now())
 	if err != nil {
@@ -409,9 +409,9 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 		log.Errorln("SaveRate: ", err)
 	}
 	if topic == "" {
-		log.Infof("Daily tree at level %s written \n", level)
+		log.Infof("Daily tree at level %s written", level)
 	} else {
-		log.Infof("Daily tree at level %s for topic %s written \n", level, topic)
+		log.Infof("Daily tree at level %s for topic %s written", level, topic)
 	}
 	return err
 }
@@ -441,7 +441,7 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 // It is important to notice that this just facilitates the retrieval. The map can be reconstructed
 // by id information stored in influx. Hence, the system does not rely on correct function/constant.
 func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
-	log.Infof("Set pool IDs for %s: %v\n", topic, ID)
+	log.Infof("Set pool IDs for %s: %v", topic, ID)
 	poolMap := make(map[string]interface{})
 	for _, num := range children {
 		poolMap[num] = int(ID)

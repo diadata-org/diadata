@@ -317,7 +317,7 @@ func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree
 	return
 }
 
-// DailyTreeTopic retrieves all merkle trees corresponding to @topic from influx and
+// DailyTreeTopic retrieves all storage trees corresponding to @topic from influx and
 // hashes them in a merkle tree. The tree's (influx-)timestamps are ranging until at most @timeFinal.
 // The root hash of the resulting merkle tree is returned.
 // This functionality implements Level2 from the Merkle Documentation.
@@ -330,12 +330,13 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	if err != nil {
 		log.Error(err)
 	}
-	fmt.Println("last timestamp retrieved")
+	log.Infof("last timestamp retrieved for %s: %v", topic, timeInit.UnixNano())
 	// Get merkle trees from storage table and build them into a merkle tree.
 	vals, err := ds.GetStorageTreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
 		log.Error(err)
 	}
+	fmt.Println("len vals: ", len(vals))
 	var merkleTrees []merkletree.MerkleTree
 	var lastTimestamp time.Time
 	var IDs []string
@@ -353,7 +354,7 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 			}
 			merkleTrees = append(merkleTrees, auxTree)
 			// Find last timestamp. It will be the initial time for the next iteration.
-			tstamp, _ := time.Parse(time.RFC3339, vals[i][0].(string))
+			tstamp, _ := time.Parse(time.RFC3339Nano, vals[i][0].(string))
 			if tstamp.After(lastTimestamp) {
 				lastTimestamp = tstamp
 			}
@@ -372,8 +373,6 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 		if err != nil {
 			log.Error(err)
 		}
-		// !!! TO DO: Question/Problem with timing: how to prevent that a new tree with content is written in between
-		// line 193 and this save call?
 		err = ds.SetStorageTreeInflux(*nilTree, topic)
 		if err != nil {
 			log.Error("error saving tree to influx: ", err)
@@ -386,6 +385,12 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 			log.Error(err)
 		}
 		IDs = append(IDs, id)
+		// Question/Problem with timing: how to prevent that a new tree with content is written
+		// in between line 193 and this save call?
+		// Solution: We set lastTimestamp as timeFinal. This is the end time of the above query
+		// for storage trees, so next query will begin there and include content that was possibly
+		// written in between.
+		lastTimestamp = timeFinal
 	}
 	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
 	if err != nil {
