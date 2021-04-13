@@ -3,12 +3,14 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	ws "github.com/gorilla/websocket"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 // API base url
@@ -23,8 +25,22 @@ const apiDelay = time.Second
 // Seconds to wait for scrappers to be ready
 const waitForScrapers = 10
 
+var BitBaySocketURL string = "wss://api.bitbay.net/websocket/"
+
+type BitBaySubscribe struct {
+	Action string `json:"action"`
+	Module string `json:"module"`
+	Path   string `json:"path"`
+}
+
+//{
+//"action": "subscribe-public",
+//"module": "trading",
+//"path": "ticker/{market_code}"
+//}
+
 //TradeInfo as received from API response
-type TradeInfo struct {
+type BitBayTrade struct {
 	Date            int64   `json:"date"`
 	Price           float64 `json:"price"`
 	TransactionType string  `json:"type"`
@@ -35,7 +51,9 @@ type TradeInfo struct {
 // BitBayScraper provides  methods needed to get Trade information from BitBay
 type BitBayScraper struct {
 	// control flag for main loop
-	run bool
+	run      bool
+	wsClient *ws.Conn
+
 	// signaling channels for session initialization and finishing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -45,7 +63,7 @@ type BitBayScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers []*BitBayPairScraper
+	pairScrapers map[string]*BitBayPairScraper
 	// exchange name
 	exchangeName string
 	// channel to send trades
@@ -57,92 +75,156 @@ func NewBitBayScraper(exchange dia.Exchange) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		pairScrapers: make([]*BitBayPairScraper, 0),
+		pairScrapers: make(map[string]*BitBayPairScraper),
+
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		closed:       false,
 	}
+
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(BitBaySocketURL, nil)
+
+	if err != nil {
+		println(err.Error())
+	}
+
+	s.wsClient = SwConn
+
 	go s.mainLoop()
+
 	return s
+}
+
+func (s *BitBayScraper) getMarkets() (markets []string) {
+	var bbm BitBayMarkets
+	b, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	if err != nil {
+		log.Errorln("Error Getting markets", err)
+	}
+	json.Unmarshal(b, &bbm)
+
+	for key, _ := range bbm.Items {
+		markets = append(markets, key)
+	}
+	return
+}
+
+func (s *BitBayScraper) ping() {
+
+	a := &BitBaySubscribe{
+		Action: "ping",
+	}
+
+	log.Infoln("Ping", a)
+
+	if err := s.wsClient.WriteJSON(a); err != nil {
+		log.Println(err.Error())
+	}
+}
+
+func (s *BitBayScraper) subscribe() {
+
+	markets := s.getMarkets()
+
+	for _, market := range markets {
+
+		a := &BitBaySubscribe{
+			Action: "subscribe-public",
+			Module: "trading",
+			Path:   "transactions/" + market,
+		}
+
+		log.Println("subscribing", a)
+
+		if err := s.wsClient.WriteJSON(a); err != nil {
+			log.Println(err.Error())
+		}
+
+	}
 }
 
 // runs in a goroutine until s is closed
 func (s *BitBayScraper) mainLoop() {
-	// wait up to 10 [s] for scrapers
-	waitForScrapers := 10
-	s.run = false
-	s.error = errors.New(s.exchangeName + "Scraper: No pair to scrap provided")
-	log.Info("Waiting for pairs")
-	for waitForScrapers > 0 {
-		log.Info(".")
-		if len(s.pairScrapers) > 0 {
-			// If at least one scraper is ready we can start querying the API
-			log.Info("Pair availables")
-			s.error = nil
-			s.run = true
-			break
-		}
-		time.Sleep(time.Second)
-		waitForScrapers--
-	}
-	for s.run {
-		for _, pair := range s.pairScrapers {
-			// time.Sleep(apiDelay)
-			trades, err := fetchTrades(pair.apiEndPoint, strconv.Itoa(pair.latestTrade))
-			if err == nil {
-				for _, trade := range trades {
-					i, err := strconv.Atoi(trade.Tid)
-					if err == nil {
-						if i > pair.latestTrade {
-							pair.latestTrade = i
-							t := &dia.Trade{
-								Symbol:         pair.pair.Symbol,
-								Pair:           pair.apiEndPoint,
-								Price:          trade.Price,
-								Volume:         trade.Amount,
-								Time:           time.Unix(trade.Date, 0),
-								ForeignTradeID: trade.Tid,
-								Source:         s.exchangeName,
-							}
-							log.Info("got trade: ", t)
-							pair.parent.chanTrades <- t
-						}
-					} else {
-						log.Error(s.exchangeName + "Scrapper:Error converting trade id:" + trade.Tid + " into int")
-					}
-				}
-			} else {
-				log.Error("Error fetching pairs:", err)
+
+	s.subscribe()
+
+	pingTimer := time.NewTicker(10 * time.Second)
+	go func() {
+		for {
+			select {
+			case <-pingTimer.C:
+				go s.ping()
 			}
 		}
-		time.Sleep(1 * time.Second)
+	}()
+
+	for true {
+
+		var response BitBayWSResponse
+
+		if s.error = s.wsClient.ReadJSON(&response); s.error != nil {
+			log.Error(s.error.Error())
+			break
+		}
+
+		//b,_ := json.Marshal(message)
+		//
+		//log.Infoln("Message",string(b[:]))
+
+		log.Infoln("message", response)
+
+		timestamp, err := strconv.ParseInt(response.Timestamp, 10, 64)
+		if err != nil {
+			log.Error("Error Parsing time", err)
+		}
+
+		pair := strings.TrimPrefix(response.Topic, "trading/transactions/")
+		pair = strings.Replace(pair, "-", "", -1)
+		pair = strings.ToUpper(pair)
+
+		ps, ok := s.pairScrapers[pair]
+		if !ok {
+			log.Error("unknown pair: " + pair)
+			continue
+		}
+
+		for _, trade := range response.Message.Transactions {
+
+			f64Price, err := strconv.ParseFloat(trade.R, 64)
+			if err != nil {
+				log.Error("error parsing price: " + trade.R)
+				continue
+			}
+
+			f64Volume, err := strconv.ParseFloat(trade.A, 64)
+			if err != nil {
+				log.Error("error parsing volume: " + trade.A)
+				continue
+			}
+
+			if trade.Ty == "Sell" {
+				f64Volume = -f64Volume
+			}
+
+			t := &dia.Trade{
+				Symbol:         ps.Pair().Symbol,
+				Pair:           pair,
+				Price:          f64Price,
+				Volume:         f64Volume,
+				Time:           time.Unix(timestamp/1e3, 0),
+				ForeignTradeID: trade.ID,
+				Source:         s.exchangeName,
+			}
+			log.Info("got trade: ", t)
+			ps.parent.chanTrades <- t
+		}
 	}
 	if s.error == nil {
 		s.error = errors.New(s.exchangeName + "Scraper: terminated by Close()")
 	}
 	s.cleanup(s.error)
-}
-
-// retrieve pair data
-func fetchTrades(pairs string, latestTrade string) ([]TradeInfo, error) {
-
-	log.Info("requesting:" + apiURL + pairs + apiRequest + "?since=" + latestTrade)
-
-	body, err := utils.GetRequest(apiURL + pairs + apiRequest + "?since=" + latestTrade)
-	type APIResponse []TradeInfo
-	var ar APIResponse
-
-	if err != nil {
-		return ar, err
-	}
-
-	jsonErr := json.Unmarshal(body, &ar)
-	if jsonErr != nil {
-		log.Error("Error unmarshalling:", jsonErr)
-		return nil, jsonErr
-	}
-	return ar, err
 }
 
 // Close channels for shutdown
@@ -181,7 +263,7 @@ func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		apiEndPoint: pair.ForeignName,
 		latestTrade: 0,
 	}
-	s.pairScrapers = append(s.pairScrapers, ps)
+	s.pairScrapers[pair.ForeignName] = ps
 	return ps, nil
 }
 
@@ -237,4 +319,41 @@ func (ps *BitBayPairScraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *BitBayPairScraper) Pair() dia.Pair {
 	return ps.pair
+}
+
+type BitBayMarkets struct {
+	Status string                  `json:"status"`
+	Items  map[string]BitBayMarket `json:"items"`
+}
+
+type BitBayMarket struct {
+	Code  string `json:"code"`
+	First struct {
+		Currency string `json:"currency"`
+		MinOffer string `json:"minOffer"`
+		Scale    int    `json:"scale"`
+	} `json:"first"`
+	Second struct {
+		Currency string `json:"currency"`
+		MinOffer string `json:"minOffer"`
+		Scale    int    `json:"scale"`
+	} `json:"second"`
+}
+
+type BitBayWSResponse struct {
+	Action    string  `json:"action"`
+	Message   Message `json:"message"`
+	SeqNo     int     `json:"seqNo"`
+	Timestamp string  `json:"timestamp"`
+	Topic     string  `json:"topic"`
+}
+type BitBayTransaction struct {
+	A  string `json:"a"`
+	ID string `json:"id"`
+	R  string `json:"r"`
+	T  string `json:"t"`
+	Ty string `json:"ty"`
+}
+type Message struct {
+	Transactions []BitBayTransaction `json:"transactions"`
 }
