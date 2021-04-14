@@ -527,7 +527,7 @@ func (db *DBAudit) GetLastTimestamp(topic, level string) (time.Time, error) {
 		log.Error(err)
 		return time.Time{}, err
 	}
-	return time.Unix(i, 0), nil
+	return time.Unix(0, i), nil
 }
 
 // GetLastIDMerkle retrieves the highest current id for @topic (if given) and @level from the merkle table
