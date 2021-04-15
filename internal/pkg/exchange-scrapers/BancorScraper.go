@@ -3,174 +3,83 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
-	"strconv"
-	"sync"
-	"time"
-
+	ConverterRegistry "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/BancorNetwork"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeFour"
+	ConvertertypeOne "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeOne"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeThree"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeZero"
+	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jjjjpppp/quoinex-go-client/v2"
+	"math"
+	"math/big"
+	"sync"
+	"time"
 )
 
-const (
-	// Set delay to one day and divide by number of pairs. In this way, we can
-	// use 24h volume as averaged trade volume
-	BancorApiDelay = 60 * 60 * 24
-)
 
-type BancorTicker struct {
-	Data struct {
-		Name            string  `json:"name"`
-		Symbol          string  `json:"symbol"`
-		Code            string  `json:"code"`
-		Decimals        int     `json:"decimals"`
-		TotalSupply     string  `json:"totalSupply"`
-		TotalSupplyD    string  `json:"totalSupplyD"`
-		Volume24H       string  `json:"volume24h"`
-		Volume24HD      float64 `json:"volume24hD"`
-		DisplayCurrency string  `json:"displayCurrency"`
-		Price24H        string  `json:"price24h"`
-		Price           float64 `json:"price"`
-	} `json:"data"`
+
+type BancorPool struct {
+	Reserves []struct {
+		DltID   string `json:"dlt_id"`
+		Symbol  string `json:"symbol"`
+		Name    string `json:"name"`
+		Balance struct {
+			Usd string `json:"usd"`
+		} `json:"balance"`
+		Weight int `json:"weight"`
+		Price  struct {
+			Usd string `json:"usd"`
+		} `json:"price"`
+		Price24HAgo struct {
+			Usd string `json:"usd"`
+		} `json:"price_24h_ago"`
+		Volume24H struct {
+			Usd  string `json:"usd"`
+			Base string `json:"base"`
+		} `json:"volume_24h"`
+	} `json:"reserves"`
+	DltType        string `json:"dlt_type"`
+	DltID          string `json:"dlt_id"`
+	Type           int    `json:"type"`
+	Version        int    `json:"version"`
+	Symbol         string `json:"symbol"`
+	Name           string `json:"name"`
+	Supply         string `json:"supply"`
+	ConverterDltID string `json:"converter_dlt_id"`
+	ConversionFee  string `json:"conversion_fee"`
+	Liquidity      struct {
+		Usd string `json:"usd"`
+	} `json:"liquidity"`
+	Volume24H struct {
+		Usd string `json:"usd"`
+	} `json:"volume_24h"`
+	Fees24H struct {
+		Usd string `json:"usd"`
+	} `json:"fees_24h"`
 }
 
-type BancorAssetPairs struct {
-	Data struct {
-		ETH     string `json:"ETH"`
-		EOS     string `json:"EOS"`
-		STX     string `json:"STX"`
-		BNB     string `json:"BNB"`
-		BAT     string `json:"BAT"`
-		OMG     string `json:"OMG"`
-		DICE    string `json:"DICE"`
-		BLACK   string `json:"BLACK"`
-		IQ      string `json:"IQ"`
-		MANA    string `json:"MANA"`
-		SRN     string `json:"SRN"`
-		LOC     string `json:"LOC"`
-		MKR     string `json:"MKR"`
-		ENJ     string `json:"ENJ"`
-		SNT     string `json:"SNT"`
-		GTO     string `json:"GTO"`
-		HORUS   string `json:"HORUS"`
-		POWR    string `json:"POWR"`
-		EMCO    string `json:"EMCO"`
-		KNC     string `json:"KNC"`
-		XDCE    string `json:"XDCE"`
-		XPAT    string `json:"XPAT"`
-		PLR     string `json:"PLR"`
-		EPRA    string `json:"EPRA"`
-		AMN     string `json:"AMN"`
-		MEV     string `json:"MEV"`
-		MEETONE string `json:"MEETONE"`
-		CEEK    string `json:"CEEK"`
-		MYB     string `json:"MYB"`
-		TKN     string `json:"TKN"`
-		X8X     string `json:"X8X"`
-		SPD     string `json:"SPD"`
-		XNK     string `json:"XNK"`
-		AGRI    string `json:"AGRI"`
-		REAL    string `json:"REAL"`
-		RBLX    string `json:"RBLX"`
-		ONG     string `json:"ONG"`
-		ZIPT    string `json:"ZIPT"`
-		CAN     string `json:"CAN"`
-		WAND    string `json:"WAND"`
-		DTRC    string `json:"DTRC"`
-		OCT     string `json:"OCT"`
-		VEE     string `json:"VEE"`
-		POA20   string `json:"POA20"`
-		REQ     string `json:"REQ"`
-		MFT     string `json:"MFT"`
-		RVT     string `json:"RVT"`
-		ELF     string `json:"ELF"`
-		RDN     string `json:"RDN"`
-		ANT     string `json:"ANT"`
-		WINGS   string `json:"WINGS"`
-		EURS    string `json:"EURS"`
-		GNO     string `json:"GNO"`
-		AID     string `json:"AID"`
-		TNS     string `json:"TNS"`
-		TAEL    string `json:"TAEL"`
-		GRID    string `json:"GRID"`
-		ZINC    string `json:"ZINC"`
-		HVT     string `json:"HVT"`
-		SVD     string `json:"SVD"`
-		MRG     string `json:"MRG"`
-		LOCI    string `json:"LOCI"`
-		BETR    string `json:"BETR"`
-		LDC     string `json:"LDC"`
-		MFG     string `json:"MFG"`
-		AUC     string `json:"AUC"`
-		BOXX    string `json:"BOXX"`
-		DRT     string `json:"DRT"`
-		WLK     string `json:"WLK"`
-		RLC     string `json:"RLC"`
-		RCN     string `json:"RCN"`
-		DATA    string `json:"DATA"`
-		MRPH    string `json:"MRPH"`
-		IND     string `json:"IND"`
-		CAT     string `json:"CAT"`
-		LUME    string `json:"LUME"`
-		VIB     string `json:"VIB"`
-		SCL     string `json:"SCL"`
-		REM     string `json:"REM"`
-		AIX     string `json:"AIX"`
-		TBX     string `json:"TBX"`
-		STAC    string `json:"STAC"`
-		ABX     string `json:"ABX"`
-		COT     string `json:"COT"`
-		PEOS    string `json:"PEOS"`
-		FTX     string `json:"FTX"`
-		ZOS     string `json:"ZOS"`
-		BCS     string `json:"BCS"`
-		REF     string `json:"REF"`
-		J8T     string `json:"J8T"`
-		FLIXX   string `json:"FLIXX"`
-		EQUA    string `json:"EQUA"`
-		MNTP    string `json:"MNTP"`
-		MTL     string `json:"MTL"`
-		MDT     string `json:"MDT"`
-		SXL     string `json:"SXL"`
-		XBP     string `json:"XBP"`
-		SAN     string `json:"SAN"`
-		UP      string `json:"UP"`
-		DAPP    string `json:"DAPP"`
-		EOSDT   string `json:"EOSDT"`
-		FINX    string `json:"FINX"`
-		EMT     string `json:"EMT"`
-		NUT     string `json:"NUT"`
-		EFOOD   string `json:"EFOOD"`
-		HEDG    string `json:"HEDG"`
-		PIXEOS  string `json:"PIXEOS"`
-		CHEX    string `json:"CHEX"`
-		USDQ    string `json:"USDQ"`
-		QDAO    string `json:"QDAO"`
-		ELET    string `json:"ELET"`
-		AMPL    string `json:"AMPL"`
-		USDB    string `json:"USDB"`
-		SENSE   string `json:"SENSE"`
-		USDT    string `json:"USDT"`
-		NMR     string `json:"NMR"`
-		MET     string `json:"MET"`
-		CUSD    string `json:"CUSD"`
-		UBT     string `json:"UBT"`
-		ANK     string `json:"ANK"`
-		DAI     string `json:"DAI"`
-		GRIG    string `json:"GRIG"`
-		UPT     string `json:"UPT"`
-		RPL     string `json:"RPL"`
-		PBTC    string `json:"PBTC"`
-		JRT     string `json:"JRT"`
-		STM     string `json:"STM"`
-		INVOX   string `json:"INVOX"`
-		XRT     string `json:"XRT"`
-	} `json:"data"`
+type BancorPools struct {
+	Data      []BancorPool `json:"data"`
+	Timestamp struct {
+		Ethereum struct {
+			Block     int   `json:"block"`
+			Timestamp int64 `json:"timestamp"`
+		} `json:"ethereum"`
+	} `json:"timestamp"`
 }
 
 type BancorScraper struct {
-	client       *quoinex.Client
+	client *quoinex.Client
+
+	WsClient   *ethclient.Client
+	RestClient *ethclient.Client
+
 	exchangeName string
 
 	// channels to signal events
@@ -189,8 +98,23 @@ type BancorScraper struct {
 }
 
 func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
+	var wsClient, restClient *ethclient.Client
+
+	wsClient, err := ethclient.Dial(wsDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	restClient, err = ethclient.Dial(restDial)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
 	scraper := &BancorScraper{
 		exchangeName:   exchange.Name,
+		WsClient:       wsClient,
+		RestClient:     restClient,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -203,57 +127,142 @@ func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
 	return scraper
 }
 
+func (scraper *BancorScraper) GetpoolAddress() {
+	// Get All Anchors
+
+	converTerRegistryAddress := common.HexToAddress("0xC0205e203F423Bcd8B2a4d6f8C8A154b0Aa60F19")
+
+	converter, err := ConverterRegistry.NewConverterRegistryCaller(converTerRegistryAddress, scraper.RestClient)
+	if err != nil {
+		log.Errorln("Error Getting Anchors", err)
+	}
+
+	_, err = converter.GetAnchors(&bind.CallOpts{})
+	if err != nil {
+		log.Errorln("Error Getting Anchors", err)
+	}
+
+}
+
+func (scraper *BancorScraper) GetConversion() (chan *BancorNetwork.BancorNetworkConversion, error) {
+
+	sink := make(chan *BancorNetwork.BancorNetworkConversion)
+
+	var conversionFiltererContract *BancorNetwork.BancorNetworkFilterer
+
+	address := common.HexToAddress("0x2F9EC37d6CcFFf1caB21733BdaDEdE11c823cCB0") // bancor Network
+	conversionFiltererContract, err := BancorNetwork.NewBancorNetworkFilterer(address, scraper.WsClient)
+	if err != nil {
+		return nil, nil
+	}
+
+	subs, err := conversionFiltererContract.WatchConversion(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{}, []common.Address{})
+	if err != nil {
+		log.Error("error in get swaps channel: ", err)
+	}
+	log.Infoln("Subscribed", subs)
+
+	return sink, nil
+
+}
+
+// normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
+func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkConversion) (normalizedSwap UniswapSwap, err error) {
+
+	fromToken, err := uniswapcontract.NewIERC20(swap.FromToken, scrapper.RestClient)
+	if err != nil {
+ 		return
+
+	}
+	toToken, err := uniswapcontract.NewIERC20(swap.ToToken, scrapper.RestClient)
+	if err != nil {
+		return
+	}
+
+	fromTokenDecimal, err := fromToken.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	toTokenDecimal, err := toToken.Decimals(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	decimals0 := int(fromTokenDecimal)
+	decimals1 := int(toTokenDecimal)
+	amount0In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.FromAmount), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount0Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.FromAmount), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount1In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.ToAmount), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	amount1Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.ToAmount), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+
+	normalizedSwap = UniswapSwap{
+		ID:         swap.Raw.TxHash.Hex(),
+		Timestamp:  time.Now().Unix(),
+		Amount0In:  amount0In,
+		Amount0Out: amount0Out,
+		Amount1In:  amount1In,
+		Amount1Out: amount1Out,
+	}
+	return
+}
+
+func (scrapper *BancorScraper) getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
+	if swap.Amount0In == float64(0) {
+		volume = swap.Amount0Out
+		price = swap.Amount1In / swap.Amount0Out
+		return
+	}
+
+	volume = -swap.Amount0In
+	price = swap.Amount1Out / swap.Amount0In
+	return
+}
+
 func (scraper *BancorScraper) mainLoop() {
-	scraper.run = true
-	pairs, _ := scraper.FetchAvailablePairs()
-	numPairs := len(pairs)
-	for scraper.run {
-		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("bancor: No pairs to scrap provided")
-			log.Error(scraper.error.Error())
-			break
-		}
-		for pair, pairScraper := range scraper.pairScrapers {
-			// Sleep such that each pair is scraped once per day
-			time.Sleep(time.Duration(BancorApiDelay/numPairs) * time.Second)
 
-			var ticker BancorTicker
-			tickerData, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/" + pairScraper.pair.Symbol + "/ticker?fromCurrencyCode=BNT")
+	scraper.GetpoolAddress()
+
+	sink, err := scraper.GetConversion()
+	if err != nil {
+		log.Errorln("Error GetConversion", err)
+	}
+	
+	go func() {
+		for {
+
+			rawSwap, _ := <-sink
+
+			var address []common.Address
+			swap, err := scraper.normalizeSwap(rawSwap)
+			if err!=nil{
+				log.Error("error normalizeSwap: ", err)
+
+			}
+			price, volume, err := scraper.getSwapData(swap)
 			if err != nil {
-				log.Error("Error getting ticker: ", err)
+				log.Error("error getting swap data: ", err)
 				continue
 			}
-			err = json.Unmarshal(tickerData, &ticker)
-			if err != nil {
-				log.Error("Error unmarshalling ticker: ", err)
-				continue
-			}
 
-			price, err := strconv.ParseFloat(ticker.Data.Price24H, 64)
-			if err != nil {
-				log.Error("error parsing price24H: ", err)
-			}
+			address = append(address, rawSwap.FromToken)
+			address = append(address, rawSwap.ToToken)
 
-			// Skip pair where price or volume is 0
-			if ticker.Data.Volume24HD == 0 || price == 0 {
-				log.Error("Price or Volume 0")
-				break
-			}
+			pair := scraper.GetPair(address)
 
 			trade := &dia.Trade{
-				Symbol:         pairScraper.pair.Symbol,
-				Pair:           pair,
+				Symbol:         pair.Symbol,
+				Pair:           pair.ForeignName,
 				Price:          price,
-				Volume:         ticker.Data.Volume24HD,
+				Volume:         volume,
 				Time:           time.Now(),
-				ForeignTradeID: "",
+				ForeignTradeID: rawSwap.Raw.TxHash.String(),
 				Source:         scraper.exchangeName,
 			}
 			log.Info("Got Trade: ", trade)
 
-			pairScraper.parent.chanTrades <- trade
+			scraper.chanTrades <- trade
+
 		}
-	}
+	}()
 	if scraper.error == nil {
 		scraper.error = errors.New("Main loop terminated by Close().")
 	}
@@ -264,38 +273,220 @@ func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
 
+func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {
+
+	contract, err := ConverterTypeZero.NewConverterTypeZeroCaller(address, scraper.RestClient)
+	if err != nil {
+		return
+	}
+
+	tokenCount, err := contract.ConnectorTokenCount(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	if tokenCount == 2 {
+		token1, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(0))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token1)
+		token2, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(1))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token2)
+
+	}
+
+	return
+
+}
+
+func (scraper *BancorScraper) ConverterTypeOne(address common.Address) (tokenAddress []common.Address, err error) {
+
+	contract, err := ConvertertypeOne.NewConvertertypeOne(address, scraper.RestClient)
+	if err != nil {
+		return
+	}
+
+	tokenCount, err := contract.ConnectorTokenCount(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	log.Println("tokenCount", tokenCount)
+
+	if tokenCount == 2 {
+		token1, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(0))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token1)
+		token2, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(1))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token2)
+
+	}
+
+	return
+
+}
+
+func (scraper *BancorScraper) ConverterTypeThree(address common.Address) (tokenAddress []common.Address, err error) {
+
+	contract, err := ConverterTypeThree.NewConverterTypeThree(address, scraper.RestClient)
+	if err != nil {
+		return
+	}
+
+	tokenCount, err := contract.ConnectorTokenCount(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	log.Println("tokenCount", tokenCount)
+
+	if tokenCount == 2 {
+		token1, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(0))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token1)
+		token2, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(1))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token2)
+
+	}
+
+	return
+
+}
+
+func (scraper *BancorScraper) ConverterTypeFour(address common.Address) (tokenAddress []common.Address, err error) {
+
+	contract, err := ConverterTypeFour.NewConverterTypeFour(address, scraper.RestClient)
+	if err != nil {
+		return
+	}
+
+	tokenCount, err := contract.ConnectorTokenCount(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	log.Println("tokenCount", tokenCount)
+
+	if tokenCount == 2 {
+		token1, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(0))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token1)
+		token2, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(1))
+		if err != nil {
+			log.Println("Error", err)
+		}
+		tokenAddress = append(tokenAddress, token2)
+
+	}
+
+	return
+
+}
+
 func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	assets, err := scraper.readAssets()
+	pools, err := scraper.readPools()
 	if err != nil {
 		log.Error("Couldn't obtain Bancor product ids:", err)
 	}
-	v := reflect.ValueOf(assets.Data)
-	typeOfS := v.Type()
-	pairs = make([]dia.Pair, v.NumField())
+	for _, pool := range pools {
+		var address []common.Address
 
-	for i := 0; i < v.NumField(); i++ {
-		pairs = append(pairs, dia.Pair{
-			Symbol:      typeOfS.Field(i).Name,
-			ForeignName: typeOfS.Field(i).Name + "-" + v.Field(i).Interface().(string),
-			Exchange:    scraper.exchangeName,
-		})
+		switch pool.Type {
+		case 0:
+			{
+				address, err = scraper.ConverterTypeZero(common.HexToAddress(pool.ConverterDltID))
+				if err != nil {
+					log.Errorln("Error getting Address", err)
+				}
+			}
+		case 1:
+			{
+				address, err = scraper.ConverterTypeOne(common.HexToAddress(pool.ConverterDltID))
+				if err != nil {
+					log.Errorln("Error getting Address", err)
+				}
+			}
+		case 3:
+			{
+				address, err = scraper.ConverterTypeThree(common.HexToAddress(pool.ConverterDltID))
+				if err != nil {
+					log.Errorln("Error getting Address", err)
+				}
+			}
+		case 4:
+			{
+				address, err = scraper.ConverterTypeFour(common.HexToAddress(pool.ConverterDltID))
+				if err != nil {
+					log.Errorln("Error getting Address", err)
+				}
+			}
+			pair := scraper.GetPair(address)
+			log.Println(pair)
+			pairs = append(pairs, pair)
+
+		}
+
 	}
+
 	return
 }
 
-func (scraper *BancorScraper) readAssets() (BancorAssetPairs, error) {
-	var pair BancorAssetPairs
+func (scraper *BancorScraper) GetPair(address []common.Address) dia.Pair {
 
-	pairs, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/convertiblePairs")
+	token0, err := uniswapcontract.NewIERC20Caller(address[0], scraper.RestClient)
 	if err != nil {
-		return pair, err
+		log.Errorln("Error Getting token 0 ", err)
 	}
-	err = json.Unmarshal(pairs, &pair)
+
+	token1, err := uniswapcontract.NewIERC20Caller(address[1], scraper.RestClient)
+	if err != nil {
+		log.Errorln("Error Getting token 1 ", err)
+	}
+
+	symbol0, err := token0.Symbol(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
+	}
+	symbol1, err := token1.Symbol(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
+	}
+
+	return dia.Pair{
+		ForeignName: symbol0 + "-" + symbol1,
+		Symbol:      symbol0,
+		Exchange:    scraper.exchangeName,
+	}
+}
+
+func (scraper *BancorScraper) readPools() ([]BancorPool, error) {
+	var bpools BancorPools
+	pairs, err := utils.GetRequest("https://api-v2.bancor.network/pools")
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(pairs, &bpools)
 	if err != nil {
 		log.Error("Error reading json", err)
 
 	}
-	return pair, nil
+	return bpools.Data, nil
 
 }
 
