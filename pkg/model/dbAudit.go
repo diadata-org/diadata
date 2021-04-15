@@ -471,11 +471,16 @@ func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
 func (db *DBAudit) GetPoolsParentID(id, topic string) (string, error) {
 	key := getKeyPoolIDs(topic)
 	response := db.redisClient.HGet(context.Background(), key, id)
-	if len(response.Val()) > 0 {
-		return response.Val(), nil
+	val, err := response.Result()
+	if err != nil {
+		if err == redis.Nil {
+			errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
+			return "", errors.New(errorstring)
+		} else {
+			return "", err
+		}
 	}
-	errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
-	return "", errors.New(errorstring)
+	return val, nil
 }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.

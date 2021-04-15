@@ -15,6 +15,7 @@ import (
 
 	"github.com/cbergoon/merkletree"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/go-redis/redis/v8"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
@@ -198,39 +199,101 @@ func marshAndUnmarshTree(tree merkletree.MerkleTree) (merkletree.MerkleTree, err
 	return recoveredTree, nil
 }
 
+// GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
+func GetPoolsParentID(id, topic string, r *redis.Client) (string, error) {
+	key := getKeyPoolIDs(topic)
+	response := r.HGet(context.Background(), key, id)
+	val, err := response.Result()
+	if err != nil {
+		if err == redis.Nil {
+			errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
+			return "", errors.New(errorstring)
+		} else {
+			return "", err
+		}
+	}
+	return val, nil
+	// fmt.Println("Args: ", response.Args())
+	// b, err := response.Bool()
+	// fmt.Println("bool, err: ", b, err)
+	// res, err := response.Result()
+	// fmt.Println("res, err: ", res, err)
+	// fmt.Println("string: ", response.String())
+	// if len(response.Val()) > 0 {
+	// 	return response.Val(), nil
+	// }
+
+}
+
+// SetPoolID sets a key value map for retrieval of parent trees of hashed pools.
+// It is important to notice that this just facilitates the retrieval. The map can be reconstructed
+// by id information stored in influx. Hence, the system does not rely on correct function/constant.
+func SetPoolID(topic string, children []string, ID int64, r *redis.Client) error {
+	log.Infof("Set pool IDs for %s: %v", topic, ID)
+	poolMap := make(map[string]interface{})
+	for _, num := range children {
+		poolMap[num] = int(ID)
+	}
+	key := getKeyPoolIDs(topic)
+	fmt.Printf("key, map: %s, %v \n", key, poolMap)
+	resp := r.HSet(context.Background(), key, poolMap)
+	_, err := resp.Result()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getKeyPoolIDs(topic string) string {
+	return "HashedPoolsMap_" + topic
+}
+
 func main() {
 
-	// unmarshalling from influx
+	r := redis.NewClient(&redis.Options{
+		Addr:     "",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 
-	ds, err := models.NewAuditStore()
+	err := SetPoolID("testtopic", []string{"111", "222", "333"}, 0, r)
 	if err != nil {
-		log.Error("NewAuditStore: ", err)
-	}
-
-	tree0, err := makeTestTree(2, []string{"hello ", "world."}, []string{"how ", "are ", "you?"})
-	if err != nil {
-		fmt.Println("error: ", err)
-	}
-
-	err = ds.SetStorageTreeInflux(*tree0, "test")
-	if err != nil {
-		fmt.Println("error: ", err)
+		fmt.Println("error1: ", err)
 	}
 
-	time.Sleep(10 * time.Second)
-	vals, err := ds.GetStorageTreesInflux("test", time.Now().Add(-20*time.Second), time.Now())
-	if err != nil {
-		fmt.Println("error: ", err)
-	}
-	log.Infof("got %v trees: ", len(vals))
-	if len(vals) > 0 {
-		var auxTree merkletree.MerkleTree
-		err = json.Unmarshal([]byte(vals[0][4].(string)), &auxTree)
-		if err != nil {
-			fmt.Println("error: ", err)
-		}
-		fmt.Println("tree: ", auxTree)
-	}
+	parent, err := GetPoolsParentID("222", "testtopic", r)
+	fmt.Println("parent, err: ", parent, err)
+
+	// // unmarshalling from influx
+	// ds, err := models.NewAuditStore()
+	// if err != nil {
+	// 	log.Error("NewAuditStore: ", err)
+	// }
+
+	// tree0, err := makeTestTree(2, []string{"hello ", "world."}, []string{"how ", "are ", "you?"})
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+
+	// err = ds.SetStorageTreeInflux(*tree0, "test")
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+
+	// time.Sleep(10 * time.Second)
+	// vals, err := ds.GetStorageTreesInflux("test", time.Now().Add(-20*time.Second), time.Now())
+	// if err != nil {
+	// 	fmt.Println("error: ", err)
+	// }
+	// log.Infof("got %v trees: ", len(vals))
+	// if len(vals) > 0 {
+	// 	var auxTree merkletree.MerkleTree
+	// 	err = json.Unmarshal([]byte(vals[0][4].(string)), &auxTree)
+	// 	if err != nil {
+	// 		fmt.Println("error: ", err)
+	// 	}
+	// 	fmt.Println("tree: ", auxTree)
+	// }
 
 	// // marshalling and unmarshalling trees ----------
 
