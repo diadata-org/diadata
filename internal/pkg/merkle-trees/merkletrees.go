@@ -2,6 +2,7 @@ package merklehashing
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -38,8 +39,8 @@ var TopicInfo = []struct {
 		ID:         0,
 		KafkaID:    4,
 		Name:       GetHashTopics()[0],
-		SizePool:   16,
-		SizeBucket: 1024,
+		SizePool:   32,
+		SizeBucket: 2048,
 	},
 	{
 		ID:         1,
@@ -52,29 +53,29 @@ var TopicInfo = []struct {
 		ID:         2,
 		KafkaID:    6,
 		Name:       GetHashTopics()[2],
-		SizePool:   8,
-		SizeBucket: 1024,
+		SizePool:   16,
+		SizeBucket: 2048,
 	},
 	{
 		ID:         3,
 		KafkaID:    7,
 		Name:       GetHashTopics()[3],
-		SizePool:   4,
-		SizeBucket: 512,
+		SizePool:   16,
+		SizeBucket: 2048,
 	},
 	{
 		ID:         4,
 		KafkaID:    8,
 		Name:       GetHashTopics()[4],
-		SizePool:   4,
-		SizeBucket: 256,
+		SizePool:   16,
+		SizeBucket: 2048,
 	},
 	{
 		ID:         5,
 		KafkaID:    9,
 		Name:       GetHashTopics()[5],
-		SizePool:   4,
-		SizeBucket: 512,
+		SizePool:   16,
+		SizeBucket: 2048,
 	},
 }
 
@@ -238,44 +239,50 @@ func HashPoolLoop(topic string, lenPool, sizeBucket uint64, ds models.AuditStore
 // -------------------------------------------------------------------------------------------------
 
 // MasterTree returns the master merkle tree resulting from the (daily) hashing procedure.
-// In particular, it retrieves daily trees
+// In particular, it retrieves daily trees.
 func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err error) {
 	level := "0"
 
-	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
-	// collected from last timestamp until now
-	timestamp := time.Now()
-	dailyTree, err := DailyTree(timestamp, ds)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	dailyRootHash := dailyTree.MerkleRoot
-
-	// Get last master tree
+	// Get last master tree ID and increment it for the actual run.
+	// All children inherit the ID from the master.
 	lastID, err := ds.GetLastIDMerkle("", level)
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	ID := strconv.Itoa(int(lastID))
-	masterTree, err = ds.GetDailyTreeByID("", level, ID)
+	ID := lastID + 1
+
+	// Get today's merkle root, i.e. construct the level 1 tree from hashed pools
+	// collected from last timestamp until now.
+	dailyTree, err := DailyTree(time.Now(), ID, ds)
 	if err != nil {
 		log.Error(err)
 		return
 	}
+	// edge case where no new data was collected during one hashing period.
+	if dailyTree == nil {
+		return
+	}
+	// dailyTree is not nil and therefore has a root hash.
+	dailyRootHash := dailyTree.MerkleRoot
 
-	// Extend master tree by today's merkle root
+	// Get last master tree...
+	masterTree, err = ds.GetDailyTreeByID("", level, lastID)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	// ...and extend it by today's merkle root.
 	newHash := merkletree.ByteContent{Content: dailyRootHash}
-	fmt.Println("new Hash: ", newHash)
+	fmt.Println("new Hash: ", hex.EncodeToString(newHash.Content))
 	if !masterTree.Isempty() {
 		err = (&masterTree).ExtendTree([]merkletree.Content{newHash})
 		if err != nil {
 			log.Error(err)
 			return
 		}
-		// Save new Master Tree
-		ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+		// Save new Master Tree.
+		ds.SetDailyTreeInflux(masterTree, ID, "", level, []string{}, time.Time{})
 		return
 	}
 	// If master tree is empty, make it from the root hash of level 1 tree.
@@ -286,7 +293,10 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 		return
 	}
 	masterTree = *mT
-	ds.SetDailyTreeInflux(masterTree, "", level, []string{}, time.Time{})
+	err = ds.SetDailyTreeInflux(masterTree, ID, "", level, []string{}, time.Time{})
+	if err != nil {
+		return
+	}
 	return
 
 }
@@ -294,25 +304,36 @@ func MasterTree(ds models.AuditStore) (masterTree merkletree.MerkleTree, err err
 // DailyTree returns a merkle tree which is constructed from the root hashes of the DailyTopicTrees.
 // It includes all Level2 trees which have not been hashed into a Level1 tree yet, up to timeFinal.
 // This functionality implements Level1 from the Merkle Documentation
-func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree.MerkleTree, err error) {
+func DailyTree(timeFinal time.Time, ID int64, ds models.AuditStore) (dailyTree *merkletree.MerkleTree, err error) {
 	level := "1"
 	var dailyTrees []merkletree.MerkleTree
 
-	// Retrieve daily trees for all topics
+	// Retrieve daily trees for all topics.
 	topicMap := GetHashTopics()
+	log.Info("length of topic map: ", len(topicMap))
 	for key := range topicMap {
-		dailyTopicTree, err := DailyTreeTopic(topicMap[key], timeFinal, ds)
+		dailyTopicTree, err := DailyTreeTopic(topicMap[key], ID, timeFinal, ds)
 		if err != nil {
 			log.Error(err)
 		}
-		dailyTrees = append(dailyTrees, *dailyTopicTree)
+		// If new data is available, add to daily trees.
+		// (if no new data is available no dailyTopicTree is created).
+		if dailyTopicTree != nil {
+			dailyTrees = append(dailyTrees, *dailyTopicTree)
+		}
 	}
+
+	// Edge case of no new content in all topics.
+	if len(dailyTrees) == 0 {
+		return
+	}
+
+	// Make and store daily tree across all topics.
 	dailyTree, err = merkletree.ForestToTree(dailyTrees)
 	if err != nil {
 		return
 	}
-
-	err = ds.SetDailyTreeInflux(*dailyTree, "", level, []string{}, time.Time{})
+	err = ds.SetDailyTreeInflux(*dailyTree, ID, "", level, []string{}, time.Time{})
 	fmt.Println("daily tree built at level 1")
 	return
 }
@@ -321,7 +342,7 @@ func DailyTree(timeFinal time.Time, ds models.AuditStore) (dailyTree *merkletree
 // hashes them in a merkle tree. The tree's (influx-)timestamps are ranging until at most @timeFinal.
 // The root hash of the resulting merkle tree is returned.
 // This functionality implements Level2 from the Merkle Documentation.
-func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (dailyTopicTree *merkletree.MerkleTree, err error) {
+func DailyTreeTopic(topic string, ID int64, timeFinal time.Time, ds models.AuditStore) (dailyTopicTree *merkletree.MerkleTree, err error) {
 	level := "2"
 	fmt.Printf("begin making daily tree level 2 for topic %s \n", topic)
 
@@ -334,12 +355,11 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 	// Get merkle trees from storage table and build them into a merkle tree.
 	vals, err := ds.GetStorageTreesInflux(topic, timeInit, timeFinal)
 	if err != nil {
-		log.Error(err)
+		return
 	}
-	fmt.Println("len vals: ", len(vals))
 	var merkleTrees []merkletree.MerkleTree
 	var lastTimestamp time.Time
-	var IDs []string
+	var ChildIDs []string
 
 	if len(vals) > 0 {
 		log.Infof("new content available for topic %s on level 2.", topic)
@@ -359,47 +379,21 @@ func DailyTreeTopic(topic string, timeFinal time.Time, ds models.AuditStore) (da
 				lastTimestamp = tstamp
 			}
 			// Get IDs of storage trees (we use timestamps in unix nano format as ID)
-			IDs = append(IDs, strconv.FormatInt(tstamp.UnixNano(), 10))
+			ChildIDs = append(ChildIDs, strconv.FormatInt(tstamp.UnixNano(), 10))
 		}
+		dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		err = ds.SetDailyTreeInflux(*dailyTopicTree, ID, topic, level, ChildIDs, lastTimestamp)
+		if err != nil {
+			return
+		}
+		fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
 	} else {
-		log.Infof("no new content available for topic %s on level 2. store tree with nil content.", topic)
-		// If no content is available, make tree from empty bucket and store to storage table for consistency of IDs
-		emptyBucket := merkletree.StorageBucket{
-			Content:   []byte{},
-			Topic:     topic,
-			Timestamp: time.Now(),
-		}
-		nilTree, err := merkletree.NewTree([]merkletree.Content{emptyBucket})
-		if err != nil {
-			log.Error(err)
-		}
-		err = ds.SetStorageTreeInflux(*nilTree, topic)
-		if err != nil {
-			log.Error("error saving tree to influx: ", err)
-		}
-		merkleTrees = []merkletree.MerkleTree{*nilTree}
-		// As we artificially set the empty storage tree here, we have to get the ID of the same tree
-		// as above in the if-condition
-		id, err := ds.GetLastID(topic)
-		if err != nil {
-			log.Error(err)
-		}
-		IDs = append(IDs, id)
-		// Question/Problem with timing: how to prevent that a new tree with content is written
-		// in between line 193 and this save call?
-		// Solution: We set lastTimestamp as timeFinal. This is the end time of the above query
-		// for storage trees, so next query will begin there and include content that was possibly
-		// written in between.
-		lastTimestamp = timeFinal
+		log.Infof("no new content available for topic %s on level 2.", topic)
 	}
-	dailyTopicTree, err = merkletree.ForestToTree(merkleTrees)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	// fmt.Printf("daily topic tree built at level 2 for topic %s \n", topic)
-
-	err = ds.SetDailyTreeInflux(*dailyTopicTree, topic, level, IDs, lastTimestamp)
 	return
 }
 

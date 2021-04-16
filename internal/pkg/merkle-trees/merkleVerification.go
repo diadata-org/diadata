@@ -59,7 +59,7 @@ func VerifyPool(tree merkletree.MerkleTree, topic, ID string, ds models.AuditSto
 
 // VerifyTree verifies a tree in the hashing hierarchy with respect to the tree one level down
 // Atm this applies to level==2 and level==1
-func VerifyTree(tree merkletree.MerkleTree, level, ID string, ds models.AuditStore) (bool, error) {
+func VerifyTree(tree merkletree.MerkleTree, level string, ID int64, ds models.AuditStore) (bool, error) {
 
 	levelInt, err := strconv.ParseInt(level, 10, 64)
 	if err != nil {

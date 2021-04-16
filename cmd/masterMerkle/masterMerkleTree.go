@@ -15,7 +15,7 @@ func main() {
 		log.Fatal("NewAuditStore: ", err)
 	}
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(60 * 1 * time.Second)
 	go func() {
 		for {
 			select {
@@ -24,8 +24,11 @@ func main() {
 				if err != nil {
 					log.Error(err)
 				}
-				log.Infof("%v -- master tree saved with root: %s", time.Now(), hex.EncodeToString(masterTree.MerkleRoot))
-
+				if masterTree.Isempty() {
+					log.Infof("no new data available during the last hashing period. master tree and root remain the same.")
+				} else {
+					log.Infof("%v -- master tree saved with root: %s", time.Now(), hex.EncodeToString(masterTree.MerkleRoot))
+				}
 			}
 		}
 	}()

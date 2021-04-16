@@ -28,13 +28,13 @@ type AuditStore interface {
 	GetLastID(topic string) (string, error)
 
 	// merkle tree methods
-	SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, children []string, lastTimestamp time.Time) error
+	SetDailyTreeInflux(tree merkletree.MerkleTree, ID int64, topic, level string, children []string, lastTimestamp time.Time) error
 	GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) ([][]interface{}, error)
-	GetDailyTreeByID(topic, level, ID string) (merkletree.MerkleTree, error)
+	GetDailyTreeByID(topic string, level string, ID int64) (merkletree.MerkleTree, error)
 	GetLastTimestamp(topic, level string) (time.Time, error)
 	GetLastIDMerkle(topic, level string) (int64, error)
 	SetPoolID(topic string, children []string, ID int64) error
-	GetPoolsParentID(id, topic string) (string, error)
+	GetPoolsParentID(id, topic string) (int64, error)
 	GetYoungestChildMerkle(topic string) (int64, error)
 }
 
@@ -306,11 +306,9 @@ func (db *DBAudit) GetStorageTreesInflux(topic string, timeInit, timeFinal time.
 	if err != nil {
 		return [][]interface{}{}, err
 	}
-	if len(res[0].Series) == 0 {
-		err = errors.New("empty response")
-		return
+	if len(res[0].Series) > 0 {
+		val = res[0].Series[0].Values
 	}
-	val = res[0].Series[0].Values
 	return
 }
 
@@ -360,10 +358,11 @@ func (db *DBAudit) GetLastID(topic string) (string, error) {
 
 // SetDailyTreeInflux stores the trees which are produced on a daily basis in order to publish
 // the master root hash.
-// @topic only concerns level 2 and should be the empty string for level 1 and 0
-// @level is an int corresponding to the level in the merkle documentation (currently 0<level<3)
-// @lastTimestamp is the last timestamp of hashed trees from the data layer. Only applies to level 2
-func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level string, children []string, lastTimestamp time.Time) error {
+// @ID is the integer id that must be assigned by the level 0 tree to its children.
+// @topic only concerns level 2 and should be the empty string for level 1 and 0.
+// @level is an int corresponding to the level in the merkle documentation (currently 0<level<3).
+// @lastTimestamp is the last timestamp of hashed trees from the data layer. Only applies to level 2.
+func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, ID int64, topic, level string, children []string, lastTimestamp time.Time) error {
 
 	// Marshal tree
 	marshTree, err := json.Marshal(tree)
@@ -371,16 +370,9 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 		return err
 	}
 
-	// Get last id and increment it
-	lastID, err := db.GetLastIDMerkle(topic, level)
-	if err != nil {
-		return err
-	}
-	id := strconv.FormatInt(lastID+1, 10)
-
 	// Extend poolMap in Redis if level == 2
 	if level == "2" {
-		db.SetPoolID(topic, children, lastID+1)
+		db.SetPoolID(topic, children, ID)
 	}
 	// Encode children in order to store in influx
 	childrenData, err := json.Marshal(children)
@@ -391,7 +383,7 @@ func (db *DBAudit) SetDailyTreeInflux(tree merkletree.MerkleTree, topic, level s
 	tags := map[string]string{
 		"topic": topic,
 		"level": level,
-		"id":    id,
+		"id":    strconv.Itoa(int(ID)),
 	}
 	fields := map[string]interface{}{
 		"value":         string(marshTree),
@@ -468,19 +460,23 @@ func (db *DBAudit) SetPoolID(topic string, children []string, ID int64) error {
 // }
 
 // GetPoolsParentID returns the ID of level 2 tree such that hashed pool with @id is a leaf
-func (db *DBAudit) GetPoolsParentID(id, topic string) (string, error) {
+func (db *DBAudit) GetPoolsParentID(id, topic string) (int64, error) {
 	key := getKeyPoolIDs(topic)
 	response := db.redisClient.HGet(context.Background(), key, id)
 	val, err := response.Result()
 	if err != nil {
 		if err == redis.Nil {
 			errorstring := fmt.Sprintf("no redis entry for pool ID %s with topic %s \n", id, topic)
-			return "", errors.New(errorstring)
+			return -2, errors.New(errorstring)
 		} else {
-			return "", err
+			return -2, err
 		}
 	}
-	return val, nil
+	ID, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return -2, err
+	}
+	return ID, nil
 }
 
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
@@ -499,9 +495,8 @@ func (db *DBAudit) GetDailyTreesInflux(topic, level string, timeInit, timeFinal 
 }
 
 // GetDailyTreeByID returns the daily merkletree of a given topic, level and ID.
-func (db *DBAudit) GetDailyTreeByID(topic, level, ID string) (tree merkletree.MerkleTree, err error) {
-
-	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and id='%s'", influxDBMerkleTable, topic, level, ID)
+func (db *DBAudit) GetDailyTreeByID(topic string, level string, ID int64) (tree merkletree.MerkleTree, err error) {
+	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and level='%s' and id='%s'", influxDBMerkleTable, topic, level, strconv.Itoa(int(ID)))
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
 		return merkletree.MerkleTree{}, err

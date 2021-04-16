@@ -96,7 +96,10 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if err != nil {
 			log.Fatalf("could not unmarshal daily tree for topic %s", topic)
 		}
-		id := val[2].(string)
+		id, err := strconv.ParseInt(val[2].(string), 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
 		verif, err := merklehashing.VerifyTree(dailyTree, "2", id, ds)
 		if err != nil {
 			log.Fatal(err)
@@ -139,7 +142,10 @@ func main() {
 					if err != nil {
 						log.Fatalf("could not unmarshal daily tree on level %s\n", "1")
 					}
-					id := val[2].(string)
+					id, err := strconv.ParseInt(val[2].(string), 10, 64)
+					if err != nil {
+						log.Fatal(err)
+					}
 					verif, err := merklehashing.VerifyTree(dailyTree, "1", id, ds)
 					if err != nil {
 						log.Fatal(err)
