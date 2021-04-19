@@ -35,6 +35,10 @@
     {
       "Address": "0xfe9a29ab92522d14fc65880d817214261d8479ae",
       "Symbol": "SNOW"
+    },
+    {
+      "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55",
+      "Symbol": "SUPER"
     }
   ]
 }

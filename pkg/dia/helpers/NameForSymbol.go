@@ -375,7 +375,7 @@ func NameForSymbol(symbol string) string {
 	case "CRYPT":
 		return "CryptCoin"
 	case "SUPER":
-		return "SuperCoin"
+		return "SuperFarm"
 	case "BOST":
 		return "BoostCoin"
 	case "HYPER":

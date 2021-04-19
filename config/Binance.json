@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "SUPERUSDT",
+            "Ignore": false,
+            "Symbol": "SUPER"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "NEARUSDT",
             "Ignore": false,
             "Symbol": "NEAR"

@@ -20131,12 +20131,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "Super",
-            "ForeignName": "Super-USDT",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "SHLB",
             "ForeignName": "SHLB-ETH",
             "Exchange": "UniswapV2",
@@ -20233,8 +20227,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "Super",
-            "ForeignName": "Super-ETH",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SUPER",
             "Exchange": "UniswapV2",
             "Ignore": false
         },

@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SUPER_USDT",
+      "Ignore": false,
+      "Symbol": "SUPER"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SNOW_ETH",
       "Ignore": false,
       "Symbol": "SNOW"
