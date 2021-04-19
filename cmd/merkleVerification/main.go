@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -54,7 +53,7 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("number of storage trees to check for %s: %v \n", topic, len(storageTreesToVerify))
+	log.Printf("number of storage trees to check for %s: %v", topic, len(storageTreesToVerify))
 	// Iterate over storage trees
 	for _, val := range storageTreesToVerify {
 		tree := merkletree.MerkleTree{}
@@ -189,17 +188,20 @@ func mainOld() {
 					if err != nil {
 						log.Fatal(err)
 					}
-					fmt.Printf("youngest merkle child for %s: %d\n", topicMap[key], lastID)
+					log.Printf("youngest merkle child for %s: %d", topicMap[key], lastID)
 
 					storageTreesToVerify, err := ds.GetStorageTreesInflux(topicMap[key], time.Time{}, time.Unix(0, lastID))
 					if err != nil {
 						log.Fatal(err)
 					}
-					log.Printf("number of storage trees to check for %s: %v \n", topicMap[key], len(storageTreesToVerify))
+					log.Printf("number of storage trees to check for %s: %v", topicMap[key], len(storageTreesToVerify))
 					// Iterate over storage trees in go routines
 					for _, val := range storageTreesToVerify {
 						tree := merkletree.MerkleTree{}
 						err = json.Unmarshal([]byte(val[4].(string)), &tree)
+						if err != nil {
+							log.Error(err)
+						}
 						tstamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
 						go verifyContent(topicMap[key], strconv.FormatInt(tstamp.UnixNano(), 10), ds, &wg)
 					}

@@ -41,7 +41,7 @@ func main() {
 	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
 	defer r.Close()
 
-	hashWriter, err := kafkaHelper.NewHashWriter("hash-trades", true)
+	hashWriter, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_TRADES, true)
 	if err != nil {
 		log.Fatal(err)
 	}

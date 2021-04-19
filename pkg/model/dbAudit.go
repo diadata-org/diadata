@@ -22,7 +22,7 @@ type AuditStore interface {
 	FlushAuditBatch() error
 	// Storage methods
 	SetStorageTreeInflux(tree merkletree.MerkleTree, topic string) error
-	GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, error)
+	GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, time.Time, error)
 	GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time) ([][]interface{}, error)
 	GetStorageTreeByID(topic, ID string) (merkletree.MerkleTree, error)
 	GetLastID(topic string) (string, error)
@@ -36,6 +36,10 @@ type AuditStore interface {
 	SetPoolID(topic string, children []string, ID int64) error
 	GetPoolsParentID(id, topic string) (int64, error)
 	GetYoungestChildMerkle(topic string) (int64, error)
+
+	// data retrieval/identification methods
+	ReadStorageTree(storageTree merkletree.MerkleTree) ([][][]byte, error)
+	FindStorageTree(data []byte, timestamp time.Time, topic string) (string, error)
 }
 
 const (
@@ -279,21 +283,21 @@ func (db *DBAudit) SetStorageTreeInflux(tree merkletree.MerkleTree, topic string
 	return err
 }
 
-// GetStorageTreeInflux returns the first merkletree of a given topic with timestamp after timeLower
-func (db *DBAudit) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, error) {
-
+// GetStorageTreeInflux returns the first merkletree of a given topic with timestamp after timeLower.
+func (db *DBAudit) GetStorageTreeInflux(topic string, timeLower time.Time) (merkletree.MerkleTree, time.Time, error) {
 	retval := merkletree.MerkleTree{}
-	q := fmt.Sprintf("SELECT time, value FROM (SELECT * FROM %s WHERE topic='%s' and time >= %d) ORDER BY ASC LIMIT 1", influxDBStorageTable, topic, timeLower.UnixNano())
+	q := fmt.Sprintf("SELECT time, value FROM (SELECT * FROM %s WHERE topic='%s' and time > %d) ORDER BY ASC LIMIT 1", influxDBStorageTable, topic, timeLower.UnixNano())
 	res, err := queryAuditDB(db.influxClient, q)
 	if err != nil {
-		return merkletree.MerkleTree{}, err
+		return merkletree.MerkleTree{}, time.Time{}, err
 	}
 	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 		val := res[0].Series[0].Values[0]
 		err = json.Unmarshal([]byte(val[1].(string)), &retval)
-		return retval, err
+		timestamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
+		return retval, timestamp, err
 	}
-	return merkletree.MerkleTree{}, errors.New("empty response")
+	return merkletree.MerkleTree{}, time.Time{}, errors.New("empty response")
 }
 
 // GetStorageTreesInflux returns a slice of merkletrees from the storage table corresponding to a given topic in a given time range.
@@ -577,4 +581,41 @@ func (db *DBAudit) GetYoungestChildMerkle(topic string) (int64, error) {
 	}
 	return 0, nil
 
+}
+
+// ReadStorageTree returns a 3-d byte slice.
+// The first dimension corresponds to the buckets/leafs in @storageTree.
+// The second dimension corresponds to the data points in a bucket.
+// The third dimension corresponds to one specific data point.
+func (db *DBAudit) ReadStorageTree(storageTree merkletree.MerkleTree) ([][][]byte, error) {
+	var content [][][]byte
+	for _, leaf := range storageTree.Leafs {
+		storageBucket := leaf.C.(merkletree.StorageBucket)
+		data, err := (&storageBucket).ReadContent()
+		if err != nil {
+			return content, err
+		}
+		content = append(content, data)
+	}
+	return content, nil
+}
+
+// FindStorageTree returns the ID of the storage tree that contains (the bucket that contains) @data.
+func (db *DBAudit) FindStorageTree(data []byte, timeData time.Time, topic string) (string, error) {
+	// The containing tree can't be older than the written data.
+	tree, timeTree, err := db.GetStorageTreeInflux(topic, timeData)
+	if err != nil {
+		return "", err
+	}
+	isContained, _, err := merkletree.DataInStorageTree(data, tree)
+	if err != nil {
+		return "", err
+	}
+	if isContained {
+		return timeTree.String(), nil
+	}
+
+	// if not contained repeat the above steps for timeData = timeTree
+
+	return "", nil
 }

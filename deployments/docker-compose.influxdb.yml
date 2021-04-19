@@ -16,6 +16,7 @@ services:
       - influxdb-network
     environment:
       INFLUXDB_HTTP_MAX_BODY_SIZE: 0
+      INFLUXDB_DATA_MAX_SERIES_PER_DATABASE: 0
     logging:
       options:
         max-size: "50m" 

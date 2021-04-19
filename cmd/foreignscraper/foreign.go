@@ -16,7 +16,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	hashWriter, err := kafkaHelper.NewHashWriter("hash-foreignscraper", true)
+	hashWriter, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_FOREIGNSCRAPER, true)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -161,8 +161,8 @@ func (t TestSHA256Content) Equals(other merkletree.Content) (bool, error) {
 }
 
 // makeTestTree makes a tree with two nodes
-func makeTestTree(numpools uint64, ContentNode1, ContentNode2 []string) (*merkletree.MerkleTree, error) {
-	bp := merkletree.NewBucketPool(numpools, 216, "test")
+func makeTestTree(numbuckets uint64, ContentNode1, ContentNode2 []string) (*merkletree.MerkleTree, error) {
+	bp := merkletree.NewBucketPool(numbuckets, 216, "test")
 	bucket1, err := bp.Get()
 	if err != nil {
 		fmt.Println("error: ", err)
@@ -250,19 +250,45 @@ func getKeyPoolIDs(topic string) string {
 
 func main() {
 
-	r := redis.NewClient(&redis.Options{
-		Addr:     "",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	err := SetPoolID("testtopic", []string{"111", "222", "333"}, 0, r)
+	tree, err := makeTestTree(2, []string{"just ", "a "}, []string{"simple ", "tree."})
 	if err != nil {
-		fmt.Println("error1: ", err)
+		log.Error(err)
+	}
+	fmt.Println("number of leafs: ", len(tree.Leafs))
+	addLeaf := merkletree.StorageBucket{
+		Content: []byte("leaf 3"),
+		Topic:   "test",
+	}
+	tree.ExtendTree([]merkletree.Content{addLeaf})
+	fmt.Println("number of leafs after adding one leaf: ", len(tree.Leafs))
+	tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
+		Content: []byte("leaf 4"),
+		Topic:   "test",
+	}})
+	tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
+		Content: []byte("leaf 5"),
+		Topic:   "test",
+	}})
+
+	fmt.Println("number of leafs after adding three leafs: ", len(tree.Leafs))
+	for _, leaf := range tree.Leafs {
+		fmt.Println("leaf: ", string(leaf.C.(merkletree.StorageBucket).Content))
 	}
 
-	parent, err := GetPoolsParentID("222", "testtopic", r)
-	fmt.Println("parent, err: ", parent, err)
+	// // redis hset/hget test
+	// r := redis.NewClient(&redis.Options{
+	// 	Addr:     "",
+	// 	Password: "", // no password set
+	// 	DB:       0,  // use default DB
+	// })
+
+	// err := SetPoolID("testtopic", []string{"111", "222", "333"}, 0, r)
+	// if err != nil {
+	// 	fmt.Println("error1: ", err)
+	// }
+
+	// parent, err := GetPoolsParentID("222", "testtopic", r)
+	// fmt.Println("parent, err: ", parent, err)
 
 	// // unmarshalling from influx
 	// ds, err := models.NewAuditStore()

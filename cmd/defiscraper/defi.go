@@ -46,13 +46,13 @@ func main() {
 	flag.Parse()
 
 	wg := sync.WaitGroup{}
-	hashWriterRates, err := kafkaHelper.NewHashWriter("hash-lendingrates", true)
+	hashWriterRates, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_LENDINGRATES, true)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer hashWriterRates.Close()
 
-	hashWriterStates, err := kafkaHelper.NewHashWriter("hash-lendingstates", true)
+	hashWriterStates, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_LENDINGSTATES, true)
 	if err != nil {
 		log.Fatal(err)
 	}

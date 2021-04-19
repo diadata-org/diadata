@@ -34,7 +34,7 @@ func main() {
 	rateType := flag.String("type", "SOFR", "Type of interest rate")
 	flag.Parse()
 
-	hashWriter, err := kafkaHelper.NewHashWriter("hash-interestrates", true)
+	hashWriter, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_INTERESTRATES, true)
 	if err != nil {
 		log.Fatal(err)
 	}

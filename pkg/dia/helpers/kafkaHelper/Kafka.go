@@ -15,7 +15,13 @@ import (
 )
 
 const (
-	messageSizeMax = 1e8
+	messageSizeMax      = 1e8
+	HASH_TRADES         = "hash-trades"
+	HASH_INTERESTRATES  = "hash-interestrates"
+	HASH_LENDINGRATES   = "hash-lendingrates"
+	HASH_LENDINGSTATES  = "hash-lendingstates"
+	HASH_FARMINGPOOLS   = "hash-farmingpools"
+	HASH_FOREIGNSCRAPER = "hash-foreignscraper"
 )
 
 type KafkaMessage interface {
@@ -49,12 +55,12 @@ func getTopic(topic int) string {
 		1: "filtersBlock",
 		2: "trades",
 		3: "tradesBlock",
-		4: "hash-trades",
-		5: "hash-interestrates",
-		6: "hash-lendingrates",
-		7: "hash-lendingstates",
-		8: "hash-farmingpools",
-		9: "hash-foreignscraper",
+		4: HASH_TRADES,
+		5: HASH_INTERESTRATES,
+		6: HASH_LENDINGRATES,
+		7: HASH_LENDINGSTATES,
+		8: HASH_FARMINGPOOLS,
+		9: HASH_FOREIGNSCRAPER,
 	}
 	result, ok := topicMap[topic]
 	if !ok {

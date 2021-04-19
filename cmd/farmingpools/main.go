@@ -16,7 +16,7 @@ func main() {
 	poolName := flag.String("type", "CVAULT", "Name of Pool")
 	flag.Parse()
 
-	hashWriter, err := kafkaHelper.NewHashWriter("hash-farmingpools", true)
+	hashWriter, err := kafkaHelper.NewHashWriter(kafkaHelper.HASH_FARMINGPOOLS, true)
 	if err != nil {
 		log.Fatal(err)
 	}

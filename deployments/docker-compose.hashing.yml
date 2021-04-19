@@ -71,6 +71,20 @@ services:
     logging:
       options:
         max-size: "50m"
+
+  hashingfarmingpoolsservice:
+    depends_on: [generichashingservice]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_generichashingservice:latest
+    command: /bin/hashingService -topic-key=4
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
         
 networks:
   kafka-network:

@@ -82,12 +82,12 @@ var TopicInfo = []struct {
 // GetHashTopics returns a map listing all hashing topics
 func GetHashTopics() map[int]string {
 	topicMap := map[int]string{
-		0: "hash-trades",
-		1: "hash-interestrates",
-		2: "hash-lendingrates",
-		3: "hash-lendingstates",
-		4: "hash-farmingpools",
-		5: "hash-foreignscraper",
+		0: kafkaHelper.HASH_TRADES,
+		1: kafkaHelper.HASH_INTERESTRATES,
+		2: kafkaHelper.HASH_LENDINGRATES,
+		3: kafkaHelper.HASH_LENDINGSTATES,
+		4: kafkaHelper.HASH_FARMINGPOOLS,
+		5: kafkaHelper.HASH_FOREIGNSCRAPER,
 	}
 	return topicMap
 }
@@ -310,7 +310,6 @@ func DailyTree(timeFinal time.Time, ID int64, ds models.AuditStore) (dailyTree *
 
 	// Retrieve daily trees for all topics.
 	topicMap := GetHashTopics()
-	log.Info("length of topic map: ", len(topicMap))
 	for key := range topicMap {
 		dailyTopicTree, err := DailyTreeTopic(topicMap[key], ID, timeFinal, ds)
 		if err != nil {
