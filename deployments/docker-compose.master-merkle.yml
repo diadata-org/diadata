@@ -16,21 +16,6 @@ services:
       options:
         max-size: "50m"
 
-  merkleverification:
-    build:
-      context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-merkleVerification
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_merkleverification:latest
-    networks:
-      - kafka-network
-      - redis-network
-      - influxdb-network
-    environment:
-      - EXEC_MODE=production
-    logging:
-      options:
-        max-size: "50m"
-
 networks:
   kafka-network:
     external:

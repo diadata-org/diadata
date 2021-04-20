@@ -29,6 +29,7 @@ type AuditStore interface {
 
 	// merkle tree methods
 	SetDailyTreeInflux(tree merkletree.MerkleTree, ID int64, topic, level string, children []string, lastTimestamp time.Time) error
+	GetDailyTreeInflux(topic string, level string, timeLower time.Time) (merkletree.MerkleTree, int64, time.Time, error)
 	GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) ([][]interface{}, error)
 	GetDailyTreeByID(topic string, level string, ID int64) (merkletree.MerkleTree, error)
 	GetLastTimestamp(topic, level string) (time.Time, error)
@@ -297,12 +298,13 @@ func (db *DBAudit) GetStorageTreeInflux(topic string, timeLower time.Time) (merk
 		timestamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
 		return retval, timestamp, err
 	}
-	return merkletree.MerkleTree{}, time.Time{}, errors.New("empty response")
+	return merkletree.MerkleTree{}, time.Time{}, nil
 }
 
 // GetStorageTreesInflux returns a slice of merkletrees from the storage table corresponding to a given topic in a given time range.
 // More precisely, the two-dimensional interface val is returned. It has length 5 and can be cast as follows:
 // val[0]:(influx-)timestamp, val[1]:firstDate, val[2]:lastDate, val[3]:topic, val[4]:Content/MerkleTree
+// Caution: For big time ranges, this might cause an out-of-memory induced crash of influx!
 func (db *DBAudit) GetStorageTreesInflux(topic string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
 	// TO DO: Substitute SELECT * FROM with more specific query.
 	q := fmt.Sprintf("SELECT * FROM %s WHERE topic='%s' and time > %d and time <= %d", influxDBStorageTable, topic, timeInit.UnixNano(), timeFinal.UnixNano())
@@ -483,6 +485,27 @@ func (db *DBAudit) GetPoolsParentID(id, topic string) (int64, error) {
 	return ID, nil
 }
 
+// GetDailyTreeInflux returns the first merkletree of a given topic with timestamp after timeLower.
+func (db *DBAudit) GetDailyTreeInflux(topic string, level string, timeLower time.Time) (merkletree.MerkleTree, int64, time.Time, error) {
+	dailyTree := merkletree.MerkleTree{}
+	q := fmt.Sprintf("SELECT time,\"id\",value FROM (SELECT * FROM %s WHERE topic='%s' and level='%s' and time > %d) ORDER BY ASC LIMIT 1", influxDBMerkleTable, topic, level, timeLower.UnixNano())
+	res, err := queryAuditDB(db.influxClient, q)
+	if err != nil {
+		return merkletree.MerkleTree{}, 0, time.Time{}, err
+	}
+	if len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
+		val := res[0].Series[0].Values[0]
+		timestamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
+		id, err := strconv.ParseInt(val[1].(string), 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = json.Unmarshal([]byte(val[2].(string)), &dailyTree)
+		return dailyTree, id, timestamp, err
+	}
+	return merkletree.MerkleTree{}, 0, time.Time{}, nil
+}
+
 // GetDailyTreesInflux returns a slice of merkletrees of a given topic in a given time range.
 func (db *DBAudit) GetDailyTreesInflux(topic, level string, timeInit, timeFinal time.Time) (val [][]interface{}, err error) {
 
@@ -607,6 +630,8 @@ func (db *DBAudit) FindStorageTree(data []byte, timeData time.Time, topic string
 	if err != nil {
 		return "", err
 	}
+
+	// Can we check whether timeData lies between firstDate and lastDate of tree and only proceed if so?
 	isContained, _, err := merkletree.DataInStorageTree(data, tree)
 	if err != nil {
 		return "", err

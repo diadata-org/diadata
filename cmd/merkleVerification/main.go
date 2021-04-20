@@ -47,23 +47,18 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 	if err != nil {
 		log.Fatal(err)
 	}
-	// fmt.Printf("youngest merkle child for %s: %d\n", topic, lastID)
 
-	storageTreesToVerify, err := ds.GetStorageTreesInflux(topic, time.Time{}, time.Unix(0, lastID))
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("number of storage trees to check for %s: %v", topic, len(storageTreesToVerify))
-	// Iterate over storage trees
-	for _, val := range storageTreesToVerify {
-		tree := merkletree.MerkleTree{}
-		err = json.Unmarshal([]byte(val[4].(string)), &tree)
+	var timeInit time.Time
+	numStorageTrees := 0
+	for time.Unix(0, lastID).After(timeInit) {
+		// Verify buckets in pool / storage tree.
+		tree, timestamp, err := ds.GetStorageTreeInflux(topic, timeInit)
 		if err != nil {
-			log.Fatalf("could not unmarshal storage tree for topic %s", topic)
+			log.Fatal(err)
 		}
-		tstamp, _ := time.Parse(time.RFC3339Nano, val[0].(string))
-
-		// Verify buckets in pool
+		if tree.Isempty() {
+			break
+		}
 		verif, err := merklehashing.VerifyBuckets(tree, topic, ds)
 		if err != nil {
 			log.Fatal(err)
@@ -71,9 +66,10 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if !verif {
 			log.Fatalf("could not verify bucket in pool for topic %s", topic)
 		}
+		timeInit = timestamp
 
-		// Verify pools in daily trees
-		id := strconv.FormatInt(tstamp.UnixNano(), 10)
+		// Verify pool / storage tree in daily tree.
+		id := strconv.FormatInt(timestamp.UnixNano(), 10)
 		verif, err = merklehashing.VerifyPool(tree, topic, id, ds)
 		if err != nil {
 			log.Fatal(err)
@@ -81,23 +77,20 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if !verif {
 			log.Fatalf("could not verify pool in daily tree. topic, id: %s, %s", topic, id)
 		}
+		numStorageTrees++
 	}
-	log.Infof("successfully verified all storage trees for %s.", topic)
+	log.Infof("successfully verified all %d storage trees for %s.", numStorageTrees, topic)
 
 	// Verify daily trees for level 2
-	dailyTrees, err := ds.GetDailyTreesInflux(topic, "2", time.Time{}, verificationTime)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, val := range dailyTrees {
-		dailyTree := merkletree.MerkleTree{}
-		err = json.Unmarshal([]byte(val[6].(string)), &dailyTree)
-		if err != nil {
-			log.Fatalf("could not unmarshal daily tree for topic %s", topic)
-		}
-		id, err := strconv.ParseInt(val[2].(string), 10, 64)
+	timeInit = time.Time{}
+	numDailyTrees := 0
+	for verificationTime.After(timeInit) {
+		dailyTree, id, timestamp, err := ds.GetDailyTreeInflux(topic, "2", timeInit)
 		if err != nil {
 			log.Fatal(err)
+		}
+		if dailyTree.Isempty() {
+			break
 		}
 		verif, err := merklehashing.VerifyTree(dailyTree, "2", id, ds)
 		if err != nil {
@@ -106,8 +99,10 @@ func verifyTopic(topic string, verificationTime time.Time, ds models.AuditStore,
 		if !verif {
 			log.Fatalf("could not verify level %s tree for topic %s", "2", topic)
 		}
+		timeInit = timestamp
+		numDailyTrees++
 	}
-	log.Infof("Successfully verified %d daily trees from topic %s.", len(dailyTrees), topic)
+	log.Infof("Successfully verified %d daily trees from topic %s.", numDailyTrees, topic)
 }
 
 func main() {

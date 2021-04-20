@@ -503,7 +503,7 @@ func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time
 			}
 		}
 	} else {
-		return &retval, errors.New("Error parsing Trade from Database")
+		return &retval, errors.New("error parsing Trade from Database")
 	}
 	return &retval, nil
 }
@@ -548,7 +548,7 @@ func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDat
 			retval = append(retval, currentPoint)
 		}
 	} else {
-		return retval, errors.New("Error parsing CVI value from Database")
+		return retval, errors.New("error parsing CVI value from Database")
 	}
 	return retval, nil
 }
@@ -701,7 +701,7 @@ func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("error parsing farming pool from Database")
 	}
 	return retval, nil
 
@@ -754,7 +754,7 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 			retval = append(retval, pool)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("error parsing Defi Lending Rate from Database")
 	}
 	return retval, nil
 
@@ -902,7 +902,7 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			retval = append(retval, defiState)
 		}
 	} else {
-		err = errors.New("Error parsing Defi Lending Rate from Database")
+		err = errors.New("error parsing Defi Lending Rate from Database")
 		return
 	}
 	return
@@ -973,14 +973,18 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 			retval = append(retval, currentSupply)
 		}
 	} else {
-		return retval, errors.New("Error parsing Supply value from Database")
+		return retval, errors.New("error parsing Supply value from Database")
 	}
 	return retval, nil
 }
 
 func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
-	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
+	tags := map[string]string{
+		"filter":   filter,
+		"symbol":   symbol,
+		"exchange": exchange,
+	}
 	fields := map[string]interface{}{
 		"value":        value,
 		"ignore":       false,

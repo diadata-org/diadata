@@ -1,0 +1,24 @@
+version: '3.2'
+services:
+  
+  merkleverification:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-merkleVerification
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_merkleverification:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
