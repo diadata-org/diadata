@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -250,37 +251,54 @@ func getKeyPoolIDs(topic string) string {
 
 func main() {
 
-	tree, err := makeTestTree(2, []string{"just ", "a "}, []string{"simple ", "tree."})
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println("number of leafs: ", len(tree.Leafs))
-	addLeaf := merkletree.StorageBucket{
-		Content: []byte("leaf 3"),
-		Topic:   "test",
-	}
-	tree.ExtendTree([]merkletree.Content{addLeaf})
-	fmt.Println("number of leafs after adding one leaf: ", len(tree.Leafs))
-	tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
-		Content: []byte("leaf 4"),
-		Topic:   "test",
-	}})
-	tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
-		Content: []byte("leaf 5"),
-		Topic:   "test",
-	}})
+	// tree, err := makeTestTree(2, []string{"just ", "a "}, []string{"simple ", "tree."})
+	// if err != nil {
+	// 	log.Error(err)
+	// }
+	// fmt.Println("number of leafs: ", len(tree.Leafs))
+	// addLeaf := merkletree.StorageBucket{
+	// 	Content: []byte("leaf 3"),
+	// 	Topic:   "test",
+	// }
+	// tree.ExtendTree([]merkletree.Content{addLeaf})
+	// fmt.Println("number of leafs after adding one leaf: ", len(tree.Leafs))
+	// tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
+	// 	Content: []byte("leaf 4"),
+	// 	Topic:   "test",
+	// }})
+	// tree.ExtendTree([]merkletree.Content{merkletree.StorageBucket{
+	// 	Content: []byte("leaf 5"),
+	// 	Topic:   "test",
+	// }})
 
-	fmt.Println("number of leafs after adding three leafs: ", len(tree.Leafs))
-	for _, leaf := range tree.Leafs {
-		fmt.Println("leaf: ", string(leaf.C.(merkletree.StorageBucket).Content))
-	}
+	// fmt.Println("number of leafs after adding three leafs: ", len(tree.Leafs))
+	// for _, leaf := range tree.Leafs {
+	// 	fmt.Println("leaf: ", string(leaf.C.(merkletree.StorageBucket).Content))
+	// }
 
-	// // redis hset/hget test
-	// r := redis.NewClient(&redis.Options{
-	// 	Addr:     "",
-	// 	Password: "", // no password set
-	// 	DB:       0,  // use default DB
-	// })
+	// redis hset/hget test
+	r := redis.NewClient(&redis.Options{
+		Addr:     "",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	for i := 0; i < 10; i++ {
+		obj := make(map[string]interface{})
+		obj["id"] = strconv.Itoa(i)
+		obj["last sell date"] = strconv.Itoa(i * 1000)
+		r.HSet(context.Background(), "token_"+strconv.Itoa(i), obj)
+	}
+	resp := r.HGet(context.Background(), "token_1", "last sell date")
+	if resp.Err() != nil {
+		fmt.Println(resp.Err())
+	}
+	fmt.Println(resp.Result())
+	resp = r.HGet(context.Background(), "token_2", "id")
+	if resp.Err() != nil {
+		fmt.Println(resp.Err())
+	}
+	fmt.Println(resp.Result())
 
 	// err := SetPoolID("testtopic", []string{"111", "222", "333"}, 0, r)
 	// if err != nil {

@@ -51,6 +51,7 @@ require (
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
+	github.com/nitishm/go-rejson/v4 v4.0.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/peterh/liner v1.2.1 // indirect
