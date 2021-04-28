@@ -57,7 +57,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 | Contract Name | Contract Address |
 | :--- | :--- |
-| DIA Oracle | 0xd5e1e0056bed90e46e1a58f0a09449cbebd0ff4a |
+| DIA Oracle | [0x3DCd7C86acf46c7e7F1eb583c7234f85118B9acF](https://moonbase-blockscout.testnet.moonbeam.network/address/0x3DCd7C86acf46c7e7F1eb583c7234f85118B9acF) |
 
 ### NEAR Testnet
 
