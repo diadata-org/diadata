@@ -1,0 +1,22 @@
+version: '3.2'
+services:
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "27017:27017"
+      - "5432:5432"
+    environment:
+        EXEC_MODE: production
+    env_file:
+      - ../secrets/postgres.env
+    networks:
+      - postgres-network
+    volumes:
+      - /home/srv/config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
+
+networks:
+  postgres-network:
+    driver: overlay
+    attachable: true

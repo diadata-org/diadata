@@ -11,8 +11,63 @@ import (
 )
 
 const (
-	Diadata = "diadata.org"
+	Diadata                                 = "diadata.org"
+	PROOF_OF_STAKE    VerificationMechanism = "pos"
+	PROOF_OF_WORK     VerificationMechanism = "pow"
+	BITCOIN                                 = "Bitcoin"
+	ETHEREUM                                = "Ethereum"
+	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 )
+
+type VerificationMechanism string
+
+// NFTClass is the container for an nft class defined by
+// a contract (address) on a blockchain.
+type NFTClass struct {
+	Address      common.Address
+	Symbol       string
+	Name         string
+	Blockchain   string
+	ContractType string
+	Category     string
+}
+
+// MarshalBinary for DefiProtocolState
+func (nc *NFTClass) MarshalBinary() ([]byte, error) {
+	return json.Marshal(nc)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (nc *NFTClass) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &nc); err != nil {
+		return err
+	}
+	return nil
+}
+
+// NFT is the container for a specific NFT defined by
+// the pair (address,tokenID).
+type NFT struct {
+	NFTClass       NFTClass
+	TokenID        uint64
+	CreationTime   time.Time
+	CreatorAddress common.Address
+	URI            string
+	Attributes     []byte
+}
+
+// MarshalBinary for DefiProtocolState
+func (n *NFT) MarshalBinary() ([]byte, error) {
+	return json.Marshal(n)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (n *NFT) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+	return nil
+}
 
 type Exchange struct {
 	Name          string

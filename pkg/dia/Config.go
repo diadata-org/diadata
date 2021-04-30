@@ -101,13 +101,6 @@ type BlockChain struct {
 	VerificationMechanism VerificationMechanism
 }
 
-type VerificationMechanism string
-
-const (
-	PROOF_OF_STAKE VerificationMechanism = "pos"
-	PROOF_OF_WORK  VerificationMechanism = "pow"
-)
-
 func GetConfig(exchange string) (*ConfigApi, error) {
 	var configApi ConfigApi
 	usr, _ := user.Current()
