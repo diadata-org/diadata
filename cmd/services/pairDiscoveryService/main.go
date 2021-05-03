@@ -26,7 +26,7 @@ type Pairs struct {
 }
 
 func getPairsFromConfig(exchange string) ([]dia.Pair, error) {
-	configFileAPI := configCollectors.ConfigFileConnectors(exchange)
+	configFileAPI := configCollectors.ConfigFileConnectors(exchange, ".json")
 	// configFileAPI := "config/" + exchange + ".json"
 	var coins Pairs
 	err := gonfig.GetConf(configFileAPI, &coins)

@@ -249,6 +249,10 @@ func main() {
 		// Index
 		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
+
+		// Endpoints for NFTs
+		dia.GET("/NFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
+		dia.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

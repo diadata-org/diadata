@@ -8,7 +8,9 @@ import (
 	logrus "github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
+
 var log = logrus.New()
+
 func (c *ConfigCollectors) Exchanges() []string {
 	return []string{dia.BinanceExchange, dia.BitfinexExchange, dia.CoinBaseExchange, dia.KrakenExchange, dia.UnknownExchange}
 }
@@ -38,26 +40,26 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	return false
 }
 
-func ConfigFileConnectors(exchange string) string {
+func ConfigFileConnectors(exchange string, filetype string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	if dir == "/root" || dir == "/home" {
-		return "/config/" + exchange + ".json" //hack for docker...
+		return "/config/" + exchange + filetype //hack for docker...
 	}
 	if dir == "/home/travis" {
-		return "../config/" + exchange + ".json" //hack for travis
+		return "../config/" + exchange + filetype //hack for travis
 	}
 	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + ".json"
 }
 
-func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
+func NewConfigCollectorsIfExists(exchange string, filetype string) *ConfigCollectors {
 	var connectorConfig = ConfigCollectors{
 		Coins: []dia.Pair{},
 	}
 	if exchange == "" {
 		for _, e := range dia.Exchanges() {
 			var c = ConfigCollectors{}
-			file := ConfigFileConnectors(e)
+			file := ConfigFileConnectors(e, filetype)
 			err := gonfig.GetConf(file, &c)
 			if err != nil {
 				log.Error("error loading <", file, "> ", err)
@@ -67,7 +69,7 @@ func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 			}
 		}
 	} else {
-		file := ConfigFileConnectors(exchange)
+		file := ConfigFileConnectors(exchange, filetype)
 		err := gonfig.GetConf(file, &connectorConfig)
 		if err != nil {
 			log.Error("error loading <", file, "> ", err)
@@ -79,8 +81,8 @@ func NewConfigCollectorsIfExists(exchange string) *ConfigCollectors {
 	return &connectorConfig
 }
 
-func NewConfigCollectors(exchange string) *ConfigCollectors {
-	cc := NewConfigCollectorsIfExists(exchange)
+func NewConfigCollectors(exchange string, filetype string) *ConfigCollectors {
+	cc := NewConfigCollectorsIfExists(exchange, filetype)
 	if cc == nil {
 		log.Fatal("error in NewConfigCollectors")
 	}

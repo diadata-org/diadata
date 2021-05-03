@@ -3,6 +3,7 @@ package nftsource
 import (
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -64,8 +65,8 @@ func (ons *OpenseaNFTSource) Close() chan bool {
 }
 
 // retrieve nft classes from opensea api. Ordered by number of sales in descending order.
-func fetchClasses(offset, limit int) (acs []AssetContract, err error) {
-	resp, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=desc&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
+func fetchClasses(offset, limit int, order_direction string) (acs []AssetContract, err error) {
+	resp, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
 	if err != nil {
 		return
 	}
@@ -86,10 +87,15 @@ func fetchClasses(offset, limit int) (acs []AssetContract, err error) {
 }
 
 func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
-	// totalPages := 50 * 400
+	// totalPages := 50 * 200 - this is the limit on offset parameter in the api endpoint
 	checkmap := make(map[common.Address]struct{})
-	for k := 0; k < 400; k++ {
-		assetContracts, err := fetchClasses(k*50, 50)
+	for k := 0; k < 200; k++ {
+		assetContracts, err := fetchClasses(k*50, 50, "desc")
+		if err != nil {
+			log.Error(err)
+		}
+		assetContractsAsc, err := fetchClasses(k*50, 50, "asc")
+		assetContracts = append(assetContracts, assetContractsAsc...)
 		if err != nil {
 			log.Error(err)
 		}
@@ -106,6 +112,7 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 				checkmap[nftClass.Address] = struct{}{}
 			}
 		}
+		time.Sleep(1 * time.Second)
 	}
 
 	// Gracefully close channel after iterating through all classes

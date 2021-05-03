@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
@@ -17,6 +18,10 @@ type RelDatastore interface {
 
 	// NFT methods
 	SetNFTClass(nftClass dia.NFTClass) error
+	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
+	GetNFTClassID(address common.Address, blockchain string) (ID string, err error)
+	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
+	GetNFTCategories() ([]string, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -25,9 +30,12 @@ type RelDatastore interface {
 const (
 	postgresKey = "postgres_credentials.txt"
 
-	blockchainTable = "blockchain"
-	nftclassTable   = "nftclass"
-	nftTable        = "nft"
+	blockchainTable  = "blockchain"
+	nftcategoryTable = "nftcategory"
+	nftclassTable    = "nftclass"
+	nftTable         = "nft"
+	nftsaleTable     = "nftsale"
+	nftofferTable    = "nftoffer"
 
 	// time format for blockchain genesis dates
 	timeFormatBlockchain = "2006-01-02"

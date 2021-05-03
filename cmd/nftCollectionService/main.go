@@ -1,13 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgconn"
 
 	nftsource "github.com/diadata-org/diadata/internal/pkg/nftService"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -48,9 +55,26 @@ func main() {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
 	}
-	// Initial run:
+
+	// Initial run.
 	runNFTSource(relDB, *nftSource, *secret)
-	// Afterwards, run every @fetchPeriodMinutes
+
+	// load gitcoin files for categorization of NFT classes.
+	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
+	for _, file := range gitcoinfiles {
+		path := "nftClassesGitcoin/" + file
+		gitcoinCategories, err := readFile(path)
+		if err != nil {
+			log.Errorln("Error while reading  file", path, err)
+			continue
+		}
+		err = setGitcoinCategories(gitcoinCategories, relDB)
+		if err != nil {
+			log.Error("error writing gitcoin submissions: ", err)
+		}
+	}
+
+	// Afterwards, run every @fetchPeriodMinutes.
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
 		for {
@@ -76,20 +100,93 @@ func runNFTSource(relDB *models.RelDB, source string, secret string) error {
 				var pgErr *pgconn.PgError
 				if errors.As(err, &pgErr) {
 					if pgErr.Code == "23505" {
-						log.Infof("asset %v already in db. continue.", receivedClass)
+						log.Infof("nft %v already in db. continue.", receivedClass)
 						continue
 					} else {
-						log.Errorf("postgres error saving asset %v: %v", receivedClass, err)
+						log.Errorf("postgres error saving nft %v: %v", receivedClass, err)
 					}
 				} else {
-					log.Errorf("Error saving asset %v: %v", receivedClass, err)
+					log.Errorf("Error saving nft %v: %v", receivedClass, err)
 				}
 			} else {
-				log.Info("successfully set asset ", receivedClass)
+				log.Info("successfully set nft ", receivedClass)
 			}
 
 		case <-nftCollector.Close():
 			return nil
 		}
 	}
+}
+
+// ----------------------------------------------------------------------------
+// Gitcoin submission functionality
+// ----------------------------------------------------------------------------
+
+type GitcoinSubmission struct {
+	AllItems []SubmissionItem `json:"NFTClasses"`
+}
+
+type SubmissionItem struct {
+	Address      string `json:"Address"`
+	Symbol       string `json:"Symbol"`
+	Name         string `json:"Name"`
+	Blockchain   string `json:"Blockchain"`
+	ContractType string `json:"ContractType"`
+	Category     string `json:"Category"`
+}
+
+// readFile reads a gitcoin submission json file and returns a slice of NFTClasse items.
+func readFile(filename string) (items GitcoinSubmission, err error) {
+	var (
+		jsonFile  *os.File
+		filebytes []byte
+	)
+	path := configCollectors.ConfigFileConnectors(filename, "")
+	jsonFile, err = os.Open(path)
+	if err != nil {
+		return
+	}
+	defer jsonFile.Close()
+
+	filebytes, err = ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+	json.Unmarshal(filebytes, &items)
+	return
+}
+
+// setGitcoinCategories writes all mappings from submissions into exchangesymbol table.
+func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) error {
+	for _, nftClass := range submissions.AllItems {
+		// Get ID of underlying NFTClass.
+		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address), nftClass.Blockchain)
+		if err != nil {
+			return err
+		}
+
+		// Write into nftclass table and update Category.
+		success, err := relDB.UpdateNFTClassCategory(nftClassID, nftClass.Category)
+		if err != nil || !success {
+			return err
+		}
+	}
+	return nil
+}
+
+func iterateDirectory(foldername string) (files []string) {
+	path := configCollectors.ConfigFileConnectors(foldername, "")
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fileExtension := filepath.Ext(path)
+
+		if fileExtension == ".json" {
+			files = append(files, info.Name())
+			fmt.Printf("File Name: %s\n", info.Name())
+		}
+		return nil
+	})
+	return
 }

@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -22,6 +22,7 @@ import (
 
 type Env struct {
 	DataStore models.Datastore
+	RelDB     models.RelDB
 }
 
 // PostSupply godoc
@@ -1234,7 +1235,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24 * time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1274,4 +1275,27 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, constituents)
+}
+
+// -----------------------------------------------------------------------------
+// NFT
+// -----------------------------------------------------------------------------
+
+// GetNFTCategories returns all available NFT categories.
+func (env *Env) GetNFTCategories(c *gin.Context) {
+	q, err := env.RelDB.GetNFTCategories()
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTClasses returns all NFT classes.
+func (env *Env) GetNFTClasses(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	q, err := env.RelDB.GetAllNFTClasses(blockchain)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
 }

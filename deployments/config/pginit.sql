@@ -44,16 +44,24 @@ CREATE TABLE exchangesymbol (
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id integer primary key generated always as identity,
-    UNIQUE name text not null,
+    name text not null,
     genesisdate timestamp,
     nativetoken text,
-	verificationmechanism text
+	verificationmechanism text,
+    UNIQUE(name)
 );
 
 
 ---------------------------------------
 ------- tables for NFT storage --------
 ---------------------------------------
+
+-- collect all possible categories for nfts
+CREATE TABLE nftcategory (
+    category_id UUID DEFAULT gen_random_uuid(),
+    category text not null,
+    UNIQUE(category)
+);
 
 -- nftclass is uniquely defined by the pair (blockchain,address),
 -- referring to the blockchain on which the nft was minted.
@@ -64,8 +72,9 @@ CREATE TABLE nftclass (
     name text,
     blockchain text REFERENCES blockchain(name),
     contract_type text,
-    category text REFERENCES nftcategories(category),
-    UNIQUE(blockchain,address)
+    category text REFERENCES nftcategory(category),
+    UNIQUE(blockchain,address),
+    UNIQUE(nftclass_id)
 );
 
 -- an element from nft is a specific non-fungible nft, unqiuely
@@ -76,33 +85,29 @@ CREATE TABLE nft (
     tokenID text not null,
     creation_time timestamp,
     creator_address text,
+    uri text,
     attributes json,
-    uri text
+    UNIQUE(nft_id)
 );
 
--- collect all possible categories for nfts
-CREATE TABLE nftcategories (
-    category_id UUID DEFAULT gen_random_uuid(),
-    category text not null,
-    UNIQUE(category)
-);
-
-CREATE TABLE nftsales (
+CREATE TABLE nftsale (
     sale_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
     time timestamp,
     price_usd numeric,
     transfer_from text,
     transfer_to text,
-    marketplace text
+    marketplace text,
+    UNIQUE(sale_id)
 );
 
-CREATE TABLE nftoffers (
+CREATE TABLE nftoffer (
     offer_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
     time timestamp,
     time_expiration timestamp,
-    price_usd,
+    price_usd numeric,
     from_address text,
-    marketplace text
+    marketplace text,
+    UNIQUE(offer_id)
 );
