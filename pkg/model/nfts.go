@@ -7,6 +7,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
 )
@@ -43,12 +44,13 @@ func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass
 	var address string
 	for rows.Next() {
 		var nftClass dia.NFTClass
-		err := rows.Scan(&address, &nftClass.Symbol, &nftClass.Name, &nftClass.Blockchain, &nftClass.ContractType, nftClass.Category)
+		var category pgtype.Unknown
+		err := rows.Scan(&address, &nftClass.Symbol, &nftClass.Name, &nftClass.Blockchain, &nftClass.ContractType, &category)
 		if err != nil {
 			log.Error(err)
 		}
-		addressCommon := common.HexToAddress(address)
-		nftClass.Address = addressCommon
+		nftClass.Address = common.HexToAddress(address)
+		nftClass.Category = category.String
 		nftClasses = append(nftClasses, nftClass)
 	}
 	return
@@ -66,10 +68,16 @@ func (rdb *RelDB) GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass
 
 	for rows.Next() {
 		var nftClass dia.NFTClass
+		var category pgtype.Unknown
 		var address string
-		rows.Scan(&address, &nftClass.Symbol, &nftClass.Name, &nftClass.Blockchain, &nftClass.ContractType, &nftClass.Category)
+		err := rows.Scan(&address, &nftClass.Symbol, &nftClass.Name, &nftClass.Blockchain, &nftClass.ContractType, &category)
+		if err != nil {
+			log.Error(err)
+		}
 		nftClass.Address = common.HexToAddress(address)
+		nftClass.Category = category.String
 		nftClasses = append(nftClasses, nftClass)
+
 	}
 	return
 }
