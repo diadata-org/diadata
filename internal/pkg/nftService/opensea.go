@@ -112,7 +112,7 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 				checkmap[nftClass.Address] = struct{}{}
 			}
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 
 	// Gracefully close channel after iterating through all classes

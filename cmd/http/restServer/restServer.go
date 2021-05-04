@@ -183,7 +183,14 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
-	diaApiEnv := &diaApi.Env{store}
+	relStore, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("NewRelDataStore", err)
+	}
+	diaApiEnv := &diaApi.Env{
+		DataStore: store,
+		RelDB:     *relStore,
+	}
 
 	diaAuth := r.Group("/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
@@ -251,7 +258,8 @@ func main() {
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 
 		// Endpoints for NFTs
-		dia.GET("/NFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
+		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
+		dia.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
 		dia.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
 	}
 

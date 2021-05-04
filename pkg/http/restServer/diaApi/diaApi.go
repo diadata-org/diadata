@@ -1291,9 +1291,29 @@ func (env *Env) GetNFTCategories(c *gin.Context) {
 }
 
 // GetNFTClasses returns all NFT classes.
-func (env *Env) GetNFTClasses(c *gin.Context) {
+func (env *Env) GetAllNFTClasses(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	q, err := env.RelDB.GetAllNFTClasses(blockchain)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTClasses returns all NFT classes.
+func (env *Env) GetNFTClasses(c *gin.Context) {
+	limitString := c.Param("limit")
+	offsetString := c.Param("offset")
+	limit, err := strconv.ParseUint(limitString, 10, 32)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	offset, err := strconv.ParseUint(offsetString, 10, 32)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	q, err := env.RelDB.GetNFTClasses(limit, offset)
 	if len(q) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}

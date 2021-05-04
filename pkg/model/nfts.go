@@ -54,6 +54,26 @@ func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass
 	return
 }
 
+// GetNFTClassPage returns @limit NFT classes with @offset.
+func (rdb *RelDB) GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error) {
+
+	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s LIMIT $1 OFFSET $2", nftclassTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, limit, offset)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var nftClass dia.NFTClass
+		var address string
+		rows.Scan(&address, &nftClass.Symbol, &nftClass.Name, &nftClass.Blockchain, &nftClass.ContractType, &nftClass.Category)
+		nftClass.Address = common.HexToAddress(address)
+		nftClasses = append(nftClasses, nftClass)
+	}
+	return
+}
+
 func (rdb *RelDB) UpdateNFTClassCategory(nftclassID string, category string) (bool, error) {
 	query := fmt.Sprintf("update %s set category=$1 where nftclass_id=$2", nftclassTable)
 	resp, err := rdb.postgresClient.Exec(context.Background(), query, category, nftclassID)
