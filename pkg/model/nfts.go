@@ -117,3 +117,8 @@ func (rdb *RelDB) GetNFTCategories() (categories []string, err error) {
 	}
 	return
 }
+
+func (rdb *RelDB) SetNFTData(nft dia.NFT) error {
+	// TO DO
+	return nil
+}

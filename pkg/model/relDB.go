@@ -24,6 +24,8 @@ type RelDatastore interface {
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 
+	SetNFTData(nft dia.NFT) error
+
 	// General methods
 	GetKeys(table string) ([]string, error)
 }
