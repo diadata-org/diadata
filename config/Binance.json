@@ -2,6 +2,24 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "AKROUSDT",
+            "Ignore": false,
+            "Symbol": "AKRO"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "AKROBTC",
+            "Ignore": false,
+            "Symbol": "AKRO"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PERPUSDT",
+            "Ignore": false,
+            "Symbol": "PERP"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SUPERUSDT",
             "Ignore": false,
             "Symbol": "SUPER"
@@ -581,6 +599,12 @@
             "ForeignName": "ENGETH",
             "Ignore": true,
             "Symbol": "ENG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ENJUSDT",
+            "Ignore": true,
+            "Symbol": "ENJ"
         },
         {
             "Exchange": "Binance",

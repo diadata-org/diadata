@@ -39,6 +39,10 @@
     {
       "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55",
       "Symbol": "SUPER"
+    },
+    {
+      "Address": "0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd",
+      "Symbol": "pCWS"
     }
   ]
 }

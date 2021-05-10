@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "AKRO_USDT",
+      "Ignore": false,
+      "Symbol": "AKRO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PERP_USDT",
+      "Ignore": false,
+      "Symbol": "PERP"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SUPER_USDT",
       "Ignore": false,
       "Symbol": "SUPER"
