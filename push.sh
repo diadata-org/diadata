@@ -267,7 +267,7 @@ main() {
 			rebuild_service $RESULT
 		done
 	else
-		RESULT=`cat $FILETMP | grep $LINENUMBER | cut -f2- -d\- `
+		RESULT=`cat $FILETMP | grep ${LINENUMBER}- | cut -f2- -d\- `
 		rebuild_service $RESULT
 	fi
 
@@ -281,6 +281,8 @@ main() {
 
 	selectLocalHost
 	clean
+
+	rm -f $FILETMP $FILETMP2
 
 	echo "docker stack services $STACKNAME  "
 	echo "run this to get logs:"

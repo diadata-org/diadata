@@ -7,46 +7,26 @@ import (
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
+	log "github.com/sirupsen/logrus"
 )
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
 
-	// --- Assets methods ---
-	// --------- Persistent ---------
-	SetAsset(asset dia.Asset) error
-	GetAsset(address, blockchain string) (dia.Asset, error)
-	GetAssetByID(ID string) (dia.Asset, error)
-	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
-	GetAllAssets(blockchain string) ([]dia.Asset, error)
-	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
-	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
-	GetAssetID(asset dia.Asset) (string, error)
-	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
-	Count() (uint32, error)
+	// NFT methods
+	SetNFTClass(nftClass dia.NFTClass) error
+	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
+	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
+	GetNFTClassID(address common.Address, blockchain string) (ID string, err error)
+	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
+	GetNFTCategories() ([]string, error)
 
-	// --------------- asset methods for exchanges ---------------
-	SetExchangePair(exchange string, pair dia.ExchangePair)
-	GetExchangePair(exchange string, foreignname string) (exchangepair dia.ExchangePair, err error)
-	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
-	GetPairs(exchange string) ([]dia.ExchangePair, error)
-	SetExchangeSymbol(exchange string, symbol string) error
-	GetExchangeSymbols(exchange string) ([]string, error)
-	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
-	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
-	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
-
-	// ----------------- blockchain methods -------------------
-	GetBlockchain(name string) (dia.BlockChain, error)
-
-	// ------ Caching ------
-	SetAssetCache(asset dia.Asset) error
-	GetAssetCache(symbol, name string) (dia.Asset, error)
-	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
-	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
-	CountCache() (uint32, error)
+	SetNFT(nft dia.NFT) error
+	GetNFT(address common.Address, tokenID uint64) (dia.NFT, error)
+	SetNFTTrade(trade dia.NFTTrade) error
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -55,15 +35,12 @@ type RelDatastore interface {
 const (
 	postgresKey = "postgres_credentials.txt"
 
-	// postgres tables
-	assetTable          = "asset"
-	exchangepairTable   = "exchangepair"
-	exchangesymbolTable = "exchangesymbol"
-	blockchainTable     = "blockchain"
-
-	// cache keys
-	keyAssetCache        = "dia_asset_"
-	keyExchangePairCache = "dia_exchangepair_"
+	blockchainTable  = "blockchain"
+	nftcategoryTable = "nftcategory"
+	nftclassTable    = "nftclass"
+	nftTable         = "nft"
+	nftsaleTable     = "nftsale"
+	nftofferTable    = "nftoffer"
 
 	// time format for blockchain genesis dates
 	timeFormatBlockchain = "2006-01-02"

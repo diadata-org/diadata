@@ -16,12 +16,12 @@ func (c *ConfigCollectors) Exchanges() []string {
 }
 
 type ConfigCollectors struct {
-	Coins []dia.ExchangePair
+	Coins []dia.Pair
 }
 
-func (c *ConfigCollectors) AllPairs() []dia.ExchangePair {
+func (c *ConfigCollectors) AllPairs() []dia.Pair {
 	founds := map[string]bool{}
-	result := []dia.ExchangePair{}
+	result := []dia.Pair{}
 	for _, configPair := range c.Coins {
 		if _, ok := founds[configPair.ForeignName]; !ok {
 			founds[configPair.ForeignName] = true
@@ -40,23 +40,21 @@ func (c *ConfigCollectors) IsSymbolInConfig(symbol string) bool {
 	return false
 }
 
-// ConfigFileConnectors returns a path to folder @exchange in config folder if @filteype is empty.
-// If @filteype is a filetype it returns the path to file @exchange as a @filteype file.
-func ConfigFileConnectors(exchange string, fileteype string) string {
+func ConfigFileConnectors(exchange string, filetype string) string {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	if dir == "/root" || dir == "/home" {
-		return "/config/" + exchange + fileteype //hack for docker...
+		return "/config/" + exchange + filetype //hack for docker...
 	}
 	if dir == "/home/travis" {
-		return "../config/" + exchange + fileteype //hack for travis
+		return "../config/" + exchange + filetype //hack for travis
 	}
-	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + fileteype
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + ".json"
 }
 
 func NewConfigCollectorsIfExists(exchange string, filetype string) *ConfigCollectors {
 	var connectorConfig = ConfigCollectors{
-		Coins: []dia.ExchangePair{},
+		Coins: []dia.Pair{},
 	}
 	if exchange == "" {
 		for _, e := range dia.Exchanges() {

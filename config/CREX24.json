@@ -7447,12 +7447,6 @@
             "Ignore": true
         },
         {
-            "Symbol": "SUPER",
-            "ForeignName": "SUPER-BTC",
-            "Exchange": "CREX24",
-            "Ignore": true
-        },
-        {
             "Symbol": "SURE",
             "ForeignName": "SURE-BTC",
             "Exchange": "CREX24",

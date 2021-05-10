@@ -64,16 +64,16 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	relDB, err := models.NewRelDataStore()
+	ds, err := models.NewRedisDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
 
-	pairsExchange, err := relDB.GetExchangePairSymbols(*exchange)
-	log.Info("available exchangePairs:", len(pairsExchange))
+	pairsExchange, err := ds.GetAvailablePairsForExchange(*exchange)
+	log.Info("available pairs:", len(pairsExchange))
 
 	if err != nil || len(pairsExchange) == 0 {
-		log.Error("error on GetExchangePairSymbols", err)
+		log.Error("error on GetAvailablePairsForExchange", err)
 		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 		pairsExchange = cc.AllPairs()
 	}
@@ -82,28 +82,26 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
+	es := scrapers.NewAPIScraper(*exchange, configApi.ApiKey, configApi.SecretKey)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	defer w.Close()
 
 	wg := sync.WaitGroup{}
 
-	exchangePairs := make(map[string]string)
+	pairs := make(map[string]string)
 
-	// TO DO: Add check for new pairs. i.e. put a ticker around the following loop
-	// and add a control whether new pairs are there.
 	for _, configPair := range pairsExchange {
 		dontAddPair := false
 		if *onePairPerSymbol {
-			_, dontAddPair = exchangePairs[configPair.Symbol]
-			exchangePairs[configPair.Symbol] = configPair.Symbol
+			_, dontAddPair = pairs[configPair.Symbol]
+			pairs[configPair.Symbol] = configPair.Symbol
 		}
 		if dontAddPair {
 			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
 		} else {
 			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-			_, err := es.ScrapePair(dia.ExchangePair{
+			_, err := es.ScrapePair(dia.Pair{
 				Symbol:      configPair.Symbol,
 				ForeignName: configPair.ForeignName})
 			if err != nil {

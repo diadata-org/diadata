@@ -1,0 +1,46 @@
+version: '3.2'
+services:
+
+  genericnftcollector:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-nftCollectionService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftcollector:latest
+    restart: "no"
+    networks:
+      - redis-network
+      - postgres-network
+    environment:
+      - EXEC_MODE=production
+    secrets:
+      - postgres_credentials
+    logging:
+      options:
+        max-size: "50m"
+
+  openseanftcollector:
+    depends_on: [genericnftcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftcollector:latest
+    command: /bin/nftCollectionService -source=Opensea
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+    networks:
+      - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
+
+secrets:
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
+
+networks:
+  redis-network:
+    external:
+        name: redis_redis-network
+  postgres-network:
+    external:
+        name: postgres_postgres-network
