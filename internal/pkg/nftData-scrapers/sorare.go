@@ -308,7 +308,6 @@ func (scraper *SorareScraper) UpdateNFT() error {
 }
 
 func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
-	// TO DO: iterate over all NFT IDs and fill []dia.NFT
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return
@@ -352,6 +351,12 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 			continue
 		}
 
+		tokenURI, err := scraper.GetTokenURI(tok)
+		if err != nil {
+			fmt.Errorf("Error getting token URI for %d: %+v", tok, err)
+			continue
+		}
+
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPlayer(tok)
 		if err != nil {
@@ -372,6 +377,7 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 			CreatorAddress: creatorAddress,
 			CreationTime:   creationTime,
 			NFTClass:       sorareNTFClass,
+			URI:            tokenURI,
 		})
 	}
 	return sorareNFTs, nil
@@ -384,6 +390,15 @@ func (scraper *SorareScraper) GetTotalSupply() (*big.Int, error) {
 		fmt.Println("error getting contract: ", err)
 	}
 	return contract.TotalSupply(&bind.CallOpts{})
+}
+
+// GetTokenURI returns the token URI.
+func (scraper *SorareScraper) GetTokenURI(index *big.Int) (string, error) {
+	contract, err := sorare.NewSorareTokensCaller(scraper.address, scraper.nftscraper.ethConnection)
+	if err != nil {
+		fmt.Println("error getting contract: ", err)
+	}
+	return contract.TokenURI(&bind.CallOpts{}, index)
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
