@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"sync"
+
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 // pairs contains all pairs currently supported by the DIA scrapers
@@ -42,7 +43,7 @@ func main() {
 
 	s := map[string]scrapers.APIScraper{}
 
-	cc := configCollectors.NewConfigCollectors(*exchange)
+	cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 
 	wg := sync.WaitGroup{}
 

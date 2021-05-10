@@ -74,7 +74,7 @@ func main() {
 
 	if err != nil || len(pairsExchange) == 0 {
 		log.Error("error on GetAvailablePairsForExchange", err)
-		cc := configCollectors.NewConfigCollectors(*exchange)
+		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 		pairsExchange = cc.AllPairs()
 	}
 

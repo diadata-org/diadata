@@ -69,6 +69,28 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+type NFTTrade struct {
+	NFT         NFT
+	Timestamp   time.Time
+	PriceUSD    float64
+	FromAddress common.Address
+	ToAddress   common.Address
+	Exchange    string
+}
+
+// MarshalBinary for DefiProtocolState
+func (ns *NFTTrade) MarshalBinary() ([]byte, error) {
+	return json.Marshal(ns)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &ns); err != nil {
+		return err
+	}
+	return nil
+}
+
 type Exchange struct {
 	Name          string
 	Centralized   bool
