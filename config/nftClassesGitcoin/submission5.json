@@ -1,0 +1,324 @@
+{
+    "NFTClasses": [
+        {
+            "Address": "0x4caaf4e5c5132b3f532749255541ea5c33bb61c4",
+            "Symbol": "BBBS",
+            "Name": "Boney BBs",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x7b23b086d32f0dd344cd2073a89e00676c58e0a5",
+            "Symbol": "STD",
+            "Name": "NFTStudio:Token",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xd92e44ac213b9ebda0178e1523cc0ce177b7fa96",
+            "Symbol": "BEEPLE2",
+            "Name": "Beeple Round 2 Open Edition",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xef36ff3b28f528a37eb2aad4c9316bde4759f9b4",
+            "Symbol": "DH",
+            "Name": "DONUT HEADS",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x55a7a2f764a86b4622510af16006c8017cdd76db",
+            "Symbol": "LF2",
+            "Name": "Little Fighter",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xaa5e9cd4223cfc1c09272fd7da2c4cf3041720f4",
+            "Symbol": "SVIN",
+            "Name": "Crypto SVIN",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2683dc00083ecf26443362664cbc92f7514ebe62",
+            "Symbol": "MGT",
+            "Name": "Mani Grupa Token",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xa194bef56be26c2ac087de7514e9855c5b944544",
+            "Symbol": "RBC",
+            "Name": "Revo Box collection",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x0760abbcade5fe056bbd79a625ca2e18c17dc0e8",
+            "Symbol": "nQUB",
+            "Name": "nQUB NFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x9c008a22d71b6182029b694b0311486e4c0e53db",
+            "Symbol": "APYMON",
+            "Name": "Apymon",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x77301021b53a871e9f14ad1b6762a619c58014e4",
+            "Symbol": "BDK",
+            "Name": "Blockdeck",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xa92e3ab42c195e52c9fbf129be47ecbb03845dfd",
+            "Symbol": "PIECE",
+            "Name": "CryptoMasterpieces",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x8853b05833029e3cf8d3cbb592f9784fa43d2a79",
+            "Symbol": "CR",
+            "Name": "Codex Record",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0xafee04257f9ef008bc4a66e3fcf247680f3c787e",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xb48bfe9fc7cb9ffd63bfc3230002e82f871df447",
+            "Symbol": "GROWTHBYCALVINHARRISXEMILNAVA",
+            "Name": "GROWTH by Calvin Harris x Emil Nava",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xe3a0343b198177870a72873a2ec78943536d29e4",
+            "Symbol": "GHSTY",
+            "Name": "GHSTY",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6fe5e7acfdfbdfc15d1f451308b889011a534570",
+            "Symbol": "BLX",
+            "Name": "BALEX SNEAKERS",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x74f1334e210bbd0ae2555ec212019cd77a6a36ff",
+            "Symbol": "KEKMOHF",
+            "Name": "KEK Museum of History And Future",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xe54891774eed9277236bac10d82788aee0aed313",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xa342f5d851e866e18ff98f351f2c6637f4478db5",
+            "Symbol": "ASSET",
+            "Name": "Sandbox's ASSETs",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0x1dd2c47496fbd9d38ac9a884d15d816b062e1f6e",
+            "Symbol": "E-M",
+            "Name": "ETH-MEN",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xc0e1729ce42394570573a0079ea0ba9ad5e29bf4",
+            "Symbol": "Deansace",
+            "Name": "Deansace",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xfaafdc07907ff5120a76b34b731b278c38d6043c",
+            "Symbol": "",
+            "Name": "Enjin",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xdd4f84e4f3cd31d6c91d80122b5a26cb4ae66bd5",
+            "Symbol": "sdNFT",
+            "Name": "Stake DAO NFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x7227e371540cf7b8e512544ba6871472031f3335",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xd1e5b0ff1287aa9f9a268759062e4ab08b9dacbe",
+            "Symbol": "",
+            "Name": ".crypto",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Domains"
+        },
+        {
+            "Address": "0x9928a8ea82d86290dfd1920e126b3872890525b3",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xb26e09db6656b998d2913f13870e06c151c37900",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
+            "Symbol": "ENS",
+            "Name": "ENS",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Domains"
+        },
+        {
+            "Address": "0x0f384a08719ab48fec3f2e2ab8c1420e9d214566",
+            "Symbol": "CryptoCola",
+            "Name": "Crypto Cola",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6cd2abb5d4cd191236d2ed4f0612dcfe9e98844a",
+            "Symbol": "AxieChat",
+            "Name": "AxieChat",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0xf3bb137b2a6d518700c6b7e85b05341599822397",
+            "Symbol": "Rehab",
+            "Name": "Rehab Creations",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xa53ceab15f40e83e8ab7608d42004daa9ecc4edd",
+            "Symbol": "IHAVETORETURNSOMEVIDEOTAPESBYLUSHSUX",
+            "Name": "I have to return some videotapes  by Lushsux",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x574f64ac2e7215cba9752b85fc73030f35166bc0",
+            "Symbol": "DCLDGTBLHDSPC",
+            "Name": "DCL Dgtble Headspace",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xf52fbd056ed1f1ab01d4296fce136d6c0a2bbfaf",
+            "Symbol": "MTHDNFT",
+            "Name": "MethodNFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x6e4c6d9b0930073e958abd2aba516b885260b8ff",
+            "Symbol": "INFA",
+            "Name": "Influence Asteroids",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0x5f5c08f823aeeddc8a4e53e4f144e7a8f50d3b37",
+            "Symbol": "AWW",
+            "Name": "AWW.GAMES",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0x2af75676692817d85121353f0d6e8e9ae6ad5576",
+            "Symbol": "F1DT",
+            "Name": "F1® Delta Time",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xc2d5bc0fd802bf72f2722617d27558f39fe5804b",
+            "Symbol": "💀 ",
+            "Name": "FMMTOYS",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x47dd306909fcd7cd22dfbf2548f7e43a8594b243",
+            "Symbol": "TLDC",
+            "Name": "ToryLanez Digital Collectibles",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        }
+    ]
+}

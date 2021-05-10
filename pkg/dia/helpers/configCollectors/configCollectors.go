@@ -49,7 +49,7 @@ func ConfigFileConnectors(exchange string, filetype string) string {
 	if dir == "/home/travis" {
 		return "../config/" + exchange + filetype //hack for travis
 	}
-	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + ".json"
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + filetype
 }
 
 func NewConfigCollectorsIfExists(exchange string, filetype string) *ConfigCollectors {
