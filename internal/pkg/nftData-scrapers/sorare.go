@@ -373,8 +373,6 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 			CreationTime:   creationTime,
 			NFTClass:       sorareNTFClass,
 		})
-
-		fmt.Printf("%s  --  %+v  --  %+v\n\n", result, creatorAddress, creationTime)
 	}
 	return sorareNFTs, nil
 }
