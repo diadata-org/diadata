@@ -8,7 +8,6 @@ import (
 	"math"
 	"math/big"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -174,6 +173,9 @@ func (s *UniswapScraper) mainLoop() {
 		log.Error(s.error.Error())
 	}
 	for i := 0; i < numPairs; i++ {
+		if s.exchangeName == "PanCakeSwap" {
+			time.Sleep(200 * time.Millisecond)
+		}
 
 		pair, err := s.GetPairByID(int64(i))
 		if err != nil {
@@ -234,7 +236,7 @@ func (s *UniswapScraper) mainLoop() {
 							VerifiedPair:   true,
 						}
 						// If we need quotation of a base token, reverse pair
-						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
+						if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
 							tSwapped, err := dia.SwapTrade(*t)
 							if err == nil {
 								t = &tSwapped

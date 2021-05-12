@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
 )
@@ -48,6 +49,18 @@ type RelDatastore interface {
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 	CountCache() (uint32, error)
 
+	// ---------------- NFT methods -------------------
+	SetNFTClass(nftClass dia.NFTClass) error
+	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
+	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
+	GetNFTClassID(address common.Address, blockchain string) (ID string, err error)
+	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
+	GetNFTCategories() ([]string, error)
+
+	SetNFT(nft dia.NFT) error
+	GetNFT(address common.Address, tokenID uint64) (dia.NFT, error)
+	SetNFTTrade(trade dia.NFTTrade) error
+
 	// General methods
 	GetKeys(table string) ([]string, error)
 }
@@ -64,6 +77,11 @@ const (
 	// cache keys
 	keyAssetCache        = "dia_asset_"
 	keyExchangePairCache = "dia_exchangepair_"
+	nftcategoryTable     = "nftcategory"
+	nftclassTable        = "nftclass"
+	nftTable             = "nft"
+	nftsaleTable         = "nftsale"
+	nftofferTable        = "nftoffer"
 
 	// time format for blockchain genesis dates
 	timeFormatBlockchain = "2006-01-02"

@@ -99,7 +99,7 @@ Successful retrieval of available exchanges.
 {% endapi-method-response-example-description %}
 
 ```
-["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
+["KuCoin","Uniswap","Balancer","Maker","Gnosis","Curvefi","Binance","BitBay","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB","Bancor","Loopring","SushiSwap","Dforce","0x","Kyber","Bitmax","PanCakeSwap","CREX24","STEX"]
 ```
 {% endapi-method-response-example %}
 {% endapi-method-response %}

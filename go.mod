@@ -38,9 +38,10 @@ require (
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
-	github.com/jackc/pgtype v1.6.2
+	github.com/jackc/pgconn v1.8.1
+	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx v3.6.2+incompatible
-	github.com/jackc/pgx/v4 v4.10.1
+	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jjjjpppp/quoinex-go-client v0.0.8
 	github.com/json-iterator/go v1.1.10 // indirect
@@ -74,12 +75,11 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 	golang.org/x/exp v0.0.0-20191030013958-a1ab85dbe136 // indirect
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20201216054612-986b41b23924
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	golang.org/x/tools v0.1.0 // indirect

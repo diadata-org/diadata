@@ -1175,8 +1175,6 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	c.JSON(http.StatusOK, constituents)
 }
 
-
-
 // GetMissingExchangeSymbol returns all unverified symbol
 func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
 	exchange := c.Param("exchange")
@@ -1200,3 +1198,45 @@ func (env *Env) GetAsset(c *gin.Context) {
 	}
 }
 
+// -----------------------------------------------------------------------------
+// NFT
+// -----------------------------------------------------------------------------
+
+// GetNFTCategories returns all available NFT categories.
+func (env *Env) GetNFTCategories(c *gin.Context) {
+	q, err := env.RelDB.GetNFTCategories()
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTClasses returns all NFT classes.
+func (env *Env) GetAllNFTClasses(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	q, err := env.RelDB.GetAllNFTClasses(blockchain)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTClasses returns all NFT classes.
+func (env *Env) GetNFTClasses(c *gin.Context) {
+	limitString := c.Param("limit")
+	offsetString := c.Param("offset")
+	limit, err := strconv.ParseUint(limitString, 10, 32)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	offset, err := strconv.ParseUint(offsetString, 10, 32)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	q, err := env.RelDB.GetNFTClasses(limit, offset)
+	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
