@@ -3,6 +3,7 @@ package dia
 import (
 	"os/user"
 	"strings"
+	"time"
 
 	"github.com/tkanos/gonfig"
 )
@@ -43,38 +44,44 @@ const (
 	STEXExchange      = "STEX"
 )
 
+const (
+	Bitcoin  = "Bitcoin"
+	Ethereum = "Ethereum"
+)
+
 func Exchanges() []string {
 	return []string{
 		KuCoinExchange,
-		// BalancerExchange,
-		// BancorExchange,
-		// BinanceExchange,
-		// BitfinexExchange,
-		BitMaxExchange,
+		UniswapExchange,
+		BalancerExchange,
+		MakerExchange,
+		GnosisExchange,
+		CurveFIExchange,
+		BinanceExchange,
+		BitBayExchange,
+		BitfinexExchange,
 		BittrexExchange,
 		CoinBaseExchange,
-		CREX24Exchange,
-		// CurveFIExchange,
-		// DforceExchange,
-		// GateIOExchange,
-		// GnosisExchange,
+		GateIOExchange,
 		HitBTCExchange,
-		// HuobiExchange,
+		HuobiExchange,
 		KrakenExchange,
-		// KyberExchange,
-		// LBankExchange,
-		// LoopringExchange,
-		// MakerExchange,
-		// OKExExchange,
-		// PanCakeSwap,
-		// QuoineExchange,
-		// SimexExchange,
+		LBankExchange,
+		OKExExchange,
+		QuoineExchange,
+		SimexExchange,
+		ZBExchange,
+		BancorExchange,
+		UnknownExchange,
+		LoopringExchange,
+		SushiSwapExchange,
+		DforceExchange,
+		ZeroxExchange,
+		KyberExchange,
+		BitMaxExchange,
+		PanCakeSwap,
+		CREX24Exchange,
 		STEXExchange,
-		// SushiSwapExchange,
-		UniswapExchange,
-		// ZBExchange,
-		// ZeroxExchange,
-		// UnknownExchange,
 	}
 }
 
@@ -84,7 +91,14 @@ type ConfigApi struct {
 }
 
 type ConfigConnector struct {
-	Coins []ExchangePair
+	Coins []Pair
+}
+
+type BlockChain struct {
+	Name                  string
+	GenesisDate           time.Time
+	NativeToken           string
+	VerificationMechanism VerificationMechanism
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {

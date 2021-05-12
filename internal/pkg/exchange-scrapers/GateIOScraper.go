@@ -14,13 +14,7 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _GateIOsocketurl string = "wss://ws.gate.io/v3"
-
-type SubscribeGate struct {
-	Id     int      `json:"id"`
-	Method string   `json:"method"`
-	Params []string `json:"params"`
-}
+var _GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
 
 type ResponseGate struct {
 	Method string        `json:"method,omitempty"`
@@ -28,28 +22,11 @@ type ResponseGate struct {
 	Id     interface{}   `json:"id,omitempty"`
 }
 
-type GateIOTickerData struct {
-	Result string           `json:"result"`
-	Data   []GateIOCurrency `json:"data"`
-}
-
-type GateIOCurrency struct {
-	No          int    `json:"no"`
-	Symbol      string `json:"symbol"`
-	Name        string `json:"name"`
-	NameEn      string `json:"name_en"`
-	NameCn      string `json:"name_cn"`
-	Pair        string `json:"pair"`
-	Rate        string `json:"rate"`
-	VolA        string `json:"vol_a"`
-	VolB        string `json:"vol_b"`
-	CurrA       string `json:"curr_a"`
-	CurrB       string `json:"curr_b"`
-	CurrSuffix  string `json:"curr_suffix"`
-	RatePercent string `json:"rate_percent"`
-	Trend       string `json:"trend"`
-	Lq          string `json:"lq"`
-	PRate       int    `json:"p_rate"`
+type SubscribeGate struct {
+	Time    int64    `json:"time"`
+	Channel string   `json:"channel"`
+	Event   string   `json:"event"`
+	Payload []string `json:"payload"`
 }
 
 type GateIOScraper struct {
@@ -64,118 +41,133 @@ type GateIOScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers           map[string]*GateIOPairScraper
-	exchangeName           string
-	chanTrades             chan *dia.Trade
-	currencySymbolName     map[string]string
-	isTickerMapInitialised bool
+	pairScrapers map[string]*GateIOPairScraper
+	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
-func NewGateIOScraper(exchange dia.Exchange, scrape bool) *GateIOScraper {
+func NewGateIOScraper(exchange dia.Exchange) *GateIOScraper {
 
 	s := &GateIOScraper{
-		shutdown:               make(chan nothing),
-		shutdownDone:           make(chan nothing),
-		pairScrapers:           make(map[string]*GateIOPairScraper),
-		exchangeName:           exchange.Name,
-		error:                  nil,
-		chanTrades:             make(chan *dia.Trade),
-		currencySymbolName:     make(map[string]string),
-		isTickerMapInitialised: false,
+		shutdown:     make(chan nothing),
+		shutdownDone: make(chan nothing),
+		pairScrapers: make(map[string]*GateIOPairScraper),
+		exchangeName: exchange.Name,
+		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
 	}
+
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
+
 	if err != nil {
 		println(err.Error())
 	}
-	s.wsClient = SwConn
 
-	if scrape {
-		go s.mainLoop()
-	}
+	s.wsClient = SwConn
+	go s.mainLoop()
 	return s
+}
+
+type GateIPPairResponse []GateIOPair
+type GateIOPair struct {
+	ID              string `json:"id"`
+	Base            string `json:"base"`
+	Quote           string `json:"quote"`
+	Fee             string `json:"fee"`
+	MinQuoteAmount  string `json:"min_quote_amount,omitempty"`
+	AmountPrecision int    `json:"amount_precision"`
+	Precision       int    `json:"precision"`
+	TradeStatus     string `json:"trade_status"`
+	SellStart       int    `json:"sell_start"`
+	BuyStart        int    `json:"buy_start"`
+	MinBaseAmount   string `json:"min_base_amount,omitempty"`
+}
+
+type GateIOResponseTrade struct {
+	Time    int    `json:"time"`
+	Channel string `json:"channel"`
+	Event   string `json:"event"`
+	Result  struct {
+		ID           int    `json:"id"`
+		CreateTime   int    `json:"create_time"`
+		CreateTimeMs string `json:"create_time_ms"`
+		Side         string `json:"side"`
+		CurrencyPair string `json:"currency_pair"`
+		Amount       string `json:"amount"`
+		Price        string `json:"price"`
+	} `json:"result"`
 }
 
 // runs in a goroutine until s is closed
 func (s *GateIOScraper) mainLoop() {
+	var (
+		gresponse GateIPPairResponse
+		allPairs  []string
+	)
 
-	// wait for all pairs have added into s.PairScrapers
-	time.Sleep(4 * time.Second)
-	allPairs := make([]string, len(s.pairScrapers))
-	var index = 0
-	for key, _ := range s.pairScrapers {
-		allPairs[index] = key
-		index += 1
+
+	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
+	json.Unmarshal(b, &gresponse)
+
+	for _, v := range gresponse {
+		allPairs = append(allPairs, v.ID)
 	}
 
-	// Only one subscribe for all pairs
 	a := &SubscribeGate{
-		Id:     12312,
-		Method: "trades.subscribe",
-		Params: allPairs,
+		Event:   "subscribe",
+		Time:    time.Now().Unix(),
+		Channel: "spot.trades",
+		Payload: allPairs,
 	}
 	var err error
+	log.Infoln("subscribed", allPairs)
 	if err = s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
 	}
 
 	for true {
 
-		message := &ResponseGate{}
+		var message GateIOResponseTrade
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
 			break
 		}
-		var pairRetrieved string
-		for key, v := range message.Params {
-			// key 0 -> pair
-			// key 1 -> datas
-			if key == 0 {
-				pairRetrieved = v.(string)
+
+		ps, ok := s.pairScrapers[message.Result.CurrencyPair]
+		if ok {
+
+			f64Price, err := strconv.ParseFloat(message.Result.Price, 64)
+			if err != nil {
+				log.Errorln("error parsing float Price", err)
+				continue
 			}
-			if key == 1 {
-				ps, ok := s.pairScrapers[pairRetrieved]
-				if ok {
 
-					md := v.([]interface{})
-					for _, v := range md {
-
-						md_inner := v.(map[string]interface{})
-						f64Price_string := md_inner["price"].(string)
-						f64Price, err := strconv.ParseFloat(f64Price_string, 64)
-
-						if err == nil {
-
-							f64Volume_string := md_inner["amount"].(string)
-							f64Volume, err := strconv.ParseFloat(f64Volume_string, 64)
-
-							if err == nil {
-								if md_inner["type"] == "sell" {
-									f64Volume = -f64Volume
-								}
-								timestamp_temp := int64(md_inner["time"].(float64))
-								timestamp := time.Unix(timestamp_temp, 0).UTC()
-								t := &dia.Trade{
-									Symbol:         ps.pair.Symbol,
-									Pair:           pairRetrieved,
-									Price:          f64Price,
-									Volume:         f64Volume,
-									Time:           timestamp,
-									ForeignTradeID: strconv.FormatInt(int64(md_inner["id"].(float64)), 16),
-									Source:         s.exchangeName,
-								}
-								ps.parent.chanTrades <- t
-							} else {
-								log.Error("error parsing volume %v " + md_inner["amount"].(string))
-							}
-						} else {
-							log.Error("error parsing price %v " + md_inner["price"].(string))
-						}
-					}
-				}
+			f64Volume, err := strconv.ParseFloat(message.Result.Amount, 64)
+			if err != nil {
+				log.Errorln("error parsing float Price", err)
+				continue
 			}
+
+			if message.Result.Side == "sell" {
+				f64Volume = -f64Volume
+			}
+
+			t := &dia.Trade{
+				Symbol:         ps.pair.Symbol,
+				Pair:           message.Result.CurrencyPair,
+				Price:          f64Price,
+				Volume:         f64Volume,
+				Time:           time.Unix(int64(message.Result.CreateTime), 0),
+				ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
+				Source:         s.exchangeName,
+			}
+			ps.parent.chanTrades <- t
+			log.Infoln("got trade",t)
+
 		}
+
 	}
 	s.cleanup(err)
 }
@@ -209,7 +201,7 @@ func (s *GateIOScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *GateIOScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (s *GateIOScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -248,7 +240,7 @@ func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{
 	return symbol, nil
 }
 
-func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *GateIOScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	str := strings.Split(pair.ForeignName, "_")
 	symbol := strings.ToUpper(str[0])
 	pair.Symbol = symbol
@@ -266,45 +258,15 @@ func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 	return pair, nil
 }
 
-// FetchTickerData collects all available information on an asset traded on GateIO
-func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-
-	// Fetch Data
-	if !s.isTickerMapInitialised {
-		var (
-			response GateIOTickerData
-			data     []byte
-		)
-		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
-		if err != nil {
-			return
-		}
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return
-		}
-
-		for _, gateioasset := range response.Data {
-			s.currencySymbolName[gateioasset.Symbol] = gateioasset.Name
-		}
-		s.isTickerMapInitialised = true
-
-	}
-
-	asset.Symbol = symbol
-	asset.Name = s.currencySymbolName[symbol]
-	return asset, nil
-}
-
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
 	if err != nil {
 		return
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		pairToNormalize := dia.ExchangePair{
+		pairToNormalize := dia.Pair{
 			Symbol:      "",
 			ForeignName: p,
 			Exchange:    s.exchangeName,
@@ -322,7 +284,7 @@ func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 // GateIOPairScraper implements PairScraper for GateIO
 type GateIOPairScraper struct {
 	parent *GateIOScraper
-	pair   dia.ExchangePair
+	pair   dia.Pair
 	closed bool
 }
 
@@ -346,6 +308,6 @@ func (ps *GateIOPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *GateIOPairScraper) Pair() dia.ExchangePair {
+func (ps *GateIOPairScraper) Pair() dia.Pair {
 	return ps.pair
 }

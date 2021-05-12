@@ -29,8 +29,9 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 | Contract Name | Contract Address |
 | :--- | :--- |
-| DIA Oracle | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://www.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) |
+| DIA Oracle | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) |
 | Coinmarketcap Oracle | [0xbAFEe71d40baBC12a3D0B2b8937ee62D3A070835](https://bscscan.com/address/0xbafee71d40babc12a3d0b2b8937ee62d3a070835) |
+| Coingecko Oracle | [0x48140d0116964f05c97F08e0B3271D78B12506d8](https://bscscan.com/address/0x48140d0116964f05c97f08e0b3271d78b12506d8) |
 
 ### Binance Smart Chain Testnet
 
@@ -44,10 +45,23 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://explorer-mainnet.maticvigil.com/address/0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f) |
 | Coingecko Oracle | [0xa14ce6091786a708cDe547E1bf53911C78777ede](https://explorer-mainnet.maticvigil.com/address/0xa14ce6091786a708cDe547E1bf53911C78777ede) |
+| Coinmarketcap Oracle | [0xF7CD0F8a9D1FD0dF200Cf8a0A6875126457676B8](https://explorer-mainnet.maticvigil.com/address/0xF7CD0F8a9D1FD0dF200Cf8a0A6875126457676B8) |
+
+### Matic Mumbai Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) |
 
 ### Moonbeam Testnet
 
 | Contract Name | Contract Address |
 | :--- | :--- |
-| DIA Oracle | 0xd5e1e0056bed90e46e1a58f0a09449cbebd0ff4a |
+| DIA Oracle | [0x3DCd7C86acf46c7e7F1eb583c7234f85118B9acF](https://moonbase-blockscout.testnet.moonbeam.network/address/0x3DCd7C86acf46c7e7F1eb583c7234f85118B9acF) |
+
+### NEAR Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Request Oracle | [@contract.dia-test.testnet](https://explorer.testnet.near.org/accounts/contract.dia-test.testnet) |
 

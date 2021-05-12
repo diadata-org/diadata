@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/datasource"
+	"github.com/jackc/pgconn"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -21,7 +23,6 @@ var blockchains map[string]dia.BlockChain
 var (
 	log         = logrus.New()
 	assetSource *string
-	key         *string
 	secret      *string
 	caching     *bool
 )
@@ -87,14 +88,24 @@ func main() {
 func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) error {
 
 	log.Println("Fetching asset from ", source)
-	asset := NewAssetScraper(source, secret)
+	assetScraper := NewAssetScraper(source, secret)
 	for {
 		select {
-		case receivedAsset := <-asset.Asset():
+		case receivedAsset := <-assetScraper.Asset():
 			// Set to persistent DB
 			err := relDB.SetAsset(receivedAsset)
 			if err != nil {
-				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
+				var pgErr *pgconn.PgError
+				if errors.As(err, &pgErr) {
+					if pgErr.Code == "23505" {
+						log.Infof("asset %v already in db. continue.", receivedAsset)
+						continue
+					} else {
+						log.Errorf("postgres error saving asset %v: %v", receivedAsset, err)
+					}
+				} else {
+					log.Errorf("Error saving asset %v: %v", receivedAsset, err)
+				}
 			} else {
 				log.Info("successfully set asset ", receivedAsset)
 			}
@@ -106,6 +117,8 @@ func runAssetSource(relDB *models.RelDB, source string, caching bool, secret str
 					log.Error("Error caching asset: ", err)
 				}
 			}
+		case <-assetScraper.Close():
+			return nil
 		}
 	}
 }

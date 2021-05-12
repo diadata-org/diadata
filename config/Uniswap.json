@@ -6007,12 +6007,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "HODL",
-            "ForeignName": "HODL-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "UH3XBOMB",
             "ForeignName": "UH3XBOMB-ETH",
             "Exchange": "UniswapV2",
@@ -11047,12 +11041,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-HODL",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "HYPER",
             "ForeignName": "HYPER-ETH",
             "Exchange": "UniswapV2",
@@ -12441,12 +12429,6 @@
         {
             "Symbol": "NUCN",
             "ForeignName": "NUCN-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -18973,12 +18955,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "HODL",
-            "ForeignName": "HODL-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "GALO",
             "ForeignName": "GALO-ETH",
             "Exchange": "UniswapV2",
@@ -19491,12 +19467,6 @@
         {
             "Symbol": "XAMPGOLD",
             "ForeignName": "XAMPGOLD-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VTX",
-            "ForeignName": "VTX-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -20161,12 +20131,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "Super",
-            "ForeignName": "Super-USDT",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "SHLB",
             "ForeignName": "SHLB-ETH",
             "Exchange": "UniswapV2",
@@ -20263,8 +20227,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "Super",
-            "ForeignName": "Super-ETH",
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SUPER",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -20955,12 +20919,6 @@
         {
             "Symbol": "IVA",
             "ForeignName": "IVA-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-VTX",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -23101,12 +23059,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "HODL",
-            "ForeignName": "HODL-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "OAX",
             "ForeignName": "OAX-ETH",
             "Exchange": "UniswapV2",
@@ -24757,12 +24709,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "SHIT",
             "ForeignName": "SHIT-ETH",
             "Exchange": "UniswapV2",
@@ -24885,12 +24831,6 @@
         {
             "Symbol": "XOR",
             "ForeignName": "XOR-STA",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-NEAR",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -25201,12 +25141,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "FET",
             "ForeignName": "FET-USDT",
             "Exchange": "UniswapV2",
@@ -25269,12 +25203,6 @@
         {
             "Symbol": "ETH",
             "ForeignName": "ETH-SAND",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -25623,12 +25551,6 @@
         {
             "Symbol": "WJL",
             "ForeignName": "WJL-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HODL",
-            "ForeignName": "HODL-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -26269,12 +26191,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "SRM",
             "ForeignName": "SRM-ETH",
             "Exchange": "UniswapV2",
@@ -26295,12 +26211,6 @@
         {
             "Symbol": "SRM",
             "ForeignName": "SRM-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -26348,12 +26258,6 @@
         },
         {
             "Symbol": "ETH",
-            "ForeignName": "ETH-NEAR",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
             "ForeignName": "ETH-GOOC",
             "Exchange": "UniswapV2",
             "Ignore": false
@@ -26373,12 +26277,6 @@
         {
             "Symbol": "ETB",
             "ForeignName": "ETB-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -26829,12 +26727,6 @@
         {
             "Symbol": "SNT",
             "ForeignName": "SNT-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HODL",
-            "ForeignName": "HODL-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -27904,6 +27796,12 @@
         {
             "Symbol": "OPIUM",
             "ForeignName": "OPIUM-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SNOW",
             "Exchange": "UniswapV2",
             "Ignore": false
         }

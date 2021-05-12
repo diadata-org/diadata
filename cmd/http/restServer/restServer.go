@@ -183,13 +183,13 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
-	relDB, err := models.NewRelDataStore()
+	relStore, err := models.NewRelDataStore()
 	if err != nil {
-		log.Errorln("NewDataStore", err)
+		log.Errorln("NewRelDataStore", err)
 	}
 	diaApiEnv := &diaApi.Env{
 		DataStore: store,
-		RelDB:     *relDB,
+		RelDB:     *relStore,
 	}
 
 	diaAuth := r.Group("/v1")
@@ -204,14 +204,15 @@ func main() {
 		// Endpoints for cryptocurrencies/exchanges
 		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
 		dia.GET("/lastTrades/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastTrades))
+		dia.GET("/lastPriceBefore/:filter/:exchange/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBefore))
+		dia.GET("/lastPriceBeforeAllExchanges/:filter/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBeforeAllExchanges))
 		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
 		dia.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
-		//  Deprectated - > split up in specific endpoints
-		// dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
+		dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
 		dia.GET("/symbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		dia.GET("/volume/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		dia.GET("/volume24/:exchange", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
-		// Deprectated: dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
+		dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
 		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
 		dia.GET("/exchanges", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		dia.GET("/defiLendingProtocols", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
@@ -222,9 +223,6 @@ func main() {
 		dia.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
 		dia.GET("/defiLendingState/:protocol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
 		dia.GET("/defiLendingState/:protocol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
-		dia.GET("/missingToken/:exchange", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
-		dia.GET("/token/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
-
 
 		dia.GET("/FarmingPools", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
 		dia.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
@@ -257,6 +255,12 @@ func main() {
 
 		// Index
 		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
+		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
+
+		// Endpoints for NFTs
+		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
+		dia.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
+		dia.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

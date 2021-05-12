@@ -14,8 +14,10 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+      - postgres-network
     secrets:
       - api_diadata
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -57,6 +59,8 @@ secrets:
     file: ../secrets/api_diadata.json
   htpassword:
     file: ../secrets/htpassword.nginx
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
 
 networks:
   kafka-network:
@@ -68,3 +72,6 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  postgres-network:
+    external:
+        name: postgres_postgres-network

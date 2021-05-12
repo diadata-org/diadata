@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "NEAR-USDT",
+      "Ignore": false,
+      "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "1ST-USDT",
       "Ignore": true,
       "Symbol": "1ST"

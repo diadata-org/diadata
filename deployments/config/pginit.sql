@@ -44,16 +44,70 @@ CREATE TABLE exchangesymbol (
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id integer primary key generated always as identity,
-    UNIQUE name text not null,
+    name text not null,
     genesisdate timestamp,
     nativetoken text,
-	verificationmechanism text
+	verificationmechanism text,
+    UNIQUE(name)
 );
 
--- Comments:
 
--- We use text instead of char:
--- https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying
+---------------------------------------
+------- tables for NFT storage --------
+---------------------------------------
 
--- For the use of primary keys and the advantage of integers. A bit old, but maybe still true?
--- https://stackoverflow.com/questions/337503/whats-the-best-practice-for-primary-keys-in-tables
+-- collect all possible categories for nfts
+CREATE TABLE nftcategory (
+    category_id UUID DEFAULT gen_random_uuid(),
+    category text not null,
+    UNIQUE(category)
+);
+
+-- nftclass is uniquely defined by the pair (blockchain,address),
+-- referring to the blockchain on which the nft was minted.
+CREATE TABLE nftclass (
+    nftclass_id UUID DEFAULT gen_random_uuid(),
+    address text not null,
+    symbol text,
+    name text,
+    blockchain text REFERENCES blockchain(name),
+    contract_type text,
+    category text REFERENCES nftcategory(category),
+    UNIQUE(blockchain,address),
+    UNIQUE(nftclass_id)
+);
+
+-- an element from nft is a specific non-fungible nft, unqiuely
+-- identified by the pair (address(on blockchain), tokenID)
+CREATE TABLE nft (
+    nft_id UUID DEFAULT gen_random_uuid(),
+    nftclass_id uuid REFERENCES nftclass(nftclass_id),
+    tokenID text not null,
+    creation_time timestamp,
+    creator_address text,
+    uri text,
+    attributes json,
+    UNIQUE(nft_id)
+);
+
+CREATE TABLE nftsale (
+    sale_id UUID DEFAULT gen_random_uuid(),
+    nft_id uuid REFERENCES nft(nft_id),
+    time timestamp,
+    price_usd numeric,
+    transfer_from text,
+    transfer_to text,
+    marketplace text,
+    UNIQUE(sale_id)
+);
+
+CREATE TABLE nftoffer (
+    offer_id UUID DEFAULT gen_random_uuid(),
+    nft_id uuid REFERENCES nft(nft_id),
+    time timestamp,
+    time_expiration timestamp,
+    price_usd numeric,
+    from_address text,
+    marketplace text,
+    UNIQUE(offer_id)
+);
