@@ -267,7 +267,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 		shutdownDone:  make(chan nothing),
 		error:         nil,
 		ethConnection: connection,
-		relDB:         rdb,
+		relDB:         *rdb,
 		chanData:      make(chan *dia.NFT),
 	}
 	s := &SorareScraper{
@@ -319,7 +319,7 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 	// TO DO get NFT class from DB
 	//sorareNTFClass, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
 	sorareNTFClass := dia.NFTClass{
-		Blockchain:   dia.Ethereum,
+		Blockchain:   dia.ETHEREUM,
 		Category:     "Game",
 		Address:      scraper.address,
 		Name:         "Sorare",

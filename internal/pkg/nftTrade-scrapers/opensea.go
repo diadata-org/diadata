@@ -39,7 +39,7 @@ func NewOpenseaScraper(rdb *models.RelDB) *OpenseaScraper {
 		shutdownDone:  make(chan nothing),
 		error:         nil,
 		ethConnection: connection,
-		datastore:     rdb,
+		datastore:     *rdb,
 		chanTrade:     make(chan *dia.NFTTrade),
 		exchange:      source,
 	}
