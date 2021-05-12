@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -131,4 +132,11 @@ func (rdb *RelDB) GetNFT(address common.Address, tokenID uint64) (dia.NFT, error
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	// TO DO
 	return nil
+}
+
+func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error) {
+	// TO DO:
+	// Return highest block number of recorded trades for @nft.
+	// Returns 0 if no trade recorded.
+	return big.NewInt(0), nil
 }

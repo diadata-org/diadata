@@ -17,18 +17,17 @@ import (
 )
 
 const (
-	source       = "Opensea"
 	refreshDelay = time.Second * 60 * 30
 )
 
-type OpenseaScraper struct {
-	tradescraper             TradeScraper
-	openseaStorefrontAddress common.Address
-	ticker                   *time.Ticker
-	lastBlockNumber          *big.Int
+type SorareScraper struct {
+	tradescraper    TradeScraper
+	contractAddress common.Address
+	ticker          *time.Ticker
+	lastBlockNumber *big.Int
 }
 
-func NewOpenseaScraper(rdb *models.RelDB) *OpenseaScraper {
+func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -41,12 +40,11 @@ func NewOpenseaScraper(rdb *models.RelDB) *OpenseaScraper {
 		ethConnection: connection,
 		datastore:     rdb,
 		chanTrade:     make(chan *dia.NFTTrade),
-		exchange:      source,
 	}
-	s := &OpenseaScraper{
-		openseaStorefrontAddress: common.HexToAddress("0x495f947276749Ce646f68AC8c248420045cb7b5e"),
-		tradescraper:             tradeScraper,
-		ticker:                   time.NewTicker(refreshDelay),
+	s := &SorareScraper{
+		contractAddress: common.HexToAddress("0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205"),
+		tradescraper:    tradeScraper,
+		ticker:          time.NewTicker(refreshDelay),
 	}
 
 	go s.mainLoop()
@@ -54,7 +52,7 @@ func NewOpenseaScraper(rdb *models.RelDB) *OpenseaScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *OpenseaScraper) mainLoop() {
+func (scraper *SorareScraper) mainLoop() {
 	for true {
 		select {
 		case <-scraper.ticker.C:
@@ -68,7 +66,7 @@ func (scraper *OpenseaScraper) mainLoop() {
 	}
 }
 
-func (scraper *OpenseaScraper) UpdateTrades() error {
+func (scraper *SorareScraper) UpdateTrades() error {
 	trades, err := scraper.FetchTrades()
 	if err != nil {
 		return err
@@ -79,15 +77,19 @@ func (scraper *OpenseaScraper) UpdateTrades() error {
 	return nil
 }
 
-func (scraper *OpenseaScraper) FetchTrades() (trades []dia.NFTTrade, err error) {
-	// TO DO: Fetch all trades/transactions since scraper.lastBlockNumber from on-chain
-	// The field nftTrade.NFT has to be fetched from postgres through scraper.tradescraper.datastore.GetNFT()
+func (scraper *SorareScraper) FetchTrades() (trades []dia.NFTTrade, err error) {
+	// TO DO: Fetch all trades/transactions since scraper.lastBlockNumber from on-chain.
+	// If scraper.lastBlockNumber == 0 fetch last blockNumber from postgres using:
+	// scraper.tradescraper.datastore.GetLastBlockNFTTrade(nft dia.NFT)
+
+	// The field nftTrade.NFT can be fetched from postgres through scraper.tradescraper.datastore.GetNFT()
+	//
 	return []dia.NFTTrade{}, nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
-func (scraper *OpenseaScraper) GetTotalSupply() (*big.Int, error) {
-	contract, err := sorare.NewSorareTokensCaller(scraper.openseaStorefrontAddress, scraper.tradescraper.ethConnection)
+func (scraper *SorareScraper) GetTotalSupply() (*big.Int, error) {
+	contract, err := sorare.NewSorareTokensCaller(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
 	}
@@ -95,12 +97,12 @@ func (scraper *OpenseaScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *OpenseaScraper) GetTradeChannel() chan *dia.NFTTrade {
+func (scraper *SorareScraper) GetTradeChannel() chan *dia.NFTTrade {
 	return scraper.tradescraper.chanTrade
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *OpenseaScraper) cleanup(err error) {
+func (scraper *SorareScraper) cleanup(err error) {
 	scraper.tradescraper.errorLock.Lock()
 	defer scraper.tradescraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -112,7 +114,7 @@ func (scraper *OpenseaScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *OpenseaScraper) Close() error {
+func (scraper *SorareScraper) Close() error {
 	if scraper.tradescraper.closed {
 		return errors.New("scraper already closed")
 	}

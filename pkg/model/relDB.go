@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -27,6 +28,7 @@ type RelDatastore interface {
 	SetNFT(nft dia.NFT) error
 	GetNFT(address common.Address, tokenID uint64) (dia.NFT, error)
 	SetNFTTrade(trade dia.NFTTrade) error
+	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)

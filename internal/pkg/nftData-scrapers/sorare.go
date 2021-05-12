@@ -17,12 +17,11 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
 	source       = "Sorare"
-	refreshDelay = time.Second * 60 * 5
+	refreshDelay = time.Second * 20
 )
 
 type nothing struct{}
@@ -297,11 +296,13 @@ func (scraper *SorareScraper) mainLoop() {
 }
 
 func (scraper *SorareScraper) UpdateNFT() error {
+	fmt.Println("fetch data...")
 	nfts, err := scraper.FetchData()
 	if err != nil {
 		return err
 	}
 	for _, nft := range nfts {
+		log.Info("got nft: ", nft)
 		scraper.GetDataChannel() <- &nft
 	}
 	return nil
@@ -326,48 +327,42 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 		Symbol:       "SOR",
 		ContractType: "",
 	}
+	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
 	for i := 0; i < int(totalSupply.Int64()); i++ {
 		var out SorareOutput
 		// 1. fetch data from onchain
 		tok, err := scraper.TokenByIndex(big.NewInt(int64(i)))
 		if err != nil {
-			fmt.Errorf("Error getting token ID: %+v", err)
-			continue
+			log.Errorf("Error getting token ID: %+v", err)
 		}
 		out.Card, err = scraper.GetCard(tok)
 		if err != nil {
-			fmt.Errorf("Error getting sorare card %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting sorare card %d: %+v", tok, err)
 		}
 		out.Player, err = scraper.GetPlayer(out.Card.PlayerId)
 		if err != nil {
-			fmt.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
-			continue
+			log.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
 		}
 		out.Club, err = scraper.GetClub(out.Card.ClubId)
 		if err != nil {
-			fmt.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
-			continue
+			log.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
 		}
 
 		tokenURI, err := scraper.GetTokenURI(tok)
 		if err != nil {
-			fmt.Errorf("Error getting token URI for %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting token URI for %d: %+v", tok, err)
 		}
 
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPlayer(tok)
 		if err != nil {
-			fmt.Errorf("Error getting Opensea data: %+v", err)
-			continue
+			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result, err := json.Marshal(out)
 		if err != nil {
-			fmt.Errorf("Error converting NFT data to JSON: %+v", err)
-			continue
+			log.Errorf("Error converting NFT data to JSON: %+v", err)
 		}
 
 		// Set output object
