@@ -30,11 +30,11 @@ type BinanceScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      sync.Map // dia.ExchangePair -> binancePairScraperSet
-	pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
-	pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
-	exchangeName      string
-	chanTrades        chan *dia.Trade
+	pairScrapers sync.Map // dia.ExchangePair -> binancePairScraperSet
+	// pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
+	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
+	exchangeName string
+	chanTrades   chan *dia.Trade
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
@@ -55,16 +55,6 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		go s.mainLoop()
 	}
 	return s
-}
-
-func eventHandler(event *binance.WsAggTradeEvent) {
-	fmt.Println(event)
-
-}
-
-func errorHandler(err error) {
-	fmt.Println(err)
-
 }
 
 func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -144,7 +134,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		price, err2 := strconv.ParseFloat(event.Price, 64)
 
 		if err == nil && err2 == nil && event.Event == "aggTrade" {
-			if event.IsBuyerMaker == false {
+			if !event.IsBuyerMaker {
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)

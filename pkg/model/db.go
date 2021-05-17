@@ -381,25 +381,29 @@ func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) 
 		log.Errorln("Sum24HoursInflux ", err)
 		return nil, err
 	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			var result float64
-			v, o := row[1].(json.Number)
-			if o {
-				result, _ = v.Float64()
-				return &result, nil
-			}
-			errorString = "error on parsing row 1"
-			log.Errorln(errorString)
-			return nil, errors.New(errorString)
 
+	if len(res) > 0 && len(res[0].Series) > 0 {
+
+		var result float64
+		v, o := res[0].Series[0].Values[0][1].(json.Number)
+		if o {
+			result, err = v.Float64()
+			if err != nil {
+				log.Error(err)
+				return nil, err
+			}
+			return &result, nil
 		}
+		errorString = "error on parsing row 1"
+		log.Errorln(errorString)
+		return nil, errors.New(errorString)
+
 	} else {
-		errorString = "Empty response in Sum24HoursInflux"
+		errorString = "empty response in Sum24HoursInflux"
 		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 	}
-	return nil, errors.New("couldn't sum in Sum24HoursInflux")
+
 }
 
 // Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
@@ -452,7 +456,7 @@ func (db *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Volume value from Database")
+		return retval, errors.New("parsing volume value from database")
 	}
 	return retval, nil
 }
@@ -527,7 +531,7 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 			}
 		}
 	} else {
-		return &retval, errors.New("Error parsing Trade from Database")
+		return &retval, errors.New("parsing trade from database")
 	}
 	return &retval, nil
 }
@@ -572,7 +576,7 @@ func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDat
 			retval = append(retval, currentPoint)
 		}
 	} else {
-		return retval, errors.New("Error parsing CVI value from Database")
+		return retval, errors.New("parsing CVI value from database")
 	}
 	return retval, nil
 }
@@ -713,7 +717,7 @@ func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing farming pool from Database")
 	}
 	return retval, nil
 
@@ -766,7 +770,7 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 			retval = append(retval, pool)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing farming pool from database")
 	}
 	return retval, nil
 
@@ -829,7 +833,7 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			retval = append(retval, currentRate)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing defi lending rate from database")
 	}
 	return retval, nil
 }
@@ -890,7 +894,7 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			retval = append(retval, defiState)
 		}
 	} else {
-		err = errors.New("Error parsing Defi Lending Rate from Database")
+		err = errors.New("parsing defi lending state from database")
 		return
 	}
 	return
@@ -969,7 +973,7 @@ func (db *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endtime time
 			retval = append(retval, currentSupply)
 		}
 	} else {
-		return retval, errors.New("Error parsing Supply value from Database")
+		return retval, errors.New("parsing supply value from database")
 	}
 	return retval, nil
 }

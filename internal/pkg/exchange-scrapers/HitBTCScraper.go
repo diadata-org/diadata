@@ -87,7 +87,7 @@ func NewHitBTCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := &Event{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
@@ -210,18 +210,20 @@ func (s *HitBTCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
-	symbol = strings.ToUpper(baseCurrency)
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
+
+// func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
+// 	symbol = strings.ToUpper(baseCurrency)
+// 	if helpers.NameForSymbol(symbol) == symbol {
+// 		if !helpers.SymbolIsName(symbol) {
+// 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+// 		}
+// 	}
+// 	if helpers.SymbolIsBlackListed(symbol) {
+// 		return symbol, errors.New("Symbol is black listed:" + symbol)
+// 	}
+// 	return symbol, nil
+// }
+
 func (s *HitBTCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
@@ -255,7 +257,6 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 	var ar []APIResponse
 	err = json.Unmarshal(data, &ar)
-	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
 			pairToNormalize := dia.ExchangePair{
@@ -283,6 +284,7 @@ type HitBTCPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *HitBTCPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

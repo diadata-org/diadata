@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -28,7 +29,7 @@ type Confirm struct {
 var _apiurl string = "https://simex.global/api"
 
 type SimexTicker struct {
-	Data [] SimexAsset`json:"data"`
+	Data []SimexAsset `json:"data"`
 }
 
 type SimexAsset struct {
@@ -48,24 +49,24 @@ type SimexScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*SimexPairScraper
-	pairIdTrade  map[string]*PairIdMap
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	currencySymbolName map[string]string
+	pairScrapers           map[string]*SimexPairScraper
+	pairIdTrade            map[string]*PairIdMap
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
 }
 
 func NewSimexScraper(exchange dia.Exchange, scrape bool) *SimexScraper {
 	s := &SimexScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*SimexPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		currencySymbolName: make(map[string]string),
-		isTickerMapInitialised:false,
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		pairScrapers:           make(map[string]*SimexPairScraper),
+		exchangeName:           exchange.Name,
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		currencySymbolName:     make(map[string]string),
+		isTickerMapInitialised: false,
 	}
 	pairMap := map[string]*PairIdMap{}
 	//API call used for retrievi all pairs
@@ -153,7 +154,7 @@ func (s *SimexScraper) mainLoop() {
 						timeStamp, _ := time.Parse(layout, tradeReturn["created_at"].(string))
 						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["name"].(string))
 						if err != nil {
-							log.Error("Error Getting ExchangePair from cache",err)
+							log.Error("Error Getting ExchangePair from cache", err)
 						}
 
 						t := &dia.Trade{
@@ -349,6 +350,7 @@ type SimexPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *SimexPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

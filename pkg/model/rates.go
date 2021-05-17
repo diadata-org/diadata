@@ -10,7 +10,6 @@ import (
 	"time"
 
 	ratederivatives "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
-	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 )
@@ -290,7 +289,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	}
 
 	// Get compounded rate
-	compRate, err := ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
+	compRate, err := ratederivatives.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -540,7 +539,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 				}
 			}
 
-			compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+			compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 			if err != nil || utils.ContainsDay(holidays, dateInit) {
 				dateInit = dateInit.AddDate(0, 0, 1)
@@ -668,7 +667,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 			ratesPeriod = append(ratesPeriod, mapRates[auxDate])
 			auxDate = auxDate.AddDate(0, 0, 1)
 		}
-		compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+		compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 		if err != nil {
 			dateInit = dateInit.AddDate(0, 0, 1)
@@ -707,10 +706,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 func (db *DB) ExistInterestRate(symbol, date string) bool {
 	pattern := "*" + symbol + "_" + date + "*"
 	strSlice := db.redisClient.Keys(pattern).Val()
-	if len(strSlice) == 0 {
-		return false
-	}
-	return true
+	return len(strSlice) != 0
 }
 
 // matchKeyInterestRate returns the key in the database db with the youngest timestamp
@@ -718,6 +714,7 @@ func (db *DB) ExistInterestRate(symbol, date string) bool {
 func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	exDate, err := db.findLastDay(symbol, date)
 	if err != nil {
+		return "", err
 	}
 	// Determine all database entries with given date
 	pattern := "*" + symbol + "_" + exDate + "*"

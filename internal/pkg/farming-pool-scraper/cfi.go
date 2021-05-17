@@ -153,6 +153,9 @@ func (cv *CFIScraper) getCoins(poolAddress common.Address) ([]string, error) {
 		tokenCaller, _ := ethhelper.NewTokenCaller(coin, cv.RestClient)
 		symbol := new([]interface{})
 		err = tokenCaller.Contract.Call(&bind.CallOpts{}, symbol, "symbol")
+		if err != nil {
+			log.Error(err)
+		}
 		symbols = append(symbols, (*symbol)[0].(string))
 	}
 

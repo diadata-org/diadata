@@ -20,7 +20,7 @@ type DeribitOptionsScraper struct {
 	deribitScraper     *DeribitScraper
 	optionsWaitGroup   *sync.WaitGroup
 	ScraperIsRunning   bool
-	ScraperIsRunningMu sync.Mutex
+	ScraperIsRunningMu *sync.Mutex
 }
 
 type AllDeribitOptionsScrapers struct {
@@ -170,7 +170,6 @@ func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
 		for {
 			s.handleWsMessage()
 		}
-		time.Sleep(30 * time.Second)
 	}()
 	for {
 		for _, scraper := range s.Scrapers {
@@ -326,7 +325,6 @@ func (s *AllDeribitOptionsScrapers) AddMarket(market string) {
 	}
 	newScraper := NewDeribitOptionsScraper(s.ds, s.owg, market, s.accessKey, s.accessSecret, s.WsConnection)
 	s.Scrapers = append(s.Scrapers, &newScraper)
-	return
 }
 
 // note, this function requires meta to be stored in a file

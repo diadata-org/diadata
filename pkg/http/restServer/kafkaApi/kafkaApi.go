@@ -1,12 +1,12 @@
 package kafkaApi
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/gin-gonic/gin"
-	"github.com/segmentio/kafka-go"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -25,8 +25,8 @@ type resultApi struct {
 }
 
 type RestApi struct {
-	topic  int
-	writer *kafka.Writer //TOFIX reorganise the api
+	topic int
+	// writer *kafka.Writer //TOFIX reorganise the api
 }
 
 func SendError(c *gin.Context, errorCode int, err error) {

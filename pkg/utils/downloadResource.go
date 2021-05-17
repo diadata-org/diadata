@@ -64,7 +64,7 @@ func GetRequest(url string) ([]byte, error) {
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
-		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
+		return []byte{}, fmt.Errorf("HTTP Response Error %d", response.StatusCode)
 	}
 
 	// Read the response body
@@ -101,7 +101,7 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	// proper response.
 	if response.StatusCode != 200 {
 		log.Error("HTTP Response Error: ", response.StatusCode)
-		return []byte{}, fmt.Errorf("HTTP Response Error %d\n", response.StatusCode)
+		return []byte{}, fmt.Errorf("HTTP Response Error %d", response.StatusCode)
 	}
 
 	// Read the response body

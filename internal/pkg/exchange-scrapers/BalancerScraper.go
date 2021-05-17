@@ -140,7 +140,7 @@ func (scraper *BalancerScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Balancer: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -336,7 +336,7 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 
 	tokenMap := make(map[string]*BalancerToken)
 
-	for token, _ := range tokenAddressSet {
+	for token := range tokenAddressSet {
 
 		tokenCaller, err := balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
@@ -413,24 +413,24 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 
 }
 
-func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *pool.BalancerpoolLOGSWAP, error) {
-	sink := make(chan *pool.BalancerpoolLOGSWAP)
-	var pairFiltererContract *pool.BalancerpoolFilterer
-	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
+// func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *pool.BalancerpoolLOGSWAP, error) {
+// 	sink := make(chan *pool.BalancerpoolLOGSWAP)
+// 	var pairFiltererContract *pool.BalancerpoolFilterer
+// 	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
 
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startblock := header.Number.Uint64() - uint64(5250)
+// 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	startblock := header.Number.Uint64() - uint64(5250)
 
-	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{}, []common.Address{})
-	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
-	for itr.Next() {
-		// vLog := itr.Event
-	}
-	return sink, nil
-}
+// 	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{}, []common.Address{})
+// 	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
+// 	for itr.Next() {
+// 		// vLog := itr.Event
+// 	}
+// 	return sink, nil
+// }
 
 func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription, error) {
 	sink := make(chan *pool.BalancerpoolLOGSWAP)
@@ -507,8 +507,6 @@ func (scraper *BalancerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, 
 
 	return pairScraper, nil
 }
-
-
 
 func (scraper *BalancerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil

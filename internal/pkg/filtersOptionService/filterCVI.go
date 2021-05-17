@@ -10,7 +10,7 @@ import (
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -72,6 +72,9 @@ func processMinutesUntilMidnight(now time.Time, timezone string) (float64, error
 func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone string) (float64, error) {
 	const nilTime float64 = 0
 	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, err
+	}
 	now := time.Now().In(loc)
 	mid, err := Eod(now, timezone)
 	if err != nil {
@@ -182,10 +185,10 @@ func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error)
 	earliestDate := time.Now().Add(62 * 24 * time.Hour)
 	// Determine date of NextTerm
 	for _, optionMeta := range optionsMeta {
-		if optionMeta.ExpirationTime.Sub(time.Now()) > 62*24*time.Hour {
+		if time.Until(optionMeta.ExpirationTime) > 62*24*time.Hour {
 			continue
 		}
-		if optionMeta.ExpirationTime.Sub(time.Now()) < 20*24*time.Hour {
+		if time.Until(optionMeta.ExpirationTime) < 20*24*time.Hour {
 			continue
 		}
 		if optionMeta.ExpirationTime.Unix() < earliestDate.Unix() {
@@ -194,7 +197,8 @@ func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error)
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
 	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
 	if err != nil {
@@ -228,7 +232,8 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
 	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
 	if err != nil {
@@ -319,6 +324,9 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 
 	// Get options from DB
 	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	if err != nil {
+		return []dia.OptionMetaIndex{}, err
+	}
 	for _, optionMeta := range optionsMeta {
 		if !strings.Contains(optionMeta.InstrumentName, maturityDate) {
 			continue
@@ -329,8 +337,8 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 			continue
 		}
 		result = append(result, dia.OptionMetaIndex{
-			optionMeta,
-			orderbookData,
+			OptionMeta:           optionMeta,
+			OptionOrderbookDatum: orderbookData,
 		})
 	}
 	sort.Slice(result, func(i, j int) bool {
@@ -461,7 +469,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 			continue
 		}
 		// if no changes for 2 minutes or more
-		noChangeCVItime = time.Now().Sub(lastCVItime)
+		noChangeCVItime = time.Since(lastCVItime)
 		if noChangeCVItime.Minutes() >= 2 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime

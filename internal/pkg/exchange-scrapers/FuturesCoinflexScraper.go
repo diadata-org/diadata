@@ -27,10 +27,6 @@ type CoinflexFuturesScraper struct {
 	Logger    *zap.SugaredLogger
 }
 
-type tradeMessageCoinflex struct {
-	Type string `json:"type"`
-}
-
 // the response of https://webapi.coinflex.com/markets/ is a list of marketCoinglex JSON objects
 // This is used to validate that the market that you have selected to scrape acutally exists. This is done
 // validateMarket function.

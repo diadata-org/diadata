@@ -86,7 +86,7 @@ const (
 	nftofferTable        = "nftoffer"
 
 	// time format for blockchain genesis dates
-	timeFormatBlockchain = "2006-01-02"
+	// timeFormatBlockchain = "2006-01-02"
 )
 
 // RelDB is a relative database with redis caching layer.

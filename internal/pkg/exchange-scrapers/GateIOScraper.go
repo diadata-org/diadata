@@ -155,7 +155,7 @@ func (s *GateIOScraper) mainLoop() {
 		log.Error(err.Error())
 	}
 
-	for true {
+	for {
 
 		var message GateIOResponseTrade
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -251,22 +251,23 @@ func (s *GateIOScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
-	str := strings.Split(foreignName, "_")
-	symbol = strings.ToUpper(str[0])
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if symbol == "IOTA" {
-				return "MIOTA", nil
-			}
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
+
+// func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+// 	str := strings.Split(foreignName, "_")
+// 	symbol = strings.ToUpper(str[0])
+// 	if helpers.NameForSymbol(symbol) == symbol {
+// 		if !helpers.SymbolIsName(symbol) {
+// 			if symbol == "IOTA" {
+// 				return "MIOTA", nil
+// 			}
+// 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+// 		}
+// 	}
+// 	if helpers.SymbolIsBlackListed(symbol) {
+// 		return symbol, errors.New("Symbol is black listed:" + symbol)
+// 	}
+// 	return symbol, nil
+// }
 
 func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "_")
@@ -348,6 +349,7 @@ type GateIOPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *GateIOPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

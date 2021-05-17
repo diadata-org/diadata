@@ -37,6 +37,9 @@ func (c *Client) refresh() error {
 	url := c.url + "auth/refresh_token"
 
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
 
 	bytes, err := c.DoRequest(req, false)
 	if err != nil {
@@ -73,6 +76,9 @@ func (c *Client) login() error {
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return err
+	}
 
 	req.Header.Set("Content-Type", "application/json")
 
@@ -205,7 +211,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 
 	log.Debug("StatusCode", resp.StatusCode)
 
-	if 200 != resp.StatusCode {
+	if resp.StatusCode != 200 {
 
 		if refresh {
 			if resp.StatusCode == 401 {
@@ -249,6 +255,9 @@ func (c *Client) sendSupply(s *Supply) error {
 	url := c.url + "v1/supply"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return err
+	}
 
 	_, err = c.DoRequest(req, true)
 	if err != nil {

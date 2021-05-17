@@ -10,7 +10,6 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/jjjjpppp/quoinex-go-client/v2"
 )
 
 const (
@@ -170,7 +169,6 @@ type BancorAssetPairs struct {
 }
 
 type BancorScraper struct {
-	client       *quoinex.Client
 	exchangeName string
 
 	// channels to signal events
@@ -257,7 +255,7 @@ func (scraper *BancorScraper) mainLoop() {
 		}
 	}
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }

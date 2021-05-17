@@ -114,7 +114,7 @@ func (s *HuobiScraper) mainLoop() {
 	if err != nil {
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}
-	for true {
+	for {
 		message := &ResponseType{}
 		_, testRead, err := s.wsClient.NextReader()
 
@@ -341,6 +341,7 @@ type HuobiPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *HuobiPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

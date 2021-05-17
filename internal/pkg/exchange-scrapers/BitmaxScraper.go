@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -64,9 +65,9 @@ type BitMaxScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers           map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
-	pairSubscriptions      sync.Map                      // dia.ExchangePair -> string (subscription ID)
-	pairLocks              sync.Map                      // dia.ExchangePair -> sync.Mutex
+	pairScrapers map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
+	// pairSubscriptions      sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	// pairLocks              sync.Map                      // dia.ExchangePair -> sync.Mutex
 	exchangeName           string
 	chanTrades             chan *dia.Trade
 	wsClient               *ws.Conn
@@ -119,7 +120,7 @@ type BitMaxTradeResponse struct {
 // runs in a goroutine until s is closed
 func (s *BitMaxScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := &BitMaxTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
@@ -256,7 +257,7 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	a := &BitMaxRequest{
 		Op: "sub",
 		Ch: "trades:" + pair.ForeignName,
-		ID: string(time.Now().Unix()),
+		ID: fmt.Sprint(time.Now().Unix()),
 	}
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())

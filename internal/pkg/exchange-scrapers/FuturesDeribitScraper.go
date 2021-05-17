@@ -12,7 +12,7 @@ import (
 	zap "go.uber.org/zap"
 )
 
-const scrapeDataSaveLocationDeribit = ""
+// const scrapeDataSaveLocationDeribit = ""
 
 type deribitRefreshMessage struct {
 	Result struct {

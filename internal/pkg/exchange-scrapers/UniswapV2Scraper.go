@@ -102,8 +102,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
@@ -115,8 +113,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(wsDialBSC)
@@ -664,6 +660,7 @@ type UniswapPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *UniswapPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

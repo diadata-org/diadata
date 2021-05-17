@@ -125,7 +125,7 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 			return price / float64(numPrices-errs), nil
 		}
 	}
-	return 0, errors.New("No data available from yesterday")
+	return 0, errors.New("no data available from yesterday")
 }
 
 // GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source,

@@ -280,7 +280,7 @@ func (ps *CREX24PairScraper) Close() error {
 
 func (ps *CREX24PairScraper) Error() error {
 	if ps.parent.closed {
-		return errors.New("Scraper has been closed")
+		return errors.New("scraper has been closed")
 	} else {
 		return nil
 	}

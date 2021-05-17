@@ -28,5 +28,5 @@ type TradeScraper struct {
 	ethConnection *ethclient.Client
 	datastore     models.RelDB
 	chanTrade     chan *dia.NFTTrade
-	source        string
+	// source        string
 }

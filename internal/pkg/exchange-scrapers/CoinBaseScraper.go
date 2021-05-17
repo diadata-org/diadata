@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
@@ -67,7 +65,7 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := gdax.Message{}
 		if err = s.wsConn.ReadJSON(&message); err != nil {
 			println(err.Error())
@@ -147,18 +145,6 @@ func (s *CoinBaseScraper) Close() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
-	str := strings.Split(foreignName, "-")
-	symbol = str[0]
-	if helpers.NameForSymbol(symbol) == symbol {
-		return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
 }
 
 func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -249,13 +235,13 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	subscribe := gdax.Message{
 		Type: "subscribe",
 		Channels: []gdax.MessageChannel{
-			gdax.MessageChannel{
+			{
 				Name: ChannelHeartbeat,
 				ProductIds: []string{
 					pair.ForeignName,
 				},
 			},
-			gdax.MessageChannel{
+			{
 				Name: ChannelTicker,
 				ProductIds: []string{
 					pair.ForeignName,
@@ -276,6 +262,7 @@ func (ps *CoinBaseScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *CoinBasePairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

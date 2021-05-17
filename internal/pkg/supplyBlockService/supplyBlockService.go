@@ -2,13 +2,14 @@ package supplyBlockService
 
 import (
 	"fmt"
-	"github.com/cnf/structhash"
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/cnf/structhash"
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -111,8 +112,8 @@ func getSupplyFromDia(symbol string) (*dia.Supply, error) {
 	} else {
 		defer response.Body.Close()
 
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error on dia api")
+		if response.StatusCode != 200 {
+			return nil, fmt.Errorf("error on dia api")
 		}
 
 		contents, err := ioutil.ReadAll(response.Body)

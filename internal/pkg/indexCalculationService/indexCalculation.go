@@ -166,7 +166,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 
 		numConstituents := float64(len(*constituents))
 		for i, constituent := range *constituents {
-			if "SPICE" == constituent.Asset.Symbol {
+			if constituent.Asset.Symbol == "SPICE" {
 				(*constituents)[i].Weight = 0.025
 			} else {
 				(*constituents)[i].Weight = (1 - 0.025) / (numConstituents - 1)

@@ -274,6 +274,7 @@ type BittrexPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *BittrexPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

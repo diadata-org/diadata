@@ -63,6 +63,9 @@ func getRSS() (pubDate string, link string, err error) {
 	)
 
 	XMLdata, err := utils.GetRequest("http://mid.ecb.europa.eu/rss/mid.xml")
+	if err != nil {
+		return "", "", err
+	}
 
 	// Decode the body
 	rss := new(RssMain)

@@ -14,18 +14,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
-// API base url
-const apiURL string = "https://bitbay.net/API/Public/"
-
-// API request
-const apiRequest string = "/trades.json"
-
-// Minimum delay between API calls
-const apiDelay = time.Second
-
-// Seconds to wait for scrappers to be ready
-const waitForScrapers = 10
-
 var BitBaySocketURL string = "wss://api.bitbay.net/websocket/"
 
 type BitBaySubscribe struct {
@@ -107,7 +95,7 @@ func (s *BitBayScraper) getMarkets() (markets []string) {
 	}
 	json.Unmarshal(b, &bbm)
 
-	for key, _ := range bbm.Items {
+	for key := range bbm.Items {
 		markets = append(markets, key)
 	}
 	return
@@ -162,7 +150,7 @@ func (s *BitBayScraper) mainLoop() {
 		}
 	}()
 
-	for true {
+	for {
 
 		var response BitBayWSResponse
 
@@ -269,10 +257,6 @@ func (s *BitBayScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
-// set exchange base currency according to DIA standard
-func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
-	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
-}
 func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return dia.ExchangePair{}, nil
 }

@@ -64,13 +64,13 @@ type KuCoinScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      map[string]*KuCoinPairScraper // dia.ExchangePair -> KuCoinPairScraper
-	pairSubscriptions sync.Map                      // dia.ExchangePair -> string (subscription ID)
-	pairLocks         sync.Map                      // dia.ExchangePair -> sync.Mutex
-	exchangeName      string
-	chanTrades        chan *dia.Trade
-	apiService        *kucoin.ApiService
-	db                *models.RelDB
+	pairScrapers map[string]*KuCoinPairScraper // dia.ExchangePair -> KuCoinPairScraper
+	// pairSubscriptions sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	// pairLocks         sync.Map                      // dia.ExchangePair -> sync.Mutex
+	exchangeName string
+	chanTrades   chan *dia.Trade
+	apiService   *kucoin.ApiService
+	db           *models.RelDB
 }
 
 func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KuCoinScraper {

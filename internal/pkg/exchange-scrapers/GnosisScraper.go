@@ -235,7 +235,7 @@ func (scraper *GnosisScraper) mainLoop() {
 	scraper.subscribeToTrades()
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
 				scraper.subscribeToTrades()
@@ -245,7 +245,7 @@ func (scraper *GnosisScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Gnosis: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}

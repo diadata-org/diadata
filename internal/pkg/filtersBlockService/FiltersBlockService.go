@@ -37,15 +37,15 @@ type filtersAsset struct {
 // FiltersBlockService is the data structure containing all objects
 // necessary for the processing of a tradesBlock.
 type FiltersBlockService struct {
-	shutdown             chan nothing
-	shutdownDone         chan nothing
-	chanTradesBlock      chan *dia.TradesBlock
-	chanFiltersBlock     chan *dia.FiltersBlock
-	errorLock            sync.RWMutex
-	error                error
-	closed               bool
-	started              bool
-	currentTime          time.Time
+	shutdown         chan nothing
+	shutdownDone     chan nothing
+	chanTradesBlock  chan *dia.TradesBlock
+	chanFiltersBlock chan *dia.FiltersBlock
+	errorLock        sync.RWMutex
+	error            error
+	closed           bool
+	started          bool
+	// currentTime          time.Time
 	filters              map[filtersAsset][]Filter
 	lastLog              time.Time
 	calculationValues    []int

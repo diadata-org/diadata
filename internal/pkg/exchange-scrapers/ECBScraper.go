@@ -372,6 +372,7 @@ func (ps *ECBScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *ECBPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

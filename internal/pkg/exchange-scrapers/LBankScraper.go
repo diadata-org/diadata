@@ -75,7 +75,7 @@ func NewLBankScraper(exchange dia.Exchange, scrape bool) *LBankScraper {
 func (s *LBankScraper) mainLoop() {
 	var err error
 
-	for true {
+	for {
 		message := &ResponseLBank{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			println(err.Error())
@@ -233,6 +233,7 @@ type LBankPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *LBankPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

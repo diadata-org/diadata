@@ -34,7 +34,7 @@ const (
 var (
 	allowedMarketsHuobi     = []string{"BTC", "ETC", "ETH", "EOS", "LTC", "BCH", "XRP", "TRX", "BSV"}
 	allowedFrequenciesHuobi = []string{"CW", "NW", "CQ"}
-	bufferHuobi             bytes.Buffer
+	// bufferHuobi             bytes.Buffer
 )
 
 // ---------------
@@ -160,7 +160,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					}
 					s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
 					if len(unzipmsg) == pingMsgLengthHuobi {
-						if "ping" == string(unzipmsg[2:6]) {
+						if string(unzipmsg[2:6]) == "ping" {
 							_, err := s.pong(string(unzipmsg[8:21]), market, ws)
 							if err != nil {
 								s.Logger.Errorf("[%s] problem ponging the websocket server, err: %s", market, err)
@@ -232,10 +232,10 @@ func parseGzip(data []byte) ([]byte, error) {
 	b := new(bytes.Buffer)
 	binary.Write(b, binary.LittleEndian, data)
 	r, err := gzip.NewReader(b)
-	defer r.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer r.Close()
 	unzipped, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err

@@ -254,6 +254,9 @@ func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]ST
 		return nil, err
 	}
 	err = json.Unmarshal(bytes, &response)
+	if err != nil {
+		return []STEXTrade{}, err
+	}
 	// Update timestamp
 	pairIDInt, _ := strconv.ParseInt(pairID, 10, 32)
 	symbol := s.pairIDToSymbol[int(pairIDInt)]
@@ -399,12 +402,12 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 type STEXPairScraper struct {
 	parent *STEXScraper
 	pair   dia.ExchangePair
-	id     int
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *STEXPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

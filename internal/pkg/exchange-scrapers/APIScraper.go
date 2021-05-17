@@ -11,10 +11,10 @@ import (
 
 // The collector kills a scraper after @watchdogDelayXXX seconds of inactivity
 const (
-	// TODO use this with test
-	// watchdogDelayShort = 10 * 60
-	watchdogDelay     = 20 * 60
-	watchdogDelayLong = 120 * 60
+// TODO use this with test
+// watchdogDelayShort = 10 * 60
+// watchdogDelay     = 20 * 60
+// watchdogDelayLong = 120 * 60
 )
 
 // empty type used for signaling

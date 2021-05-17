@@ -282,7 +282,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
 			scraper.UpdateNFT()

@@ -398,6 +398,7 @@ type OKExPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *OKExPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

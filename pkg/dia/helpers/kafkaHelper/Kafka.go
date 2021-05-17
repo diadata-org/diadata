@@ -104,7 +104,6 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 				}
 			}
 		}
-		log.Println("ReadOffsetWithRetryOnError retrying...")
 	}
 }
 
@@ -193,10 +192,7 @@ func IsTopicEmpty(topic int) bool {
 	log.Println("IsTopicEmpty: ", topic)
 	offset := ReadOffsetWithRetryOnError(topic)
 	offset--
-	if offset < 0 {
-		return true
-	}
-	return false
+	return offset < 0
 }
 
 func GetLastElementWithRetryOnError(topic int) interface{} {
@@ -286,11 +282,11 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 					result = append(result, e)
 				}
 			default:
-				return nil, errors.New("Missing case unknown topic in switch... function GetElements / Kafka.go")
+				return nil, errors.New("missing case unknown topic in switch... function GetElements / Kafka.go")
 			}
 
 			if err != nil {
-				errorMsg := fmt.Sprintf("Parsing error while processing offset: %v/%v", c, maxOffset)
+				errorMsg := fmt.Sprintf("parsing error while processing offset: %v/%v", c, maxOffset)
 				return nil, errors.New(errorMsg)
 			}
 			if len(result) == nbElements {

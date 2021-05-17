@@ -48,7 +48,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 		} else {
 			if t.Asset.Symbol == "" || t.CirculatingSupply == 0.0 {
 				log.Errorln("received supply:", t)
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("Missing Symbol or CirculatingSupply value"))
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("missing symbol or circulating supply value"))
 			} else {
 				log.Println("received supply:", t)
 				source := dia.Diadata
@@ -268,14 +268,6 @@ func (env *Env) GetPairs(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, &models.Pairs{Pairs: p})
 	}
-}
-
-func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
-	t = t.Round(roundOn)
-	if time.Since(t) >= 0 {
-		t = t.Add(roundOn)
-	}
-	return t
 }
 
 // GetExchanges is the delegate method for fetching all
@@ -822,6 +814,9 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 	date, _ := time.Parse("2006-01-02", datestring)
 	days := c.Param("days")
 	calDays, err := strconv.Atoi(days)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	}
 	dpy := c.Param("dpy")
 	daysPerYear, err := strconv.Atoi(dpy)
 	if err != nil {
@@ -887,6 +882,9 @@ func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
 	date, _ := time.Parse("2006-01-02", datestring)
 	days := c.Param("days")
 	calDays, err := strconv.Atoi(days)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	}
 	dpy := c.Param("dpy")
 	daysPerYear, err := strconv.Atoi(dpy)
 	if err != nil {

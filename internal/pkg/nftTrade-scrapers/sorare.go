@@ -24,7 +24,7 @@ type SorareScraper struct {
 	tradescraper    TradeScraper
 	contractAddress common.Address
 	ticker          *time.Ticker
-	lastBlockNumber *big.Int
+	// lastBlockNumber *big.Int
 }
 
 func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
@@ -53,7 +53,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
 			scraper.UpdateTrades()

@@ -112,12 +112,15 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperation.CbusinessEventLog.CeventDate.CEvDate)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
 		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
+		if err != nil {
+			log.Error(err)
+		}
 
 		t := models.InterestRate{
 			Symbol:          symbol,

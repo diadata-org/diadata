@@ -82,7 +82,7 @@ func NewCoinMarketCapScraper(datastore models.Datastore) *CoinMarketCapScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CoinMarketCapScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
 			scraper.UpdateQuotation()
@@ -227,7 +227,7 @@ func (scraper *CoinMarketCapScraper) cleanup(err error) {
 // Close closes any existing API connections
 func (scraper *CoinMarketCapScraper) Close() error {
 	if scraper.foreignScrapper.closed {
-		return errors.New("Scraper: Already closed")
+		return errors.New("scraper already closed")
 	}
 	close(scraper.foreignScrapper.shutdown)
 	<-scraper.foreignScrapper.shutdownDone

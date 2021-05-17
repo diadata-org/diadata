@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"golang.org/x/time/rate"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var logger = logrus.New()
@@ -45,17 +46,17 @@ type OKExOptionsScraper struct {
 	PollFrequency      int8
 	ScraperIsRunning   bool
 	ScraperIsRunningMu sync.Mutex
-	optionsWaitGroup   *sync.WaitGroup
-	DataStore          *models.DB
-	chanOrderBook      chan *dia.OptionOrderbookDatum
-	Ratelimiter        *rate.Limiter
+	// optionsWaitGroup   *sync.WaitGroup
+	DataStore     *models.DB
+	chanOrderBook chan *dia.OptionOrderbookDatum
+	Ratelimiter   *rate.Limiter
 }
 
 type AllOKExOptionsScrapers struct {
 	Scrapers []*OKExOptionsScraper
 	Markets  []string
 	ds       *models.DB
-	owg      *sync.WaitGroup
+	// owg      *sync.WaitGroup
 }
 
 type rawOKExOBDatum struct {
@@ -193,7 +194,6 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 		}
 
 	}
-	return
 }
 func (s *OKExOptionsScraper) Scrape() {
 

@@ -111,6 +111,9 @@ func NewQuoineScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 		db:             relDB,
 	}
 	err = scraper.readProductIds()
+	if err != nil {
+		log.Error(err)
+	}
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(LiquidSocketURL, nil)
@@ -163,7 +166,7 @@ type LiquidResponse struct {
 }
 
 func (scraper *QuoineScraper) mainLoop() {
-	for true {
+	for {
 
 		var message LiquidResponse
 
@@ -203,10 +206,6 @@ func (scraper *QuoineScraper) mainLoop() {
 		}
 
 	}
-	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close()")
-	}
-	scraper.cleanup(nil)
 }
 
 func (s *QuoineScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -284,7 +283,7 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 	}
 
 	if scraper.closed {
-		return nil, errors.New("Quoine scraper is closed")
+		return nil, errors.New("scraper is already closed")
 	}
 
 	pairScraper := &QuoinePairScraper{
@@ -310,15 +309,16 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 
 	return pairScraper, nil
 }
-func (s *QuoineScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.shutdownDone)
-}
+
+// func (s *QuoineScraper) cleanup(err error) {
+// 	s.errorLock.Lock()
+// 	defer s.errorLock.Unlock()
+// 	if err != nil {
+// 		s.error = err
+// 	}
+// 	s.closed = true
+// 	close(s.shutdownDone)
+// }
 
 func (scraper *QuoineScraper) Close() error {
 	// close the pair scraper channels

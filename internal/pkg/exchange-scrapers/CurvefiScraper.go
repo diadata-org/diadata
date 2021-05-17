@@ -61,7 +61,7 @@ func (p *Pools) poolsAddressNoLock() []string {
 	p.poolsLock.RLock()
 	defer p.poolsLock.RUnlock()
 	var values []string
-	for key, _ := range p.pools {
+	for key := range p.pools {
 		values = append(values, key)
 	}
 	return values
@@ -154,7 +154,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Curvefi: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -162,7 +162,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 	time.Sleep(10 * time.Second)
 
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }

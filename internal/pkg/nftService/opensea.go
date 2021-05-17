@@ -32,7 +32,6 @@ type AssetContract struct {
 type OpenseaNFTSource struct {
 	APIurl          string
 	nftClassChannel chan dia.NFTClass
-	nftChannel      chan dia.NFT
 	closed          chan bool
 	blockchain      string
 }
