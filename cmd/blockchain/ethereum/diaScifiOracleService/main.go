@@ -127,8 +127,8 @@ func getIndexValueFromDia(symbol string) (*models.CryptoIndex, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {

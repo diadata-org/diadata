@@ -62,8 +62,6 @@ func (vt *VerifiedTokens) AppendVerifiedTokens(assets []dia.Asset) {
 	}
 }
 
-
-
 func (vt *VerifiedTokens) Get() map[string]dia.Asset {
 	return vt.tokenMap
 }

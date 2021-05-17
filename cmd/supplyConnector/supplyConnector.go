@@ -1,10 +1,11 @@
 package main
 
 import (
+	"sync"
+
 	supply "github.com/diadata-org/diadata/internal/pkg/supplyBlockService"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/segmentio/kafka-go"
-	"sync"
 )
 
 // handleTrades delegates trade information to Kafka

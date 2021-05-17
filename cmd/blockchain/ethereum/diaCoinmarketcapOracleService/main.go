@@ -181,8 +181,8 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on coinmarketcap api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on coinmarketcap api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -196,7 +196,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	var quotations CoinMarketCapListing
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("Error on coinmarketcap api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on coinmarketcap api with return code %d", response.StatusCode)
 	}
 	var symbols []string
 	for _, dataEntry := range quotations.Data {
@@ -212,8 +212,8 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {

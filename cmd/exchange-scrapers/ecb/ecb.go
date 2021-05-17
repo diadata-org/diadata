@@ -95,6 +95,9 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rd
 func main() {
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("initializing datastore: ", err)
+	}
 	rdb, err := models.NewRelDataStore()
 
 	if err != nil {

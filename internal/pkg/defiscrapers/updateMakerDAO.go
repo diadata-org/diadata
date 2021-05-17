@@ -197,7 +197,7 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 
 	asset := &dia.DefiRate{
 		Timestamp:     time.Now(),
-		Asset:         fmt.Sprintf("DAI"),
+		Asset:         "DAI",
 		Protocol:      proto.protocol.Name,
 		LendingRate:   daiLendingApy,
 		BorrowingRate: 0,
@@ -233,7 +233,7 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
-			Asset:         fmt.Sprintf("%s", col.name),
+			Asset:         col.name,
 			Protocol:      proto.protocol.Name,
 			LendingRate:   0,
 			BorrowingRate: apy,

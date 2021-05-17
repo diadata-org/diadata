@@ -18,7 +18,6 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoingeckoOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -141,8 +140,8 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on coingecko api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on coingecko api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -154,7 +153,7 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 	var quotations []aux
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	var symbols []string
 	for _, quotation := range quotations {
@@ -170,8 +169,8 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -259,75 +258,75 @@ type BasicTokenInfo struct {
 	Symbol string `json:"symbol"`
 }
 
-func getCoinInfoByAddress(address string) (name, symbol string, err error) {
-	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
-	if err != nil {
-		return
-	}
-	var tokenInfo BasicTokenInfo
-	err = json.Unmarshal(response, &tokenInfo)
-	if err != nil {
-		return
-	}
-	name = tokenInfo.Name
-	symbol = tokenInfo.Symbol
-	return
-}
+// func getCoinInfoByAddress(address string) (name, symbol string, err error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+// 	if err != nil {
+// 		return
+// 	}
+// 	var tokenInfo BasicTokenInfo
+// 	err = json.Unmarshal(response, &tokenInfo)
+// 	if err != nil {
+// 		return
+// 	}
+// 	name = tokenInfo.Name
+// 	symbol = tokenInfo.Symbol
+// 	return
+// }
 
-func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
-	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
-	var coin CoinData
-	err = json.Unmarshal(response, &coin)
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
+// func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
+// 	var coin CoinData
+// 	err = json.Unmarshal(response, &coin)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
 
-	// Get index of most recent timestamp
-	prices := coin.Prices
-	latestTimestamp := time.Time{}
-	indexLatestTimestamp := 0
-	for i, price := range prices {
-		tm := time.Unix(int64(price[0]/1000), 0)
-		if latestTimestamp.Before(tm) {
-			latestTimestamp = tm
-			indexLatestTimestamp = i
-		}
-	}
+// 	// Get index of most recent timestamp
+// 	prices := coin.Prices
+// 	latestTimestamp := time.Time{}
+// 	indexLatestTimestamp := 0
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		if latestTimestamp.Before(tm) {
+// 			latestTimestamp = tm
+// 			indexLatestTimestamp = i
+// 		}
+// 	}
 
-	// Get index of timestamp closest to latestTimestamp-24h
-	indexYesterday := 0
-	yesterday := latestTimestamp.AddDate(0, 0, -1)
-	minDuration := time.Duration(int64(1e16))
-	for i, price := range prices {
-		tm := time.Unix(int64(price[0]/1000), 0)
-		diff := yesterday.Sub(tm)
-		if diff < 0 {
-			diff = tm.Sub(yesterday)
-		}
-		if diff < minDuration {
-			minDuration = diff
-			indexYesterday = i
-		}
-	}
+// 	// Get index of timestamp closest to latestTimestamp-24h
+// 	indexYesterday := 0
+// 	yesterday := latestTimestamp.AddDate(0, 0, -1)
+// 	minDuration := time.Duration(int64(1e16))
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		diff := yesterday.Sub(tm)
+// 		if diff < 0 {
+// 			diff = tm.Sub(yesterday)
+// 		}
+// 		if diff < minDuration {
+// 			minDuration = diff
+// 			indexYesterday = i
+// 		}
+// 	}
 
-	// Get name and symbol by address from coingecko
-	name, symbol, err := getCoinInfoByAddress(address)
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
+// 	// Get name and symbol by address from coingecko
+// 	name, symbol, err := getCoinInfoByAddress(address)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
 
-	var fq models.ForeignQuotation
-	fq.Symbol = strings.ToUpper(symbol)
-	fq.Name = name
-	fq.Price = prices[indexLatestTimestamp][1]
-	fq.PriceYesterday = prices[indexYesterday][1]
-	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
-	fq.Source = "Coingecko"
-	fq.Time = latestTimestamp
-	return &fq, nil
-}
+// 	var fq models.ForeignQuotation
+// 	fq.Symbol = strings.ToUpper(symbol)
+// 	fq.Name = name
+// 	fq.Price = prices[indexLatestTimestamp][1]
+// 	fq.PriceYesterday = prices[indexYesterday][1]
+// 	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
+// 	fq.Source = "Coingecko"
+// 	fq.Time = latestTimestamp
+// 	return &fq, nil
+// }

@@ -1,7 +1,6 @@
 package defiscrapers
 
 import (
-	"bytes"
 	"encoding/json"
 	"math"
 	"strconv"
@@ -59,6 +58,9 @@ func NewDYDX(scraper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
 func fetchDYDXMarkets() (dydxrate []DYDXMarket, err error) {
 	var response map[string][]DYDXMarket
 	jsondata, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
+	if err != nil {
+		return []DYDXMarket{}, err
+	}
 	err = json.Unmarshal(jsondata, &response)
 	return response["markets"], err
 }
@@ -135,15 +137,15 @@ func (proto *DYDXProtocol) UpdateRate() error {
 	return nil
 }
 
-func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
-	var response map[string]DYDXMarket
-	var url bytes.Buffer
-	url.WriteString("https://api.dydx.exchange/v1/markets/")
-	url.WriteString(marketID)
-	jsonDATA, err := utils.GetRequest(url.String())
-	err = json.Unmarshal(jsonDATA, &response)
-	return response["market"], err
-}
+// func getMarketByID(marketID string) (dydxrate DYDXMarket, err error) {
+// 	var response map[string]DYDXMarket
+// 	var url bytes.Buffer
+// 	url.WriteString("https://api.dydx.exchange/v1/markets/")
+// 	url.WriteString(marketID)
+// 	jsonDATA, err := utils.GetRequest(url.String())
+// 	err = json.Unmarshal(jsonDATA, &response)
+// 	return response["market"], err
+// }
 
 func (proto *DYDXProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)

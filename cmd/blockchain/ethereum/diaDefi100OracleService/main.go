@@ -10,8 +10,8 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
@@ -150,8 +150,8 @@ func getDefiMCFromCoingecko() (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on coingecko api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on coingecko api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -165,7 +165,7 @@ func getDefiMCFromCoingecko() (float64, error) {
 	var rawdata CoingeckoData
 	err = json.Unmarshal(contents, &rawdata)
 	if err != nil {
-		return 0.0, fmt.Errorf("Error on unmarshaling data from coingecko:", contents)
+		return 0.0, fmt.Errorf("error on unmarshaling data from coingecko:", contents)
 	}
 	marketCap, err := strconv.ParseFloat(rawdata.Data.DefiMarketCap, 64)
 	if err != nil {
@@ -182,8 +182,8 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {

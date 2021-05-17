@@ -878,8 +878,8 @@ func getCoinDetailsFromDia(symbol string) (*models.Coin, error) {
 	} else {
 		defer response.Body.Close()
 
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		if response.StatusCode != 200 {
+			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 		}
 
 		contents, err := ioutil.ReadAll(response.Body)
@@ -963,8 +963,8 @@ func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) 
 	} else {
 		defer response.Body.Close()
 
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		if response.StatusCode != 200 {
+			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 		}
 
 		contents, err := ioutil.ReadAll(response.Body)
@@ -989,8 +989,8 @@ func getDefiStateFromDia(protocol string) (*dia.DefiProtocolState, error) {
 	} else {
 		defer response.Body.Close()
 
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		if response.StatusCode != 200 {
+			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 		}
 
 		contents, err := ioutil.ReadAll(response.Body)
@@ -1014,8 +1014,8 @@ func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
 	} else {
 		defer response.Body.Close()
 
-		if 200 != response.StatusCode {
-			return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		if response.StatusCode != 200 {
+			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 		}
 
 		contents, err := ioutil.ReadAll(response.Body)
@@ -1063,8 +1063,8 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -1085,8 +1085,8 @@ func getSupplyFromDia(symbol string) (*dia.Supply, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -1107,8 +1107,8 @@ func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool,
 		return nil, err
 	}
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
 
 	contents, err := ioutil.ReadAll(response.Body)

@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"sync"
+
 	"github.com/diadata-org/diadata/internal/pkg/tradesBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.WaitGroup, w *kafka.Writer) {

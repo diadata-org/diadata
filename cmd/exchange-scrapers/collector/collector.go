@@ -54,7 +54,7 @@ func init() {
 	if *exchange == "" {
 		flag.Usage()
 		log.Println(dia.Exchanges())
-		for true {
+		for {
 			time.Sleep(24 * time.Hour)
 		}
 		// log.Fatal("exchange is required")

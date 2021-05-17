@@ -102,7 +102,7 @@ func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 }
 
 func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
-	for asset, _ := range proto.assets {
+	for asset := range proto.assets {
 		bzxrate, err := proto.fetch(asset)
 		if err != nil {
 			continue
@@ -127,7 +127,7 @@ func (proto *BZXProtocol) UpdateRate() error {
 
 		totalBorrowAPR := new(big.Float)
 		totalBorrowAPR.SetString(market.BorrowRate.String())
-		totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
+		// totalBorrowAPR = new(big.Float).Quo(totalSupplyAPR, big.NewFloat(math.Pow10(18)))
 		totalBorrowAPRPOW18, _ := totalSupplyAPR.Float64()
 
 		asset := &dia.DefiRate{

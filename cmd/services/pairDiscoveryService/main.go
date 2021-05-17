@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	log        *logrus.Logger
-	updateTime = time.Second * 60 * 60
+	log *logrus.Logger
+	// updateTime = time.Second * 60 * 60
 )
 
 type Task struct {
@@ -98,9 +98,10 @@ func main() {
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
 func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
-	toggle := getTogglePairDiscovery(updateTime)
+	// TO DO: activate toggle
+	// toggle := getTogglePairDiscovery(updateTime)
 
-	toggle = true
+	toggle := true
 	if !toggle {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
@@ -294,7 +295,13 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							continue
 						}
 						quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
+						if err != nil {
+							log.Error(err)
+						}
 						basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
+						if err != nil {
+							log.Error(err)
+						}
 
 						if quotetokenVerified {
 							quotetoken, err := relDB.GetAssetByID(quotetokenID)
@@ -370,15 +377,16 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	}
 }
 
+// TO DO: activate toggle
 // getTogglePairDiscovery switches to true between midnight and midnight + duration
-func getTogglePairDiscovery(d time.Duration) bool {
-	t := time.Now()
-	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
-	if float64(secondsAfterMidnight) < d.Seconds()+10 {
-		return true
-	}
-	return false
-}
+// func getTogglePairDiscovery(d time.Duration) bool {
+// 	t := time.Now()
+// 	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
+// 	if float64(secondsAfterMidnight) < d.Seconds()+10 {
+// 		return true
+// 	}
+// 	return false
+// }
 
 // addNewPairs adds pair from @pairs if it's not in our postgres DB yet.
 // Equality refers to the unique identifier (exchange,foreignName).

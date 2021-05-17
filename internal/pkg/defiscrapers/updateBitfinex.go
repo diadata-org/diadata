@@ -114,6 +114,9 @@ func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProto
 func fetchFundingSymbols() (fundingSymbols []string, err error) {
 	fundingSymbols = make([]string, 0)
 	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	if err != nil {
+		log.Error(err)
+	}
 	log.Debugf("%s", jsondata)
 	resp := make([][]interface{}, 0)
 	err = json.Unmarshal(jsondata, &resp)
@@ -228,6 +231,9 @@ func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	// Fetch market prices in bulk, so we don't be affected by Bitfinex api rate limits
 	// See https://docs.bitfinex.com/reference#rest-public-tickers
 	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	if err != nil {
+		return 0, err
+	}
 	log.Debugf("%s", jsondata)
 	priceList := make([][]interface{}, 0)
 	err = json.Unmarshal(jsondata, &priceList)
@@ -237,13 +243,16 @@ func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	for _, symbol := range symbols {
 		// We need to make an api call for every funding symbol
 		jsondata, err := utils.GetRequest(fmt.Sprintf("https://api-pub.bitfinex.com/v2/stats1/funding.size:1m:f%s/last", symbol))
+		if err != nil {
+			log.Error(err)
+		}
 		resp := make([]float64, 0)
 		err = json.Unmarshal(jsondata, &resp)
 		if err != nil {
 			return 0, err
 		}
 		if len(resp) != 2 {
-			return 0, fmt.Errorf("Unexpected response from bitfinex stats api")
+			return 0, fmt.Errorf("unexpected response from bitfinex stats api")
 		}
 		symTotal := resp[1]
 		// Find price for funding symbols

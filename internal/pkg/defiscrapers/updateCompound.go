@@ -17,10 +17,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	cTokenDecimals = 8
-)
-
 type CompoundRate struct {
 	SupplyRate    float64
 	BorrowRate    float64
@@ -129,9 +125,12 @@ func NewCreamFinance(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundP
 	return &CompoundProtocol{scraper: scraper, protocol: protocol, decimals: decimals, assets: assets, connection: connection}
 }
 
-func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error) {
+func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 	var contract *compoundcontract.CTokenCaller
-	contract, err = compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	contract, err := compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	if err != nil {
+		return CompoundRate{}, err
+	}
 
 	// Get decimals of underlying token for computation of tvl
 	var decs *big.Int
@@ -140,37 +139,46 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 	} else {
 		var cContract *compoundcontract.CErc20Caller
 		cContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
-		address, _ := cContract.Underlying(&bind.CallOpts{})
+		if err != nil {
+			return CompoundRate{}, err
+		}
+		address, err := cContract.Underlying(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		var underlyingContract *compoundcontract.CErc20Caller
 		underlyingContract, err = compoundcontract.NewCErc20Caller(address, proto.connection)
+		if err != nil {
+			return CompoundRate{}, err
+		}
 		decs, _ = underlyingContract.Decimals(&bind.CallOpts{})
 	}
 
 	supplyInterestRate, err := contract.SupplyRatePerBlock(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	borrowInterestRate, err := contract.BorrowRatePerBlock(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalSupply, err := contract.TotalSupply(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalBorrow, err := contract.TotalBorrows(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalReserves, err := contract.TotalReserves(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	cash, err := contract.GetCash(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
-	rate = CompoundRate{
+	rate := CompoundRate{
 		Symbol:        asset,
 		Decimal:       int(decs.Int64()),
 		BorrowRate:    proto.calculateAPY(borrowInterestRate),
@@ -180,18 +188,15 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 		TotalReserves: totalReserves,
 		Cash:          cash,
 	}
-	return
+	return rate, nil
 }
 
 func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	// https://compound.finance/docs#protocol-math
 	//Calculate APY
-	var blocksPerDay float64
-	var daysPerYear float64
-	var ethMantissa float64
-	ethMantissa = 1e18
-	blocksPerDay = 4 * 60 * 24
-	daysPerYear = 365
+	ethMantissa := 1e18
+	blocksPerDay := float64(4 * 60 * 24)
+	daysPerYear := float64(365)
 
 	rateInt, err := strconv.ParseFloat(rate.String(), 64)
 	if err != nil {

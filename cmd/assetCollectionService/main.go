@@ -16,14 +16,14 @@ import (
 fetch assets from various exchanges and save them in postgresql
 */
 
-var blockchains map[string]dia.BlockChain
+// var blockchains map[string]dia.BlockChain
 
 var (
 	log         = logrus.New()
 	assetSource *string
-	key         *string
-	secret      *string
-	caching     *bool
+	// key         *string
+	secret  *string
+	caching *bool
 )
 
 const (
