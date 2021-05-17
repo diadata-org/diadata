@@ -2,6 +2,7 @@ package dia
 
 import (
 	"encoding/json"
+	"math/big"
 	"strings"
 	"time"
 
@@ -71,7 +72,7 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 
 type NFTTrade struct {
 	NFT         NFT
-	Timestamp   time.Time
+	BlockNumber *big.Int
 	PriceUSD    float64
 	FromAddress common.Address
 	ToAddress   common.Address
