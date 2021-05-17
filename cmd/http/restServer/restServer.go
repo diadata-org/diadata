@@ -85,7 +85,7 @@ func helloHandler(c *gin.Context) {
 
 func main() {
 
-	r := gin.Default()
+	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
@@ -160,6 +160,9 @@ func main() {
 		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
 		TimeFunc: time.Now,
 	})
+	if err != nil {
+		log.Error("creating middleware: ", err)
+	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
 
