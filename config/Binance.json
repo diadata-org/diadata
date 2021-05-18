@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "GRTUSDT",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "AKROUSDT",
             "Ignore": false,
             "Symbol": "AKRO"

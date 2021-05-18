@@ -85,7 +85,7 @@ func helloHandler(c *gin.Context) {
 
 func main() {
 
-	r := gin.Default()
+	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
@@ -160,6 +160,9 @@ func main() {
 		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
 		TimeFunc: time.Now,
 	})
+	if err != nil {
+		log.Error("creating middleware: ", err)
+	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
 
@@ -203,7 +206,7 @@ func main() {
 	{
 		// Endpoints for cryptocurrencies/exchanges
 		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
-		dia.GET("/lastTrades/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastTrades))
+		dia.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
 		dia.GET("/lastPriceBefore/:filter/:exchange/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBefore))
 		dia.GET("/lastPriceBeforeAllExchanges/:filter/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBeforeAllExchanges))
 		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
@@ -254,7 +257,7 @@ func main() {
 		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
+		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 
 		// Endpoints for NFTs
