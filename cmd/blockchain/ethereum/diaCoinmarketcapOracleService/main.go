@@ -86,7 +86,8 @@ func main() {
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for range ticker.C {
-			periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			err := periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			log.Fatalf("failed periodic update %v: ", err)
 		}
 	}()
 	select {}

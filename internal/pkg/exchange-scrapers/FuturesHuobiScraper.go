@@ -142,7 +142,10 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					m, err := ws.Read(msg)
@@ -230,12 +233,17 @@ func (s *HuobiFuturesScraper) validateMarket(market string) {
 // Huobi websocket API sends back gzips, this will parse it.
 func parseGzip(data []byte) ([]byte, error) {
 	b := new(bytes.Buffer)
-	binary.Write(b, binary.LittleEndian, data)
+	err := binary.Write(b, binary.LittleEndian, data)
+	if err != nil {
+		return []byte{}, err
+	}
+
 	r, err := gzip.NewReader(b)
 	if err != nil {
 		return nil, err
 	}
 	defer r.Close()
+
 	unzipped, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err

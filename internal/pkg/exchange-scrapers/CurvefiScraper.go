@@ -120,7 +120,10 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	}
 	scraper.RestClient = restClient
 
-	scraper.loadPoolsAndCoins()
+	err = scraper.loadPoolsAndCoins()
+	if err != nil {
+		log.Error(err)
+	}
 
 	if scrape {
 		go scraper.mainLoop()
@@ -132,7 +135,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 	scraper.run = true
 
 	for _, pool := range scraper.pools.poolsAddressNoLock() {
-		scraper.watchSwaps(pool)
+		err := scraper.watchSwaps(pool)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	scraper.watchNewPools()
 
@@ -146,7 +152,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 					scraper.watchNewPools()
 				} else {
 					log.Info("resubscribe to swaps from Pool: " + p)
-					scraper.watchSwaps(p)
+					err := scraper.watchSwaps(p)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -205,8 +214,14 @@ func (scraper *CurveFIScraper) watchNewPools() {
 			case vLog := <-sink:
 
 				if _, ok := scraper.pools.getPool(vLog.Pool.Hex()); !ok {
-					scraper.loadPoolData(vLog.Pool.Hex())
-					scraper.watchSwaps(vLog.Pool.Hex())
+					err = scraper.loadPoolData(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
+					err = scraper.watchSwaps(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -234,7 +249,10 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 			log.Error(err)
 		}
 
-		scraper.loadPoolData(pool.Hex())
+		err = scraper.loadPoolData(pool.Hex())
+		if err != nil {
+			return err
+		}
 
 	}
 	return err

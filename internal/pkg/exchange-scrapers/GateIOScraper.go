@@ -137,7 +137,10 @@ func (s *GateIOScraper) mainLoop() {
 	)
 
 	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
-	json.Unmarshal(b, &gresponse)
+	err := json.Unmarshal(b, &gresponse)
+	if err != nil {
+		log.Error(err)
+	}
 
 	for _, v := range gresponse {
 		allPairs = append(allPairs, v.ID)
@@ -149,7 +152,7 @@ func (s *GateIOScraper) mainLoop() {
 		Channel: "spot.trades",
 		Payload: allPairs,
 	}
-	var err error
+
 	log.Infoln("subscribed", allPairs)
 	if err = s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
@@ -219,8 +222,12 @@ func (s *GateIOScraper) Close() error {
 	if s.closed {
 		return errors.New("GateIOScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		log.Error(err)
+	}
 	close(s.shutdown)
+
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

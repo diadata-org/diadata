@@ -104,7 +104,10 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		}
 		tokenCaller, _ := ethhelper.NewTokenCaller(lpToken, cv.RestClient)
 		lpTokenSymbol := new([]interface{})
-		tokenCaller.Contract.Call(&bind.CallOpts{}, lpTokenSymbol, "symbol")
+		err = tokenCaller.Contract.Call(&bind.CallOpts{}, lpTokenSymbol, "symbol")
+		if err != nil {
+			log.Error(err)
+		}
 
 		var pr models.FarmingPool
 		pr.TimeStamp = time.Now()

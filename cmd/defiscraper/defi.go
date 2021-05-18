@@ -21,7 +21,10 @@ func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.
 			log.Error("error")
 			return
 		}
-		ds.SetDefiRateInflux(t)
+		err := ds.SetDefiRateInflux(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 
@@ -35,7 +38,10 @@ func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds model
 			log.Error("error")
 			return
 		}
-		ds.SetDefiStateInflux(t)
+		err := ds.SetDefiStateInflux(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 

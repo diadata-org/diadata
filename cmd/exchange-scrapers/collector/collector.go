@@ -39,7 +39,10 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, exchan
 				return
 			}
 			lastTradeTime = time.Now()
-			kafkaHelper.WriteMessage(w, t)
+			err := kafkaHelper.WriteMessage(w, t)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }

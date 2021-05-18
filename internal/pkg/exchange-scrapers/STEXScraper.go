@@ -145,7 +145,10 @@ func (s *STEXScraper) mainLoop() {
 func (s *STEXScraper) scrapeTrades() {
 
 	var numRequests int
-	s.FetchAvailablePairs()
+	_, err := s.FetchAvailablePairs()
+	if err != nil {
+		log.Error(err)
+	}
 	for _, pairScraper := range s.pairScrapers {
 		if numRequests > 180 {
 			// API limit is 180 requests per min.

@@ -138,7 +138,10 @@ func (s *BitflyerScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					_, message, err := ws.ReadMessage()
@@ -160,7 +163,10 @@ func (s *BitflyerScraper) Scrape(market string) {
 
 // write's primary purpose is to write a ping frame op code to keep the websocket connection alive
 func (s *BitflyerScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
-	ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	err := ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	if err != nil {
+		return err
+	}
 	return ws.WriteMessage(mt, payload)
 }
 

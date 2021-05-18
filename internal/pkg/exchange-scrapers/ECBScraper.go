@@ -96,11 +96,17 @@ func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *ECBScraper) mainLoop() {
-	s.Update()
+	err := s.Update()
+	if err != nil {
+		log.Error(err)
+	}
 	for {
 		select {
 		case <-s.ticker.C:
-			s.Update()
+			err := s.Update()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("ECBScraper shutting down")
 			s.cleanup(nil)
@@ -196,7 +202,10 @@ func (s *ECBScraper) Update() error {
 				}
 			}
 		}
-		s.datastore.SetCurrencyChange(change)
+		err := s.datastore.SetCurrencyChange(change)
+		if err != nil {
+			return err
+		}
 	}
 	log.Info("Update done")
 	return err
@@ -295,11 +304,14 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		}
 		quotations = append(quotations, &assetquotation)
 	}
-	datastore.AddAssetQuotationsToBatch(quotations)
+	err = datastore.AddAssetQuotationsToBatch(quotations)
+	if err != nil {
+		log.Errorf("add quotation to batch: %v", err)
+	}
 	// Write quotations on influxdb
 	err = datastore.WriteBatchInflux()
 	if err != nil {
-		log.Printf("Error on asset quotations batch write: %v\n", err)
+		log.Errorf("asset quotations batch write: %v", err)
 	} else {
 		log.Printf("historical prices for %s successfully populated\n", currency)
 	}

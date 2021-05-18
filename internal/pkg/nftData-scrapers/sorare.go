@@ -285,7 +285,10 @@ func (scraper *SorareScraper) mainLoop() {
 	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateNFT()
+			err := scraper.UpdateNFT()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.nftscraper.shutdown: // user requested shutdown
 			log.Printf("Sorare scraper shutting down")
 			err := scraper.Close()

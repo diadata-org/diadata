@@ -161,7 +161,10 @@ func (s *BitMaxScraper) mainLoop() {
 				a := &BitMaxRequest{
 					Op: "pong",
 				}
-				s.wsClient.WriteJSON(a)
+				err = s.wsClient.WriteJSON(a)
+				if err != nil {
+					log.Error(err)
+				}
 				log.Infoln("Send Pong to keep connection alive")
 
 			}
@@ -282,7 +285,6 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 
 	err = json.Unmarshal(body, &bitmaxResponse)
-
 	if err != nil {
 		log.Error("error unmarshalling symbols for bitmax", err)
 	}

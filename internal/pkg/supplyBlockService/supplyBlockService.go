@@ -67,14 +67,14 @@ func (s *SupplyScraper) mainLoop() {
 			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("SupplyScraper shutting down")
-			s.cleanup(nil)
+			s.cleanup()
 			return
 		}
 	}
 }
 
 // must only be called from mainLoop
-func (s *SupplyScraper) cleanup(err error) {
+func (s *SupplyScraper) cleanup() {
 	s.ticker.Stop()
 	s.closed = true
 	close(s.shutdownDone) // signal that shutdown is complete

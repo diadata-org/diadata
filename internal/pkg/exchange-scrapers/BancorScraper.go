@@ -275,7 +275,6 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 	}
 	v := reflect.ValueOf(assets.Data)
 	typeOfS := v.Type()
-	pairs = make([]dia.ExchangePair, v.NumField())
 
 	for i := 0; i < v.NumField(); i++ {
 		pairs = append(pairs, dia.ExchangePair{

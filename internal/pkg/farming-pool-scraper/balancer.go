@@ -261,7 +261,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	// 				so that every public pool gets logged.
 	finalized, err := pool.IsFinalized(&bind.CallOpts{})
 	if err != nil {
-		errors.Wrap(err, "checking if pool is finalized")
+		log.Errorf("checking if pool is finalized: %v", err)
 	} else if !finalized {
 		return errors.New("pool is not finalized")
 	}

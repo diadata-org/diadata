@@ -155,7 +155,10 @@ func (s *ZBScraper) Close() error {
 	}
 
 	close(s.shutdown)
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

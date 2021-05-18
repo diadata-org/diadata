@@ -133,7 +133,10 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				for {
 					select {
 					case <-tick.C:
-						s.send(&map[string]string{"op": "ping"}, market, ws)
+						err := s.send(&map[string]string{"op": "ping"}, market, ws)
+						if err != nil {
+							log.Error(err)
+						}
 					}
 				}
 			}()
@@ -141,7 +144,10 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					_, message, err := ws.ReadMessage()

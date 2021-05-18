@@ -78,14 +78,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for range ticker.C {
-			periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
+			}
 		}
 	}()
 	select {}

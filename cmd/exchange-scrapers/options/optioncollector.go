@@ -21,7 +21,7 @@ const (
 	watchdogDelay = 60 * 60
 )
 
-func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup, exchange string) {
+func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup) {
 	lastTradeTime := time.Now()
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
@@ -86,6 +86,6 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	go handleorderBook(ds, es.Channel(), &wg, *exchange)
+	go handleorderBook(ds, es.Channel(), &wg)
 	wg.Wait()
 }

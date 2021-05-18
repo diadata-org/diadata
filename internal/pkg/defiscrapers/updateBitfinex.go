@@ -94,7 +94,10 @@ func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProto
 				case <-wsConn.restart:
 					// Try to close the connection first
 					if wsConn.conn != nil {
-						wsConn.conn.Close()
+						err := wsConn.conn.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}
 					go wsConn.connectWebsocket()
 				}
@@ -137,14 +140,20 @@ func (ws *BitfinexWSSConnection) pingWebsocket() {
 	if err != nil {
 		return
 	}
-	w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "f` + ws.symbol + `" }`))
+	_, err = w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "f` + ws.symbol + `" }`))
+	if err != nil {
+		return
+	}
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
 		ws.restart <- true
 	}()
 	for range ticker.C {
-		ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		err = ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		if err != nil {
+			log.Error(err)
+		}
 		if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 			return
 		}

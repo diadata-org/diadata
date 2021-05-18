@@ -206,11 +206,12 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	return rates * 100
 }
 
-func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
+func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate) {
 	for asset := range proto.assets {
 		Compoundrate, err := proto.fetch(asset)
 		if err != nil {
 			log.Errorf("error fetching asset %s: %v", asset, err)
+			continue
 		}
 		rates = append(rates, Compoundrate)
 	}
@@ -219,11 +220,8 @@ func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 
 func (proto *CompoundProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
-	markets, err := proto.fetchALL()
-	if err != nil {
-		log.Errorf("error fetching rates %v: ", err)
-		return err
-	}
+	markets := proto.fetchALL()
+
 	for _, market := range markets {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
@@ -243,10 +241,8 @@ func (proto *CompoundProtocol) UpdateRate() error {
 func (proto *CompoundProtocol) getTotalSupply() (float64, error) {
 	// total supply for a market is explained here:
 	// https://compound.finance/docs/ctokens#get-cash
-	markets, err := proto.fetchALL()
-	if err != nil {
-		return 0, err
-	}
+	markets := proto.fetchALL()
+
 	sum := float64(0)
 	for i := 0; i < len(markets); i++ {
 		supply, err := strconv.ParseFloat(markets[i].Cash.String(), 64)

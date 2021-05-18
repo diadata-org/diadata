@@ -128,7 +128,10 @@ func (s *HuobiScraper) mainLoop() {
 			//It has to gzip response data
 			reader, _ := gzip.NewReader(testRead)
 			jsonBase := json.NewDecoder(reader)
-			jsonBase.Decode(message)
+			err := jsonBase.Decode(message)
+			if err != nil {
+				log.Error(err)
+			}
 
 			// If msg is ping type, it needs to resend a pong msg to ws.
 			// for avoid to disconnect it
@@ -239,7 +242,10 @@ func (s *HuobiScraper) Close() error {
 	if s.closed {
 		return errors.New("HuobiScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()

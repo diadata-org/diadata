@@ -28,7 +28,6 @@ func main() {
 	 * Read in Oracle address
 	 */
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var topCoins = flag.Int("topCoins", 15, "Number of coins to push with the oracle")
 	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
 	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
 	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
@@ -79,20 +78,20 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
-	periodicOracleUpdateHelper(topCoins, *sleepSeconds, auth, contract, conn)
+	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for range ticker.C {
-			periodicOracleUpdateHelper(topCoins, *sleepSeconds, auth, contract, conn)
+			periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
 
 	// --------------------------------------------------------
 	// PRICE QUOTATIONS

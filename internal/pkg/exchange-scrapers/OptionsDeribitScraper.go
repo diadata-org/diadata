@@ -144,12 +144,24 @@ func (s *DeribitOptionsScraper) Scrape(market string) {
 func (s *AllDeribitOptionsScrapers) GetMetas() {
 	tick := time.NewTicker(time.Duration(s.collectMetaEvery) * time.Hour)
 	defer tick.Stop()
-	s.GetAndStoreOptionsMeta("BTC")
-	s.GetAndStoreOptionsMeta("ETH")
+	err := s.GetAndStoreOptionsMeta("BTC")
+	if err != nil {
+		log.Error(err)
+	}
+	err = s.GetAndStoreOptionsMeta("ETH")
+	if err != nil {
+		log.Error(err)
+	}
 	go func() {
 		for range tick.C {
-			s.GetAndStoreOptionsMeta("BTC")
-			s.GetAndStoreOptionsMeta("ETH")
+			err = s.GetAndStoreOptionsMeta("BTC")
+			if err != nil {
+				log.Error(err)
+			}
+			err = s.GetAndStoreOptionsMeta("ETH")
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}()
 }
@@ -370,7 +382,10 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 				StrikePrice:    instrument.Strike,
 				OptionType:     optionType,
 			}
-			s.ds.SetOptionMeta(&optionMeta)
+			err := s.ds.SetOptionMeta(&optionMeta)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 	return nil
@@ -396,7 +411,10 @@ func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
 
 func (s *AllDeribitOptionsScrapers) Close() {
 	for _, scraper := range s.Scrapers {
-		scraper.ScraperClose(scraper.deribitScraper.Markets[0], s.WsConnection)
+		err := scraper.ScraperClose(scraper.deribitScraper.Markets[0], s.WsConnection)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	err := s.WsConnection.Close()
 	if err != nil {

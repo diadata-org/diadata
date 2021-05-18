@@ -75,11 +75,17 @@ func (cv *Cvault) mainLoop() {
 			select {
 			case deposit := <-cv.DepositEvent:
 				{
-					cv.getPool(deposit.Pid)
+					err := cv.getPool(deposit.Pid)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			case withdraw := <-cv.WithDrawEvent:
 				{
-					cv.getPool(withdraw.Pid)
+					err := cv.getPool(withdraw.Pid)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 

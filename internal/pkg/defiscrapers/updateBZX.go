@@ -101,10 +101,11 @@ func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
 	return
 }
 
-func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
+func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate) {
 	for asset := range proto.assets {
 		bzxrate, err := proto.fetch(asset)
 		if err != nil {
+			log.Errorf("fetching asset %s: %v", asset, err)
 			continue
 		}
 		bzxrates = append(bzxrates, bzxrate)
@@ -114,10 +115,7 @@ func (proto *BZXProtocol) fetchALL() (bzxrates []BZXRate, err error) {
 
 func (proto *BZXProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
-	markets, err := proto.fetchALL()
-	if err != nil {
-		return err
-	}
+	markets := proto.fetchALL()
 
 	for _, market := range markets {
 		totalSupplyAPR := new(big.Float)
@@ -147,10 +145,8 @@ func (proto *BZXProtocol) UpdateRate() error {
 }
 
 func (proto *BZXProtocol) getTotalSupply() (float64, error) {
-	markets, err := proto.fetchALL()
-	if err != nil {
-		return 0, err
-	}
+	markets := proto.fetchALL()
+
 	sum := float64(0)
 	for i := 0; i < len(markets); i++ {
 

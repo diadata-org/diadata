@@ -40,6 +40,9 @@ func handlerate(c chan *models.FarmingPool, wg *sync.WaitGroup, ds models.Datast
 			return
 		}
 		log.Print("Write pool info: ", pr)
-		ds.SetFarmingPool(pr)
+		err := ds.SetFarmingPool(pr)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }

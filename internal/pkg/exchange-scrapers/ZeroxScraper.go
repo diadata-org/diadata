@@ -240,7 +240,10 @@ func (scraper *ZeroxScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
 
 	go func() {
 		for scraper.run {

@@ -56,7 +56,10 @@ func (scraper *SorareScraper) mainLoop() {
 	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateTrades()
+			err := scraper.UpdateTrades()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.tradescraper.shutdown: // user requested shutdown
 			log.Printf("Sorare scraper shutting down")
 			err := scraper.Close()

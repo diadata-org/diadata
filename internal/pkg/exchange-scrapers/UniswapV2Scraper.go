@@ -197,10 +197,7 @@ func (s *UniswapScraper) mainLoop() {
 						if err != nil {
 							log.Error("error normalizing swap: ", err)
 						}
-						price, volume, err := getSwapData(swap)
-						if err != nil {
-							log.Error("error getting swap data: ", err)
-						}
+						price, volume := getSwapData(swap)
 						pair.normalizeUniPair()
 						token0 := dia.Asset{
 							Address:    pair.Token0.Address.Hex(),
@@ -298,7 +295,10 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 		AllAssets []lockedAsset `json:"Tokens"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return nil, err
+	}
 
 	// Extract addresses
 	for _, token := range allAssets.AllAssets {
@@ -594,7 +594,7 @@ func (s *UniswapScraper) getNumPairs() (int, error) {
 }
 
 // getSwapData returns price, volume and sell/buy information of @swap
-func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
+func getSwapData(swap UniswapSwap) (price float64, volume float64) {
 	if swap.Amount0In == float64(0) {
 		volume = swap.Amount0Out
 		price = swap.Amount1In / swap.Amount0Out

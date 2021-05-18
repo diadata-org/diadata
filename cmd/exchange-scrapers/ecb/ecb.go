@@ -52,7 +52,7 @@ func init() {
 }
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rdb models.RelDB) {
+func handleTrades(c chan *dia.Trade, ds models.Datastore, rdb models.RelDB) {
 	for {
 		t, ok := <-c
 		if !ok {
@@ -123,7 +123,7 @@ func main() {
 		// This should be uncommented in case "go mainLoop.go" is deleted from SpawnECBScraper
 		// go sECB.MainLoop()
 
-		go handleTrades(sECB.Channel(), &wg, ds, *rdb)
+		go handleTrades(sECB.Channel(), ds, *rdb)
 		defer wg.Wait()
 	}
 }

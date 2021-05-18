@@ -122,7 +122,10 @@ func (s *LBankScraper) mainLoop() {
 
 func hash(s string) uint32 {
 	h := fnv.New32a()
-	h.Write([]byte(s))
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		log.Error(err)
+	}
 	return h.Sum32()
 }
 
@@ -149,7 +152,10 @@ func (s *LBankScraper) Close() error {
 	if s.closed {
 		return errors.New("LBankScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()

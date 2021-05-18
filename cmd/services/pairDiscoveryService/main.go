@@ -332,13 +332,16 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						VerifiedAssetsCount: verificationCount,
 					}
 					file, _ := json.MarshalIndent(dataforfile, "", " ")
-					ioutil.WriteFile(exchange+".json", file, 0644)
+					err = ioutil.WriteFile(exchange+".json", file, 0644)
+					if err != nil {
+						log.Error(err)
+					}
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						scraper.Close()
+						s.Close()
 					}(scraper, exchange)
 				} else {
 					// For DEXes, FetchAvailablePairs can retrieve unique information.
@@ -363,7 +366,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						scraper.Close()
+						s.Close()
 					}(scraper, exchange)
 				}
 			} else {
@@ -487,7 +490,10 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 	if err != nil {
 		return
 	}
-	json.Unmarshal(filebytes, &items)
+	err = json.Unmarshal(filebytes, &items)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -517,7 +523,7 @@ func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error
 
 func iterateDirectory(foldername string) (files []string) {
 	path := configCollectors.ConfigFileConnectors(foldername, "")
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -530,5 +536,8 @@ func iterateDirectory(foldername string) (files []string) {
 
 		return nil
 	})
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }

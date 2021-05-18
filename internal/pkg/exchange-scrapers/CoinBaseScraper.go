@@ -139,7 +139,10 @@ func (s *CoinBaseScraper) Close() error {
 	if s.closed {
 		return errors.New("CoinBaseScraper: Already closed")
 	}
-	s.wsConn.Close()
+	err := s.wsConn.Close()
+	if err != nil {
+		log.Error(err)
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()

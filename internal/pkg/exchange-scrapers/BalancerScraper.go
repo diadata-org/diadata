@@ -129,10 +129,16 @@ func (scraper *BalancerScraper) mainLoop() {
 			if scraper.run {
 				if pool == "NEW_POOLS" {
 					log.Info("resubscribe to new pools")
-					scraper.subscribeToNewPools()
+					err := scraper.subscribeToNewPools()
+					if err != nil {
+						log.Error(err)
+					}
 				} else {
 					log.Info("resubscribe to pool: " + pool)
-					scraper.subscribeToNewSwaps(pool)
+					err = scraper.subscribeToNewSwaps(pool)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -156,7 +162,10 @@ func (scraper *BalancerScraper) mainLoop() {
 
 func (scraper *BalancerScraper) performSubscriptions() {
 	for pool := range scraper.pools {
-		scraper.subscribeToNewSwaps(pool)
+		err := scraper.subscribeToNewSwaps(pool)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 	scraper.subscribeToNewPools()
@@ -187,7 +196,10 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 			case vLog := <-sinkPool:
 				if _, ok := scraper.pools[vLog.Pool.Hex()]; !ok {
 					scraper.pools[vLog.Pool.Hex()] = struct{}{}
-					scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+					err = scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -197,11 +209,7 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 }
 
 func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
-	sink, sub, err := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
-	if err != nil {
-		log.Error(err)
-		return err
-	}
+	sink, sub := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
 
 	go func() {
 		fmt.Println("subscribed to pool: " + poolToSub)
@@ -241,11 +249,7 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 				}
 
 				// Get trading data from swap in "classic" format
-				_, volume, price, err := getSwapDataBalancer(swap)
-
-				if err != nil {
-					log.Error("error parsing time: ", err)
-				}
+				_, volume, price := getSwapDataBalancer(swap)
 
 				trade := &dia.Trade{
 					Symbol:         pairScraper.pair.Symbol,
@@ -262,13 +266,11 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 			}
 		}
 	}()
-
-	return err
-
+	return nil
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, price float64, err error) {
+func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, price float64) {
 	volume = s.BuyVolume
 	price = s.SellVolume / s.BuyVolume
 	foreignName = s.BuyToken + "-" + s.SellToken
@@ -432,7 +434,7 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 // 	return sink, nil
 // }
 
-func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription, error) {
+func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription) {
 	sink := make(chan *pool.BalancerpoolLOGSWAP)
 	var pairFiltererContract *pool.BalancerpoolFilterer
 	pairFiltererContract, err := pool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
@@ -451,7 +453,7 @@ func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (
 		log.Error("error in get swaps channel: ", err)
 	}
 
-	return sink, sub, nil
+	return sink, sub
 }
 
 func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
@@ -471,6 +473,7 @@ func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.Balancerfa
 	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &startblock}, sink, nil, nil)
 	if err != nil {
 		log.Error("error in get pools channel: ", err)
+		return sink, sub, err
 	}
 
 	return sink, sub, nil

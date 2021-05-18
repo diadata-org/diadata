@@ -106,9 +106,11 @@ func runNFTSource(relDB *models.RelDB, source string, secret string) error {
 						continue
 					} else {
 						log.Errorf("postgres error saving nft %v: %v", receivedClass, err)
+						return err
 					}
 				} else {
 					log.Errorf("Error saving nft %v: %v", receivedClass, err)
+					return err
 				}
 			} else {
 				log.Info("successfully set nft ", receivedClass)

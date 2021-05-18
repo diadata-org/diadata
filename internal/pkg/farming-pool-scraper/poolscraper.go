@@ -44,12 +44,12 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 		s.poolHelper = NewSynthetixScraper(s)
 	}
 
-	go s.mainLoop(poolName)
+	go s.mainLoop()
 	return s
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (s *PoolScraper) mainLoop(rateType string) {
+func (s *PoolScraper) mainLoop() {
 	for range s.shutdown { // user requested shutdown
 		log.Println("PoolScraper shutting down")
 		s.cleanup(nil)

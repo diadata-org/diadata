@@ -167,7 +167,11 @@ func (s *HitBTCScraper) Close() error {
 		return errors.New("HitBTCScraper: Already closed")
 	}
 	close(s.shutdown)
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
+
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

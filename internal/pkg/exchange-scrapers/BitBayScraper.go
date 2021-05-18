@@ -96,7 +96,10 @@ func (s *BitBayScraper) getMarkets() (markets []string) {
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 	}
-	json.Unmarshal(b, &bbm)
+	err = json.Unmarshal(b, &bbm)
+	if err != nil {
+		log.Error(err)
+	}
 
 	for key := range bbm.Items {
 		markets = append(markets, key)

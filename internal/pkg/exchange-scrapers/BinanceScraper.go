@@ -78,7 +78,7 @@ func (s *BinanceScraper) mainLoop() {
 	close(s.initDone)
 	for range s.shutdown { // user requested shutdown
 		log.Println("BinanceScraper shutting down")
-		s.cleanup(nil)
+		s.cleanup()
 		return
 	}
 	select {}
@@ -91,7 +91,7 @@ func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 
 // closes all connected PairScrapers
 // must only be called from mainLoop
-func (s *BinanceScraper) cleanup(err error) {
+func (s *BinanceScraper) cleanup() {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 	// close all channels of PairScraper children

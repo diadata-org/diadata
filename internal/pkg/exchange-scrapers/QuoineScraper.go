@@ -143,7 +143,10 @@ func (scraper *QuoineScraper) sendPing() {
 			ls := &LiquidSubscribe{
 				Event: "pusher:ping",
 			}
-			scraper.wsClient.WriteJSON(ls)
+			err := scraper.wsClient.WriteJSON(ls)
+			if err != nil {
+				log.Error(err)
+			}
 
 		}
 	}
@@ -239,8 +242,6 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 	if err != nil {
 		return
 	}
-
-	pairs = make([]dia.ExchangePair, len(products))
 
 	for _, prod := range products {
 		pairToNormalize := dia.ExchangePair{

@@ -15,7 +15,7 @@ import (
 // pairs contains all pairs currently supported by the DIA scrapers
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup) {
+func handleTrades(c chan *dia.Trade) {
 	for {
 		t, ok := <-c
 		if !ok {
@@ -66,7 +66,7 @@ func main() {
 			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey, relDB)
 			if s != nil {
 				s[configPair.Exchange] = aPIScraper
-				go handleTrades(aPIScraper.Channel(), &wg)
+				go handleTrades(aPIScraper.Channel())
 			} else {
 				fmt.Println("Couldn't create APIScraper for ", configPair.Exchange)
 			}

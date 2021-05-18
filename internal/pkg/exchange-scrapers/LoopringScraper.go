@@ -135,7 +135,10 @@ func NewLoopringScraper(exchange dia.Exchange, scrape bool) *LoopringScraper {
 		log.Error("Error getting loopring key : ", err.Error())
 	}
 	var lkResponse LoopringKey
-	json.Unmarshal(resp, &lkResponse)
+	err = json.Unmarshal(resp, &lkResponse)
+	if err != nil {
+		log.Error(err)
+	}
 
 	s.wsURL = _LoopringSocketurl + "?wsApiKey=" + lkResponse.Key
 
@@ -163,7 +166,10 @@ func (s *LoopringScraper) reconnectToWS() {
 		log.Error("Error getting loopring key : ", err.Error())
 	}
 	var lkResponse LoopringKey
-	json.Unmarshal(resp, &lkResponse)
+	err = json.Unmarshal(resp, &lkResponse)
+	if err != nil {
+		log.Error(err)
+	}
 
 	s.wsURL = _LoopringSocketurl + "?wsApiKey=" + lkResponse.Key
 
@@ -267,7 +273,10 @@ func (s *LoopringScraper) Close() error {
 	if s.closed {
 		return errors.New("LoopringScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()

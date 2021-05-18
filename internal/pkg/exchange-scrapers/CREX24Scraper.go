@@ -133,7 +133,10 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 			payload, ok := arguments[1].(string)
 			var parsedUpdate CREX24ApiTradeUpdate
 			if ok {
-				json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				err := json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				if err != nil {
+					log.Error(err)
+				}
 				s.sendTradesToChannel(&parsedUpdate)
 			}
 		}

@@ -70,14 +70,20 @@ func main() {
 		return
 	}
 	// Initial run:
-	runAssetSource(relDB, *assetSource, *caching, *secret)
+	err = runAssetSource(relDB, *assetSource, *caching, *secret)
+	if err != nil {
+		log.Error(err)
+	}
 	// Afterwards, run every @fetchPeriodMinutes
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				runAssetSource(relDB, *assetSource, *caching, *secret)
+				err := runAssetSource(relDB, *assetSource, *caching, *secret)
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
