@@ -257,7 +257,7 @@ func main() {
 		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
+		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 
 		// Endpoints for NFTs
