@@ -49,6 +49,7 @@ func init() {
 	Exchanges[dia.FilterKing] = dia.Exchange{Name: dia.FilterKing, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BancorExchange] = dia.Exchange{Name: dia.BancorExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], WatchdogDelay: watchdogDelay} //API is used instead of contracts
 	Exchanges[dia.UniswapExchange] = dia.Exchange{Name: dia.UniswapExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.UniswapExchangeV3] = dia.Exchange{Name: dia.UniswapExchangeV3, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.LoopringExchange] = dia.Exchange{Name: dia.LoopringExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], WatchdogDelay: watchdogDelay} //API is used instead of contracts
 	Exchanges[dia.CurveFIExchange] = dia.Exchange{Name: dia.CurveFIExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], Contract: common.HexToAddress("0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.MakerExchange] = dia.Exchange{Name: dia.MakerExchange, Centralized: false, BlockChain: blockchains[dia.Ethereum], WatchdogDelay: watchdogDelay} //API is used instead of contracts
@@ -149,6 +150,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange])
 	case dia.STEXExchange:
 		return NewSTEXScraper(Exchanges[dia.STEXExchange])
+	case dia.UniswapExchangeV3:
+		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3])
 
 	default:
 		return nil

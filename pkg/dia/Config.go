@@ -30,6 +30,7 @@ const (
 	FilterKing        = "MA120"
 	BancorExchange    = "Bancor"
 	UniswapExchange   = "Uniswap"
+	UniswapExchangeV3 = "UniswapV3"
 	LoopringExchange  = "Loopring"
 	CurveFIExchange   = "Curvefi"
 	MakerExchange     = "Maker"
@@ -82,6 +83,7 @@ func Exchanges() []string {
 		PanCakeSwap,
 		CREX24Exchange,
 		STEXExchange,
+		UniswapExchangeV3,
 	}
 }
 
