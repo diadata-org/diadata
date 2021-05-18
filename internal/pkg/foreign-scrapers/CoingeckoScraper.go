@@ -58,7 +58,10 @@ func (scraper *CoingeckoScraper) mainLoop() {
 	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateQuotation()
+			err := scraper.UpdateQuotation()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("Coingeckoscraper shutting down")
 			return

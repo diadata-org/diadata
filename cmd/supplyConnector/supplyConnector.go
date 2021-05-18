@@ -5,6 +5,7 @@ import (
 
 	supply "github.com/diadata-org/diadata/internal/pkg/supplyBlockService"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	"github.com/prometheus/common/log"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -16,7 +17,10 @@ func handle(s *supply.SupplyScraper, wg *sync.WaitGroup, w *kafka.Writer) {
 			wg.Done()
 			return
 		}
-		kafkaHelper.WriteMessage(w, t)
+		err := kafkaHelper.WriteMessage(w, t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 

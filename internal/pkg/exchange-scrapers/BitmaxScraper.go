@@ -271,20 +271,20 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	var bitmaxResponse BitMaxPairResponse
 	response, err := http.Get("https://bitmax.io/api/pro/v1/products")
 	if err != nil {
-		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
+		log.Error("error getting symbols for bitmax", err)
 	}
 
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
+		log.Error("error reading symbols for bitmax", err)
 	}
 
 	err = json.Unmarshal(body, &bitmaxResponse)
 
 	if err != nil {
-		log.Errorf("Error Unmarshalling  Symbols for Bitmax Exchange", err)
+		log.Error("error unmarshalling symbols for bitmax", err)
 	}
 
 	for _, p := range bitmaxResponse.Data {

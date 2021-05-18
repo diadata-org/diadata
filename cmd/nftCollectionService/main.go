@@ -56,7 +56,10 @@ func main() {
 	}
 
 	// Initial run.
-	runNFTSource(relDB, *nftSource, *secret)
+	err = runNFTSource(relDB, *nftSource, *secret)
+	if err != nil {
+		log.Error(err)
+	}
 
 	// load gitcoin files for categorization of NFT classes.
 	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
@@ -76,10 +79,10 @@ func main() {
 	// Afterwards, run every @fetchPeriodMinutes.
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				runNFTSource(relDB, *nftSource, *secret)
+		for range ticker.C {
+			err = runNFTSource(relDB, *nftSource, *secret)
+			if err != nil {
+				log.Error(err)
 			}
 		}
 	}()
@@ -151,7 +154,10 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 	if err != nil {
 		return
 	}
-	json.Unmarshal(filebytes, &items)
+	err = json.Unmarshal(filebytes, &items)
+	if err != nil {
+		return
+	}
 	return
 }
 
@@ -176,7 +182,7 @@ func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) er
 
 func iterateDirectory(foldername string) (files []string) {
 	path := configCollectors.ConfigFileConnectors(foldername, "")
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -187,5 +193,8 @@ func iterateDirectory(foldername string) (files []string) {
 		}
 		return nil
 	})
+	if err != nil {
+		return
+	}
 	return
 }

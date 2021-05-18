@@ -147,12 +147,9 @@ func (s *AllDeribitOptionsScrapers) GetMetas() {
 	s.GetAndStoreOptionsMeta("BTC")
 	s.GetAndStoreOptionsMeta("ETH")
 	go func() {
-		for {
-			select {
-			case <-tick.C:
-				s.GetAndStoreOptionsMeta("BTC")
-				s.GetAndStoreOptionsMeta("ETH")
-			}
+		for range tick.C {
+			s.GetAndStoreOptionsMeta("BTC")
+			s.GetAndStoreOptionsMeta("ETH")
 		}
 	}()
 }
@@ -292,29 +289,27 @@ func (s *AllDeribitOptionsScrapers) refreshWsToken() {
 	tick := time.NewTicker(time.Duration(s.RefreshTokenEvery) * time.Second) // every RefreshTokenEvery seconds we have to refresh token
 	defer tick.Stop()
 	// we require a separate goroutine for ticker, so that we can refresh our access token everyRefreshToken seconds
-	for {
-		select {
-		case <-tick.C:
-			isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
-			if err != nil {
-				close(failedToRefreshToken)
-				time.Sleep(time.Duration(60) * time.Minute) // something very long
-			}
-			maxRetryAttempts := 5
-			if !isRefreshed {
-				for i := 1; i < maxRetryAttempts; i++ {
-					isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
-					if isRefreshed {
-						break
-					}
-					if err != nil {
-						close(failedToRefreshToken)
-						time.Sleep(time.Duration(60) * time.Minute) // something very long
-					}
+	for range tick.C {
+		isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+		if err != nil {
+			close(failedToRefreshToken)
+			time.Sleep(time.Duration(60) * time.Minute) // something very long
+		}
+		maxRetryAttempts := 5
+		if !isRefreshed {
+			for i := 1; i < maxRetryAttempts; i++ {
+				isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+				if isRefreshed {
+					break
+				}
+				if err != nil {
+					close(failedToRefreshToken)
+					time.Sleep(time.Duration(60) * time.Minute) // something very long
 				}
 			}
 		}
 	}
+	select {}
 }
 
 func (s *AllDeribitOptionsScrapers) AddMarket(market string) {
@@ -393,9 +388,7 @@ func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
 			for _, meta := range metas {
 				s.AddMarket(meta.InstrumentName)
 			}
-			select {
-			case <-tick.C:
-			}
+			<-tick.C
 		}
 	}()
 	return nil

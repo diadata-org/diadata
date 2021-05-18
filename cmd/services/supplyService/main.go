@@ -67,13 +67,10 @@ func main() {
 	// Continuously update supplies once every 24h
 	ticker := time.NewTicker(24 * time.Hour)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
-				if err != nil {
-					log.Error(err)
-				}
+		for range ticker.C {
+			err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
+			if err != nil {
+				log.Error(err)
 			}
 		}
 	}()

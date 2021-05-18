@@ -140,9 +140,18 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t1)
-		ds.SetInterestRate(&t2)
-		ds.SetInterestRate(&t3)
+		err = ds.SetInterestRate(&t1)
+		if err != nil {
+			log.Error(err)
+		}
+		err = ds.SetInterestRate(&t2)
+		if err != nil {
+			log.Error(err)
+		}
+		err = ds.SetInterestRate(&t3)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

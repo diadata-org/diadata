@@ -50,17 +50,14 @@ func (cv *CFIScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-cv.scraper.tickerRate.C:
-				err := cv.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scraping", err)
-				}
+		for range cv.scraper.tickerRate.C {
+			err := cv.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scraping", err)
 			}
-
 		}
 	}()
+	select {}
 
 }
 

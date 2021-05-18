@@ -81,9 +81,9 @@ const (
 	keyExchangePairCache = "dia_exchangepair_"
 	nftcategoryTable     = "nftcategory"
 	nftclassTable        = "nftclass"
-	nftTable             = "nft"
-	nftsaleTable         = "nftsale"
-	nftofferTable        = "nftoffer"
+	// nftTable             = "nft"
+	// nftsaleTable  = "nftsale"
+	// nftofferTable = "nftoffer"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"

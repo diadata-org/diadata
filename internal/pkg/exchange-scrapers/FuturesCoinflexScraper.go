@@ -193,16 +193,13 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 			// and we may fail sending ping before we get any message on a market, thus
 			// forcing Coinflex to close our websocket out.
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						err := s.write(websocket.PingMessage, []byte{}, ws)
-						if err != nil {
-							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
-							return
-						}
-						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
+				for range tick.C {
+					err := s.write(websocket.PingMessage, []byte{}, ws)
+					if err != nil {
+						s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
+						return
 					}
+					s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
 				}
 			}()
 			for {
@@ -255,8 +252,8 @@ func (s *CoinflexFuturesScraper) ScrapeMarkets() {
 
 func (s *CoinflexFuturesScraper) getBaseAndCounterID(market string) (int64, int64, error) {
 	assets := strings.Split(market, "/")
-	var baseID int64 = 0
-	var quoteID int64 = 0
+	baseID := int64(0)
+	quoteID := int64(0)
 	base := assets[0]
 	quote := assets[1] // coinflex call this "counter"
 	baseID, err := s.assetID(base)

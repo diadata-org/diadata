@@ -48,7 +48,10 @@ func InitSource() (source *Source, err error) {
 	if err != nil {
 		return
 	}
-	json.Unmarshal(fileBytes, &source)
+	err = json.Unmarshal(fileBytes, &source)
+	if err != nil {
+		return
+	}
 	return
 }
 

@@ -148,10 +148,16 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	for _, filters := range s.filters {
 		for _, f := range filters {
-			f.save(s.datastore)
+			err = f.save(s.datastore)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
-	s.datastore.Flush()
+	err = s.datastore.Flush()
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {

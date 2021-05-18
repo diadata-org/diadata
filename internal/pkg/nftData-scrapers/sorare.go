@@ -323,7 +323,7 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 		Blockchain:   dia.ETHEREUM,
 		Category:     "Game",
 		Address:      scraper.address,
-		Name:         "Sorare",
+		Name:         source,
 		Symbol:       "SOR",
 		ContractType: "",
 	}

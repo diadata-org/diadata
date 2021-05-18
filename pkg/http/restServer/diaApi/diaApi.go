@@ -756,7 +756,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 	if dateInitstring == "noRange" {
 
-		date := time.Time{}
+		var date time.Time
 		if datestring == "" {
 			// If date is omitted in API call, take most recent date
 			date = time.Now()

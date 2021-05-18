@@ -59,6 +59,7 @@ require (
 	github.com/peterh/liner v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
+	github.com/prometheus/common v0.9.1
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/segmentio/kafka-go v0.3.7

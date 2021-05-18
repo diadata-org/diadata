@@ -272,9 +272,16 @@ func main() {
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
 	if executionMode == "production" {
-		r.Run(":8080")
+		err := r.Run(":8080")
+		if err != nil {
+			log.Error(err)
+		}
 	} else {
-		r.Run(":8081")
+		err = r.Run(":8081")
+		if err != nil {
+			log.Error(err)
+		}
+
 	}
 
 }

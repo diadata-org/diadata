@@ -50,15 +50,12 @@ func SpawnPoolScraper(datastore models.Datastore, poolName string) *PoolScraper 
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *PoolScraper) mainLoop(rateType string) {
-	for {
-		select {
-
-		case <-s.shutdown: // user requested shutdown
-			log.Println("PoolScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
+	for range s.shutdown { // user requested shutdown
+		log.Println("PoolScraper shutting down")
+		s.cleanup(nil)
+		return
 	}
+	select {}
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop

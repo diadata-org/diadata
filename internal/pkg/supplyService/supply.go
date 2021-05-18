@@ -49,7 +49,11 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		AllAssets []lockedAsset `json:"lockedWallets"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return map[string][]string{}, err
+	}
+
 	// make map[string][]string from allAssets. This accounts for erroneous addition of new entry
 	// for already existing asset in config file.
 	allAssetsMap := make(map[string][]string)

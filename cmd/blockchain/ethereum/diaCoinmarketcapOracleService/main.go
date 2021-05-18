@@ -85,11 +85,8 @@ func main() {
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
-			}
+		for range ticker.C {
+			periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
 		}
 	}()
 	select {}
@@ -157,7 +154,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	apiKey := lines[0]
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
 		return nil, err

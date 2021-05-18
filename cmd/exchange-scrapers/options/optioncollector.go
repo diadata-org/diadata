@@ -39,7 +39,11 @@ func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg 
 				return
 			}
 			lastTradeTime = time.Now()
-			datastore.SaveOptionOrderbookDatumInflux(*t)
+			err := datastore.SaveOptionOrderbookDatumInflux(*t)
+			if err != nil {
+				log.Error(err)
+			}
+
 		}
 	}
 }

@@ -117,7 +117,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
-	s.datastore.SaveTradeInflux(&t)
+	err := s.datastore.SaveTradeInflux(&t)
+	if err != nil {
+		log.Error(err)
+	}
 
 	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debugf("ignore trade should be in previous block %v", t)
@@ -142,7 +145,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Info("created new block beginTime:", b.TradesBlockData.BeginTime, "previous block nb trades:", len(s.currentBlock.TradesBlockData.Trades))
 			}
 			s.currentBlock = b
-			s.datastore.Flush()
+			err = s.datastore.Flush()
+			if err != nil {
+				log.Error(err)
+			}
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {

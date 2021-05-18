@@ -136,7 +136,7 @@ type Datastore interface {
 
 const (
 	influxMaxPointsInBatch = 5000
-	timeOutRedisOneBlock   = 60 * 3 * time.Second
+	// timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
 type DB struct {
@@ -147,14 +147,14 @@ type DB struct {
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbFiatQuotationsTable          = "fiat"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbSupplyTable                  = "supplies"
-	influxDbSupplyTableOld               = "supply"
+	influxDbName                = "dia"
+	influxDbTradesTable         = "trades"
+	influxDbFiltersTable        = "filters"
+	influxDbFiatQuotationsTable = "fiat"
+	influxDbOptionsTable        = "options"
+	influxDbCVITable            = "cvi"
+	influxDbSupplyTable         = "supplies"
+	// influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"
 	influxDbPoolTable                    = "defiPools"
@@ -318,7 +318,10 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Debug("AddPoint forcing write Bash")
-		db.WriteBatchInflux()
+		err := db.WriteBatchInflux()
+		if err != nil {
+			log.Error("add point to influx batch: ", err)
+		}
 	}
 }
 

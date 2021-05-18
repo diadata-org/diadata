@@ -11,6 +11,7 @@ import (
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -35,10 +36,11 @@ type BinanceScraper struct {
 	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -48,6 +50,7 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	// establish connection in the background
@@ -73,14 +76,17 @@ func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 // runs in a goroutine until s is closed
 func (s *BinanceScraper) mainLoop() {
 	close(s.initDone)
-	for {
-		select {
-		case <-s.shutdown: // user requested shutdown
-			log.Println("BinanceScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
+	for range s.shutdown { // user requested shutdown
+		log.Println("BinanceScraper shutting down")
+		s.cleanup(nil)
+		return
 	}
+	select {}
+}
+
+func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 // closes all connected PairScrapers

@@ -17,12 +17,12 @@ import (
 // from @url and stores it into @filepath.
 func DownloadResource(filepath, url string) error {
 
-	log.Printf("Downloading data")
-
-	resp, err := http.Get(url) //nolint:gosec
+	fmt.Println("url: ", url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
+
 	err = resp.Body.Close()
 	if err != nil {
 		log.Println(err)
@@ -47,12 +47,9 @@ func DownloadResource(filepath, url string) error {
 // as a slice of byte data.
 func GetRequest(url string) ([]byte, error) {
 
-	// Get url
-	response, err := http.Get(url) //nolint:gosec
-
-	// Check, whether the request was successful
+	response, err := http.Get(url)
 	if err != nil {
-		log.Error(err)
+		log.Error("get request: ", err)
 		return []byte{}, err
 	}
 

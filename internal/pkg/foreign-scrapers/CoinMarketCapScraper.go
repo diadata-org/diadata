@@ -2,6 +2,7 @@ package foreignscrapers
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -85,7 +86,10 @@ func (scraper *CoinMarketCapScraper) mainLoop() {
 	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateQuotation()
+			err := scraper.UpdateQuotation()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("CoinMarketCapscraper shutting down")
 			return
@@ -174,7 +178,7 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	}
 	apiKey := lines[0]
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
 		return

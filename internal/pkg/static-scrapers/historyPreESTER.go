@@ -51,11 +51,14 @@ func GetHistoricPreESTER() error {
 		"=&removedItemList=&mergeFilter=&activeTab=MMSR&showHide=&MAX_DOWNLOAD_SERIES=500&" +
 		"SERIES_MAX_NUM=50&node=9693657&legendPub=published&legendNor=&exportType=sdmx&ajaxTab=true"
 	pathPreESTERAbs, _ := filepath.Abs(pathPreESTER)
-	os.MkdirAll(filepath.Dir(pathPreESTERAbs), os.ModePerm)
-
-	err := utils.DownloadResource(pathPreESTERAbs, linkPreESTER)
+	err := os.MkdirAll(filepath.Dir(pathPreESTERAbs), os.ModePerm)
 	if err != nil {
-		fmt.Println(err)
+		return err
+	}
+
+	err = utils.DownloadResource(pathPreESTERAbs, linkPreESTER)
+	if err != nil {
+		return err
 	}
 	return err
 }
@@ -76,7 +79,10 @@ func WriteHistoricPreESTER(ds models.Datastore) error {
 	defer xmlFile.Close()
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 	var myVar CMessageGroupPre
-	xml.Unmarshal(byteValue, &myVar)
+	err = xml.Unmarshal(byteValue, &myVar)
+	if err != nil {
+		return err
+	}
 
 	// A slice containing all historic data. Value data is in the 8th row of series
 	histDataSlice := myVar.CDataSetPre.CSeriesPre[7].CObsPre
@@ -111,7 +117,10 @@ func WriteHistoricPreESTER(ds models.Datastore) error {
 			Source:          "ECB",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

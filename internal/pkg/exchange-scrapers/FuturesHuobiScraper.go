@@ -26,7 +26,7 @@ const (
 	// files will be created automatically
 
 	// API Endpoints
-	marketURLHuobi     string = "https://api.hbdm.com"
+	// marketURLHuobi     string = "https://api.hbdm.com"
 	wsURLHuobi         string = "wss://www.hbdm.com/ws"
 	pingMsgLengthHuobi int    = 22
 )

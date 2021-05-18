@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
+	// curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
 	curveFiLookBackBlocks = 6 * 60 * 24 * 20
 	curveWsDial           = "ws://159.69.120.42:8546/"
 	curveRestDial         = "http://159.69.120.42:8545/"

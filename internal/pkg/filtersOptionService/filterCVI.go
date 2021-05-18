@@ -356,8 +356,8 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 	}
 
 	var (
-		lh     float64 = 0
-		deltaK float64 = 0
+		lh     = float64(0)
+		deltaK = float64(0)
 	)
 
 	// left & right hand side terms

@@ -53,11 +53,18 @@ func NewSupplyScraper() *SupplyScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *SupplyScraper) mainLoop() {
-	s.update()
+	err := s.update()
+	if err != nil {
+		log.Error(err)
+	}
+
 	for {
 		select {
 		case <-s.ticker.C:
-			s.update()
+			err = s.update()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("SupplyScraper shutting down")
 			s.cleanup(nil)
@@ -139,7 +146,11 @@ func (s *SupplyScraper) update() error {
 			supply, errDia := getSupplyFromDia(symbol)
 			if errDia == nil && supply != nil {
 				s.currentSupplies[symbol] = *supply
-				s.datastore.SetSupply(supply)
+				err = s.datastore.SetSupply(supply)
+				if err != nil {
+					return err
+				}
+
 			}
 		}
 	}

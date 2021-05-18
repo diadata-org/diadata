@@ -84,11 +84,8 @@ func main() {
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
-			}
+		for range ticker.C {
+			periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
 		}
 	}()
 	select {}
@@ -247,16 +244,16 @@ func updateOracle(
 // Methods for getting additional foreign quotations by address
 // ------------------------------------------------------------
 
-type CoinData struct {
-	Prices     [][]float64 `json:"prices"`
-	MarketCaps [][]float64 `json:"market_caps"`
-	Volumes    [][]float64 `json:"total_volumes"`
-}
+// type CoinData struct {
+// 	Prices     [][]float64 `json:"prices"`
+// 	MarketCaps [][]float64 `json:"market_caps"`
+// 	Volumes    [][]float64 `json:"total_volumes"`
+// }
 
-type BasicTokenInfo struct {
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
-}
+// type BasicTokenInfo struct {
+// 	Name   string `json:"name"`
+// 	Symbol string `json:"symbol"`
+// }
 
 // func getCoinInfoByAddress(address string) (name, symbol string, err error) {
 // 	// Pull and unmarshall data from coingecko API

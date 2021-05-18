@@ -31,8 +31,6 @@ const (
 	VOLUME
 	HIGH
 	LOW
-	_PLACE_HOLDER1
-	_PLACE_HOLDER2
 	FRR_AMOUNT_AVAILABLE
 )
 
@@ -145,13 +143,10 @@ func (ws *BitfinexWSSConnection) pingWebsocket() {
 		ticker.Stop()
 		ws.restart <- true
 	}()
-	for {
-		select {
-		case <-ticker.C:
-			ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
+	for range ticker.C {
+		ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			return
 		}
 	}
 }
@@ -270,7 +265,7 @@ func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	return
 }
 func (proto *BitfinexProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	totalSupplyUSD, err := fetchTotalLocked(proto.fundingSymbols)
 	if err != nil {
 		log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD: %v", err)

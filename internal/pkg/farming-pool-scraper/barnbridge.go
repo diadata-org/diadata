@@ -52,16 +52,14 @@ func (bd *BARNBRIDGEScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-bd.scraper.tickerRate.C:
-				err := bd.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scrapping", err)
-				}
+		for range bd.scraper.tickerRate.C {
+			err := bd.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scrapping", err)
 			}
 		}
 	}()
+	select {}
 
 }
 

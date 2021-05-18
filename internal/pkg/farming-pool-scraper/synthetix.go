@@ -49,17 +49,14 @@ func NewSynthetixScraper(scraper *PoolScraper) *SynthetixScraper {
 // runs in a goroutine until sts is closed
 func (sts *SynthetixScraper) mainLoop() {
 	go func() {
-		for {
-			select {
-			case <-sts.scraper.tickerRate.C:
-				err := sts.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scraping", err)
-				}
+		for range sts.scraper.tickerRate.C {
+			err := sts.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scraping", err)
 			}
-
 		}
 	}()
+	select {}
 }
 
 func (sts *SynthetixScraper) scrapePools() error {

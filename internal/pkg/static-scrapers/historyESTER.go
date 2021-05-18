@@ -48,11 +48,14 @@ func GetHistoricESTER() error {
 		"emoveItem=&removedItemList=&mergeFilter=&activeTab=EST&showHide=&MAX_DOW" +
 		"NLOAD_SERIES=500&SERIES_MAX_NUM=50&node=9698150&legendRef=reference&legendNor=&exportType=sdmx&ajaxTab=true"
 	pathESTERAbs, _ := filepath.Abs(pathESTER)
-	os.MkdirAll(filepath.Dir(pathESTERAbs), os.ModePerm)
-
-	err := utils.DownloadResource(pathESTERAbs, linkESTER)
+	err := os.MkdirAll(filepath.Dir(pathESTERAbs), os.ModePerm)
 	if err != nil {
-		fmt.Println(err)
+		return err
+	}
+
+	err = utils.DownloadResource(pathESTERAbs, linkESTER)
+	if err != nil {
+		return err
 	}
 	return err
 }
@@ -72,7 +75,10 @@ func WriteHistoricESTER(ds models.Datastore) error {
 	defer xmlFile.Close()
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 	var myVar CMessageGroup
-	xml.Unmarshal(byteValue, &myVar)
+	err = xml.Unmarshal(byteValue, &myVar)
+	if err != nil {
+		return err
+	}
 
 	// A slice containing all historic data. Value data is in the 8th row of series
 	histDataSlice := myVar.CDataSet.CSeries[8].CObs
@@ -109,7 +115,10 @@ func WriteHistoricESTER(ds models.Datastore) error {
 			Source:          "ECB",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

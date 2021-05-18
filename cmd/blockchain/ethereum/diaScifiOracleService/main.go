@@ -82,11 +82,8 @@ func main() {
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(indexName, auth, contract)
-			}
+		for range ticker.C {
+			periodicOracleUpdateHelper(indexName, auth, contract)
 		}
 	}()
 	select {}

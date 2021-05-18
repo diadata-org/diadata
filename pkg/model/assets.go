@@ -137,7 +137,10 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	defer rows.Close()
 	for rows.Next() {
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		decimalsInt, err := strconv.Atoi(decimals)
 		if err != nil {
 			return []dia.Asset{}, err
@@ -209,7 +212,10 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 	var decimals string
 	for rows.Next() {
 		asset := dia.Asset{}
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		intDecimals, err := strconv.Atoi(decimals)
 		if err != nil {
 			log.Error("error parsing decimals string")
@@ -246,7 +252,10 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 
 	for rows.Next() {
 		asset := dia.Asset{}
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		assets = append(assets, asset)
 	}
 	return
@@ -261,7 +270,10 @@ func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []strin
 	defer rows.Close()
 	for rows.Next() {
 		symbol := ""
-		rows.Scan(&symbol)
+		err = rows.Scan(&symbol)
+		if err != nil {
+			return []string{}, err
+		}
 		symbols = append(symbols, symbol)
 	}
 	return
@@ -278,7 +290,10 @@ func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err err
 
 	for rows.Next() {
 		symbol := ""
-		rows.Scan(&symbol)
+		err = rows.Scan(&symbol)
+		if err != nil {
+			return []string{}, err
+		}
 		symbols = append(symbols, symbol)
 	}
 	return
@@ -382,7 +397,10 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 
 	for rows.Next() {
 		pair := dia.ExchangePair{}
-		rows.Scan(&pair.Symbol, &pair.ForeignName)
+		err = rows.Scan(&pair.Symbol, &pair.ForeignName)
+		if err != nil {
+			return []dia.ExchangePair{}, err
+		}
 		pairs = append(pairs, pair)
 	}
 
@@ -471,7 +489,10 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 	for rows.Next() {
 		fmt.Println("---")
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
 		assets = append(assets, asset)
 	}
 	// Last page (or empty page)

@@ -20,7 +20,10 @@ func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds mode
 			log.Error("error")
 			return
 		}
-		ds.SetInterestRate(t)
+		err := ds.SetInterestRate(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 

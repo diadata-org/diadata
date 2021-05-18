@@ -130,7 +130,10 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

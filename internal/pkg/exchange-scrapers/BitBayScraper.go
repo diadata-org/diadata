@@ -11,6 +11,7 @@ import (
 	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -57,10 +58,11 @@ type BitBayScraper struct {
 	exchangeName string
 	// channel to send trades
 	chanTrades chan *dia.Trade
+	db         *models.RelDB
 }
 
 //NewBitBayScraper get a scrapper for BitBay exchange
-func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
+func NewBitBayScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -70,6 +72,7 @@ func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		closed:       false,
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -264,6 +267,11 @@ func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 //Channel returns the channel to get trades
 func (s *BitBayScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
+}
+
+func (s *BitBayScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 //FetchAvailablePairs returns a list with all available trade pairs

@@ -344,14 +344,14 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 		}
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
-			log.Error("Error: %v", err)
+			log.Error(err)
 		}
 		if helpers.SymbolIsBlackListed(symbol) {
 			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
-			log.Error("Error: %v", token, err)
+			log.Error(err)
 		}
 		if symbol != "" {
 			tokenMap[token] = &BalancerToken{

@@ -152,11 +152,11 @@ func (s *KuCoinScraper) mainLoop() {
 		var msg *kucoin.WebSocketDownstreamMessage
 		for {
 			select {
-			case msg = <-client2DownStream:
+			case <-client2DownStream:
 			case msg = <-client1DownStream:
 				t := &KucoinMarketMatch{}
 				if err := msg.ReadData(t); err != nil {
-					log.Error("Failure to read: %s", err.Error())
+					log.Errorf("Failure to read: %v", err)
 					return
 				}
 				asset := strings.Split(t.Symbol, "-")
@@ -194,9 +194,7 @@ func (s *KuCoinScraper) mainLoop() {
 				return
 			}
 		}
-
 	}()
-
 }
 
 func (s *KuCoinScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -276,12 +274,12 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	resp, err := s.apiService.Currency(symbol, "")
 	if err != nil {
-		log.Error("error fetching %s from kucoin api: %v\n", symbol, err)
+		log.Errorf("error fetching %s from kucoin api: %v", symbol, err)
 	}
 	var kc KucoinCurrency
 	err = resp.ReadData(&kc)
 	if err != nil {
-		log.Error("error reading data for %s: %v\n", symbol, err)
+		log.Errorf("error reading data for %s: %v", symbol, err)
 	}
 	asset.Symbol = symbol
 	asset.Name = kc.Name

@@ -43,7 +43,10 @@ func (jr *jsonReader) fetchAssets() {
 		log.Error(err)
 	}
 	var assets Assets
-	json.Unmarshal(data, &assets)
+	err = json.Unmarshal(data, &assets)
+	if err != nil {
+		log.Error(err)
+	}
 	for _, asset := range assets.Assets {
 		log.Info("got asset: ", asset)
 		jr.assetChannel <- asset

@@ -221,7 +221,7 @@ func (proto *CompoundProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
-		log.Error("error fetching rates %+v\n ", err)
+		log.Errorf("error fetching rates %v: ", err)
 		return err
 	}
 	for _, market := range markets {

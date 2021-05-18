@@ -89,11 +89,8 @@ func main() {
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
-			}
+		for range ticker.C {
+			periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
 		}
 	}()
 	select {}
@@ -137,7 +134,7 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 // getDefiMCFromCoingecko returns the market cap of the top 100 defi tokens
 func getDefiMCFromCoingecko() (float64, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://api.coingecko.com/api/v3/global/decentralized_finance_defi", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://api.coingecko.com/api/v3/global/decentralized_finance_defi", nil)
 	if err != nil {
 		log.Print(err)
 		return 0.0, err
@@ -165,11 +162,11 @@ func getDefiMCFromCoingecko() (float64, error) {
 	var rawdata CoingeckoData
 	err = json.Unmarshal(contents, &rawdata)
 	if err != nil {
-		return 0.0, fmt.Errorf("error on unmarshaling data from coingecko:", contents)
+		return 0.0, fmt.Error("error on unmarshaling data from coingecko")
 	}
 	marketCap, err := strconv.ParseFloat(rawdata.Data.DefiMarketCap, 64)
 	if err != nil {
-		log.Error("Error parsing string %s to float", rawdata.Data.DefiMarketCap)
+		log.Errorf("Error parsing string %s to float", rawdata.Data.DefiMarketCap)
 	}
 
 	return marketCap, nil

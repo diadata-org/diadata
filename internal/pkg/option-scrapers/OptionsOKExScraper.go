@@ -176,7 +176,10 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 	}
 
 	var underlying []string
-	json.Unmarshal(b, &underlying)
+	err = json.Unmarshal(b, &underlying)
+	if err != nil {
+		log.Error(err)
+	}
 
 	for _, pair := range underlying {
 		var instruments OKExInstrumentDetails
@@ -187,7 +190,10 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 			log.Errorln("Error getting instrumentId")
 		}
 
-		json.Unmarshal(b, &instruments)
+		err = json.Unmarshal(b, &instruments)
+		if err != nil {
+			log.Error(err)
+		}
 
 		for _, v := range instruments {
 			s.Markets = append(s.Markets, v.InstrumentID)
@@ -312,7 +318,10 @@ func (s *AllOKExOptionsScrapers) GetAndStoreOptionsMeta() (err error) {
 				OptionType:     optionType,
 			}
 
-			s.ds.SetOptionMeta(&optionMeta)
+			err = s.ds.SetOptionMeta(&optionMeta)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 

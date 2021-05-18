@@ -176,14 +176,20 @@ func NewReaderXElementsBeforeLastMessage(topic int, x int64) *kafka.Reader {
 		MinBytes:  0,
 		MaxBytes:  10e6, // 10MB
 	})
-	r.SetOffset(offset)
+	err = r.SetOffset(offset)
+	if err != nil {
+		log.Error(err)
+	}
 	return r
 }
 
 func NewReaderNextMessage(topic int) *kafka.Reader {
 	offset := ReadOffsetWithRetryOnError(topic)
 	r := NewReader(topic)
-	r.SetOffset(offset)
+	err := r.SetOffset(offset)
+	if err != nil {
+		log.Error(err)
+	}
 	log.Printf("Reading from offset %d/%d on topic %s", offset, offset, getTopic(topic))
 	return r
 }
@@ -259,8 +265,6 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 				return nil, err
 			}
 			b2 := b[:z]
-
-			err = nil
 
 			switch topic {
 			case TopicFiltersBlock:
