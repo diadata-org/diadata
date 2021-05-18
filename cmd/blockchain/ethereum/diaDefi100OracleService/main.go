@@ -162,7 +162,7 @@ func getDefiMCFromCoingecko() (float64, error) {
 	var rawdata CoingeckoData
 	err = json.Unmarshal(contents, &rawdata)
 	if err != nil {
-		return 0.0, fmt.Error("error on unmarshaling data from coingecko")
+		return 0.0, fmt.Errorf("error on unmarshaling data from coingecko")
 	}
 	marketCap, err := strconv.ParseFloat(rawdata.Data.DefiMarketCap, 64)
 	if err != nil {
