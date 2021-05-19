@@ -11,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 const (
@@ -127,7 +128,7 @@ func (s *ECBScraper) Update() error {
 	}
 
 	// Close the response once we return from the function.
-	defer resp.Body.Close()
+	defer utils.CloseHTTPResp(resp)
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -254,7 +255,7 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 	if err != nil {
 		log.Errorf("error fetching url %v %v\n", url, err)
 	}
-	defer resp.Body.Close()
+	defer utils.CloseHTTPResp(resp)
 
 	// Parse XML in response
 	var xmlSheet XMLHistoricalEnvelope

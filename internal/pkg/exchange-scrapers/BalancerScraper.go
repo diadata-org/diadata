@@ -168,7 +168,10 @@ func (scraper *BalancerScraper) performSubscriptions() {
 		}
 	}
 
-	scraper.subscribeToNewPools()
+	err := scraper.subscribeToNewPools()
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (scraper *BalancerScraper) subscribeToNewPools() error {

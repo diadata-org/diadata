@@ -30,7 +30,12 @@ func NewBitflyerFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &BitflyerScraper{
 		WaitGroup: &wg,
@@ -109,7 +114,13 @@ func (s *BitflyerScraper) Scrape(market string) {
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err := s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			ws.SetPongHandler(func(appData string) error {
 				s.Logger.Debugf("received a pong frame")
 				return nil

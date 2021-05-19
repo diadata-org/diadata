@@ -15,32 +15,31 @@ import (
 
 // DownloadResource is a simple utility that downloads a resource
 // from @url and stores it into @filepath.
-func DownloadResource(filepath, url string) error {
+func DownloadResource(filepath, url string) (err error) {
 
 	fmt.Println("url: ", url)
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return
 	}
 
-	err = resp.Body.Close()
-	if err != nil {
-		log.Println(err)
-	}
+	defer CloseHTTPResp(resp)
 
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
-		return err
+		return
 	}
-	err = out.Close()
-	if err != nil {
-		log.Println(err)
-	}
+	defer func() {
+		cerr := out.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
-	return err
+	return
 }
 
 // GetRequest performs a get request on @url and returns the response body
@@ -54,10 +53,8 @@ func GetRequest(url string) ([]byte, error) {
 	}
 
 	// Close response body after function
-	err = response.Body.Close()
-	if err != nil {
-		log.Println(err)
-	}
+	defer CloseHTTPResp(response)
+
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
@@ -89,10 +86,7 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	}
 
 	// Close response body after function
-	err = response.Body.Close()
-	if err != nil {
-		log.Println(err)
-	}
+	defer CloseHTTPResp(response)
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -142,6 +136,8 @@ func GraphQLGet(url string, query []byte, bearer string) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
+	defer CloseHTTPResp(resp)
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return []byte{}, err

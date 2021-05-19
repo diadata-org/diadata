@@ -56,7 +56,12 @@ func main() {
 
 		// Spawn the corresponding rate scraper
 		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)
-		defer sRate.Close()
+		defer func() {
+			cerr := sRate.Close()
+			if err == nil {
+				err = cerr
+			}
+		}()
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(1)

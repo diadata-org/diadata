@@ -107,7 +107,12 @@ func main() {
 		go scrapers.Populate(ds, rdb, pairs)
 
 		sECB := scrapers.SpawnECBScraper(ds)
-		defer sECB.Close()
+		defer func() {
+			err := sECB.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		for _, pair := range pairs {
 			_, err := sECB.ScrapePair(dia.ExchangePair{

@@ -19,6 +19,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -46,7 +47,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -79,7 +86,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
@@ -141,7 +151,13 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -178,7 +194,8 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
+
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on coinmarketcap api with return code %d", response.StatusCode)
 	}
@@ -209,7 +226,8 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
+
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}

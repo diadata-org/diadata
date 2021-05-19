@@ -183,7 +183,7 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer utils.CloseHTTPResp(resp)
 
 	var parsedPairs []CREX24ApiInstrument
 	err = json.NewDecoder(resp.Body).Decode(&parsedPairs)

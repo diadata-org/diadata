@@ -17,6 +17,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -43,7 +44,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -78,14 +85,20 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
-	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for range ticker.C {
-			periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+			err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
+			}
 		}
 	}()
 	select {}
@@ -482,7 +495,7 @@ func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) 
 	if err != nil {
 		return nil, err
 	} else {
-		defer response.Body.Close()
+		defer utils.CloseHTTPResp(response)
 
 		if response.StatusCode != 200 {
 			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
@@ -508,7 +521,7 @@ func getDefiStateFromDia(protocol string) (*dia.DefiProtocolState, error) {
 	if err != nil {
 		return nil, err
 	} else {
-		defer response.Body.Close()
+		defer utils.CloseHTTPResp(response)
 
 		if response.StatusCode != 200 {
 			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
@@ -533,7 +546,7 @@ func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
 	if err != nil {
 		return nil, err
 	} else {
-		defer response.Body.Close()
+		defer utils.CloseHTTPResp(response)
 
 		if response.StatusCode != 200 {
 			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
@@ -581,7 +594,7 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
@@ -603,7 +616,7 @@ func getSupplyFromDia(symbol string) (*dia.Supply, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
@@ -625,7 +638,7 @@ func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool,
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}

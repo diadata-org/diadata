@@ -88,7 +88,12 @@ func main() {
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
-	defer w.Close()
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	wg := sync.WaitGroup{}
 

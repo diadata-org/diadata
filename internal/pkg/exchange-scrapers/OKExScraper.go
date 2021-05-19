@@ -238,11 +238,17 @@ func (s *OKExScraper) mainLoop() {
 	s.cleanup(errors.New("main loop terminated by Close()"))
 }
 
-func GzipDecode(in []byte) ([]byte, error) {
+func GzipDecode(in []byte) (content []byte, err error) {
 	reader := flate.NewReader(bytes.NewReader(in))
-	defer reader.Close()
+	defer func() {
+		cerr := reader.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	content, err = ioutil.ReadAll(reader)
 
-	return ioutil.ReadAll(reader)
+	return
 }
 
 func (s *OKExScraper) cleanup(err error) {

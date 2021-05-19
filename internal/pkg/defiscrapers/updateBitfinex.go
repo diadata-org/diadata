@@ -166,8 +166,18 @@ func (ws *BitfinexWSSConnection) fetchingForever() {
 
 	}()
 	ws.conn.SetReadLimit(maxMessageSize)
-	ws.conn.SetReadDeadline(time.Now().Add(pongWait))
-	ws.conn.SetPongHandler(func(string) error { ws.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	err := ws.conn.SetReadDeadline(time.Now().Add(pongWait))
+	if err != nil {
+		log.Error(err)
+	}
+	ws.conn.SetPongHandler(func(string) error {
+		err = ws.conn.SetReadDeadline(time.Now().Add(pongWait))
+		if err != nil {
+			log.Error(err)
+		}
+		return nil
+	})
+
 	for {
 		_, message, err := ws.conn.ReadMessage()
 		if err != nil {

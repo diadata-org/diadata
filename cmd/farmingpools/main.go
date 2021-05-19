@@ -20,7 +20,12 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	} else {
 		sRate := pool.SpawnPoolScraper(ds, *poolName)
-		defer sRate.Close()
+		defer func() {
+			err := sRate.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(2)

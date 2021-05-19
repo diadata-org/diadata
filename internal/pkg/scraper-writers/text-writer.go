@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // FileWriter - One implementation of the Writer interface. This one will write to txt files, and generate file names like yyyy-mm-dd-exchange-market.txt.
@@ -25,7 +27,10 @@ func (f *FileWriter) Write(line string, filename string) (int, error) {
 
 	n, err := file.WriteString(line)
 	if err != nil {
-		file.Close()
+		cerr := file.Close()
+		if cerr != nil {
+			log.Error(cerr)
+		}
 		return n, err
 	}
 	return n, file.Close()

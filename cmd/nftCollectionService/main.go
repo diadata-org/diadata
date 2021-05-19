@@ -150,7 +150,12 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 	if err != nil {
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	filebytes, err = ioutil.ReadAll(jsonFile)
 	if err != nil {

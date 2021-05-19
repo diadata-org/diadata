@@ -41,7 +41,12 @@ func NewFTXFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &FTXFuturesScraper{
 		WaitGroup: &wg,
@@ -113,7 +118,13 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err := s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			err = s.send(&map[string]string{"market": market, "channel": "trades", "op": "subscribe"}, market, ws)
 			if err != nil {
 				s.Logger.Errorf("could not send a channel subscription message. retrying, err: %s", err)

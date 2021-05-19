@@ -280,7 +280,13 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	if err != nil {
 		return &[]string{}, err
 	}
-	defer jsonFile.Close()
+	defer func() {
+		err := jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return &[]string{}, err

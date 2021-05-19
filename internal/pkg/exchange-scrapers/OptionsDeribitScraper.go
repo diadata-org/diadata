@@ -90,7 +90,12 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 	wg := sync.WaitGroup{}
 	logger := zap.NewExample().Sugar()
 	optionsScraper := DeribitOptionsScraper{}
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper = DeribitScraper{
 		WaitGroup: &wg,

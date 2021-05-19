@@ -50,11 +50,13 @@ func GetHistoricESTER() error {
 	pathESTERAbs, _ := filepath.Abs(pathESTER)
 	err := os.MkdirAll(filepath.Dir(pathESTERAbs), os.ModePerm)
 	if err != nil {
+		fmt.Println("here")
 		return err
 	}
 
 	err = utils.DownloadResource(pathESTERAbs, linkESTER)
 	if err != nil {
+		fmt.Println("there")
 		return err
 	}
 	return err
@@ -62,7 +64,7 @@ func GetHistoricESTER() error {
 
 // WriteHistoricESTER makes a GET request to fetch the historic data of the SOFR index
 // and writes it into the redis database.
-func WriteHistoricESTER(ds models.Datastore) error {
+func WriteHistoricESTER(ds models.Datastore) (err error) {
 
 	log.Printf("Writing historic ESTER data")
 
@@ -72,12 +74,18 @@ func WriteHistoricESTER(ds models.Datastore) error {
 		fmt.Println(err)
 	}
 
-	defer xmlFile.Close()
+	defer func() {
+		cerr := xmlFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 	var myVar CMessageGroup
 	err = xml.Unmarshal(byteValue, &myVar)
 	if err != nil {
-		return err
+		return
 	}
 
 	// A slice containing all historic data. Value data is in the 8th row of series
@@ -124,5 +132,5 @@ func WriteHistoricESTER(ds models.Datastore) error {
 
 	log.Info("Writing historic ESTER data complete.")
 
-	return err
+	return
 }

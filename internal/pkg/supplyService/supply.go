@@ -19,7 +19,7 @@ import (
 )
 
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
-func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
+func GetLockedWalletsFromConfig(filename string) (allAssetsMap map[string][]string, err error) {
 
 	var fileName string
 	executionMode := os.Getenv("EXEC_MODE")
@@ -31,14 +31,19 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
-		return map[string][]string{}, err
+		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		log.Error(err)
-		return map[string][]string{}, err
+		return
 	}
 
 	type lockedAsset struct {
@@ -51,12 +56,11 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 	var allAssets lockedAssetList
 	err = json.Unmarshal(byteData, &allAssets)
 	if err != nil {
-		return map[string][]string{}, err
+		return
 	}
 
 	// make map[string][]string from allAssets. This accounts for erroneous addition of new entry
 	// for already existing asset in config file.
-	allAssetsMap := make(map[string][]string)
 	var diff []string
 	for _, asset := range allAssets.AllAssets {
 		if _, ok := allAssetsMap[asset.Address]; !ok {
@@ -67,7 +71,7 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		}
 	}
 
-	return allAssetsMap, nil
+	return
 }
 
 // GetWalletBalance returns balance of token with address @tokenAddr in wallet with address @walletAddr

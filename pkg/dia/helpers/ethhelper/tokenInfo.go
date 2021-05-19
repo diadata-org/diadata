@@ -123,7 +123,12 @@ func GetAddressesFromFile(filename string) (addresses []string, err error) {
 		log.Errorln("Error opening file", err)
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
@@ -139,7 +144,10 @@ func GetAddressesFromFile(filename string) (addresses []string, err error) {
 		Tokens []token `json:"Tokens"`
 	}
 	var tokeninfo TokenInfo
-	json.Unmarshal(byteData, &tokeninfo)
+	err = json.Unmarshal(byteData, &tokeninfo)
+	if err != nil {
+		return
+	}
 	for _, token := range tokeninfo.Tokens {
 		addresses = append(addresses, token.Address)
 	}

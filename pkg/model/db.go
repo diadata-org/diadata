@@ -1040,7 +1040,10 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 	log.Debug(key, "vals: %v on getZSETValue maxScore: %v", vals, max)
 	if err == nil {
 		if len(vals) > 0 {
-			fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			_, err = fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", result)
 		} else {
 			err = errors.New("getZSETValue no value found")

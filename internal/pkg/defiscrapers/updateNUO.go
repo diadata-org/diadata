@@ -110,7 +110,7 @@ func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 		return
 
 	}
-	defer resp.Body.Close()
+	defer utils.CloseHTTPResp(resp)
 
 	jsonData, err := ioutil.ReadAll(resp.Body)
 

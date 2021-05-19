@@ -65,23 +65,28 @@ func GetHistoricPreESTER() error {
 
 // WriteHistoricPreESTER makes a GET request to fetch the historic data of the SOFR index
 // and writes it into the redis database.
-func WriteHistoricPreESTER(ds models.Datastore) error {
+func WriteHistoricPreESTER(ds models.Datastore) (err error) {
 	log.Printf("Writing historic Pre-ESTER data")
 
 	// The path relative to the calling main / executable
 	absPath, _ := filepath.Abs(pathPreESTER)
 	xmlFile, err := os.Open(absPath)
-
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	defer xmlFile.Close()
+	defer func() {
+		cerr := xmlFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 	var myVar CMessageGroupPre
 	err = xml.Unmarshal(byteValue, &myVar)
 	if err != nil {
-		return err
+		return
 	}
 
 	// A slice containing all historic data. Value data is in the 8th row of series
@@ -126,5 +131,5 @@ func WriteHistoricPreESTER(ds models.Datastore) error {
 
 	log.Info("Writing historic Pre-ESTER data complete.")
 
-	return err
+	return
 }

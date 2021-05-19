@@ -63,7 +63,13 @@ func readJSONFromConfig(filename string) (content []byte, err error) {
 	if err != nil {
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	content, err = ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return

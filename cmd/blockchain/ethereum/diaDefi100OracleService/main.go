@@ -17,6 +17,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -50,7 +51,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -83,14 +90,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
 		for range ticker.C {
-			periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+			err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
+			}
 		}
 	}()
 	select {}
@@ -146,7 +159,8 @@ func getDefiMCFromCoingecko() (float64, error) {
 		return 0.0, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
+
 	if response.StatusCode != 200 {
 		return 0.0, fmt.Errorf("error on coingecko api with return code %d", response.StatusCode)
 	}
@@ -178,7 +192,8 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
+
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}

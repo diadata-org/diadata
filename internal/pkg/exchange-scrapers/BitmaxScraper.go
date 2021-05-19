@@ -277,7 +277,7 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 		log.Error("error getting symbols for bitmax", err)
 	}
 
-	defer response.Body.Close()
+	defer utils.CloseHTTPResp(response)
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {

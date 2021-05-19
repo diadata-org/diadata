@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	dia "github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +19,7 @@ func GetItins(itinUrl string) (ItinTokens, error) {
 		log.Error(err)
 		return tokens, err
 	}
-	defer resp.Body.Close()
+	defer utils.CloseHTTPResp(resp)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)

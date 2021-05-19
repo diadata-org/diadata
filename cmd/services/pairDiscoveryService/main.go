@@ -341,7 +341,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						s.Close()
+						err = s.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}(scraper, exchange)
 				} else {
 					// For DEXes, FetchAvailablePairs can retrieve unique information.
@@ -366,7 +369,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						s.Close()
+						err = s.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}(scraper, exchange)
 				}
 			} else {
@@ -479,12 +485,15 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 	)
 	path := configCollectors.ConfigFileConnectors(filename, "")
 	jsonFile, err = os.Open(path)
-	// if os.Open returns an error then handle it
 	if err != nil {
 		return
 	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	filebytes, err = ioutil.ReadAll(jsonFile)
 	if err != nil {

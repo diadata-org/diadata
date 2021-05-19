@@ -50,7 +50,12 @@ type ParsedDeribitOptionOrderbookEntry struct {
 func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,

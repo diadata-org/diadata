@@ -30,10 +30,20 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 func main() {
 
 	w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
-	defer w.Close()
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
-	defer r.Close()
+	defer func() {
+		err := r.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	s, err := models.NewDataStore()
 	if err != nil {
