@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"path/filepath"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
@@ -191,7 +192,8 @@ func getPostgresKeyFromSecrets(executionMode string) string {
 		}
 	} else {
 		gopath := os.Getenv("GOPATH")
-		file, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
+		filePath := filepath.Join(gopath, filepath.Clean("/src/github.com/diadata-org/diadata/secrets/"), postgresKey)
+		file, err = os.Open(filePath)
 		if err != nil {
 			log.Fatal(err)
 		}

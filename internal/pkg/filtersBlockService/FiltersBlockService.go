@@ -194,12 +194,12 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	missingPoints := 0
 	result := newFilters
 	newFiltersMap := make(map[filtersAsset]*dia.FilterPoint)
-	for _, filter := range newFilters {
+	for i, filter := range newFilters {
 		fa := filtersAsset{
 			Identifier: getIdentifier(filter.Asset),
 			Source:     filter.Name,
 		}
-		newFiltersMap[fa] = &filter
+		newFiltersMap[fa] = &newFilters[i]
 	}
 
 	for _, filter := range previousBlockFilters {

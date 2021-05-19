@@ -223,8 +223,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		return err
 	}
 
-	for _, constituent := range index.Constituents {
-		err = db.SetCryptoIndexConstituent(&constituent, index.Asset)
+	for i := range index.Constituents {
+		err = db.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset)
 		if err != nil {
 			return err
 		}

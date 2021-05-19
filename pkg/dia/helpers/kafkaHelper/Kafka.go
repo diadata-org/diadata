@@ -98,7 +98,13 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 					log.Errorln("ReadOffsetWithRetryOnError conn error: <", err, "> ", ip, " topic:", topic)
 					time.Sleep(retryDelay)
 				} else {
-					defer conn.Close()
+					defer func() {
+						err := conn.Close()
+						if err != nil {
+							log.Error(err)
+						}
+					}()
+
 					offset, err = conn.ReadLastOffset()
 					if err != nil {
 						log.Errorln("ReadOffsetWithRetryOnError ReadLastOffset error: <", err, "> ", ip, " topic:", topic)

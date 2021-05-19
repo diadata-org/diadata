@@ -1080,7 +1080,10 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
-			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			_, err := fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", value)
 		} else {
 			err = errors.New("getZSETLastValue no value found")

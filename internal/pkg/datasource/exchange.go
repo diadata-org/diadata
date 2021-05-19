@@ -5,6 +5,7 @@ import (
 	"go/build"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
@@ -37,7 +38,8 @@ func InitSource() (source *Source, err error) {
 	if executionMode == "production" {
 		jsonFile, err = os.Open("/config/exchanges.json")
 	} else {
-		jsonFile, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/config/exchanges.json")
+		filePath := filepath.Join(gopath, filepath.Clean("/src/github.com/diadata-org/diadata/config/exchanges.json"))
+		jsonFile, err = os.Open(filePath)
 	}
 	if err != nil {
 		return
