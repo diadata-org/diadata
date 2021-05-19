@@ -65,23 +65,28 @@ func init() {
 }
 
 // WithRetryOnError
-func ReadOffset(topic int) (int64, error) {
-	var err error
+func ReadOffset(topic int) (offset int64, err error) {
 	for _, ip := range KafkaConfig.KafkaUrl {
-		conn, err := kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
+		var conn *kafka.Conn
+		conn, err = kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
 		if err != nil {
 			log.Errorln("ReadOffset conn error: <", err, "> ", ip)
 		} else {
-			defer conn.Close()
-			offset, err := conn.ReadLastOffset()
+			offset, err = conn.ReadLastOffset()
 			if err != nil {
 				log.Errorln("ReadOffset ReadLastOffset error: <", err, "> ")
 			} else {
-				return offset, nil
+				return
 			}
+			defer func() {
+				cerr := conn.Close()
+				if err == nil {
+					err = cerr
+				}
+			}()
 		}
 	}
-	return 0, err
+	return
 }
 
 func ReadOffsetWithRetryOnError(topic int) (offset int64) {

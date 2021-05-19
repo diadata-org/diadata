@@ -112,6 +112,15 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	return XMLdata, err
 }
 
+// CloseHTTPResp is a wrapper for Close() such that defer can be used
+// in accordance with the linter.
+func CloseHTTPResp(resp *http.Response) {
+	err := resp.Body.Close()
+	if err != nil {
+		log.Error(err)
+	}
+}
+
 // GraphQLGet returns the body of the result of a graphQL GET query.
 // @url is the base url of the graphQL API
 // @query is a byte slice representing the graphQL query message

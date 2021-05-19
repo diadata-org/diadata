@@ -42,7 +42,12 @@ func InitSource() (source *Source, err error) {
 	if err != nil {
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	fileBytes, err = ioutil.ReadAll(jsonFile)
 	if err != nil {

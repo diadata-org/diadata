@@ -68,9 +68,9 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
-	cachingTimeShort  = time.Minute * 2
-	cachingTimeMedium = time.Minute * 10
-	cachingTimeLong   = time.Minute * 100
+	cachingTimeShort = time.Minute * 2
+	// cachingTimeMedium = time.Minute * 10
+	cachingTimeLong = time.Minute * 100
 )
 
 var identityKey = "id"

@@ -87,7 +87,8 @@ func (c *Client) login() error {
 		log.Println(err)
 		return err
 	}
-	defer resp.Body.Close()
+
+	defer utils.CloseHTTPResp(resp)
 
 	body, _ := ioutil.ReadAll(resp.Body)
 

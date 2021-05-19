@@ -22,12 +22,13 @@ func (f *FileWriter) Write(line string, filename string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer file.Close()
+
 	n, err := file.WriteString(line)
 	if err != nil {
+		file.Close()
 		return n, err
 	}
-	return n, nil
+	return n, file.Close()
 }
 
 func (f *FileWriter) clean(s string) string {

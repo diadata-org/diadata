@@ -196,7 +196,6 @@ func getPostgresKeyFromSecrets(executionMode string) string {
 			log.Fatal(err)
 		}
 	}
-	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -206,6 +205,10 @@ func getPostgresKeyFromSecrets(executionMode string) string {
 	}
 	if len(lines) != 1 {
 		log.Fatal("Secrets file should have exactly one line")
+	}
+	err = file.Close()
+	if err != nil {
+		log.Error(err)
 	}
 	return lines[0]
 }
