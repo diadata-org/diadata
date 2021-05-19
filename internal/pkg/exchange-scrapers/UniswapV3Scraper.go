@@ -152,7 +152,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						}
 
 						t := &dia.Trade{
-							Symbol:         pair.Token1.Symbol,
+							Symbol:         pair.Token0.Symbol,
 							Pair:           pair.ForeignName,
 							Price:          price,
 							Volume:         volume,
