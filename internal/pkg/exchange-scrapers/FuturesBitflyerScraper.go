@@ -109,6 +109,13 @@ func (s *BitflyerScraper) Scrape(market string) {
 			u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			defer func() {
+				err := ws.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			if err != nil {
 				s.Logger.Errorf("could not dial Bitflyer websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)

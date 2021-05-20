@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -94,10 +92,16 @@ func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 	// establish connection in the background
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(bitmaxSocketURL, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
+	defer func() {
+		err := SwConn.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	s.wsClient = SwConn
 	if scrape {
 		go s.mainLoop()
@@ -273,16 +277,9 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	var bitmaxResponse BitMaxPairResponse
-	response, err := http.Get("https://bitmax.io/api/pro/v1/products")
+	body, _, err := utils.GetRequest("https://bitmax.io/api/pro/v1/products")
 	if err != nil {
 		log.Error("error getting symbols for bitmax", err)
-	}
-
-	defer utils.CloseHTTPResp(response)
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Error("error reading symbols for bitmax", err)
 	}
 
 	err = json.Unmarshal(body, &bitmaxResponse)
