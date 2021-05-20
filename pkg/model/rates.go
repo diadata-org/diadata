@@ -281,8 +281,8 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	// Check, whether first day is a holiday or weekend. If so, prepend rate of
 	// preceding business day (outside the considered time range!).
 	if utils.ContainsDay(holidays, dateInit) || !utils.CheckWeekDay(dateInit) {
-		var err error
-		firstRate, err := db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
+		var firstRate *InterestRate
+		firstRate, err = db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
 		if err != nil {
 			return &InterestRate{}, err
 		}

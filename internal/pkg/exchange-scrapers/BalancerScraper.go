@@ -313,8 +313,8 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 
 	tokenSet := make(map[string]struct{})
 	for it.Next() {
-		var err error
-		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		var poolCaller *pool.BalancerpoolCaller
+		poolCaller, err = pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
@@ -343,8 +343,8 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 	tokenMap := make(map[string]*BalancerToken)
 
 	for token := range tokenAddressSet {
-		var err error
-		tokenCaller, err := balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
+		var tokenCaller *balancertoken.BalancertokenCaller
+		tokenCaller, err = balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}

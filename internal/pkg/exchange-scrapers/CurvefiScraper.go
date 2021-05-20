@@ -244,8 +244,8 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 		log.Error(err)
 	}
 	for i := 0; i < int(poolCount.Int64()); i++ {
-		var err error
-		pool, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
+		var pool common.Address
+		pool, err = contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if err != nil {
 			log.Error(err)
 		}
@@ -273,8 +273,8 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	}
 
 	for cIdx, c := range poolCoins.Coins {
-		var err error
-		coinCaller, err := token.NewTokenCaller(c, scraper.RestClient)
+		var coinCaller *token.TokenCaller
+		coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 			continue

@@ -171,8 +171,8 @@ func (s *GateIOScraper) mainLoop() {
 
 		ps, ok := s.pairScrapers[message.Result.CurrencyPair]
 		if ok {
-			var err error
-			f64Price, err := strconv.ParseFloat(message.Result.Price, 64)
+			var f64Price float64
+			f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
 				continue

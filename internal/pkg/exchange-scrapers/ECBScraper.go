@@ -167,8 +167,8 @@ func (s *ECBScraper) Update() error {
 			pair := string("EUR" + valueCube.Currency)
 			ps := s.pairScrapers[pair]
 			if ps != nil {
-				var err error
-				rate, err := strconv.ParseFloat(valueCube.Rate, 64)
+				var rate float64
+				rate, err = strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
 					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
@@ -280,8 +280,8 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		if o.Price.Value == "NaN" {
 			continue
 		}
-		var err error
-		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
+		var timestamp time.Time
+		timestamp, err = time.Parse("2006-01-02", o.Timestamp.Value)
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)
 		}

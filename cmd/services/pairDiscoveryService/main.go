@@ -279,11 +279,16 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 
 					// 2.b Verify/falsify exchange pairs using the exchangesymbol table in postgres.
 					for _, pair := range pairs {
-						var err error
+						var exchangepair dia.ExchangePair
+						var pairSymbols []string
+						var quotetokenID string
+						var basetokenID string
+						var quotetokenVerified bool
+						var basetokenVerified bool
 						log.Info("handle pair ", pair)
 						// time.Sleep(1 * time.Second)
 						// Continue if pair is already verified
-						exchangepair, err := relDB.GetExchangePairCache(exchange, pair.ForeignName)
+						exchangepair, err = relDB.GetExchangePairCache(exchange, pair.ForeignName)
 						if err != nil {
 							log.Errorf("error getting pair %s from cache", pair.ForeignName)
 						}
@@ -292,31 +297,31 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							continue
 						}
 						// if not yet verified, try do do so
-						pairSymbols, err := dia.GetPairSymbols(pair)
+						pairSymbols, err = dia.GetPairSymbols(pair)
 						if err != nil {
 							log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
 							continue
 						}
-						quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
+						quotetokenID, quotetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
 						if err != nil {
 							log.Error(err)
 						}
-						basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
+						basetokenID, basetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
 						if err != nil {
 							log.Error(err)
 						}
 
 						if quotetokenVerified {
-							var err error
-							quotetoken, err := relDB.GetAssetByID(quotetokenID)
+							var quotetoken dia.Asset
+							quotetoken, err = relDB.GetAssetByID(quotetokenID)
 							if err != nil {
 								log.Error(err)
 							}
 							pair.UnderlyingPair.QuoteToken = quotetoken
 						}
 						if basetokenVerified {
-							var err error
-							basetoken, err := relDB.GetAssetByID(basetokenID)
+							var basetoken dia.Asset
+							basetoken, err = relDB.GetAssetByID(basetokenID)
 							if err != nil {
 								log.Error(err)
 							}

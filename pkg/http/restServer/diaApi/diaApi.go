@@ -403,8 +403,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		exchanges := env.DataStore.GetExchanges()
 		for _, exch := range exchanges {
-			var err error
-			sExch, err := env.RelDB.GetExchangeSymbols(exch)
+			var sExch []string
+			sExch, err = env.RelDB.GetExchangeSymbols(exch)
 			if err != nil {
 				restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
 			}

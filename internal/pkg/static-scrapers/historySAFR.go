@@ -81,9 +81,9 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
-		var err error
+		var rate float64
 		// Convert interest rate from string to float64
-		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
+		rate, err = strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
 		if err != nil {
 			fmt.Println(err)
 		}

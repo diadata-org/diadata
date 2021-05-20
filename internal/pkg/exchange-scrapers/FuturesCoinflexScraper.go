@@ -172,7 +172,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
 			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			defer func() {
-				err := ws.Close()
+				err = ws.Close()
 				if err != nil {
 					log.Error(err)
 				}

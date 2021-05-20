@@ -64,9 +64,9 @@ func main() {
 	// load gitcoin files for categorization of NFT classes.
 	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
 	for _, file := range gitcoinfiles {
-		var err error
+		var gitcoinCategories GitcoinSubmission
 		path := "nftClassesGitcoin/" + file
-		gitcoinCategories, err := readFile(path)
+		gitcoinCategories, err = readFile(path)
 		if err != nil {
 			log.Errorln("Error while reading  file", path, err)
 			continue

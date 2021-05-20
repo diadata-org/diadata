@@ -135,10 +135,10 @@ func (s *BitMaxScraper) mainLoop() {
 		case "trades":
 			{
 				for _, trade := range message.Data {
-					var err error
+					var exchangepair dia.ExchangePair
 					priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-					exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
 					if err != nil {
 						log.Error(err)
 					}
