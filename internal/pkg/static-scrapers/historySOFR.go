@@ -98,7 +98,6 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
-		var err error
 		var dateTime time.Time
 		var effDate time.Time
 		// Collect entries of InterestRate struct -----------------------------------

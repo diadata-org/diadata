@@ -82,12 +82,11 @@ func main() {
 
 	updateExchangePairs(relDB, verifiedToken)
 
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
 	go func() { defer task.wg.Done(); task.run(relDB, verifiedToken) }()
-	select {
-	case <-c:
+	for range c {
 		log.Info("Received stop signal.")
 		task.stop()
 	}
@@ -207,6 +206,8 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						var verified bool
 						var assetInfo dia.Asset
 						var assetCandidates []dia.Asset
+						var assetID string
+						var ok bool
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
@@ -258,11 +259,11 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							isVerified := verifiedTokens.IsExists(assetCandidates[0])
 							if isVerified {
 								verificationCount++
-								assetID, err := relDB.GetAssetID(assetCandidates[0])
+								assetID, err = relDB.GetAssetID(assetCandidates[0])
 								if err != nil {
 									log.Error(err)
 								}
-								ok, err := relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
+								ok, err = relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
 								if err != nil {
 									log.Error(err)
 								}

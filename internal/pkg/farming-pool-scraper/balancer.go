@@ -320,7 +320,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 		}
 
 		// get token weight in pool
-		weight, err := pool.GetNormalizedWeight(&bind.CallOpts{}, token)
+		weight, err = pool.GetNormalizedWeight(&bind.CallOpts{}, token)
 		if err != nil {
 			return errors.Wrapf(err, "getting normalized weight for token %s in pool", symbol)
 		}

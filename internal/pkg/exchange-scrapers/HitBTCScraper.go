@@ -101,6 +101,7 @@ func (s *HitBTCScraper) mainLoop() {
 				for _, v := range mdData {
 					var f64Price float64
 					var f64Volume float64
+					var exchangepair dia.ExchangePair
 					mdElement := v.(map[string]interface{})
 					f64PriceString := mdElement["price"].(string)
 					f64Price, err = strconv.ParseFloat(f64PriceString, 64)
@@ -114,7 +115,7 @@ func (s *HitBTCScraper) mainLoop() {
 									f64Volume = -f64Volume
 								}
 
-								exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+								exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
 								if err != nil {
 									log.Error(err)
 								}

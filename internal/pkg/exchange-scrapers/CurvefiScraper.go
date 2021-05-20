@@ -282,7 +282,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 			log.Error(err)
 			continue
 		}
-		symbol, err := coinCaller.Symbol(&bind.CallOpts{})
+		symbol, err = coinCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err, c.Hex())
 			continue
