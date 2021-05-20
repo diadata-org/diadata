@@ -108,7 +108,7 @@ func (s *KuCoinScraper) mainLoop() {
 	}
 
 	tk := &kucoin.WebSocketTokenModel{}
-	if err := rsp.ReadData(tk); err != nil {
+	if err = rsp.ReadData(tk); err != nil {
 		log.Error("Error Reading data", err)
 
 	}

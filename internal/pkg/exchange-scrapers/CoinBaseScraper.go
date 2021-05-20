@@ -74,6 +74,7 @@ func (s *CoinBaseScraper) mainLoop() {
 		if message.Type == ChannelTicker {
 			ps, ok := s.pairScrapers[message.ProductID]
 			if ok {
+				var err error
 				f64Price, err := strconv.ParseFloat(message.Price, 64)
 				if err == nil {
 					f64Volume, err := strconv.ParseFloat(message.LastSize, 64)

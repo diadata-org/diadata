@@ -51,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer func() {
-		err := file.Close()
+		err = file.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -61,7 +61,7 @@ func main() {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 2 {

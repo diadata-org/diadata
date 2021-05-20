@@ -355,10 +355,8 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		return 0, fmt.Errorf("not enough options to compute the CVI")
 	}
 
-	var (
-		lh     = float64(0)
-		deltaK = float64(0)
-	)
+	lh := float64(0)
+	deltaK := float64(0)
 
 	// left & right hand side terms
 	// as explained in the issue on GitHub: https://github.com/diadata-org/diadata/issues/193
@@ -454,10 +452,10 @@ func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoi
 func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrapers.ComputedCVI) {
 	// it is the responsibility of the function that filters the CVIs to close the channel through which it communicates these values
 	defer close(filteredCVIs)
-	var baseline float64 = 0
-	var lastCVItime time.Time = time.Time{}
-	var absDiff float64 = 0
-	var noChangeCVItime time.Duration = 0 // tracks for how long there has been no change to CVI
+	var baseline float64
+	var lastCVItime time.Time
+	var absDiff float64
+	var noChangeCVItime time.Duration // tracks for how long there has been no change to CVI
 
 	// it is the responsibility of thr computedCVIs creator to send the computed CVI values as often as it needs to
 	for v := range computedCVIs {

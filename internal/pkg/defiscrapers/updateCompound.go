@@ -142,6 +142,7 @@ func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 		if err != nil {
 			return CompoundRate{}, err
 		}
+		var err error
 		address, err := cContract.Underlying(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)

@@ -176,7 +176,7 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 1 {

@@ -99,7 +99,7 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 					time.Sleep(retryDelay)
 				} else {
 					defer func() {
-						err := conn.Close()
+						err = conn.Close()
 						if err != nil {
 							log.Error(err)
 						}
@@ -152,7 +152,7 @@ func WriteMessage(w *kafka.Writer, m KafkaMessage) error {
 	key := []byte("helloKafka")
 	value, err := m.MarshalBinary()
 	if err == nil && value != nil {
-		err := w.WriteMessages(context.Background(),
+		err = w.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   key,
 				Value: value,

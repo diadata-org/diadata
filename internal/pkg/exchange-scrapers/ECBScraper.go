@@ -128,7 +128,7 @@ func (s *ECBScraper) Update() error {
 
 	// Close the response once we return from the function.
 	defer func() {
-		err := resp.Body.Close()
+		err = resp.Body.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -167,6 +167,7 @@ func (s *ECBScraper) Update() error {
 			pair := string("EUR" + valueCube.Currency)
 			ps := s.pairScrapers[pair]
 			if ps != nil {
+				var err error
 				rate, err := strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
 					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
@@ -207,7 +208,7 @@ func (s *ECBScraper) Update() error {
 				}
 			}
 		}
-		err := s.datastore.SetCurrencyChange(change)
+		err = s.datastore.SetCurrencyChange(change)
 		if err != nil {
 			return err
 		}
@@ -260,7 +261,7 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		log.Errorf("error fetching url %v %v\n", url, err)
 	}
 	defer func() {
-		err := resp.Body.Close()
+		err = resp.Body.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -279,7 +280,7 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		if o.Price.Value == "NaN" {
 			continue
 		}
-
+		var err error
 		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)

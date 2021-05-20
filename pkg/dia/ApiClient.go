@@ -88,7 +88,7 @@ func (c *Client) login() error {
 		return err
 	}
 	defer func() {
-		err := resp.Body.Close()
+		err = resp.Body.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -209,7 +209,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 		return nil, err
 	}
 	defer func() {
-		err := resp.Body.Close()
+		err = resp.Body.Close()
 		if err != nil {
 			log.Error(err)
 		}

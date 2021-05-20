@@ -189,7 +189,7 @@ func (ws *BitfinexWSSConnection) fetchingForever() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		resp := make([]interface{}, 0)
-		if err := json.Unmarshal(message, &resp); err != nil {
+		if err = json.Unmarshal(message, &resp); err != nil {
 			continue
 		}
 		event, ok := resp[1].([]interface{})

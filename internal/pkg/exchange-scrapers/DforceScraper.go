@@ -187,7 +187,7 @@ func (scraper *DforceScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}

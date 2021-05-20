@@ -135,6 +135,7 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 	// Subtract locked wallets' balances from total supply for circulating supply
 	circulatingSupply := totalSupp
 	for _, walletAddress := range lockedWallets {
+		var err error
 		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
 		if err != nil {
 			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)

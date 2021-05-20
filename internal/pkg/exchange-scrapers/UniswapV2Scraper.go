@@ -281,7 +281,7 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 		return &[]string{}, err
 	}
 	defer func() {
-		err := jsonFile.Close()
+		err = jsonFile.Close()
 		if err != nil {
 			log.Error(err)
 		}

@@ -129,7 +129,7 @@ func (scraper *BalancerScraper) mainLoop() {
 			if scraper.run {
 				if pool == "NEW_POOLS" {
 					log.Info("resubscribe to new pools")
-					err := scraper.subscribeToNewPools()
+					err = scraper.subscribeToNewPools()
 					if err != nil {
 						log.Error(err)
 					}
@@ -188,7 +188,7 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-subPool.Err():
+			case err = <-subPool.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -222,7 +222,7 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) (err error
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -313,7 +313,7 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 
 	tokenSet := make(map[string]struct{})
 	for it.Next() {
-
+		var err error
 		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
@@ -343,7 +343,7 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 	tokenMap := make(map[string]*BalancerToken)
 
 	for token := range tokenAddressSet {
-
+		var err error
 		tokenCaller, err := balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)

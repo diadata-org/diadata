@@ -87,7 +87,7 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
-
+		var err error
 		// Convert rates from string to float64
 		rate1, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor1Avg.CValue1Avg, 64)
 		if err != nil {

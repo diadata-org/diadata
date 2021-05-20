@@ -98,7 +98,7 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
-
+		var err error
 		// Collect entries of InterestRate struct -----------------------------------
 		symbol := histDataSlice[i].CrateOperation.CrateType.CType
 

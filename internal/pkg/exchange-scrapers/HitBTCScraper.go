@@ -99,6 +99,7 @@ func (s *HitBTCScraper) mainLoop() {
 			if ok {
 				mdData := md["data"].([]interface{})
 				for _, v := range mdData {
+					var err error
 					mdElement := v.(map[string]interface{})
 					f64PriceString := mdElement["price"].(string)
 					f64Price, err := strconv.ParseFloat(f64PriceString, 64)

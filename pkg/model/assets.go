@@ -364,7 +364,8 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 		log.Error(err)
 	}
 	if val1 != nil {
-		quotetoken, err := rdb.GetAssetByID(val1.(string))
+		var quotetoken dia.Asset
+		quotetoken, err = rdb.GetAssetByID(val1.(string))
 		if err != nil {
 			return dia.ExchangePair{}, err
 		}
@@ -411,7 +412,8 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 // SetExchangePair adds @pair to exchangepair table.
 // If cache==true, it is also cached into redis
 func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error {
-	query := fmt.Sprintf("insert into %s (symbol,foreignname,exchange) select $1,$2,$3 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3)", exchangepairTable, exchangepairTable)
+	var query string
+	query = fmt.Sprintf("insert into %s (symbol,foreignname,exchange) select $1,$2,$3 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3)", exchangepairTable, exchangepairTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err
@@ -425,14 +427,14 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 		log.Error(err)
 	}
 	if basetokenID != "" {
-		query := fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
 		}
 	}
 	if quotetokenID != "" {
-		query := fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err

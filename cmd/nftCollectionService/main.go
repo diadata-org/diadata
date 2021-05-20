@@ -64,6 +64,7 @@ func main() {
 	// load gitcoin files for categorization of NFT classes.
 	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
 	for _, file := range gitcoinfiles {
+		var err error
 		path := "nftClassesGitcoin/" + file
 		gitcoinCategories, err := readFile(path)
 		if err != nil {

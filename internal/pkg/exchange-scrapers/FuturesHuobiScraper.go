@@ -128,7 +128,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 			ws, err := websocket.Dial(wsURLHuobi, "", "http://www.google.com")
 			// defer inside of the function will cleanup before the next run
 			defer func() {
-				err := s.ScraperClose(market, ws)
+				err = s.ScraperClose(market, ws)
 				if err != nil {
 					log.Error(err)
 				}

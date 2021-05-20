@@ -115,7 +115,7 @@ func (s *BitflyerScraper) Scrape(market string) {
 				return
 			}
 			defer func() {
-				err := s.ScraperClose(market, ws)
+				err = s.ScraperClose(market, ws)
 				if err != nil {
 					log.Error(err)
 				}

@@ -288,6 +288,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	for _, token := range tokens {
 		// tokCaller, err := erctoken.NewERC20Token(token, bp.restClient)
 		// tokCaller, err := erctoken.NewERC20TokenCaller(token, bp.restClient)
+		var err error
 		tokCaller, err := baltokencontract.NewBalancertokenCaller(token, bp.restClient)
 		if err != nil {
 			return errors.Wrapf(err, "creating bal token contract caller for %s", token.Hex())

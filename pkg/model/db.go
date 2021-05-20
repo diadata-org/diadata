@@ -204,7 +204,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var ci clientInfluxdb.Client
 	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
-	var err error
+
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
 	address := "localhost:6379"
@@ -212,6 +212,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	defaultDB := 0
 
 	if withRedis {
+		var err error
 		// Run localhost for testing and server for production
 		if executionMode == "production" {
 			address = os.Getenv("REDISURL")
@@ -241,6 +242,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		log.Debug("NewDB", pong2)
 	}
 	if withInflux {
+		var err error
 		if executionMode == "production" {
 			address = os.Getenv("INFLUXURL")
 		} else {
@@ -1023,7 +1025,7 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-	if err := db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
+	if err = db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?
 	return err
@@ -1080,7 +1082,7 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
-			_, err := fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			_, err = fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
 			if err != nil {
 				log.Error(err)
 			}

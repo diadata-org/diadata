@@ -203,7 +203,7 @@ func (scraper *CurveFIScraper) watchNewPools() {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -244,6 +244,7 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 		log.Error(err)
 	}
 	for i := 0; i < int(poolCount.Int64()); i++ {
+		var err error
 		pool, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if err != nil {
 			log.Error(err)
@@ -272,7 +273,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	}
 
 	for cIdx, c := range poolCoins.Coins {
-
+		var err error
 		coinCaller, err := token.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
@@ -366,7 +367,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 		for scraper.run && subscribed {
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}

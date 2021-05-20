@@ -120,6 +120,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 			// Get filled version with verification and underlying dia.Pair if existent.
 			var pairs []dia.ExchangePair
 			for _, pair := range simplePairs {
+				var err error
 				fullPair, err := relDB.GetExchangePair(exchange, pair.ForeignName)
 				if err != nil {
 					log.Error("error fetching exchangepair: ", err)
@@ -203,6 +204,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 					verificationCount := 0
 					for _, symbol := range symbols {
+						var err error
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
@@ -277,6 +279,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 
 					// 2.b Verify/falsify exchange pairs using the exchangesymbol table in postgres.
 					for _, pair := range pairs {
+						var err error
 						log.Info("handle pair ", pair)
 						// time.Sleep(1 * time.Second)
 						// Continue if pair is already verified
@@ -304,6 +307,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						}
 
 						if quotetokenVerified {
+							var err error
 							quotetoken, err := relDB.GetAssetByID(quotetokenID)
 							if err != nil {
 								log.Error(err)
@@ -311,6 +315,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							pair.UnderlyingPair.QuoteToken = quotetoken
 						}
 						if basetokenVerified {
+							var err error
 							basetoken, err := relDB.GetAssetByID(basetokenID)
 							if err != nil {
 								log.Error(err)
