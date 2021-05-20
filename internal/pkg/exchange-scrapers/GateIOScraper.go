@@ -136,8 +136,11 @@ func (s *GateIOScraper) mainLoop() {
 		allPairs  []string
 	)
 
-	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
-	err := json.Unmarshal(b, &gresponse)
+	b, _, err := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
+	if err != nil {
+		log.Error(err)
+	}
+	err = json.Unmarshal(b, &gresponse)
 	if err != nil {
 		log.Error(err)
 	}
@@ -303,7 +306,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 			response GateIOTickerData
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
+		data, _, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
 		if err != nil {
 			return
 		}
@@ -326,7 +329,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
+	data, _, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
 	if err != nil {
 		return
 	}

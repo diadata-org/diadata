@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
@@ -146,28 +145,21 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 
 // getDefiMCFromCoingecko returns the market cap of the top 100 defi tokens
 func getDefiMCFromCoingecko() (float64, error) {
-	client := &http.Client{}
+
 	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://api.coingecko.com/api/v3/global/decentralized_finance_defi", nil)
 	if err != nil {
 		log.Print(err)
 		return 0.0, err
 	}
-
-	response, err := client.Do(req)
+	contents, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		log.Print("Error sending request to server: ", err)
 		return 0.0, err
 	}
-
-	defer utils.CloseHTTPResp(response)
-
-	if response.StatusCode != 200 {
-		return 0.0, fmt.Errorf("error on coingecko api with return code %d", response.StatusCode)
+	if statusCode != 200 {
+		return 0.0, fmt.Errorf("error on coingecko api with return code %d", statusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return 0.0, err
-	}
+
 	type CoingeckoData struct {
 		Data struct {
 			DefiMarketCap string `json:"defi_market_cap"`
@@ -187,20 +179,14 @@ func getDefiMCFromCoingecko() (float64, error) {
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
-
-	defer utils.CloseHTTPResp(response)
-
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	var quotation models.Quotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {

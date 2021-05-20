@@ -97,7 +97,7 @@ func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]M
 		url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId+" + strconv.Itoa(next)
 	}
 
-	bytes, err = utils.GetRequest(url)
+	bytes, _, err = utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (scraper *MakerScraper) mainLoop() {
 
 func (scraper *MakerScraper) getPairs() (pairs []dia.ExchangePair, err error) {
 	var response MakerPairResponse
-	byte, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
+	byte, _, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
 	if err != nil {
 		return
 	}

@@ -49,7 +49,7 @@ type (
 func (s *RateScraper) UpdateSOFR() error {
 	log.Printf("SOFRScraper update")
 
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/rss/feeds/sofr")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/rss/feeds/sofr")
 
 	if err != nil {
 		return err

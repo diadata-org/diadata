@@ -87,8 +87,12 @@ func (c *Client) login() error {
 		log.Println(err)
 		return err
 	}
-
-	defer utils.CloseHTTPResp(resp)
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -108,7 +112,7 @@ func GetSupply(symbol string) (*Supply, error) {
 	url := BaseUrl + "/v1/supply/" + symbol
 	log.Println("Checking supply for", symbol, "on", url)
 
-	contents, err := utils.GetRequest(url)
+	contents, _, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +133,7 @@ func GetSupply(symbol string) (*Supply, error) {
 func GetSymbolsList(url string) ([]string, error) {
 	log.Println("getSymbolList")
 
-	contents, err := utils.GetRequest(url + "/v1/symbols")
+	contents, _, err := utils.GetRequest(url + "/v1/symbols")
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +208,13 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer utils.CloseHTTPResp(resp)
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err

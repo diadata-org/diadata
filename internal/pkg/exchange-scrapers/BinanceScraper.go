@@ -10,7 +10,6 @@ import (
 
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
@@ -168,32 +167,32 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 	return ps, err
 }
 func (s *BinanceScraper) normalizeSymbol(p dia.ExchangePair, foreignName string, params ...string) (pair dia.ExchangePair, err error) {
-	symbol := p.Symbol
-	status := params[0]
-	if status == "TRADING" {
-		if helpers.NameForSymbol(symbol) == symbol {
-			if !helpers.SymbolIsName(symbol) {
-				pair.Symbol = symbol
-				pair, _ = s.NormalizePair(pair)
+	// symbol := p.Symbol
+	// status := params[0]
+	// if status == "TRADING" {
+	// 	if helpers.NameForSymbol(symbol) == symbol {
+	// 		if !helpers.SymbolIsName(symbol) {
+	// 			pair.Symbol = symbol
+	// 			pair, _ = s.NormalizePair(pair)
 
-				return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-			}
-		}
-		if helpers.SymbolIsBlackListed(symbol) {
-			pair.Symbol = symbol
-			return pair, errors.New("Symbol is black listed:" + symbol)
-		}
-	} else {
-		return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
+	// 			return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+	// 		}
+	// 	}
+	// 	if helpers.SymbolIsBlackListed(symbol) {
+	// 		pair.Symbol = symbol
+	// 		return pair, errors.New("Symbol is black listed:" + symbol)
+	// 	}
+	// } else {
+	// 	return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
 
-	}
+	// }
 	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
+	data, _, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
 
 	if err != nil {
 		return

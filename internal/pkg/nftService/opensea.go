@@ -65,7 +65,7 @@ func (ons *OpenseaNFTSource) Close() chan bool {
 
 // retrieve nft classes from opensea api. Ordered by number of sales in descending order.
 func fetchClasses(offset, limit int, order_direction string) (acs []AssetContract, err error) {
-	resp, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
+	resp, _, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
 	if err != nil {
 		return
 	}

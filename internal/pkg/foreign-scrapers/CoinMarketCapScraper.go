@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -183,7 +183,7 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 		log.Fatal("Secrets file for coinmarketcap API key should have exactly one line")
 	}
 	apiKey := lines[0]
-	client := &http.Client{}
+
 	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
@@ -201,13 +201,12 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	req.Header.Add("X-CMC_PRO_API_KEY", apiKey)
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := client.Do(req)
+	response, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		fmt.Println("Error sending request to server")
 		os.Exit(1)
 	}
-	fmt.Println(resp.Status)
-	response, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(statusCode)
 
 	err = json.Unmarshal(response, &listing)
 	if err != nil {

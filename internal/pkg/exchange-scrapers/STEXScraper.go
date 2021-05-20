@@ -214,7 +214,7 @@ func (s *STEXScraper) FillSymbolData(symbol string) (asset dia.Asset, err error)
 			response STEXTickerData
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://api3.stex.com/public/currencies")
+		data, _, err = utils.GetRequest("https://api3.stex.com/public/currencies")
 		if err != nil {
 			return
 		}
@@ -252,7 +252,7 @@ func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]ST
 		url = apiBaseURL + "/trades/" + pairID + "?sort=DESC&from=" + unixTime + "&limit=100"
 	}
 
-	bytes, err = utils.GetRequest(url)
+	bytes, _, err = utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -371,7 +371,7 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 			AmountMultiplier  int    `json:"amount_multiplier"`
 		} `json:"data"`
 	}
-	data, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
+	data, _, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
 	if err != nil {
 		return
 	}

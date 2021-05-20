@@ -6,10 +6,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -144,18 +142,9 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 
 // getTopCoinsFromCoingecko returns the symbols of the top @numCoins assets from coingecko by market cap
 func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
-	response, err := http.Get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
+	contents, statusCode, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
 	if err != nil {
-		return nil, err
-	}
-
-	defer utils.CloseHTTPResp(response)
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on coingecko api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	type aux struct {
 		Symbol string `json:"symbol"`
@@ -163,7 +152,7 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 	var quotations []aux
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	var symbols []string
 	for _, quotation := range quotations {
@@ -173,19 +162,11 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	contents, _, err := utils.GetRequest(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
-	defer utils.CloseHTTPResp(response)
 
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.ForeignQuotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {
@@ -270,7 +251,7 @@ func updateOracle(
 
 // func getCoinInfoByAddress(address string) (name, symbol string, err error) {
 // 	// Pull and unmarshall data from coingecko API
-// 	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
 // 	if err != nil {
 // 		return
 // 	}
@@ -286,7 +267,7 @@ func updateOracle(
 
 // func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
 // 	// Pull and unmarshall data from coingecko API
-// 	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
 // 	if err != nil {
 // 		return &models.ForeignQuotation{}, err
 // 	}

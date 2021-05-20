@@ -211,7 +211,7 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 	return err
 }
 
-func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
+func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) (err error) {
 	sink, sub := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
 
 	go func() {
@@ -248,6 +248,7 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 				pair := swap.BuyToken + "-" + swap.SellToken
 				pairScraper, ok := scraper.pairScrapers[pair]
 				if !ok {
+					err = errors.New("pair does not have a corresponding pair scraper")
 					return
 				}
 
@@ -269,7 +270,7 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 			}
 		}
 	}()
-	return nil
+	return
 }
 
 // getSwapData returns the foreign name, volume and price of a swap

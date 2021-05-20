@@ -76,7 +76,7 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	log.Printf("Writing historic SOFR data")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/mktrates/r3")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/mktrates/r3")
 
 	if err != nil {
 		return err

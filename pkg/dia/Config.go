@@ -45,10 +45,10 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		BinanceExchange,
 		KuCoinExchange,
 		// BalancerExchange,
 		// BancorExchange,
-		// BinanceExchange,
 		// BitfinexExchange,
 		BitMaxExchange,
 		BittrexExchange,

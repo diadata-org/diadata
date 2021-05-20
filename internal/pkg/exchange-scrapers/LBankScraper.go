@@ -208,7 +208,7 @@ func (s *LBankScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, e
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
+	data, _, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
 	if err != nil {
 		return
 	}

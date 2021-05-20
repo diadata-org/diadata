@@ -51,7 +51,7 @@ func NewDDEX(scraper *DefiScraper, protocol dia.DefiProtocol) *DDEXProtocol {
 }
 
 func fetchddexmarkets() (ddexMarket DDEXMarket, err error) {
-	jsondata, err := utils.GetRequest("https://api.ddex.io/v4/lending_pool_stats")
+	jsondata, _, err := utils.GetRequest("https://api.ddex.io/v4/lending_pool_stats")
 	if err != nil {
 		return DDEXMarket{}, err
 	}

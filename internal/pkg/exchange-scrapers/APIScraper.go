@@ -68,8 +68,8 @@ type PairScraper interface {
 // scraping. Otherwise can be used for pairdiscovery.
 func NewAPIScraper(exchange string, scrape bool, key string, secret string, relDB *models.RelDB) APIScraper {
 	switch exchange {
-	// case dia.BinanceExchange:
-	// 	return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
+	case dia.BinanceExchange:
+		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
 	// case dia.BitBayExchange:
 	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
 	// case dia.BitfinexExchange:

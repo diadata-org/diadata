@@ -57,7 +57,7 @@ func NewDYDX(scraper *DefiScraper, protocol dia.DefiProtocol) *DYDXProtocol {
 
 func fetchDYDXMarkets() (dydxrate []DYDXMarket, err error) {
 	var response map[string][]DYDXMarket
-	jsondata, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
+	jsondata, _, err := utils.GetRequest("https://api.dydx.exchange/v1/markets")
 	if err != nil {
 		return []DYDXMarket{}, err
 	}

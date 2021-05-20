@@ -59,7 +59,7 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 	log.Printf("Writing historic SAFR values")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
 
 	if err != nil {
 		return err

@@ -44,12 +44,12 @@ func DownloadResource(filepath, url string) (err error) {
 
 // GetRequest performs a get request on @url and returns the response body
 // as a slice of byte data.
-func GetRequest(url string) ([]byte, error) {
+func GetRequest(url string) ([]byte, int, error) {
 
 	response, err := http.Get(url)
 	if err != nil {
 		log.Error("get request: ", err)
-		return []byte{}, err
+		return []byte{}, 0, err
 	}
 
 	// Close response body after function
@@ -58,7 +58,7 @@ func GetRequest(url string) ([]byte, error) {
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
 	if response.StatusCode != 200 {
-		return []byte{}, fmt.Errorf("HTTP Response Error %d", response.StatusCode)
+		return []byte{}, response.StatusCode, fmt.Errorf("HTTP Response Error %d", response.StatusCode)
 	}
 
 	// Read the response body
@@ -66,10 +66,10 @@ func GetRequest(url string) ([]byte, error) {
 
 	if err != nil {
 		log.Error(err)
-		return []byte{}, err
+		return []byte{}, response.StatusCode, err
 	}
 
-	return XMLdata, err
+	return XMLdata, response.StatusCode, err
 }
 
 // PostRequest performs a POST request on @url and returns the response body
@@ -106,8 +106,25 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	return XMLdata, err
 }
 
-// CloseHTTPResp is a wrapper for Close() such that defer can be used
-// in accordance with the linter.
+// HTTPRequest returns the request body and defers the closing compliant
+// to linting.
+func HTTPRequest(request *http.Request) (body []byte, statusCode int, err error) {
+	client := &http.Client{}
+	resp, err := client.Do(request)
+	if err != nil {
+		return
+	}
+	defer CloseHTTPResp(resp)
+	statusCode = resp.StatusCode
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// CloseHTTPResp is a wrapper for closing http response bodies
+// while complying with the linter.
 func CloseHTTPResp(resp *http.Response) {
 	err := resp.Body.Close()
 	if err != nil {
@@ -119,30 +136,18 @@ func CloseHTTPResp(resp *http.Response) {
 // @url is the base url of the graphQL API
 // @query is a byte slice representing the graphQL query message
 // @bearer contains the API key if present
-func GraphQLGet(url string, query []byte, bearer string) ([]byte, error) {
+func GraphQLGet(url string, query []byte, bearer string) ([]byte, int, error) {
 
 	// Form post request with graphQL query
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query))
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, 0, err
 	}
 
 	// Add authorization bearer to header
 	req.Header.Add("Authorization", bearer)
 
-	// Send request using http Client
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return []byte{}, err
-	}
-	defer CloseHTTPResp(resp)
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return []byte{}, err
-	}
-	return body, nil
+	return HTTPRequest(req)
 }
 
 // GetCoinPrice Gets the price in USD of coin through our API.
@@ -178,7 +183,7 @@ func GetCoinPrice(coin string) (float64, error) {
 		Price float64 `json:"USD"`
 	}
 	url := "https://api.diadata.org/v1/quotation/" + coin
-	data, err := GetRequest(url)
+	data, _, err := GetRequest(url)
 	if err == nil {
 		Quot := Quotation{}
 		err = json.Unmarshal(data, &Quot)
@@ -188,7 +193,7 @@ func GetCoinPrice(coin string) (float64, error) {
 		return Quot.Price, nil
 	}
 	// Try to get price from cryptocompare in case we don't have it in our API yet.
-	data, err = GetRequest("https://min-api.cryptocompare.com/data/price?fsym=" + coin + "&tsyms=USD")
+	data, _, err = GetRequest("https://min-api.cryptocompare.com/data/price?fsym=" + coin + "&tsyms=USD")
 	if err != nil {
 		log.Error("Could not get price")
 		return 0, err

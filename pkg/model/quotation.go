@@ -153,7 +153,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 	// fetch current state of cache
 	cachestate, err := db.GetAssetQuotationCache(quotation.Asset)
-	if err != nil && err != redis.Nil {
+	if err != nil && !errors.Is(err, redis.Nil) {
 		return false, err
 	}
 	// Do not write to cache if more recent entry exists
@@ -172,7 +172,7 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 	quotation := &AssetQuotation{}
 	err := db.redisClient.Get(key).Scan(quotation)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetAssetQuotationCache on %s: %v\n", asset.Name, err)
 		}
 		return quotation, err
@@ -289,7 +289,7 @@ func (db *DB) GetPriceUSD(symbol string) (float64, error) {
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
 		}
 		return 0.0, err
@@ -302,7 +302,7 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	value := &Quotation{}
 	err := db.redisClient.Get(key).Scan(value)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetQuotation %v\n", err, key)
 		}
 		return nil, err

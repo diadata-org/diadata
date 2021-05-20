@@ -167,7 +167,7 @@ func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.pro.coinbase.com/products")
+	data, _, err := utils.GetRequest("https://api.pro.coinbase.com/products")
 	if err != nil {
 		return
 	}
@@ -194,7 +194,7 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 // FillSymbolData collects all available information on an asset traded on CoinBase
 func (s *CoinBaseScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response gdax.Currency
-	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
+	data, _, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
 	if err != nil {
 		return
 	}

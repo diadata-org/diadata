@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -103,21 +102,14 @@ func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9,kn;q=0.8")
 	req.Header.Set("If-None-Match", "W/\"5473-u4bZ7v7BG290uuR5jiFHcU30CRw\"")
 
-	resp, err := http.DefaultClient.Do(req)
+	jsonData, _, err := utils.HTTPRequest(req)
 	if err != nil {
 		// handle err
 		log.Error("error getting req ", err)
 		return
 
 	}
-	defer utils.CloseHTTPResp(resp)
 
-	jsonData, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Error(err)
-		return
-	}
 	err = json.Unmarshal(jsonData, &rate)
 	if err != nil {
 		log.Error(err)

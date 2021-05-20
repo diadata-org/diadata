@@ -11,7 +11,6 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 const (
@@ -128,7 +127,12 @@ func (s *ECBScraper) Update() error {
 	}
 
 	// Close the response once we return from the function.
-	defer utils.CloseHTTPResp(resp)
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -154,7 +158,7 @@ func (s *ECBScraper) Update() error {
 			if valueCube.Currency == "USD" {
 				euroDollar, err = strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
-					return fmt.Errorf("error parsing rate %v %v", valueCube.Rate, err)
+					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
 			}
 		}
@@ -165,11 +169,11 @@ func (s *ECBScraper) Update() error {
 			if ps != nil {
 				rate, err := strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
-					return fmt.Errorf("error parsing rate %v %v", valueCube.Rate, err)
+					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
 				time, err := time.Parse("2006-01-02", valueCubeTime.Time)
 				if err != nil {
-					return fmt.Errorf("error parsing time %v %v", valueCubeTime.Time, err)
+					return fmt.Errorf("error parsing time %s: %w", valueCubeTime.Time, err)
 				}
 
 				t := &dia.Trade{
@@ -255,7 +259,12 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 	if err != nil {
 		log.Errorf("error fetching url %v %v\n", url, err)
 	}
-	defer utils.CloseHTTPResp(resp)
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	// Parse XML in response
 	var xmlSheet XMLHistoricalEnvelope

@@ -219,7 +219,7 @@ type BasicTokenInfo struct {
 
 func getCoinInfoByAddress(address string) (name, symbol string, err error) {
 	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
 	if err != nil {
 		return
 	}
@@ -235,7 +235,7 @@ func getCoinInfoByAddress(address string) (name, symbol string, err error) {
 
 func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
 	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
 	if err != nil {
 		return &models.ForeignQuotation{}, err
 	}

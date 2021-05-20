@@ -190,7 +190,7 @@ func (s *SimexScraper) mainLoop() {
 
 func getAPICall(params ...string) []interface{} {
 
-	body, err := utils.GetRequest(_apiurl + params[0])
+	body, _, err := utils.GetRequest(_apiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -222,7 +222,7 @@ func (s *SimexScraper) FetchTickerData(symbol string) (asset dia.Asset, err erro
 			response SimexTicker
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://simex.global/api/currencies")
+		data, _, err = utils.GetRequest("https://simex.global/api/currencies")
 		if err != nil {
 			return
 		}
@@ -314,8 +314,7 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 		Data []DataT `json:"data"`
 	}
 
-	data, err := utils.GetRequest("https://simex.global/api/pairs")
-
+	data, _, err := utils.GetRequest("https://simex.global/api/pairs")
 	if err != nil {
 		return
 	}

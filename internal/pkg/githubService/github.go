@@ -102,7 +102,7 @@ func FetchCommitsByDate(nameUser, nameRepository, apiKey string, timeInit time.T
 
 	jsonValue, _ := json.Marshal(jsonData)
 	var bearer = "Bearer " + apiKey
-	body, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
+	body, _, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
 	if err != nil {
 		return
 	}
@@ -162,7 +162,7 @@ func fetchCommitsAfterCursorInRange(nameUser, nameRepository, cursor string, tim
 
 	jsonValue, _ := json.Marshal(jsonData)
 	var bearer = "Bearer " + apiKey
-	body, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
+	body, _, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
 	if err != nil {
 		return GithubRepo{}, "", err
 	}
@@ -215,7 +215,7 @@ func FetchAllCommits(nameUser, nameRepository string, numPerPage int, apiKey str
 
 	jsonValue, _ := json.Marshal(jsonData)
 	var bearer = "Bearer " + apiKey
-	body, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
+	body, _, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
 	if err != nil {
 		return
 	}
@@ -275,7 +275,7 @@ func fetchCommitsAfterCursor(nameUser, nameRepository, cursor string, numCommits
 
 	jsonValue, _ := json.Marshal(jsonData)
 	var bearer = "Bearer " + apiKey
-	body, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
+	body, _, err := utils.GraphQLGet(githubURL, jsonValue, bearer)
 	if err != nil {
 		return GithubRepo{}, "", err
 	}

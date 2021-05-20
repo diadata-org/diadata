@@ -98,7 +98,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	ir := &InterestRate{}
 	err := db.redisClient.Get(key).Scan(ir)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
 		}
 		return ir, err

@@ -62,7 +62,7 @@ func getRSS() (pubDate string, link string, err error) {
 		}
 	)
 
-	XMLdata, err := utils.GetRequest("http://mid.ecb.europa.eu/rss/mid.xml")
+	XMLdata, _, err := utils.GetRequest("http://mid.ecb.europa.eu/rss/mid.xml")
 	if err != nil {
 		return "", "", err
 	}
@@ -107,7 +107,7 @@ func (s *RateScraper) UpdateESTER() error {
 	}
 
 	// Get response from ESTER feed
-	XMLdata, err := utils.GetRequest(address)
+	XMLdata, _, err := utils.GetRequest(address)
 	if err != nil {
 		return err
 	}

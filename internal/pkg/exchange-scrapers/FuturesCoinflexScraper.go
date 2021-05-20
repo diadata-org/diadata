@@ -143,7 +143,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 	if !validated || err != nil {
 		s.Logger.Errorf("could not validate %s market", market)
 		if err != nil {
-			s.Logger.Errorf("issue with validating, err: %s", err)
+			s.Logger.Errorf("issue with validating: %s", err)
 		}
 		return
 	}
@@ -301,7 +301,7 @@ func (s *CoinflexFuturesScraper) validateMarket(market string) (bool, error) {
 }
 
 func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, error) {
-	body, err := utils.GetRequest("https://webapi.coinflex.com/markets/")
+	body, _, err := utils.GetRequest("https://webapi.coinflex.com/markets/")
 	if err != nil {
 		return []marketCoinflex{}, err
 	}
@@ -316,7 +316,7 @@ func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, e
 
 // uses /assets/ GET endpoint to obtain all the Coinflex's assets
 func (s *CoinflexFuturesScraper) getAllAssets() ([]assetCoinflex, error) {
-	body, err := utils.GetRequest("https://webapi.coinflex.com/assets/")
+	body, _, err := utils.GetRequest("https://webapi.coinflex.com/assets/")
 	if err != nil {
 		return nil, err
 	}
@@ -334,7 +334,7 @@ func (s *CoinflexFuturesScraper) assetID(asset string) (int64, error) {
 	var assetsID int64 = 0
 	assets, err := s.getAllAssets()
 	if err != nil {
-		return assetsID, fmt.Errorf("could not retrieve all Coinflex's assets, err: %s", err)
+		return assetsID, fmt.Errorf("could not retrieve all Coinflex's assets: %w", err)
 	}
 	for _, assetObj := range assets {
 		if assetObj.Name == asset {

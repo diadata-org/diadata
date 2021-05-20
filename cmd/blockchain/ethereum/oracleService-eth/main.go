@@ -5,10 +5,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -491,79 +489,58 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 
 // Getting defi rate
 func getDefiRatesFromDia(protocol string, symbol string) (*dia.DefiRate, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingRate/" + strings.ToUpper(protocol) + "/" + strings.ToUpper(symbol) + "/" + strconv.FormatInt(time.Now().Unix(), 10))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/defiLendingRate/" + strings.ToUpper(protocol) + "/" + strings.ToUpper(symbol) + "/" + strconv.FormatInt(time.Now().Unix(), 10))
 	if err != nil {
 		return nil, err
-	} else {
-		defer utils.CloseHTTPResp(response)
-
-		if response.StatusCode != 200 {
-			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-		}
-
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		var b dia.DefiRate
-		err = b.UnmarshalBinary(contents)
-		if err == nil {
-			return &b, nil
-		}
-		return nil, err
 	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
+	}
+
+	var b dia.DefiRate
+	err = b.UnmarshalBinary(contents)
+	if err == nil {
+		return &b, nil
+	}
+	return nil, err
+
 }
 
 // Getting defi state
 func getDefiStateFromDia(protocol string) (*dia.DefiProtocolState, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/defiLendingState/" + strings.ToUpper(protocol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/defiLendingState/" + strings.ToUpper(protocol))
 	if err != nil {
 		return nil, err
-	} else {
-		defer utils.CloseHTTPResp(response)
-
-		if response.StatusCode != 200 {
-			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-		}
-
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		var b dia.DefiProtocolState
-		err = b.UnmarshalBinary(contents)
-		if err == nil {
-			return &b, nil
-		}
-		return nil, err
 	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
+	}
+
+	var b dia.DefiProtocolState
+	err = b.UnmarshalBinary(contents)
+	if err == nil {
+		return &b, nil
+	}
+	return nil, err
+
 }
 
 func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/chartPoints/MAIR120/" + dexname + "/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/chartPoints/MAIR120/" + dexname + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
-	} else {
-		defer utils.CloseHTTPResp(response)
-
-		if response.StatusCode != 200 {
-			return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-		}
-
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		var b models.Points
-		err = b.UnmarshalBinary(contents)
-		if err == nil {
-			return &b, nil
-		}
-		return nil, err
 	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
+	}
+
+	var b models.Points
+	err = b.UnmarshalBinary(contents)
+	if err == nil {
+		return &b, nil
+	}
+	return nil, err
+
 }
 
 // func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
@@ -589,19 +566,14 @@ func getDEXFromDia(dexname string, symbol string) (*models.Points, error) {
 // }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer utils.CloseHTTPResp(response)
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.Quotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {
@@ -611,19 +583,14 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 }
 
 func getSupplyFromDia(symbol string) (*dia.Supply, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/supply/" + symbol)
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/supply/" + symbol)
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer utils.CloseHTTPResp(response)
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var supply dia.Supply
 	err = supply.UnmarshalBinary(contents)
 	if err != nil {
@@ -633,19 +600,12 @@ func getSupplyFromDia(symbol string) (*dia.Supply, error) {
 }
 
 func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool, error) {
-	response, err := http.Get(dia.BaseUrl + "v1/FarmingPoolData/" + strings.ToUpper(protocol) + "/" + poolID)
-
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "v1/FarmingPoolData/" + strings.ToUpper(protocol) + "/" + poolID)
 	if err != nil {
 		return nil, err
 	}
-	defer utils.CloseHTTPResp(response)
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-	}
-
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
 	var fp models.FarmingPool

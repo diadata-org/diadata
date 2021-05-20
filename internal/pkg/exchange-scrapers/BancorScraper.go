@@ -218,7 +218,7 @@ func (scraper *BancorScraper) mainLoop() {
 			time.Sleep(time.Duration(BancorApiDelay/numPairs) * time.Second)
 
 			var ticker BancorTicker
-			tickerData, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/" + pairScraper.pair.Symbol + "/ticker?fromCurrencyCode=BNT")
+			tickerData, _, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/" + pairScraper.pair.Symbol + "/ticker?fromCurrencyCode=BNT")
 			if err != nil {
 				log.Error("Error getting ticker: ", err)
 				continue
@@ -289,7 +289,7 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 func (scraper *BancorScraper) readAssets() (BancorAssetPairs, error) {
 	var pair BancorAssetPairs
 
-	pairs, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/convertiblePairs")
+	pairs, _, err := utils.GetRequest("https://api.bancor.network/0.1/currencies/convertiblePairs")
 	if err != nil {
 		return pair, err
 	}

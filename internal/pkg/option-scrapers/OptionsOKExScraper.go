@@ -170,7 +170,7 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 func (s *OKExOptionsScraper) FetchInstruments() {
 
 	// Get underlying pairs https://www.okex.com/api/option/v3/underlying
-	b, err := utils.GetRequest("https://www.okex.com/api/option/v3/underlying")
+	b, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/underlying")
 	if err != nil {
 		log.Errorln("Error gettinb underlying assets", err)
 	}
@@ -185,7 +185,7 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 		var instruments OKExInstrumentDetails
 		log.Println(pair)
 
-		b, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/" + pair)
+		b, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/" + pair)
 		if err != nil {
 			log.Errorln("Error getting instrumentId")
 		}
@@ -226,7 +226,7 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 	url := fmt.Sprintf("https://www.okex.com/api/option/v3/instruments/%s/book?size=1", market)
 	log.Infoln("Requesting Url ", url)
 	// * change size query param to larger number for greater depth. the largest you can go to is 200
-	body, err := utils.GetRequest(url)
+	body, _, err := utils.GetRequest(url)
 	if err != nil {
 		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
 		return
@@ -271,7 +271,7 @@ func (s *AllOKExOptionsScrapers) MetaOnOptionIsAvailable(option OKExInstrument) 
 }
 
 func (s *AllOKExOptionsScrapers) GetAndStoreOptionsMeta() (err error) {
-	body, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/BTC-USD")
+	body, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/BTC-USD")
 	if err != nil {
 		return
 	}

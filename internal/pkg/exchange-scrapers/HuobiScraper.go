@@ -207,7 +207,7 @@ func (s *HuobiScraper) mainLoop() {
 // FillSymbolData collects all available information on an asset traded on huobi
 func (s *HuobiScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response HuobiCurrency
-	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
+	data, _, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
 	if err != nil {
 		return
 	}
@@ -312,7 +312,7 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 		Data []DataT `json:"data"`
 	}
 
-	data, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
+	data, _, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
 
 	if err != nil {
 		return

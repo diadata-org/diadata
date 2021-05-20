@@ -227,7 +227,7 @@ func (s *QuoineScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 
 func getLiquidProducts() (products LiquidProducts, err error) {
 	var response []byte
-	response, err = utils.GetRequest(LiquidSocketRestURL + "/products")
+	response, _, err = utils.GetRequest(LiquidSocketRestURL + "/products")
 	if err != nil {
 		return
 	}

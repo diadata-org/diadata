@@ -5,10 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -131,19 +129,14 @@ func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract 
 }
 
 func getIndexValueFromDia(symbol string) (*models.CryptoIndex, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200*time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200*time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer utils.CloseHTTPResp(response)
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var indices []models.CryptoIndex
 	err = json.Unmarshal([]byte(contents), &indices)
 	if err != nil {

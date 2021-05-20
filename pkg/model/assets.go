@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -343,7 +344,7 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 // It also returns the underlying pair if existent.
 func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.ExchangePair, error) {
 	var exchangepair dia.ExchangePair
-	var err error
+
 	exchangepair.Exchange = exchange
 	exchangepair.ForeignName = foreignname
 	var verified bool
@@ -351,7 +352,7 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 	var uuid_basetoken pgtype.UUID
 
 	query := fmt.Sprintf("select symbol,verified,id_quotetoken,id_basetoken from %s where exchange=$1 and foreignname=$2", exchangepairTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
 	if err != nil {
 		return dia.ExchangePair{}, err
 	}
@@ -540,7 +541,7 @@ func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
 	asset := dia.Asset{}
 	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetAssetCache with postgres asset_id %s\n", err, assetID)
 		}
 		return asset, err
@@ -568,7 +569,7 @@ func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia
 	exchangePair := dia.ExchangePair{}
 	err := rdb.redisClient.Get(keyExchangePairCache + exchange + "_" + foreignName).Scan(&exchangePair)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetExchangePairCache on %s with foreign name %s: %v\n", exchange, foreignName, err)
 		}
 		return exchangePair, err

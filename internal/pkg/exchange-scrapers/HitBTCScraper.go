@@ -255,7 +255,7 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 		ProvideLiquidityRate float64 `json:"provideLiquidityRate,string"`
 		FeeCurrency          string  `json:"feeCurrency"`
 	}
-	data, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/symbol")
+	data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/symbol")
 	if err != nil {
 		return
 	}
@@ -300,7 +300,7 @@ func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 // FillSymbolData collects all available information on an asset traded on HitBTC
 func (ps *HitBTCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response HitBTCAsset
-	data, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
+	data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
 	if err != nil {
 		return
 	}

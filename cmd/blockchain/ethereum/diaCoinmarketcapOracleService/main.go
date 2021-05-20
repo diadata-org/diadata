@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
@@ -170,7 +169,6 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	}
 	apiKey := lines[0]
 
-	client := &http.Client{}
 	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
@@ -188,21 +186,15 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	req.Header.Add("X-CMC_PRO_API_KEY", apiKey)
 	req.URL.RawQuery = q.Encode()
 
-	response, err := client.Do(req)
+	contents, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		log.Print("Error sending request to server: ", err)
 		return nil, err
 	}
-
-	defer utils.CloseHTTPResp(response)
-
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on coinmarketcap api with return code %d", response.StatusCode)
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on coinmarketcap api with return code %d", statusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	type CoinMarketCapListing struct {
 		Data []struct {
 			Symbol string `json:"symbol"`
@@ -211,7 +203,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	var quotations CoinMarketCapListing
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("error on coinmarketcap api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on coinmarketcap api with return code %d", statusCode)
 	}
 	var symbols []string
 	for _, dataEntry := range quotations.Data {
@@ -221,20 +213,14 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
-
-	defer utils.CloseHTTPResp(response)
-
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	var quotation models.ForeignQuotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {

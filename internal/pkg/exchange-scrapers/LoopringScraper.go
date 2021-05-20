@@ -130,7 +130,7 @@ func NewLoopringScraper(exchange dia.Exchange, scrape bool) *LoopringScraper {
 	}
 
 	// Get Loopring Key
-	resp, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	resp, _, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
 	if err != nil {
 		log.Error("Error getting loopring key : ", err.Error())
 	}
@@ -161,7 +161,7 @@ func (s *LoopringScraper) reconnectToWS() {
 	log.Info("Reconnecting ws")
 
 	// Get Loopring Key
-	resp, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	resp, _, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
 	if err != nil {
 		log.Error("Error getting loopring key : ", err.Error())
 	}
@@ -321,8 +321,7 @@ func (s *LoopringScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	data, err := utils.GetRequest("https://api.loopring.io/api/v2/exchange/markets")
-
+	data, _, err := utils.GetRequest("https://api.loopring.io/api/v2/exchange/markets")
 	if err != nil {
 		return
 	}
