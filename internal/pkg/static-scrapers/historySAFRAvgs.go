@@ -90,6 +90,9 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 		var rate1 float64
 		var rate2 float64
 		var rate3 float64
+		var dateTime time.Time
+		var effDate time.Time
+
 		// Convert rates from string to float64
 		rate1, err = strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor1Avg.CValue1Avg, 64)
 		if err != nil {
@@ -106,14 +109,14 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
 		if err != nil {
 			log.Error("Error parsing publishing time for SOFRXXX: ", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
 		if err != nil {
 			log.Error("Error parsing effective date for SOFRXXX: ", err)
 		}

@@ -168,11 +168,12 @@ func (s *ECBScraper) Update() error {
 			ps := s.pairScrapers[pair]
 			if ps != nil {
 				var rate float64
+				var timestamp time.Time
 				rate, err = strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
 					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
-				time, err := time.Parse("2006-01-02", valueCubeTime.Time)
+				timestamp, err = time.Parse("2006-01-02", valueCubeTime.Time)
 				if err != nil {
 					return fmt.Errorf("error parsing time %s: %w", valueCubeTime.Time, err)
 				}
@@ -182,7 +183,7 @@ func (s *ECBScraper) Update() error {
 					Symbol: pair,
 					Price:  rate,
 					Volume: 0,
-					Time:   time,
+					Time:   timestamp,
 					Source: "ECB",
 				}
 
@@ -281,11 +282,12 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 			continue
 		}
 		var timestamp time.Time
+		var price float64
 		timestamp, err = time.Parse("2006-01-02", o.Timestamp.Value)
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)
 		}
-		price, err := strconv.ParseFloat(o.Price.Value, 64)
+		price, err = strconv.ParseFloat(o.Price.Value, 64)
 		if err != nil {
 			log.Errorf("error parsing price %v %v", o.Price.Value, err)
 		}

@@ -100,12 +100,13 @@ func (s *HitBTCScraper) mainLoop() {
 				mdData := md["data"].([]interface{})
 				for _, v := range mdData {
 					var f64Price float64
+					var f64Volume float64
 					mdElement := v.(map[string]interface{})
 					f64PriceString := mdElement["price"].(string)
 					f64Price, err = strconv.ParseFloat(f64PriceString, 64)
 					if err == nil {
 						f64VolumeString := mdElement["quantity"].(string)
-						f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
+						f64Volume, err = strconv.ParseFloat(f64VolumeString, 64)
 						if err == nil {
 							timeStamp, _ := time.Parse(time.RFC3339, mdElement["timestamp"].(string))
 							if mdElement["id"] != 0 {

@@ -314,11 +314,13 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 	tokenSet := make(map[string]struct{})
 	for it.Next() {
 		var poolCaller *pool.BalancerpoolCaller
+		var tokens []common.Address
 		poolCaller, err = pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
-		tokens, err := poolCaller.GetCurrentTokens(&bind.CallOpts{})
+
+		tokens, err = poolCaller.GetCurrentTokens(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
@@ -344,18 +346,20 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 
 	for token := range tokenAddressSet {
 		var tokenCaller *balancertoken.BalancertokenCaller
+		var symbol string
+		var decimals *big.Int
 		tokenCaller, err = balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
-		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+		symbol, err = tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
 		if helpers.SymbolIsBlackListed(symbol) {
 			continue
 		}
-		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		decimals, err = tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}

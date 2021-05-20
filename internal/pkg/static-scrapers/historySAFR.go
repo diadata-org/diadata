@@ -82,6 +82,9 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 
 	for i := 0; i < numData; i++ {
 		var rate float64
+		var dateTime time.Time
+		var effDate time.Time
+
 		// Convert interest rate from string to float64
 		rate, err = strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
 		if err != nil {
@@ -89,14 +92,14 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
 		if err != nil {
 			log.Error("error parsing publishing time of historic SAFR: ", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationInd.CeffectiveDateInd.CEffDateInd)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperationInd.CeffectiveDateInd.CEffDateInd)
 		if err != nil {
 			log.Error("error parsing effective date of historic SAFR: ", err)
 		}

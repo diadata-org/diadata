@@ -274,6 +274,9 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 
 	for cIdx, c := range poolCoins.Coins {
 		var coinCaller *token.TokenCaller
+		var symbol string
+		var decimals *big.Int
+		var name string
 		coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
@@ -284,12 +287,12 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 			log.Error(err, c.Hex())
 			continue
 		}
-		decimals, err := coinCaller.Decimals(&bind.CallOpts{})
+		decimals, err = coinCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			continue
 		}
-		name, err := coinCaller.Name(&bind.CallOpts{})
+		name, err = coinCaller.Name(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			continue

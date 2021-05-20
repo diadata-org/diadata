@@ -99,6 +99,8 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 
 	for i := 0; i < numData; i++ {
 		var err error
+		var dateTime time.Time
+		var effDate time.Time
 		// Collect entries of InterestRate struct -----------------------------------
 		symbol := histDataSlice[i].CrateOperation.CrateType.CType
 
@@ -109,7 +111,7 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperation.CbusinessEventLog.CeventDate.CEvDate)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperation.CbusinessEventLog.CeventDate.CEvDate)
 
 		if err != nil {
 			log.Error(err)
@@ -117,7 +119,7 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
 		if err != nil {
 			log.Error(err)
 		}

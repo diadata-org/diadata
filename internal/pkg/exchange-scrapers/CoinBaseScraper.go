@@ -75,16 +75,18 @@ func (s *CoinBaseScraper) mainLoop() {
 			ps, ok := s.pairScrapers[message.ProductID]
 			if ok {
 				var f64Price float64
+				var f64Volume float64
+				var exchangepair dia.ExchangePair
 				f64Price, err = strconv.ParseFloat(message.Price, 64)
 				if err == nil {
-					f64Volume, err := strconv.ParseFloat(message.LastSize, 64)
+					f64Volume, err = strconv.ParseFloat(message.LastSize, 64)
 					if err == nil {
 						if message.TradeID != 0 {
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
 
-							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
+							exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
 							if err != nil {
 								log.Error(err)
 							}

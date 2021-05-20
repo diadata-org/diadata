@@ -120,8 +120,8 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 			// Get filled version with verification and underlying dia.Pair if existent.
 			var pairs []dia.ExchangePair
 			for _, pair := range simplePairs {
-				var err error
-				fullPair, err := relDB.GetExchangePair(exchange, pair.ForeignName)
+				var fullPair dia.ExchangePair
+				fullPair, err = relDB.GetExchangePair(exchange, pair.ForeignName)
 				if err != nil {
 					log.Error("error fetching exchangepair: ", err)
 					continue
@@ -204,7 +204,9 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 					verificationCount := 0
 					for _, symbol := range symbols {
-						var err error
+						var verified bool
+						var assetInfo dia.Asset
+						var assetCandidates []dia.Asset
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
@@ -213,7 +215,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						// matched with assets from the asset table.
 
 						// Continue if symbol is already in DB and verified.
-						_, verified, err := relDB.GetExchangeSymbolAssetID(exchange, symbol)
+						_, verified, err = relDB.GetExchangeSymbolAssetID(exchange, symbol)
 						if err != nil {
 							if err.Error() != pgx.ErrNoRows.Error() {
 								log.Errorf("error getting exchange symbol %s: %v", symbol, err)
@@ -229,13 +231,13 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							log.Errorf("error setting exchange symbol %s: %v", symbol, err)
 						}
 						// Gather as much information on @symbol as available on the exchange's API.
-						assetInfo, err := scraper.FillSymbolData(symbol)
+						assetInfo, err = scraper.FillSymbolData(symbol)
 						if err != nil {
 							log.Errorf("error fetching ticker data for %s: %v", symbol, err)
 							continue
 						}
 						// Using the gathered information, find matching assets in asset table.
-						assetCandidates, err := relDB.IdentifyAsset(assetInfo)
+						assetCandidates, err = relDB.IdentifyAsset(assetInfo)
 						if err != nil {
 							log.Errorf("error getting asset candidates for %s: %v", symbol, err)
 							continue
