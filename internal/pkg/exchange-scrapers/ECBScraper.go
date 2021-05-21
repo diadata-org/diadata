@@ -122,7 +122,7 @@ func (s *ECBScraper) Update() error {
 	log.Printf("Executing ECBScraper update")
 
 	// Retrieve the rss feed document from the web.
-	resp, err := http.Get(ecbRSSURL)
+	resp, err := http.Get(ecbRSSURL) //nolint:gosec
 	if err != nil {
 		return err
 	}
@@ -254,13 +254,11 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 	log.Printf("Historical prices population starting for %s\n", asset.Symbol)
 	time.Sleep(5 * time.Second)
 
-	// Format url to fetch
-	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
-
 	// Fetch URL
-	resp, err := http.Get(url)
+	resp, err := http.Get(fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)) //nolint:gosec
+
 	if err != nil {
-		log.Errorf("error fetching url %v %v\n", url, err)
+		log.Errorf("error fetching url %v\n", err)
 	}
 	defer func() {
 		err = resp.Body.Close()

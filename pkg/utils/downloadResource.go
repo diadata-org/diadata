@@ -18,12 +18,17 @@ import (
 func DownloadResource(filepath, url string) (err error) {
 
 	fmt.Println("url: ", url)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:noctx,gosec
 	if err != nil {
 		return
 	}
 
-	defer CloseHTTPResp(resp)
+	defer func() {
+		cerr := resp.Body.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	// Create the file
 	out, err := os.Create(filepath)
@@ -46,14 +51,19 @@ func DownloadResource(filepath, url string) (err error) {
 // as a slice of byte data.
 func GetRequest(url string) ([]byte, int, error) {
 
-	response, err := http.Get(url)
+	response, err := http.Get(url) //nolint:noctx,gosec
 	if err != nil {
 		log.Error("get request: ", err)
 		return []byte{}, 0, err
 	}
 
 	// Close response body after function
-	defer CloseHTTPResp(response)
+	defer func() {
+		cerr := response.Body.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -76,7 +86,7 @@ func GetRequest(url string) ([]byte, int, error) {
 func PostRequest(url string, body io.Reader) ([]byte, error) {
 
 	// Get url
-	response, err := http.Post(url, "", body)
+	response, err := http.Post(url, "", body) //nolint:noctx,gosec
 
 	// Check, whether the request was successful
 	if err != nil {
@@ -85,7 +95,12 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	}
 
 	// Close response body after function
-	defer CloseHTTPResp(response)
+	defer func() {
+		cerr := response.Body.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -144,7 +159,7 @@ func CloseHTTPResp(resp *http.Response) {
 func GraphQLGet(url string, query []byte, bearer string) ([]byte, int, error) {
 
 	// Form post request with graphQL query
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query)) //nolint:noctx
 	if err != nil {
 		return []byte{}, 0, err
 	}

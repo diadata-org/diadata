@@ -345,7 +345,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						VerifiedAssetsCount: verificationCount,
 					}
 					file, _ := json.MarshalIndent(dataforfile, "", " ")
-					err = ioutil.WriteFile(exchange+".json", file, 0644)
+					err = ioutil.WriteFile(exchange+".json", file, 0600)
 					if err != nil {
 						log.Error(err)
 					}
@@ -496,8 +496,7 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 		jsonFile  *os.File
 		filebytes []byte
 	)
-	path := configCollectors.ConfigFileConnectors(filename, "")
-	jsonFile, err = os.Open(path)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
 	if err != nil {
 		return
 	}
