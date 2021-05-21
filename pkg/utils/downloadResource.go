@@ -63,7 +63,6 @@ func GetRequest(url string) ([]byte, int, error) {
 
 	// Read the response body
 	XMLdata, err := ioutil.ReadAll(response.Body)
-
 	if err != nil {
 		log.Error(err)
 		return []byte{}, response.StatusCode, err

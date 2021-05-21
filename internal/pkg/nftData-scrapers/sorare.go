@@ -267,7 +267,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 		error:         nil,
 		ethConnection: connection,
 		relDB:         *rdb,
-		chanData:      make(chan *dia.NFT),
+		chanData:      make(chan dia.NFT),
 	}
 	s := &SorareScraper{
 		address:       common.HexToAddress("0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205"),
@@ -306,7 +306,7 @@ func (scraper *SorareScraper) UpdateNFT() error {
 	}
 	for _, nft := range nfts {
 		log.Info("got nft: ", nft)
-		scraper.GetDataChannel() <- &nft
+		scraper.GetDataChannel() <- nft
 	}
 	return nil
 }
@@ -509,7 +509,7 @@ func GetCreationTime(playerResp []byte) (time.Time, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *SorareScraper) GetDataChannel() chan *dia.NFT {
+func (scraper *SorareScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 

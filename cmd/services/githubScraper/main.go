@@ -69,7 +69,7 @@ func main() {
 				log.Fatal(err)
 			}
 			for _, commit := range commits {
-				err = ds.SetCommit(&commit)
+				err = ds.SetCommit(commit)
 				if err != nil {
 					log.Fatal(err)
 				}

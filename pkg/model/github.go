@@ -26,7 +26,7 @@ type Author struct {
 }
 
 // SetCommit stores a github commit in influx
-func (db *DB) SetCommit(commit *GithubCommit) error {
+func (db *DB) SetCommit(commit GithubCommit) error {
 	log.Info("set commit: ", commit)
 	fields := map[string]interface{}{
 		"numAdditions":    commit.NumAdditions,

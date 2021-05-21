@@ -128,7 +128,7 @@ type Datastore interface {
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
 
 	// Github methods
-	SetCommit(commit *GithubCommit) error
+	SetCommit(commit GithubCommit) error
 	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
 	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
 	GetLatestCommit(user, repository string) (GithubCommit, error)
