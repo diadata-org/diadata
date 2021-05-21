@@ -98,13 +98,14 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
+		var rate float64
 		var dateTime time.Time
 		var effDate time.Time
 		// Collect entries of InterestRate struct -----------------------------------
 		symbol := histDataSlice[i].CrateOperation.CrateType.CType
 
 		// Convert interest rate from string to float64
-		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperation.Crate.CValue, 64)
+		rate, err = strconv.ParseFloat(histDataSlice[i].CrateOperation.Crate.CValue, 64)
 		if err != nil {
 			fmt.Println(err)
 		}

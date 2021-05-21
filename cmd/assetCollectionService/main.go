@@ -70,48 +70,43 @@ func main() {
 		return
 	}
 	// Initial run:
-	err = runAssetSource(relDB, *assetSource, *caching, *secret)
-	if err != nil {
-		log.Error(err)
-	}
+	runAssetSource(relDB, *assetSource, *caching, *secret)
+	// if err != nil {
+	// 	log.Error(err)
+	// }
 	// Afterwards, run every @fetchPeriodMinutes
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				err := runAssetSource(relDB, *assetSource, *caching, *secret)
-				if err != nil {
-					log.Error(err)
-				}
-			}
+		for range ticker.C {
+			runAssetSource(relDB, *assetSource, *caching, *secret)
+			// if err != nil {
+			// 	log.Error(err)
+			// }
 		}
 	}()
 	select {}
 }
 
-func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) error {
-
+func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) {
+	// TO DO: check for duplicate key error and return if error is different
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
-	for {
-		select {
-		case receivedAsset := <-asset.Asset():
-			// Set to persistent DB
-			err := relDB.SetAsset(receivedAsset)
-			if err != nil {
-				log.Errorf("Error saving asset %v: %v", receivedAsset, err)
-			} else {
-				log.Info("successfully set asset ", receivedAsset)
-			}
+	for receivedAsset := range asset.Asset() {
+		// Set to persistent DB
+		err := relDB.SetAsset(receivedAsset)
+		if err != nil {
+			log.Errorf("Error saving asset %v: %v", receivedAsset, err)
+		} else {
+			log.Info("successfully set asset ", receivedAsset)
+		}
 
-			// Set to cache
-			if caching {
-				err := relDB.SetAssetCache(receivedAsset)
-				if err != nil {
-					log.Error("Error caching asset: ", err)
-				}
+		// Set to cache
+		if caching {
+			err := relDB.SetAssetCache(receivedAsset)
+			if err != nil {
+				log.Error("Error caching asset: ", err)
 			}
 		}
+
 	}
 }

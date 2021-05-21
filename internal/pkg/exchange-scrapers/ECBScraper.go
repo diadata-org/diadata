@@ -15,6 +15,7 @@ import (
 
 const (
 	refreshDelay = time.Second * 20 * 60
+	ecbRSSURL    = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 )
 
 type (
@@ -121,7 +122,7 @@ func (s *ECBScraper) Update() error {
 	log.Printf("Executing ECBScraper update")
 
 	// Retrieve the rss feed document from the web.
-	resp, err := http.Get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+	resp, err := http.Get(ecbRSSURL)
 	if err != nil {
 		return err
 	}

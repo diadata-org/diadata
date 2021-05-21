@@ -147,13 +147,10 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 			// and we may fail sending ping before we get any message on a market, thus
 			// forcing FTX to close our websocket out.
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						err := s.send(&map[string]string{"op": "ping"}, market, ws)
-						if err != nil {
-							log.Error(err)
-						}
+				for range tick.C {
+					err := s.send(&map[string]string{"op": "ping"}, market, ws)
+					if err != nil {
+						log.Error(err)
 					}
 				}
 			}()

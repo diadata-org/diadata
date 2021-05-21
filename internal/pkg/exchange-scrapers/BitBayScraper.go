@@ -148,11 +148,8 @@ func (s *BitBayScraper) mainLoop() {
 
 	pingTimer := time.NewTicker(10 * time.Second)
 	go func() {
-		for {
-			select {
-			case <-pingTimer.C:
-				go s.ping()
-			}
+		for range pingTimer.C {
+			go s.ping()
 		}
 	}()
 

@@ -18,10 +18,10 @@ type UniswapPair struct {
 }
 
 const (
-	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	wsDial   = "ws://159.69.120.42:8546/"
-	restDial = "http://159.69.120.42:8545/"
+	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// wsDial   = "ws://159.69.120.42:8546/"
+	// restDial = "http://159.69.120.42:8545/"
 
 	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	restDialBSC = "https://bsc-dataseed2.defibit.io/"

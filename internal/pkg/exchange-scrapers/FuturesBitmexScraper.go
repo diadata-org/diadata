@@ -140,16 +140,13 @@ func (s *BitmexScraper) Scrape(market string) {
 			tick := time.NewTicker(15 * time.Second)
 			defer tick.Stop()
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						err := s.write(websocket.PingMessage, []byte{}, ws)
-						if err != nil {
-							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
-							return
-						}
-						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
+				for range tick.C {
+					err := s.write(websocket.PingMessage, []byte{}, ws)
+					if err != nil {
+						s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
+						return
 					}
+					s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
 				}
 			}()
 			for {

@@ -89,9 +89,9 @@ func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProto
 	go func() {
 		for {
 			for _, wsConn := range proto.WsConnections {
-				select {
+
 				// Reconnect websocket connection on restart
-				case <-wsConn.restart:
+				for range wsConn.restart {
 					// Try to close the connection first
 					if wsConn.conn != nil {
 						err := wsConn.conn.Close()

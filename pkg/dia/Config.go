@@ -49,6 +49,7 @@ func Exchanges() []string {
 		KuCoinExchange,
 		// BalancerExchange,
 		// BancorExchange,
+		// BitBayExchange,
 		// BitfinexExchange,
 		BitMaxExchange,
 		BittrexExchange,

@@ -137,18 +137,15 @@ func NewQuoineScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 func (scraper *QuoineScraper) sendPing() {
 	ticker := time.NewTicker(pingPeriod)
 	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			ls := &LiquidSubscribe{
-				Event: "pusher:ping",
-			}
-			err := scraper.wsClient.WriteJSON(ls)
-			if err != nil {
-				log.Error(err)
-			}
-
+	for range ticker.C {
+		ls := &LiquidSubscribe{
+			Event: "pusher:ping",
 		}
+		err := scraper.wsClient.WriteJSON(ls)
+		if err != nil {
+			log.Error(err)
+		}
+
 	}
 
 }
@@ -257,6 +254,11 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 		}
 	}
 	return
+}
+
+func (scraper *QuoineScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 func (scraper *QuoineScraper) readProductIds() error {
