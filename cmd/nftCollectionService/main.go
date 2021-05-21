@@ -146,8 +146,7 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 		jsonFile  *os.File
 		filebytes []byte
 	)
-	path := configCollectors.ConfigFileConnectors(filename, "")
-	jsonFile, err = os.Open(path)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
 	if err != nil {
 		return
 	}

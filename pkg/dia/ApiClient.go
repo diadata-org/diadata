@@ -36,7 +36,7 @@ func (c *Client) refresh() error {
 
 	url := c.url + "auth/refresh_token"
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil) //nolint:noctx
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (c *Client) login() error {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //nolint:noctx
 	if err != nil {
 		return err
 	}
@@ -265,7 +265,7 @@ func (c *Client) sendSupply(s *Supply) error {
 
 	url := c.url + "v1/supply"
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //nolint:noctx
 	if err != nil {
 		return err
 	}
