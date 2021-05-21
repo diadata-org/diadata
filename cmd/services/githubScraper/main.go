@@ -41,7 +41,7 @@ func main() {
 			log.Fatal("error fetching all commits: ", err)
 		}
 		for _, commit := range commits {
-			err = ds.SetCommit(&commit)
+			err = ds.SetCommit(commit)
 			if err != nil {
 				log.Fatal("error setting commit: ", err)
 			}
