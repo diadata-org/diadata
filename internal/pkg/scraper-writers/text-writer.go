@@ -20,7 +20,7 @@ func (f *FileWriter) GetWriteFileName(exchange string, market string) string {
 
 // Write - Will write to the filename the line.
 func (f *FileWriter) Write(line string, filename string) (int, error) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666) //nolint:gosec
 	if err != nil {
 		return 0, err
 	}

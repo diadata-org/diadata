@@ -21,14 +21,14 @@ import (
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
 func GetLockedWalletsFromConfig(filename string) (allAssetsMap map[string][]string, err error) {
 
-	var fileName string
+	var jsonFile *os.File
+
 	executionMode := os.Getenv("EXEC_MODE")
 	if executionMode == "production" {
-		fileName = fmt.Sprintf("/config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("/config/token_supply/%s.json", filename))
 	} else {
-		fileName = fmt.Sprintf("../../../config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("../../../config/token_supply/%s.json", filename))
 	}
-	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
 		return

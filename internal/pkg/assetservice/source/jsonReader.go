@@ -58,8 +58,7 @@ func readJSONFromConfig(filename string) (content []byte, err error) {
 	var (
 		jsonFile *os.File
 	)
-	path := configCollectors.ConfigFileConnectors(filename, ".json")
-	jsonFile, err = os.Open(path)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ".json"))
 	if err != nil {
 		return
 	}

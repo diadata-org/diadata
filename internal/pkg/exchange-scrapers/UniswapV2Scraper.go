@@ -275,8 +275,7 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var reverseTokens []string
 
 	// Load file and read data
-	fileName := fmt.Sprintf("../config/uniswap/%s.json", filename)
-	jsonFile, err := os.Open(fileName)
+	jsonFile, err := os.Open(fmt.Sprintf("../config/uniswap/%s.json", filename))
 	if err != nil {
 		return &[]string{}, err
 	}

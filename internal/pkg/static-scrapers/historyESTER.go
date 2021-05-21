@@ -69,7 +69,7 @@ func WriteHistoricESTER(ds models.Datastore) (err error) {
 	log.Printf("Writing historic ESTER data")
 
 	pathESTERAbs, _ := filepath.Abs(pathESTER)
-	xmlFile, err := os.Open(pathESTERAbs)
+	xmlFile, err := os.Open(pathESTERAbs) //nolint:gosec
 	if err != nil {
 		fmt.Println(err)
 	}

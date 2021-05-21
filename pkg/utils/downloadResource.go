@@ -113,7 +113,13 @@ func HTTPRequest(request *http.Request) (body []byte, statusCode int, err error)
 	if err != nil {
 		return
 	}
-	defer CloseHTTPResp(resp)
+	defer func() {
+		cerr := resp.Body.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	statusCode = resp.StatusCode
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {

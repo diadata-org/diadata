@@ -70,7 +70,7 @@ func WriteHistoricPreESTER(ds models.Datastore) (err error) {
 
 	// The path relative to the calling main / executable
 	absPath, _ := filepath.Abs(pathPreESTER)
-	xmlFile, err := os.Open(absPath)
+	xmlFile, err := os.Open(absPath) //nolint:gosec
 	if err != nil {
 		fmt.Println(err)
 	}

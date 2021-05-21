@@ -5,17 +5,9 @@ import (
 	"go/build"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/sirupsen/logrus"
 )
-
-var log *logrus.Logger
-
-func init() {
-	log = logrus.New()
-}
 
 type Source struct {
 	Exchanges []dia.Exchange `json:"exchanges"`
@@ -23,23 +15,22 @@ type Source struct {
 
 //InitSource Read exchange.json file and put exchange metadata in Source struct
 func InitSource() (source *Source, err error) {
-	gopath := os.Getenv("GOPATH")
-	if gopath == "" {
-		gopath = build.Default.GOPATH
-	}
+
 	var (
 		jsonFile  *os.File
 		fileBytes []byte
 	)
 	executionMode := os.Getenv("EXEC_MODE")
-	log.Info("executionMode: ", gopath)
-	dir, _ := os.Getwd()
-	log.Info("pwd: ", dir)
+
 	if executionMode == "production" {
 		jsonFile, err = os.Open("/config/exchanges.json")
 	} else {
-		filePath := filepath.Join(gopath, filepath.Clean("/src/github.com/diadata-org/diadata/config/exchanges.json"))
-		jsonFile, err = os.Open(filePath)
+		gopath := os.Getenv("GOPATH")
+		if gopath == "" {
+			jsonFile, err = os.Open(build.Default.GOPATH)
+		} else {
+			jsonFile, err = os.Open(os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/exchanges.json")
+		}
 	}
 	if err != nil {
 		return

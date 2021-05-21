@@ -21,7 +21,7 @@ const (
 	Window2               = 24 * 60 * 60 * 8
 	BufferTTL             = 60 * 60
 	BiggestWindow         = Window2
-	TimeOutRedis          = time.Duration(time.Second * (BiggestWindow + BufferTTL))
+	TimeOutRedis          = time.Duration(time.Second*BiggestWindow + time.Second*BufferTTL)
 	TimeOutAssetQuotation = time.Duration(time.Second * WindowYesterday)
 )
 
