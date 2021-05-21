@@ -44,7 +44,7 @@ type UniswapV3Scraper struct {
 	chanTrades   chan *dia.Trade
 }
 
-// NewUniswapScraper returns a new UniswapScraper for the given pair
+// NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
@@ -86,7 +86,6 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 // runs in a goroutine until s is closed
 func (s *UniswapV3Scraper) mainLoop() {
 
-	// Import tokens which appear as base token and we need a quotation for
 	var err error
 	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
 	if err != nil {
@@ -106,7 +105,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 	}()
 
 	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("Uniswap: No pairs to scrap provided")
+		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
 	for {
@@ -246,7 +245,6 @@ func (s *UniswapV3Scraper) GetPairByAddress(pairAddress common.Address) (pair Un
 		return UniswapPair{}, err
 	}
 
-	// Getting tokens from pair ---------------------
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
 	var token0Contract *uniswapcontract.IERC20Caller
@@ -299,29 +297,12 @@ func (s *UniswapV3Scraper) GetPairByAddress(pairAddress common.Address) (pair Un
 
 // FetchAvailablePairs returns a list with all available trade pairs as dia.Pair for the pairDiscorvery service
 func (s *UniswapV3Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	//uniPairs, err := s.GetAllPairs()
-	//if err != nil {
-	//	return
-	//}
-	//for _, pair := range uniPairs {
-	//	if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
-	//		continue
-	//	}
-	//	pairToNormalise := dia.Pair{
-	//		Symbol:      pair.Token0.Symbol,
-	//		ForeignName: pair.ForeignName,
-	//		Exchange:    "UniswapV2",
-	//		Ignore:      false,
-	//	}
-	//	normalizedPair, _ := s.NormalizePair(pairToNormalise)
-	//	pairs = append(pairs, normalizedPair)
-	//}
 
 	return
 }
 
 
-func (up *UniswapV3Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *UniswapV3Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	if pair.ForeignName == "WETH" {
 		pair.Symbol = "ETH"
 	}
@@ -403,9 +384,6 @@ func (s *UniswapV3Scraper) GetDecimals(tokenAddress common.Address) (decimals ui
 	return
 }
 
-func (s *UniswapV3Scraper) getPair(chan *dia.Pair, error) {
-
-}
 
 // getNumPairs returns the number of available pairs on Uniswap
 func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
@@ -422,15 +400,14 @@ func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 	startBlock = 12369621
 
 	poolCreated, err := contract.FilterPoolCreated(&bind.FilterOpts{Start: startBlock}, []common.Address{}, []common.Address{}, []*big.Int{})
+	if err !=nil{
+		return nil,err
+	}
 	for poolCreated.Next() {
 		poolsCount++
 		pair, _ := s.GetPairData(poolCreated.Event)
 		pairs = append(pairs, pair)
 		s.pairRecieved <- &pair
-		// Test for first 20 pool
-		//if poolsCount == 100{
-		//	break
-		//}
 	}
 
 	return pairs, nil
@@ -498,8 +475,8 @@ func (ps *UniswapPairV3Scraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (ps *UniswapV3Scraper) Channel() chan *dia.Trade {
-	return ps.chanTrades
+func (s *UniswapV3Scraper) Channel() chan *dia.Trade {
+	return s.chanTrades
 }
 
 // Error returns an error when the channel Channel() is closed

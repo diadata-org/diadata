@@ -106,6 +106,19 @@ services:
     environment:
       - EXEC_MODE=production
 
+  uniswapcollector3:
+    depends_on: [ genericcollector ]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=UniswapV3
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
   sushiswapcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
