@@ -108,19 +108,24 @@ func (s *BitmexScraper) Scrape(market string) {
 		func() {
 			u := url.URL{Scheme: "wss", Host: "www.bitmex.com", Path: "/realtime"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
-			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			ws, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			if err != nil {
+				s.Logger.Errorf("could not dial Bitmex websocket: %s", err)
+				time.Sleep(time.Duration(retryIn) * time.Second)
+				return
+			}
 			defer func() {
 				err = ws.Close()
 				if err != nil {
 					log.Error(err)
 				}
 			}()
-
-			if err != nil {
-				s.Logger.Errorf("could not dial Bitmex websocket: %s", err)
-				time.Sleep(time.Duration(retryIn) * time.Second)
-				return
-			}
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
 			defer func() {
 				err = s.ScraperClose(market, ws)
 				if err != nil {

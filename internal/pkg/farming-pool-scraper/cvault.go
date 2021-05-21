@@ -23,7 +23,7 @@ var log = logrus.New()
 
 const (
 	cvaultAddress  = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
-	lpTokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b"
+	lptokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b"
 )
 
 type Cvault struct {
@@ -143,7 +143,7 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	if err != nil {
 		return
 	}
-	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lpTokenAddress, cv.RestClient)
+	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lptokenAddress, cv.RestClient)
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
 	var pr models.FarmingPool

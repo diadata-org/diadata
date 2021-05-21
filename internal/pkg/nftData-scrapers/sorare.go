@@ -6,15 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/big"
-	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/sorare"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -440,12 +439,7 @@ func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, c
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, creatorAddress, creationTime, err
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, _, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, creatorAddress, creationTime, err
 	}
