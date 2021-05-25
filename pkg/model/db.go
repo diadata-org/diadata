@@ -143,6 +143,7 @@ const (
 	influxDbFiltersTable                 = "filters"
 	influxDbOptionsTable                 = "options"
 	influxDbCVITable                     = "cvi"
+	influxDbCVITable                     = "cviETH"
 	influxDbSupplyTable                  = "supplies"
 	influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
@@ -514,6 +515,27 @@ func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	return err
 }
 
+func (db *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) error {
+	fields := map[string]interface{}{
+		"value": cviValue,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbCVITable, nil, fields, observationTime)
+	if err != nil {
+		log.Errorln("NewOptionInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+	}
+
+	return err
+}
+
+
+
 func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
 	retval := []dia.CviDataPoint{}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
@@ -567,6 +589,7 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	retval := dia.OptionOrderbookDatum{}
 	q := fmt.Sprintf("SELECT LAST(askPrice), bidPrice, askSize, bidSize, observationTime FROM %s WHERE instrumentName ='%s'", influxDbOptionsTable, t.InstrumentName)
 	res, err := queryInfluxDB(db.influxClient, q)
+
 	if err != nil {
 		return retval, err
 	}
