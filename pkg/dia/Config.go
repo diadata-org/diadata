@@ -14,6 +14,9 @@ const (
 	KrakenExchange    = "Kraken"
 	BitfinexExchange  = "Bitfinex"
 	BinanceExchange   = "Binance"
+	FTX   = "FTX"
+	Opyn   = "OPYN"
+	Premia   = "Premia"
 	BitBayExchange    = "BitBay"
 	BittrexExchange   = "Bittrex"
 	CoinBaseExchange  = "CoinBase"
@@ -30,6 +33,7 @@ const (
 	FilterKing        = "MA120"
 	BancorExchange    = "Bancor"
 	UniswapExchange   = "Uniswap"
+	UniswapExchangeV3   = "UniswapV3"
 	LoopringExchange  = "Loopring"
 	CurveFIExchange   = "Curvefi"
 	MakerExchange     = "Maker"
@@ -42,6 +46,8 @@ const (
 	BitMaxExchange    = "Bitmax"
 	CREX24Exchange    = "CREX24"
 	STEXExchange      = "STEX"
+	Deribit      = "Deribit"
+
 )
 
 const (
@@ -51,6 +57,7 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		UniswapExchangeV3,
 		KuCoinExchange,
 		UniswapExchange,
 		BalancerExchange,

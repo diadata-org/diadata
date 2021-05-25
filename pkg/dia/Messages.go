@@ -154,6 +154,8 @@ type OptionOrderbookDatum struct {
 	BidPrice        float64
 	AskSize         float64
 	BidSize         float64
+	StrikePrice     float64
+	ExpirationTime  time.Time
 }
 
 type OptionMeta struct {

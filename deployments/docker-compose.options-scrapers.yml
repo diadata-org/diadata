@@ -25,3 +25,27 @@ services:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
+
+  deribitCollector:
+    depends_on: [ optioncollector ]
+    command: /bin/collector -exchange=Deribit
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  opynCollector:
+    depends_on: [ optioncollector ]
+    command: /bin/collector -exchange=OPYN
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
