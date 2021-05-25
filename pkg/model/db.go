@@ -143,7 +143,7 @@ const (
 	influxDbFiltersTable                 = "filters"
 	influxDbOptionsTable                 = "options"
 	influxDbCVITable                     = "cvi"
-	influxDbCVITable                     = "cviETH"
+	influxDbETHCVITable                     = "cviETH"
 	influxDbSupplyTable                  = "supplies"
 	influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
@@ -519,7 +519,7 @@ func (db *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) erro
 	fields := map[string]interface{}{
 		"value": cviValue,
 	}
-	pt, err := clientInfluxdb.NewPoint(influxDbCVITable, nil, fields, observationTime)
+	pt, err := clientInfluxdb.NewPoint(influxDbETHCVITable, nil, fields, observationTime)
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
