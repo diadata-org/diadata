@@ -40,10 +40,6 @@ func New(exchange string, key string, secret string) OptionsScraper {
 		return NewOKExOptionsScraper(int8(30))
 	case dia.Deribit:
 		return NewDeribitETHOptionScraper()
-	case dia.BinanceExchange:
-		return NewBinanceETHOptionScraper()
-	case dia.FTX:
-		return NewFTXETHOptionScraper()
 	case dia.Opyn:
 		return NewOpynETHOptionScraper()
 	case dia.Premia:
