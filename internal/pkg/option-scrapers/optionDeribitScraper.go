@@ -156,32 +156,23 @@ func (scraper *DeribitETHOptionScraper) handleWSMessage() {
 	b, _ := json.Marshal(response)
 	log.Infoln("Message Received", string(b[:]))
 	for _, askOut := range response.Params.Data.Asks {
-		log.Infoln("askOut", askOut)
-		switch everything {
-		case "delete":
-			log.Infoln("Delete")
-		case "new":
-			log.Infoln("new")
-			resolvedAskSize = askOut[1].(float64)
+ 		switch everything {
+ 		case "new":
+ 			resolvedAskSize = askOut[1].(float64)
 			resolvedAskPX = askOut[0].(float64)
 		default:
-			log.Infoln(" askOut[0].(string)", askOut[0].(string))
 
 		}
 
 	}
 
 	for _, bidOut := range response.Params.Data.Bids {
-		log.Infoln("bidOut", bidOut)
-		switch everything {
+ 		switch everything {
 		case "delete":
-			log.Infoln("Delete")
-		case "new":
-			log.Infoln("new")
+ 		case "new":
 			resolvedBidSize = bidOut[1].(float64)
 			resolvedBidPX = bidOut[0].(float64)
 		default:
-			log.Infoln(" bidOut[0].(string)", bidOut[0].(string))
 
 		}
 
@@ -239,7 +230,18 @@ func (scraper *DeribitETHOptionScraper) heartBeat() {
 		params["interval"] = 30
 
 		request.Params = params
-		log.Info("set_heartbeat ", request)
+		log.Errorln("set_heartbeat ", request)
+		scraper.wsClient.WriteJSON(request)
+		id++
+
+		
+		request = &DeribitRequest{
+			Jsonrpc: "2.0",
+			ID:      id,
+			Method:  "public/test",
+		}
+
+		log.Errorln("public/test ", request)
 		scraper.wsClient.WriteJSON(request)
 		id++
 		time.Sleep(1 * time.Minute)
