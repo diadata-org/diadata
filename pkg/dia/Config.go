@@ -14,6 +14,9 @@ const (
 	KrakenExchange    = "Kraken"
 	BitfinexExchange  = "Bitfinex"
 	BinanceExchange   = "Binance"
+	FTX               = "FTX"
+	Opyn              = "OPYN"
+	Premia            = "Premia"
 	BitBayExchange    = "BitBay"
 	BittrexExchange   = "Bittrex"
 	CoinBaseExchange  = "CoinBase"
@@ -43,6 +46,7 @@ const (
 	BitMaxExchange    = "Bitmax"
 	CREX24Exchange    = "CREX24"
 	STEXExchange      = "STEX"
+	Deribit           = "Deribit"
 )
 
 const (
@@ -52,6 +56,7 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		UniswapExchangeV3,
 		KuCoinExchange,
 		UniswapExchange,
 		BalancerExchange,
