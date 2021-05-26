@@ -3,13 +3,14 @@ package filters
 import (
 	"errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"math"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 var log = logrus.New()
@@ -164,9 +165,8 @@ func TimeToMaturity(option dia.OptionMetaForward) float64 {
 	return endtime.Sub(starttime).Minutes()
 }
 
-
 func TimeToMaturityTime(endtime time.Time) float64 {
- 	starttime := time.Now()
+	starttime := time.Now()
 
 	return endtime.Sub(starttime).Minutes()
 }
@@ -362,7 +362,7 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 	//	return result[i].StrikePrice > result[j].StrikePrice
 	//})
 
-	log.Println("result",result)
+	log.Println("result", result)
 
 	return result, nil
 }
@@ -470,18 +470,12 @@ func ETHCVIToDatastore(value float64) error {
 	return ds.SaveETHCVIInflux(value, time.Now())
 }
 
-
-
-
-
-
-
 func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
 	ds, err := models.NewDataStore()
 	if err != nil {
 		return []dia.CviDataPoint{}, err
 	}
-	return ds.GetCVIInflux(starttime, endtime)
+	return ds.GetCVIInflux(starttime, endtime, "ETH")
 }
 
 // CVIFiltering is the actual filtering algorithm; computedCVIs is the channel through which we receive the calculated CVIs, filteredCVIs is the channel through which we send the filtered CVIs
