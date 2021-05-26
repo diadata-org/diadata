@@ -1,12 +1,13 @@
 package optionscrapers
 
 import (
-	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaMarket"
-	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaOption"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaMarket"
+	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaOption"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -85,8 +86,7 @@ func (scrapper *PremiaScraper) subscribe() (chan *PremiaMarket.PremiaMarketOrder
 	if err != nil {
 		log.Fatal(err)
 	}
- 	var hash [][32]byte
-
+	var hash [][32]byte
 
 	subscribed, err := optionFilterer.WatchOrderCreated(&bind.WatchOpts{}, sink, hash, []common.Address{}, []common.Address{})
 	if err != nil {
@@ -103,7 +103,6 @@ func (scrapper *PremiaScraper) Scrape() {
 	log.Infoln("Scrape")
 
 	sink, _ := scrapper.subscribe()
-
 
 	go func() {
 
@@ -206,25 +205,24 @@ func (scrapper *PremiaScraper) FetchInstruments() {
 	scrapper.FetchMarkets()
 }
 
-func (s *PremiaScraper) MetaOnOptionIsAvailable(option BinanceInstrument) (available bool, err error) {
-	available = false
-	err = nil
+// func (s *PremiaScraper) MetaOnOptionIsAvailable(option BinanceInstrument) (available bool, err error) {
+// 	available = false
+// 	err = nil
 
-	// TODO: can make this faster by specifying BaseCurrency/QuoteCurrency instead
-	optionMetas, err := s.DataStore.GetOptionMeta(option.Underlying)
-	if err != nil {
-		return
-	}
+// 	// TODO: can make this faster by specifying BaseCurrency/QuoteCurrency instead
+// 	optionMetas, err := s.DataStore.GetOptionMeta(option.Underlying)
+// 	if err != nil {
+// 		return
+// 	}
 
-	for _, optionMeta := range optionMetas {
-		if optionMeta.InstrumentName == option.Symbol {
-			return true, nil
-		}
-	}
+// 	for _, optionMeta := range optionMetas {
+// 		if optionMeta.InstrumentName == option.Symbol {
+// 			return true, nil
+// 		}
+// 	}
 
-	return
-}
-
+// 	return
+// }
 
 func (scrapper *PremiaScraper) Channel() chan *dia.OptionOrderbookDatum {
 	return scrapper.chanOrderBook

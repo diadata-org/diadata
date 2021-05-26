@@ -5,7 +5,7 @@ services:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-optioncollector
-#    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}-optioncollector:latest
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
     networks:
       - redis-network
     logging:
@@ -16,7 +16,8 @@ services:
 
   okexCollector:
     depends_on: [optioncollector]
-    command: /bin/collector -exchange=OKEx
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=OKEx
     networks:
       - influxdb-network
       - redis-network
@@ -27,8 +28,9 @@ services:
       - EXEC_MODE=production
 
   deribitCollector:
-    depends_on: [ optioncollector ]
-    command: /bin/collector -exchange=Deribit
+    depends_on: [optioncollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=Deribit
     networks:
       - influxdb-network
       - redis-network
@@ -39,8 +41,9 @@ services:
       - EXEC_MODE=production
 
   opynCollector:
-    depends_on: [ optioncollector ]
-    command: /bin/collector -exchange=OPYN
+    depends_on: [optioncollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=OPYN
     networks:
       - influxdb-network
       - redis-network
@@ -49,3 +52,13 @@ services:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
+
+
+networks:
+  redis-network:
+    external:
+        name: redis_redis-network
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
+      
