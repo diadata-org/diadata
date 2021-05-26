@@ -139,8 +139,10 @@ func (scraper *DeribitETHOptionScraper) Scrape() {
 			err = scraper.wsClient.ReadJSON(&response)
 			if err != nil {
 				log.Errorln("Error reading wsclient", err)
+				scraper.wsClient.Close()
+
 				scraper.Scrape()
-				break
+				return
 
 			}
 

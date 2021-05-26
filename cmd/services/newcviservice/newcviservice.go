@@ -52,10 +52,10 @@ func main() {
 	if err != nil {
 		log.Errorln("Error Getting Datastore", err)
 	}
-	for {
-		CalculateVIX(asset, ds)
-		time.Sleep(5 * time.Minute)
-	}
+ for {
+	 CalculateVIX(asset, ds)
+	 time.Sleep(5 * time.Minute)
+ }
 
 }
 
@@ -254,6 +254,7 @@ func CalculateVIX(asset UnderlyingAsset, ds *models.DB) {
 		nextTermOTM[k] = v
 	}
 
+
 	maxDiff := 0.0
 	selectedStrikePrice := 0.0
 	var (
@@ -319,6 +320,7 @@ func CalculateVIX(asset UnderlyingAsset, ds *models.DB) {
 		nextSigma = nextSigma + v.ContributionByStrike
 	}
 
+
 	//adjustment https://youtu.be/qToj8UiPBdk?t=613
 	nearSigma = nearSigma * (2 / t1)
 	nextSigma = nextSigma * (2 / t2)
@@ -326,18 +328,20 @@ func CalculateVIX(asset UnderlyingAsset, ds *models.DB) {
 	log.Infoln("nearSigma", nearSigma)
 	log.Infoln("nextSigma", nextSigma)
 
+
 	//Now calculate σ2 1 and σ2 2:
 
-	cvinear := nearSigma - math.Pow((f1/k01)-1, 2)/t1
+	cvinear := math.Abs(nearSigma - math.Pow((f1/k01)-1,2)/t1)
 
-	cvinext := nextSigma - math.Pow((f2/k02)-1, 2)/t2
+	cvinext := math.Abs(nextSigma - math.Pow((f2/k02)-1,2)/t2)
 
 	log.Infoln("cvinear", cvinear)
 	log.Infoln("cvinext", cvinext)
 
 	vix := 100 * math.Sqrt((t1*cvinear*(46394-43200/46394-35942))+(t2*cvinext*(43200-35924/46394-35924))*525600/43200)
 
-	log.Infoln("Saving CVI", vix)
+
+	log.Infoln("Saving CVI",vix)
 	err := filters.ETHCVIToDatastore(vix)
 	if err != nil {
 		log.Error(err)
@@ -346,7 +350,7 @@ func CalculateVIX(asset UnderlyingAsset, ds *models.DB) {
 
 // delta K/ k^2 * e^rt * q()
 func CalculateSigma(ot OptionsTable, roi float64, t float64) float64 {
-	return (5 / math.Pow(ot.StrikePrice, 2)) * math.Exp(roi*t) * math.Abs((ot.PutBid+ot.PutAsk)/2)
+	return (5 / math.Pow(ot.StrikePrice,2)) * math.Exp(roi*t) * math.Abs((ot.PutBid+ot.PutAsk)/2)
 
 }
 

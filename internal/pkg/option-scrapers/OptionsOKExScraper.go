@@ -135,7 +135,7 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 	}
 	var resolvedAskPX float64
 	var resolvedAskSize float64
-	if len(datum.Asks[0]) > 1 {
+	if len(datum.Asks) > 1  && len(datum.Asks[0]) > 1 {
 		resolvedAskPX, err = strconv.ParseFloat(datum.Asks[0][0], 64)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
