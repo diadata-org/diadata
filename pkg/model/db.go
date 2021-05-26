@@ -59,7 +59,7 @@ type Datastore interface {
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
-	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
+	GetCVIInflux(time.Time, time.Time, string) ([]dia.CviDataPoint, error)
 	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
 	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
@@ -143,7 +143,7 @@ const (
 	influxDbFiltersTable                 = "filters"
 	influxDbOptionsTable                 = "options"
 	influxDbCVITable                     = "cvi"
-	influxDbETHCVITable                     = "cviETH"
+	influxDbETHCVITable                  = "cviETH"
 	influxDbSupplyTable                  = "supplies"
 	influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
@@ -534,11 +534,16 @@ func (db *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) erro
 	return err
 }
 
-
-
-func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time, symbol string) ([]dia.CviDataPoint, error) {
 	retval := []dia.CviDataPoint{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	var q string
+	if symbol == "ETH" {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbETHCVITable, starttime.UnixNano(), endtime.UnixNano())
+
+	} else {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	}
+
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
