@@ -91,6 +91,20 @@ services:
       options:
         max-size: "50m"
 
+  ethcviservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-cviServiceEth
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ethcviservice:latest
+    networks:
+      - redis-network
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   pairdiscoveryservice:
     build:
       context: ../../../..

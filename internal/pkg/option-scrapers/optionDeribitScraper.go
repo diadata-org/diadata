@@ -234,7 +234,7 @@ func (scraper *DeribitETHOptionScraper) heartBeat() {
 		scraper.wsClient.WriteJSON(request)
 		id++
 
-		
+
 		request = &DeribitRequest{
 			Jsonrpc: "2.0",
 			ID:      id,
