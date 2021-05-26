@@ -14,7 +14,6 @@ import (
 const clientID = "2fSbOqqC"
 const clientSecret = "78gpYOitaZkn3y39XboRAWgDrtocdtHVWOz1_IlaN74"
 
-
 type DeribitInstrumentsResponse struct {
 	Jsonrpc string              `json:"jsonrpc"`
 	Result  []DeribitInstrument `json:"result"`
@@ -55,13 +54,13 @@ type DeribitETHOptionScraper struct {
 	DataStore          *models.DB
 	chanOrderBook      chan *dia.OptionOrderbookDatum
 	Ratelimiter        *rate.Limiter
-	refreshToken   string
+	refreshToken       string
 }
 
 type DeribitRequest struct {
-	Jsonrpc string       `json:"jsonrpc"`
-	ID      int          `json:"id"`
-	Method  string       `json:"method"`
+	Jsonrpc string      `json:"jsonrpc"`
+	ID      int         `json:"id"`
+	Method  string      `json:"method"`
 	Params  interface{} `json:"params"`
 }
 
@@ -94,8 +93,6 @@ func NewDeribitETHOptionScraper() *DeribitETHOptionScraper {
 	return s
 
 }
-
-
 
 func (scraper *DeribitETHOptionScraper) subscribe() {
 
@@ -140,7 +137,7 @@ func (scraper *DeribitETHOptionScraper) handleWSMessage() {
 	var response DeribitOptionResponse
 	var err error
 
- 	err = scraper.wsClient.ReadJSON(&response)
+	err = scraper.wsClient.ReadJSON(&response)
 	if err != nil {
 		log.Errorln("Error reading wsclient", err)
 		return
@@ -156,9 +153,9 @@ func (scraper *DeribitETHOptionScraper) handleWSMessage() {
 	b, _ := json.Marshal(response)
 	log.Infoln("Message Received", string(b[:]))
 	for _, askOut := range response.Params.Data.Asks {
- 		switch everything {
- 		case "new":
- 			resolvedAskSize = askOut[1].(float64)
+		switch everything {
+		case "new":
+			resolvedAskSize = askOut[1].(float64)
 			resolvedAskPX = askOut[0].(float64)
 		default:
 
@@ -167,9 +164,9 @@ func (scraper *DeribitETHOptionScraper) handleWSMessage() {
 	}
 
 	for _, bidOut := range response.Params.Data.Bids {
- 		switch everything {
+		switch everything {
 		case "delete":
- 		case "new":
+		case "new":
 			resolvedBidSize = bidOut[1].(float64)
 			resolvedBidPX = bidOut[0].(float64)
 		default:
@@ -203,8 +200,7 @@ func (scraper *DeribitETHOptionScraper) handleWSMessage() {
 }
 func (scraper *DeribitETHOptionScraper) Scrape() {
 
-
- 	go scraper.heartBeat()
+	go scraper.heartBeat()
 	scraper.subscribe()
 	go func() {
 		for {
@@ -217,34 +213,39 @@ func (scraper *DeribitETHOptionScraper) Scrape() {
 }
 
 func (scraper *DeribitETHOptionScraper) heartBeat() {
+
+	t := time.NewTicker(3 * time.Second)
 	for {
-		var params map[string]int
+		select {
+		case <-t.C:
+			{
+				var params map[string]int
 
-		id := 5600000
-		request := &DeribitRequest{
-			Jsonrpc: "2.0",
-			ID:      id,
-			Method:  "/public/set_heartbeat",
+				id := 5600000
+				request := &DeribitRequest{
+					Jsonrpc: "2.0",
+					ID:      id,
+					Method:  "/public/set_heartbeat",
+				}
+				params = make(map[string]int)
+				params["interval"] = 30
+
+				request.Params = params
+				log.Errorln("set_heartbeat ", request)
+				scraper.wsClient.WriteJSON(request)
+				id++
+
+				request = &DeribitRequest{
+					Jsonrpc: "2.0",
+					ID:      id,
+					Method:  "public/test",
+				}
+
+				log.Errorln("public/test ", request)
+				scraper.wsClient.WriteJSON(request)
+				id++
+			}
 		}
-		params = make(map[string]int)
-		params["interval"] = 30
-
-		request.Params = params
-		log.Errorln("set_heartbeat ", request)
-		scraper.wsClient.WriteJSON(request)
-		id++
-
-
-		request = &DeribitRequest{
-			Jsonrpc: "2.0",
-			ID:      id,
-			Method:  "public/test",
-		}
-
-		log.Errorln("public/test ", request)
-		scraper.wsClient.WriteJSON(request)
-		id++
-		time.Sleep(1 * time.Minute)
 	}
 }
 
@@ -274,7 +275,6 @@ func (s *DeribitETHOptionScraper) handleRefreshToken(previousToken string, webso
 	}
 	return true, nil
 }
-
 
 type DeribitOptionsResponse struct {
 	Jsonrpc string              `json:"jsonrpc"`
