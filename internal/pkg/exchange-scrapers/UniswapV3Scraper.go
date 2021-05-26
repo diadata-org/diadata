@@ -2,15 +2,16 @@ package scrapers
 
 import (
 	"errors"
-	uniswapcontractv3 "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3"
-	UniswapV3Pair "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3/uniswapV3Pair"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	"github.com/diadata-org/diadata/pkg/utils"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
+
+	uniswapcontractv3 "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3"
+	UniswapV3Pair "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3/uniswapV3Pair"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -22,6 +23,14 @@ import (
 var (
 	UniswapV3FactoryContractAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
 )
+
+type UniswapV3Swap struct {
+	ID        string
+	Timestamp int64
+	Pair      UniswapPair
+	Amount0   float64
+	Amount1   float64
+}
 
 type UniswapV3Scraper struct {
 	WsClient   *ethclient.Client
@@ -144,11 +153,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						if err != nil {
 							log.Error("error normalizing swap: ", err)
 						}
-						price, volume, err := s.getSwapData(swap)
-
-						if err != nil {
-							log.Error("error getting swap data: ", err)
-						}
+						price, volume := s.getSwapData(swap)
 
 						t := &dia.Trade{
 							Symbol:         pair.Token0.Symbol,
@@ -198,22 +203,22 @@ func (s *UniswapV3Scraper) GetSwapsChannel(pairAddress common.Address) (chan *Un
 
 }
 
-func (s *UniswapV3Scraper) getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
-	if swap.Amount0In > float64(0) {
+func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volume float64) {
+	if swap.Amount0 > float64(0) {
 		// Amount0In is positive
-		volume = math.Abs(swap.Amount1Out)
-		price = swap.Amount0In / swap.Amount1Out
+		volume = swap.Amount0
+		price = swap.Amount1 / swap.Amount0
 	} else {
 		// Amount0In is Negative
-		volume = math.Abs(swap.Amount0In)
-		price = swap.Amount0In / swap.Amount1Out
+		volume = swap.Amount0
+		price = swap.Amount1 / swap.Amount0
 	}
 	price = math.Abs(price)
 	return
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3PairSwap) (normalizedSwap UniswapSwap, err error) {
+func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3PairSwap) (normalizedSwap UniswapV3Swap, err error) {
 
 	pair, err := s.GetPairByAddress(swap.Raw.Address)
 	if err != nil {
@@ -222,15 +227,15 @@ func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3Pair
 	}
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
-	amount0In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
-	amount1Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	normalizedSwap = UniswapSwap{
-		ID:         swap.Raw.TxHash.Hex(),
-		Timestamp:  time.Now().Unix(),
-		Pair:       pair,
-		Amount0In:  amount0In,
-		Amount1Out: amount1Out,
+	normalizedSwap = UniswapV3Swap{
+		ID:        swap.Raw.TxHash.Hex(),
+		Timestamp: time.Now().Unix(),
+		Pair:      pair,
+		Amount0:   amount0,
+		Amount1:   amount1,
 	}
 	return
 }
@@ -300,7 +305,6 @@ func (s *UniswapV3Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 
 	return
 }
-
 
 func (s *UniswapV3Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	if pair.ForeignName == "WETH" {
@@ -384,7 +388,6 @@ func (s *UniswapV3Scraper) GetDecimals(tokenAddress common.Address) (decimals ui
 	return
 }
 
-
 // getNumPairs returns the number of available pairs on Uniswap
 func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 
@@ -400,8 +403,8 @@ func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 	startBlock = 12369621
 
 	poolCreated, err := contract.FilterPoolCreated(&bind.FilterOpts{Start: startBlock}, []common.Address{}, []common.Address{}, []*big.Int{})
-	if err !=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	for poolCreated.Next() {
 		poolsCount++

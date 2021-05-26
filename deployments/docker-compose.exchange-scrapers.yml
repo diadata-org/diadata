@@ -106,7 +106,7 @@ services:
     environment:
       - EXEC_MODE=production
 
-  uniswapcollector3:
+  uniswapv3collector:
     depends_on: [ genericcollector ]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=UniswapV3
