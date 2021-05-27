@@ -2,7 +2,6 @@ package scrapers
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"strconv"
 	"sync"
@@ -58,12 +57,12 @@ func Round(x, unit float64) float64 {
 	return math.Round(x/unit) * unit
 }
 
-func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
-	obj := desired - current
-	roundedObj := Round(obj, minChange)
-	message := fmt.Sprintf("current position: %v, min change: %v, desired position: %v, delta current/desired: %v, rounded delta: %v", current, minChange, desired, obj, roundedObj)
-	return roundedObj, message
-}
+// func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
+// 	obj := desired - current
+// 	roundedObj := Round(obj, minChange)
+// 	message := fmt.Sprintf("current position: %v, min change: %v, desired position: %v, delta current/desired: %v, rounded delta: %v", current, minChange, desired, obj, roundedObj)
+// 	return roundedObj, message
+// }
 
 func FloatToString(input_num float64) string {
 	// to convert a float number to a string
@@ -186,6 +185,7 @@ func (ps *KrakenScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *KrakenPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

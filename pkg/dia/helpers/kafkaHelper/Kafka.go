@@ -65,23 +65,28 @@ func init() {
 }
 
 // WithRetryOnError
-func ReadOffset(topic int) (int64, error) {
-	var err error
+func ReadOffset(topic int) (offset int64, err error) {
 	for _, ip := range KafkaConfig.KafkaUrl {
-		conn, err := kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
+		var conn *kafka.Conn
+		conn, err = kafka.DialLeader(context.Background(), "tcp", ip, getTopic(topic), 0)
 		if err != nil {
 			log.Errorln("ReadOffset conn error: <", err, "> ", ip)
 		} else {
-			defer conn.Close()
-			offset, err := conn.ReadLastOffset()
+			offset, err = conn.ReadLastOffset()
 			if err != nil {
 				log.Errorln("ReadOffset ReadLastOffset error: <", err, "> ")
 			} else {
-				return offset, nil
+				return
 			}
+			defer func() {
+				cerr := conn.Close()
+				if err == nil {
+					err = cerr
+				}
+			}()
 		}
 	}
-	return 0, err
+	return
 }
 
 func ReadOffsetWithRetryOnError(topic int) (offset int64) {
@@ -93,7 +98,13 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 					log.Errorln("ReadOffsetWithRetryOnError conn error: <", err, "> ", ip, " topic:", topic)
 					time.Sleep(retryDelay)
 				} else {
-					defer conn.Close()
+					defer func() {
+						err = conn.Close()
+						if err != nil {
+							log.Error(err)
+						}
+					}()
+
 					offset, err = conn.ReadLastOffset()
 					if err != nil {
 						log.Errorln("ReadOffsetWithRetryOnError ReadLastOffset error: <", err, "> ", ip, " topic:", topic)
@@ -104,7 +115,6 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 				}
 			}
 		}
-		log.Println("ReadOffsetWithRetryOnError retrying...")
 	}
 }
 
@@ -142,7 +152,7 @@ func WriteMessage(w *kafka.Writer, m KafkaMessage) error {
 	key := []byte("helloKafka")
 	value, err := m.MarshalBinary()
 	if err == nil && value != nil {
-		err := w.WriteMessages(context.Background(),
+		err = w.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   key,
 				Value: value,
@@ -177,14 +187,20 @@ func NewReaderXElementsBeforeLastMessage(topic int, x int64) *kafka.Reader {
 		MinBytes:  0,
 		MaxBytes:  10e6, // 10MB
 	})
-	r.SetOffset(offset)
+	err = r.SetOffset(offset)
+	if err != nil {
+		log.Error(err)
+	}
 	return r
 }
 
 func NewReaderNextMessage(topic int) *kafka.Reader {
 	offset := ReadOffsetWithRetryOnError(topic)
 	r := NewReader(topic)
-	r.SetOffset(offset)
+	err := r.SetOffset(offset)
+	if err != nil {
+		log.Error(err)
+	}
 	log.Printf("Reading from offset %d/%d on topic %s", offset, offset, getTopic(topic))
 	return r
 }
@@ -193,10 +209,7 @@ func IsTopicEmpty(topic int) bool {
 	log.Println("IsTopicEmpty: ", topic)
 	offset := ReadOffsetWithRetryOnError(topic)
 	offset--
-	if offset < 0 {
-		return true
-	}
-	return false
+	return offset < 0
 }
 
 func GetLastElementWithRetryOnError(topic int) interface{} {
@@ -264,8 +277,6 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 			}
 			b2 := b[:z]
 
-			err = nil
-
 			switch topic {
 			case TopicFiltersBlock:
 				var e dia.FiltersBlock
@@ -286,11 +297,11 @@ func GetElements(topic int, offset int64, nbElements int) ([]interface{}, error)
 					result = append(result, e)
 				}
 			default:
-				return nil, errors.New("Missing case unknown topic in switch... function GetElements / Kafka.go")
+				return nil, errors.New("missing case unknown topic in switch... function GetElements / Kafka.go")
 			}
 
 			if err != nil {
-				errorMsg := fmt.Sprintf("Parsing error while processing offset: %v/%v", c, maxOffset)
+				errorMsg := fmt.Sprintf("parsing error while processing offset: %v/%v", c, maxOffset)
 				return nil, errors.New(errorMsg)
 			}
 			if len(result) == nbElements {

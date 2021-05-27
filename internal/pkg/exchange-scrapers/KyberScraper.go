@@ -184,7 +184,7 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -229,20 +229,27 @@ func (scraper *KyberScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
+
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Kyber: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}

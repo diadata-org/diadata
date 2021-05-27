@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"sync"
+
 	"github.com/diadata-org/diadata/internal/pkg/tradesBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	"github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.WaitGroup, w *kafka.Writer) {
@@ -29,10 +30,20 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 func main() {
 
 	w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
-	defer w.Close()
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
-	defer r.Close()
+	defer func() {
+		err := r.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	s, err := models.NewDataStore()
 	if err != nil {

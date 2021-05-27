@@ -76,7 +76,7 @@ func NewZBScraper(exchange dia.Exchange, scrape bool) *ZBScraper {
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 
-	for true {
+	for {
 
 		message := &ZBTradeResponse{}
 
@@ -84,7 +84,6 @@ func (s *ZBScraper) mainLoop() {
 			log.Error(s.error.Error())
 			break
 		}
-
 
 		for _, trade := range message.Data {
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
@@ -142,11 +141,11 @@ func (s *ZBScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
-
 // FillSymbolData is not used by DEX scrapers.
 func (s *ZBScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil
 }
+
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *ZBScraper) Close() error {
@@ -156,7 +155,10 @@ func (s *ZBScraper) Close() error {
 	}
 
 	close(s.shutdown)
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -210,6 +212,7 @@ type ZBPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *ZBPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

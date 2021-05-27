@@ -153,7 +153,7 @@ func (s *BittrexScraper) mainLoop() {
 
 func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response BittrexAsset
-	data, err := utils.GetRequest("https://api.bittrex.com/v3/currencies/" + symbol)
+	data, _, err := utils.GetRequest("https://api.bittrex.com/v3/currencies/" + symbol)
 	if err != nil {
 		return
 	}
@@ -167,7 +167,7 @@ func (s *BittrexScraper) FillSymbolData(symbol string) (asset dia.Asset, err err
 }
 
 func getAPICallBittrex(params ...string) []interface{} {
-	body, err := utils.GetRequest(_bittrexapiurl + params[0])
+	body, _, err := utils.GetRequest(_bittrexapiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -274,6 +274,7 @@ type BittrexPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *BittrexPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

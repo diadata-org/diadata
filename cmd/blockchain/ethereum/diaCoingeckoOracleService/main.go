@@ -6,10 +6,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -46,12 +44,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 2 {
@@ -79,16 +83,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+		for range ticker.C {
+			err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
 			}
 		}
 	}()
@@ -135,18 +142,9 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 
 // getTopCoinsFromCoingecko returns the symbols of the top @numCoins assets from coingecko by market cap
 func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
-	response, err := http.Get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
+	contents, statusCode, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
 	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on coingecko api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	type aux struct {
 		Symbol string `json:"symbol"`
@@ -154,7 +152,7 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 	var quotations []aux
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	var symbols []string
 	for _, quotation := range quotations {
@@ -164,19 +162,11 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	contents, _, err := utils.GetRequest(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.ForeignQuotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {
@@ -248,86 +238,86 @@ func updateOracle(
 // Methods for getting additional foreign quotations by address
 // ------------------------------------------------------------
 
-type CoinData struct {
-	Prices     [][]float64 `json:"prices"`
-	MarketCaps [][]float64 `json:"market_caps"`
-	Volumes    [][]float64 `json:"total_volumes"`
-}
+// type CoinData struct {
+// 	Prices     [][]float64 `json:"prices"`
+// 	MarketCaps [][]float64 `json:"market_caps"`
+// 	Volumes    [][]float64 `json:"total_volumes"`
+// }
 
-type BasicTokenInfo struct {
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
-}
+// type BasicTokenInfo struct {
+// 	Name   string `json:"name"`
+// 	Symbol string `json:"symbol"`
+// }
 
-func getCoinInfoByAddress(address string) (name, symbol string, err error) {
-	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
-	if err != nil {
-		return
-	}
-	var tokenInfo BasicTokenInfo
-	err = json.Unmarshal(response, &tokenInfo)
-	if err != nil {
-		return
-	}
-	name = tokenInfo.Name
-	symbol = tokenInfo.Symbol
-	return
-}
+// func getCoinInfoByAddress(address string) (name, symbol string, err error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+// 	if err != nil {
+// 		return
+// 	}
+// 	var tokenInfo BasicTokenInfo
+// 	err = json.Unmarshal(response, &tokenInfo)
+// 	if err != nil {
+// 		return
+// 	}
+// 	name = tokenInfo.Name
+// 	symbol = tokenInfo.Symbol
+// 	return
+// }
 
-func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
-	// Pull and unmarshall data from coingecko API
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
-	var coin CoinData
-	err = json.Unmarshal(response, &coin)
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
+// func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
+// 	var coin CoinData
+// 	err = json.Unmarshal(response, &coin)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
 
-	// Get index of most recent timestamp
-	prices := coin.Prices
-	latestTimestamp := time.Time{}
-	indexLatestTimestamp := 0
-	for i, price := range prices {
-		tm := time.Unix(int64(price[0]/1000), 0)
-		if latestTimestamp.Before(tm) {
-			latestTimestamp = tm
-			indexLatestTimestamp = i
-		}
-	}
+// 	// Get index of most recent timestamp
+// 	prices := coin.Prices
+// 	latestTimestamp := time.Time{}
+// 	indexLatestTimestamp := 0
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		if latestTimestamp.Before(tm) {
+// 			latestTimestamp = tm
+// 			indexLatestTimestamp = i
+// 		}
+// 	}
 
-	// Get index of timestamp closest to latestTimestamp-24h
-	indexYesterday := 0
-	yesterday := latestTimestamp.AddDate(0, 0, -1)
-	minDuration := time.Duration(int64(1e16))
-	for i, price := range prices {
-		tm := time.Unix(int64(price[0]/1000), 0)
-		diff := yesterday.Sub(tm)
-		if diff < 0 {
-			diff = tm.Sub(yesterday)
-		}
-		if diff < minDuration {
-			minDuration = diff
-			indexYesterday = i
-		}
-	}
+// 	// Get index of timestamp closest to latestTimestamp-24h
+// 	indexYesterday := 0
+// 	yesterday := latestTimestamp.AddDate(0, 0, -1)
+// 	minDuration := time.Duration(int64(1e16))
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		diff := yesterday.Sub(tm)
+// 		if diff < 0 {
+// 			diff = tm.Sub(yesterday)
+// 		}
+// 		if diff < minDuration {
+// 			minDuration = diff
+// 			indexYesterday = i
+// 		}
+// 	}
 
-	// Get name and symbol by address from coingecko
-	name, symbol, err := getCoinInfoByAddress(address)
-	if err != nil {
-		return &models.ForeignQuotation{}, err
-	}
+// 	// Get name and symbol by address from coingecko
+// 	name, symbol, err := getCoinInfoByAddress(address)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
 
-	var fq models.ForeignQuotation
-	fq.Symbol = strings.ToUpper(symbol)
-	fq.Name = name
-	fq.Price = prices[indexLatestTimestamp][1]
-	fq.PriceYesterday = prices[indexYesterday][1]
-	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
-	fq.Source = "Coingecko"
-	fq.Time = latestTimestamp
-	return &fq, nil
-}
+// 	var fq models.ForeignQuotation
+// 	fq.Symbol = strings.ToUpper(symbol)
+// 	fq.Name = name
+// 	fq.Price = prices[indexLatestTimestamp][1]
+// 	fq.PriceYesterday = prices[indexYesterday][1]
+// 	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
+// 	fq.Source = "Coingecko"
+// 	fq.Time = latestTimestamp
+// 	return &fq, nil
+// }

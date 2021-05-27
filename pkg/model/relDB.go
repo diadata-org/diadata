@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -60,6 +61,7 @@ type RelDatastore interface {
 	SetNFT(nft dia.NFT) error
 	GetNFT(address common.Address, tokenID uint64) (dia.NFT, error)
 	SetNFTTrade(trade dia.NFTTrade) error
+	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -79,12 +81,12 @@ const (
 	keyExchangePairCache = "dia_exchangepair_"
 	nftcategoryTable     = "nftcategory"
 	nftclassTable        = "nftclass"
-	nftTable             = "nft"
-	nftsaleTable         = "nftsale"
-	nftofferTable        = "nftoffer"
+	// nftTable             = "nft"
+	// nftsaleTable  = "nftsale"
+	// nftofferTable = "nftoffer"
 
 	// time format for blockchain genesis dates
-	timeFormatBlockchain = "2006-01-02"
+	// timeFormatBlockchain = "2006-01-02"
 )
 
 // RelDB is a relative database with redis caching layer.
@@ -188,22 +190,24 @@ func getPostgresKeyFromSecrets(executionMode string) string {
 			log.Fatal(err)
 		}
 	} else {
-		gopath := os.Getenv("GOPATH")
-		file, err = os.Open(gopath + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
+		file, err = os.Open(os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 1 {
 		log.Fatal("Secrets file should have exactly one line")
+	}
+	err = file.Close()
+	if err != nil {
+		log.Error(err)
 	}
 	return lines[0]
 }

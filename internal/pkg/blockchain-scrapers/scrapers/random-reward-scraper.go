@@ -46,7 +46,7 @@ func RunScraper(host string, port int, user, password, symbol string, elapsedTim
 
 		blockTime := time.Unix(block.Time, 0)
 
-		if time.Now().Sub(blockTime) > waitTime {
+		if time.Since(blockTime) > waitTime {
 			txOutSetInfo, err := bitcoinLib.GetTxOutsetInfo()
 			if err != nil {
 				log.Println(err)
@@ -66,7 +66,7 @@ func RunScraper(host string, port int, user, password, symbol string, elapsedTim
 				}
 			}
 		} else {
-			log.Println("Block:", block.Height, "synchronized for", time.Now().Sub(blockTime))
+			log.Println("Block:", block.Height, "synchronized for", time.Since(blockTime))
 		}
 
 		time.Sleep(SLEEP_TIME * time.Second)

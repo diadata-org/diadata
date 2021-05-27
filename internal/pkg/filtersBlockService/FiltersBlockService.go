@@ -37,15 +37,15 @@ type filtersAsset struct {
 // FiltersBlockService is the data structure containing all objects
 // necessary for the processing of a tradesBlock.
 type FiltersBlockService struct {
-	shutdown             chan nothing
-	shutdownDone         chan nothing
-	chanTradesBlock      chan *dia.TradesBlock
-	chanFiltersBlock     chan *dia.FiltersBlock
-	errorLock            sync.RWMutex
-	error                error
-	closed               bool
-	started              bool
-	currentTime          time.Time
+	shutdown         chan nothing
+	shutdownDone     chan nothing
+	chanTradesBlock  chan *dia.TradesBlock
+	chanFiltersBlock chan *dia.FiltersBlock
+	errorLock        sync.RWMutex
+	error            error
+	closed           bool
+	started          bool
+	// currentTime          time.Time
 	filters              map[filtersAsset][]Filter
 	lastLog              time.Time
 	calculationValues    []int
@@ -148,10 +148,16 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	for _, filters := range s.filters {
 		for _, f := range filters {
-			f.save(s.datastore)
+			err = f.save(s.datastore)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
-	s.datastore.Flush()
+	err = s.datastore.Flush()
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {
@@ -188,12 +194,12 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	missingPoints := 0
 	result := newFilters
 	newFiltersMap := make(map[filtersAsset]*dia.FilterPoint)
-	for _, filter := range newFilters {
+	for i, filter := range newFilters {
 		fa := filtersAsset{
 			Identifier: getIdentifier(filter.Asset),
 			Source:     filter.Name,
 		}
-		newFiltersMap[fa] = &filter
+		newFiltersMap[fa] = &newFilters[i]
 	}
 
 	for _, filter := range previousBlockFilters {

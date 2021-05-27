@@ -52,16 +52,14 @@ func (bd *BARNBRIDGEScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-bd.scraper.tickerRate.C:
-				err := bd.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scrapping", err)
-				}
+		for range bd.scraper.tickerRate.C {
+			err := bd.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scrapping", err)
 			}
 		}
 	}()
+	select {}
 
 }
 
@@ -87,12 +85,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "USDC_BOND_UNI_LP":
 			vault, err := lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
@@ -100,12 +107,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "BOND":
 			vault, err := bondvault.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
@@ -113,12 +129,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		}
 		poolBalance, _ = new(big.Float).Quo(new(big.Float).SetInt(balanceBig), new(big.Float).SetFloat64(1e18)).Float64()

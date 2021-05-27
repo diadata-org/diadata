@@ -1,9 +1,10 @@
 package main
 
 import (
+	"time"
+
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersOptionService"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 func main() {

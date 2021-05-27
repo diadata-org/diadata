@@ -128,7 +128,7 @@ type Datastore interface {
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
 
 	// Github methods
-	SetCommit(commit *GithubCommit) error
+	SetCommit(commit GithubCommit) error
 	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
 	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
 	GetLatestCommit(user, repository string) (GithubCommit, error)
@@ -136,7 +136,7 @@ type Datastore interface {
 
 const (
 	influxMaxPointsInBatch = 5000
-	timeOutRedisOneBlock   = 60 * 3 * time.Second
+	// timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
 type DB struct {
@@ -147,14 +147,14 @@ type DB struct {
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbFiatQuotationsTable          = "fiat"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbSupplyTable                  = "supplies"
-	influxDbSupplyTableOld               = "supply"
+	influxDbName                = "dia"
+	influxDbTradesTable         = "trades"
+	influxDbFiltersTable        = "filters"
+	influxDbFiatQuotationsTable = "fiat"
+	influxDbOptionsTable        = "options"
+	influxDbCVITable            = "cvi"
+	influxDbSupplyTable         = "supplies"
+	// influxDbSupplyTableOld               = "supply"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"
 	influxDbPoolTable                    = "defiPools"
@@ -204,7 +204,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var ci clientInfluxdb.Client
 	var bp clientInfluxdb.BatchPoints
 	var r *redis.Client
-	var err error
+
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
 	address := "localhost:6379"
@@ -212,6 +212,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	defaultDB := 0
 
 	if withRedis {
+		var err error
 		// Run localhost for testing and server for production
 		if executionMode == "production" {
 			address = os.Getenv("REDISURL")
@@ -241,6 +242,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		log.Debug("NewDB", pong2)
 	}
 	if withInflux {
+		var err error
 		if executionMode == "production" {
 			address = os.Getenv("INFLUXURL")
 		} else {
@@ -318,7 +320,10 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
 		log.Debug("AddPoint forcing write Bash")
-		db.WriteBatchInflux()
+		err := db.WriteBatchInflux()
+		if err != nil {
+			log.Error("add point to influx batch: ", err)
+		}
 	}
 }
 
@@ -381,25 +386,29 @@ func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) 
 		log.Errorln("Sum24HoursInflux ", err)
 		return nil, err
 	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			var result float64
-			v, o := row[1].(json.Number)
-			if o {
-				result, _ = v.Float64()
-				return &result, nil
-			}
-			errorString = "error on parsing row 1"
-			log.Errorln(errorString)
-			return nil, errors.New(errorString)
 
+	if len(res) > 0 && len(res[0].Series) > 0 {
+
+		var result float64
+		v, o := res[0].Series[0].Values[0][1].(json.Number)
+		if o {
+			result, err = v.Float64()
+			if err != nil {
+				log.Error(err)
+				return nil, err
+			}
+			return &result, nil
 		}
+		errorString = "error on parsing row 1"
+		log.Errorln(errorString)
+		return nil, errors.New(errorString)
+
 	} else {
-		errorString = "Empty response in Sum24HoursInflux"
+		errorString = "empty response in Sum24HoursInflux"
 		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 	}
-	return nil, errors.New("couldn't sum in Sum24HoursInflux")
+
 }
 
 // Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
@@ -452,7 +461,7 @@ func (db *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Volume value from Database")
+		return retval, errors.New("parsing volume value from database")
 	}
 	return retval, nil
 }
@@ -527,7 +536,7 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 			}
 		}
 	} else {
-		return &retval, errors.New("Error parsing Trade from Database")
+		return &retval, errors.New("parsing trade from database")
 	}
 	return &retval, nil
 }
@@ -572,7 +581,7 @@ func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDat
 			retval = append(retval, currentPoint)
 		}
 	} else {
-		return retval, errors.New("Error parsing CVI value from Database")
+		return retval, errors.New("parsing CVI value from database")
 	}
 	return retval, nil
 }
@@ -713,7 +722,7 @@ func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
 			}
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing farming pool from Database")
 	}
 	return retval, nil
 
@@ -766,7 +775,7 @@ func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID 
 			retval = append(retval, pool)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing farming pool from database")
 	}
 	return retval, nil
 
@@ -829,7 +838,7 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			retval = append(retval, currentRate)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing defi lending rate from database")
 	}
 	return retval, nil
 }
@@ -890,7 +899,7 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			retval = append(retval, defiState)
 		}
 	} else {
-		err = errors.New("Error parsing Defi Lending Rate from Database")
+		err = errors.New("parsing defi lending state from database")
 		return
 	}
 	return
@@ -969,7 +978,7 @@ func (db *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endtime time
 			retval = append(retval, currentSupply)
 		}
 	} else {
-		return retval, errors.New("Error parsing Supply value from Database")
+		return retval, errors.New("parsing supply value from database")
 	}
 	return retval, nil
 }
@@ -1016,7 +1025,7 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-	if err := db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
+	if err = db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?
 	return err
@@ -1033,7 +1042,10 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 	log.Debug(key, "vals: %v on getZSETValue maxScore: %v", vals, max)
 	if err == nil {
 		if len(vals) > 0 {
-			fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			_, err = fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", result)
 		} else {
 			err = errors.New("getZSETValue no value found")
@@ -1070,7 +1082,10 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
-			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			_, err = fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", value)
 		} else {
 			err = errors.New("getZSETLastValue no value found")

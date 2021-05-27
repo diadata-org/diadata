@@ -21,7 +21,7 @@ const (
 	watchdogDelay = 60 * 60
 )
 
-func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup, exchange string) {
+func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg *sync.WaitGroup) {
 	lastTradeTime := time.Now()
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
@@ -39,7 +39,11 @@ func handleorderBook(datastore *models.DB, c chan *dia.OptionOrderbookDatum, wg 
 				return
 			}
 			lastTradeTime = time.Now()
-			datastore.SaveOptionOrderbookDatumInflux(*t)
+			err := datastore.SaveOptionOrderbookDatumInflux(*t)
+			if err != nil {
+				log.Error(err)
+			}
+
 		}
 	}
 }
@@ -55,7 +59,7 @@ func init() {
 	if *exchange == "" {
 		flag.Usage()
 		log.Println(dia.Exchanges())
-		for true {
+		for {
 			time.Sleep(24 * time.Hour)
 		}
 		// log.Fatal("exchange is required")
@@ -82,6 +86,6 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	go handleorderBook(ds, es.Channel(), &wg, *exchange)
+	go handleorderBook(ds, es.Channel(), &wg)
 	wg.Wait()
 }

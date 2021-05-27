@@ -145,7 +145,10 @@ func (s *STEXScraper) mainLoop() {
 func (s *STEXScraper) scrapeTrades() {
 
 	var numRequests int
-	s.FetchAvailablePairs()
+	_, err := s.FetchAvailablePairs()
+	if err != nil {
+		log.Error(err)
+	}
 	for _, pairScraper := range s.pairScrapers {
 		if numRequests > 180 {
 			// API limit is 180 requests per min.
@@ -211,7 +214,7 @@ func (s *STEXScraper) FillSymbolData(symbol string) (asset dia.Asset, err error)
 			response STEXTickerData
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://api3.stex.com/public/currencies")
+		data, _, err = utils.GetRequest("https://api3.stex.com/public/currencies")
 		if err != nil {
 			return
 		}
@@ -249,11 +252,14 @@ func (s *STEXScraper) GetNewTrades(pairID string, fromTimestamp time.Time) ([]ST
 		url = apiBaseURL + "/trades/" + pairID + "?sort=DESC&from=" + unixTime + "&limit=100"
 	}
 
-	bytes, err = utils.GetRequest(url)
+	bytes, _, err = utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
 	err = json.Unmarshal(bytes, &response)
+	if err != nil {
+		return []STEXTrade{}, err
+	}
 	// Update timestamp
 	pairIDInt, _ := strconv.ParseInt(pairID, 10, 32)
 	symbol := s.pairIDToSymbol[int(pairIDInt)]
@@ -365,7 +371,7 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 			AmountMultiplier  int    `json:"amount_multiplier"`
 		} `json:"data"`
 	}
-	data, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
+	data, _, err := utils.GetRequest("https://api3.stex.com/public/currency_pairs/list/ALL")
 	if err != nil {
 		return
 	}
@@ -399,12 +405,12 @@ func (s *STEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 type STEXPairScraper struct {
 	parent *STEXScraper
 	pair   dia.ExchangePair
-	id     int
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *STEXPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

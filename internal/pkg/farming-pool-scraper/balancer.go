@@ -261,7 +261,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	// 				so that every public pool gets logged.
 	finalized, err := pool.IsFinalized(&bind.CallOpts{})
 	if err != nil {
-		errors.Wrap(err, "checking if pool is finalized")
+		log.Errorf("checking if pool is finalized: %v", err)
 	} else if !finalized {
 		return errors.New("pool is not finalized")
 	}
@@ -288,14 +288,18 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	for _, token := range tokens {
 		// tokCaller, err := erctoken.NewERC20Token(token, bp.restClient)
 		// tokCaller, err := erctoken.NewERC20TokenCaller(token, bp.restClient)
-		tokCaller, err := baltokencontract.NewBalancertokenCaller(token, bp.restClient)
+		var tokCaller *baltokencontract.BalancertokenCaller
+		var symbol string
+		var weight *big.Int
+		var balance *big.Int
+		tokCaller, err = baltokencontract.NewBalancertokenCaller(token, bp.restClient)
 		if err != nil {
 			return errors.Wrapf(err, "creating bal token contract caller for %s", token.Hex())
 		}
 
 		// ERC-20 specification does not includes symbol informations, so fetching the symbol won't work on some contracts
 		// in case it fails, we'll use a map to associate token addresses with symbol
-		symbol, err := tokCaller.Symbol(&bind.CallOpts{})
+		symbol, err = tokCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			// add tokens with buggy symbols here
 			symbolMap := map[string]string{
@@ -316,7 +320,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 		}
 
 		// get token weight in pool
-		weight, err := pool.GetNormalizedWeight(&bind.CallOpts{}, token)
+		weight, err = pool.GetNormalizedWeight(&bind.CallOpts{}, token)
 		if err != nil {
 			return errors.Wrapf(err, "getting normalized weight for token %s in pool", symbol)
 		}
@@ -324,7 +328,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 		weightFloat = weightFloat.Quo(weightFloat, big.NewFloat(10e17))
 
 		// get token balance in pool
-		balance, err := pool.GetBalance(&bind.CallOpts{}, token)
+		balance, err = pool.GetBalance(&bind.CallOpts{}, token)
 		if err != nil {
 			return errors.Wrapf(err, "getting balance for token %s in pool", symbol)
 		}

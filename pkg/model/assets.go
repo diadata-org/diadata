@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -137,7 +138,10 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	defer rows.Close()
 	for rows.Next() {
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		decimalsInt, err := strconv.Atoi(decimals)
 		if err != nil {
 			return []dia.Asset{}, err
@@ -209,7 +213,10 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 	var decimals string
 	for rows.Next() {
 		asset := dia.Asset{}
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		intDecimals, err := strconv.Atoi(decimals)
 		if err != nil {
 			log.Error("error parsing decimals string")
@@ -246,7 +253,10 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 
 	for rows.Next() {
 		asset := dia.Asset{}
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		if err != nil {
+			return []dia.Asset{}, err
+		}
 		assets = append(assets, asset)
 	}
 	return
@@ -261,7 +271,10 @@ func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []strin
 	defer rows.Close()
 	for rows.Next() {
 		symbol := ""
-		rows.Scan(&symbol)
+		err = rows.Scan(&symbol)
+		if err != nil {
+			return []string{}, err
+		}
 		symbols = append(symbols, symbol)
 	}
 	return
@@ -278,7 +291,10 @@ func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err err
 
 	for rows.Next() {
 		symbol := ""
-		rows.Scan(&symbol)
+		err = rows.Scan(&symbol)
+		if err != nil {
+			return []string{}, err
+		}
 		symbols = append(symbols, symbol)
 	}
 	return
@@ -328,7 +344,7 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 // It also returns the underlying pair if existent.
 func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.ExchangePair, error) {
 	var exchangepair dia.ExchangePair
-	var err error
+
 	exchangepair.Exchange = exchange
 	exchangepair.ForeignName = foreignname
 	var verified bool
@@ -336,7 +352,7 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 	var uuid_basetoken pgtype.UUID
 
 	query := fmt.Sprintf("select symbol,verified,id_quotetoken,id_basetoken from %s where exchange=$1 and foreignname=$2", exchangepairTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
 	if err != nil {
 		return dia.ExchangePair{}, err
 	}
@@ -348,7 +364,8 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 		log.Error(err)
 	}
 	if val1 != nil {
-		quotetoken, err := rdb.GetAssetByID(val1.(string))
+		var quotetoken dia.Asset
+		quotetoken, err = rdb.GetAssetByID(val1.(string))
 		if err != nil {
 			return dia.ExchangePair{}, err
 		}
@@ -382,7 +399,10 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 
 	for rows.Next() {
 		pair := dia.ExchangePair{}
-		rows.Scan(&pair.Symbol, &pair.ForeignName)
+		err = rows.Scan(&pair.Symbol, &pair.ForeignName)
+		if err != nil {
+			return []dia.ExchangePair{}, err
+		}
 		pairs = append(pairs, pair)
 	}
 
@@ -392,7 +412,8 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 // SetExchangePair adds @pair to exchangepair table.
 // If cache==true, it is also cached into redis
 func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error {
-	query := fmt.Sprintf("insert into %s (symbol,foreignname,exchange) select $1,$2,$3 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3)", exchangepairTable, exchangepairTable)
+	var query string
+	query = fmt.Sprintf("insert into %s (symbol,foreignname,exchange) select $1,$2,$3 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3)", exchangepairTable, exchangepairTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err
@@ -406,14 +427,14 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 		log.Error(err)
 	}
 	if basetokenID != "" {
-		query := fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
 		}
 	}
 	if quotetokenID != "" {
-		query := fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
@@ -471,7 +492,10 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 	for rows.Next() {
 		fmt.Println("---")
 		var asset dia.Asset
-		rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
 		assets = append(assets, asset)
 	}
 	// Last page (or empty page)
@@ -519,7 +543,7 @@ func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
 	asset := dia.Asset{}
 	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetAssetCache with postgres asset_id %s\n", err, assetID)
 		}
 		return asset, err
@@ -547,7 +571,7 @@ func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia
 	exchangePair := dia.ExchangePair{}
 	err := rdb.redisClient.Get(keyExchangePairCache + exchange + "_" + foreignName).Scan(&exchangePair)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetExchangePairCache on %s with foreign name %s: %v\n", exchange, foreignName, err)
 		}
 		return exchangePair, err

@@ -21,8 +21,8 @@ import (
 
 const (
 	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxWsDial         = "ws://159.69.120.42:8546/"
-	zeroxRestDial       = "http://159.69.120.42:8545/"
+	zeroxWsDial   = "ws://159.69.120.42:8546/"
+	zeroxRestDial = "http://159.69.120.42:8545/"
 	// zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
 	// zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 	zeroxLookBackBlocks = 6 * 60 * 24
@@ -114,6 +114,10 @@ func (scraper *ZeroxScraper) loadTokens() {
 
 	for it.Next() {
 		i, err := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
+		if err != nil {
+			// skip non-existing token data
+			continue
+		}
 		o, err := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
 		if err != nil {
 			// skip non-existing token data
@@ -191,7 +195,7 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -236,21 +240,27 @@ func (scraper *ZeroxScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
 
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err = scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Zerox: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}

@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
+	// curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
 	curveFiLookBackBlocks = 6 * 60 * 24 * 20
 	curveWsDial           = "ws://159.69.120.42:8546/"
 	curveRestDial         = "http://159.69.120.42:8545/"
@@ -61,7 +61,7 @@ func (p *Pools) poolsAddressNoLock() []string {
 	p.poolsLock.RLock()
 	defer p.poolsLock.RUnlock()
 	var values []string
-	for key, _ := range p.pools {
+	for key := range p.pools {
 		values = append(values, key)
 	}
 	return values
@@ -120,7 +120,10 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	}
 	scraper.RestClient = restClient
 
-	scraper.loadPoolsAndCoins()
+	err = scraper.loadPoolsAndCoins()
+	if err != nil {
+		log.Error(err)
+	}
 
 	if scrape {
 		go scraper.mainLoop()
@@ -132,7 +135,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 	scraper.run = true
 
 	for _, pool := range scraper.pools.poolsAddressNoLock() {
-		scraper.watchSwaps(pool)
+		err := scraper.watchSwaps(pool)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	scraper.watchNewPools()
 
@@ -146,7 +152,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 					scraper.watchNewPools()
 				} else {
 					log.Info("resubscribe to swaps from Pool: " + p)
-					scraper.watchSwaps(p)
+					err := scraper.watchSwaps(p)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -154,7 +163,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Curvefi: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -162,7 +171,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 	time.Sleep(10 * time.Second)
 
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
@@ -194,7 +203,7 @@ func (scraper *CurveFIScraper) watchNewPools() {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -205,8 +214,14 @@ func (scraper *CurveFIScraper) watchNewPools() {
 			case vLog := <-sink:
 
 				if _, ok := scraper.pools.getPool(vLog.Pool.Hex()); !ok {
-					scraper.loadPoolData(vLog.Pool.Hex())
-					scraper.watchSwaps(vLog.Pool.Hex())
+					err = scraper.loadPoolData(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
+					err = scraper.watchSwaps(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -229,12 +244,16 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 		log.Error(err)
 	}
 	for i := 0; i < int(poolCount.Int64()); i++ {
-		pool, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
+		var pool common.Address
+		pool, err = contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if err != nil {
 			log.Error(err)
 		}
 
-		scraper.loadPoolData(pool.Hex())
+		err = scraper.loadPoolData(pool.Hex())
+		if err != nil {
+			return err
+		}
 
 	}
 	return err
@@ -254,23 +273,26 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	}
 
 	for cIdx, c := range poolCoins.Coins {
-
-		coinCaller, err := token.NewTokenCaller(c, scraper.RestClient)
+		var coinCaller *token.TokenCaller
+		var symbol string
+		var decimals *big.Int
+		var name string
+		coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 			continue
 		}
-		symbol, err := coinCaller.Symbol(&bind.CallOpts{})
+		symbol, err = coinCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err, c.Hex())
 			continue
 		}
-		decimals, err := coinCaller.Decimals(&bind.CallOpts{})
+		decimals, err = coinCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			continue
 		}
-		name, err := coinCaller.Name(&bind.CallOpts{})
+		name, err = coinCaller.Name(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			continue
@@ -348,7 +370,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 		for scraper.run && subscribed {
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}

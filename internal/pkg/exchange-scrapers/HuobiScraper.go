@@ -114,7 +114,7 @@ func (s *HuobiScraper) mainLoop() {
 	if err != nil {
 		panic("Couldn't initialize relDB, error: " + err.Error())
 	}
-	for true {
+	for {
 		message := &ResponseType{}
 		_, testRead, err := s.wsClient.NextReader()
 
@@ -128,7 +128,10 @@ func (s *HuobiScraper) mainLoop() {
 			//It has to gzip response data
 			reader, _ := gzip.NewReader(testRead)
 			jsonBase := json.NewDecoder(reader)
-			jsonBase.Decode(message)
+			err := jsonBase.Decode(message)
+			if err != nil {
+				log.Error(err)
+			}
 
 			// If msg is ping type, it needs to resend a pong msg to ws.
 			// for avoid to disconnect it
@@ -204,7 +207,7 @@ func (s *HuobiScraper) mainLoop() {
 // FillSymbolData collects all available information on an asset traded on huobi
 func (s *HuobiScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response HuobiCurrency
-	data, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
+	data, _, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
 	if err != nil {
 		return
 	}
@@ -239,7 +242,10 @@ func (s *HuobiScraper) Close() error {
 	if s.closed {
 		return errors.New("HuobiScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -306,7 +312,7 @@ func (s *HuobiScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 		Data []DataT `json:"data"`
 	}
 
-	data, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
+	data, _, err := utils.GetRequest("http://api.huobi.pro/v1/common/symbols")
 
 	if err != nil {
 		return
@@ -341,6 +347,7 @@ type HuobiPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *HuobiPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

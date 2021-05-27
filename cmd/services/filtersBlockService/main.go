@@ -43,14 +43,24 @@ func main() {
 
 		w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicFiltersBlock)
 
-		defer w.Close()
+		defer func() {
+			err := w.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		wg := sync.WaitGroup{}
 
 		go handler(channel, &wg, w)
 
 		r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTradesBlock)
-		defer r.Close()
+		defer func() {
+			err := r.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		for {
 			m, err := r.ReadMessage(context.Background())

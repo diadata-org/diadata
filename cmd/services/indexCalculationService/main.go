@@ -38,17 +38,14 @@ func main() {
 	}
 	indexTicker := time.NewTicker(300 * time.Second)
 	go func() {
-		for {
-			select {
-			case <-indexTicker.C:
-				for _, index := range indexAssets {
-					currentConstituents := getCurrentIndexCompositionForIndex(index, ds)
-					log.Info(currentConstituents)
-					index := periodicIndexValueCalculation(currentConstituents, index, ds)
-					err := ds.SetCryptoIndex(&index)
-					if err != nil {
-						log.Error(err)
-					}
+		for range indexTicker.C {
+			for _, index := range indexAssets {
+				currentConstituents := getCurrentIndexCompositionForIndex(index, ds)
+				log.Info(currentConstituents)
+				index := periodicIndexValueCalculation(currentConstituents, index, ds)
+				err := ds.SetCryptoIndex(&index)
+				if err != nil {
+					log.Error(err)
 				}
 			}
 		}

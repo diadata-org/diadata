@@ -15,7 +15,6 @@ type FilterVOL struct {
 	exchange    string
 	currentTime time.Time
 	volumeUSD   float64
-	lastTrade   *dia.Trade
 	value       float64
 	filterName  string
 	memory      int

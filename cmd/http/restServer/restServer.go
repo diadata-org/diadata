@@ -68,9 +68,9 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
-	cachingTimeShort  = time.Minute * 2
-	cachingTimeMedium = time.Minute * 10
-	cachingTimeLong   = time.Minute * 100
+	cachingTimeShort = time.Minute * 2
+	// cachingTimeMedium = time.Minute * 10
+	cachingTimeLong = time.Minute * 100
 )
 
 var identityKey = "id"
@@ -85,7 +85,7 @@ func helloHandler(c *gin.Context) {
 
 func main() {
 
-	r := gin.Default()
+	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
@@ -160,6 +160,9 @@ func main() {
 		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
 		TimeFunc: time.Now,
 	})
+	if err != nil {
+		log.Error("creating middleware: ", err)
+	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
 
@@ -203,7 +206,7 @@ func main() {
 	{
 		// Endpoints for cryptocurrencies/exchanges
 		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
-		dia.GET("/lastTrades/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastTrades))
+		dia.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
 		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
 		dia.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
 		//  Deprectated - > split up in specific endpoints
@@ -255,7 +258,7 @@ func main() {
 		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		dia.GET("/index/:symbol", cache.CachePage(memoryStore, cachingTimeMedium, diaApiEnv.GetCryptoIndex))
+		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
 
 		// Endpoints for NFTs
 		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
@@ -269,9 +272,16 @@ func main() {
 	// This environment variable is either set in docker-compose or empty
 	executionMode := os.Getenv("EXEC_MODE")
 	if executionMode == "production" {
-		r.Run(":8080")
+		err = r.Run(":8080")
+		if err != nil {
+			log.Error(err)
+		}
 	} else {
-		r.Run(":8081")
+		err = r.Run(":8081")
+		if err != nil {
+			log.Error(err)
+		}
+
 	}
 
 }

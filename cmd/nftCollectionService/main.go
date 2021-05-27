@@ -56,13 +56,17 @@ func main() {
 	}
 
 	// Initial run.
-	runNFTSource(relDB, *nftSource, *secret)
+	err = runNFTSource(relDB, *nftSource, *secret)
+	if err != nil {
+		log.Error(err)
+	}
 
 	// load gitcoin files for categorization of NFT classes.
 	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
 	for _, file := range gitcoinfiles {
+		var gitcoinCategories GitcoinSubmission
 		path := "nftClassesGitcoin/" + file
-		gitcoinCategories, err := readFile(path)
+		gitcoinCategories, err = readFile(path)
 		if err != nil {
 			log.Errorln("Error while reading  file", path, err)
 			continue
@@ -76,10 +80,10 @@ func main() {
 	// Afterwards, run every @fetchPeriodMinutes.
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				runNFTSource(relDB, *nftSource, *secret)
+		for range ticker.C {
+			err = runNFTSource(relDB, *nftSource, *secret)
+			if err != nil {
+				log.Error(err)
 			}
 		}
 	}()
@@ -103,9 +107,11 @@ func runNFTSource(relDB *models.RelDB, source string, secret string) error {
 						continue
 					} else {
 						log.Errorf("postgres error saving nft %v: %v", receivedClass, err)
+						return err
 					}
 				} else {
 					log.Errorf("Error saving nft %v: %v", receivedClass, err)
+					return err
 				}
 			} else {
 				log.Info("successfully set nft ", receivedClass)
@@ -140,18 +146,25 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 		jsonFile  *os.File
 		filebytes []byte
 	)
-	path := configCollectors.ConfigFileConnectors(filename, "")
-	jsonFile, err = os.Open(path)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
 	if err != nil {
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	filebytes, err = ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return
 	}
-	json.Unmarshal(filebytes, &items)
+	err = json.Unmarshal(filebytes, &items)
+	if err != nil {
+		return
+	}
 	return
 }
 
@@ -176,7 +189,7 @@ func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) er
 
 func iterateDirectory(foldername string) (files []string) {
 	path := configCollectors.ConfigFileConnectors(foldername, "")
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -187,5 +200,8 @@ func iterateDirectory(foldername string) (files []string) {
 		}
 		return nil
 	})
+	if err != nil {
+		return
+	}
 	return
 }

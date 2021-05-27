@@ -40,18 +40,14 @@ func (cv *YFIPool) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-cv.scraper.tickerRate.C:
-				err := cv.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scrapping", err)
-				}
+		for range cv.scraper.tickerRate.C {
+			err := cv.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scrapping", err)
 			}
-
 		}
 	}()
-
+	select {}
 }
 
 func (cv *YFIPool) scrapePools() (err error) {

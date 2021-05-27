@@ -75,7 +75,7 @@ func NewLBankScraper(exchange dia.Exchange, scrape bool) *LBankScraper {
 func (s *LBankScraper) mainLoop() {
 	var err error
 
-	for true {
+	for {
 		message := &ResponseLBank{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			println(err.Error())
@@ -122,7 +122,10 @@ func (s *LBankScraper) mainLoop() {
 
 func hash(s string) uint32 {
 	h := fnv.New32a()
-	h.Write([]byte(s))
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		log.Error(err)
+	}
 	return h.Sum32()
 }
 
@@ -149,7 +152,10 @@ func (s *LBankScraper) Close() error {
 	if s.closed {
 		return errors.New("LBankScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -202,7 +208,7 @@ func (s *LBankScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, e
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
+	data, _, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
 	if err != nil {
 		return
 	}
@@ -233,6 +239,7 @@ type LBankPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *LBankPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

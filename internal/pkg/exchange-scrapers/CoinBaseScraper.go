@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
@@ -67,7 +65,7 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := gdax.Message{}
 		if err = s.wsConn.ReadJSON(&message); err != nil {
 			println(err.Error())
@@ -76,16 +74,19 @@ func (s *CoinBaseScraper) mainLoop() {
 		if message.Type == ChannelTicker {
 			ps, ok := s.pairScrapers[message.ProductID]
 			if ok {
-				f64Price, err := strconv.ParseFloat(message.Price, 64)
+				var f64Price float64
+				var f64Volume float64
+				var exchangepair dia.ExchangePair
+				f64Price, err = strconv.ParseFloat(message.Price, 64)
 				if err == nil {
-					f64Volume, err := strconv.ParseFloat(message.LastSize, 64)
+					f64Volume, err = strconv.ParseFloat(message.LastSize, 64)
 					if err == nil {
 						if message.TradeID != 0 {
 							if message.Side == "sell" {
 								f64Volume = -f64Volume
 							}
 
-							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
+							exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
 							if err != nil {
 								log.Error(err)
 							}
@@ -141,24 +142,15 @@ func (s *CoinBaseScraper) Close() error {
 	if s.closed {
 		return errors.New("CoinBaseScraper: Already closed")
 	}
-	s.wsConn.Close()
+	err := s.wsConn.Close()
+	if err != nil {
+		log.Error(err)
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-func (s *CoinBaseScraper) normalizeSymbol(foreignName string) (symbol string, err error) {
-	str := strings.Split(foreignName, "-")
-	symbol = str[0]
-	if helpers.NameForSymbol(symbol) == symbol {
-		return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
 }
 
 func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -178,7 +170,7 @@ func (s *CoinBaseScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.pro.coinbase.com/products")
+	data, _, err := utils.GetRequest("https://api.pro.coinbase.com/products")
 	if err != nil {
 		return
 	}
@@ -205,7 +197,7 @@ func (s *CoinBaseScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 // FillSymbolData collects all available information on an asset traded on CoinBase
 func (s *CoinBaseScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response gdax.Currency
-	data, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
+	data, _, err := utils.GetRequest("https://api.pro.coinbase.com/currencies/" + symbol)
 	if err != nil {
 		return
 	}
@@ -249,13 +241,13 @@ func (s *CoinBaseScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	subscribe := gdax.Message{
 		Type: "subscribe",
 		Channels: []gdax.MessageChannel{
-			gdax.MessageChannel{
+			{
 				Name: ChannelHeartbeat,
 				ProductIds: []string{
 					pair.ForeignName,
 				},
 			},
-			gdax.MessageChannel{
+			{
 				Name: ChannelTicker,
 				ProductIds: []string{
 					pair.ForeignName,
@@ -276,6 +268,7 @@ func (ps *CoinBaseScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *CoinBasePairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

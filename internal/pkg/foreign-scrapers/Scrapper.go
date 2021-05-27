@@ -1,9 +1,10 @@
 package foreignscrapers
 
 import (
+	"sync"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 type ForeignScrapperer interface {
@@ -18,7 +19,7 @@ type ForeignScraper struct {
 
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock sync.RWMutex
+	errorLock *sync.RWMutex
 	error     error
 	closed    bool
 	// TODO: check after linting

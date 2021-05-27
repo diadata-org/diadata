@@ -10,7 +10,7 @@ import (
 
 	"github.com/adshao/go-binance"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -30,15 +30,16 @@ type BinanceScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      sync.Map // dia.ExchangePair -> binancePairScraperSet
-	pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
-	pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
-	exchangeName      string
-	chanTrades        chan *dia.Trade
+	pairScrapers sync.Map // dia.ExchangePair -> binancePairScraperSet
+	// pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
+	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
+	exchangeName string
+	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -48,6 +49,7 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	// establish connection in the background
@@ -55,16 +57,6 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		go s.mainLoop()
 	}
 	return s
-}
-
-func eventHandler(event *binance.WsAggTradeEvent) {
-	fmt.Println(event)
-
-}
-
-func errorHandler(err error) {
-	fmt.Println(err)
-
 }
 
 func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -83,19 +75,22 @@ func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 // runs in a goroutine until s is closed
 func (s *BinanceScraper) mainLoop() {
 	close(s.initDone)
-	for {
-		select {
-		case <-s.shutdown: // user requested shutdown
-			log.Println("BinanceScraper shutting down")
-			s.cleanup(nil)
-			return
-		}
+	for range s.shutdown { // user requested shutdown
+		log.Println("BinanceScraper shutting down")
+		s.cleanup()
+		return
 	}
+	select {}
+}
+
+func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 // closes all connected PairScrapers
 // must only be called from mainLoop
-func (s *BinanceScraper) cleanup(err error) {
+func (s *BinanceScraper) cleanup() {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 	// close all channels of PairScraper children
@@ -144,7 +139,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		price, err2 := strconv.ParseFloat(event.Price, 64)
 
 		if err == nil && err2 == nil && event.Event == "aggTrade" {
-			if event.IsBuyerMaker == false {
+			if !event.IsBuyerMaker {
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)
@@ -172,32 +167,32 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 	return ps, err
 }
 func (s *BinanceScraper) normalizeSymbol(p dia.ExchangePair, foreignName string, params ...string) (pair dia.ExchangePair, err error) {
-	symbol := p.Symbol
-	status := params[0]
-	if status == "TRADING" {
-		if helpers.NameForSymbol(symbol) == symbol {
-			if !helpers.SymbolIsName(symbol) {
-				pair.Symbol = symbol
-				pair, _ = s.NormalizePair(pair)
+	// symbol := p.Symbol
+	// status := params[0]
+	// if status == "TRADING" {
+	// 	if helpers.NameForSymbol(symbol) == symbol {
+	// 		if !helpers.SymbolIsName(symbol) {
+	// 			pair.Symbol = symbol
+	// 			pair, _ = s.NormalizePair(pair)
 
-				return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-			}
-		}
-		if helpers.SymbolIsBlackListed(symbol) {
-			pair.Symbol = symbol
-			return pair, errors.New("Symbol is black listed:" + symbol)
-		}
-	} else {
-		return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
+	// 			return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+	// 		}
+	// 	}
+	// 	if helpers.SymbolIsBlackListed(symbol) {
+	// 		pair.Symbol = symbol
+	// 		return pair, errors.New("Symbol is black listed:" + symbol)
+	// 	}
+	// } else {
+	// 	return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
 
-	}
+	// }
 	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
+	data, _, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
 
 	if err != nil {
 		return

@@ -15,6 +15,7 @@ import (
 
 const (
 	refreshDelay = time.Second * 20 * 60
+	ecbRSSURL    = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 )
 
 type (
@@ -96,11 +97,17 @@ func SpawnECBScraper(datastore models.Datastore) *ECBScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *ECBScraper) mainLoop() {
-	s.Update()
+	err := s.Update()
+	if err != nil {
+		log.Error(err)
+	}
 	for {
 		select {
 		case <-s.ticker.C:
-			s.Update()
+			err := s.Update()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("ECBScraper shutting down")
 			s.cleanup(nil)
@@ -115,13 +122,18 @@ func (s *ECBScraper) Update() error {
 	log.Printf("Executing ECBScraper update")
 
 	// Retrieve the rss feed document from the web.
-	resp, err := http.Get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+	resp, err := http.Get(ecbRSSURL) //nolint:noctx,gosec
 	if err != nil {
 		return err
 	}
 
 	// Close the response once we return from the function.
-	defer resp.Body.Close()
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	// Check the status code for a 200 so we know we have received a
 	// proper response.
@@ -147,7 +159,7 @@ func (s *ECBScraper) Update() error {
 			if valueCube.Currency == "USD" {
 				euroDollar, err = strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
-					return fmt.Errorf("error parsing rate %v %v", valueCube.Rate, err)
+					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
 			}
 		}
@@ -156,13 +168,15 @@ func (s *ECBScraper) Update() error {
 			pair := string("EUR" + valueCube.Currency)
 			ps := s.pairScrapers[pair]
 			if ps != nil {
-				rate, err := strconv.ParseFloat(valueCube.Rate, 64)
+				var rate float64
+				var timestamp time.Time
+				rate, err = strconv.ParseFloat(valueCube.Rate, 64)
 				if err != nil {
-					return fmt.Errorf("error parsing rate %v %v", valueCube.Rate, err)
+					return fmt.Errorf("error parsing rate %s: %w", valueCube.Rate, err)
 				}
-				time, err := time.Parse("2006-01-02", valueCubeTime.Time)
+				timestamp, err = time.Parse("2006-01-02", valueCubeTime.Time)
 				if err != nil {
-					return fmt.Errorf("error parsing time %v %v", valueCubeTime.Time, err)
+					return fmt.Errorf("error parsing time %s: %w", valueCubeTime.Time, err)
 				}
 
 				t := &dia.Trade{
@@ -170,7 +184,7 @@ func (s *ECBScraper) Update() error {
 					Symbol: pair,
 					Price:  rate,
 					Volume: 0,
-					Time:   time,
+					Time:   timestamp,
 					Source: "ECB",
 				}
 
@@ -196,7 +210,10 @@ func (s *ECBScraper) Update() error {
 				}
 			}
 		}
-		s.datastore.SetCurrencyChange(change)
+		err = s.datastore.SetCurrencyChange(change)
+		if err != nil {
+			return err
+		}
 	}
 	log.Info("Update done")
 	return err
@@ -237,15 +254,18 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 	log.Printf("Historical prices population starting for %s\n", asset.Symbol)
 	time.Sleep(5 * time.Second)
 
-	// Format url to fetch
-	url := fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)
-
 	// Fetch URL
-	resp, err := http.Get(url)
+	resp, err := http.Get(fmt.Sprintf("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D.%s.EUR.SP00.A", currency)) //nolint:noctx,gosec
+
 	if err != nil {
-		log.Errorf("error fetching url %v %v\n", url, err)
+		log.Errorf("error fetching url %v\n", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	// Parse XML in response
 	var xmlSheet XMLHistoricalEnvelope
@@ -260,12 +280,13 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		if o.Price.Value == "NaN" {
 			continue
 		}
-
-		timestamp, err := time.Parse("2006-01-02", o.Timestamp.Value)
+		var timestamp time.Time
+		var price float64
+		timestamp, err = time.Parse("2006-01-02", o.Timestamp.Value)
 		if err != nil {
 			log.Errorf("error formating timestamp %v\n", err)
 		}
-		price, err := strconv.ParseFloat(o.Price.Value, 64)
+		price, err = strconv.ParseFloat(o.Price.Value, 64)
 		if err != nil {
 			log.Errorf("error parsing price %v %v", o.Price.Value, err)
 		}
@@ -295,11 +316,14 @@ func populateCurrency(datastore *models.DB, rdb *models.RelDB, currency string, 
 		}
 		quotations = append(quotations, &assetquotation)
 	}
-	datastore.AddAssetQuotationsToBatch(quotations)
+	err = datastore.AddAssetQuotationsToBatch(quotations)
+	if err != nil {
+		log.Errorf("add quotation to batch: %v", err)
+	}
 	// Write quotations on influxdb
 	err = datastore.WriteBatchInflux()
 	if err != nil {
-		log.Printf("Error on asset quotations batch write: %v\n", err)
+		log.Errorf("asset quotations batch write: %v", err)
 	} else {
 		log.Printf("historical prices for %s successfully populated\n", currency)
 	}
@@ -372,6 +396,7 @@ func (ps *ECBScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *ECBPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

@@ -97,11 +97,14 @@ func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]M
 		url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId+" + strconv.Itoa(next)
 	}
 
-	bytes, err = utils.GetRequest(url)
+	bytes, _, err = utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
 	err = json.Unmarshal(bytes, &makertraderesponse)
+	if err != nil {
+		log.Error(err)
+	}
 	return makertraderesponse.MakerTrades, nil
 }
 
@@ -111,7 +114,7 @@ func (scraper *MakerScraper) mainLoop() {
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Maker: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 			break
 		}
@@ -153,14 +156,17 @@ func (scraper *MakerScraper) mainLoop() {
 	}
 
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
 
 func (scraper *MakerScraper) getPairs() (pairs []dia.ExchangePair, err error) {
 	var response MakerPairResponse
-	byte, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
+	byte, _, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(byte, &response)
 	for i, v := range response.Data {
 		pair := strings.Split(i, "/")

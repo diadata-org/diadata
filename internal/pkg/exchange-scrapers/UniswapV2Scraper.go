@@ -102,8 +102,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(wsDial)
@@ -115,8 +113,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(wsDialBSC)
@@ -201,10 +197,7 @@ func (s *UniswapScraper) mainLoop() {
 						if err != nil {
 							log.Error("error normalizing swap: ", err)
 						}
-						price, volume, err := getSwapData(swap)
-						if err != nil {
-							log.Error("error getting swap data: ", err)
-						}
+						price, volume := getSwapData(swap)
 						pair.normalizeUniPair()
 						token0 := dia.Asset{
 							Address:    pair.Token0.Address.Hex(),
@@ -282,12 +275,17 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var reverseTokens []string
 
 	// Load file and read data
-	fileName := fmt.Sprintf("../config/uniswap/%s.json", filename)
-	jsonFile, err := os.Open(fileName)
+	jsonFile, err := os.Open(fmt.Sprintf("../config/uniswap/%s.json", filename))
 	if err != nil {
 		return &[]string{}, err
 	}
-	defer jsonFile.Close()
+	defer func() {
+		err = jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return &[]string{}, err
@@ -302,7 +300,10 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 		AllAssets []lockedAsset `json:"Tokens"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return nil, err
+	}
 
 	// Extract addresses
 	for _, token := range allAssets.AllAssets {
@@ -598,7 +599,7 @@ func (s *UniswapScraper) getNumPairs() (int, error) {
 }
 
 // getSwapData returns price, volume and sell/buy information of @swap
-func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
+func getSwapData(swap UniswapSwap) (price float64, volume float64) {
 	if swap.Amount0In == float64(0) {
 		volume = swap.Amount0Out
 		price = swap.Amount1In / swap.Amount0Out
@@ -664,6 +665,7 @@ type UniswapPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *UniswapPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

@@ -132,7 +132,7 @@ func (s *OKExScraper) subscribeToALL() {
 		allPairs []OKEXArgs
 	)
 
-	b, err := utils.GetRequest("https://aws.okex.com/api/v5/public/instruments?instType=SPOT")
+	b, _, err := utils.GetRequest("https://aws.okex.com/api/v5/public/instruments?instType=SPOT")
 	if err != nil {
 		log.Errorln("Error getting OKex market", err)
 	}
@@ -238,11 +238,17 @@ func (s *OKExScraper) mainLoop() {
 	s.cleanup(errors.New("main loop terminated by Close()"))
 }
 
-func GzipDecode(in []byte) ([]byte, error) {
+func GzipDecode(in []byte) (content []byte, err error) {
 	reader := flate.NewReader(bytes.NewReader(in))
-	defer reader.Close()
+	defer func() {
+		cerr := reader.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	content, err = ioutil.ReadAll(reader)
 
-	return ioutil.ReadAll(reader)
+	return
 }
 
 func (s *OKExScraper) cleanup(err error) {
@@ -363,7 +369,7 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 		BaseCurrency string `json:"base_currency"`
 	}
 
-	data, err := utils.GetRequest("https://www.okex.com/api/spot/v3/products")
+	data, _, err := utils.GetRequest("https://www.okex.com/api/spot/v3/products")
 
 	if err != nil {
 		return
@@ -398,6 +404,7 @@ type OKExPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *OKExPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

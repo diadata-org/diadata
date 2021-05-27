@@ -136,8 +136,14 @@ func (s *GateIOScraper) mainLoop() {
 		allPairs  []string
 	)
 
-	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
-	json.Unmarshal(b, &gresponse)
+	b, _, err := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
+	if err != nil {
+		log.Error(err)
+	}
+	err = json.Unmarshal(b, &gresponse)
+	if err != nil {
+		log.Error(err)
+	}
 
 	for _, v := range gresponse {
 		allPairs = append(allPairs, v.ID)
@@ -149,13 +155,13 @@ func (s *GateIOScraper) mainLoop() {
 		Channel: "spot.trades",
 		Payload: allPairs,
 	}
-	var err error
+
 	log.Infoln("subscribed", allPairs)
 	if err = s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
 	}
 
-	for true {
+	for {
 
 		var message GateIOResponseTrade
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -165,14 +171,15 @@ func (s *GateIOScraper) mainLoop() {
 
 		ps, ok := s.pairScrapers[message.Result.CurrencyPair]
 		if ok {
-
-			f64Price, err := strconv.ParseFloat(message.Result.Price, 64)
+			var f64Price float64
+			var f64Volume float64
+			f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
 				continue
 			}
 
-			f64Volume, err := strconv.ParseFloat(message.Result.Amount, 64)
+			f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
 				continue
@@ -219,8 +226,12 @@ func (s *GateIOScraper) Close() error {
 	if s.closed {
 		return errors.New("GateIOScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		log.Error(err)
+	}
 	close(s.shutdown)
+
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -251,22 +262,23 @@ func (s *GateIOScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
-	str := strings.Split(foreignName, "_")
-	symbol = strings.ToUpper(str[0])
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			if symbol == "IOTA" {
-				return "MIOTA", nil
-			}
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
+
+// func (s *GateIOScraper) normalizeSymbol(foreignName string, params ...interface{}) (symbol string, err error) {
+// 	str := strings.Split(foreignName, "_")
+// 	symbol = strings.ToUpper(str[0])
+// 	if helpers.NameForSymbol(symbol) == symbol {
+// 		if !helpers.SymbolIsName(symbol) {
+// 			if symbol == "IOTA" {
+// 				return "MIOTA", nil
+// 			}
+// 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+// 		}
+// 	}
+// 	if helpers.SymbolIsBlackListed(symbol) {
+// 		return symbol, errors.New("Symbol is black listed:" + symbol)
+// 	}
+// 	return symbol, nil
+// }
 
 func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "_")
@@ -295,7 +307,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 			response GateIOTickerData
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
+		data, _, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
 		if err != nil {
 			return
 		}
@@ -318,7 +330,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *GateIOScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	data, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
+	data, _, err := utils.GetRequest("https://data.gate.io/api2/1/pairs")
 	if err != nil {
 		return
 	}
@@ -348,6 +360,7 @@ type GateIOPairScraper struct {
 
 // Close stops listening for trades of the pair associated with s
 func (ps *GateIOPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 

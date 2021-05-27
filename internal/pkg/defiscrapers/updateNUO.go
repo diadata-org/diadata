@@ -1,9 +1,9 @@
 package defiscrapers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -84,7 +84,7 @@ func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 	//-H 'if-none-match: W/"5473-u4bZ7v7BG290uuR5jiFHcU30CRw"' \
 	//--compressed
 
-	req, err := http.NewRequest("GET", "https://api.nuo.network/reserves/all?primary_currency_short_name=USD&markets=USDC", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://api.nuo.network/reserves/all?primary_currency_short_name=USD&markets=USDC", nil)
 	if err != nil {
 		log.Error("error getting req ", err)
 		return
@@ -102,21 +102,14 @@ func (proto *NuoProtocol) fetchALL() (rate NuoResponse, err error) {
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9,kn;q=0.8")
 	req.Header.Set("If-None-Match", "W/\"5473-u4bZ7v7BG290uuR5jiFHcU30CRw\"")
 
-	resp, err := http.DefaultClient.Do(req)
+	jsonData, _, err := utils.HTTPRequest(req)
 	if err != nil {
 		// handle err
 		log.Error("error getting req ", err)
 		return
 
 	}
-	defer resp.Body.Close()
 
-	jsonData, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Error(err)
-		return
-	}
 	err = json.Unmarshal(jsonData, &rate)
 	if err != nil {
 		log.Error(err)
@@ -149,7 +142,7 @@ func (proto *NuoProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
-		log.Error("error fetching rates %+v\n ", err)
+		log.Errorf("error fetching rates %+v ", err)
 		return err
 	}
 
@@ -170,7 +163,7 @@ func (proto *NuoProtocol) UpdateRate() error {
 }
 
 func (proto *NuoProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	totalSupplyUSD, err := proto.getTotalSupply()
 	if err != nil {
 		return err

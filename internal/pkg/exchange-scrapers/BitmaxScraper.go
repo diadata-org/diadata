@@ -3,8 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"net/http"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -64,9 +63,9 @@ type BitMaxScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers           map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
-	pairSubscriptions      sync.Map                      // dia.ExchangePair -> string (subscription ID)
-	pairLocks              sync.Map                      // dia.ExchangePair -> sync.Mutex
+	pairScrapers map[string]*BitMaxPairScraper // dia.ExchangePair -> BitMaxPairScraper
+	// pairSubscriptions      sync.Map                      // dia.ExchangePair -> string (subscription ID)
+	// pairLocks              sync.Map                      // dia.ExchangePair -> sync.Mutex
 	exchangeName           string
 	chanTrades             chan *dia.Trade
 	wsClient               *ws.Conn
@@ -93,10 +92,16 @@ func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 	// establish connection in the background
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(bitmaxSocketURL, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
+	defer func() {
+		err := SwConn.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	s.wsClient = SwConn
 	if scrape {
 		go s.mainLoop()
@@ -119,7 +124,7 @@ type BitMaxTradeResponse struct {
 // runs in a goroutine until s is closed
 func (s *BitMaxScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := &BitMaxTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
@@ -130,9 +135,10 @@ func (s *BitMaxScraper) mainLoop() {
 		case "trades":
 			{
 				for _, trade := range message.Data {
+					var exchangepair dia.ExchangePair
 					priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-					exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
 					if err != nil {
 						log.Error(err)
 					}
@@ -160,7 +166,10 @@ func (s *BitMaxScraper) mainLoop() {
 				a := &BitMaxRequest{
 					Op: "pong",
 				}
-				s.wsClient.WriteJSON(a)
+				err = s.wsClient.WriteJSON(a)
+				if err != nil {
+					log.Error(err)
+				}
 				log.Infoln("Send Pong to keep connection alive")
 
 			}
@@ -179,7 +188,7 @@ func (s *BitMaxScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 			response BitMaxAssets
 			data     []byte
 		)
-		data, err = utils.GetRequest("https://bitmax.io/api/pro/v1/assets")
+		data, _, err = utils.GetRequest("https://bitmax.io/api/pro/v1/assets")
 		if err != nil {
 			return
 		}
@@ -256,7 +265,7 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	a := &BitMaxRequest{
 		Op: "sub",
 		Ch: "trades:" + pair.ForeignName,
-		ID: string(time.Now().Unix()),
+		ID: fmt.Sprint(time.Now().Unix()),
 	}
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
@@ -268,22 +277,14 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	var bitmaxResponse BitMaxPairResponse
-	response, err := http.Get("https://bitmax.io/api/pro/v1/products")
+	body, _, err := utils.GetRequest("https://bitmax.io/api/pro/v1/products")
 	if err != nil {
-		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
-	}
-
-	defer response.Body.Close()
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Errorf("Error Getting  Symbols for Bitmax Exchange", err)
+		log.Error("error getting symbols for bitmax", err)
 	}
 
 	err = json.Unmarshal(body, &bitmaxResponse)
-
 	if err != nil {
-		log.Errorf("Error Unmarshalling  Symbols for Bitmax Exchange", err)
+		log.Error("error unmarshalling symbols for bitmax", err)
 	}
 
 	for _, p := range bitmaxResponse.Data {

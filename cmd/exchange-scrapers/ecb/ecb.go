@@ -52,7 +52,7 @@ func init() {
 }
 
 // handleTrades delegates trade information to Kafka
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rdb models.RelDB) {
+func handleTrades(c chan *dia.Trade, ds models.Datastore, rdb models.RelDB) {
 	for {
 		t, ok := <-c
 		if !ok {
@@ -95,6 +95,9 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, ds models.Datastore, rd
 func main() {
 	wg := sync.WaitGroup{}
 	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("initializing datastore: ", err)
+	}
 	rdb, err := models.NewRelDataStore()
 
 	if err != nil {
@@ -104,7 +107,12 @@ func main() {
 		go scrapers.Populate(ds, rdb, pairs)
 
 		sECB := scrapers.SpawnECBScraper(ds)
-		defer sECB.Close()
+		defer func() {
+			err := sECB.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		for _, pair := range pairs {
 			_, err := sECB.ScrapePair(dia.ExchangePair{
@@ -120,7 +128,7 @@ func main() {
 		// This should be uncommented in case "go mainLoop.go" is deleted from SpawnECBScraper
 		// go sECB.MainLoop()
 
-		go handleTrades(sECB.Channel(), &wg, ds, *rdb)
+		go handleTrades(sECB.Channel(), ds, *rdb)
 		defer wg.Wait()
 	}
 }

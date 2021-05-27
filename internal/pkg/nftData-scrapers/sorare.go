@@ -6,23 +6,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/big"
-	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/sorare"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
 	source       = "Sorare"
-	refreshDelay = time.Second * 60 * 5
+	refreshDelay = time.Second * 20
 )
 
 type nothing struct{}
@@ -268,7 +266,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 		error:         nil,
 		ethConnection: connection,
 		relDB:         *rdb,
-		chanData:      make(chan *dia.NFT),
+		chanData:      make(chan dia.NFT),
 	}
 	s := &SorareScraper{
 		address:       common.HexToAddress("0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205"),
@@ -283,10 +281,13 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateNFT()
+			err := scraper.UpdateNFT()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.nftscraper.shutdown: // user requested shutdown
 			log.Printf("Sorare scraper shutting down")
 			err := scraper.Close()
@@ -297,12 +298,14 @@ func (scraper *SorareScraper) mainLoop() {
 }
 
 func (scraper *SorareScraper) UpdateNFT() error {
+	fmt.Println("fetch data...")
 	nfts, err := scraper.FetchData()
 	if err != nil {
 		return err
 	}
 	for _, nft := range nfts {
-		scraper.GetDataChannel() <- &nft
+		log.Info("got nft: ", nft)
+		scraper.GetDataChannel() <- nft
 	}
 	return nil
 }
@@ -322,52 +325,46 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 		Blockchain:   dia.ETHEREUM,
 		Category:     "Game",
 		Address:      scraper.address,
-		Name:         "Sorare",
+		Name:         source,
 		Symbol:       "SOR",
 		ContractType: "",
 	}
+	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
 	for i := 0; i < int(totalSupply.Int64()); i++ {
 		var out SorareOutput
 		// 1. fetch data from onchain
 		tok, err := scraper.TokenByIndex(big.NewInt(int64(i)))
 		if err != nil {
-			fmt.Errorf("Error getting token ID: %+v", err)
-			continue
+			log.Errorf("Error getting token ID: %+v", err)
 		}
 		out.Card, err = scraper.GetCard(tok)
 		if err != nil {
-			fmt.Errorf("Error getting sorare card %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting sorare card %d: %+v", tok, err)
 		}
 		out.Player, err = scraper.GetPlayer(out.Card.PlayerId)
 		if err != nil {
-			fmt.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
-			continue
+			log.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
 		}
 		out.Club, err = scraper.GetClub(out.Card.ClubId)
 		if err != nil {
-			fmt.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
-			continue
+			log.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
 		}
 
 		tokenURI, err := scraper.GetTokenURI(tok)
 		if err != nil {
-			fmt.Errorf("Error getting token URI for %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting token URI for %d: %+v", tok, err)
 		}
 
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPlayer(tok)
 		if err != nil {
-			fmt.Errorf("Error getting Opensea data: %+v", err)
-			continue
+			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result, err := json.Marshal(out)
 		if err != nil {
-			fmt.Errorf("Error converting NFT data to JSON: %+v", err)
-			continue
+			log.Errorf("Error converting NFT data to JSON: %+v", err)
 		}
 
 		// Set output object
@@ -442,12 +439,7 @@ func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, c
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, creatorAddress, creationTime, err
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, _, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, creatorAddress, creationTime, err
 	}
@@ -511,7 +503,7 @@ func GetCreationTime(playerResp []byte) (time.Time, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *SorareScraper) GetDataChannel() chan *dia.NFT {
+func (scraper *SorareScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 

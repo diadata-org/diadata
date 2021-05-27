@@ -59,7 +59,7 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 	log.Printf("Writing historic SAFR values")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
 
 	if err != nil {
 		return err
@@ -81,24 +81,27 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
+		var rate float64
+		var dateTime time.Time
+		var effDate time.Time
 
 		// Convert interest rate from string to float64
-		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
+		rate, err = strconv.ParseFloat(histDataSlice[i].CrateOperationInd.CrateIndexInd.CValueInd, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperationInd.CinsertTimestampInd.CTimestampInd)
 		if err != nil {
-			log.Errorf("Error parsing publishing time of historic SAFR: ", err)
+			log.Error("error parsing publishing time of historic SAFR: ", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationInd.CeffectiveDateInd.CEffDateInd)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperationInd.CeffectiveDateInd.CEffDateInd)
 		if err != nil {
-			log.Errorf("Error parsing effective date of historic SAFR: ", err)
+			log.Error("error parsing effective date of historic SAFR: ", err)
 		}
 
 		t := models.InterestRate{
@@ -109,7 +112,10 @@ func WriteHistoricSAFR(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

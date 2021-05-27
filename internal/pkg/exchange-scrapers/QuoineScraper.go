@@ -111,6 +111,9 @@ func NewQuoineScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 		db:             relDB,
 	}
 	err = scraper.readProductIds()
+	if err != nil {
+		log.Error(err)
+	}
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(LiquidSocketURL, nil)
@@ -134,15 +137,15 @@ func NewQuoineScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 func (scraper *QuoineScraper) sendPing() {
 	ticker := time.NewTicker(pingPeriod)
 	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			ls := &LiquidSubscribe{
-				Event: "pusher:ping",
-			}
-			scraper.wsClient.WriteJSON(ls)
-
+	for range ticker.C {
+		ls := &LiquidSubscribe{
+			Event: "pusher:ping",
 		}
+		err := scraper.wsClient.WriteJSON(ls)
+		if err != nil {
+			log.Error(err)
+		}
+
 	}
 
 }
@@ -163,7 +166,7 @@ type LiquidResponse struct {
 }
 
 func (scraper *QuoineScraper) mainLoop() {
-	for true {
+	for {
 
 		var message LiquidResponse
 
@@ -203,10 +206,6 @@ func (scraper *QuoineScraper) mainLoop() {
 		}
 
 	}
-	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close()")
-	}
-	scraper.cleanup(nil)
 }
 
 func (s *QuoineScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
@@ -225,7 +224,7 @@ func (s *QuoineScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 
 func getLiquidProducts() (products LiquidProducts, err error) {
 	var response []byte
-	response, err = utils.GetRequest(LiquidSocketRestURL + "/products")
+	response, _, err = utils.GetRequest(LiquidSocketRestURL + "/products")
 	if err != nil {
 		return
 	}
@@ -241,8 +240,6 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 		return
 	}
 
-	pairs = make([]dia.ExchangePair, len(products))
-
 	for _, prod := range products {
 		pairToNormalize := dia.ExchangePair{
 			Symbol:      prod.BaseCurrency,
@@ -257,6 +254,11 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 		}
 	}
 	return
+}
+
+func (scraper *QuoineScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 func (scraper *QuoineScraper) readProductIds() error {
@@ -284,7 +286,7 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 	}
 
 	if scraper.closed {
-		return nil, errors.New("Quoine scraper is closed")
+		return nil, errors.New("scraper is already closed")
 	}
 
 	pairScraper := &QuoinePairScraper{
@@ -310,15 +312,16 @@ func (scraper *QuoineScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 
 	return pairScraper, nil
 }
-func (s *QuoineScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.shutdownDone)
-}
+
+// func (s *QuoineScraper) cleanup(err error) {
+// 	s.errorLock.Lock()
+// 	defer s.errorLock.Unlock()
+// 	if err != nil {
+// 		s.error = err
+// 	}
+// 	s.closed = true
+// 	close(s.shutdownDone)
+// }
 
 func (scraper *QuoineScraper) Close() error {
 	// close the pair scraper channels

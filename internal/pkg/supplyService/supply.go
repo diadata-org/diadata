@@ -19,26 +19,31 @@ import (
 )
 
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
-func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
+func GetLockedWalletsFromConfig(filename string) (allAssetsMap map[string][]string, err error) {
 
-	var fileName string
+	var jsonFile *os.File
+
 	executionMode := os.Getenv("EXEC_MODE")
 	if executionMode == "production" {
-		fileName = fmt.Sprintf("/config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("/config/token_supply/%s.json", filename))
 	} else {
-		fileName = fmt.Sprintf("../../../config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("../../../config/token_supply/%s.json", filename))
 	}
-	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
-		return map[string][]string{}, err
+		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		log.Error(err)
-		return map[string][]string{}, err
+		return
 	}
 
 	type lockedAsset struct {
@@ -49,10 +54,13 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		AllAssets []lockedAsset `json:"lockedWallets"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return
+	}
+
 	// make map[string][]string from allAssets. This accounts for erroneous addition of new entry
 	// for already existing asset in config file.
-	allAssetsMap := make(map[string][]string)
 	var diff []string
 	for _, asset := range allAssets.AllAssets {
 		if _, ok := allAssetsMap[asset.Address]; !ok {
@@ -63,7 +71,7 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		}
 	}
 
-	return allAssetsMap, nil
+	return
 }
 
 // GetWalletBalance returns balance of token with address @tokenAddr in wallet with address @walletAddr
@@ -127,7 +135,8 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 	// Subtract locked wallets' balances from total supply for circulating supply
 	circulatingSupply := totalSupp
 	for _, walletAddress := range lockedWallets {
-		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
+		var balance float64
+		balance, err = GetWalletBalance(walletAddress, tokenAddress, client)
 		if err != nil {
 			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)
 		}

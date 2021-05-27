@@ -50,7 +50,10 @@ func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup
 			return
 		}
 
-		ds.SaveForeignQuotationInflux(*fq)
+		err := ds.SaveForeignQuotationInflux(*fq)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 }

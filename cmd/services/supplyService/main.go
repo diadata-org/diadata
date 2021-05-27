@@ -59,21 +59,15 @@ func main() {
 		log.Error(err)
 	}
 	// Initial run
-	err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
-	if err != nil {
-		log.Error(err)
-	}
+	setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
 
 	// Continuously update supplies once every 24h
 	ticker := time.NewTicker(24 * time.Hour)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				err = setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
-				if err != nil {
-					log.Error(err)
-				}
+		for range ticker.C {
+			setSupplies(tokenAddressesFinal, lockedWalletsMap, ds, conn)
+			if err != nil {
+				log.Error(err)
 			}
 		}
 	}()
@@ -81,7 +75,7 @@ func main() {
 
 }
 
-func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, ds models.Datastore, conn *ethclient.Client) error {
+func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, ds models.Datastore, conn *ethclient.Client) {
 	for _, address := range tokenAddresses {
 
 		supp, err := supplyservice.GetTotalSupplyfromMainNet(address, lockedWalletsMap[address], conn)
@@ -126,5 +120,4 @@ func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, 
 			log.Info("set supply: " + supp.Asset.Name + " - " + supp.Asset.Symbol)
 		}
 	}
-	return nil
 }

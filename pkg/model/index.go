@@ -223,8 +223,8 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		return err
 	}
 
-	for _, constituent := range index.Constituents {
-		err = db.SetCryptoIndexConstituent(&constituent, index.Asset)
+	for i := range index.Constituents {
+		err = db.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset)
 		if err != nil {
 			return err
 		}
@@ -242,6 +242,9 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 	var price float64
 	if len(res) > 0 && len(res[0].Series) > 0 && len(res[0].Series[0].Values) > 0 {
 		price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
+		if err != nil {
+			return 0, err
+		}
 	}
 	return price, nil
 

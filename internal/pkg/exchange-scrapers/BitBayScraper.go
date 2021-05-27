@@ -11,20 +11,9 @@ import (
 	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 )
-
-// API base url
-const apiURL string = "https://bitbay.net/API/Public/"
-
-// API request
-const apiRequest string = "/trades.json"
-
-// Minimum delay between API calls
-const apiDelay = time.Second
-
-// Seconds to wait for scrappers to be ready
-const waitForScrapers = 10
 
 var BitBaySocketURL string = "wss://api.bitbay.net/websocket/"
 
@@ -69,10 +58,11 @@ type BitBayScraper struct {
 	exchangeName string
 	// channel to send trades
 	chanTrades chan *dia.Trade
+	db         *models.RelDB
 }
 
 //NewBitBayScraper get a scrapper for BitBay exchange
-func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
+func NewBitBayScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -82,6 +72,7 @@ func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		closed:       false,
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -101,13 +92,16 @@ func NewBitBayScraper(exchange dia.Exchange, scrape bool) *BitBayScraper {
 
 func (s *BitBayScraper) getMarkets() (markets []string) {
 	var bbm BitBayMarkets
-	b, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	b, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 	}
-	json.Unmarshal(b, &bbm)
+	err = json.Unmarshal(b, &bbm)
+	if err != nil {
+		log.Error(err)
+	}
 
-	for key, _ := range bbm.Items {
+	for key := range bbm.Items {
 		markets = append(markets, key)
 	}
 	return
@@ -154,15 +148,12 @@ func (s *BitBayScraper) mainLoop() {
 
 	pingTimer := time.NewTicker(10 * time.Second)
 	go func() {
-		for {
-			select {
-			case <-pingTimer.C:
-				go s.ping()
-			}
+		for range pingTimer.C {
+			go s.ping()
 		}
 	}()
 
-	for true {
+	for {
 
 		var response BitBayWSResponse
 
@@ -269,10 +260,6 @@ func (s *BitBayScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
-// set exchange base currency according to DIA standard
-func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
-	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
-}
 func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return dia.ExchangePair{}, nil
 }
@@ -280,6 +267,11 @@ func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 //Channel returns the channel to get trades
 func (s *BitBayScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
+}
+
+func (s *BitBayScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// TO DO
+	return dia.Asset{}, nil
 }
 
 //FetchAvailablePairs returns a list with all available trade pairs
@@ -291,7 +283,7 @@ func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 	var bitbayResponse items
 
-	data, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	data, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
 	if err != nil {
 		return
 	}

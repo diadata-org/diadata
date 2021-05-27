@@ -74,8 +74,8 @@ func computeQuartiles(samples []float64) (Q1 float64, Q3 float64) {
 			Q1 = computeMedian(samples[0 : length/2])
 			Q3 = computeMedian(samples[length/2 : length])
 		} else {
-			Q1 = computeMedian(samples[0:int(math.Floor(float64(length/2)))])
-			Q3 = computeMedian(samples[int(math.Floor(float64(length/2)))+1 : length])
+			Q1 = computeMedian(samples[0:int(float64(length/2))])
+			Q3 = computeMedian(samples[int(float64(length/2))+1 : length])
 		}
 	}
 	return

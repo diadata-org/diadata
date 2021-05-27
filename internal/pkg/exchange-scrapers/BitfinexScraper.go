@@ -227,7 +227,7 @@ func (s *BitfinexScraper) normalizeSymbol(pair dia.ExchangePair) (dia.ExchangePa
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.bitfinex.com/v1/symbols")
+	data, _, err := utils.GetRequest("https://api.bitfinex.com/v1/symbols")
 	if err != nil {
 		return
 	}

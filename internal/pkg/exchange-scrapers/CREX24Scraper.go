@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -133,7 +132,10 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 			payload, ok := arguments[1].(string)
 			var parsedUpdate CREX24ApiTradeUpdate
 			if ok {
-				json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				err := json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				if err != nil {
+					log.Error(err)
+				}
 				s.sendTradesToChannel(&parsedUpdate)
 			}
 		}
@@ -176,14 +178,13 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 }
 
 func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	resp, err := http.Get("https://api.crex24.com/v2/public/instruments")
+	data, _, err := utils.GetRequest("https://api.crex24.com/v2/public/instruments")
 	if err != nil {
-		return nil, err
+		return
 	}
-	defer resp.Body.Close()
 
 	var parsedPairs []CREX24ApiInstrument
-	err = json.NewDecoder(resp.Body).Decode(&parsedPairs)
+	err = json.Unmarshal(data, &parsedPairs)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +204,7 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 // FillSymbolData collects all available information on an asset traded on CREX24
 func (s *CREX24Scraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	var response CREX4Asset
-	data, err := utils.GetRequest("https://api.crex24.com/v2/public/currencies?filter=" + symbol)
+	data, _, err := utils.GetRequest("https://api.crex24.com/v2/public/currencies?filter=" + symbol)
 	if err != nil {
 		return
 	}
@@ -280,7 +281,7 @@ func (ps *CREX24PairScraper) Close() error {
 
 func (ps *CREX24PairScraper) Error() error {
 	if ps.parent.closed {
-		return errors.New("Scraper has been closed")
+		return errors.New("scraper has been closed")
 	} else {
 		return nil
 	}

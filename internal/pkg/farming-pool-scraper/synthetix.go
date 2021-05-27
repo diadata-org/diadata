@@ -49,17 +49,14 @@ func NewSynthetixScraper(scraper *PoolScraper) *SynthetixScraper {
 // runs in a goroutine until sts is closed
 func (sts *SynthetixScraper) mainLoop() {
 	go func() {
-		for {
-			select {
-			case <-sts.scraper.tickerRate.C:
-				err := sts.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scraping", err)
-				}
+		for range sts.scraper.tickerRate.C {
+			err := sts.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scraping", err)
 			}
-
 		}
 	}()
+	select {}
 }
 
 func (sts *SynthetixScraper) scrapePools() error {
@@ -111,6 +108,9 @@ func (sts *SynthetixScraper) scrapePools() error {
 			return err
 		}
 		decimals, err := token.Decimals(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		// Supply values for synths from "Total Synths" on https://stats.synthetix.io/#staking
 		totSupp, _ := token.TotalSupply(&bind.CallOpts{})
 		totalSupply, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(totSupp), new(big.Float).SetFloat64(math.Pow10(int(decimals)))).Float64()

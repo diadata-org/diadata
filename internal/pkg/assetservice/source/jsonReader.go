@@ -43,7 +43,10 @@ func (jr *jsonReader) fetchAssets() {
 		log.Error(err)
 	}
 	var assets Assets
-	json.Unmarshal(data, &assets)
+	err = json.Unmarshal(data, &assets)
+	if err != nil {
+		log.Error(err)
+	}
 	for _, asset := range assets.Assets {
 		log.Info("got asset: ", asset)
 		jr.assetChannel <- asset
@@ -55,12 +58,17 @@ func readJSONFromConfig(filename string) (content []byte, err error) {
 	var (
 		jsonFile *os.File
 	)
-	path := configCollectors.ConfigFileConnectors(filename, ".json")
-	jsonFile, err = os.Open(path)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ".json"))
 	if err != nil {
 		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	content, err = ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return

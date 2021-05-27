@@ -24,7 +24,7 @@ func (db *DB) SetBatchFiatPriceInflux(fiatQuotations []*FiatQuotation) error {
 
 func checkInfluxIsAvailable(db *DB) error {
 	if db.influxClient == nil {
-		return fmt.Errorf("SetInfluxFiatPrice error: no influx database available\n")
+		return fmt.Errorf("SetInfluxFiatPrice error: no influx database available")
 	}
 	return nil
 }
@@ -68,7 +68,7 @@ func (db *DB) SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error {
 
 func checkRedisIsAvailable(db *DB) error {
 	if db.redisClient == nil {
-		return fmt.Errorf("SetRedisFiatPrice error: no redis database available\n")
+		return fmt.Errorf("SetRedisFiatPrice error: no redis database available")
 	}
 	return nil
 }

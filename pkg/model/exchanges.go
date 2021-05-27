@@ -69,7 +69,10 @@ func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err 
 	}
 	for rows.Next() {
 		exchange := ""
-		rows.Scan(&exchange)
+		err = rows.Scan(&exchange)
+		if err != nil {
+			return []string{}, err
+		}
 		exchanges = append(exchanges, exchange)
 	}
 	return

@@ -70,12 +70,12 @@ func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
 		tokens:         make(map[uint16]*GnosisToken),
 	}
 
-	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/806b0419b2d041869fc83727e0043236")
+	wsClient, err := ethclient.Dial(gnosisWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	restClient, err := ethclient.Dial(gnosisRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -171,7 +171,7 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -189,41 +189,38 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 }
 
 func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
-	symbol, foreignName, volume, price, err := scraper.getSwapDataGnosis(trade)
+	symbol, foreignName, volume, price := scraper.getSwapDataGnosis(trade)
 	timestamp := time.Now().Unix()
-	if err != nil {
-		log.Error(err)
-	} else {
-		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-			buyToken := scraper.tokens[trade.BuyToken]
-			sellToken := scraper.tokens[trade.SellToken]
+	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-			token0 := dia.Asset{
-				Address: buyToken.Address,
-				Symbol:  buyToken.Symbol,
-				Name:    buyToken.Name,
-			}
-			token1 := dia.Asset{
-				Address: sellToken.Address,
-				Symbol:  sellToken.Symbol,
-				Name:    sellToken.Name,
-			}
+		buyToken := scraper.tokens[trade.BuyToken]
+		sellToken := scraper.tokens[trade.SellToken]
 
-			trade := &dia.Trade{
-				Symbol:         symbol,
-				Pair:           pairScraper.pair.ForeignName,
-				Price:          price,
-				BaseToken:      token0,
-				QuoteToken:     token1,
-				Volume:         volume,
-				Time:           time.Unix(timestamp, 0),
-				ForeignTradeID: "",
-				Source:         scraper.exchangeName,
-			}
-			pairScraper.parent.chanTrades <- trade
-			fmt.Println("got trade: ", trade)
+		token0 := dia.Asset{
+			Address: buyToken.Address,
+			Symbol:  buyToken.Symbol,
+			Name:    buyToken.Name,
 		}
+		token1 := dia.Asset{
+			Address: sellToken.Address,
+			Symbol:  sellToken.Symbol,
+			Name:    sellToken.Name,
+		}
+
+		trade := &dia.Trade{
+			Symbol:         symbol,
+			Pair:           pairScraper.pair.ForeignName,
+			Price:          price,
+			BaseToken:      token0,
+			QuoteToken:     token1,
+			Volume:         volume,
+			Time:           time.Unix(timestamp, 0),
+			ForeignTradeID: "",
+			Source:         scraper.exchangeName,
+		}
+		pairScraper.parent.chanTrades <- trade
+		fmt.Println("got trade: ", trade)
 	}
 
 }
@@ -232,20 +229,27 @@ func (scraper *GnosisScraper) mainLoop() {
 
 	scraper.run = true
 	log.Info("subscribe to trades...")
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
+
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Gnosis: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -259,7 +263,7 @@ func (scraper *GnosisScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
+func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64) {
 	buyToken := scraper.tokens[s.BuyToken]
 	sellToken := scraper.tokens[s.SellToken]
 	buyDecimals := buyToken.Decimals

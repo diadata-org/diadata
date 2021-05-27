@@ -39,7 +39,10 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, exchan
 				return
 			}
 			lastTradeTime = time.Now()
-			kafkaHelper.WriteMessage(w, t)
+			err := kafkaHelper.WriteMessage(w, t)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }
@@ -54,7 +57,7 @@ func init() {
 	if *exchange == "" {
 		flag.Usage()
 		log.Println(dia.Exchanges())
-		for true {
+		for {
 			time.Sleep(24 * time.Hour)
 		}
 		// log.Fatal("exchange is required")
@@ -85,7 +88,12 @@ func main() {
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
-	defer w.Close()
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	wg := sync.WaitGroup{}
 

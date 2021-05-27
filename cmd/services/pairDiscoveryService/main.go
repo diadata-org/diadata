@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	log        *logrus.Logger
-	updateTime = time.Second * 60 * 60
+	log *logrus.Logger
+	// updateTime = time.Second * 60 * 60
 )
 
 type Task struct {
@@ -82,12 +82,11 @@ func main() {
 
 	updateExchangePairs(relDB, verifiedToken)
 
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	task.wg.Add(1)
 	go func() { defer task.wg.Done(); task.run(relDB, verifiedToken) }()
-	select {
-	case <-c:
+	for range c {
 		log.Info("Received stop signal.")
 		task.stop()
 	}
@@ -98,9 +97,10 @@ func main() {
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
 func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
-	toggle := getTogglePairDiscovery(updateTime)
+	// TO DO: activate toggle
+	// toggle := getTogglePairDiscovery(updateTime)
 
-	toggle = true
+	toggle := true
 	if !toggle {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
@@ -119,7 +119,8 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 			// Get filled version with verification and underlying dia.Pair if existent.
 			var pairs []dia.ExchangePair
 			for _, pair := range simplePairs {
-				fullPair, err := relDB.GetExchangePair(exchange, pair.ForeignName)
+				var fullPair dia.ExchangePair
+				fullPair, err = relDB.GetExchangePair(exchange, pair.ForeignName)
 				if err != nil {
 					log.Error("error fetching exchangepair: ", err)
 					continue
@@ -202,6 +203,11 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 					verificationCount := 0
 					for _, symbol := range symbols {
+						var verified bool
+						var assetInfo dia.Asset
+						var assetCandidates []dia.Asset
+						var assetID string
+						var ok bool
 						// signature for this part:
 						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
 
@@ -210,7 +216,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						// matched with assets from the asset table.
 
 						// Continue if symbol is already in DB and verified.
-						_, verified, err := relDB.GetExchangeSymbolAssetID(exchange, symbol)
+						_, verified, err = relDB.GetExchangeSymbolAssetID(exchange, symbol)
 						if err != nil {
 							if err.Error() != pgx.ErrNoRows.Error() {
 								log.Errorf("error getting exchange symbol %s: %v", symbol, err)
@@ -226,13 +232,13 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							log.Errorf("error setting exchange symbol %s: %v", symbol, err)
 						}
 						// Gather as much information on @symbol as available on the exchange's API.
-						assetInfo, err := scraper.FillSymbolData(symbol)
+						assetInfo, err = scraper.FillSymbolData(symbol)
 						if err != nil {
 							log.Errorf("error fetching ticker data for %s: %v", symbol, err)
 							continue
 						}
 						// Using the gathered information, find matching assets in asset table.
-						assetCandidates, err := relDB.IdentifyAsset(assetInfo)
+						assetCandidates, err = relDB.IdentifyAsset(assetInfo)
 						if err != nil {
 							log.Errorf("error getting asset candidates for %s: %v", symbol, err)
 							continue
@@ -253,11 +259,11 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							isVerified := verifiedTokens.IsExists(assetCandidates[0])
 							if isVerified {
 								verificationCount++
-								assetID, err := relDB.GetAssetID(assetCandidates[0])
+								assetID, err = relDB.GetAssetID(assetCandidates[0])
 								if err != nil {
 									log.Error(err)
 								}
-								ok, err := relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
+								ok, err = relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
 								if err != nil {
 									log.Error(err)
 								}
@@ -276,10 +282,16 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 
 					// 2.b Verify/falsify exchange pairs using the exchangesymbol table in postgres.
 					for _, pair := range pairs {
+						var exchangepair dia.ExchangePair
+						var pairSymbols []string
+						var quotetokenID string
+						var basetokenID string
+						var quotetokenVerified bool
+						var basetokenVerified bool
 						log.Info("handle pair ", pair)
 						// time.Sleep(1 * time.Second)
 						// Continue if pair is already verified
-						exchangepair, err := relDB.GetExchangePairCache(exchange, pair.ForeignName)
+						exchangepair, err = relDB.GetExchangePairCache(exchange, pair.ForeignName)
 						if err != nil {
 							log.Errorf("error getting pair %s from cache", pair.ForeignName)
 						}
@@ -288,23 +300,31 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							continue
 						}
 						// if not yet verified, try do do so
-						pairSymbols, err := dia.GetPairSymbols(pair)
+						pairSymbols, err = dia.GetPairSymbols(pair)
 						if err != nil {
 							log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
 							continue
 						}
-						quotetokenID, quotetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
-						basetokenID, basetokenVerified, err := relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
+						quotetokenID, quotetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
+						if err != nil {
+							log.Error(err)
+						}
+						basetokenID, basetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
+						if err != nil {
+							log.Error(err)
+						}
 
 						if quotetokenVerified {
-							quotetoken, err := relDB.GetAssetByID(quotetokenID)
+							var quotetoken dia.Asset
+							quotetoken, err = relDB.GetAssetByID(quotetokenID)
 							if err != nil {
 								log.Error(err)
 							}
 							pair.UnderlyingPair.QuoteToken = quotetoken
 						}
 						if basetokenVerified {
-							basetoken, err := relDB.GetAssetByID(basetokenID)
+							var basetoken dia.Asset
+							basetoken, err = relDB.GetAssetByID(basetokenID)
 							if err != nil {
 								log.Error(err)
 							}
@@ -325,13 +345,19 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						VerifiedAssetsCount: verificationCount,
 					}
 					file, _ := json.MarshalIndent(dataforfile, "", " ")
-					ioutil.WriteFile(exchange+".json", file, 0644)
+					err = ioutil.WriteFile(exchange+".json", file, 0600)
+					if err != nil {
+						log.Error(err)
+					}
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						scraper.Close()
+						err = s.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}(scraper, exchange)
 				} else {
 					// For DEXes, FetchAvailablePairs can retrieve unique information.
@@ -356,7 +382,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
-						scraper.Close()
+						err = s.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}(scraper, exchange)
 				}
 			} else {
@@ -370,15 +399,16 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	}
 }
 
+// TO DO: activate toggle
 // getTogglePairDiscovery switches to true between midnight and midnight + duration
-func getTogglePairDiscovery(d time.Duration) bool {
-	t := time.Now()
-	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
-	if float64(secondsAfterMidnight) < d.Seconds()+10 {
-		return true
-	}
-	return false
-}
+// func getTogglePairDiscovery(d time.Duration) bool {
+// 	t := time.Now()
+// 	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
+// 	if float64(secondsAfterMidnight) < d.Seconds()+10 {
+// 		return true
+// 	}
+// 	return false
+// }
 
 // addNewPairs adds pair from @pairs if it's not in our postgres DB yet.
 // Equality refers to the unique identifier (exchange,foreignName).
@@ -466,20 +496,25 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 		jsonFile  *os.File
 		filebytes []byte
 	)
-	path := configCollectors.ConfigFileConnectors(filename, "")
-	jsonFile, err = os.Open(path)
-	// if os.Open returns an error then handle it
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
 	if err != nil {
 		return
 	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	filebytes, err = ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return
 	}
-	json.Unmarshal(filebytes, &items)
+	err = json.Unmarshal(filebytes, &items)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
@@ -509,7 +544,7 @@ func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error
 
 func iterateDirectory(foldername string) (files []string) {
 	path := configCollectors.ConfigFileConnectors(foldername, "")
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -522,5 +557,8 @@ func iterateDirectory(foldername string) (files []string) {
 
 		return nil
 	})
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }

@@ -36,7 +36,7 @@ type VerifiedTokens struct {
 
 func New() (*VerifiedTokens, error) {
 	var tokenList TokenList
-	b, err := utils.GetRequest("https://tokens.coingecko.com/uniswap/all.json")
+	b, _, err := utils.GetRequest("https://tokens.coingecko.com/uniswap/all.json")
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,6 @@ func (vt *VerifiedTokens) AppendVerifiedTokens(assets []dia.Asset) {
 
 	}
 }
-
-
 
 func (vt *VerifiedTokens) Get() map[string]dia.Asset {
 	return vt.tokenMap
