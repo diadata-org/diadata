@@ -14,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
+	signer "github.com/diadata-org/diadata/pkg/sign"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -88,7 +89,10 @@ func (env *Env) PostSupply(c *gin.Context) {
 // @Router /v1/quotation/:symbol: [get]
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
+	sign, ok := c.GetQuery("sign")
+
 	q, err := env.DataStore.GetQuotation(symbol)
+
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -96,7 +100,29 @@ func (env *Env) GetQuotation(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		if ok && sign == "true" {
+			responseMap, err := utils.StructToMap(q)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+			qbyte, err := json.Marshal(responseMap)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+			dataSigner, err := signer.New()
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+			signature, err := dataSigner.Sign(qbyte)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+			responseMap["Sign"] = signature
+			c.JSON(http.StatusOK, responseMap)
+		} else {
+			c.JSON(http.StatusOK, q)
+
+		}
 	}
 }
 
