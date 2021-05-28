@@ -41,7 +41,7 @@ func main() {
 
 }
 
-func handleData(dataChannel chan *dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB) {
+func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB) {
 	defer wg.Done()
 
 	for {
@@ -50,7 +50,7 @@ func handleData(dataChannel chan *dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB
 			log.Error("error")
 			return
 		}
-		rdb.SetNFT(*fq)
+		rdb.SetNFT(fq)
 	}
 
 }

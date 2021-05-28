@@ -22,6 +22,7 @@ type RelDatastore interface {
 	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
 	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
 	GetNFTClassID(address common.Address, blockchain string) (ID string, err error)
+	GetNFTClassByID(id string) (nftclass dia.NFTClass, err error)
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 

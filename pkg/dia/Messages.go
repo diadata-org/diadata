@@ -1,7 +1,9 @@
 package dia
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"math/big"
 	"strings"
 	"time"
@@ -50,11 +52,28 @@ func (nc *NFTClass) UnmarshalBinary(data []byte) error {
 // the pair (address,tokenID).
 type NFT struct {
 	NFTClass       NFTClass
-	TokenID        uint64
+	TokenID        string
 	CreationTime   time.Time
 	CreatorAddress common.Address
 	URI            string
-	Attributes     []byte
+	Attributes     NFTAttributes
+}
+
+// NFTAttributes can be stored as jasonb in postgres:
+// https://www.alexedwards.net/blog/using-postgresql-jsonb
+type NFTAttributes map[string]interface{}
+
+func (a NFTAttributes) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+func (a *NFTAttributes) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &a)
 }
 
 // MarshalBinary for DefiProtocolState

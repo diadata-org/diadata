@@ -87,6 +87,7 @@ CREATE TABLE nft (
     creator_address text,
     uri text,
     attributes jsonb,
+    UNIQUE(nftclass_id, tokenID),
     UNIQUE(nft_id)
 );
 
