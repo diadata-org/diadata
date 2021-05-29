@@ -1,0 +1,324 @@
+{
+    "NFTClasses": [
+    {
+        "Address": "0x557430421f8f3ed0a92aca211f1c05ad7b606288",
+        "Symbol": "KLNFTF",
+        "Name": "NFT Yourself Factory",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x495f947276749ce646f68ac8c248420045cb7b5e",
+        "Symbol": "OPENSTORE",
+        "Name": "OpenSea Collection",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x0333f63c8ed192ab07b70d67d18f787198c89fef",
+        "Symbol": "VXM",
+        "Name": "VoxoDeus Minter",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xe4605d46fd0b3f8329d936a8b258d69276cba264",
+        "Symbol": "MEMES",
+        "Name": "Meme Ltd.",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x5d00d312e171be5342067c09bae883f9bcb2003b",
+        "Symbol": "MON",
+        "Name": "Etheremon",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Gaming"
+    },
+    {
+        "Address": "0x06012c8cf97bead5deae237070f9587f8e7a266d",
+        "Symbol": "CKITTY",
+        "Name": "CryptoKitties",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x8c9b261faef3b3c2e64ab5e58e04615f8c788099",
+        "Symbol": "MLBCB",
+        "Name": "MLB Champions",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xb9341cca0a5f04b804f7b3a996a74726923359a8",
+        "Symbol": "BLUE",
+        "Name": "OFF BLUE",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xd2d2a84f0eb587f70e181a0c4b252c2c053f80cb",
+        "Symbol": "ToshimonMinter",
+        "Name": "Toshimon Minter",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xd07dc4262bcdbf85190c01c996b4c06a461d2430",
+        "Symbol": "",
+        "Name": "Rarible 1155",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x3c230084fef56a4d8cfd8c89d8ebc67a8e4bde47",
+        "Symbol": "",
+        "Name": "Spirit Clash",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x188a084a62e60d22682c6000821df70aa292bb61",
+        "Symbol": "CTPrints",
+        "Name": "CT Prints",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x7c10bc61de6781caa00f2f6d8eb4822684337a2b",
+        "Symbol": "APEfi",
+        "Name": "ApeIn.Finance Shop",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x93ea6ec350ace7473f7694d43dec2726a515e31a",
+        "Symbol": "",
+        "Name": "Aavegotchi Frens Raffle Tickets",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xb985b80ebb5af0cd4f5b31e3018302ac15b697e4",
+        "Symbol": "",
+        "Name": "CreepyCryptos Initial Sale",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x33a4cfc925ad40e5bb2b9b2462d7a1a5a5da4476",
+        "Symbol": "",
+        "Name": "Pills",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x6d4530149e5b4483d2f7e60449c02570531a0751",
+        "Symbol": "[NFT]",
+        "Name": "NFTBoxes",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x7bd29408f11d2bfc23c34f18275bbf23bb716bc7",
+        "Symbol": "⚇",
+        "Name": "Meebits",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x53ac5ed41bfe023c8b0ee5c80380d19756af7df9",
+        "Symbol": "",
+        "Name": "Big Fat Sexy Collectible Card Experience",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x12ead3396df7e868398fa27bc60f62ad3b5a184e",
+        "Symbol": "CBUDS",
+        "Name": "CryptoBuds",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x2d9e5de7d36f3830c010a28b29b3bdf5ca73198e",
+        "Symbol": "MKT",
+        "Name": "Makersplace V2",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0xb6dae651468e9593e4581705a09c10a76ac1e0c8",
+        "Symbol": "ASYNC-V2",
+        "Name": "Async Art V2",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x2a46f2ffd99e19a89476e2f62270e0a35bbf0756",
+        "Symbol": "MKT2",
+        "Name": "MakersPlace V3",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+        "Symbol": "BAYC",
+        "Name": "BoredApeYachtClub",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x4995ff1c49baa6576029b7398479068ba664449c",
+        "Symbol": "ETHERTHINGS",
+        "Name": "EtherThings",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x87cb562c65c288f2ca678535bcd26441bf696d55",
+        "Symbol": "DOOM",
+        "Name": "DoomCatRescue",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x51e613727fdd2e0b91b51c3e5427e9440a7957e4",
+        "Symbol": "CORGI",
+        "Name": "Crypto Corgis Breeder",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xb88dc6cf4d683e4617abd87f7f64cf81c4494eb0",
+        "Symbol": "A7X-CR",
+        "Name": "Avenged Sevenfold X Cam Rackam",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x661c9fe3523b0d14a5efd0314aefb2910761a19c",
+        "Symbol": "",
+        "Name": "",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
+        "Symbol": "BLOCKS",
+        "Name": "Art Blocks",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x89ee76cc25fcbf1714ed575faa6a10202b71c26a",
+        "Symbol": "",
+        "Name": "Node Runners",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x4222b2a98daa443c6a0a761300d7d6bfd9161e52",
+        "Symbol": "ILV-NFT",
+        "Name": "Illuvium IDO Collection",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x2e81cda0aababa180f2c5d9c259c93ded9069ee3",
+        "Symbol": "STORY",
+        "Name": "BlockspaperNFT",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0xba35430ffd0313d83f87317e9024293128eb98d7",
+        "Symbol": "Sat",
+        "Name": "Sunday Soundbites with Satman",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x87df2103941187dc230eab1a148a587cb8a03afb",
+        "Symbol": "WAIFUC",
+        "Name": "WAIFU Collaboration",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0xdf3e1410841124603c89e2a7823bb6a34dda4ee0",
+        "Symbol": "FYDCards",
+        "Name": "FYDCards",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Collectibles"
+    },
+    {
+        "Address": "0x8abde73d078ce2b5c24e2fd10ebeee9ded879b8d",
+        "Symbol": "SIN",
+        "Name": "The Sin of Man",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0xee4ba9ffcf1ab4b15bfdd094515914d8710f4881",
+        "Symbol": "$KID",
+        "Name": "Skid Memes",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x1db61fc42a843bad4d91a2d788789ea4055b8613",
+        "Symbol": "CHUBBIES",
+        "Name": "Chubbies",
+        "Blockchain": "Ethereum",
+        "ContractType": "non-fungible",
+        "Category": "Arts"
+    },
+    {
+        "Address": "0x2140714e006c2242c79e63571fb9aebff7b0fe02",
+        "Symbol": "SRGM",
+        "Name": "Surrogates Multi",
+        "Blockchain": "Ethereum",
+        "ContractType": "semi-fungible",
+        "Category": "Arts"
+    }
+]
+}

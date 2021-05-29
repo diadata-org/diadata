@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -31,10 +32,25 @@ func (rdb *RelDB) GetNFTClassID(address common.Address, blockchain string) (ID s
 	return ID, nil
 }
 
+func (rdb *RelDB) GetNFTClassByID(id string) (nftclass dia.NFTClass, err error) {
+	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where nftclass_id=$1", nftclassTable)
+	var address string
+	var category interface{}
+	err = rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&address, &nftclass.Symbol, &nftclass.Name, &nftclass.Blockchain, &nftclass.ContractType, &category)
+	if err != nil {
+		return
+	}
+	nftclass.Address = common.HexToAddress(address)
+	if category != nil {
+		nftclass.Category = category.(string)
+	}
+	return
+}
+
 // GetAllNFTClasses returns all NFT classes on @blockchain.
 func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where blockchain=$1", nftclassTable)
+	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where blockchain=$1 and category is null order by name desc", nftclassTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain)
 	if err != nil {
 		return
@@ -119,7 +135,15 @@ func (rdb *RelDB) GetNFTCategories() (categories []string, err error) {
 }
 
 func (rdb *RelDB) SetNFT(nft dia.NFT) error {
-	// TO DO
+	nftClassID, err := rdb.GetNFTClassID(nft.NFTClass.Address, nft.NFTClass.Blockchain)
+	if err != nil {
+		return err
+	}
+	query := fmt.Sprintf("insert into %s (nftclass_id,tokenID,creation_time,creator_address,uri,attributes) values ($1,$2,$3,$4,$5,$6)", nftTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftClassID, nft.TokenID, nft.CreationTime, nft.CreatorAddress.Hex(), nft.URI, nft.Attributes)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -131,4 +155,11 @@ func (rdb *RelDB) GetNFT(address common.Address, tokenID uint64) (dia.NFT, error
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	// TO DO
 	return nil
+}
+
+func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error) {
+	// TO DO:
+	// Return highest block number of recorded trades for @nft.
+	// Returns 0 if no trade recorded.
+	return big.NewInt(0), nil
 }

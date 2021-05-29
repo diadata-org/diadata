@@ -532,8 +532,11 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 func (env *Env) GetCviIndex(c *gin.Context) {
 	starttimeStr := c.DefaultQuery("starttime", "noRange")
 	endtimeStr := c.Query("endtime")
+	symbol := c.Query("symbol")
 
 	var starttime, endtime time.Time
+	var q []dia.CviDataPoint
+	var err error
 
 	if starttimeStr == "noRange" || endtimeStr == "" {
 		starttime = time.Unix(0, 0)
@@ -552,10 +555,12 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
-	for i := range q {
-		q[i].Value /= 2430.5812295231785
-	}
+
+	q, err = env.DataStore.GetCVIInflux(starttime, endtime, symbol)
+
+	//for i := range q {
+	//	q[i].Value /= 2430.5812295231785
+	//}
 	if len(q) == 0 {
 		c.JSON(http.StatusOK, make([]string, 0))
 	}

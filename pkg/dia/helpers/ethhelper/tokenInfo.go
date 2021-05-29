@@ -34,7 +34,7 @@ func NewETHClient() (*ethclient.Client, error) {
 			log.Error("Error connecting Eth Client")
 		}
 	} else {
-		connection, err = ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+		connection, err = ethclient.Dial("https://mainnet.infura.io/v3/6febc205750b46bf97e08718d29531db")
 		if err != nil {
 			log.Error("Error connecting Eth Client")
 		}

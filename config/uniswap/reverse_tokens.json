@@ -1,44 +1,48 @@
 {
   "Tokens": [
     {
-      "Address": "0xfa5047c9c78b8877af97bdcb85db743fd7313d4a",
+      "Address": "0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a",
       "Symbol": "ROOK"
     },
     {
-      "Address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+      "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30",
       "Symbol": "INJ"
     },
     {
-      "Address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+      "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
       "Symbol": "GRT"
     },
     {
-      "Address": "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577",
+      "Address": "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577",
       "Symbol": "YF-DAI"
     },
     {
-      "Address": "0xf5d669627376ebd411e34b98f19c868c8aba5ada",
+      "Address": "0xF5D669627376EBd411E34b98F19C868c8ABA5ADA",
       "Symbol": "AXS"
     },
     {
-      "Address": "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4",
+      "Address": "0xfDC4a3FC36df16a78edCAf1B837d3ACAaeDB2CB4",
       "Symbol": "SCIFI"
     },
     {
-      "Address": "0xcb67be5c54eab9462967ee3c03c35bfffeb801cd",
+      "Address": "0xCB67bE5c54eab9462967eE3C03C35bfFfeB801cD",
       "Symbol": "GBI"
     },
     {
-      "Address": "0xdc9ac3c20d1ed0b540df9b1fedc10039df13f99c",
+      "Address": "0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c",
       "Symbol": "UTK"
     },
     {
-      "Address": "0xfe9a29ab92522d14fc65880d817214261d8479ae",
+      "Address": "0xfe9A29aB92522D14Fc65880d817214261D8479AE",
       "Symbol": "SNOW"
     },
     {
       "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55",
       "Symbol": "SUPER"
+    },
+    {
+      "Address": "0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd",
+      "Symbol": "pCWS"
     }
   ]
 }

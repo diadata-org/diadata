@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -70,7 +69,7 @@ func main() {
 		}
 		err = setGitcoinCategories(gitcoinCategories, relDB)
 		if err != nil {
-			log.Error("error writing gitcoin submissions: ", err)
+			log.Errorf("error writing gitcoin submissions for file %s: %v", file, err)
 		}
 	}
 
@@ -162,7 +161,8 @@ func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) er
 		// Get ID of underlying NFTClass.
 		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address), nftClass.Blockchain)
 		if err != nil {
-			return err
+			log.Error("error fetching nftclass: ", nftClass)
+			continue
 		}
 
 		// Write into nftclass table and update Category.
@@ -184,7 +184,6 @@ func iterateDirectory(foldername string) (files []string) {
 
 		if fileExtension == ".json" {
 			files = append(files, info.Name())
-			fmt.Printf("File Name: %s\n", info.Name())
 		}
 		return nil
 	})

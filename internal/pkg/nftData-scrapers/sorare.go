@@ -6,23 +6,22 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/big"
-	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/sorare"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	log "github.com/sirupsen/logrus"
+	structs "github.com/fatih/structs"
 )
 
 const (
-	source       = "Sorare"
-	refreshDelay = time.Second * 60 * 5
+	// source       = "Sorare"
+	refreshDelay = time.Hour * 24
 )
 
 type nothing struct{}
@@ -41,6 +40,219 @@ type SorarePlayer struct {
 	YearOfBirth  uint16
 	MonthOfBirth uint8
 	DayOfBirth   uint8
+}
+
+type SorareClub struct {
+	Name        string
+	Country     string
+	City        string
+	YearFounded uint16
+}
+
+type Club struct {
+	NameClub    string
+	CountryClub string
+	CityClub    string
+	YearFounded uint16
+}
+
+type SorareTrait struct {
+	TraitType   string      `json:"trait_type"`
+	Value       interface{} `json:"value"`
+	DisplayType interface{} `json:"display_type"`
+	MaxValue    interface{} `json:"max_value"`
+	TraitCount  int         `json:"trait_count"`
+	Order       interface{} `json:"order"`
+}
+
+type SorareOutput struct {
+	Card   SorareCard    `structs:",flatten"`
+	Player SorarePlayer  `structs:",flatten"`
+	Club   Club          `structs:",flatten"`
+	Traits []SorareTrait `structs:",flatten"`
+}
+
+type OpenSeaResponse struct {
+	ID                   int         `json:"id"`
+	TokenID              string      `json:"token_id"`
+	NumSales             int         `json:"num_sales"`
+	BackgroundColor      string      `json:"background_color"`
+	ImageURL             string      `json:"image_url"`
+	ImagePreviewURL      string      `json:"image_preview_url"`
+	ImageThumbnailURL    string      `json:"image_thumbnail_url"`
+	ImageOriginalURL     string      `json:"image_original_url"`
+	AnimationURL         interface{} `json:"animation_url"`
+	AnimationOriginalURL interface{} `json:"animation_original_url"`
+	Name                 string      `json:"name"`
+	Description          string      `json:"description"`
+	ExternalLink         string      `json:"external_link"`
+	AssetContract        struct {
+		Address                     string      `json:"address"`
+		AssetContractType           string      `json:"asset_contract_type"`
+		CreatedDate                 string      `json:"created_date"`
+		Name                        string      `json:"name"`
+		NftVersion                  string      `json:"nft_version"`
+		OpenseaVersion              interface{} `json:"opensea_version"`
+		Owner                       int         `json:"owner"`
+		SchemaName                  string      `json:"schema_name"`
+		Symbol                      string      `json:"symbol"`
+		TotalSupply                 interface{} `json:"total_supply"`
+		Description                 string      `json:"description"`
+		ExternalLink                string      `json:"external_link"`
+		ImageURL                    string      `json:"image_url"`
+		DefaultToFiat               bool        `json:"default_to_fiat"`
+		DevBuyerFeeBasisPoints      int         `json:"dev_buyer_fee_basis_points"`
+		DevSellerFeeBasisPoints     int         `json:"dev_seller_fee_basis_points"`
+		OnlyProxiedTransfers        bool        `json:"only_proxied_transfers"`
+		OpenseaBuyerFeeBasisPoints  int         `json:"opensea_buyer_fee_basis_points"`
+		OpenseaSellerFeeBasisPoints int         `json:"opensea_seller_fee_basis_points"`
+		BuyerFeeBasisPoints         int         `json:"buyer_fee_basis_points"`
+		SellerFeeBasisPoints        int         `json:"seller_fee_basis_points"`
+		PayoutAddress               string      `json:"payout_address"`
+	} `json:"asset_contract"`
+	Owner struct {
+		User          interface{} `json:"user"`
+		ProfileImgURL string      `json:"profile_img_url"`
+		Address       string      `json:"address"`
+		Config        string      `json:"config"`
+		DiscordID     string      `json:"discord_id"`
+	} `json:"owner"`
+	Permalink  string `json:"permalink"`
+	Collection struct {
+		PaymentTokens []struct {
+			ID       int     `json:"id"`
+			Symbol   string  `json:"symbol"`
+			Address  string  `json:"address"`
+			ImageURL string  `json:"image_url"`
+			Name     string  `json:"name"`
+			Decimals int     `json:"decimals"`
+			EthPrice float64 `json:"eth_price"`
+			UsdPrice float64 `json:"usd_price"`
+		} `json:"payment_tokens"`
+		PrimaryAssetContracts []struct {
+			Address                     string      `json:"address"`
+			AssetContractType           string      `json:"asset_contract_type"`
+			CreatedDate                 string      `json:"created_date"`
+			Name                        string      `json:"name"`
+			NftVersion                  string      `json:"nft_version"`
+			OpenseaVersion              interface{} `json:"opensea_version"`
+			Owner                       int         `json:"owner"`
+			SchemaName                  string      `json:"schema_name"`
+			Symbol                      string      `json:"symbol"`
+			TotalSupply                 interface{} `json:"total_supply"`
+			Description                 string      `json:"description"`
+			ExternalLink                string      `json:"external_link"`
+			ImageURL                    string      `json:"image_url"`
+			DefaultToFiat               bool        `json:"default_to_fiat"`
+			DevBuyerFeeBasisPoints      int         `json:"dev_buyer_fee_basis_points"`
+			DevSellerFeeBasisPoints     int         `json:"dev_seller_fee_basis_points"`
+			OnlyProxiedTransfers        bool        `json:"only_proxied_transfers"`
+			OpenseaBuyerFeeBasisPoints  int         `json:"opensea_buyer_fee_basis_points"`
+			OpenseaSellerFeeBasisPoints int         `json:"opensea_seller_fee_basis_points"`
+			BuyerFeeBasisPoints         int         `json:"buyer_fee_basis_points"`
+			SellerFeeBasisPoints        int         `json:"seller_fee_basis_points"`
+			PayoutAddress               string      `json:"payout_address"`
+		} `json:"primary_asset_contracts"`
+		Traits struct {
+			XP struct {
+				Min int `json:"min"`
+				Max int `json:"max"`
+			} `json:"XP"`
+			PrintDate struct {
+				Min float64 `json:"min"`
+				Max float64 `json:"max"`
+			} `json:"print_date"`
+			Power struct {
+				Min float64 `json:"min"`
+				Max float64 `json:"max"`
+			} `json:"power"`
+			SerialNumber struct {
+				Min int `json:"min"`
+				Max int `json:"max"`
+			} `json:"serial_number"`
+			Level struct {
+				Min int `json:"min"`
+				Max int `json:"max"`
+			} `json:"level"`
+		} `json:"traits"`
+		Stats struct {
+			SevenDayVolume       float64 `json:"seven_day_volume"`
+			TotalVolume          float64 `json:"total_volume"`
+			SevenDayChange       float64 `json:"seven_day_change"`
+			SevenDaySales        float64 `json:"seven_day_sales"`
+			TotalSales           float64 `json:"total_sales"`
+			TotalSupply          float64 `json:"total_supply"`
+			Count                float64 `json:"count"`
+			NumOwners            int     `json:"num_owners"`
+			SevenDayAveragePrice float64 `json:"seven_day_average_price"`
+			AveragePrice         float64 `json:"average_price"`
+			NumReports           int     `json:"num_reports"`
+			MarketCap            float64 `json:"market_cap"`
+		} `json:"stats"`
+		BannerImageURL string `json:"banner_image_url"`
+		ChatURL        string `json:"chat_url"`
+		CreatedDate    string `json:"created_date"`
+		DefaultToFiat  bool   `json:"default_to_fiat"`
+		Description    string `json:"description"`
+		DisplayData    struct {
+			CardDisplayStyle string `json:"card_display_style"`
+		} `json:"display_data"`
+		ExternalURL                 string      `json:"external_url"`
+		Featured                    bool        `json:"featured"`
+		FeaturedImageURL            interface{} `json:"featured_image_url"`
+		Hidden                      bool        `json:"hidden"`
+		SafelistRequestStatus       string      `json:"safelist_request_status"`
+		ImageURL                    string      `json:"image_url"`
+		IsSubjectToWhitelist        bool        `json:"is_subject_to_whitelist"`
+		LargeImageURL               string      `json:"large_image_url"`
+		MediumUsername              interface{} `json:"medium_username"`
+		Name                        string      `json:"name"`
+		OnlyProxiedTransfers        bool        `json:"only_proxied_transfers"`
+		OpenseaBuyerFeeBasisPoints  string      `json:"opensea_buyer_fee_basis_points"`
+		OpenseaSellerFeeBasisPoints string      `json:"opensea_seller_fee_basis_points"`
+		PayoutAddress               string      `json:"payout_address"`
+		RequireEmail                bool        `json:"require_email"`
+		ShortDescription            interface{} `json:"short_description"`
+		Slug                        string      `json:"slug"`
+		TelegramURL                 string      `json:"telegram_url"`
+		TwitterUsername             string      `json:"twitter_username"`
+		InstagramUsername           interface{} `json:"instagram_username"`
+		WikiURL                     interface{} `json:"wiki_url"`
+	} `json:"collection"`
+	Decimals   int         `json:"decimals"`
+	SellOrders interface{} `json:"sell_orders"`
+	Creator    struct {
+		User struct {
+			Username string `json:"username"`
+		} `json:"user"`
+		ProfileImgURL string `json:"profile_img_url"`
+		Address       string `json:"address"`
+		Config        string `json:"config"`
+		DiscordID     string `json:"discord_id"`
+	} `json:"creator"`
+	Traits                  []SorareTrait `json:"traits"`
+	LastSale                interface{}   `json:"last_sale"`
+	TopBid                  interface{}   `json:"top_bid"`
+	ListingDate             interface{}   `json:"listing_date"`
+	IsPresale               bool          `json:"is_presale"`
+	TransferFeePaymentToken interface{}   `json:"transfer_fee_payment_token"`
+	TransferFee             interface{}   `json:"transfer_fee"`
+	RelatedAssets           []interface{} `json:"related_assets"`
+	Orders                  []interface{} `json:"orders"`
+	Auctions                []interface{} `json:"auctions"`
+	SupportsWyvern          bool          `json:"supports_wyvern"`
+	TopOwnerships           []struct {
+		Owner struct {
+			User          interface{} `json:"user"`
+			ProfileImgURL string      `json:"profile_img_url"`
+			Address       string      `json:"address"`
+			Config        string      `json:"config"`
+			DiscordID     string      `json:"discord_id"`
+		} `json:"owner"`
+		Quantity string `json:"quantity"`
+	} `json:"top_ownerships"`
+	Ownership              interface{} `json:"ownership"`
+	HighestBuyerCommitment interface{} `json:"highest_buyer_commitment"`
 }
 
 type SorareScraper struct {
@@ -268,7 +480,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 		error:         nil,
 		ethConnection: connection,
 		relDB:         rdb,
-		chanData:      make(chan *dia.NFT),
+		chanData:      make(chan dia.NFT),
 	}
 	s := &SorareScraper{
 		address:       common.HexToAddress("0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205"),
@@ -283,10 +495,13 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateNFT()
+			err := scraper.UpdateNFT()
+			if err != nil {
+				log.Error("updating nfts: ", err)
+			}
 		case <-scraper.nftscraper.shutdown: // user requested shutdown
 			log.Printf("Sorare scraper shutting down")
 			err := scraper.Close()
@@ -297,12 +512,13 @@ func (scraper *SorareScraper) mainLoop() {
 }
 
 func (scraper *SorareScraper) UpdateNFT() error {
+	fmt.Println("fetch data...")
 	nfts, err := scraper.FetchData()
 	if err != nil {
 		return err
 	}
 	for _, nft := range nfts {
-		scraper.GetDataChannel() <- &nft
+		scraper.GetDataChannel() <- nft
 	}
 	return nil
 }
@@ -316,67 +532,65 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 	var sorareNFTs []dia.NFT
 	var creatorAddress common.Address
 	var creationTime time.Time
-	// TO DO get NFT class from DB
-	//sorareNTFClass, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
-	sorareNTFClass := dia.NFTClass{
-		Blockchain:   dia.Ethereum,
-		Category:     "Game",
-		Address:      scraper.address,
-		Name:         "Sorare",
-		Symbol:       "SOR",
-		ContractType: "",
+	// NFT class from DB
+	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
+	if err != nil {
+		log.Error("getting nftclass ID: ", err)
+	}
+	sorareNFTClass, err := scraper.nftscraper.relDB.GetNFTClassByID(nftClassID)
+	if err != nil {
+		log.Error("getting nft by ID: ", err)
 	}
 
+	fmt.Println("total supply: ", int(totalSupply.Int64()))
 	for i := 0; i < int(totalSupply.Int64()); i++ {
+
 		var out SorareOutput
 		// 1. fetch data from onchain
 		tok, err := scraper.TokenByIndex(big.NewInt(int64(i)))
 		if err != nil {
-			fmt.Errorf("Error getting token ID: %+v", err)
-			continue
+			log.Errorf("Error getting token ID: %+v", err)
 		}
 		out.Card, err = scraper.GetCard(tok)
 		if err != nil {
-			fmt.Errorf("Error getting sorare card %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting sorare card %d: %+v", tok, err)
 		}
 		out.Player, err = scraper.GetPlayer(out.Card.PlayerId)
 		if err != nil {
-			fmt.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
-			continue
+			log.Errorf("Error getting player %d: %+v", out.Card.PlayerId, err)
 		}
-		out.Club, err = scraper.GetClub(out.Card.ClubId)
+
+		sorareClub, err := scraper.GetClub(out.Card.ClubId)
 		if err != nil {
-			fmt.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
-			continue
+			log.Errorf("Error getting club %d: %+v", out.Card.ClubId, err)
+		}
+		out.Club = Club{
+			NameClub:    sorareClub.Name,
+			CountryClub: sorareClub.Country,
+			CityClub:    sorareClub.City,
+			YearFounded: sorareClub.YearFounded,
 		}
 
 		tokenURI, err := scraper.GetTokenURI(tok)
 		if err != nil {
-			fmt.Errorf("Error getting token URI for %d: %+v", tok, err)
-			continue
+			log.Errorf("Error getting token URI for %d: %+v", tok, err)
 		}
 
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPlayer(tok)
 		if err != nil {
-			fmt.Errorf("Error getting Opensea data: %+v", err)
-			continue
+			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
-		result, err := json.Marshal(out)
-		if err != nil {
-			fmt.Errorf("Error converting NFT data to JSON: %+v", err)
-			continue
-		}
+		result := structs.Map(out)
 
 		// Set output object
 		sorareNFTs = append(sorareNFTs, dia.NFT{
-			TokenID:        tok.Uint64(),
+			TokenID:        tok.String(),
 			Attributes:     result,
 			CreatorAddress: creatorAddress,
 			CreationTime:   creationTime,
-			NFTClass:       sorareNTFClass,
+			NFTClass:       sorareNFTClass,
 			URI:            tokenURI,
 		})
 	}
@@ -442,12 +656,7 @@ func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, c
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, creatorAddress, creationTime, err
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, creatorAddress, creationTime, err
 	}
@@ -511,7 +720,7 @@ func GetCreationTime(playerResp []byte) (time.Time, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *SorareScraper) GetDataChannel() chan *dia.NFT {
+func (scraper *SorareScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 
