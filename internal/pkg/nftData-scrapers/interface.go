@@ -9,7 +9,7 @@ import (
 )
 
 type NFTDataScraper interface {
-	GetDataChannel() chan *dia.NFT
+	GetDataChannel() chan dia.NFT
 	FetchData() ([]dia.NFT, error)
 }
 
@@ -25,5 +25,5 @@ type NFTScraper struct {
 	closed        bool
 	ethConnection *ethclient.Client
 	relDB         models.RelDatastore
-	chanData      chan *dia.NFT
+	chanData      chan dia.NFT
 }

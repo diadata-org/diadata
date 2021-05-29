@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "GRT-USDT",
+      "Ignore": false,
+      "Symbol": "GRT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "PERP-USDT",
+      "Ignore": false,
+      "Symbol": "PERP"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "NEAR-USDT",
       "Ignore": false,
       "Symbol": "NEAR"

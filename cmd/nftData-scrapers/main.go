@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/jackc/pgconn"
 
 	nftdatascrapers "github.com/diadata-org/diadata/internal/pkg/nftData-scrapers"
 	log "github.com/sirupsen/logrus"
@@ -41,16 +43,32 @@ func main() {
 
 }
 
-func handleData(dataChannel chan *dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB) {
+func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB) {
 	defer wg.Done()
 
 	for {
-		fq, ok := <-dataChannel
+		nft, ok := <-dataChannel
 		if !ok {
 			log.Error("error")
 			return
 		}
-		rdb.SetNFT(*fq)
+		log.Info("set nft: ", nft)
+		err := rdb.SetNFT(nft)
+		if err != nil {
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				if pgErr.Code == "23505" {
+					log.Infof("nft %v from class %s already in db. continue.", nft.TokenID, nft.NFTClass.Name)
+					continue
+				} else {
+					log.Errorf("postgres error saving nft %v: %v", nft.NFTClass.Name, nft.TokenID)
+				}
+			} else {
+				log.Errorf("Error saving nft %v: %v", nft.NFTClass.Name, nft.TokenID)
+			}
+		} else {
+			log.Info("successfully set nft ", nft.NFTClass.Name, nft.TokenID)
+		}
 	}
 
 }
