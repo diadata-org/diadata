@@ -94,11 +94,11 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 		if err != nil {
 			log.Error(err)
 		}
-		assetContractsAsc, err := fetchClasses(k*50, 50, "asc")
-		assetContracts = append(assetContracts, assetContractsAsc...)
-		if err != nil {
-			log.Error(err)
-		}
+		// assetContractsAsc, err := fetchClasses(k*50, 50, "asc")
+		// assetContracts = append(assetContracts, assetContractsAsc...)
+		// if err != nil {
+		// 	log.Error(err)
+		// }
 		for _, contract := range assetContracts {
 			nftClass := dia.NFTClass{
 				Address:      common.HexToAddress(contract.Address),
