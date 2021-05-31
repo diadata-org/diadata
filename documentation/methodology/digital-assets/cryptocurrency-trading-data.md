@@ -16,9 +16,12 @@ We remark that by the very nature of a websocket API, there is no retrieval freq
 | Exchange | API Type | API Link | Retrieval Period |
 | :--- | :--- | :--- | :--- |
 | Binance | Rest | [Binance Rest API Documentation](https://binance-docs.github.io/apidocs/spot/en/#introduction) | 1 sec. |
+| BitBay | Websocket | [Bitbay API Documentation](https://docs.bitbay.net/v1.0.1-en/reference) | - |
 | Bitfinex | Websocket | [Bitfinex Websocket Documentation](https://docs.bitfinex.com/docs/ws-general) | - |
+| BitMax | Websocket | [Bitmax API Documentation](https://bitmax-exchange.github.io/bitmax-pro-api/#bitmax-pro-api-documentation) | - |
 | Bittrex   | Rest | [Bittrex Rest API Documentation](https://bittrex.github.io/api/v1-1) | 7 sec. |
 | Coinbase | Websocket | [Coinbase Websocket Documentation](https://docs.pro.coinbase.com/) | - |
+| CREX24 | Websocket | [CREX24 Websocket Documentation](https://docs.crex24.com/trade-api/v2/#signalr-api-1-0-websocket) | - |
 | GateIO | Websocket | [GateIO Websocket Documentation](https://www.gate.io/docs/websocket/index.html) | - |
 | HitBTC | Websocket | [HitBTC Websocket Documentation](https://api.hitbtc.com/#socket-api-reference) | - |
 | Huobi | Websocket | [Huobi Websocket Documentation](https://huobiapi.github.io/docs/spot/v1/en/#websocket-market-data) | - |
@@ -27,6 +30,7 @@ We remark that by the very nature of a websocket API, there is no retrieval freq
 | LBank | Websocket API | [LBank Websocket Documentation](https://docs.lbkex.net/en/#websocket-api-market-data) | - |
 | OKEx | Websocket API | [OKEx Websocket Documentation](https://www.okex.com/docs/en/#ws_swap-README) | - |
 | Quoine | Rest API | [Quoine Rest API Documentation](https://developers.liquid.com/) | 1.5 sec.  |
+| STEX | Rest API | [STEX Rest API Documentation](https://help.stex.com/en/collections/1593608-api-v3-documentation) | 1 min. |
 | ZB | Websocket API | [ZB Websocket Documentation](https://www.zb.com/api#WebSocket%20API) | - |
 
 ### Decentralized Cryptocurrency Exchanges \(DEXes\)
@@ -47,6 +51,7 @@ In contrast to centralized exchanges, in decentralized exchanges it is possible 
 | Gnosis | [Smart Contract](https://etherscan.io/address/0x6F400810b62df8E13fded51bE75fF5393eaa841F) | [Github Repository](https://github.com/gnosis/dex-contracts) | Ethereum | - |
 | Kyber | [Smart Contract](https://etherscan.io/address/0x9AAb3f75489902f3a48495025729a0AF77d4b11e) | [Github Repository](https://github.com/KyberNetwork/smart-contracts) | Ethereum  | - |
 | Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | 2 min. |
+| PancakeSwap | [Smart Contract](https://bscscan.com/address/0xbcfccbde45ce874adcb698cc183debcf17952812) | [Github Repository](https://github.com/pancakeswap/pancake-swap-interface-v1) | Ethereum | - |
 | SushiSwap | [Smart Contract](https://etherscan.io/address/0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac) | [Github Repository](https://github.com/sushiswap/sushiswap/tree/master/contracts) | Ethereum | - |
 | Uniswap V2 | [Smart Contract](https://etherscan.io/address/0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f) | [Github Repository](https://github.com/Uniswap/uniswap-v2-core) | Ethereum | - |
 | Uniswap V3 | [Smart Contract](https://etherscan.io/address/0x1F98431c8aD98523631AE4a59f267346ea31F984#code) | [Github Repository](https://github.com/Uniswap/uniswap-v3-core) | Ethereum |  |
