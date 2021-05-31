@@ -38,11 +38,19 @@ type Quotation struct {
 	ITIN               string
 }
 
+func (q *Quotation) GetStripped() (stripped map[string]interface{}) {
+	stripped = make(map[string]interface{})
+	stripped["Symbol"] = q.Symbol
+	stripped["Price"] = q.Price
+	stripped["Time"] = q.Time
+	return
+}
+
 type Price struct {
-	Symbol     string
-	Name       string
-	Price      float64
-	Time       time.Time
+	Symbol string
+	Name   string
+	Price  float64
+	Time   time.Time
 }
 
 type InterestRate struct {
