@@ -6,60 +6,26 @@ description: >-
 
 # Chart Points
 
-The oracle exists on various blockchains and contains information about chart points. You can access a price quotation and the timestamp of the last update.
+The oracle contains information about chart points of an ever growing list of exchanges and assets. You can access a price quotation and the timestamp of the last update.
 
-1.  Access the corresponding [oracle smart contract](https://docs.diadata.org/documentation/oracle-documentation/deployed-contracts).
+1.  Access our [oracle smart contract](deployed-contracts.md).
 2. Call `getCoinInfo(exchange)` with `exchange` being the full name of the exchange such as `Uniswap`. You can use the "Read" section on Etherscan to execute this call.
 3. The response of the call contains three values:
    1. The current asset price in USD with a fix-comma notation of five decimals.
    2. The [UNIX timestamp](https://www.unixtimestamp.com/) of the last oracle update.
    3. The short name of the quoted asset, e.g., `ETH` for Ethereum.
 
-As of now, the following list of price points is available in this oracle:
-
-**Ethereum Mainnet:**
-
-* PanCakeSwap \(WBNB\)
-
-**Binance Smart Chain:**
-
-* 0x \(ETH\)
-* Bancor \(ETH\)
-* Bitmax \(ETH\)
-* CREX24 \(CREX\)
-* Curvefi \(DAI\)
-* Gnosis \(ETH\)
-* Kyber \(ETH\)
-* STEX \(PLEX\)
-* SushiSwap \(ETH\)
-* Uniswap \(ETH\)
-* PanCakeSwap \(WBNB\)
-
-**Polygon \(Matic\):**
-
-* 0x \(ETH\)
-* Bancor \(ETH\)
-* Bitmax \(ETH\)
-* CREX24 \(CREX\)
-* Curvefi \(DAI\)
-* Gnosis \(ETH\)
-* Kyber \(ETH\)
-* STEX \(PLEX\)
-* SushiSwap \(ETH\)
-* Uniswap \(ETH\)
-* PanCakeSwap \(WBNB\) 
-
-**Moonbeam:**
-
-* 0x \(ETH\)
-* Bancor \(ETH\)
-* Bitmax \(ETH\)
-* CREX24 \(CREX\)
-* Curvefi \(DAI\)
-* Gnosis \(ETH\)
-* Kyber \(ETH\)
-* STEX \(PLEX\)
-* SushiSwap \(ETH\)
-* Uniswap \(ETH\)
-* PanCakeSwap \(WBNB\) 
+As of now, the following list of exchanges is available in this oracle:  
+- 0x \(ETH\)  
+- Bancor \(ETH\)  
+- Bitmax \(ETH\)  
+- CREX24 \(CREX\)  
+- Curvefi \(DAI\)  
+- Gnosis \(ETH\)  
+- Kyber \(ETH\)  
+- Loopring \(ETH\)  
+- STEX \(PLEX\)  
+- SushiSwap \(ETH\)  
+- Uniswap \(ETH\)  
+- PanCakeSwap \(WBNB\)
 

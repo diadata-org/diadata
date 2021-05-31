@@ -49,6 +49,7 @@ In contrast to centralized exchanges, in decentralized exchanges it is possible 
 | Loopring | Websocket API | [Loopring Websocket Documentation](https://docs.loopring.io/en/websocket/overview.html) | Ethereum | 2 min. |
 | SushiSwap | [Smart Contract](https://etherscan.io/address/0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac) | [Github Repository](https://github.com/sushiswap/sushiswap/tree/master/contracts) | Ethereum | - |
 | Uniswap V2 | [Smart Contract](https://etherscan.io/address/0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f) | [Github Repository](https://github.com/Uniswap/uniswap-v2-core) | Ethereum | - |
+| Uniswap V3 | [Smart Contract](https://etherscan.io/address/0x1F98431c8aD98523631AE4a59f267346ea31F984#code) | [Github Repository](https://github.com/Uniswap/uniswap-v3-core) | Ethereum |  |
 | \_\_ |  | _Coming soon:_ |  |  |
 | Maker | Rest API | [Maker API Documentation](https://developer.makerdao.com/oasis/api/2/) | Ethereum | 1 min. |
 
