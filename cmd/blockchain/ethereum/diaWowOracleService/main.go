@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaWowOracleService"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -31,7 +31,7 @@ func main() {
 	var blockchainNode = flag.String("blockchainNode", "https://bsc-dataseed.binance.org/", "Node address for blockchain connection")
 	var sleepSeconds = flag.Int("sleepSeconds", 1, "Number of seconds to sleep between calls")
 	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between checking oracle runs")
-	var deviationPermille = flag.Int("deviationPermille", 30, "Permille of deviation to trigger an oracle update")
+	// var deviationPermille = flag.Int("deviationPermille", 30, "Permille of deviation to trigger an oracle update")
 	var chainId = flag.Int64("chainId", 56, "Chain-ID of the network to connect to")
 	flag.Parse()
 
