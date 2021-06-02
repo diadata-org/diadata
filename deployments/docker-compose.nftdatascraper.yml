@@ -1,7 +1,7 @@
 version: '3.2'
 services:
 
-  openseascraper:
+  sorarescraper:
     depends_on: [genericnftdatascraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
     command: /bin/nftDatascraper -nftclass=Sorare

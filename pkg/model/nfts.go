@@ -23,6 +23,21 @@ func (rdb *RelDB) SetNFTClass(nftClass dia.NFTClass) error {
 	return nil
 }
 
+func (rdb *RelDB) GetNFTClass(address common.Address, blockchain string) (nftclass dia.NFTClass, err error) {
+	query := fmt.Sprintf("select symbol,name,contract_type,category from %s where address=$1 and blockchain=$2", nftclassTable)
+	var category interface{}
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address.Hex(), blockchain).Scan(&nftclass.Symbol, &nftclass.Name, &nftclass.ContractType, &category)
+	if err != nil {
+		return
+	}
+	nftclass.Address = address
+	nftclass.Blockchain = blockchain
+	if category != nil {
+		nftclass.Category = category.(string)
+	}
+	return
+}
+
 func (rdb *RelDB) GetNFTClassID(address common.Address, blockchain string) (ID string, err error) {
 	query := fmt.Sprintf("select nftclass_id from %s where address=$1 and blockchain=$2", nftclassTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address.String(), blockchain).Scan(&ID)
@@ -147,9 +162,43 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 	return nil
 }
 
-func (rdb *RelDB) GetNFT(address common.Address, tokenID uint64) (dia.NFT, error) {
-	// TO DO
-	return dia.NFT{}, nil
+func (rdb *RelDB) GetNFT(address common.Address, blockchain string, tokenID string) (dia.NFT, error) {
+	query := fmt.Sprintf("select nftclass_id,creation_time,creator_address,uri,attributes from %s where tokenid=$1", nftTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, tokenID)
+	if err != nil {
+		return dia.NFT{}, err
+	}
+	defer rows.Close()
+
+	var nfts []dia.NFT
+	var classIDs []string
+	for rows.Next() {
+		var nft dia.NFT
+		var nftClassID string
+		var creatoraddress string
+		err = rows.Scan(&nftClassID, &nft.CreationTime, &creatoraddress, &nft.URI, &nft.Attributes)
+		if err != nil {
+			log.Error(err)
+		}
+		nft.CreatorAddress = common.HexToAddress(creatoraddress)
+		nfts = append(nfts, nft)
+		classIDs = append(classIDs, nftClassID)
+	}
+	// Find the correct underlying nft class separately due too "conn busy" error:
+	// https://github.com/jackc/pgx/issues/635
+	for i := range nfts {
+		var refclass dia.NFTClass
+		refclass, err = rdb.GetNFTClassByID(classIDs[i])
+		if err != nil {
+			log.Error("could not find underlying nft class: ", err)
+		}
+		if refclass.Address == address && refclass.Blockchain == blockchain {
+			nft := nfts[i]
+			nft.NFTClass = refclass
+			return nft, nil
+		}
+	}
+	return dia.NFT{}, err
 }
 
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {

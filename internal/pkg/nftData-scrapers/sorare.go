@@ -310,24 +310,11 @@ func (scraper *SorareScraper) mainLoop() {
 }
 
 func (scraper *SorareScraper) UpdateNFT() error {
-	fmt.Println("fetch data...")
-	nfts, err := scraper.FetchData()
+	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return err
 	}
-	for _, nft := range nfts {
-		scraper.GetDataChannel() <- nft
-	}
-	return nil
-}
 
-func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
-	totalSupply, err := scraper.GetTotalSupply()
-	if err != nil {
-		return
-	}
-
-	var sorareNFTs []dia.NFT
 	var creatorAddress common.Address
 	var creationTime time.Time
 	// NFT class from DB
@@ -383,24 +370,18 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 		result := structs.Map(out)
 
 		// Set output object
-		sorareNFTs = append(sorareNFTs, dia.NFT{
+		sorareNFT := dia.NFT{
 			TokenID:        tok.String(),
 			Attributes:     result,
 			CreatorAddress: creatorAddress,
 			CreationTime:   creationTime,
 			NFTClass:       sorareNFTClass,
 			URI:            tokenURI,
-		})
-		log.Info("fetched nft: ", dia.NFT{
-			TokenID:        tok.String(),
-			Attributes:     result,
-			CreatorAddress: creatorAddress,
-			CreationTime:   creationTime,
-			NFTClass:       sorareNFTClass,
-			URI:            tokenURI,
-		})
+		}
+		log.Info("fetched nft: ", sorareNFT)
+		scraper.GetDataChannel() <- sorareNFT
 	}
-	return sorareNFTs, nil
+	return nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
@@ -552,4 +533,16 @@ func (scraper *SorareScraper) Close() error {
 	scraper.nftscraper.errorLock.RLock()
 	defer scraper.nftscraper.errorLock.RUnlock()
 	return scraper.nftscraper.error
+}
+
+func (scraper *SorareScraper) FetchData() ([]dia.NFT, error) {
+	// fmt.Println("fetch data...")
+	// nfts, err := scraper.FetchData()
+	// if err != nil {
+	// 	return err
+	// }
+	// for _, nft := range nfts {
+	// 	scraper.GetDataChannel() <- nft
+	// }
+	return []dia.NFT{}, nil
 }
