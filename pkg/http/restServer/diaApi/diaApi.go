@@ -88,12 +88,13 @@ func (env *Env) PostSupply(c *gin.Context) {
 // @Router /v1/quotation/:symbol: [get]
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
-	sign, ok := c.GetQuery("sign")
-	stripped, ok := c.GetQuery("stripped")
+	sign, signedExists := c.GetQuery("sign")
+	stripped, strippedExists := c.GetQuery("stripped")
 
 	q, err := env.DataStore.GetQuotation(symbol)
+
 	responseMap, err := utils.StructToMap(q)
-	if stripped == "true" {
+	if strippedExists && stripped == "true" {
 		responseMap = q.GetStripped()
 	}
 
@@ -104,7 +105,7 @@ func (env *Env) GetQuotation(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		if ok && sign == "true" {
+		if signedExists && sign == "true" {
 			signature, err := utils.SignData(responseMap)
 			if err != nil {
 				restApi.SendError(c, http.StatusInternalServerError, err)

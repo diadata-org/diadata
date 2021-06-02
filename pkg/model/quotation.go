@@ -67,7 +67,7 @@ func (db *DB) SetPriceUSD(symbol string, price float64) error {
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
 		Source: dia.Diadata,
-		Time:   time.Now(),
+		Time:   time.Now().Unix(),
 	})
 }
 
@@ -77,7 +77,7 @@ func (a *DB) SetPriceEUR(symbol string, price float64) error {
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
 		Source: dia.Diadata,
-		Time:   time.Now(),
+		Time:   time.Now().Unix(),
 	})
 }
 

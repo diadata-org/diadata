@@ -2,6 +2,7 @@ package models
 
 import (
 	"sort"
+	"time"
 
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -45,7 +46,8 @@ func (db *DB) GetCoins() (*Coins, error) {
 					if price.PriceYesterday != nil {
 						c1.PriceYesterday = price.PriceYesterday
 					}
-					c1.Time = price.Time
+
+					c1.Time = time.Unix(price.Time,0)
 					c1.VolumeYesterdayUSD = volume
 					supply, err := db.GetLatestSupply(symbol)
 					if err != nil {

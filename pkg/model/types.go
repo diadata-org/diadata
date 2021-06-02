@@ -34,7 +34,7 @@ type Quotation struct {
 	PriceYesterday     *float64
 	VolumeYesterdayUSD *float64
 	Source             string
-	Time               time.Time
+	Time               int64
 	ITIN               string
 }
 
