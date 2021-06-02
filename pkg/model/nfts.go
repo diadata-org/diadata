@@ -50,7 +50,7 @@ func (rdb *RelDB) GetNFTClassByID(id string) (nftclass dia.NFTClass, err error) 
 // GetAllNFTClasses returns all NFT classes on @blockchain.
 func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where blockchain=$1 and category is null order by name desc", nftclassTable)
+	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where blockchain=$1 order by name desc", nftclassTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain)
 	if err != nil {
 		return

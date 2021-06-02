@@ -805,12 +805,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "ETH",
             "ForeignName": "ETH-ERC223",
             "Exchange": "UniswapV2",
@@ -12355,12 +12349,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "KATA",
             "ForeignName": "KATA-ETH",
             "Exchange": "UniswapV2",
@@ -15759,12 +15747,6 @@
         {
             "Symbol": "aLEND",
             "ForeignName": "aLEND-LEND",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-CANDY",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
