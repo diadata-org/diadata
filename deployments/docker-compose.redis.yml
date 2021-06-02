@@ -18,3 +18,5 @@ services:
 
 networks:
   redis-network:
+    driver: overlay
+    attachable: true

@@ -19,3 +19,5 @@ services:
 
 networks:
   postgres-network:
+    driver: overlay
+    attachable: true
