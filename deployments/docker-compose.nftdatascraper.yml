@@ -1,0 +1,41 @@
+version: '3.2'
+services:
+
+  openseascraper:
+    depends_on: [genericnftdatascraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
+    command: /bin/nftDatascraper -nftclass=Sorare
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  genericnftdatascraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericNFTDataScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
+    restart: "no"
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+secrets:
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
+
+networks:
+  postgres-network:
+    external:
+        name: postgres_postgres-network

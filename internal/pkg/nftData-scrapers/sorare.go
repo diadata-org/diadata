@@ -289,6 +289,10 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
+	err := scraper.UpdateNFT()
+	if err != nil {
+		log.Error("updating nfts: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -380,6 +384,14 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 
 		// Set output object
 		sorareNFTs = append(sorareNFTs, dia.NFT{
+			TokenID:        tok.String(),
+			Attributes:     result,
+			CreatorAddress: creatorAddress,
+			CreationTime:   creationTime,
+			NFTClass:       sorareNFTClass,
+			URI:            tokenURI,
+		})
+		log.Info("fetched nft: ", dia.NFT{
 			TokenID:        tok.String(),
 			Attributes:     result,
 			CreatorAddress: creatorAddress,
