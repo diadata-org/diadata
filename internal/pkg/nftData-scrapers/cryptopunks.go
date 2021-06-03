@@ -408,16 +408,8 @@ func GetCryptopunkTraits(punkResp []byte) ([]CryptopunkTraits, error) {
 
 // GetCryptopunkAddress returns the creator address from Opensea
 func GetCryptopunkAddress(punkResp []byte) (common.Address, error) {
-	var resp OpenSeaCryptopunkResponse
-	var address common.Address
-	if err := json.Unmarshal(punkResp, &resp); err != nil {
-		return address, err
-	}
 
-	if resp.Creator == nil {
-		return common.Address{0}, nil
-	}
-	return common.Address{0}, nil
+	return common.HexToAddress("0xc352b534e8b987e036a93539fd6897f53488e56a"), nil
 }
 
 // GetCryptopunkCreationTime returns the creation time from Opensea
