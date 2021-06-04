@@ -2,12 +2,18 @@ package nftdatascrapers
 
 import (
 	"sync"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+const (
+	refreshDelay = time.Hour * 24
+)
+
+type nothing struct{}
 type NFTDataScraper interface {
 	GetDataChannel() chan dia.NFT
 	FetchData() ([]dia.NFT, error)
