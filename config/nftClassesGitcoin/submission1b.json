@@ -1,802 +1,804 @@
-[
-    {
-        "Address": "0x65b9344d3d81f2c00da30e303f8ec40110857495",
-        "Symbol": "MP3",
-        "Name": "Zplit Tokenized Music",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xabefbc9fd2f806065b4f3c237d4b59d9a97bcac7",
-        "Symbol": "ZORA",
-        "Name": "Zora",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x0fd42901e5d7b0b14574940e2f68a9d94afe5d7c",
-        "Symbol": "",
-        "Name": "Zodiac",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xa5f1ea7df861952863df2e8d1312f7305dabf215",
-        "Symbol": "ZED",
-        "Name": "ZED Horse",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Gaming"
-    },
-    {
-        "Address": "0xdf2f6ef713a46ea63f77b9511cc71569d4d63201",
-        "Symbol": "ZCL",
-        "Name": "Zastrin Courses",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0x382a0c85d41481dd37f927360271097b2176b393",
-        "Symbol": "Z",
-        "Name": "Z",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Gaming"
-    },
-    {
-        "Address": "0xbe40c0b67d03798948309f6f42874fadf25c07ab",
-        "Symbol": "",
-        "Name": "YouToken",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xa55651b16153b82c910dd1fba9f7c573e0ac2662",
-        "Symbol": "YOUONLYLOVEDMEWHENWEWEREHIGHCOLLECTIONOPENEDITIONSBYMARIUSSPERLICH",
-        "Name": "YOU ONLY LOVED ME WHEN WE WERE HIGH COLLECTION Open Editions by Marius Sperlich",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xb4b581ff5de940c5d803036054620e62e6f4f120",
-        "Symbol": "YouMe",
-        "Name": "YouMe",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xa3cebc9500dffb0f4c1a14cdba2d2a251b297971",
-        "Symbol": "YOKAICLUB",
-        "Name": "Yokai Club Community Token #1000",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x181aea6936b407514ebfc0754a37704eb8d98f91",
-        "Symbol": "yNFT",
-        "Name": "yInsureNFT",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Real-world Assets"
-    },
-    {
-        "Address": "0x529b6787c72a6c56b8baf5c758d95f99d2dfcf0d",
-        "Symbol": "YFI",
-        "Name": "YFI",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x020171085bcd43b6fd36ad8c95ad61848b1211a2",
-        "Symbol": "yGIFT",
-        "Name": "yearn Gift NFT",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xcb4bf0a3a12e382ee2b9c28587bf18a22a25a143",
-        "Symbol": "yeah",
-        "Name": "yea.hammer",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Gaming"
-    },
-    {
-        "Address": "0x25876cfb2a1e930e8130db5c416abef15eb98fe2",
-        "Symbol": "YCK digital luxury",
-        "Name": "YCK",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0x85773c1d866c89ca0b7c700f27e95a028a46b9e3",
-        "Symbol": "XYOW",
-        "Name": "XYO World 3.0",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xa9df13ccfcf4f4b0ac9d1368dc4ecb9af9d41df6",
-        "Symbol": "XROB",
-        "Name": "XonaRobotics",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x71e9f2f945d8c58b8a869f56573fc24e05bf526e",
-        "Symbol": "XNFT8",
-        "Name": "XNFT8",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xae58a82e84cedc7ef47830b97679044ef116edba",
-        "Symbol": "XNFT2",
-        "Name": "XNFT2",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x30630c16a44d67852f83fa30680f403dd696f167",
-        "Symbol": "XNFT17",
-        "Name": "XNFT17",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x4c4f0c486ff8bb50ef19c3f82bbf26c27209392b",
-        "Symbol": "XNFT15",
-        "Name": "XNFT15",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x93a36e088464334cdf9c3b2fcc534ae82e50dbe6",
-        "Symbol": "XNFT14",
-        "Name": "XNFT14",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x8d604ec183903dcd52a3af17dcc52bdf1cd5bc24",
-        "Symbol": "",
-        "Name": "XCOPY",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x60d92741bf44a4a7c240bbad29e328ff74232268",
-        "Symbol": "",
-        "Name": "X.CARDS",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x99b546a19cc1ec8ec9a6ce781a237ddb642dda77",
-        "Symbol": "XBYMURATPAK",
-        "Name": "X by Murat Pak",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x7c40c393dc0f283f318791d746d894ddd3693572",
-        "Symbol": "WMCR",
-        "Name": "Wrapped MoonCatsRescue",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x6f894a9368eda6d406dcaa2dcadf18792763c496",
-        "Symbol": "W",
-        "Name": "Wrapped-HashPunks",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6",
-        "Symbol": "WPUNKS",
-        "Name": "Wrapped Cryptopunks",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xd0e7bc3f1efc5f098534bce73589835b8273b9a0",
-        "Symbol": "WCCAT",
-        "Name": "Wrapped CryptoCats",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x1e7e42ff9a6c60ad5b7452fdc3a20c3a06fde21a",
-        "Symbol": "wAXIE",
-        "Name": "Wrapped Axie",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xac1aee5027fcc98d40a26588ac0841a44f53a8fe",
-        "Symbol": "",
-        "Name": "WORD",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0x10319d7994f211297de6ae555013a3eec23b9511",
-        "Symbol": "",
-        "Name": "WizardX Limited Artwork",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x1e1b3525388e8a63988f8455638aee87f68eeaa7",
-        "Symbol": "",
-        "Name": "WiV",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x64a0b52ccf9a1ee1cdec9975239781343417f0f3",
-        "Symbol": "WIP",
-        "Name": "WIP",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x94841826a98bdb3efdb493250e7882aa9954feed",
-        "Symbol": "",
-        "Name": "WGM Media",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xb3faf6e8af293bd2f87662e785b06ccd35af03bc",
-        "Symbol": "WEIRD",
-        "Name": "WEIRD",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x569406401da35a393cfcc69d9a82111691892a3a",
-        "Symbol": "MEME",
-        "Name": "Weensy Meme Cards",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x2d6e10561b320c4f31a903bf0fa92a1ed58637c0",
-        "Symbol": "",
-        "Name": "War Riders Gun",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x5caebd3b32e210e85ce3e9d51638b9c445481567",
-        "Symbol": "WR",
-        "Name": "War Riders",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x641dd4a952e0f7a4957fa8c9614eacf8fe550d25",
-        "Symbol": "WNFT",
-        "Name": "Warp Finance",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xe04cc101c671516ac790a6a6dc58f332b86978bb",
-        "Symbol": "WARNYMPHCOLLECTIONVOLOPENEDITIONSBYGRIMESXMAC",
-        "Name": "WarNymph Collection Vol 1 Open Editions By Grimes x Mac",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x2216d47494e516d8206b70fca8585820ed3c4946",
-        "Symbol": "WF",
-        "Name": "Waifus",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xc191ee8e39d8e7d73d076efbc80c307a710b46a3",
-        "Symbol": "VTUBE",
-        "Name": "VTuberNft",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x764e5a8c9ca14b456f5afbf31bfb2fa7f1e002b6",
-        "Symbol": "MFV",
-        "Name": "Voxters",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xafba8c6b3875868a90e5055e791213258a9fe7a7",
-        "Symbol": "VXO",
-        "Name": "VoxoDeus",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x4ac3191894614e6287f9fc3370e414c309806fa4",
-        "Symbol": "",
-        "Name": "Voxelboards",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xd68ec2a8d2b5818b2459681bb4a210076144e8cb",
-        "Symbol": "",
-        "Name": "Vorg.eth Voxels",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x57f0b53926dd62f2e26bc40b30140abea474da94",
-        "Symbol": "VNFT",
-        "Name": "VNFT",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xae03233307865623aaef76da9ade669b86e6f20a",
-        "Symbol": "VISOR",
-        "Name": "VISOR",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0x2f167764891ef106dda002d61039edcd2823aee4",
-        "Symbol": "VS",
-        "Name": "Vintage Ships",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xef9e50890693cc4f21d9dd33cd26c19f0bdeab60",
-        "Symbol": "",
-        "Name": "Vierter Crypto Stamp Stammtisch",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0xc8fb2c39e5e35ba76094571d6c5e895a433082f3",
-        "Symbol": "VERSIONONEBYPROXIMITYXMOHAMMEDOMRANXLACZAXTHEPYRAMIDWATCH",
-        "Name": "Version ONE.0 by Proximity x Mohammed Omran x Lacza x The Pyramid Watch",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x25292b34a0e5022c22a1a71ebb48b39027d78bc9",
-        "Symbol": "VNSV",
-        "Name": "Venus V",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xe6b159ead1fcb09841d246ed6ca62a0ef23f6cdb",
-        "Symbol": "VNSII",
-        "Name": "Venus II",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xa3aee8bce55beea1951ef834b99f3ac60d1abeeb",
-        "Symbol": "VFT",
-        "Name": "VeeFriends",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x156d3a3c7f9c6a5e197797b33ac9e58d3ee91597",
-        "Symbol": "",
-        "Name": "v7_mechanic_Logo",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x860bc96be37399616ec1ea9e63e19a7b9aa2a3d1",
-        "Symbol": "CRT",
-        "Name": "#V1NT4GE concert tickets",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x79f5a1b185586beb73184dfb2d6d836c9218376b",
-        "Symbol": "UTOPIAVSDYSTOPIADIFFERENTVISIONSOFTHEFUTUREOPENEDITIONSBYANNIBALESICONOLFIINWARD",
-        "Name": "Utopia vs Dystopia : Different Visions of The Future, Open Editions by Annibale Siconolfi ",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x797ce6d5a2e4ba7ed007b01a42f797a050a3cbd8",
-        "Symbol": "USNFT",
-        "Name": "US 2020 Election NFT",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x6ac07b7c4601b5ce11de8dfe6335b871c7c4dd4d",
-        "Symbol": "AZP",
-        "Name": "Urbit ID",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x8077a5d7e94bc172157604844392b10e8f9618f4",
-        "Symbol": "UOFM",
-        "Name": "Unity of Multi",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
-        "Symbol": "UNI-V3-POS",
-        "Name": "Uniswap V3 Positions NFT-V1",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0x2998d346c66259e3e73dd7410899948371a28e94",
-        "Symbol": "UNE",
-        "Name": "Unique One",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xbaf9266c419497c164f38ea7c62c6c8f8d4df95e",
-        "Symbol": "UNF",
-        "Name": "Unique Fans",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x94170434f82345a6630fa7945f991d201e1922db",
-        "Symbol": "UNIQLYONE",
-        "Name": "Uniqly Genesis Collection",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Real-world Assets"
-    },
-    {
-        "Address": "0x9293fdc3132608e68bd008f0d45a0c91bc2ad23f",
-        "Symbol": "UNIQLYONE",
-        "Name": "Uniqly Genesis Collection",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Real-world Assets"
-    },
-    {
-        "Address": "0x0d128001bc8c9fcb8dfb81778b147edf229d4672",
-        "Symbol": "UP",
-        "Name": "UniPangram",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x774418646555f414cbaeca6cf3c72a0613d4dab4",
-        "Symbol": "NIF",
-        "Name": "Unifty.io",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xbc9e25d15aad2824f5866955f5549869dd961685",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xdf74156420bd57ab387b195ed81eca36f9fabaca",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0x9c81ba58a80cbfaf879ec1440ac7b24f401f5873",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x238133ce985e09c7ad6c3009494992f73a6c3fad",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xfd1dbd4114550a867ca46049c346b6cd452ec919",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x100b8361baa522d69df839f0089fa1728aaa1aa8",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xd3fdaeac03cd397b37f98375dfac9308c933afa8",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Real-world Assets"
-    },
-    {
-        "Address": "0x798ee82618fa6b36a79f9eec87db611338a7f866",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xe4597f9182ba947f7f3bf8cbc6562285751d5aee",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Gaming"
-    },
-    {
-        "Address": "0xd23f5e5848b57f03626b7c924a8224975934a4db",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0xafb44cef938b1be600a4331bf9904f6cec2fcac3",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xd18928351e285a76b0cb61c5abae354ac0bdc0f1",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xd495255ca4a7f0f0dcd1d53f662607764558a5c6",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x2afa1b13d2df7da8c7942e7dc14432d4ffd7e459",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0x2e734269c869bda3ea6550f510d2514f2d66de71",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x598e29cd83582702ea289c1cb50b051484b7212c",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0xa983b3d938eedf79783ce88ed227a47b6861a3e9",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xed9e2b88feb7a94a682e7e3a59631e15e8442711",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xd6a30176bb3bc72385d517ea9d44970a06214fdf",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0xf9481510210c13be887d200fbb03036088638d79",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0xa2caea05ff7b98f10ad5ddc837f15905f33feb60",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0x32c5a8a33f282a776495a6544b0a97db24d8922e",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x39c40e0dd57f745b05d29c2253245c0df8b7bb30",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0x0db8c099b426677f575d512874d45a767e9acc3c",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Certificates and Licenses"
-    },
-    {
-        "Address": "0xaded9f5e2ecaf40ff90db452ec2fd600298b1c91",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xf98e7f2645d5a281386d1d8abffe653bfc3499c4",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x06799a1e4792001aa9114f0012b9650ca28059a3",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Real-world Assets"
-    },
-    {
-        "Address": "0x0e94325b3640d5c95de525eb6e3f4125d1e266c2",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": ""
-    },
-    {
-        "Address": "0xcd1dbc840e1222a445be7c1d8ecb900f9d930695",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x2d0d9b4075e231bff33141d69df49ffcf3be7642",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Collectibles"
-    },
-    {
-        "Address": "0x5c70591acaf87ddee68b50877d4975e498a32c1f",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "non-fungible",
-        "Category": "Arts"
-    },
-    {
-        "Address": "0xdd9dae51ec0b2514b088bd8b0a53b466d5ae628c",
-        "Symbol": "",
-        "Name": "Unidentified contract",
-        "Blockchain": "Ethereum",
-        "ContractType": "semi-fungible",
-        "Category": "Arts"
-    }
-]
+{
+    "NFTClasses": [
+        {
+            "Address": "0x65b9344d3d81f2c00da30e303f8ec40110857495",
+            "Symbol": "MP3",
+            "Name": "Zplit Tokenized Music",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xabefbc9fd2f806065b4f3c237d4b59d9a97bcac7",
+            "Symbol": "ZORA",
+            "Name": "Zora",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x0fd42901e5d7b0b14574940e2f68a9d94afe5d7c",
+            "Symbol": "",
+            "Name": "Zodiac",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xa5f1ea7df861952863df2e8d1312f7305dabf215",
+            "Symbol": "ZED",
+            "Name": "ZED Horse",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xdf2f6ef713a46ea63f77b9511cc71569d4d63201",
+            "Symbol": "ZCL",
+            "Name": "Zastrin Courses",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0x382a0c85d41481dd37f927360271097b2176b393",
+            "Symbol": "Z",
+            "Name": "Z",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xbe40c0b67d03798948309f6f42874fadf25c07ab",
+            "Symbol": "",
+            "Name": "YouToken",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xa55651b16153b82c910dd1fba9f7c573e0ac2662",
+            "Symbol": "YOUONLYLOVEDMEWHENWEWEREHIGHCOLLECTIONOPENEDITIONSBYMARIUSSPERLICH",
+            "Name": "YOU ONLY LOVED ME WHEN WE WERE HIGH COLLECTION Open Editions by Marius Sperlich",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xb4b581ff5de940c5d803036054620e62e6f4f120",
+            "Symbol": "YouMe",
+            "Name": "YouMe",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xa3cebc9500dffb0f4c1a14cdba2d2a251b297971",
+            "Symbol": "YOKAICLUB",
+            "Name": "Yokai Club Community Token #1000",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x181aea6936b407514ebfc0754a37704eb8d98f91",
+            "Symbol": "yNFT",
+            "Name": "yInsureNFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x529b6787c72a6c56b8baf5c758d95f99d2dfcf0d",
+            "Symbol": "YFI",
+            "Name": "YFI",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x020171085bcd43b6fd36ad8c95ad61848b1211a2",
+            "Symbol": "yGIFT",
+            "Name": "yearn Gift NFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xcb4bf0a3a12e382ee2b9c28587bf18a22a25a143",
+            "Symbol": "yeah",
+            "Name": "yea.hammer",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0x25876cfb2a1e930e8130db5c416abef15eb98fe2",
+            "Symbol": "YCK digital luxury",
+            "Name": "YCK",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0x85773c1d866c89ca0b7c700f27e95a028a46b9e3",
+            "Symbol": "XYOW",
+            "Name": "XYO World 3.0",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xa9df13ccfcf4f4b0ac9d1368dc4ecb9af9d41df6",
+            "Symbol": "XROB",
+            "Name": "XonaRobotics",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x71e9f2f945d8c58b8a869f56573fc24e05bf526e",
+            "Symbol": "XNFT8",
+            "Name": "XNFT8",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xae58a82e84cedc7ef47830b97679044ef116edba",
+            "Symbol": "XNFT2",
+            "Name": "XNFT2",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x30630c16a44d67852f83fa30680f403dd696f167",
+            "Symbol": "XNFT17",
+            "Name": "XNFT17",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x4c4f0c486ff8bb50ef19c3f82bbf26c27209392b",
+            "Symbol": "XNFT15",
+            "Name": "XNFT15",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x93a36e088464334cdf9c3b2fcc534ae82e50dbe6",
+            "Symbol": "XNFT14",
+            "Name": "XNFT14",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x8d604ec183903dcd52a3af17dcc52bdf1cd5bc24",
+            "Symbol": "",
+            "Name": "XCOPY",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x60d92741bf44a4a7c240bbad29e328ff74232268",
+            "Symbol": "",
+            "Name": "X.CARDS",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x99b546a19cc1ec8ec9a6ce781a237ddb642dda77",
+            "Symbol": "XBYMURATPAK",
+            "Name": "X by Murat Pak",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x7c40c393dc0f283f318791d746d894ddd3693572",
+            "Symbol": "WMCR",
+            "Name": "Wrapped MoonCatsRescue",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6f894a9368eda6d406dcaa2dcadf18792763c496",
+            "Symbol": "W",
+            "Name": "Wrapped-HashPunks",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6",
+            "Symbol": "WPUNKS",
+            "Name": "Wrapped Cryptopunks",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xd0e7bc3f1efc5f098534bce73589835b8273b9a0",
+            "Symbol": "WCCAT",
+            "Name": "Wrapped CryptoCats",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x1e7e42ff9a6c60ad5b7452fdc3a20c3a06fde21a",
+            "Symbol": "wAXIE",
+            "Name": "Wrapped Axie",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xac1aee5027fcc98d40a26588ac0841a44f53a8fe",
+            "Symbol": "",
+            "Name": "WORD",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0x10319d7994f211297de6ae555013a3eec23b9511",
+            "Symbol": "",
+            "Name": "WizardX Limited Artwork",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x1e1b3525388e8a63988f8455638aee87f68eeaa7",
+            "Symbol": "",
+            "Name": "WiV",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x64a0b52ccf9a1ee1cdec9975239781343417f0f3",
+            "Symbol": "WIP",
+            "Name": "WIP",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x94841826a98bdb3efdb493250e7882aa9954feed",
+            "Symbol": "",
+            "Name": "WGM Media",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xb3faf6e8af293bd2f87662e785b06ccd35af03bc",
+            "Symbol": "WEIRD",
+            "Name": "WEIRD",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x569406401da35a393cfcc69d9a82111691892a3a",
+            "Symbol": "MEME",
+            "Name": "Weensy Meme Cards",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2d6e10561b320c4f31a903bf0fa92a1ed58637c0",
+            "Symbol": "",
+            "Name": "War Riders Gun",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5caebd3b32e210e85ce3e9d51638b9c445481567",
+            "Symbol": "WR",
+            "Name": "War Riders",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x641dd4a952e0f7a4957fa8c9614eacf8fe550d25",
+            "Symbol": "WNFT",
+            "Name": "Warp Finance",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xe04cc101c671516ac790a6a6dc58f332b86978bb",
+            "Symbol": "WARNYMPHCOLLECTIONVOLOPENEDITIONSBYGRIMESXMAC",
+            "Name": "WarNymph Collection Vol 1 Open Editions By Grimes x Mac",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x2216d47494e516d8206b70fca8585820ed3c4946",
+            "Symbol": "WF",
+            "Name": "Waifus",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xc191ee8e39d8e7d73d076efbc80c307a710b46a3",
+            "Symbol": "VTUBE",
+            "Name": "VTuberNft",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x764e5a8c9ca14b456f5afbf31bfb2fa7f1e002b6",
+            "Symbol": "MFV",
+            "Name": "Voxters",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xafba8c6b3875868a90e5055e791213258a9fe7a7",
+            "Symbol": "VXO",
+            "Name": "VoxoDeus",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x4ac3191894614e6287f9fc3370e414c309806fa4",
+            "Symbol": "",
+            "Name": "Voxelboards",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xd68ec2a8d2b5818b2459681bb4a210076144e8cb",
+            "Symbol": "",
+            "Name": "Vorg.eth Voxels",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x57f0b53926dd62f2e26bc40b30140abea474da94",
+            "Symbol": "VNFT",
+            "Name": "VNFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xae03233307865623aaef76da9ade669b86e6f20a",
+            "Symbol": "VISOR",
+            "Name": "VISOR",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0x2f167764891ef106dda002d61039edcd2823aee4",
+            "Symbol": "VS",
+            "Name": "Vintage Ships",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xef9e50890693cc4f21d9dd33cd26c19f0bdeab60",
+            "Symbol": "",
+            "Name": "Vierter Crypto Stamp Stammtisch",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0xc8fb2c39e5e35ba76094571d6c5e895a433082f3",
+            "Symbol": "VERSIONONEBYPROXIMITYXMOHAMMEDOMRANXLACZAXTHEPYRAMIDWATCH",
+            "Name": "Version ONE.0 by Proximity x Mohammed Omran x Lacza x The Pyramid Watch",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x25292b34a0e5022c22a1a71ebb48b39027d78bc9",
+            "Symbol": "VNSV",
+            "Name": "Venus V",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xe6b159ead1fcb09841d246ed6ca62a0ef23f6cdb",
+            "Symbol": "VNSII",
+            "Name": "Venus II",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xa3aee8bce55beea1951ef834b99f3ac60d1abeeb",
+            "Symbol": "VFT",
+            "Name": "VeeFriends",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x156d3a3c7f9c6a5e197797b33ac9e58d3ee91597",
+            "Symbol": "",
+            "Name": "v7_mechanic_Logo",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x860bc96be37399616ec1ea9e63e19a7b9aa2a3d1",
+            "Symbol": "CRT",
+            "Name": "#V1NT4GE concert tickets",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x79f5a1b185586beb73184dfb2d6d836c9218376b",
+            "Symbol": "UTOPIAVSDYSTOPIADIFFERENTVISIONSOFTHEFUTUREOPENEDITIONSBYANNIBALESICONOLFIINWARD",
+            "Name": "Utopia vs Dystopia : Different Visions of The Future, Open Editions by Annibale Siconolfi ",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x797ce6d5a2e4ba7ed007b01a42f797a050a3cbd8",
+            "Symbol": "USNFT",
+            "Name": "US 2020 Election NFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6ac07b7c4601b5ce11de8dfe6335b871c7c4dd4d",
+            "Symbol": "AZP",
+            "Name": "Urbit ID",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x8077a5d7e94bc172157604844392b10e8f9618f4",
+            "Symbol": "UOFM",
+            "Name": "Unity of Multi",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+            "Symbol": "UNI-V3-POS",
+            "Name": "Uniswap V3 Positions NFT-V1",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0x2998d346c66259e3e73dd7410899948371a28e94",
+            "Symbol": "UNE",
+            "Name": "Unique One",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xbaf9266c419497c164f38ea7c62c6c8f8d4df95e",
+            "Symbol": "UNF",
+            "Name": "Unique Fans",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x94170434f82345a6630fa7945f991d201e1922db",
+            "Symbol": "UNIQLYONE",
+            "Name": "Uniqly Genesis Collection",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x9293fdc3132608e68bd008f0d45a0c91bc2ad23f",
+            "Symbol": "UNIQLYONE",
+            "Name": "Uniqly Genesis Collection",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x0d128001bc8c9fcb8dfb81778b147edf229d4672",
+            "Symbol": "UP",
+            "Name": "UniPangram",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x774418646555f414cbaeca6cf3c72a0613d4dab4",
+            "Symbol": "NIF",
+            "Name": "Unifty.io",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xbc9e25d15aad2824f5866955f5549869dd961685",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xdf74156420bd57ab387b195ed81eca36f9fabaca",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0x9c81ba58a80cbfaf879ec1440ac7b24f401f5873",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x238133ce985e09c7ad6c3009494992f73a6c3fad",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xfd1dbd4114550a867ca46049c346b6cd452ec919",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x100b8361baa522d69df839f0089fa1728aaa1aa8",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xd3fdaeac03cd397b37f98375dfac9308c933afa8",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x798ee82618fa6b36a79f9eec87db611338a7f866",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xe4597f9182ba947f7f3bf8cbc6562285751d5aee",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xd23f5e5848b57f03626b7c924a8224975934a4db",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0xafb44cef938b1be600a4331bf9904f6cec2fcac3",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xd18928351e285a76b0cb61c5abae354ac0bdc0f1",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xd495255ca4a7f0f0dcd1d53f662607764558a5c6",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2afa1b13d2df7da8c7942e7dc14432d4ffd7e459",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0x2e734269c869bda3ea6550f510d2514f2d66de71",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x598e29cd83582702ea289c1cb50b051484b7212c",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0xa983b3d938eedf79783ce88ed227a47b6861a3e9",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xed9e2b88feb7a94a682e7e3a59631e15e8442711",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xd6a30176bb3bc72385d517ea9d44970a06214fdf",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xf9481510210c13be887d200fbb03036088638d79",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0xa2caea05ff7b98f10ad5ddc837f15905f33feb60",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0x32c5a8a33f282a776495a6544b0a97db24d8922e",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x39c40e0dd57f745b05d29c2253245c0df8b7bb30",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x0db8c099b426677f575d512874d45a767e9acc3c",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Certificates and Licenses"
+        },
+        {
+            "Address": "0xaded9f5e2ecaf40ff90db452ec2fd600298b1c91",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xf98e7f2645d5a281386d1d8abffe653bfc3499c4",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x06799a1e4792001aa9114f0012b9650ca28059a3",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0x0e94325b3640d5c95de525eb6e3f4125d1e266c2",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": ""
+        },
+        {
+            "Address": "0xcd1dbc840e1222a445be7c1d8ecb900f9d930695",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2d0d9b4075e231bff33141d69df49ffcf3be7642",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5c70591acaf87ddee68b50877d4975e498a32c1f",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xdd9dae51ec0b2514b088bd8b0a53b466d5ae628c",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        }
+    ]
+}
