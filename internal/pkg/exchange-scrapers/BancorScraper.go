@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math"
 	"math/big"
 	"strings"
@@ -147,8 +146,6 @@ func (scraper *BancorScraper) mainLoop() {
 		for {
 
 			rawSwap := <-sink
-			fmt.Println("fromToken: ", rawSwap.FromToken.Hex())
-			fmt.Println("toToken: ", rawSwap.ToToken.Hex())
 
 			var address []common.Address
 			swap, err := scraper.normalizeSwap(rawSwap)
@@ -156,15 +153,12 @@ func (scraper *BancorScraper) mainLoop() {
 				log.Error("error normalizeSwap: ", err)
 
 			}
-			fmt.Println("swap: ", swap)
+
 			price, volume := scraper.getSwapData(swap)
-			fmt.Println("price: ", price)
-			fmt.Println("volume: ", volume)
 			address = append(address, rawSwap.FromToken)
 			address = append(address, rawSwap.ToToken)
 
 			pair := scraper.GetPair(address)
-			fmt.Println("address: ", address)
 
 			trade := &dia.Trade{
 				Symbol:         pair.Symbol,
@@ -176,13 +170,7 @@ func (scraper *BancorScraper) mainLoop() {
 				Source:         scraper.exchangeName,
 			}
 
-			if volume == 0 {
-				log.Info("volume 0 trade: ", trade)
-				log.Info("-------------------------------")
-			} else {
-				log.Info("Got Trade: ", trade)
-			}
-
+			log.Info("Got Trade: ", trade)
 			scraper.chanTrades <- trade
 
 		}
@@ -236,7 +224,6 @@ func (scraper *BancorScraper) GetConversion() (chan *BancorNetwork.BancorNetwork
 func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkConversion) (BancorSwap, error) {
 	var normalizedSwap BancorSwap
 	if swap.FromToken.Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
-		fmt.Println("amount0: ", swap.FromAmount)
 		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.FromAmount), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
 		normalizedSwap.FromAmount = amount0
 	} else {
@@ -254,9 +241,8 @@ func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkCo
 	}
 
 	if swap.ToToken.Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
-		fmt.Println("amount1: ", swap.ToAmount)
 		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.ToAmount), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
-		normalizedSwap.FromAmount = amount1
+		normalizedSwap.ToAmount = amount1
 	} else {
 		toToken, err := uniswapcontract.NewIERC20(swap.ToToken, scrapper.RestClient)
 		if err != nil {
@@ -271,7 +257,7 @@ func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkCo
 		normalizedSwap.ToAmount = amount1
 	}
 
-	pair := scrapper.GetPair([]common.Address{swap.FromToken, swap.ToToken})
+	pair := scrapper.GetPair([]common.Address{swap.ToToken, swap.FromToken})
 	normalizedSwap.Pair = pair
 	normalizedSwap.ID = swap.Raw.TxHash.Hex()
 	normalizedSwap.Timestamp = time.Now().Unix()
@@ -393,8 +379,6 @@ func (scraper *BancorScraper) ConverterTypeFour(address common.Address) (tokenAd
 		return
 	}
 
-	log.Println("tokenCount", tokenCount)
-
 	if tokenCount == 2 {
 		token1, err := contract.ConnectorTokens(&bind.CallOpts{}, big.NewInt(1))
 		if err != nil {
@@ -465,31 +449,33 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 }
 
 func (scraper *BancorScraper) GetPair(address []common.Address) dia.Pair {
+	var symbol0 string
+	var symbol1 string
 
 	token0, err := uniswapcontract.NewIERC20Caller(address[0], scraper.RestClient)
 	if err != nil {
 		log.Errorln("Error Getting token 0 ", err)
 	}
-
 	token1, err := uniswapcontract.NewIERC20Caller(address[1], scraper.RestClient)
 	if err != nil {
 		log.Errorln("Error Getting token 1 ", err)
 	}
 
-	symbol0, err := token0.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	symbol1, err := token1.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-
 	if address[0].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
 		symbol0 = "WETH"
+	} else {
+		symbol0, err = token0.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	if address[1].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
 		symbol1 = "WETH"
+	} else {
+		symbol1, err = token1.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 	return dia.Pair{
