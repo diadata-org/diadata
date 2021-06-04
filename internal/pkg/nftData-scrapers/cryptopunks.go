@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	cryptopunk "github.com/diadata-org/diadata/config/nftContracts/Cryptopunk"
+	cryptopunk "github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -18,10 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
 	structs "github.com/fatih/structs"
-)
-
-const (
-	source = "Cryptopunk"
 )
 
 type OpenSeaCryptopunkResponse struct {
@@ -276,10 +272,13 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CryptopunkScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateNFT()
+			err := scraper.UpdateNFT()
+			if err != nil {
+				log.Error("error updating NFT: ", err)
+			}
 		case <-scraper.nftscraper.shutdown: // user requested shutdown
 			log.Printf("Cryptopunk scraper shutting down")
 			err := scraper.Close()
@@ -311,9 +310,6 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
 	var cryptopunkNFTs []dia.NFT
-	// var creatorAddress common.Address
-	// var creationTime time.Time
-	// NFT class from DB
 	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
@@ -327,8 +323,6 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 		var out CryptopunkOutput
 		var creatorAddress common.Address
 		var creationTime time.Time
-		// 1. fetch data from onchain
-		// 2. fetch data from offchain
 
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPunk(big.NewInt(int64(i)))
 		if err != nil {
@@ -344,10 +338,8 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 			Attributes:     result,
 			URI:            scraper.cryptopunkURL + strconv.Itoa(i),
 		})
-
-		fmt.Printf("%+v\n", cryptopunkNFTs)
 	}
-	return []dia.NFT{}, nil
+	return cryptopunkNFTs, nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
