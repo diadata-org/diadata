@@ -65,6 +65,12 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) |
 
+### xDaiChain Sokol Testnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) |
+
 ### NEAR Testnet
 
 | Contract Name | Contract Address |
