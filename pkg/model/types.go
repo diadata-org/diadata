@@ -34,7 +34,8 @@ type Quotation struct {
 	PriceYesterday     *float64
 	VolumeYesterdayUSD *float64
 	Source             string
-	Time               int64
+	Time               time.Time
+	TimeStamp          int64
 	ITIN               string
 }
 
@@ -42,7 +43,7 @@ func (q *Quotation) GetStripped() (stripped map[string]interface{}) {
 	stripped = make(map[string]interface{})
 	stripped["Symbol"] = q.Symbol
 	stripped["Price"] = q.Price
-	stripped["Time"] = q.Time
+	stripped["TimeStamp"] = q.Time.Unix()
 	return
 }
 

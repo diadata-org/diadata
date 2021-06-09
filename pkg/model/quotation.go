@@ -61,23 +61,25 @@ func getKeyQuotationEUR(value string) string {
 // ------------------------------------------------------------------------------
 
 func (db *DB) SetPriceUSD(symbol string, price float64) error {
-
+	timeNow := time.Now()
 	return db.SetQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
-		Source: dia.Diadata,
-		Time:   time.Now().Unix(),
+		TimeStamp: timeNow.Unix(),
+		Time:      timeNow,
 	})
 }
 
 func (a *DB) SetPriceEUR(symbol string, price float64) error {
+	timeNow := time.Now()
 	return a.SetQuotationEUR(&Quotation{
-		Symbol: symbol,
-		Name:   helpers.NameForSymbol(symbol),
-		Price:  price,
-		Source: dia.Diadata,
-		Time:   time.Now().Unix(),
+		Symbol:    symbol,
+		Name:      helpers.NameForSymbol(symbol),
+		Price:     price,
+		Source:    dia.Diadata,
+		TimeStamp: timeNow.Unix(),
+		Time:      timeNow,
 	})
 }
 

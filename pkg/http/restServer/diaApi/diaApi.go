@@ -92,6 +92,8 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	stripped, strippedExists := c.GetQuery("stripped")
 
 	q, err := env.DataStore.GetQuotation(symbol)
+	timeNow := time.Now()
+	q = &models.Quotation{Time: timeNow,TimeStamp: timeNow.Unix(),Symbol: "BTC"}
 
 	responseMap, err := utils.StructToMap(q)
 	if strippedExists && stripped == "true" {
@@ -111,6 +113,9 @@ func (env *Env) GetQuotation(c *gin.Context) {
 				restApi.SendError(c, http.StatusInternalServerError, err)
 			}
 			responseMap["Sign"] = signature
+			// This Human readable time is required to make ir backward compatible
+			responseMap["Time"] = q.Time
+
 			c.JSON(http.StatusOK, responseMap)
 		} else {
 			c.JSON(http.StatusOK, q)

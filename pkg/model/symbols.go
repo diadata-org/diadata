@@ -146,7 +146,7 @@ func (db *DB) getSymbolDetails(symbol string) (*SymbolDetails, error) {
 				Name:               q.Name,
 				Price:              q.Price,
 				VolumeYesterdayUSD: q.VolumeYesterdayUSD,
-				Time:               time.Unix(q.Time,0),
+				Time:               q.Time,
 				PriceYesterday:     q.PriceYesterday,
 				ITIN:               itin.Itin,
 			},

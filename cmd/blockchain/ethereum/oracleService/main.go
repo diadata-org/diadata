@@ -835,8 +835,8 @@ func updateQuotation(quotation map[string]interface{}, supply *dia.Supply, auth 
 	if quotation["Sign"] != nil {
 		signature = quotation["Sign"].(string)
 	}
-	if quotation["Time"] != nil {
-		timestamp = int64(quotation["Time"].(float64))
+	if quotation["TimeStamp"] != nil {
+		timestamp = int64(quotation["TimeStamp"].(float64))
 	}
 
 
