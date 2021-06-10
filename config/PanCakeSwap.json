@@ -13,6 +13,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "WOW",
+            "ForeignName": "WOW-BUSD",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
             "Symbol": "D100",
             "ForeignName": "D100-WBNB",
             "Exchange": "PanCakeSwap",
