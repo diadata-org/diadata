@@ -3,14 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	verifiedTokens2 "github.com/diadata-org/diadata/pkg/assetservice/verifiedTokens"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/verifiedTokens"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -46,7 +45,7 @@ func main() {
 	var (
 		err           error
 		relDB         *models.RelDB
-		verifiedToken *verifiedTokens.VerifiedTokens
+		verifiedToken *verifiedTokens2.VerifiedTokens
 	)
 	task := &Task{
 		closed: make(chan struct{}),
@@ -60,7 +59,7 @@ func main() {
 	}
 
 	// verifiedToken come from a tokenlist: https://uniswap.org/blog/token-lists/
-	verifiedToken, err = verifiedTokens.New()
+	verifiedToken, err = verifiedTokens2.New()
 	if err != nil {
 		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
 	}
@@ -96,7 +95,7 @@ func main() {
 
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
-func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
+func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.VerifiedTokens) {
 	// TO DO: activate toggle
 	// toggle := getTogglePairDiscovery(updateTime)
 
@@ -442,7 +441,7 @@ func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	return coins.Coins, err
 }
 
-func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
+func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens2.VerifiedTokens) {
 	for {
 		select {
 		case <-t.closed:

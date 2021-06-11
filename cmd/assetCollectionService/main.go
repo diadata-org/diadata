@@ -4,9 +4,9 @@ import (
 	"flag"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/datasource"
+	"github.com/diadata-org/diadata/pkg/datasource"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
+	"github.com/diadata-org/diadata/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"

@@ -1,9 +1,8 @@
 package scrapers
 
 import (
+	datasource2 "github.com/diadata-org/diadata/pkg/datasource"
 	"io"
-
-	"github.com/diadata-org/diadata/internal/pkg/datasource"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -23,7 +22,7 @@ type nothing struct{}
 var Exchanges map[string]dia.Exchange
 
 func init() {
-	source, err := datasource.InitSource()
+	source, err := datasource2.InitSource()
 	if err != nil {
 		panic(err)
 	}
