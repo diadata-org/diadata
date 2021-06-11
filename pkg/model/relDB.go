@@ -170,10 +170,14 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 }
 
 func getPostgresURL(executionMode string) (url string) {
-	if executionMode == "production" {
-		url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+	if os.Getenv("USE_ENV") == "true" {
+		url = "postgresql://"+ os.Getenv("POSTGRES_HOST") + "/?user=" + os.Getenv("POSTGRES_USER") + "&password=" + os.Getenv("POSTGRES_PASSWORD")
 	} else {
-		url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+		if executionMode == "production" {
+			url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+		} else {
+			url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
+		}
 	}
 	return
 }
