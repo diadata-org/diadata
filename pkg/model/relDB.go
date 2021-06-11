@@ -171,7 +171,7 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 
 func getPostgresURL(executionMode string) (url string) {
 	if os.Getenv("USE_ENV") == "true" {
-		url = "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + os.Getenv("POSTGRES_HOST") + "/"+ os.Getenv("POSTGRES_DATABASE")
+		url = "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + "@" + os.Getenv("POSTGRES_HOST") + "/"+ os.Getenv("POSTGRES_DATABASE")
 	} else {
 		if executionMode == "production" {
 			url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
