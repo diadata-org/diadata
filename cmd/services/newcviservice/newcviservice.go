@@ -355,13 +355,13 @@ func CalculateSigma(ot OptionsTable, roi float64, t float64) float64 {
 }
 
 func FindMinimumMid(m map[float64]OptionsTable) (minimumStrikePrice float64) {
-	var minimum float64
+	var minimumDifference float64
+	minimumDifference = 100000000000000000
 	for strikePrice, table := range m {
-		if minimum < table.Difference {
-			minimumStrikePrice = strikePrice
-			minimum = table.Difference
+		if minimumDifference > table.Difference {
+ 			minimumStrikePrice = strikePrice
+			minimumDifference = table.Difference
 		}
-
 	}
 	return
 }
@@ -375,6 +375,7 @@ func CalculateMidAndDifference(m map[float64]OptionsTable) (calculated map[float
 		v.CallMid = (v.CallAsk + v.CallBid) / 2
 		v.PutMid = (v.PutAsk + v.PutBid) / 2
 		v.Difference = math.Abs(v.CallMid - v.PutMid)
+		v.StrikePrice = key
 		m[key] = v
 		if v.Difference == 0 {
 			delete(m, key)
