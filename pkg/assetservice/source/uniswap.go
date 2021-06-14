@@ -1,13 +1,13 @@
 package source
 
 import (
-	"math/big"
-
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"math/big"
 )
 
 type UniswapPair struct {
@@ -18,13 +18,13 @@ type UniswapPair struct {
 }
 
 const (
-	wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	// wsDial   = "ws://159.69.120.42:8546/"
-	// restDial = "http://159.69.120.42:8545/"
+	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	wsDial   =  "ws://159.69.120.42:8546/" // ETH_URI_WS
+	restDial = "http://159.69.120.42:8545/" // ETH_URI_REST
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
-	restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443" // ETH_URI_WS_BSC
+	restDialBSC = "https://bsc-dataseed2.defibit.io/" // ETH_URI_REST_BSC
 )
 
 type UniswapAssetSource struct {
@@ -46,12 +46,12 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(wsDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -63,12 +63,12 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		}
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(wsDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -80,11 +80,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		}
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(wsDialBSC)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}
-		restClient, err = ethclient.Dial(restDialBSC)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}

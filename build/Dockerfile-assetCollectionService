@@ -1,4 +1,4 @@
-FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-2 as build
+FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-9 as build
 
 WORKDIR $GOPATH/src/
 
