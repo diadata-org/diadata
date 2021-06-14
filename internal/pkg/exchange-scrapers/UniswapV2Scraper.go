@@ -29,8 +29,12 @@ const (
 	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
-	restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	wsDialBSC = "wss://bsc-ws-node.nariox.org:443"
+	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	restDialBSC = "https://bsc-dataseed.binance.org/"
+	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
+	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
+
 )
 
 type UniswapToken struct {
@@ -162,14 +166,31 @@ func (s *UniswapScraper) mainLoop() {
 		s.error = errors.New("Uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := 0; i < numPairs; i++ {
-		if s.exchangeName == "PanCakeSwap" {
-			time.Sleep(200 * time.Millisecond)
-		}
-
-		pair, err := s.GetPairByID(int64(i))
-		if err != nil {
-			log.Error("error fetching pair: ", err)
+	for i := -1; i < numPairs; i++ {
+		var pair UniswapPair
+		var err error
+		if i == -1 && s.exchangeName == "PanCakeSwap" {
+			token0 := UniswapToken{
+				Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
+				Symbol:   "WOW",
+				Decimals: uint8(18),
+			}
+			token1 := UniswapToken{
+				Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
+				Symbol:   "BUSD",
+				Decimals: uint8(18),
+			}
+			pair = UniswapPair{
+				Token0:      token0,
+				Token1:      token1,
+				ForeignName: "WOW-BUSD",
+				Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
+			}
+		} else {
+			pair, err = s.GetPairByID(int64(i))
+			if err != nil {
+				log.Error("error fetching pair: ", err)
+			}
 		}
 		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
 			log.Info("skip pair: ", pair.ForeignName)
