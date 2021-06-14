@@ -191,19 +191,10 @@ func CalculateVIX(asset UnderlyingAsset, ds *models.DB) {
 
 	// Get strike Price which is less or equal to the strike price of Forward Index
 
-	k01 := 0.0
-	for _, v := range nearstrikePrices {
-		if v < f1 && v > k01 {
-			k01 = v
-		}
-	}
+	k01 := findK1(nearstrikePrices,f1)
 
-	k02 := 0.0
-	for _, v := range nextstrikePrices {
-		if v < f2 && v > k02 {
-			k02 = v
-		}
-	}
+	k02 := findK2(nextstrikePrices,f2)
+
 	log.Infoln("Strike Price k01", k01)
 	log.Infoln("Strike Price k02", k02)
 
@@ -484,4 +475,24 @@ func calculateOTMPut(strikePrices []float64, optionTableCombined map[string]Opti
 	}
 	return otm
 
+}
+
+func findK1(nearstrikePrices []float64, forwardLevel float64 ) float64{
+	k01 := 0.0
+	for _, v := range nearstrikePrices {
+		if v < forwardLevel && v > k01 {
+			k01 = v
+		}
+	}
+	return k01
+}
+
+func findK2(nextstrikePrices []float64, forwardLevel float64) float64{
+	k02 := 0.0
+	for _, v := range nextstrikePrices {
+		if v < forwardLevel && v > k02 {
+			k02 = v
+		}
+	}
+	return k02
 }
