@@ -1,4 +1,4 @@
-FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-9 as build
+FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-11 as build
 
 WORKDIR $GOPATH/src/
 
@@ -8,6 +8,5 @@ RUN go install
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/assetCollectionService /bin/assetCollectionService
-COPY --from=build /go/src/github.com/diadata-org/diadata/config/ /config/
 
 CMD ["assetCollectionService"]

@@ -2,13 +2,13 @@ package defiscrapers
 
 import (
 	"fmt"
+	fortubev22 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/fortubev2"
+	token2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/fortubev2/token"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2/token"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 
@@ -47,7 +47,7 @@ func NewForTube(scraper *DefiScraper, protocol dia.DefiProtocol) *ForTubeProtoco
 func (proto *ForTubeProtocol) fetchALL() (rates []ForTubeRate, err error) {
 	fortubeV2Address := common.HexToAddress(proto.protocol.Address)
 
-	fortubeV2, err := fortubev2.NewFortubev2Caller(fortubeV2Address, proto.connection)
+	fortubeV2, err := fortubev22.NewFortubev2Caller(fortubeV2Address, proto.connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -58,7 +58,7 @@ func (proto *ForTubeProtocol) fetchALL() (rates []ForTubeRate, err error) {
 
 	for _, tkn := range markets {
 
-		tokenV2caller, err := token.NewTokenCaller(tkn, proto.connection)
+		tokenV2caller, err := token2.NewTokenCaller(tkn, proto.connection)
 		if err != nil {
 			log.Error(err)
 		}
@@ -80,7 +80,7 @@ func (proto *ForTubeProtocol) fetchALL() (rates []ForTubeRate, err error) {
 		if err != nil {
 			log.Error(err)
 		}
-		uTokenCaller, err := token.NewTokenCaller(underlying, proto.connection)
+		uTokenCaller, err := token2.NewTokenCaller(underlying, proto.connection)
 		if err != nil {
 			log.Error(err)
 		}

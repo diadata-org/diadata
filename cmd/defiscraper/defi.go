@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/dia-pkg/defiscrapers"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
-	defiscraper "github.com/diadata-org/diadata/internal/pkg/defiscrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -56,7 +56,7 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	} else {
 
-		sRate := defiscraper.SpawnDefiScraper(ds, *rateType)
+		sRate := defiscrapers.SpawnDefiScraper(ds, *rateType)
 		defer func() {
 			err := sRate.Close()
 			if err != nil {

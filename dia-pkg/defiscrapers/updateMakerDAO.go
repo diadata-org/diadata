@@ -2,14 +2,14 @@ package defiscrapers
 
 import (
 	"fmt"
+	erc20contract2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/makerdao/erc20contract"
+	jugcontract2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/makerdao/jugcontract"
+	potcontract2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/makerdao/potcontract"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/erc20contract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/jugcontract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/potcontract"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -181,7 +181,7 @@ func NewMakerdao(scraper *DefiScraper, protocol dia.DefiProtocol) *MakerdaoProto
 
 func (proto *MakerdaoProtocol) UpdateRate() error {
 	// DAI lending rate
-	pot, err := potcontract.NewPotcontract(common.HexToAddress("0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7"), proto.connection)
+	pot, err := potcontract2.NewPotcontract(common.HexToAddress("0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7"), proto.connection)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -206,7 +206,7 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 	proto.scraper.RateChannel() <- asset
 
 	// Collaterals borrowing rates
-	jug, err := jugcontract.NewJugcontract(common.HexToAddress("0x19c0976f590D67707E62397C87829d896Dc0f1F1"), proto.connection)
+	jug, err := jugcontract2.NewJugcontract(common.HexToAddress("0x19c0976f590D67707E62397C87829d896Dc0f1F1"), proto.connection)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -255,7 +255,7 @@ func (proto *MakerdaoProtocol) UpdateState() error {
 	totalUSDValueLocked := 0.
 
 	for _, col := range collaterals {
-		erc20, err := erc20contract.NewErc20contract(common.HexToAddress(col.tokenAddr), proto.connection)
+		erc20, err := erc20contract2.NewErc20contract(common.HexToAddress(col.tokenAddr), proto.connection)
 		if err != nil {
 			log.Fatal(err)
 		}

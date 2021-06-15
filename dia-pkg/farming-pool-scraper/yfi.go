@@ -2,11 +2,11 @@ package pool
 
 import (
 	"context"
+	strategy2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/yficontracts/strategy"
 	"math"
 	"math/big"
 	"time"
 
-	strategy "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/yficontracts/strategy"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -52,7 +52,7 @@ func (cv *YFIPool) mainLoop() {
 
 func (cv *YFIPool) scrapePools() (err error) {
 	for _, poolDetail := range cv.getYFIPools() {
-		strategy, err := strategy.NewStrategyCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
+		strategy, err := strategy2.NewStrategyCaller(common.HexToAddress(poolDetail.VaultAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}

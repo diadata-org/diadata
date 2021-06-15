@@ -2,6 +2,8 @@ package pool
 
 import (
 	"context"
+	proxy2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/synthetix/proxy"
+	synthetixcontract2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/synthetix/synthetix"
 	"math"
 	"math/big"
 	"time"
@@ -10,8 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	proxy "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/synthetix/proxy"
-	synthetixcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/synthetix/synthetix"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
@@ -65,7 +65,7 @@ func (sts *SynthetixScraper) scrapePools() error {
 	// https://synthetix.community/docs/claiming-rewards
 	// https://docs.synthetix.io/addresses/
 
-	sntxBase, err := synthetixcontract.NewISynthetixCaller(common.HexToAddress(synthetixBaseAddress), sts.restClient)
+	sntxBase, err := synthetixcontract2.NewISynthetixCaller(common.HexToAddress(synthetixBaseAddress), sts.restClient)
 	if err != nil {
 		log.Info(err)
 		return err
@@ -98,7 +98,7 @@ func (sts *SynthetixScraper) scrapePools() error {
 			log.Info(err)
 			return err
 		}
-		token, err := proxy.NewProxyERC20Caller(synthAddress, sts.restClient)
+		token, err := proxy2.NewProxyERC20Caller(synthAddress, sts.restClient)
 		if err != nil {
 			log.WithError(err).Error("loading SNX contract caller")
 			return err

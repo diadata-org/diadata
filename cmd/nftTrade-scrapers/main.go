@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
+	nftdatascrapers2 "github.com/diadata-org/diadata/dia-pkg/nftData-scrapers"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	nftdatascrapers "github.com/diadata-org/diadata/internal/pkg/nftData-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,12 +23,12 @@ func main() {
 
 	scraperType := flag.String("nftclass", "Sorare", "which NFT class")
 	flag.Parse()
-	var scraper nftdatascrapers.NFTDataScraper
+	var scraper nftdatascrapers2.NFTDataScraper
 
 	switch *scraperType {
 	case "Sorare":
 		log.Println("NFT Data Scraper: Start scraping data from Sorare")
-		scraper = nftdatascrapers.NewSorareScraper(rdb)
+		scraper = nftdatascrapers2.NewSorareScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)

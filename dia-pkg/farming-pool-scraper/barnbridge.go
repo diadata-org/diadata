@@ -2,12 +2,12 @@ package pool
 
 import (
 	"context"
+	bondvault2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/barnbridge/vaults/bond"
+	lpvault2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/barnbridge/vaults/lp"
+	stablecoinvault2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/barnbridge/vaults/stablecoin"
 	"math/big"
 	"time"
 
-	bondvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/bond"
-	lpvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/lp"
-	stablecoinvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/stablecoin"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -80,7 +80,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 	for _, pool := range pools {
 		switch pool.PoolID {
 		case "STABLECOIN":
-			vault, err := stablecoinvault.NewVaultCaller(common.HexToAddress(pools[0].VaultAddress), bd.RestClient)
+			vault, err := stablecoinvault2.NewVaultCaller(common.HexToAddress(pools[0].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}
@@ -102,7 +102,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "USDC_BOND_UNI_LP":
-			vault, err := lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
+			vault, err := lpvault2.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "BOND":
-			vault, err := bondvault.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
+			vault, err := bondvault2.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}

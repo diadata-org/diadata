@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
+	pool2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper"
 	"sync"
 
-	pool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	} else {
-		sRate := pool.SpawnPoolScraper(ds, *poolName)
+		sRate := pool2.SpawnPoolScraper(ds, *poolName)
 		defer func() {
 			err := sRate.Close()
 			if err != nil {

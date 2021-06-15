@@ -2,12 +2,12 @@ package defiscrapers
 
 import (
 	"fmt"
+	contract2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/bzx"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	bzxcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/bzx"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -56,8 +56,8 @@ func NewBZX(scraper *DefiScraper, protocol dia.DefiProtocol) *BZXProtocol {
 }
 
 func (proto *BZXProtocol) fetch(asset string) (bzxrate BZXRate, err error) {
-	var contract *bzxcontract.LoanTokenLogicV4Caller
-	contract, err = bzxcontract.NewLoanTokenLogicV4Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	var contract *contract2.LoanTokenLogicV4Caller
+	contract, err = contract2.NewLoanTokenLogicV4Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
 	if err != nil {
 		log.Error(err)
 		return

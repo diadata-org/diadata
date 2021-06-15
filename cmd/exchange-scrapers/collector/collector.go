@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/segmentio/kafka-go"

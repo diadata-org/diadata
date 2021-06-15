@@ -2,12 +2,12 @@ package pool
 
 import (
 	"context"
+	gauge2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/curveficontracts/gauge"
+	platform2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/curveficontracts/platform"
+	special2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/curveficontracts/special"
 	"math/big"
 	"time"
 
-	gauge "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/gauge"
-	platform "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/platform"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/special"
 	ethhelper "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -69,11 +69,11 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		if err != nil {
 			return err
 		}
-		platform, err := platform.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
+		platform, err := platform2.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
-		gauge, err := gauge.NewGauge(common.HexToAddress(poolDetail.GaugeAddress), cv.RestClient)
+		gauge, err := gauge2.NewGauge(common.HexToAddress(poolDetail.GaugeAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
@@ -127,11 +127,11 @@ func (cv *CFIScraper) scrapePools() (err error) {
 func (cv *CFIScraper) getCoins(poolAddress common.Address) ([]string, error) {
 	var symbols []string
 	var coin common.Address
-	platform, err := platform.NewPlatformCaller(poolAddress, cv.RestClient)
+	platform, err := platform2.NewPlatformCaller(poolAddress, cv.RestClient)
 	if err != nil {
 		return nil, err
 	}
-	special, err := special.NewSpecial(poolAddress, cv.RestClient)
+	special, err := special2.NewSpecial(poolAddress, cv.RestClient)
 	if err != nil {
 		return nil, err
 	}

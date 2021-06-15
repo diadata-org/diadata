@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	diaScifiOracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
 	"log"
 	"math/big"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -75,7 +75,7 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaScifiOracleService.DIAScifiOracle
+	var contract *diaScifiOracleService2.DIAScifiOracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -100,7 +100,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
+func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contract *diaScifiOracleService2.DIAScifiOracle) error {
 	rawIndex, err := getIndexValueFromDia(indexName)
 	if err != nil {
 		log.Fatalf("Failed to retrieve crypto index data from DIA: %v", err)
@@ -115,7 +115,7 @@ func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contr
 	return nil
 }
 
-func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
+func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract *diaScifiOracleService2.DIAScifiOracle) error {
 	symbol := iv.Asset.Name
 	value := iv.Value
 	timestamp := iv.CalculationTime.Unix()
@@ -145,10 +145,10 @@ func getIndexValueFromDia(symbol string) (*models.CryptoIndex, error) {
 	return &indices[0], nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaScifiOracleService.DIAScifiOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaScifiOracleService2.DIAScifiOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaScifiOracleService.NewDIAScifiOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaScifiOracleService2.NewDIAScifiOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -156,7 +156,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaScifiOracleService.DeployDIAScifiOracle(auth, conn)
+		addr, tx, *contract, err = diaScifiOracleService2.DeployDIAScifiOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -169,7 +169,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 }
 
 func updateOracle(
-	contract *diaScifiOracleService.DIAScifiOracle,
+	contract *diaScifiOracleService2.DIAScifiOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,

@@ -2,12 +2,10 @@ package pool
 
 import (
 	"context"
-
-	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
-	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
-
-	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
-	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
+	"github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/cvault"
+	erc2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/cvault/erc"
+	lptoken2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/cvault/lptoken"
+	supplyservice2 "github.com/diadata-org/diadata/dia-pkg/supplyService"
 
 	"math/big"
 	"time"
@@ -30,14 +28,14 @@ type Cvault struct {
 	scraper       *PoolScraper
 	RestClient    *ethclient.Client
 	WsClient      *ethclient.Client
-	DepositEvent  chan *cvaultcontract.CvaultpoolcontractDeposit
-	WithDrawEvent chan *cvaultcontract.CvaultpoolcontractWithdraw
+	DepositEvent  chan *cvaultpoolcontract.CvaultpoolcontractDeposit
+	WithDrawEvent chan *cvaultpoolcontract.CvaultpoolcontractWithdraw
 }
 
 func NewCvaultScraper(scraper *PoolScraper) *Cvault {
 
-	deposit := make(chan *cvaultcontract.CvaultpoolcontractDeposit)
-	withdrwa := make(chan *cvaultcontract.CvaultpoolcontractWithdraw)
+	deposit := make(chan *cvaultpoolcontract.CvaultpoolcontractDeposit)
+	withdrwa := make(chan *cvaultpoolcontract.CvaultpoolcontractWithdraw)
 	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +54,7 @@ func NewCvaultScraper(scraper *PoolScraper) *Cvault {
 // runs in a goroutine until s is closed
 func (cv *Cvault) mainLoop() {
 
-	fr, _ := cvaultcontract.NewCvaultpoolcontractFilterer(common.HexToAddress(cvaultAddress), cv.WsClient)
+	fr, _ := cvaultpoolcontract.NewCvaultpoolcontractFilterer(common.HexToAddress(cvaultAddress), cv.WsClient)
 	_, err := fr.WatchDeposit(&bind.WatchOpts{}, cv.DepositEvent, nil, nil)
 	if err != nil {
 		log.Errorln("Error Subscribing deposit events", err)
@@ -99,7 +97,7 @@ func (cv *Cvault) mainLoop() {
 func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	//TODO call all pool details at once and save in cache
 	log.Infoln("Getting Pool Info")
-	cvg, err := cvaultcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
+	cvg, err := cvaultpoolcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
 	if err != nil {
 		return
 	}
@@ -113,7 +111,7 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 		return
 	}
 
-	lptokenDetails, err := lptoken.NewLptokenCaller(pi.Token, cv.RestClient)
+	lptokenDetails, err := lptoken2.NewLptokenCaller(pi.Token, cv.RestClient)
 	if err != nil {
 		return
 	}
@@ -126,11 +124,11 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 		return
 	}
 
-	token1Details, err := erc.NewCvaultcontractCaller(token1, cv.RestClient)
+	token1Details, err := erc2.NewCvaultcontractCaller(token1, cv.RestClient)
 	if err != nil {
 		return
 	}
-	token0Details, err := erc.NewCvaultcontractCaller(token0, cv.RestClient)
+	token0Details, err := erc2.NewCvaultcontractCaller(token0, cv.RestClient)
 	if err != nil {
 		return
 	}
@@ -143,7 +141,7 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	if err != nil {
 		return
 	}
-	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lptokenAddress, cv.RestClient)
+	balLPToken, err := supplyservice2.GetWalletBalance(cvaultAddress, lptokenAddress, cv.RestClient)
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
 	var pr models.FarmingPool

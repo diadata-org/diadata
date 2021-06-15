@@ -2,12 +2,12 @@ package defiscrapers
 
 import (
 	"fmt"
+	compoundcontract2 "github.com/diadata-org/diadata/dia-pkg/defiscrapers/compound"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -126,8 +126,8 @@ func NewCreamFinance(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundP
 }
 
 func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
-	var contract *compoundcontract.CTokenCaller
-	contract, err := compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	var contract *compoundcontract2.CTokenCaller
+	contract, err := compoundcontract2.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
 	if err != nil {
 		return CompoundRate{}, err
 	}
@@ -137,8 +137,8 @@ func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 	if asset == "ETH" {
 		decs = big.NewInt(18)
 	} else {
-		var cContract *compoundcontract.CErc20Caller
-		cContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
+		var cContract *compoundcontract2.CErc20Caller
+		cContract, err = compoundcontract2.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
 		if err != nil {
 			return CompoundRate{}, err
 		}
@@ -147,8 +147,8 @@ func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 		if err != nil {
 			log.Error(err)
 		}
-		var underlyingContract *compoundcontract.CErc20Caller
-		underlyingContract, err = compoundcontract.NewCErc20Caller(address, proto.connection)
+		var underlyingContract *compoundcontract2.CErc20Caller
+		underlyingContract, err = compoundcontract2.NewCErc20Caller(address, proto.connection)
 		if err != nil {
 			return CompoundRate{}, err
 		}

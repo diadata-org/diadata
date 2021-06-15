@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"fmt"
+	writers2 "github.com/diadata-org/diadata/dia-pkg/scraper-writers"
 	"net/url"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
@@ -23,7 +23,7 @@ const scrapeDataSaveLocationCoinflex = ""
 type CoinflexFuturesScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
-	Writer    writers.Writer
+	Writer    writers2.Writer
 	Logger    *zap.SugaredLogger
 }
 
@@ -81,7 +81,7 @@ type ordersMatchedCoinflex struct {
 // NewCoinflexFuturesScraper - returns an instance of the coinflex scraper
 func NewCoinflexFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
-	writer := writers.FileWriter{}
+	writer := writers2.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer func() {
 		err := logger.Sync()

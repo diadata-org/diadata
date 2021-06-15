@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/dia-pkg/foreign-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,17 +21,17 @@ func main() {
 
 	scraperType := flag.String("foreignType", "", "which foreignQuotation")
 	flag.Parse()
-	var sc scrapers.ForeignScrapperer
+	var sc foreignscrapers.ForeignScrapperer
 
 	switch *scraperType {
 	case "Coingecko":
 		log.Println("Foreign Scraper: Start scraping data from Coingecko")
-		sc = scrapers.NewCoingeckoScraper(ds)
+		sc = foreignscrapers.NewCoingeckoScraper(ds)
 	case "CoinMarketCap":
 		log.Println("Foreign Scraper: Start scraping data from CoinMarketCap")
-		sc = scrapers.NewCoinMarketCapScraper(ds)
+		sc = foreignscrapers.NewCoinMarketCapScraper(ds)
 	default:
-		sc = scrapers.NewGenericForeignScraper()
+		sc = foreignscrapers.NewGenericForeignScraper()
 	}
 
 	wg.Add(1)

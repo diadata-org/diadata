@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"fmt"
+	writers2 "github.com/diadata-org/diadata/dia-pkg/scraper-writers"
 	"net/url"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 
 	zap "go.uber.org/zap"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,14 +21,14 @@ const scrapeDataSaveLocationBitflyer = ""
 type BitflyerScraper struct {
 	Markets   []string
 	WaitGroup *sync.WaitGroup
-	Writer    writers.Writer
+	Writer    writers2.Writer
 	Logger    *zap.SugaredLogger
 }
 
 // NewBitflyerFuturesScraper - returns an instance of an options scraper.
 func NewBitflyerFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
-	writer := writers.FileWriter{}
+	writer := writers2.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer func() {
 		err := logger.Sync()

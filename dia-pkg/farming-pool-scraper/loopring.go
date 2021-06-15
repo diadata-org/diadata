@@ -2,6 +2,9 @@ package pool
 
 import (
 	"context"
+	protocolfeevault2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/loopring/feeVault"
+	stakingpool2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/loopring/stakingpool"
+	"github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper/loopring/token"
 	"math"
 	"math/big"
 	"time"
@@ -10,10 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
-	stakingpool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
-	lrctoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
 )
 
 type LRCPool struct {
@@ -66,7 +65,7 @@ func (cv *LRCPool) scrapePools() (err error) {
 	}
 
 	// Get contract methods
-	stakingPool, err := stakingpool.NewUserStakingPoolCaller(common.HexToAddress(lrcStakingPoolAddress), cv.RestClient)
+	stakingPool, err := stakingpool2.NewUserStakingPoolCaller(common.HexToAddress(lrcStakingPoolAddress), cv.RestClient)
 	if err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func (cv *LRCPool) scrapePools() (err error) {
 	// if err != nil {
 	// 	return err
 	// }
-	feevault, err := protocolfeevault.NewProtocolFeeVaultCaller(common.HexToAddress(lrcFeeVaultAddress), cv.RestClient)
+	feevault, err := protocolfeevault2.NewProtocolFeeVaultCaller(common.HexToAddress(lrcFeeVaultAddress), cv.RestClient)
 	if err != nil {
 		return err
 	}
@@ -83,7 +82,7 @@ func (cv *LRCPool) scrapePools() (err error) {
 	if err != nil {
 		return err
 	}
-	token, err := lrctoken.NewLRCV2Caller(tokenaddress, cv.RestClient)
+	token, err := LRCtoken.NewLRCV2Caller(tokenaddress, cv.RestClient)
 	if err != nil {
 		return err
 	}

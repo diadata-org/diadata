@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	diaDefi100OracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"math/big"
 	"net/http"
 	"os"
@@ -13,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -84,7 +84,7 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaDefi100OracleService.DIADefi100Oracle
+	var contract *diaDefi100OracleService2.DIADefi100Oracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -108,7 +108,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaDefi100OracleService.DIADefi100Oracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaDefi100OracleService2.DIADefi100Oracle, conn *ethclient.Client) error {
 
 	// Defi100 data on CG
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
@@ -195,10 +195,10 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 	return &quotation, nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaDefi100OracleService.DIADefi100Oracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaDefi100OracleService2.DIADefi100Oracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaDefi100OracleService.NewDIADefi100Oracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaDefi100OracleService2.NewDIADefi100Oracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -206,7 +206,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaDefi100OracleService.DeployDIADefi100Oracle(auth, conn)
+		addr, tx, *contract, err = diaDefi100OracleService2.DeployDIADefi100Oracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -218,7 +218,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateMarketCap(marketCap float64, auth *bind.TransactOpts, contract *diaDefi100OracleService.DIADefi100Oracle, conn *ethclient.Client) error {
+func updateMarketCap(marketCap float64, auth *bind.TransactOpts, contract *diaDefi100OracleService2.DIADefi100Oracle, conn *ethclient.Client) error {
 	symbol := "Defi100"
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(marketCap*100000), timestamp)
@@ -230,7 +230,7 @@ func updateMarketCap(marketCap float64, auth *bind.TransactOpts, contract *diaDe
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaDefi100OracleService.DIADefi100Oracle, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaDefi100OracleService2.DIADefi100Oracle, conn *ethclient.Client) error {
 	symbol := quotation.Symbol
 	price := quotation.Price
 	timestamp := time.Now().Unix()
@@ -245,7 +245,7 @@ func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contr
 
 func updateOracle(
 	client *ethclient.Client,
-	contract *diaDefi100OracleService.DIADefi100Oracle,
+	contract *diaDefi100OracleService2.DIADefi100Oracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,

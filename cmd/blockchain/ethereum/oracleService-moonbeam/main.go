@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	oracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"log"
 	"math/big"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -77,7 +77,7 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *oracleService.DiaOracle
+	var contract *oracleService2.DiaOracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -102,7 +102,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 
 	// --------------------------------------------------------
 	// PRICE QUOTATIONS
@@ -665,7 +665,7 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 // Update methods
 // ------------------------------------------------------------------------------------------------
 
-func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(coin.Symbol)
 	name := coin.Name
 	supply := coin.CirculatingSupply
@@ -696,7 +696,7 @@ func updateCoin(coin models.Coin, auth *bind.TransactOpts, contract *oracleServi
 // 	return nil
 // }
 
-func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	if len(dexData.DataPoints[0].Series) > 0 && len(dexData.DataPoints[0].Series[0].Values) > 0 {
 		symbol := strings.ToUpper(dexData.DataPoints[0].Series[0].Values[0][3].(string))
 		name := dexData.DataPoints[0].Series[0].Values[0][1].(string)
@@ -734,7 +734,7 @@ func updateDEX(dexData *models.Points, auth *bind.TransactOpts, contract *oracle
 // 	return nil
 // }
 
-func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	symbol := strings.ToUpper(defiRate.Asset)
 	name := strings.ToUpper(defiRate.Protocol)
 	lendingRate := defiRate.LendingRate
@@ -749,7 +749,7 @@ func updateDefiRate(defiRate *dia.DefiRate, auth *bind.TransactOpts, contract *o
 	return nil
 }
 
-func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	symbol := ""
 	name := strings.ToUpper(defiState.Protocol.Name) + "-state"
 	price := defiState.TotalUSD
@@ -776,7 +776,7 @@ func updateDefiState(defiState *dia.DefiProtocolState, auth *bind.TransactOpts, 
 // 	return nil
 // }
 
-func updateQuotation(quotation *models.Quotation, supply *dia.Supply, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, supply *dia.Supply, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	name := quotation.Name
 	symbol := quotation.Symbol
 	price := quotation.Price
@@ -790,7 +790,7 @@ func updateQuotation(quotation *models.Quotation, supply *dia.Supply, auth *bind
 	return nil
 }
 
-func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, contract *oracleService.DiaOracle, conn *ethclient.Client) error {
+func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, contract *oracleService2.DiaOracle, conn *ethclient.Client) error {
 	protocolName := poolData.ProtocolName
 	poolID := poolData.PoolID
 	rate := poolData.Rate
@@ -803,10 +803,10 @@ func updateFarmingPool(poolData *models.FarmingPool, auth *bind.TransactOpts, co
 	return nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService.DiaOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **oracleService2.DiaOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = oracleService.NewDiaOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = oracleService2.NewDiaOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -814,7 +814,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = oracleService.DeployDiaOracle(auth, conn)
+		addr, tx, *contract, err = oracleService2.DeployDiaOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -1036,7 +1036,7 @@ func getFarmingPoolFromDia(protocol string, poolID string) (*models.FarmingPool,
 
 func updateOracle(
 	client *ethclient.Client,
-	contract *oracleService.DiaOracle,
+	contract *oracleService2.DiaOracle,
 	auth *bind.TransactOpts,
 	name string,
 	symbol string,

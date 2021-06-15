@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/binary"
 	"fmt"
+	writers2 "github.com/diadata-org/diadata/dia-pkg/scraper-writers"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -13,7 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	zap "go.uber.org/zap"
 	"golang.org/x/net/websocket"
@@ -43,7 +43,7 @@ var (
 type HuobiFuturesScraper struct {
 	Markets   []string // markets to scrape. To scrape all, call AllFuturesMarketsHuobi()
 	WaitGroup *sync.WaitGroup
-	Writer    writers.Writer // an interface to write the messages
+	Writer    writers2.Writer // an interface to write the messages
 	Logger    *zap.SugaredLogger
 }
 
@@ -52,7 +52,7 @@ type HuobiFuturesScraper struct {
 // NewHuobiFuturesScraper - returns an instance of the Huobi scraper
 func NewHuobiFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
-	writer := writers.FileWriter{}
+	writer := writers2.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
 	defer func() {
 		err := logger.Sync()
