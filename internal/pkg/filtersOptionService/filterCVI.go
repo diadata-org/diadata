@@ -3,12 +3,12 @@ package filters
 import (
 	"errors"
 	"fmt"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"math"
 	"sort"
 	"strings"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -69,7 +69,7 @@ func processMinutesUntilMidnight(now time.Time, timezone string) (float64, error
 }
 
 // MinutesUntilSettlement - how many minutes from midnight until settlement; If on the settlement day, however and after midnight, then count how many minutes until settlement (rather than count how many minutes from midnight until settlement)
-func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone string) (float64, error) {
+func MinutesUntilSettlement(settlement scrapers2.OptionSettlement, timezone string) (float64, error) {
 	const nilTime float64 = 0
 	loc, err := time.LoadLocation(timezone)
 	if err != nil {
@@ -84,7 +84,7 @@ func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone strin
 	switch timezone {
 	case "CET":
 		switch settlement {
-		case scrapers.RegularOptionSettlement:
+		case scrapers2.RegularOptionSettlement:
 			// 09:00 AM CET expiration for regular
 			d, err := time.ParseDuration("9h")
 			if err != nil {
@@ -92,7 +92,7 @@ func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone strin
 			}
 			t := mid.Add(d)
 			return t.Sub(mid).Minutes(), nil
-		case scrapers.WeeklyOptionSettlement:
+		case scrapers2.WeeklyOptionSettlement:
 			// 05:30 PM CET expiration for weekly
 			d, err := time.ParseDuration("17h30m")
 			if err != nil {
@@ -449,7 +449,7 @@ func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoi
 }
 
 // CVIFiltering is the actual filtering algorithm; computedCVIs is the channel through which we receive the calculated CVIs, filteredCVIs is the channel through which we send the filtered CVIs
-func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrapers.ComputedCVI) {
+func CVIFiltering(computedCVIs scrapers2.ComputedCVIs, filteredCVIs chan<- scrapers2.ComputedCVI) {
 	// it is the responsibility of the function that filters the CVIs to close the channel through which it communicates these values
 	defer close(filteredCVIs)
 	var baseline float64
@@ -463,7 +463,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 		if baseline == 0 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime
-			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
+			filteredCVIs <- scrapers2.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
 		// if no changes for 2 minutes or more
@@ -471,7 +471,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 		if noChangeCVItime.Minutes() >= 2 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime
-			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
+			filteredCVIs <- scrapers2.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
 		// ignoring or updating the CVI logic
@@ -479,12 +479,12 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 		if absDiff <= 0.49 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime
-			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
+			filteredCVIs <- scrapers2.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
 		if absDiff > 0.49 {
 			// do not update the CVI time so that we can check whether we have had the baseline for two minutes or more
-			filteredCVIs <- scrapers.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
+			filteredCVIs <- scrapers2.ComputedCVI{CVI: baseline, CalculationTime: time.Now()}
 			continue
 		}
 	}

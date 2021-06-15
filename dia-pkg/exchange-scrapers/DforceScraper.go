@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	dforce2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -20,19 +19,19 @@ import (
 )
 
 const (
-	gnosisWsDial         = "ws://159.69.120.42:8546/"
-	gnosisRestDial       = "http://159.69.120.42:8545/"
-	gnosisLookBackBlocks = 6 * 60 * 24 * 7
+	dforceWsDial         = "ws://159.69.120.42:8546/"
+	dforceRestDial       = "http://159.69.120.42:8545/"
+	dforceLookBackBlocks = 6 * 60 * 24 * 20
 )
 
-type GnosisToken struct {
+type DforceToken struct {
 	Symbol   string
 	Decimals uint8
 	Address  string
 	Name     string
 }
 
-type GnosisScraper struct {
+type DforceScraper struct {
 	exchangeName string
 
 	// channels to signal events
@@ -45,37 +44,37 @@ type GnosisScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*GnosisPairScraper
+	pairScrapers   map[string]*DforcePairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[uint16]*GnosisToken
+	tokens      map[string]*DforceToken
 	contract    common.Address
 }
 
-func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
-	scraper := &GnosisScraper{
-		exchangeName:   exchange.Name,
+func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
+	scraper := &DforceScraper{
 		contract:       exchange.Contract,
+		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*GnosisPairScraper),
+		pairScrapers:   make(map[string]*DforcePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[uint16]*GnosisToken),
+		tokens:         make(map[string]*DforceToken),
 	}
 
-	wsClient, err := ethclient.Dial(gnosisWsDial)
+	wsClient, err := ethclient.Dial(dforceWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(gnosisRestDial)
+	restClient, err := ethclient.Dial(dforceRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,32 +87,56 @@ func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
 	}
 	return scraper
 }
-func (scraper *GnosisScraper) loadTokens() {
-	fmt.Println("contract address: ", scraper.contract.String())
-	contract, err := gnosis.NewGnosisCaller(scraper.contract, scraper.RestClient)
+
+func (scraper *DforceScraper) loadTokens() {
+
+	// added by hand because the symbol method returns a bytes32 instead of string
+	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = &DforceToken{
+		Symbol:   "USDx",
+		Decimals: 18,
+	}
+
+	filterer, err := dforce2.NewDforceFilterer(scraper.contract, scraper.WsClient)
+	if err != nil {
+		log.Error(err)
+
+	}
+
+	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	startblock := header.Number.Uint64() - uint64(dforceLookBackBlocks)
+
+	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: startblock})
 	if err != nil {
 		log.Error(err)
 	}
-	numTokens, err := contract.NumTokens(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
+
+	for it.Next() {
+		i, _ := scraper.loadTokenData(it.Event.Input)
+		o, _ := scraper.loadTokenData(it.Event.Output)
+		log.Printf("\n %v  -%v- %v -%v- %v %v",
+			it.Event.Input.Hex(),
+			i.Symbol, i.Decimals,
+			o.Symbol, o.Decimals,
+			it.Event.Output.Hex())
 	}
-	count := uint16(0)
-	for i := uint16(0); i < numTokens; i++ {
-		tokenAddress, err := contract.TokenIdToAddressMap(&bind.CallOpts{}, i)
+
+}
+
+func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*DforceToken, error) {
+	tokenStr := tokenAddress.Hex()
+	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
+		return foundToken, nil
+	} else {
+		tokenCaller, err := token2.NewTokenCaller(tokenAddress, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
-			continue
-		}
-		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
-		if err != nil {
-			log.Error(err)
-			continue
 		}
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
-			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
@@ -123,40 +146,32 @@ func (scraper *GnosisScraper) loadTokens() {
 		if err != nil {
 			log.Error(err)
 		}
-
-		scraper.tokens[i] = &GnosisToken{
+		dfToken := &DforceToken{
 			Symbol:   symbol,
-			Decimals: uint8(decimals.Int64()),
+			Decimals: uint8(decimals.Uint64()),
 			Address:  tokenAddress.String(),
 			Name:     name,
 		}
-		scraper.tokens[count].normalizeETH()
-		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
-		count++
+		scraper.tokens[tokenStr] = dfToken
+		return dfToken, err
 	}
-	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
 }
 
-// FillSymbolData is not used by DEX scrapers.
-func (s *GnosisScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
-}
+func (scraper *DforceScraper) subscribeToTrades() error {
 
-func (scraper *GnosisScraper) subscribeToTrades() error {
-	filterer, err := gnosis.NewGnosisFilterer(scraper.contract, scraper.WsClient)
+	filterer, err := dforce2.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
-
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(gnosisLookBackBlocks)
+	startblock := header.Number.Uint64() - uint64(25250)
 
-	sink := make(chan *gnosis.GnosisTrade)
-	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
+	sink := make(chan *dforce2.DforceSwap)
+	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &startblock}, sink)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -188,52 +203,42 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 	return err
 }
 
-func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
-	symbol, foreignName, volume, price := scraper.getSwapDataGnosis(trade)
+func (scraper *DforceScraper) processTrade(trade *dforce2.DforceSwap) {
+	symbol, foreignName, volume, price, err := scraper.getSwapDataDforce(trade)
 	timestamp := time.Now().Unix()
+	if err != nil {
+		log.Error(err)
+	} else {
+		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
-
-		buyToken := scraper.tokens[trade.BuyToken]
-		sellToken := scraper.tokens[trade.SellToken]
-
-		token0 := dia.Asset{
-			Address: buyToken.Address,
-			Symbol:  buyToken.Symbol,
-			Name:    buyToken.Name,
+			trade := &dia.Trade{
+				Symbol:         symbol,
+				Pair:           pairScraper.pair.ForeignName,
+				Price:          price,
+				Volume:         volume,
+				Time:           time.Unix(timestamp, 0),
+				ForeignTradeID: "",
+				Source:         scraper.exchangeName,
+			}
+			pairScraper.parent.chanTrades <- trade
+			fmt.Println("got trade: ", trade)
 		}
-		token1 := dia.Asset{
-			Address: sellToken.Address,
-			Symbol:  sellToken.Symbol,
-			Name:    sellToken.Name,
-		}
-
-		trade := &dia.Trade{
-			Symbol:         symbol,
-			Pair:           pairScraper.pair.ForeignName,
-			Price:          price,
-			BaseToken:      token0,
-			QuoteToken:     token1,
-			Volume:         volume,
-			Time:           time.Unix(timestamp, 0),
-			ForeignTradeID: "",
-			Source:         scraper.exchangeName,
-		}
-		pairScraper.parent.chanTrades <- trade
-		fmt.Println("got trade: ", trade)
 	}
 
 }
 
-func (scraper *GnosisScraper) mainLoop() {
+func (scraper *DforceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+func (scraper *DforceScraper) mainLoop() {
 
 	scraper.run = true
-	log.Info("subscribe to trades...")
+
 	err := scraper.subscribeToTrades()
 	if err != nil {
 		log.Error(err)
 	}
-
 	go func() {
 		for scraper.run {
 			<-scraper.resubscribe
@@ -263,15 +268,21 @@ func (scraper *GnosisScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64) {
-	buyToken := scraper.tokens[s.BuyToken]
-	sellToken := scraper.tokens[s.SellToken]
+func (scraper *DforceScraper) getSwapDataDforce(s *dforce2.DforceSwap) (symbol string, foreignName string, volume float64, price float64, err error) {
+	buyToken, err := scraper.loadTokenData(s.Output)
+	if err != nil {
+		log.Error(err)
+	}
+	sellToken, err := scraper.loadTokenData(s.Input)
+	if err != nil {
+		log.Error(err)
+	}
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedBuyAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.OutputAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedSellAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.InputAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -280,7 +291,7 @@ func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol s
 	return
 }
 
-func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -315,17 +326,11 @@ func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 	return
 }
 
-func (t *GnosisToken) normalizeETH() {
-	if t.Symbol == "WETH" {
-		t.Symbol = "ETH"
-	}
-}
-
-func (scraper *GnosisScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (scraper *DforceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return dia.ExchangePair{}, nil
 }
 
-func (scraper *GnosisScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (scraper *DforceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -334,10 +339,10 @@ func (scraper *GnosisScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 	}
 
 	if scraper.closed {
-		return nil, errors.New("GnosisScraper is closed")
+		return nil, errors.New("DforceScraper is closed")
 	}
 
-	pairScraper := &GnosisPairScraper{
+	pairScraper := &DforcePairScraper{
 		parent: scraper,
 		pair:   pair,
 	}
@@ -346,7 +351,7 @@ func (scraper *GnosisScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 
 	return pairScraper, nil
 }
-func (scraper *GnosisScraper) cleanup(err error) {
+func (scraper *DforceScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
 	if err != nil {
@@ -356,7 +361,7 @@ func (scraper *GnosisScraper) cleanup(err error) {
 	close(scraper.shutdownDone)
 }
 
-func (scraper *GnosisScraper) Close() error {
+func (scraper *DforceScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
@@ -370,28 +375,28 @@ func (scraper *GnosisScraper) Close() error {
 	return nil
 }
 
-type GnosisPairScraper struct {
-	parent *GnosisScraper
+type DforcePairScraper struct {
+	parent *DforceScraper
 	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *GnosisPairScraper) Pair() dia.ExchangePair {
+func (pairScraper *DforcePairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 
-func (scraper *GnosisScraper) Channel() chan *dia.Trade {
+func (scraper *DforceScraper) Channel() chan *dia.Trade {
 	return scraper.chanTrades
 }
 
-func (pairScraper *GnosisPairScraper) Error() error {
+func (pairScraper *DforcePairScraper) Error() error {
 	s := pairScraper.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
 }
 
-func (pairScraper *GnosisPairScraper) Close() error {
+func (pairScraper *DforcePairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
 	pairScraper.closed = true

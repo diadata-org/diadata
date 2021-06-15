@@ -1,10 +1,9 @@
 package filters
 
 import (
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"testing"
 	"time"
-
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 )
 
 func TestMinutesInYear(t *testing.T) {
@@ -97,7 +96,7 @@ func TestMinutesUntilSettlement(t *testing.T) {
 	const expectedRegularMinutes float64 = 60 * 9
 	const expectedWeeklyMinutes float64 = 60 * 17.5
 
-	m, err := MinutesUntilSettlement(scrapers.RegularOptionSettlement, timezone)
+	m, err := MinutesUntilSettlement(scrapers2.RegularOptionSettlement, timezone)
 	if err != nil {
 		t.Errorf("problem computing minutes until settlement, %v", err)
 	}
@@ -105,7 +104,7 @@ func TestMinutesUntilSettlement(t *testing.T) {
 		t.Errorf("expected %v minutes until settlement, actual: %v", expectedRegularMinutes, m)
 	}
 
-	m, err = MinutesUntilSettlement(scrapers.WeeklyOptionSettlement, timezone)
+	m, err = MinutesUntilSettlement(scrapers2.WeeklyOptionSettlement, timezone)
 	if err != nil {
 		t.Errorf("problem computing minutes until settlement, %v", err)
 	}
@@ -114,7 +113,7 @@ func TestMinutesUntilSettlement(t *testing.T) {
 	}
 
 	// unsuported timezone
-	_, err = MinutesUntilSettlement(scrapers.RegularOptionSettlement, "")
+	_, err = MinutesUntilSettlement(scrapers2.RegularOptionSettlement, "")
 	if err == nil {
 		t.Errorf("expected an error, timezone is unsupported")
 	}

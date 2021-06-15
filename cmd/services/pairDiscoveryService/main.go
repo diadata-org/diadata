@@ -3,7 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	verifiedTokens2 "github.com/diadata-org/diadata/pkg/assetservice/verifiedTokens"
+	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -45,7 +45,7 @@ func main() {
 	var (
 		err           error
 		relDB         *models.RelDB
-		verifiedToken *verifiedTokens2.VerifiedTokens
+		verifiedToken *verifiedTokens.VerifiedTokens
 	)
 	task := &Task{
 		closed: make(chan struct{}),
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	// verifiedToken come from a tokenlist: https://uniswap.org/blog/token-lists/
-	verifiedToken, err = verifiedTokens2.New()
+	verifiedToken, err = verifiedTokens.New()
 	if err != nil {
 		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
 	}
@@ -95,7 +95,7 @@ func main() {
 
 // toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
 // toggle == true:  connect to all exchange's APIs and check for new pairs
-func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.VerifiedTokens) {
+func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
 	// TO DO: activate toggle
 	// toggle := getTogglePairDiscovery(updateTime)
 
@@ -149,7 +149,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.Ve
 	} else {
 
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
-		exchangeMap := scrapers.Exchanges
+		exchangeMap := scrapers2.Exchanges
 		for _, exchange := range dia.Exchanges() {
 			dataTowrite := make(map[string][]dia.Asset)
 			// TO DO: the next cond is only for testing. Remove when deploying.
@@ -159,14 +159,14 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.Ve
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
-			var scraper scrapers.APIScraper
+			var scraper scrapers2.APIScraper
 			config, err := dia.GetConfig(exchange)
 			if err == nil {
-				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
+				scraper = scrapers2.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
 			} else {
 				log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
 				log.Info("Proceeding with no API secrets")
-				scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
+				scraper = scrapers2.NewAPIScraper(exchange, false, "", "", relDB)
 			}
 
 			// If no error, fetch pairs by method implemented for each scraper resp.
@@ -350,7 +350,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.Ve
 					}
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
-					go func(s scrapers.APIScraper, exchange string) {
+					go func(s scrapers2.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
 						err = s.Close()
@@ -378,7 +378,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens2.Ve
 					// 	log.Error(err)
 					// }
 
-					go func(s scrapers.APIScraper, exchange string) {
+					go func(s scrapers2.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
 						err = s.Close()
@@ -441,7 +441,7 @@ func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	return coins.Coins, err
 }
 
-func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens2.VerifiedTokens) {
+func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
 	for {
 		select {
 		case <-t.closed:

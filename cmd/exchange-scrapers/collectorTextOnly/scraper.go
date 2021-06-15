@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"sync"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -46,7 +46,7 @@ func main() {
 	if err != nil {
 		log.Error(err)
 	}
-	s := map[string]scrapers.APIScraper{}
+	s := map[string]scrapers2.APIScraper{}
 
 	cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 
@@ -63,7 +63,7 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			}
-			aPIScraper := scrapers.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey, relDB)
+			aPIScraper := scrapers2.NewAPIScraper(configPair.Exchange, true, configExchangeApi.ApiKey, configExchangeApi.SecretKey, relDB)
 			if s != nil {
 				s[configPair.Exchange] = aPIScraper
 				go handleTrades(aPIScraper.Channel())

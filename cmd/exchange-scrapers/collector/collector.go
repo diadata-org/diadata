@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"sync"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -22,7 +22,7 @@ func init() {
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, exchange string) {
 	lastTradeTime := time.Now()
-	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
+	watchdogDelay := scrapers2.Exchanges[exchange].WatchdogDelay
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
 		select {
@@ -85,7 +85,7 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
+	es := scrapers2.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	defer func() {

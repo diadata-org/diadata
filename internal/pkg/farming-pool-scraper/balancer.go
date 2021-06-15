@@ -2,6 +2,9 @@ package pool
 
 import (
 	"context"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerfactory"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
@@ -15,10 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	baltokencontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 )
@@ -68,8 +67,8 @@ func NewBalancerPoolScraper(scraper *PoolScraper) *BalancerPoolScraper {
 }
 
 // watchFactory watches the BPFactory contract for New Pool creation events.
-func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balancerfactory.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balancerfactory.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	_, err := fr.WatchLOGNEWPOOL(&bind.WatchOpts{}, newPoolChan, nil, nil)
 	if err != nil {
@@ -80,8 +79,8 @@ func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balfactorycontract
 }
 
 // fetchPreviousPools fetches all the past pool creation event on the BPFactory contract.
-func (bp *BalancerPoolScraper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScraper) fetchPreviousPools(newPoolEventChan chan *balancerfactory.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balancerfactory.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	header, err := bp.restClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -216,7 +215,7 @@ func (bp *BalancerPoolScraper) mainLoop() {
 	// watched for transactions by bp.poolWatcher
 	newPoolChan := make(chan common.Address, 16)
 	// pool creation events sent to newPoolEventChan will get their pool sent to newPoolChan
-	newPoolEventChan := make(chan *balfactorycontract.BalancerfactoryLOGNEWPOOL, 16)
+	newPoolEventChan := make(chan *balancerfactory.BalancerfactoryLOGNEWPOOL, 16)
 	// pools sent to poolHandlerChan are forwarded to a bp.poolHandler routine
 	poolToFetchChan := make(chan common.Address, 16)
 	// pools sent to poolWatcherPerceiver will be watched by bp.poolWatcher.
@@ -250,7 +249,7 @@ func (bp *BalancerPoolScraper) mainLoop() {
 // getPool gets informations of the pool at the given pool address. These informations are emited as scrapped data.
 // To avoid rate limitation errors, do not call this function directly. It is preferred to use a fixed amount of draining goroutines.
 func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
-	pool, err := balancerpoolcontract.NewBalancerpoolCaller(poolAddress, bp.restClient)
+	pool, err := balancerpool.NewBalancerpoolCaller(poolAddress, bp.restClient)
 	if err != nil {
 		return errors.Wrap(err, "loading pool contract")
 	}
@@ -288,11 +287,11 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	for _, token := range tokens {
 		// tokCaller, err := erctoken.NewERC20Token(token, bp.restClient)
 		// tokCaller, err := erctoken.NewERC20TokenCaller(token, bp.restClient)
-		var tokCaller *baltokencontract.BalancertokenCaller
+		var tokCaller *balancertoken.BalancertokenCaller
 		var symbol string
 		var weight *big.Int
 		var balance *big.Int
-		tokCaller, err = baltokencontract.NewBalancertokenCaller(token, bp.restClient)
+		tokCaller, err = balancertoken.NewBalancertokenCaller(token, bp.restClient)
 		if err != nil {
 			return errors.Wrapf(err, "creating bal token contract caller for %s", token.Hex())
 		}

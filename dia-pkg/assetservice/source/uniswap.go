@@ -1,7 +1,7 @@
 package source
 
 import (
-	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -109,8 +109,8 @@ func (uas *UniswapAssetSource) Asset() chan dia.Asset {
 }
 
 func (uas *UniswapAssetSource) getNumPairs() (int, error) {
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -154,8 +154,8 @@ func (uas *UniswapAssetSource) fetchAssets() {
 
 // GetPairByID returns the UniswapPair with the integer id @num
 func (uas *UniswapAssetSource) GetPairByID(num int64) (UniswapPair, error) {
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -178,8 +178,8 @@ func (uas *UniswapAssetSource) GetPairByID(num int64) (UniswapPair, error) {
 
 func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pair UniswapPair, err error) {
 	connection := uas.RestClient
-	var pairContract *uniswapcontract.IUniswapV2PairCaller
-	pairContract, err = uniswapcontract.NewIUniswapV2PairCaller(pairAddress, connection)
+	var pairContract *uniswap.IUniswapV2PairCaller
+	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -188,13 +188,13 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 	// Getting tokens from pair ---------------------
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
-	var token0Contract *uniswapcontract.IERC20Caller
-	var token1Contract *uniswapcontract.IERC20Caller
-	token0Contract, err = uniswapcontract.NewIERC20Caller(address0, connection)
+	var token0Contract *uniswap.IERC20Caller
+	var token1Contract *uniswap.IERC20Caller
+	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
 	if err != nil {
 		log.Error(err)
 	}
-	token1Contract, err = uniswapcontract.NewIERC20Caller(address1, connection)
+	token1Contract, err = uniswap.NewIERC20Caller(address1, connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -246,8 +246,8 @@ func (uas *UniswapAssetSource) GetPairByAddress(pairAddress common.Address) (pai
 // GetDecimals returns the decimals of the token with address @tokenAddress
 func (uas *UniswapAssetSource) GetDecimals(tokenAddress common.Address) (decimals uint8, err error) {
 
-	var contract *uniswapcontract.IERC20Caller
-	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, uas.RestClient)
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, uas.RestClient)
 	if err != nil {
 		log.Error(err)
 		return
@@ -259,8 +259,8 @@ func (uas *UniswapAssetSource) GetDecimals(tokenAddress common.Address) (decimal
 
 func (uas *UniswapAssetSource) GetName(tokenAddress common.Address) (name string, err error) {
 
-	var contract *uniswapcontract.IERC20Caller
-	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, uas.RestClient)
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, uas.RestClient)
 	if err != nil {
 		log.Error(err)
 		return

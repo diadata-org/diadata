@@ -4,16 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerfactory"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerpool"
+	balancertoken2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
-
-	factory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	pool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -285,10 +284,10 @@ func (s *BalancerScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 	return dia.ExchangePair{}, nil
 }
 
-func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGNEWPOOLIterator, error) {
+func (scraper *BalancerScraper) getAllLogNewPool() (*balancerfactory.BalancerfactoryLOGNEWPOOLIterator, error) {
 
-	var pairFiltererContract *factory.BalancerfactoryFilterer
-	pairFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.RestClient)
+	var pairFiltererContract *balancerfactory.BalancerfactoryFilterer
+	pairFiltererContract, err := balancerfactory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.RestClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -313,9 +312,9 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 
 	tokenSet := make(map[string]struct{})
 	for it.Next() {
-		var poolCaller *pool.BalancerpoolCaller
+		var poolCaller *balancerpool.BalancerpoolCaller
 		var tokens []common.Address
-		poolCaller, err = pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		poolCaller, err = balancerpool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
@@ -345,10 +344,10 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 	tokenMap := make(map[string]*BalancerToken)
 
 	for token := range tokenAddressSet {
-		var tokenCaller *balancertoken.BalancertokenCaller
+		var tokenCaller *balancertoken2.BalancertokenCaller
 		var symbol string
 		var decimals *big.Int
-		tokenCaller, err = balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
+		tokenCaller, err = balancertoken2.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
@@ -383,7 +382,7 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 	poolCount := 0
 	for it.Next() {
 		var pair dia.ExchangePair
-		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		poolCaller, err := balancerpool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
@@ -442,10 +441,10 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 // 	return sink, nil
 // }
 
-func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription) {
-	sink := make(chan *pool.BalancerpoolLOGSWAP)
-	var pairFiltererContract *pool.BalancerpoolFilterer
-	pairFiltererContract, err := pool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
+func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *balancerpool.BalancerpoolLOGSWAP, event.Subscription) {
+	sink := make(chan *balancerpool.BalancerpoolLOGSWAP)
+	var pairFiltererContract *balancerpool.BalancerpoolFilterer
+	pairFiltererContract, err := balancerpool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -464,10 +463,10 @@ func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (
 	return sink, sub
 }
 
-func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
-	sink := make(chan *factory.BalancerfactoryLOGNEWPOOL)
-	var factoryFiltererContract *factory.BalancerfactoryFilterer
-	factoryFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.WsClient)
+func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *balancerfactory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
+	sink := make(chan *balancerfactory.BalancerfactoryLOGNEWPOOL)
+	var factoryFiltererContract *balancerfactory.BalancerfactoryFilterer
+	factoryFiltererContract, err := balancerfactory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}

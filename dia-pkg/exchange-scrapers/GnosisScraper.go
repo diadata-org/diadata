@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	gnosis2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -20,18 +19,19 @@ import (
 )
 
 const (
-	kyberContract       = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
-	kyberWsDial         = "ws://159.69.120.42:8546/"
-	kyberRestDial       = "http://159.69.120.42:8545/"
-	kyberLookBackBlocks = 6 * 60 * 24
+	gnosisWsDial         = "ws://159.69.120.42:8546/"
+	gnosisRestDial       = "http://159.69.120.42:8545/"
+	gnosisLookBackBlocks = 6 * 60 * 24 * 7
 )
 
-type KyberToken struct {
+type GnosisToken struct {
 	Symbol   string
-	Decimals *big.Int
+	Decimals uint8
+	Address  string
+	Name     string
 }
 
-type KyberScraper struct {
+type GnosisScraper struct {
 	exchangeName string
 
 	// channels to signal events
@@ -44,132 +44,118 @@ type KyberScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*KyberPairScraper
+	pairScrapers   map[string]*GnosisPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*KyberToken
+	tokens      map[uint16]*GnosisToken
+	contract    common.Address
 }
 
-func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
-	scraper := &KyberScraper{
+func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
+	scraper := &GnosisScraper{
 		exchangeName:   exchange.Name,
+		contract:       exchange.Contract,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*KyberPairScraper),
+		pairScrapers:   make(map[string]*GnosisPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*KyberToken),
+		tokens:         make(map[uint16]*GnosisToken),
 	}
-	wsClient, err := ethclient.Dial(kyberWsDial)
+
+	wsClient, err := ethclient.Dial(gnosisWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(kyberRestDial)
+	restClient, err := ethclient.Dial(gnosisRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.RestClient = restClient
 
 	scraper.loadTokens()
-	time.Sleep(5 * time.Second)
 
 	if scrape {
 		go scraper.mainLoop()
 	}
 	return scraper
 }
-
-func (scraper *KyberScraper) loadTokens() {
-
-	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
-		Symbol:   "ETH",
-		Decimals: big.NewInt(18),
-	}
-
-	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &KyberToken{
-		Symbol:   "MKR",
-		Decimals: big.NewInt(18),
-	}
-
-	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
-	if err != nil {
-		log.Error(err)
-
-	}
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startblock := header.Number.Uint64() - uint64(kyberLookBackBlocks)
-
-	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: startblock}, nil)
+func (scraper *GnosisScraper) loadTokens() {
+	fmt.Println("contract address: ", scraper.contract.String())
+	contract, err := gnosis2.NewGnosisCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
-
-	for it.Next() {
-
-		i, _ := scraper.loadTokenData(it.Event.Src)
-		o, _ := scraper.loadTokenData(it.Event.Dest)
-		log.Printf("\n %v  -%v- %v -%v- %v %v",
-			it.Event.Src.Hex(),
-			i.Symbol, i.Decimals,
-			o.Symbol, o.Decimals,
-			it.Event.Dest.Hex())
+	numTokens, err := contract.NumTokens(&bind.CallOpts{})
+	if err != nil {
+		log.Error(err)
 	}
-
-}
-
-func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (*KyberToken, error) {
-	tokenStr := tokenAddress.Hex()
-	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
-		return foundToken, nil
-	} else {
-		tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
+	count := uint16(0)
+	for i := uint16(0); i < numTokens; i++ {
+		tokenAddress, err := contract.TokenIdToAddressMap(&bind.CallOpts{}, i)
 		if err != nil {
 			log.Error(err)
+			continue
+		}
+		tokenCaller, err := token2.NewTokenCaller(tokenAddress, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+			continue
 		}
 		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
-		dfToken := &KyberToken{
-			Symbol:   symbol,
-			Decimals: decimals,
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
 		}
-		dfToken.normalizeETH()
-		scraper.tokens[tokenStr] = dfToken
-		return dfToken, err
+
+		scraper.tokens[i] = &GnosisToken{
+			Symbol:   symbol,
+			Decimals: uint8(decimals.Int64()),
+			Address:  tokenAddress.String(),
+			Name:     name,
+		}
+		scraper.tokens[count].normalizeETH()
+		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
+		count++
 	}
+	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
 }
 
-func (scraper *KyberScraper) subscribeToTrades() error {
+// FillSymbolData is not used by DEX scrapers.
+func (s *GnosisScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
 
-	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
+func (scraper *GnosisScraper) subscribeToTrades() error {
+	filterer, err := gnosis2.NewGnosisFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
+
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(5250)
+	startblock := header.Number.Uint64() - uint64(gnosisLookBackBlocks)
 
-	sink := make(chan *kyber.KyberExecuteTrade)
-	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &startblock}, sink, nil)
+	sink := make(chan *gnosis2.GnosisTrade)
+	sub, err := filterer.WatchTrade(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -201,34 +187,47 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 	return err
 }
 
-func (scraper *KyberScraper) processTrade(trade *kyber.KyberExecuteTrade) {
-	symbol, foreignName, volume, price, err := scraper.getTradeDataKyber(trade)
+func (scraper *GnosisScraper) processTrade(trade *gnosis2.GnosisTrade) {
+	symbol, foreignName, volume, price := scraper.getSwapDataGnosis(trade)
 	timestamp := time.Now().Unix()
-	if err != nil {
-		log.Error(err)
-	} else {
-		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-			trade := &dia.Trade{
-				Symbol:         symbol,
-				Pair:           pairScraper.pair.ForeignName,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(timestamp, 0),
-				ForeignTradeID: "",
-				Source:         scraper.exchangeName,
-			}
-			pairScraper.parent.chanTrades <- trade
-			fmt.Println("got trade: ", trade)
+	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
+
+		buyToken := scraper.tokens[trade.BuyToken]
+		sellToken := scraper.tokens[trade.SellToken]
+
+		token0 := dia.Asset{
+			Address: buyToken.Address,
+			Symbol:  buyToken.Symbol,
+			Name:    buyToken.Name,
 		}
+		token1 := dia.Asset{
+			Address: sellToken.Address,
+			Symbol:  sellToken.Symbol,
+			Name:    sellToken.Name,
+		}
+
+		trade := &dia.Trade{
+			Symbol:         symbol,
+			Pair:           pairScraper.pair.ForeignName,
+			Price:          price,
+			BaseToken:      token0,
+			QuoteToken:     token1,
+			Volume:         volume,
+			Time:           time.Unix(timestamp, 0),
+			ForeignTradeID: "",
+			Source:         scraper.exchangeName,
+		}
+		pairScraper.parent.chanTrades <- trade
+		fmt.Println("got trade: ", trade)
 	}
 
 }
 
-func (scraper *KyberScraper) mainLoop() {
+func (scraper *GnosisScraper) mainLoop() {
 
 	scraper.run = true
-
+	log.Info("subscribe to trades...")
 	err := scraper.subscribeToTrades()
 	if err != nil {
 		log.Error(err)
@@ -262,22 +261,16 @@ func (scraper *KyberScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
-// getTradeData returns the foreign name, volume and price of a swap
-func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
-	buyToken, err := scraper.loadTokenData(s.Dest)
-	if err != nil {
-		log.Error(err)
-	}
-	sellToken, err := scraper.loadTokenData(s.Src)
-	if err != nil {
-		log.Error(err)
-	}
+// getSwapData returns the foreign name, volume and price of a swap
+func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis2.GnosisTrade) (symbol string, foreignName string, volume float64, price float64) {
+	buyToken := scraper.tokens[s.BuyToken]
+	sellToken := scraper.tokens[s.SellToken]
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals.Int64())))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedBuyAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals.Int64())))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ExecutedSellAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -286,11 +279,7 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	return
 }
 
-func (scraper *KyberScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
-}
-
-func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -325,17 +314,17 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 	return
 }
 
-func (t *KyberToken) normalizeETH() {
+func (t *GnosisToken) normalizeETH() {
 	if t.Symbol == "WETH" {
 		t.Symbol = "ETH"
 	}
 }
 
-func (scraper *KyberScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+func (scraper *GnosisScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (scraper *GnosisScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -344,10 +333,10 @@ func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 	}
 
 	if scraper.closed {
-		return nil, errors.New("KyberScraper is closed")
+		return nil, errors.New("GnosisScraper is closed")
 	}
 
-	pairScraper := &KyberPairScraper{
+	pairScraper := &GnosisPairScraper{
 		parent: scraper,
 		pair:   pair,
 	}
@@ -356,7 +345,7 @@ func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 
 	return pairScraper, nil
 }
-func (scraper *KyberScraper) cleanup(err error) {
+func (scraper *GnosisScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
 	if err != nil {
@@ -366,7 +355,7 @@ func (scraper *KyberScraper) cleanup(err error) {
 	close(scraper.shutdownDone)
 }
 
-func (scraper *KyberScraper) Close() error {
+func (scraper *GnosisScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
@@ -380,28 +369,28 @@ func (scraper *KyberScraper) Close() error {
 	return nil
 }
 
-type KyberPairScraper struct {
-	parent *KyberScraper
+type GnosisPairScraper struct {
+	parent *GnosisScraper
 	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *KyberPairScraper) Pair() dia.ExchangePair {
+func (pairScraper *GnosisPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 
-func (scraper *KyberScraper) Channel() chan *dia.Trade {
+func (scraper *GnosisScraper) Channel() chan *dia.Trade {
 	return scraper.chanTrades
 }
 
-func (pairScraper *KyberPairScraper) Error() error {
+func (pairScraper *GnosisPairScraper) Error() error {
 	s := pairScraper.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
 }
 
-func (pairScraper *KyberPairScraper) Close() error {
+func (pairScraper *GnosisPairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
 	pairScraper.closed = true

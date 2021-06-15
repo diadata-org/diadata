@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/uniswap"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -11,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -251,11 +251,11 @@ func (s *UniswapScraper) mainLoop() {
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
-func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *uniswapcontract.UniswapV2PairSwap, error) {
+func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *uniswap.UniswapV2PairSwap, error) {
 
-	sink := make(chan *uniswapcontract.UniswapV2PairSwap)
-	var pairFiltererContract *uniswapcontract.UniswapV2PairFilterer
-	pairFiltererContract, err := uniswapcontract.NewUniswapV2PairFilterer(pairAddress, s.WsClient)
+	sink := make(chan *uniswap.UniswapV2PairSwap)
+	var pairFiltererContract *uniswap.UniswapV2PairFilterer
+	pairFiltererContract, err := uniswap.NewUniswapV2PairFilterer(pairAddress, s.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -314,7 +314,7 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapScraper) normalizeUniswapSwap(swap uniswapcontract.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
+func (s *UniswapScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
 
 	pair, err := s.GetPairByAddress(swap.Raw.Address)
 	if err != nil {
@@ -409,8 +409,8 @@ func (s *UniswapScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	time.Sleep(20 * time.Millisecond)
 	connection := s.RestClient
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -462,8 +462,8 @@ func (up *UniswapPair) normalizeUniPair() {
 // GetPairByID returns the UniswapPair with the integer id @num
 func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
 	log.Info("Get pair ID: ", num)
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -486,8 +486,8 @@ func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
 // GetPairByAddress returns the UniswapPair with pair address @pairAddress
 func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair UniswapPair, err error) {
 	connection := s.RestClient
-	var pairContract *uniswapcontract.IUniswapV2PairCaller
-	pairContract, err = uniswapcontract.NewIUniswapV2PairCaller(pairAddress, connection)
+	var pairContract *uniswap.IUniswapV2PairCaller
+	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -496,13 +496,13 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 	// Getting tokens from pair ---------------------
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
-	var token0Contract *uniswapcontract.IERC20Caller
-	var token1Contract *uniswapcontract.IERC20Caller
-	token0Contract, err = uniswapcontract.NewIERC20Caller(address0, connection)
+	var token0Contract *uniswap.IERC20Caller
+	var token1Contract *uniswap.IERC20Caller
+	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
 	if err != nil {
 		log.Error(err)
 	}
-	token1Contract, err = uniswapcontract.NewIERC20Caller(address1, connection)
+	token1Contract, err = uniswap.NewIERC20Caller(address1, connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -560,8 +560,8 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 // GetDecimals returns the decimals of the token with address @tokenAddress
 func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint8, err error) {
 
-	var contract *uniswapcontract.IERC20Caller
-	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, s.RestClient)
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, s.RestClient)
 	if err != nil {
 		log.Error(err)
 		return
@@ -573,8 +573,8 @@ func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint
 
 func (s *UniswapScraper) GetName(tokenAddress common.Address) (name string, err error) {
 
-	var contract *uniswapcontract.IERC20Caller
-	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, s.RestClient)
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, s.RestClient)
 	if err != nil {
 		log.Error(err)
 		return
@@ -587,8 +587,8 @@ func (s *UniswapScraper) GetName(tokenAddress common.Address) (name string, err 
 // getNumPairs returns the number of available pairs on Uniswap
 func (s *UniswapScraper) getNumPairs() (int, error) {
 
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 	}

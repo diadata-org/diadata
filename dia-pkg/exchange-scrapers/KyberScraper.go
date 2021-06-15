@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	kyber2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/kyber"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/kyber/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -20,20 +19,18 @@ import (
 )
 
 const (
-	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxWsDial   = "ws://159.69.120.42:8546/"
-	zeroxRestDial = "http://159.69.120.42:8545/"
-	// zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	// zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
-	zeroxLookBackBlocks = 6 * 60 * 24
+	kyberContract       = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
+	kyberWsDial         = "ws://159.69.120.42:8546/"
+	kyberRestDial       = "http://159.69.120.42:8545/"
+	kyberLookBackBlocks = 6 * 60 * 24
 )
 
-type ZeroxToken struct {
+type KyberToken struct {
 	Symbol   string
-	Decimals uint8
+	Decimals *big.Int
 }
 
-type ZeroxScraper struct {
+type KyberScraper struct {
 	exchangeName string
 
 	// channels to signal events
@@ -46,40 +43,41 @@ type ZeroxScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*ZeroxPairScraper
+	pairScrapers   map[string]*KyberPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*ZeroxToken
+	tokens      map[string]*KyberToken
 }
 
-func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
-	scraper := &ZeroxScraper{
+func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
+	scraper := &KyberScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*ZeroxPairScraper),
+		pairScrapers:   make(map[string]*KyberPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*ZeroxToken),
+		tokens:         make(map[string]*KyberToken),
 	}
-	wsClient, err := ethclient.Dial(zeroxWsDial)
+	wsClient, err := ethclient.Dial(kyberWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(zeroxRestDial)
+	restClient, err := ethclient.Dial(kyberRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.RestClient = restClient
 
 	scraper.loadTokens()
+	time.Sleep(5 * time.Second)
 
 	if scrape {
 		go scraper.mainLoop()
@@ -87,88 +85,78 @@ func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
 	return scraper
 }
 
-func (scraper *ZeroxScraper) loadTokens() {
+func (scraper *KyberScraper) loadTokens() {
 
-	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &ZeroxToken{
-		Symbol:   "MKR",
-		Decimals: 18,
+	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
+		Symbol:   "ETH",
+		Decimals: big.NewInt(18),
 	}
 
-	filterer, err := zerox.NewZeroxFilterer(common.HexToAddress(zeroxContract), scraper.WsClient)
+	// added by hand because the symbol method returns a bytes32 instead of string
+	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &KyberToken{
+		Symbol:   "MKR",
+		Decimals: big.NewInt(18),
+	}
+
+	filterer, err := kyber2.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 
 	}
-
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(zeroxLookBackBlocks)
+	startblock := header.Number.Uint64() - uint64(kyberLookBackBlocks)
 
-	it, err := filterer.FilterFill(&bind.FilterOpts{Start: startblock}, nil, nil, nil)
+	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: startblock}, nil)
 	if err != nil {
 		log.Error(err)
 	}
 
 	for it.Next() {
-		i, err := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
-		if err != nil {
-			// skip non-existing token data
-			continue
-		}
-		o, err := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
-		if err != nil {
-			// skip non-existing token data
-			continue
-		}
-		log.Printf("\n %v  -%v- %v -%v- %v %v ",
-			common.BytesToAddress(it.Event.TakerAssetData).Hex(),
+
+		i, _ := scraper.loadTokenData(it.Event.Src)
+		o, _ := scraper.loadTokenData(it.Event.Dest)
+		log.Printf("\n %v  -%v- %v -%v- %v %v",
+			it.Event.Src.Hex(),
 			i.Symbol, i.Decimals,
 			o.Symbol, o.Decimals,
-			common.BytesToAddress(it.Event.MakerAssetData).Hex(),
-		)
+			it.Event.Dest.Hex())
 	}
 
 }
 
-// FillSymbolData is not used by DEX scrapers.
-func (scraper *ZeroxScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
-}
-
-func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxToken, error) {
-
+func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (*KyberToken, error) {
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
+	} else {
+		tokenCaller, err := token2.NewTokenCaller(tokenAddress, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		dfToken := &KyberToken{
+			Symbol:   symbol,
+			Decimals: decimals,
+		}
+		dfToken.normalizeETH()
+		scraper.tokens[tokenStr] = dfToken
+		return dfToken, err
 	}
-	tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
-	if err != nil {
-		return &ZeroxToken{}, err
-	}
-	symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
-	if err != nil {
-		return &ZeroxToken{}, err
-	}
-	decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
-	if err != nil {
-		return &ZeroxToken{}, err
-	}
-	dfToken := &ZeroxToken{
-		Symbol:   symbol,
-		Decimals: uint8(decimals.Int64()),
-	}
-	dfToken.normalizeETH()
-	scraper.tokens[tokenStr] = dfToken
-	return dfToken, err
-
 }
 
-func (scraper *ZeroxScraper) subscribeToTrades() error {
+func (scraper *KyberScraper) subscribeToTrades() error {
 
-	filterer, err := zerox.NewZeroxFilterer(common.HexToAddress(zeroxContract), scraper.WsClient)
+	filterer, err := kyber2.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -177,10 +165,10 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(15250)
+	startblock := header.Number.Uint64() - uint64(5250)
 
-	sink := make(chan *zerox.ZeroxFill)
-	sub, err := filterer.WatchFill(&bind.WatchOpts{Start: &startblock}, sink, nil, nil, nil)
+	sink := make(chan *kyber2.KyberExecuteTrade)
+	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &startblock}, sink, nil)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -212,8 +200,8 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 	return err
 }
 
-func (scraper *ZeroxScraper) processTrade(trade *zerox.ZeroxFill) {
-	symbol, foreignName, volume, price, err := scraper.getFillDataZerox(trade)
+func (scraper *KyberScraper) processTrade(trade *kyber2.KyberExecuteTrade) {
+	symbol, foreignName, volume, price, err := scraper.getTradeDataKyber(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -236,7 +224,7 @@ func (scraper *ZeroxScraper) processTrade(trade *zerox.ZeroxFill) {
 
 }
 
-func (scraper *ZeroxScraper) mainLoop() {
+func (scraper *KyberScraper) mainLoop() {
 
 	scraper.run = true
 
@@ -250,7 +238,7 @@ func (scraper *ZeroxScraper) mainLoop() {
 			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				err = scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
 				if err != nil {
 					log.Error(err)
 				}
@@ -266,29 +254,29 @@ func (scraper *ZeroxScraper) mainLoop() {
 	}
 
 	time.Sleep(10 * time.Second)
+
 	if scraper.error == nil {
 		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
 
-// getfillData returns the foreign name, volume and price of a order fill
-func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (symbol string, foreignName string, volume float64, price float64, err error) {
-
-	buyToken, err := scraper.loadTokenData(common.BytesToAddress(s.MakerAssetData))
+// getTradeData returns the foreign name, volume and price of a swap
+func (scraper *KyberScraper) getTradeDataKyber(s *kyber2.KyberExecuteTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
+	buyToken, err := scraper.loadTokenData(s.Dest)
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(common.BytesToAddress(s.TakerAssetData))
+	sellToken, err := scraper.loadTokenData(s.Src)
 	if err != nil {
 		log.Error(err)
 	}
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.MakerAssetFilledAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals.Int64())))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.TakerAssetFilledAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals.Int64())))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -297,17 +285,15 @@ func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (symbol string
 	return
 }
 
-func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (scraper *KyberScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
+}
+
+func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
-		if p1.Symbol == "" || p1.Symbol == "BPT" {
-			continue
-		}
 		for _, p2 := range scraper.tokens {
-			if p2.Symbol == "" || p2.Symbol == "BPT" {
-				continue
-			}
 			token1 := p1
 			token2 := p2
 			if token1 != token2 {
@@ -338,17 +324,17 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 	return
 }
 
-func (scraper *ZeroxScraper) FetchTickerData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
-}
-
-func (t *ZeroxToken) normalizeETH() {
+func (t *KyberToken) normalizeETH() {
 	if t.Symbol == "WETH" {
 		t.Symbol = "ETH"
 	}
 }
 
-func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (scraper *KyberScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -357,10 +343,10 @@ func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 	}
 
 	if scraper.closed {
-		return nil, errors.New("ZeroxScraper is closed")
+		return nil, errors.New("KyberScraper is closed")
 	}
 
-	pairScraper := &ZeroxPairScraper{
+	pairScraper := &KyberPairScraper{
 		parent: scraper,
 		pair:   pair,
 	}
@@ -369,7 +355,7 @@ func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 
 	return pairScraper, nil
 }
-func (scraper *ZeroxScraper) cleanup(err error) {
+func (scraper *KyberScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
 	if err != nil {
@@ -379,7 +365,7 @@ func (scraper *ZeroxScraper) cleanup(err error) {
 	close(scraper.shutdownDone)
 }
 
-func (scraper *ZeroxScraper) Close() error {
+func (scraper *KyberScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
@@ -392,32 +378,29 @@ func (scraper *ZeroxScraper) Close() error {
 	<-scraper.shutdownDone
 	return nil
 }
-func (s *ZeroxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
-}
 
-type ZeroxPairScraper struct {
-	parent *ZeroxScraper
+type KyberPairScraper struct {
+	parent *KyberScraper
 	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *ZeroxPairScraper) Pair() dia.ExchangePair {
+func (pairScraper *KyberPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 
-func (scraper *ZeroxScraper) Channel() chan *dia.Trade {
+func (scraper *KyberScraper) Channel() chan *dia.Trade {
 	return scraper.chanTrades
 }
 
-func (pairScraper *ZeroxPairScraper) Error() error {
+func (pairScraper *KyberPairScraper) Error() error {
 	s := pairScraper.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
 }
 
-func (pairScraper *ZeroxPairScraper) Close() error {
+func (pairScraper *KyberPairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
 	pairScraper.closed = true

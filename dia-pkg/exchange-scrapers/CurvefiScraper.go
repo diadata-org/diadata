@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	curvefi2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi"
+	curvepool2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/curvepool"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/token"
 	"math"
 	"math/big"
 	"sync"
@@ -13,10 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/curvepool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/token"
 )
 
 const (
@@ -177,11 +176,11 @@ func (scraper *CurveFIScraper) mainLoop() {
 }
 
 func (scraper *CurveFIScraper) watchNewPools() {
-	contract, err := curvefi.NewCurvefiFilterer(scraper.contract, scraper.WsClient)
+	contract, err := curvefi2.NewCurvefiFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 	}
-	sink := make(chan *curvefi.CurvefiPoolAdded)
+	sink := make(chan *curvefi2.CurvefiPoolAdded)
 
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -235,7 +234,7 @@ func (scraper *CurveFIScraper) FillSymbolData(symbol string) (dia.Asset, error) 
 
 // contract.poolList.map(contract.GetPoolCoins(pool).)
 func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
-	contract, err := curvefi.NewCurvefiCaller(scraper.contract, scraper.RestClient)
+	contract, err := curvefi2.NewCurvefiCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -260,7 +259,7 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 }
 
 func (scraper *CurveFIScraper) loadPoolData(pool string) error {
-	contract, err := curvefi.NewCurvefiCaller(scraper.contract, scraper.RestClient)
+	contract, err := curvefi2.NewCurvefiCaller(scraper.contract, scraper.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -273,11 +272,11 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	}
 
 	for cIdx, c := range poolCoins.Coins {
-		var coinCaller *token.TokenCaller
+		var coinCaller *token2.TokenCaller
 		var symbol string
 		var decimals *big.Int
 		var name string
-		coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
+		coinCaller, err = token2.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 			continue
@@ -315,7 +314,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	return err
 }
 
-func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.CurvepoolTokenExchange) {
+func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool2.CurvepoolTokenExchange) {
 
 	foreignName, volume, price, baseToken, quoteToken, err := scraper.getSwapDataCurve(pool, swp)
 	if err != nil {
@@ -344,11 +343,11 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 
 func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
-	filterer, err := curvepool.NewCurvepoolFilterer(common.HexToAddress(pool), scraper.WsClient)
+	filterer, err := curvepool2.NewCurvepoolFilterer(common.HexToAddress(pool), scraper.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sink := make(chan *curvepool.CurvepoolTokenExchange)
+	sink := make(chan *curvepool2.CurvepoolTokenExchange)
 
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -390,7 +389,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool2.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
 
 	// fromToken, _ := scraper.curveCoins[s.TokenSold.Hex()]
 	// toToken, _ := scraper.curveCoins[s.TokenBought.Hex()]
