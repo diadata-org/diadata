@@ -31,6 +31,13 @@ type Play struct {
 	Attributes map[string]interface{}
 }
 
+type Moment struct {
+	ID           uint64
+	SetID        uint32
+	PlayID       uint32
+	SerialNumber uint32
+}
+
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 
 	flowClient, err := client.New("access.mainnet.nodes.onflow.org:9000", grpc.WithInsecure())
@@ -54,6 +61,12 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 		flowClient: flowClient,
 		ticker:     time.NewTicker(refreshDelay),
 	}
+
+	amap, err := s.GetAttributeMap()
+	if err != nil {
+		fmt.Println("err here: ", err)
+	}
+	fmt.Println("amap: ", amap)
 
 	go s.mainLoop()
 	return s
@@ -97,27 +110,26 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 	}
 	fmt.Println("number of sets: ", numSets)
 	var nbaTopshotNFTs []dia.NFT
-
-	for i := 0; i < int(numSets)-1; i++ {
-
-		values, err := scraper.GetPlaysBySet(uint32(i))
+	allMoments, err := scraper.GetAllMoments()
+	if err != nil {
+		return []dia.NFT{}, err
+	}
+	// TO DO: Import attributes map and assign attributes to moments below.
+	// TO DO: Get creation time = block time
+	// TO DO: Can we get creator address from event?
+	for _, moment := range allMoments {
+		m := MomentMintedEvent(moment)
+		metadata, err := scraper.GetMetadata(uint32(m.SetID()), uint32(m.PlayID()))
 		if err != nil {
-			fmt.Println("getting setID: ", err)
+			log.Error(err)
 		}
-		fmt.Println("number of values: ", len(values))
-		val := values[0]
-		testplay := cadenceToPlay(val)
-		fmt.Println(testplay)
-
 		nbaTopshotNFTs = append(nbaTopshotNFTs, dia.NFT{
-			TokenID: strconv.Itoa(i),
-			// NFTClass:       cryptopunkNFTClass,
-			// CreationTime:   creationTime,
-			// CreatorAddress: creatorAddress,
-			// Attributes:     result,
-			URI: "to do",
+			TokenID:    strconv.Itoa(int(m.ID())),
+			Attributes: metadata,
 		})
 	}
+	fmt.Println("results: ", nbaTopshotNFTs)
+
 	return nbaTopshotNFTs, nil
 }
 
@@ -125,6 +137,126 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 // Get Data
 // ---------------------------------------------------------
 
+// GetAllMoments returns all moments from genesis to the latest block by iterating through
+// blocks and looking for MomentMinted events.
+func (scraper *NBATopshotScraper) GetAllMoments() (mintedMoments []cadence.Event, err error) {
+	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
+	if err != nil {
+		log.Error(err)
+	}
+	// For some reason, for block heights smaller than 14mio, the rpc server returns an error
+	for i := 0; i < 500; i++ {
+		m, err := scraper.GetMintedMoments(latestBlock.Height-uint64((i+1)*249), latestBlock.Height-uint64(i*249))
+		if err != nil {
+			fmt.Println(err)
+		}
+		mintedMoments = append(mintedMoments, m...)
+	}
+	return
+}
+
+// GetMintedMoments returns all moments minted between blocks @startheight and @endheight.
+// The difference @endheight-@starthight is limited to 250.
+func (scraper *NBATopshotScraper) GetMintedMoments(startheight, endheight uint64) (mintedMoments []cadence.Event, err error) {
+
+	blockEvents, err := scraper.flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
+		Type:        "A.0b2a3299cc857e29.TopShot.MomentMinted",
+		StartHeight: startheight,
+		EndHeight:   endheight,
+	})
+	if err != nil {
+		return
+	}
+
+	for _, blockEvent := range blockEvents {
+		for _, playCreatedEvent := range blockEvent.Events {
+			mintedMoments = append(mintedMoments, playCreatedEvent.Value)
+		}
+	}
+	return
+
+}
+
+type MomentMintedEvent cadence.Event
+
+func (mme MomentMintedEvent) ID() uint64 {
+	return uint64(mme.Fields[0].(cadence.UInt64))
+}
+
+func (mme MomentMintedEvent) PlayID() uint32 {
+	return uint32(mme.Fields[1].(cadence.UInt32))
+}
+
+func (mme MomentMintedEvent) SetID() uint32 {
+	return uint32(mme.Fields[2].(cadence.UInt32))
+}
+
+func (mme MomentMintedEvent) SerialNumber() uint32 {
+	return uint32(mme.Fields[3].(cadence.UInt32))
+}
+
+// GetMetadata returns the metadata associated to the play with @playid in the set with @setid.
+func (scraper *NBATopshotScraper) GetMetadata(setid uint32, playid uint32) (map[string]interface{}, error) {
+	getPlaysScript := `
+	import TopShot from 0x0b2a3299cc857e29
+
+	pub struct MomentData  {
+		pub var seriesId: UInt32
+		pub var setId: UInt32
+		pub var playId: UInt32
+		
+  
+		pub var play: {String: String}	 
+		pub var setName: String
+		pub var numMoments: UInt32
+	  
+		init(playid: UInt32, setid: UInt32) {
+		  self.seriesId = TopShot.getSetSeries(setID: setid)!
+		  self.playId = playid
+		  self.setId = setid
+		   
+		  self.play = TopShot.getPlayMetaData(playID: self.playId)!
+		  self.setName = TopShot.getSetName(setID: self.setId)!
+		  self.numMoments = TopShot.getNumMomentsInEdition(setID: self.setId, playID: self.playId)!
+		  
+		}  
+	  }
+	
+	pub fun main(setid: UInt32, playid: UInt32): MomentData {
+		var mom: MomentData = MomentData(playid: playid, setid: setid)		
+		return mom
+	}
+	
+`
+	res, err := scraper.flowClient.ExecuteScriptAtLatestBlock(context.Background(), []byte(getPlaysScript), []cadence.Value{
+		cadence.UInt32(setid),
+		cadence.UInt32(playid),
+	})
+	if err != nil {
+		return make(map[string]interface{}), fmt.Errorf("error fetching sale moment from flow: %w", err)
+	}
+	// type Plays cadence.Struct
+	// play := Plays(res.(cadence.Struct))
+	// fmt.Println("play: ", play)
+
+	return cadenceMomentToMap(res.(cadence.Struct)), nil
+}
+
+// cadenceMomentToMap converts a moment to a map.
+func cadenceMomentToMap(cadenceMoment cadence.Value) map[string]interface{} {
+	castPlay := cadenceMoment.ToGoValue().([]interface{})
+
+	numMoments := castPlay[5].(uint32)
+	auxAttributes := castPlay[3].(map[interface{}]interface{})
+	attributes := make(map[string]interface{})
+	for key := range auxAttributes {
+		attributes[key.(string)] = auxAttributes[key]
+	}
+	attributes["numMomentsInEdition"] = numMoments
+	return attributes
+}
+
+// GetPlaysBySet returns all plays contained in a set.
 func (scraper *NBATopshotScraper) GetPlaysBySet(setid uint32) ([]cadence.Value, error) {
 	getPlaysScript := `
 	import TopShot from 0x0b2a3299cc857e29
@@ -171,10 +303,10 @@ func (scraper *NBATopshotScraper) GetPlaysBySet(setid uint32) ([]cadence.Value, 
 
 	setID := Plays(res.(cadence.Array))
 	fmt.Println("number of plays: ", len(setID.Values))
-	fmt.Println("Play: ", setID.Values[10])
 	return setID.Values, nil
 }
 
+// GetNumSets returns the number of available sets.
 func (scraper *NBATopshotScraper) GetNumSets() (uint32, error) {
 	getSetIDScript := `
 	import TopShot from 0x0b2a3299cc857e29
@@ -193,6 +325,44 @@ func (scraper *NBATopshotScraper) GetNumSets() (uint32, error) {
 	return uint32(setID), nil
 }
 
+type identifier struct {
+	SetID  uint32
+	PlayID uint32
+}
+
+// GetAttributesMap returns a map that uniquely maps setID and playID onto attributes.
+func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]interface{}, error) {
+	attrMap := make(map[identifier]map[string]interface{})
+	numSets, err := scraper.GetNumSets()
+	if err != nil {
+		return attrMap, err
+	}
+	for i := 1; i < int(numSets); i++ {
+
+		values, err := scraper.GetPlaysBySet(uint32(i))
+		if err != nil {
+			fmt.Println("getting setID: ", err)
+		}
+		for _, val := range values {
+			play := cadenceToPlay(val)
+			idfier := identifier{
+				SetID:  play.SetID,
+				PlayID: play.PlayID,
+			}
+			attributes, err := scraper.GetMetadata(idfier.SetID, idfier.PlayID)
+			if err != nil {
+				log.Errorf("fetching attributes for setID %v and playID %v: %v", idfier.SetID, idfier.PlayID, err)
+			}
+			attributes["seriesID"] = play.SeriesID
+			attributes["setName"] = play.SetName
+			attrMap[idfier] = attributes
+			fmt.Println("attributes: ", attributes)
+		}
+
+	}
+	return attrMap, nil
+}
+
 func cadenceToPlay(cadencePlay cadence.Value) (play Play) {
 	castPlay := cadencePlay.ToGoValue().([]interface{})
 	play.SeriesID = castPlay[0].(uint32)
@@ -209,24 +379,6 @@ func cadenceToPlay(cadencePlay cadence.Value) (play Play) {
 
 	return play
 }
-
-// // GetCryptopunkCreationTime returns the creation time from Opensea
-// func GetCryptopunkCreationTime(punkResp []byte) (time.Time, error) {
-// 	var resp OpenSeaCryptopunkResponse
-// 	var t time.Time
-// 	if err := json.Unmarshal(punkResp, &resp); err != nil {
-// 		return t, err
-// 	}
-
-// 	layout := "2006-01-02T15:04:05"
-// 	t, err := time.Parse(layout, resp.AssetContract.CreatedDate)
-
-// 	if err != nil {
-// 		return t, err
-// 	}
-
-// 	return t, nil
-// }
 
 // GetDataChannel returns the scrapers data channel.
 func (scraper *NBATopshotScraper) GetDataChannel() chan dia.NFT {
