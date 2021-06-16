@@ -1,6 +1,10 @@
 package dia
 
 import (
+	"encoding/json"
+	"errors"
+	"github.com/diadata-org/diadata/pkg/utils"
+	"os"
 	"os/user"
 	"strings"
 
@@ -89,10 +93,27 @@ type ConfigConnector struct {
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {
+	if utils.Getenv("USE_ENV","false") == "true" {
+		return GetConfigFromEnv(exchange)
+	}
 	var configApi ConfigApi
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
 	err := gonfig.GetConf(configFileApi, &configApi)
+	return &configApi, err
+}
+
+func GetConfigFromEnv(exchange string) (*ConfigApi, error) {
+	if utils.Getenv("USE_ENV","false") != "true" {
+		return nil, errors.New("use of config by env without env activation ")
+	}
+	var apiCred = os.Getenv("API_" + strings.ToUpper(exchange))
+	bytes, err := json.Marshal(apiCred)
+	if err != nil {
+		panic(err)
+	}
+	var configApi ConfigApi
+	err = json.Unmarshal(bytes, &configApi)
 	return &configApi, err
 }

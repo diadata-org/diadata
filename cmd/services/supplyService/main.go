@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
+	supplyservice "github.com/diadata-org/diadata/dia-pkg/supplyService"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
