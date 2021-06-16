@@ -89,7 +89,18 @@ func (env *Env) PostSupply(c *gin.Context) {
 // @Router /v1/quotation/:symbol: [get]
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
+	sign, signedExists := c.GetQuery("sign")
+	stripped, strippedExists := c.GetQuery("stripped")
+
 	q, err := env.DataStore.GetQuotation(symbol)
+	timeNow := time.Now()
+	q = &models.Quotation{Time: timeNow,TimeStamp: timeNow.Unix(),Symbol: "BTC"}
+
+	responseMap, err := utils.StructToMap(q)
+	if strippedExists && stripped == "true" {
+		responseMap = q.GetStripped()
+	}
+
 	if err != nil {
 		if err == redis.Nil {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -97,7 +108,20 @@ func (env *Env) GetQuotation(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		if signedExists && sign == "true" {
+			signature, err := utils.SignData(responseMap)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+			responseMap["Sign"] = signature
+			// This Human readable time is required to make ir backward compatible
+			responseMap["Time"] = q.Time
+
+			c.JSON(http.StatusOK, responseMap)
+		} else {
+			c.JSON(http.StatusOK, q)
+
+		}
 	}
 }
 
