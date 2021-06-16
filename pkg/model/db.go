@@ -237,7 +237,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 
 		pong2, err := r.Ping().Result()
 		if err != nil {
-			log.Error("NewDataStore redis", err)
+			log.Error("NewDataStore redis: ", err)
 		}
 		log.Debug("NewDB", pong2)
 	}

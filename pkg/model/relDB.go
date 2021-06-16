@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"math/big"
 	"os"
 
@@ -133,7 +134,7 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	if withRedis {
 		// Run localhost for testing and server for production
 		if executionMode == "production" {
-			address = "redis:6379"
+			address = utils.Getenv("REDISURL", "redis:6379")
 		} else {
 			address = "localhost:6379"
 		}
@@ -145,7 +146,7 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 
 		pong2, err := redisClient.Ping().Result()
 		if err != nil {
-			log.Error("NewDataStore redis", err)
+			log.Error("NewRelDataStore redis: ", err)
 		}
 		log.Debug("NewDB", pong2)
 	}
