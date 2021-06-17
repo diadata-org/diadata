@@ -45,8 +45,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		log.Info(utils.Getenv("ETH_URI_REST", restDial)
-		log.Info(utils.Getenv("ETH_URI_WS", wsDial)
+		log.Info(utils.Getenv("ETH_URI_REST", restDial))
+		log.Info(utils.Getenv("ETH_URI_WS", wsDial))
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
