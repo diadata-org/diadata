@@ -8,7 +8,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	nftdatascrapers "github.com/diadata-org/diadata/internal/pkg/nftData-scrapers"
+	nfttradescrapers "github.com/diadata-org/diadata/internal/pkg/nftTrade-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,14 +21,14 @@ func main() {
 		log.Fatal("relational datastore error: ", err)
 	}
 
-	scraperType := flag.String("nftclass", "Sorare", "which NFT class")
+	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
 	flag.Parse()
-	var scraper nftdatascrapers.NFTDataScraper
+	var scraper nfttradescrapers.NFTTradeScraper
 
 	switch *scraperType {
-	case "Sorare":
-		log.Println("NFT Data Scraper: Start scraping data from Sorare")
-		scraper = nftdatascrapers.NewSorareScraper(rdb)
+	case "Cryptopunk":
+		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunk")
+		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -36,21 +36,24 @@ func main() {
 	}
 
 	wg.Add(1)
-	go handleData(scraper.GetDataChannel(), &wg, rdb)
+	go handleData(scraper.GetTradeChannel(), &wg, rdb)
 	defer wg.Wait()
 
 }
 
-func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB) {
+func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.RelDB) {
 	defer wg.Done()
 
 	for {
-		fq, ok := <-dataChannel
+		fq, ok := <-tradeChannel
 		if !ok {
 			log.Error("error")
 			return
 		}
-		rdb.SetNFT(fq)
+		if 1 > 2 {
+			log.Info(fq)
+		}
+		// rdb.SetNFT(fq)
 	}
 
 }

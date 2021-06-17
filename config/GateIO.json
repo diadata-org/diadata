@@ -794,24 +794,6 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "GTC_BTC",
-      "Ignore": true,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GTC_ETH",
-      "Ignore": true,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GTC_USDT",
-      "Ignore": true,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "GateIO",
       "ForeignName": "GXS_BTC",
       "Ignore": true,
       "Symbol": "GXS"

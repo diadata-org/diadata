@@ -18,11 +18,8 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/carterjones/signalr v0.3.5
-	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b // indirect
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
-	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/structs v1.1.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
@@ -34,8 +31,6 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.0.3 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2
@@ -43,18 +38,16 @@ require (
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgtype v1.7.0
-	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
-	github.com/jjjjpppp/quoinex-go-client v0.0.8
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/mailru/easyjson v0.7.2 // indirect
-	github.com/mattn/go-colorable v0.1.7 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/onflow/cadence v0.15.0
+	github.com/onflow/flow-go-sdk v0.20.0
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/peterh/liner v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1
@@ -73,11 +66,10 @@ require (
 	go.uber.org/zap v1.15.0
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
-	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
-	golang.org/x/tools v0.0.0-20200729041821-df70183b1872 // indirect
 	gonum.org/v1/netlib v0.0.0-20201012070519-2390d26c3658 // indirect
 	gonum.org/v1/plot v0.7.0
+	google.golang.org/grpc v1.31.1
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

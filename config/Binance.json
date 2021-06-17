@@ -2,6 +2,30 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "ATAUSDT",
+            "Ignore": false,
+            "Symbol": "ATA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ATABUSD",
+            "Ignore": false,
+            "Symbol": "ATA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GTCUSDT",
+            "Ignore": false,
+            "Symbol": "GTC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GTCBUSD",
+            "Ignore": false,
+            "Symbol": "GTC"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GRTUSDT",
             "Ignore": false,
             "Symbol": "GRT"

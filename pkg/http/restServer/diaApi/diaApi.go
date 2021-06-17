@@ -15,6 +15,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -1320,6 +1321,18 @@ func (env *Env) GetNFTClasses(c *gin.Context) {
 
 	q, err := env.RelDB.GetNFTClasses(limit, offset)
 	if len(q) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFT returns an NFT.
+func (env *Env) GetNFT(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	id := c.Param("id")
+	q, err := env.RelDB.GetNFT(common.HexToAddress(address), blockchain, id)
+	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 	c.JSON(http.StatusOK, q)

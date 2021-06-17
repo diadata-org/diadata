@@ -1,6 +1,22 @@
 {
   "Tokens": [
     {
+      "Address": "0x8a2279d4a90b6fe1c4b30fa660cc9f926797baa2",
+      "Name": "Chroma"
+    },
+    {
+      "Address": "0x6c28aef8977c9b773996d0e8376d2ee379446F2f",
+      "Name": "Quickswap"
+    },
+     {
+      "Address": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+      "Name": "Gitcoin"
+    },
+    {
+      "Address": "0xa2120b9e674d3fc3875f415a7df52e382f141225",
+      "Name": "Automata"
+    },
+    {
       "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
       "Name": "Maker"
     },

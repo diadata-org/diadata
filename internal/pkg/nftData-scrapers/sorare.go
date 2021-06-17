@@ -19,13 +19,6 @@ import (
 	structs "github.com/fatih/structs"
 )
 
-const (
-	// source       = "Sorare"
-	refreshDelay = time.Hour * 24
-)
-
-type nothing struct{}
-
 type SorareCard struct {
 	PlayerId     *big.Int
 	Season       uint16
@@ -289,6 +282,10 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
+	err := scraper.UpdateNFT()
+	if err != nil {
+		log.Error("updating nfts: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -306,24 +303,11 @@ func (scraper *SorareScraper) mainLoop() {
 }
 
 func (scraper *SorareScraper) UpdateNFT() error {
-	fmt.Println("fetch data...")
-	nfts, err := scraper.FetchData()
+	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return err
 	}
-	for _, nft := range nfts {
-		scraper.GetDataChannel() <- nft
-	}
-	return nil
-}
 
-func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
-	totalSupply, err := scraper.GetTotalSupply()
-	if err != nil {
-		return
-	}
-
-	var sorareNFTs []dia.NFT
 	var creatorAddress common.Address
 	var creationTime time.Time
 	// NFT class from DB
@@ -377,18 +361,19 @@ func (scraper *SorareScraper) FetchData() (nfts []dia.NFT, err error) {
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
-
 		// Set output object
-		sorareNFTs = append(sorareNFTs, dia.NFT{
+		sorareNFT := dia.NFT{
 			TokenID:        tok.String(),
 			Attributes:     result,
 			CreatorAddress: creatorAddress,
 			CreationTime:   creationTime,
 			NFTClass:       sorareNFTClass,
 			URI:            tokenURI,
-		})
+		}
+		log.Info("fetched nft: ", sorareNFT)
+		scraper.GetDataChannel() <- sorareNFT
 	}
-	return sorareNFTs, nil
+	return nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
@@ -409,7 +394,7 @@ func (scraper *SorareScraper) GetTokenURI(index *big.Int) (string, error) {
 	return contract.TokenURI(&bind.CallOpts{}, index)
 }
 
-// GetTotalSupply returns the total supply of the NFT from on-chain.
+// TokenByIndex returns the token address from on-chain.
 func (scraper *SorareScraper) TokenByIndex(index *big.Int) (*big.Int, error) {
 	contract, err := sorare.NewSorareTokensCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
@@ -495,7 +480,7 @@ func GetCreatorAddress(playerResp []byte) (common.Address, error) {
 	return address, nil
 }
 
-// GetCreatorAddress returns the creation time from Opensea
+// GetCreationTime returns the creation time from Opensea
 func GetCreationTime(playerResp []byte) (time.Time, error) {
 	var resp OpenSeaResponse
 	var t time.Time
@@ -540,4 +525,16 @@ func (scraper *SorareScraper) Close() error {
 	scraper.nftscraper.errorLock.RLock()
 	defer scraper.nftscraper.errorLock.RUnlock()
 	return scraper.nftscraper.error
+}
+
+func (scraper *SorareScraper) FetchData() ([]dia.NFT, error) {
+	// fmt.Println("fetch data...")
+	// nfts, err := scraper.FetchData()
+	// if err != nil {
+	// 	return err
+	// }
+	// for _, nft := range nfts {
+	// 	scraper.GetDataChannel() <- nft
+	// }
+	return []dia.NFT{}, nil
 }

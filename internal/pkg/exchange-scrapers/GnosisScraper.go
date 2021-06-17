@@ -68,12 +68,12 @@ func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 		tokens:         make(map[uint16]*GnosisToken),
 	}
 
-	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/806b0419b2d041869fc83727e0043236")
+	wsClient, err := ethclient.Dial(gnosisWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	restClient, err := ethclient.Dial(gnosisRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
