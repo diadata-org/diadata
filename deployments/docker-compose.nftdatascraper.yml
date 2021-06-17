@@ -45,6 +45,20 @@ services:
       options:
         max-size: "50m"
 
+ topshotscraper:
+    depends_on: [genericnftdatascraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
+    command: /bin/nftDatascraper -nftclass=Topshot
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
 secrets:
   postgres_credentials:
     file: ../secrets/postgres_credentials.txt

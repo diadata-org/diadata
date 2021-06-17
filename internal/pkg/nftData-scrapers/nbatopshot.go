@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/onflow/cadence"
 	"github.com/onflow/flow-go-sdk/client"
 	"google.golang.org/grpc"
@@ -16,6 +17,58 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
+
+const (
+	flowAPI1       = "access-001.mainnet1.nodes.onflow.org:9000"
+	flowAPI2       = "access-001.mainnet2.nodes.onflow.org:9000"
+	flowAPI3       = "access-001.mainnet3.nodes.onflow.org:9000"
+	flowAPI4       = "access-001.mainnet4.nodes.onflow.org:9000"
+	flowAPI5       = "access-001.mainnet5.nodes.onflow.org:9000"
+	flowAPI6       = "access-001.mainnet6.nodes.onflow.org:9000"
+	flowAPI7       = "access-001.mainnet7.nodes.onflow.org:9000"
+	flowAPI8       = "access-001.mainnet8.nodes.onflow.org:9000"
+	flowAPICurrent = "access.mainnet.nodes.onflow.org:9000"
+	requestLimit   = uint64(249)
+)
+
+var (
+	rootHeight1       = uint64(7601063)
+	rootHeight2       = uint64(8742959)
+	rootHeight3       = uint64(9737133)
+	rootHeight4       = uint64(9992020)
+	rootHeight5       = uint64(12020337)
+	rootHeight6       = uint64(12609237)
+	rootHeight7       = uint64(13404174)
+	rootHeight8       = uint64(13950742)
+	rootHeightCurrent = uint64(14892104)
+	rootHeights       = []uint64{rootHeight1, rootHeight2, rootHeight3, rootHeight4, rootHeight5, rootHeight6, rootHeight7, rootHeight8, rootHeightCurrent}
+	flowAPIs          = []string{flowAPI1, flowAPI2, flowAPI3, flowAPI4, flowAPI5, flowAPI6, flowAPI7, flowAPI8, flowAPICurrent}
+)
+
+// GetFlowClient returns a feasible client corresponding to the block's startheight.
+func getFlowClient(startheight uint64) (*client.Client, error) {
+	if startheight >= rootHeightCurrent {
+		fmt.Printf("make flow client at current level with: %s\n", flowAPICurrent)
+		return client.New(flowAPICurrent, grpc.WithInsecure())
+	} else if startheight >= rootHeight8 {
+		return client.New(flowAPI8, grpc.WithInsecure())
+	} else if startheight >= rootHeight7 {
+		return client.New(flowAPI7, grpc.WithInsecure())
+	} else if startheight >= rootHeight6 {
+		return client.New(flowAPI6, grpc.WithInsecure())
+	} else if startheight >= rootHeight5 {
+		return client.New(flowAPI5, grpc.WithInsecure())
+	} else if startheight >= rootHeight4 {
+		return client.New(flowAPI4, grpc.WithInsecure())
+	} else if startheight >= rootHeight3 {
+		return client.New(flowAPI3, grpc.WithInsecure())
+	} else if startheight >= rootHeight2 {
+		return client.New(flowAPI2, grpc.WithInsecure())
+	} else if startheight >= rootHeight1 {
+		return client.New(flowAPI1, grpc.WithInsecure())
+	}
+	return nil, errors.New("startheight too small. No client available.")
+}
 
 type NBATopshotScraper struct {
 	nftscraper NFTScraper
@@ -40,7 +93,7 @@ type Moment struct {
 
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 
-	flowClient, err := client.New("access.mainnet.nodes.onflow.org:9000", grpc.WithInsecure())
+	flowClient, err := client.New(flowAPICurrent, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,18 +115,16 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 		ticker:     time.NewTicker(refreshDelay),
 	}
 
-	amap, err := s.GetAttributeMap()
-	if err != nil {
-		fmt.Println("err here: ", err)
-	}
-	fmt.Println("amap: ", amap)
-
 	go s.mainLoop()
 	return s
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *NBATopshotScraper) mainLoop() {
+	err := scraper.UpdateNFT()
+	if err != nil {
+		log.Error("error updating NFT: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -102,30 +153,41 @@ func (scraper *NBATopshotScraper) UpdateNFT() error {
 	return nil
 }
 
+// FetchData returns a slice of all NFTs fetched.
 func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 
-	numSets, err := scraper.GetNumSets()
-	if err != nil {
-		return []dia.NFT{}, err
-	}
-	fmt.Println("number of sets: ", numSets)
 	var nbaTopshotNFTs []dia.NFT
-	allMoments, err := scraper.GetAllMoments()
+	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(rootHeight1)
 	if err != nil {
 		return []dia.NFT{}, err
 	}
-	// TO DO: Import attributes map and assign attributes to moments below.
-	// TO DO: Get creation time = block time
-	// TO DO: Can we get creator address from event?
-	for _, moment := range allMoments {
+
+	attributeMap, err := scraper.GetAttributeMap()
+	if err != nil {
+		return []dia.NFT{}, err
+	}
+
+	for i, moment := range allMoments {
 		m := MomentMintedEvent(moment)
-		metadata, err := scraper.GetMetadata(uint32(m.SetID()), uint32(m.PlayID()))
-		if err != nil {
-			log.Error(err)
-		}
+		metadata := attributeMap[identifier{
+			SetID:  uint32(m.SetID()),
+			PlayID: uint32(m.PlayID()),
+		}]
+		metadata["blocknumber"] = blocknumbers[i]
 		nbaTopshotNFTs = append(nbaTopshotNFTs, dia.NFT{
-			TokenID:    strconv.Itoa(int(m.ID())),
-			Attributes: metadata,
+			NFTClass: dia.NFTClass{
+				Address:      common.HexToAddress("0x0b2a3299cc857e29"),
+				Symbol:       "TS",
+				Name:         "TopShot",
+				Blockchain:   "Flow",
+				ContractType: "non-fungible",
+				Category:     "Collectibles",
+			},
+			TokenID:        strconv.Itoa(int(m.ID())),
+			CreationTime:   timestamps[i],
+			CreatorAddress: common.Address{},
+			URI:            "not available",
+			Attributes:     metadata,
 		})
 	}
 	fmt.Println("results: ", nbaTopshotNFTs)
@@ -139,27 +201,77 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 
 // GetAllMoments returns all moments from genesis to the latest block by iterating through
 // blocks and looking for MomentMinted events.
-func (scraper *NBATopshotScraper) GetAllMoments() (mintedMoments []cadence.Event, err error) {
+func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMoments []cadence.Event, timestamps []time.Time, blocknumbers []uint64, err error) {
+	log.Info("Getting moments...")
 	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
 	if err != nil {
 		log.Error(err)
 	}
-	// For some reason, for block heights smaller than 14mio, the rpc server returns an error
-	for i := 0; i < 500; i++ {
-		m, err := scraper.GetMintedMoments(latestBlock.Height-uint64((i+1)*249), latestBlock.Height-uint64(i*249))
-		if err != nil {
-			fmt.Println(err)
+
+	// Get first interval.
+	var currentIndex int
+	if startheight > rootHeights[len(rootHeights)-1] {
+		currentIndex = len(rootHeights)
+	} else {
+		for i, root := range rootHeights {
+			if startheight < root {
+				currentIndex = i
+				break
+			}
 		}
-		mintedMoments = append(mintedMoments, m...)
 	}
+
+	log.Infof("make flow client at startheight %v: ", startheight)
+	log.Infof("currentIndex: %v\n", currentIndex)
+
+	flowClient, err := getFlowClient(startheight)
+	if err != nil {
+		return
+	}
+
+	for startheight < latestBlock.Height {
+
+		if currentIndex == len(rootHeights) || startheight+requestLimit < rootHeights[currentIndex] {
+			// all blocks within the range of given client.
+			m, t, b, err := GetMintedMoments(startheight, startheight+requestLimit, flowClient)
+			if err != nil {
+				log.Error("getting minted moments: ", err)
+			}
+			mintedMoments = append(mintedMoments, m...)
+			timestamps = append(timestamps, t...)
+			blocknumbers = append(blocknumbers, b...)
+			startheight += requestLimit
+			fmt.Println("current startheight: ", startheight)
+		} else {
+			// Reached new block range and thus need new client.
+			fmt.Println("reached new block range")
+			m, t, b, err := GetMintedMoments(startheight, rootHeights[currentIndex]-1, flowClient)
+			if err != nil {
+				log.Error(err)
+			}
+			mintedMoments = append(mintedMoments, m...)
+			timestamps = append(timestamps, t...)
+			blocknumbers = append(blocknumbers, b...)
+
+			startheight = rootHeights[currentIndex]
+			currentIndex += 1
+			flowClient, err = getFlowClient(startheight)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+	}
+	log.Info("... done getting moments.")
 	return
 }
 
 // GetMintedMoments returns all moments minted between blocks @startheight and @endheight.
 // The difference @endheight-@starthight is limited to 250.
-func (scraper *NBATopshotScraper) GetMintedMoments(startheight, endheight uint64) (mintedMoments []cadence.Event, err error) {
+// The range @startheight, @endheight must not be spread over more than the given @flowClient.
+// https://docs.onflow.org/node-operation/past-sporks/
+func GetMintedMoments(startheight, endheight uint64, flowClient *client.Client) (mintedMoments []cadence.Event, timestamps []time.Time, blockNumbers []uint64, err error) {
 
-	blockEvents, err := scraper.flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
+	blockEvents, err := flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
 		Type:        "A.0b2a3299cc857e29.TopShot.MomentMinted",
 		StartHeight: startheight,
 		EndHeight:   endheight,
@@ -167,14 +279,16 @@ func (scraper *NBATopshotScraper) GetMintedMoments(startheight, endheight uint64
 	if err != nil {
 		return
 	}
-
 	for _, blockEvent := range blockEvents {
-		for _, playCreatedEvent := range blockEvent.Events {
-			mintedMoments = append(mintedMoments, playCreatedEvent.Value)
+		timestamp := blockEvent.BlockTimestamp
+		for _, momentMintedEvent := range blockEvent.Events {
+			fmt.Printf("got moment %v at time %v: \n", momentMintedEvent.Value, timestamp)
+			timestamps = append(timestamps, timestamp)
+			blockNumbers = append(blockNumbers, blockEvent.Height)
+			mintedMoments = append(mintedMoments, momentMintedEvent.Value)
 		}
 	}
 	return
-
 }
 
 type MomentMintedEvent cadence.Event
@@ -235,14 +349,11 @@ func (scraper *NBATopshotScraper) GetMetadata(setid uint32, playid uint32) (map[
 	if err != nil {
 		return make(map[string]interface{}), fmt.Errorf("error fetching sale moment from flow: %w", err)
 	}
-	// type Plays cadence.Struct
-	// play := Plays(res.(cadence.Struct))
-	// fmt.Println("play: ", play)
 
 	return cadenceMomentToMap(res.(cadence.Struct)), nil
 }
 
-// cadenceMomentToMap converts a moment to a map.
+// cadenceMomentToMap is a helper for GetMetadata and converts a moment to a map.
 func cadenceMomentToMap(cadenceMoment cadence.Value) map[string]interface{} {
 	castPlay := cadenceMoment.ToGoValue().([]interface{})
 
@@ -330,8 +441,10 @@ type identifier struct {
 	PlayID uint32
 }
 
-// GetAttributesMap returns a map that uniquely maps setID and playID onto attributes.
+// GetAttributesMap returns a map that uniquely maps an identifier consisting of setID and playID
+// onto the corresponding attributes.
 func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]interface{}, error) {
+	log.Info("Get attribute map...")
 	attrMap := make(map[identifier]map[string]interface{})
 	numSets, err := scraper.GetNumSets()
 	if err != nil {
@@ -344,7 +457,7 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 			fmt.Println("getting setID: ", err)
 		}
 		for _, val := range values {
-			play := cadenceToPlay(val)
+			play := cadenceplayToPlay(val)
 			idfier := identifier{
 				SetID:  play.SetID,
 				PlayID: play.PlayID,
@@ -360,10 +473,12 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 		}
 
 	}
+	log.Info("... done getting attribute map.")
 	return attrMap, nil
 }
 
-func cadenceToPlay(cadencePlay cadence.Value) (play Play) {
+// cadenceplayToPlay casts a play given as a cadence.Value to the struct @Play.
+func cadenceplayToPlay(cadencePlay cadence.Value) (play Play) {
 	castPlay := cadencePlay.ToGoValue().([]interface{})
 	play.SeriesID = castPlay[0].(uint32)
 	play.SetID = castPlay[1].(uint32)

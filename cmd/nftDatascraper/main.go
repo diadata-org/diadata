@@ -64,16 +64,16 @@ func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB)
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
 				if pgErr.Code == "23505" {
-					log.Infof("nft %v from class %s already in db. continue.", nft.TokenID, nft.NFTClass.Name)
+					log.Infof("nft %s from class %s already in db. continue.", nft.TokenID, nft.NFTClass.Name)
 					continue
 				} else {
-					log.Errorf("postgres error saving nft %v: %v", nft.NFTClass.Name, nft.TokenID)
+					log.Errorf("postgres error saving nft %s: %s", nft.NFTClass.Name, nft.TokenID)
 				}
 			} else {
-				log.Errorf("Error saving nft %v: %v", nft.NFTClass.Name, nft.TokenID)
+				log.Errorf("Error saving nft from class %s with id %s: %v", nft.NFTClass.Name, nft.TokenID, err)
 			}
 		} else {
-			log.Info("successfully set nft ", nft.NFTClass.Name, nft.TokenID)
+			log.Infof("successfully set nft %s with id: %s \n", nft.NFTClass.Name, nft.TokenID)
 		}
 	}
 
