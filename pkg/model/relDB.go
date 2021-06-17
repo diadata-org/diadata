@@ -1,17 +1,14 @@
 package models
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/utils"
-	"math/big"
-	"os"
-
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
+	"math/big"
 )
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
@@ -69,7 +66,6 @@ type RelDatastore interface {
 }
 
 const (
-	postgresKey = "postgres_credentials.txt"
 
 	// postgres tables
 	assetTable          = "asset"
@@ -118,37 +114,13 @@ func NewCachingLayer() (*RelDB, error) {
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
 	var postgresClient *pgx.Conn
 	var redisClient *redis.Client
-	var err error
-	// This environment variable is either set in docker-compose or empty
-	executionMode := os.Getenv("EXEC_MODE")
-	address := ""
-	url := getPostgresURL(executionMode)
+
+	url := db.GetPostgresURL()
 	if withPostgres {
-		log.Info("connect to postgres server...")
-		postgresClient, err = pgx.Connect(context.Background(), url)
-		if err != nil {
-			return nil, err
-		}
-		log.Info("...connection to postgres server established.")
+		postgresClient = db.GetPostgresClient()
 	}
 	if withRedis {
-		// Run localhost for testing and server for production
-		if executionMode == "production" {
-			address = utils.Getenv("REDISURL", "redis:6379")
-		} else {
-			address = "localhost:6379"
-		}
-		redisClient = redis.NewClient(&redis.Options{
-			Addr:     address,
-			Password: "", // no password set
-			DB:       0,  // use default DB
-		})
-
-		pong2, err := redisClient.Ping().Result()
-		if err != nil {
-			log.Error("NewRelDataStore redis: ", err)
-		}
-		log.Debug("NewDB", pong2)
+		redisClient = db.GetRedisClient()
 	}
 	return &RelDB{url, postgresClient, redisClient, 32}, nil
 }
@@ -168,51 +140,4 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 		keys = append(keys, val[0].(string))
 	}
 	return
-}
-
-func getPostgresURL(executionMode string) (url string) {
-	if os.Getenv("USE_ENV") == "true" {
-		url = "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + "@" + os.Getenv("POSTGRES_HOST") + "/"+ os.Getenv("POSTGRES_DATABASE")
-	} else {
-		if executionMode == "production" {
-			url = "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
-		} else {
-			url = "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets(executionMode)
-		}
-	}
-	return
-}
-
-func getPostgresKeyFromSecrets(executionMode string) string {
-	var lines []string
-	var file *os.File
-	var err error
-	if executionMode == "production" {
-		pwd, _ := os.Getwd()
-		log.Info("current directory: ", pwd)
-		file, err = os.Open("/run/secrets/" + "postgres_credentials")
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		file, err = os.Open(os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err = scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	if len(lines) != 1 {
-		log.Fatal("Secrets file should have exactly one line")
-	}
-	err = file.Close()
-	if err != nil {
-		log.Error(err)
-	}
-	return lines[0]
 }

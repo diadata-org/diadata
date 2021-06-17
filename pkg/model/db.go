@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 	"strconv"
 	"time"
 
@@ -184,88 +184,29 @@ func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb
 func NewDataStore() (*DB, error) {
 	return NewDataStoreWithOptions(true, true)
 }
-func NewInfluxDataStore() (*DB, error) {
-	return NewDataStoreWithOptions(false, true)
-}
 
-func NewRedisDataStore() (*DB, error) {
-	return NewDataStoreWithOptions(true, false)
-}
-
-func NewDataStoreWithoutInflux() (*DB, error) {
-	return NewDataStoreWithOptions(true, false)
-}
-
-func NewDataStoreWithoutRedis() (*DB, error) {
-	return NewDataStoreWithOptions(false, true)
-}
 
 func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
-	var ci clientInfluxdb.Client
-	var bp clientInfluxdb.BatchPoints
-	var r *redis.Client
-
-	// This environment variable is either set in docker-compose or empty
-	executionMode := os.Getenv("EXEC_MODE")
-	address := "localhost:6379"
-	password := ""
-	defaultDB := 0
+	var influxClient clientInfluxdb.Client
+	var influxBatchPoints clientInfluxdb.BatchPoints
+	var redisClient *redis.Client
 
 	if withRedis {
-		var err error
-		// Run localhost for testing and server for production
-		if executionMode == "production" {
-			address = os.Getenv("REDISURL")
-		}
-
-		if executionMode == "production" {
-			password = os.Getenv("REDISPASSWORD")
-		}
-
-		if executionMode == "production" {
-			defaultDB, err = strconv.Atoi(os.Getenv("REDISUSEDEFAULTDB"))
-			if err != nil {
-				log.Error("wrong value for redis default db", err)
-			}
-		}
-
-		r = redis.NewClient(&redis.Options{
-			Addr:     address,
-			Password: password,  // no password set
-			DB:       defaultDB, // use default DB
-		})
-
-		pong2, err := r.Ping().Result()
-		if err != nil {
-			log.Error("NewDataStore redis: ", err)
-		}
-		log.Debug("NewDB", pong2)
+		redisClient = db.GetRedisClient()
 	}
 	if withInflux {
 		var err error
-		if executionMode == "production" {
-			address = os.Getenv("INFLUXURL")
-		} else {
-			address = "http://localhost:8086"
-		}
-		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr:     address,
-			Username: "",
-			Password: "",
-		})
-		if err != nil {
-			log.Error("NewDataStore influxdb", err)
-		}
-		bp, _ = createBatchInflux()
-		_, err = queryInfluxDB(ci, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+		influxClient = db.GetInfluxClient()
+		influxBatchPoints = createBatchInflux()
+		_, err = queryInfluxDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 		if err != nil {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
 	}
-	return &DB{r, ci, bp, 0}, nil
+	return &DB{redisClient, influxClient, influxBatchPoints, 0}, nil
 }
 
-func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
+func createBatchInflux() clientInfluxdb.BatchPoints {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
 		Precision: "s",
@@ -273,7 +214,7 @@ func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return bp, err
+	return bp
 }
 
 func (db *DB) Flush() error {
@@ -308,7 +249,7 @@ func (db *DB) WriteBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
-		db.influxBatchPoints, _ = createBatchInflux()
+		db.influxBatchPoints = createBatchInflux()
 	} else {
 		db.influxPointsInBatch = 0
 	}
