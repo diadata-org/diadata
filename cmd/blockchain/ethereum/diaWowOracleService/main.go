@@ -30,7 +30,7 @@ func main() {
 	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys_wow", "File with wallet secrets")
 	var blockchainNode = flag.String("blockchainNode", "https://bsc-dataseed.binance.org/", "Node address for blockchain connection")
 	var sleepSeconds = flag.Int("sleepSeconds", 1, "Number of seconds to sleep between calls")
-	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between checking oracle runs")
+	var frequencySeconds = flag.Int("frequencySeconds", 120, "Number of seconds to sleep between checking oracle runs")
 	var deviationPermille = flag.Int("deviationPermille", 30, "Permille of deviation to trigger an oracle update")
 	var chainId = flag.Int64("chainId", 56, "Chain-ID of the network to connect to")
 	flag.Parse()
@@ -76,46 +76,59 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	//periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
+	oldPrice := 0.0
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+				oldPrice, err = periodicOracleUpdateHelper(*sleepSeconds, oldPrice, *deviationPermille, auth, contract, conn)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaWowOracleService.DIAWowOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(sleepSeconds int, oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaWowOracleService.DIAWowOracle, conn *ethclient.Client) (float64, error) {
 
 	// Get quotation for WOW coin and update Oracle
 	rawWowQ, err := getQuotationFromDia("WOW")
 	if err != nil {
 		log.Fatalf("Failed to retrieve WOW quotation data from DIA: %v", err)
-		return err
+		return oldPrice, err
 	}
 	rawWowQ.Name = "WOW"
 
 	rawBnbQ, err := getQuotationFromDia("BNB")
 	if err != nil {
 		log.Fatalf("Failed to retrieve BNB quotation data from DIA: %v", err)
-		return err
+		return oldPrice, err
 	}
 	rawBnbQ.Name = "BNB"
-	err = updatePair(rawWowQ, rawBnbQ, auth, contract, conn)
-	if err != nil {
-		log.Fatalf("Failed to update WOW/BNB Oracle: %v", err)
-		return err
-	}
-	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
-	return nil
+	// Check for deviation
+	newPrice := rawWowQ.Price / rawBnbQ.Price
+
+	//log.Println("In periodic block")
+	//log.Println(oldPrice)
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille) / 1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille) / 1000))) {
+		log.Println("Entering deviation based update zone")
+		err = updatePair(rawWowQ, rawBnbQ, auth, contract, conn)
+		if err != nil {
+			log.Fatalf("Failed to update WOW/BNB Oracle: %v", err)
+			return oldPrice, err
+		}
+		return newPrice, nil
+	}
+
+	return oldPrice, nil
 }
 
 func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaWowOracleService.DIAWowOracle) error {
