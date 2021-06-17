@@ -1,7 +1,7 @@
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-16 as build
 
 WORKDIR $GOPATH/src/
-COPY ./cmd/service/nftCollectionService ./
+COPY ./cmd/services/nftCollectionService ./
 
 RUN go install
 

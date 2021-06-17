@@ -1,12 +1,13 @@
-FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-11 as build
+FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-16 as build
 
 WORKDIR $GOPATH/src/
 
 COPY ./cmd/services/cviService ./
 RUN go install
 
-FROM gcr.io/distroless/base
+RUN ls -la /go/bin
 
+FROM gcr.io/distroless/base
 COPY --from=build /go/bin/cviService /bin/cviService
 COPY --from=build /config/ /config/
 

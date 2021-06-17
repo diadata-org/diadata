@@ -184,7 +184,21 @@ func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb
 func NewDataStore() (*DB, error) {
 	return NewDataStoreWithOptions(true, true)
 }
+func NewInfluxDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(false, true)
+}
 
+func NewRedisDataStore() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
+}
+
+func NewDataStoreWithoutInflux() (*DB, error) {
+	return NewDataStoreWithOptions(true, false)
+}
+
+func NewDataStoreWithoutRedis() (*DB, error) {
+	return NewDataStoreWithOptions(false, true)
+}
 
 func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var influxClient clientInfluxdb.Client
