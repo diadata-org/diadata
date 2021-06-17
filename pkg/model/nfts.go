@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
@@ -199,6 +200,18 @@ func (rdb *RelDB) GetNFT(address common.Address, blockchain string, tokenID stri
 		}
 	}
 	return dia.NFT{}, err
+}
+
+// GetLastBlockheightTopshot returns the last block number before timestamp given by @upperBound.
+func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error) {
+	query := fmt.Sprintf("select attributes from %s where nftclass_id=(select nftclass_id from %s where address='0x0000000000000000000000000B2a3299cC857E29' and blockchain='Flow') order by creation_time desc limit 1;", nftTable, nftclassTable)
+	attributes := make(map[string]interface{})
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&attributes)
+	if err != nil {
+		return 0, err
+	}
+	currentBlock := uint64(attributes["blocknumber"].(float64))
+	return currentBlock, nil
 }
 
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {

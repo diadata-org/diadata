@@ -42,7 +42,6 @@ var (
 	rootHeight8       = uint64(13950742)
 	rootHeightCurrent = uint64(14892104)
 	rootHeights       = []uint64{rootHeight1, rootHeight2, rootHeight3, rootHeight4, rootHeight5, rootHeight6, rootHeight7, rootHeight8, rootHeightCurrent}
-	flowAPIs          = []string{flowAPI1, flowAPI2, flowAPI3, flowAPI4, flowAPI5, flowAPI6, flowAPI7, flowAPI8, flowAPICurrent}
 )
 
 // GetFlowClient returns a feasible client corresponding to the block's startheight.
@@ -156,8 +155,18 @@ func (scraper *NBATopshotScraper) UpdateNFT() error {
 // FetchData returns a slice of all NFTs fetched.
 func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 
+	var lastBlock uint64
+	lastBlock, err = scraper.nftscraper.relDB.GetLastBlockheightTopshot(time.Now())
+	if err != nil {
+		log.Error("fetch last topshot block: ", err)
+	}
+	if lastBlock == uint64(0) {
+		// No last block in db. Start from genesis block.
+		lastBlock = rootHeight1
+	}
+
 	var nbaTopshotNFTs []dia.NFT
-	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(rootHeight1)
+	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(lastBlock)
 	if err != nil {
 		return []dia.NFT{}, err
 	}

@@ -45,7 +45,7 @@ services:
       options:
         max-size: "50m"
 
- topshotscraper:
+  topshotscraper:
     depends_on: [genericnftdatascraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
     command: /bin/nftDatascraper -nftclass=Topshot

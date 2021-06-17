@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/common"
@@ -30,6 +31,7 @@ type RelDatastore interface {
 	SetNFT(nft dia.NFT) error
 	GetNFT(address common.Address, blockchain string, tokenID string) (dia.NFT, error)
 	SetNFTTrade(trade dia.NFTTrade) error
+	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
 
 	// General methods
