@@ -476,6 +476,8 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 				log.Errorf("fetching attributes for setID %v and playID %v: %v", idfier.SetID, idfier.PlayID, err)
 			}
 			attributes["seriesID"] = play.SeriesID
+			attributes["setID"] = play.SetID
+			attributes["playID"] = play.PlayID
 			attributes["setName"] = play.SetName
 			attrMap[idfier] = attributes
 			fmt.Println("attributes: ", attributes)
