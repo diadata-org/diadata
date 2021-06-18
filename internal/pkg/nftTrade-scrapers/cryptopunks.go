@@ -11,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
+
 	// "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -127,7 +128,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() (trades []dia.NFTTrade, err erro
 	for iter.Next() {
 		fmt.Println("iter ")
 		// TODO: What value should i use for the blockchain argument?
-		nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress, "ethereum", iter.Event.PunkIndex.String())
+		nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
 		if err != nil {
 			// TODO: should we continue if we failed to get NFT from the db or should we fail!
 			// continue

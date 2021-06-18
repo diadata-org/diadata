@@ -310,7 +310,7 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
 	var cryptopunkNFTs []dia.NFT
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
+	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
 	}
@@ -334,7 +334,7 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptopunkNFTClass,
 			CreationTime:   creationTime,
-			CreatorAddress: creatorAddress,
+			CreatorAddress: creatorAddress.Hex(),
 			Attributes:     result,
 			URI:            scraper.cryptopunkURL + strconv.Itoa(i),
 		})

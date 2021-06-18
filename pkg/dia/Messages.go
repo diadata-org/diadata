@@ -27,7 +27,7 @@ type VerificationMechanism string
 // NFTClass is the container for an nft class defined by
 // a contract (address) on a blockchain.
 type NFTClass struct {
-	Address      common.Address
+	Address      string
 	Symbol       string
 	Name         string
 	Blockchain   string
@@ -54,7 +54,7 @@ type NFT struct {
 	NFTClass       NFTClass
 	TokenID        string
 	CreationTime   time.Time
-	CreatorAddress common.Address
+	CreatorAddress string
 	URI            string
 	Attributes     NFTAttributes
 }

@@ -88,7 +88,7 @@ func fetchClasses(offset, limit int, order_direction string) (acs []AssetContrac
 
 func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 	// totalPages := 50 * 200 - this is the limit on offset parameter in the api endpoint
-	checkmap := make(map[common.Address]struct{})
+	checkmap := make(map[string]struct{})
 	for k := 0; k < 200; k++ {
 		assetContracts, err := fetchClasses(k*50, 50, "desc")
 		if err != nil {
@@ -101,7 +101,7 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 		// }
 		for _, contract := range assetContracts {
 			nftClass := dia.NFTClass{
-				Address:      common.HexToAddress(contract.Address),
+				Address:      common.HexToAddress(contract.Address).Hex(),
 				Symbol:       contract.Symbol,
 				Name:         contract.Name,
 				Blockchain:   dia.ETHEREUM,

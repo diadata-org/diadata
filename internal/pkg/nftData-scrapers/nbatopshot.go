@@ -9,65 +9,18 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/onflow/cadence"
 	"github.com/onflow/flow-go-sdk/client"
 	"google.golang.org/grpc"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	flowhelper "github.com/diadata-org/diadata/pkg/dia/helpers/flowhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
-	flowAPI1       = "access-001.mainnet1.nodes.onflow.org:9000"
-	flowAPI2       = "access-001.mainnet2.nodes.onflow.org:9000"
-	flowAPI3       = "access-001.mainnet3.nodes.onflow.org:9000"
-	flowAPI4       = "access-001.mainnet4.nodes.onflow.org:9000"
-	flowAPI5       = "access-001.mainnet5.nodes.onflow.org:9000"
-	flowAPI6       = "access-001.mainnet6.nodes.onflow.org:9000"
-	flowAPI7       = "access-001.mainnet7.nodes.onflow.org:9000"
-	flowAPI8       = "access-001.mainnet8.nodes.onflow.org:9000"
-	flowAPICurrent = "access.mainnet.nodes.onflow.org:9000"
-	requestLimit   = uint64(249)
+	TopshotAddress = "0x0b2a3299cc857e29"
 )
-
-var (
-	rootHeight1       = uint64(7601063)
-	rootHeight2       = uint64(8742959)
-	rootHeight3       = uint64(9737133)
-	rootHeight4       = uint64(9992020)
-	rootHeight5       = uint64(12020337)
-	rootHeight6       = uint64(12609237)
-	rootHeight7       = uint64(13404174)
-	rootHeight8       = uint64(13950742)
-	rootHeightCurrent = uint64(14892104)
-	rootHeights       = []uint64{rootHeight1, rootHeight2, rootHeight3, rootHeight4, rootHeight5, rootHeight6, rootHeight7, rootHeight8, rootHeightCurrent}
-)
-
-// GetFlowClient returns a feasible client corresponding to the block's startheight.
-func getFlowClient(startheight uint64) (*client.Client, error) {
-	if startheight >= rootHeightCurrent {
-		fmt.Printf("make flow client at current level with: %s\n", flowAPICurrent)
-		return client.New(flowAPICurrent, grpc.WithInsecure())
-	} else if startheight >= rootHeight8 {
-		return client.New(flowAPI8, grpc.WithInsecure())
-	} else if startheight >= rootHeight7 {
-		return client.New(flowAPI7, grpc.WithInsecure())
-	} else if startheight >= rootHeight6 {
-		return client.New(flowAPI6, grpc.WithInsecure())
-	} else if startheight >= rootHeight5 {
-		return client.New(flowAPI5, grpc.WithInsecure())
-	} else if startheight >= rootHeight4 {
-		return client.New(flowAPI4, grpc.WithInsecure())
-	} else if startheight >= rootHeight3 {
-		return client.New(flowAPI3, grpc.WithInsecure())
-	} else if startheight >= rootHeight2 {
-		return client.New(flowAPI2, grpc.WithInsecure())
-	} else if startheight >= rootHeight1 {
-		return client.New(flowAPI1, grpc.WithInsecure())
-	}
-	return nil, errors.New("startheight too small. No client available.")
-}
 
 type NBATopshotScraper struct {
 	nftscraper NFTScraper
@@ -92,7 +45,7 @@ type Moment struct {
 
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 
-	flowClient, err := client.New(flowAPICurrent, grpc.WithInsecure())
+	flowClient, err := client.New(flowhelper.FlowAPICurrent, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -162,7 +115,7 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 	}
 	if lastBlock == uint64(0) {
 		// No last block in db. Start from genesis block.
-		lastBlock = rootHeight1
+		lastBlock = flowhelper.RootHeight1
 	}
 
 	var nbaTopshotNFTs []dia.NFT
@@ -185,7 +138,7 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 		metadata["blocknumber"] = blocknumbers[i]
 		nbaTopshotNFTs = append(nbaTopshotNFTs, dia.NFT{
 			NFTClass: dia.NFTClass{
-				Address:      common.HexToAddress("0x0b2a3299cc857e29"),
+				Address:      TopshotAddress,
 				Symbol:       "TS",
 				Name:         "TopShot",
 				Blockchain:   "Flow",
@@ -194,7 +147,7 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 			},
 			TokenID:        strconv.Itoa(int(m.ID())),
 			CreationTime:   timestamps[i],
-			CreatorAddress: common.Address{},
+			CreatorAddress: "",
 			URI:            "not available",
 			Attributes:     metadata,
 		})
@@ -219,10 +172,10 @@ func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMomen
 
 	// Get first interval.
 	var currentIndex int
-	if startheight > rootHeights[len(rootHeights)-1] {
-		currentIndex = len(rootHeights)
+	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
+		currentIndex = len(flowhelper.RootHeights)
 	} else {
-		for i, root := range rootHeights {
+		for i, root := range flowhelper.RootHeights {
 			if startheight < root {
 				currentIndex = i
 				break
@@ -233,28 +186,28 @@ func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMomen
 	log.Infof("make flow client at startheight %v: ", startheight)
 	log.Infof("currentIndex: %v\n", currentIndex)
 
-	flowClient, err := getFlowClient(startheight)
+	flowClient, err := flowhelper.GetFlowClient(startheight)
 	if err != nil {
 		return
 	}
 
 	for startheight < latestBlock.Height {
 
-		if currentIndex == len(rootHeights) || startheight+requestLimit < rootHeights[currentIndex] {
+		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
 			// all blocks within the range of given client.
-			m, t, b, err := GetMintedMoments(startheight, startheight+requestLimit, flowClient)
+			m, t, b, err := GetMintedMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
 			if err != nil {
 				log.Error("getting minted moments: ", err)
 			}
 			mintedMoments = append(mintedMoments, m...)
 			timestamps = append(timestamps, t...)
 			blocknumbers = append(blocknumbers, b...)
-			startheight += requestLimit
+			startheight += flowhelper.RequestLimit
 			fmt.Println("current startheight: ", startheight)
 		} else {
 			// Reached new block range and thus need new client.
 			fmt.Println("reached new block range")
-			m, t, b, err := GetMintedMoments(startheight, rootHeights[currentIndex]-1, flowClient)
+			m, t, b, err := GetMintedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
 			if err != nil {
 				log.Error(err)
 			}
@@ -262,9 +215,9 @@ func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMomen
 			timestamps = append(timestamps, t...)
 			blocknumbers = append(blocknumbers, b...)
 
-			startheight = rootHeights[currentIndex]
+			startheight = flowhelper.RootHeights[currentIndex]
 			currentIndex += 1
-			flowClient, err = getFlowClient(startheight)
+			flowClient, err = flowhelper.GetFlowClient(startheight)
 			if err != nil {
 				log.Error(err)
 			}

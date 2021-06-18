@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
@@ -22,14 +21,14 @@ type RelDatastore interface {
 	SetNFTClass(nftClass dia.NFTClass) error
 	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
 	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
-	GetNFTClass(address common.Address, blockchain string) (nftclass dia.NFTClass, err error)
-	GetNFTClassID(address common.Address, blockchain string) (ID string, err error)
+	GetNFTClass(address string, blockchain string) (nftclass dia.NFTClass, err error)
+	GetNFTClassID(address string, blockchain string) (ID string, err error)
 	GetNFTClassByID(id string) (nftclass dia.NFTClass, err error)
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 
 	SetNFT(nft dia.NFT) error
-	GetNFT(address common.Address, blockchain string, tokenID string) (dia.NFT, error)
+	GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error)
 	SetNFTTrade(trade dia.NFTTrade) error
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)

@@ -311,7 +311,7 @@ func (scraper *SorareScraper) UpdateNFT() error {
 	var creatorAddress common.Address
 	var creationTime time.Time
 	// NFT class from DB
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address, dia.Ethereum)
+	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
 	}
@@ -365,7 +365,7 @@ func (scraper *SorareScraper) UpdateNFT() error {
 		sorareNFT := dia.NFT{
 			TokenID:        tok.String(),
 			Attributes:     result,
-			CreatorAddress: creatorAddress,
+			CreatorAddress: creatorAddress.Hex(),
 			CreationTime:   creationTime,
 			NFTClass:       sorareNFTClass,
 			URI:            tokenURI,
