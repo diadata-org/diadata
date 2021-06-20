@@ -9,10 +9,10 @@ import (
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/shopspring/decimal"
 )
 
@@ -86,13 +86,7 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 		},
 	}
 
-	c, err := ethclient.Dial("ws://213.14.226.136:8546")
-	if err != nil {
-		log.Errorf("unable to get ethereum client: %s", err.Error())
-		return scraper
-	}
-
-	scraper.tradeScraper.ethConnection, err = c, nil //ethhelper.NewETHClient()
+	scraper.tradeScraper.ethConnection, err = ethhelper.NewETHClient()
 	if err != nil {
 		log.Errorf("unable to get ethereum client: %s", err.Error())
 		return scraper
