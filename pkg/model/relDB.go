@@ -75,6 +75,15 @@ func NewCachingLayer() (*RelDB, error) {
 	return NewRelDataStoreWithOptions(false, true)
 }
 
+func NewRelDataStoreWithOptionsForOpenSeaDev(ctx context.Context, psqlDSN string) (*RelDB, error) {
+	psql, err := pgx.Connect(ctx, psqlDSN)
+	if err != nil {
+		panic(err)
+	}
+
+	return &RelDB{URI: psqlDSN, postgresClient: psql, pagesize: 32}, nil
+}
+
 // NewRelDataStoreWithOptions returns a postgres datastore and/or redis caching layer.
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
 	var postgresClient *pgx.Conn

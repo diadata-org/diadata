@@ -8,4 +8,5 @@ var log *logrus.Logger
 
 func init() {
 	log = logrus.New()
+	log.SetLevel(logrus.DebugLevel)
 }

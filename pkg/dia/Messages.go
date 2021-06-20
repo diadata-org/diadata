@@ -96,6 +96,7 @@ type NFTTrade struct {
 	FromAddress common.Address
 	ToAddress   common.Address
 	Exchange    string
+	TxHash      common.Hash // I think we need to store transaction id
 }
 
 // MarshalBinary for DefiProtocolState

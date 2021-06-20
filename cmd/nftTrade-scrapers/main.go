@@ -13,6 +13,23 @@ import (
 )
 
 func main() {
+	if testOpenSeaScraper := true; testOpenSeaScraper {
+		// rdb, err := models.NewRelDataStoreWithOptionsForOpenSeaDev(context.Background(), "postgresql://DSN...")
+		rdb, err := models.NewRelDataStore()
+		if err != nil {
+			panic(err)
+		}
+
+		scraper := nfttradescrapers.NewOpenSeaScraper(rdb)
+		go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
+
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go handleData(scraper.GetTradeChannel(), &wg, rdb)
+		wg.Wait()
+
+		return
+	}
 
 	wg := sync.WaitGroup{}
 
@@ -50,8 +67,8 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			log.Error("error")
 			return
 		}
-		if 1 > 2 {
-			log.Info(fq)
+		if 1 > 0 {
+			log.Infof("got trade: %#v", fq)
 		}
 		// rdb.SetNFT(fq)
 	}
