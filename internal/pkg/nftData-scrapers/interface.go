@@ -15,8 +15,10 @@ const (
 
 type nothing struct{}
 type NFTDataScraper interface {
+	// NFT data should be streamed through dia.NFT channel.
 	GetDataChannel() chan dia.NFT
-	FetchData() ([]dia.NFT, error)
+	// Should fetch nft data and send it to the channel.
+	FetchData() error
 }
 
 type NFTScraper struct {
