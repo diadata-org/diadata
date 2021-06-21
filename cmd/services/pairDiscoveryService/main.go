@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
-	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"

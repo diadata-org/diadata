@@ -63,7 +63,22 @@ services:
       - postgres-network
     secrets:
       - postgres_credentials
-    
+   
+  ethassetcollector:
+    depends_on: [genericassetcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericassetcollector:latest
+    command: /bin/assetCollectionService -source=assetlists -secret=eth_assets
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+    networks:
+      - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
+
   nonethassetcollector:
     depends_on: [genericassetcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericassetcollector:latest
