@@ -9,3 +9,10 @@ func Getenv(key, fallback string) string {
 	}
 	return value
 }
+
+func IsEnvExist(key string) bool {
+	if _, ok := os.LookupEnv(key); ok {
+		return true
+	}
+	return false
+}

@@ -29,17 +29,17 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 
 func main() {
 
-	w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
+	kafkaWriter := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
 	defer func() {
-		err := w.Close()
+		err := kafkaWriter.Close()
 		if err != nil {
 			log.Error(err)
 		}
 	}()
 
-	r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
+	kafkaReader := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
 	defer func() {
-		err := r.Close()
+		err := kafkaReader.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -50,22 +50,22 @@ func main() {
 		log.Errorln("NewDataStore", err)
 	}
 
-	tradesBlockService := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds)
+	service := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds)
 
 	wg := sync.WaitGroup{}
-	go handleBlocks(tradesBlockService, &wg, w)
+	go handleBlocks(service, &wg, kafkaWriter)
 
 	log.Printf("starting...")
 
 	for {
-		m, err := r.ReadMessage(context.Background())
+		m, err := kafkaReader.ReadMessage(context.Background())
 		if err != nil {
 			log.Printf(err.Error())
 		} else {
 			var t dia.Trade
 			err := t.UnmarshalBinary(m.Value)
 			if err == nil {
-				tradesBlockService.ProcessTrade(&t)
+				service.ProcessTrade(&t)
 			} else {
 				log.Printf("ignored message at offset %d: %s = %s\n", m.Offset, string(m.Key), string(m.Value))
 			}

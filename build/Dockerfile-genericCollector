@@ -10,5 +10,6 @@ RUN go install
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/collector /bin/collector
+COPY --from=build /config/ /config/
 
 CMD ["collector"]

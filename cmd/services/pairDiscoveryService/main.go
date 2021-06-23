@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
 	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
@@ -99,7 +101,10 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	// TO DO: activate toggle
 	// toggle := getTogglePairDiscovery(updateTime)
 
-	toggle := true
+	toggle, err := strconv.ParseBool(utils.Getenv("PAIR_DISCOV_EXCHANGE_TOGGLE", "true"))
+	if err != nil {
+		log.Error("Wrong content for PAIR_DISCOV_EXCHANGE_TOGGLE", err)
+	}
 	if !toggle {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
