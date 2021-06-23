@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "DAFI_USDT",
+      "Ignore": false,
+      "Symbol": "DAFI"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "AKRO_USDT",
       "Ignore": false,
       "Symbol": "AKRO"

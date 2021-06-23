@@ -73,14 +73,14 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *NBATopshotScraper) mainLoop() {
-	err := scraper.UpdateNFT()
+	err := scraper.FetchData()
 	if err != nil {
 		log.Error("error updating NFT: ", err)
 	}
 	for {
 		select {
 		case <-scraper.ticker.C:
-			err := scraper.UpdateNFT()
+			err := scraper.FetchData()
 			if err != nil {
 				log.Error("error updating NFT: ", err)
 			}
@@ -93,20 +93,8 @@ func (scraper *NBATopshotScraper) mainLoop() {
 	}
 }
 
-func (scraper *NBATopshotScraper) UpdateNFT() error {
-	fmt.Println("fetch data...")
-	nfts, err := scraper.FetchData()
-	if err != nil {
-		return err
-	}
-	for _, nft := range nfts {
-		scraper.GetDataChannel() <- nft
-	}
-	return nil
-}
-
 // FetchData returns a slice of all NFTs fetched.
-func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
+func (scraper *NBATopshotScraper) FetchData() (err error) {
 
 	var lastBlock uint64
 	lastBlock, err = scraper.nftscraper.relDB.GetLastBlockheightTopshot(time.Now())
@@ -121,12 +109,12 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 	var nbaTopshotNFTs []dia.NFT
 	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(lastBlock)
 	if err != nil {
-		return []dia.NFT{}, err
+		return err
 	}
 
 	attributeMap, err := scraper.GetAttributeMap()
 	if err != nil {
-		return []dia.NFT{}, err
+		return err
 	}
 
 	for i, moment := range allMoments {
@@ -136,7 +124,7 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 			PlayID: uint32(m.PlayID()),
 		}]
 		metadata["blocknumber"] = blocknumbers[i]
-		nbaTopshotNFTs = append(nbaTopshotNFTs, dia.NFT{
+		nft := dia.NFT{
 			NFTClass: dia.NFTClass{
 				Address:      TopshotAddress,
 				Symbol:       "TS",
@@ -150,11 +138,12 @@ func (scraper *NBATopshotScraper) FetchData() (nfts []dia.NFT, err error) {
 			CreatorAddress: "",
 			URI:            "not available",
 			Attributes:     metadata,
-		})
+		}
+		scraper.GetDataChannel() <- nft
 	}
 	fmt.Println("results: ", nbaTopshotNFTs)
 
-	return nbaTopshotNFTs, nil
+	return nil
 }
 
 // ---------------------------------------------------------

@@ -282,14 +282,14 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *SorareScraper) mainLoop() {
-	err := scraper.UpdateNFT()
+	err := scraper.FetchData()
 	if err != nil {
 		log.Error("updating nfts: ", err)
 	}
 	for {
 		select {
 		case <-scraper.ticker.C:
-			err := scraper.UpdateNFT()
+			err := scraper.FetchData()
 			if err != nil {
 				log.Error("updating nfts: ", err)
 			}
@@ -302,7 +302,7 @@ func (scraper *SorareScraper) mainLoop() {
 	}
 }
 
-func (scraper *SorareScraper) UpdateNFT() error {
+func (scraper *SorareScraper) FetchData() error {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return err
@@ -525,16 +525,4 @@ func (scraper *SorareScraper) Close() error {
 	scraper.nftscraper.errorLock.RLock()
 	defer scraper.nftscraper.errorLock.RUnlock()
 	return scraper.nftscraper.error
-}
-
-func (scraper *SorareScraper) FetchData() ([]dia.NFT, error) {
-	// fmt.Println("fetch data...")
-	// nfts, err := scraper.FetchData()
-	// if err != nil {
-	// 	return err
-	// }
-	// for _, nft := range nfts {
-	// 	scraper.GetDataChannel() <- nft
-	// }
-	return []dia.NFT{}, nil
 }

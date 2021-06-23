@@ -205,6 +205,7 @@ func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error
 	return currentBlock, nil
 }
 
+// SetNFTTTrade stores @trade.
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	// TO DO
 	return nil
@@ -215,4 +216,18 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error) {
 	// Return highest block number of recorded trades for @nft.
 	// Returns 0 if no trade recorded.
 	return big.NewInt(0), nil
+}
+
+// SetNFTBid stores @bid.
+func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
+	// TO DO
+	return nil
+}
+
+// GetLastBid returns the last bid on the nft with @address and @tokenID.
+// Here, 'last' refers to block number and block position smaller or equal
+// (in the case of block number) than @blockNumber and @blockPosition resp.
+func (rdb *RelDB) GetLastNFTBid(address string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error) {
+	// TO DO
+	return dia.NFTBid{}, nil
 }

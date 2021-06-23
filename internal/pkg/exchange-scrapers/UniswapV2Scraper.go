@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -14,6 +13,7 @@ import (
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -146,7 +146,7 @@ func (s *UniswapScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
@@ -289,8 +289,8 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var reverseTokens []string
 
 	// Load file and read data
-	fileName := fmt.Sprintf("../config/uniswap/%s.json", filename)
-	jsonFile, err := os.Open(fileName)
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
 	if err != nil {
 		return &[]string{}, err
 	}
@@ -309,7 +309,10 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 		AllAssets []lockedAsset `json:"Tokens"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return &[]string{}, err
+	}
 
 	// Extract addresses
 	for _, token := range allAssets.AllAssets {

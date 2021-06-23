@@ -12,7 +12,7 @@ type nothing struct{}
 
 type NFTTradeScraper interface {
 	GetTradeChannel() chan dia.NFTTrade
-	FetchTrades() ([]dia.NFTTrade, error)
+	FetchTrades() error
 }
 
 type TradeScraper struct {

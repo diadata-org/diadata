@@ -272,10 +272,14 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CryptopunkScraper) mainLoop() {
+	err := scraper.FetchData()
+	if err != nil {
+		log.Error("error updating NFT: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
-			err := scraper.UpdateNFT()
+			err := scraper.FetchData()
 			if err != nil {
 				log.Error("error updating NFT: ", err)
 			}
@@ -288,20 +292,7 @@ func (scraper *CryptopunkScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptopunkScraper) UpdateNFT() error {
-	fmt.Println("fetch data...")
-	nfts, err := scraper.FetchData()
-	if err != nil {
-		return err
-	}
-	for _, nft := range nfts {
-		scraper.GetDataChannel() <- nft
-	}
-	return nil
-}
-
-func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
-	// TO DO: iterate over all NFT IDs and fill []dia.NFT
+func (scraper *CryptopunkScraper) FetchData() (err error) {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return
@@ -309,7 +300,6 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	var cryptopunkNFTs []dia.NFT
 	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
@@ -330,16 +320,18 @@ func (scraper *CryptopunkScraper) FetchData() (nfts []dia.NFT, err error) {
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
-		cryptopunkNFTs = append(cryptopunkNFTs, dia.NFT{
+		nft := dia.NFT{
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptopunkNFTClass,
 			CreationTime:   creationTime,
 			CreatorAddress: creatorAddress.Hex(),
 			Attributes:     result,
 			URI:            scraper.cryptopunkURL + strconv.Itoa(i),
-		})
+		}
+		fmt.Println("get nft: ", nft)
+		scraper.GetDataChannel() <- nft
 	}
-	return cryptopunkNFTs, nil
+	return nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.

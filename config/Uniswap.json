@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "USDC",
             "ForeignName": "USDC-ETH",
             "Exchange": "UniswapV2",
