@@ -14,7 +14,6 @@ import (
 
 func main() {
 	if testOpenSeaScraper := true; testOpenSeaScraper {
-		// rdb, err := models.NewRelDataStoreWithOptionsForOpenSeaDev(context.Background(), "postgresql://DSN...")
 		rdb, err := models.NewRelDataStore()
 		if err != nil {
 			panic(err)

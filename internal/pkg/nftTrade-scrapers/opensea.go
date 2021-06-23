@@ -1,9 +1,13 @@
 package nfttradescrapers
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"io"
 	"math/big"
+	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
@@ -13,6 +17,8 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/jackc/pgx/v4"
 	"github.com/shopspring/decimal"
 )
 
@@ -28,7 +34,7 @@ const (
 	openSeaFollowingDistanceBlocks = 2
 
 	// indicates the batch size during read the filtered events
-	openSeaEvFetchBatchSize = 50000
+	openSeaEvFetchBatchSize = 10000
 
 	// wait for a while between batch retrieval of filtered events
 	openSeaWaitPerBatch = time.Second * 10
@@ -37,8 +43,15 @@ const (
 	// instead of the last state
 	openSeaUseArchiveNodeFeatures = false
 
-	// it enables getting the total supply of NFTs if it supported ERC721Enumerable
-	openSeaReadTotalSupply = false
+	// we assume all of the NFTs traded on OpenSea are ERC721(1155 is an extension of it)
+	openSeaNFTContractType = "ERC721"
+
+	openSeaReadTotalSupply = true
+
+	openSeaFetchAttrsTimeout     = 30 * time.Second
+	openSeaFetchAttrsMaxSizeInKB = 50
+
+	OpenSea = "OpenSea"
 )
 
 var (
@@ -68,6 +81,8 @@ type erc721Transfer struct {
 	From        common.Address
 	To          common.Address
 	TokenID     *big.Int
+	TokenURI    *string
+	TokenAttrs  map[string]interface{}
 }
 
 func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
@@ -79,10 +94,9 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 		tradeScraper: TradeScraper{
 			shutdown:     make(chan nothing),
 			shutdownDone: make(chan nothing),
-			errorLock:    nil, // we don't use it
 			datastore:    rdb,
 			chanTrade:    make(chan dia.NFTTrade),
-			source:       "", // TODO: @jppade, what should its value be?
+			source:       OpenSea,
 		},
 	}
 
@@ -152,7 +166,7 @@ func (s *OpenSeaScraper) mainLoop() {
 	for stop := false; !stop; {
 		select {
 		case <-s.ticker.C:
-			if err := s.fetchTrades(); err != nil {
+			if err := s.FetchTrades(); err != nil {
 				if errors.Is(err, errOpenSeaShutdownRequest) {
 					stop = true
 				}
@@ -171,7 +185,7 @@ func (s *OpenSeaScraper) mainLoop() {
 	}
 }
 
-func (s *OpenSeaScraper) fetchTrades() error {
+func (s *OpenSeaScraper) FetchTrades() error {
 	ctx := context.Background()
 
 	startBlockNum := s.lastBlockNum.Uint64()
@@ -276,42 +290,85 @@ func (s *OpenSeaScraper) fetchTrades() error {
 	return nil
 }
 
-func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer) error {
-	nft, err := s.tradeScraper.datastore.GetNFT(transfer.NFTAddress.Hex(), dia.ETHEREUM, transfer.TokenID.String())
+func (s *OpenSeaScraper) createOrReadNFTClass(transfer *erc721Transfer) (*dia.NFTClass, error) {
+	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), dia.ETHEREUM)
 	if err != nil {
-		// TODO: if the error indicates the nft could not found in rdb,
-		//       maybe we can create a new nft record by method SetNFT.
-		//       otherwise, the scraper will stuck at this event due to
-		//       undefined nft. @jppade, what is the desired behaivor?
-		return err
-	}
+		if err != pgx.ErrNoRows {
+			log.Warnf("unable to read nftclass from reldb: %s", err.Error())
+			return nil, err
+		}
 
-	{ // TODO: remove the block, it simulates nft exists in the rdb
-		nft = dia.NFT{
-			NFTClass: dia.NFTClass{
-				Address:      transfer.NFTAddress.Hex(),
-				Blockchain:   dia.ETHEREUM,
-				ContractType: "ERC721/ERC1155",
-				Category:     "N/A",
-			},
-			TokenID:        transfer.TokenID.String(),
-			CreationTime:   time.Now(),
-			CreatorAddress: "N/A", // it can be find it
-			URI:            "N/A", // it can be find it
-			Attributes:     nil,   // TODO ??
+		nftClass = dia.NFTClass{
+			Address:      transfer.NFTAddress.Hex(),
+			Blockchain:   dia.ETHEREUM,
+			ContractType: openSeaNFTContractType,
 		}
 
 		if transfer.Name != nil {
-			nft.NFTClass.Name = *transfer.Name
+			nftClass.Name = *transfer.Name
 		}
 
 		if transfer.Symbol != nil {
-			nft.NFTClass.Symbol = *transfer.Symbol
+			nftClass.Symbol = *transfer.Symbol
+		}
+
+		if err = s.tradeScraper.datastore.SetNFTClass(nftClass); err != nil {
+			log.Warnf("unable to create nftclass on reldb: %s", err.Error())
+			return nil, err
 		}
 	}
 
+	return &nftClass, nil
+}
+
+func (s *OpenSeaScraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *erc721Transfer) (*dia.NFT, error) {
+	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.ETHEREUM, transfer.TokenID.String())
+	if err != nil {
+		if err != pgx.ErrNoRows {
+			log.Warnf("unable to read nft from reldb: %s", err.Error())
+			return nil, err
+		}
+
+		createdBy, createdAt, err := s.findContractCreationInfo(context.Background(), common.HexToAddress(nftClass.Address))
+		if err != nil {
+			log.Warnf("unable to find the creation info for the nft contract(%s): %s", nftClass.Address, err.Error())
+			return nil, err
+		}
+
+		nft = dia.NFT{
+			NFTClass:       *nftClass,
+			TokenID:        transfer.TokenID.String(),
+			CreationTime:   createdAt,
+			CreatorAddress: createdBy.Hex(),
+			Attributes:     transfer.TokenAttrs,
+		}
+
+		if transfer.TokenURI != nil {
+			nft.URI = *transfer.TokenURI
+		}
+
+		if err = s.tradeScraper.datastore.SetNFT(nft); err != nil {
+			log.Warnf("unable to create nft on reldb: %s", err.Error())
+			return nil, err
+		}
+	}
+
+	return &nft, nil
+}
+
+func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer) error {
+	nftClass, err := s.createOrReadNFTClass(transfer)
+	if err != nil {
+		return err
+	}
+
+	nft, err := s.createOrReadNFT(nftClass, transfer)
+	if err != nil {
+		return err
+	}
+
 	trade := dia.NFTTrade{
-		NFT:         nft,
+		NFT:         *nft,
 		BlockNumber: new(big.Int).SetUint64(ev.Raw.BlockNumber),
 		// different NFTs can use different asset instead of eth for trades,
 		// it could be found the used asset token by checking more log records
@@ -319,7 +376,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		PriceUSD:    s.calcUSDFromWEI(ev.Price, ev.Raw.BlockNumber),
 		FromAddress: transfer.From,
 		ToAddress:   transfer.To,
-		Exchange:    "", // TODO: @jppade, what should its value be? may be `OpenSea`?
+		Exchange:    OpenSea,
 		TxHash:      ev.Raw.TxHash,
 	}
 
@@ -355,13 +412,6 @@ func (s *OpenSeaScraper) ethPrice(blockNum uint64) (decimal.Decimal, error) {
 	return decimal.NewFromString("1")
 }
 
-func (scraper *OpenSeaScraper) FetchTrades() (trades []dia.NFTTrade, err error) {
-	// we are using chanTrade as the trade stream, it supplied periodically.
-	// I don't get it exactly, is this function will be used in separate logic?
-	// TODO: @jppade
-	return nil, nil
-}
-
 // GetDataChannel returns the scrapers data channel.
 func (s *OpenSeaScraper) GetTradeChannel() chan dia.NFTTrade {
 	return s.tradeScraper.chanTrade
@@ -375,6 +425,109 @@ func (s *OpenSeaScraper) Close() error {
 	close(s.tradeScraper.shutdown)
 
 	return nil
+}
+
+// it searches the creation transaction for the given contract address using binary search in complexity of o(log n)
+func (s *OpenSeaScraper) findContractCreationInfo(ctx context.Context, contractAddr common.Address) (createdBy common.Address, createdAt time.Time, err error) {
+	var (
+		lo, hi, blockNum uint64
+		code             []byte
+		receipt          *types.Receipt
+		chainID          *big.Int
+		block            *types.Block
+	)
+
+	hi, err = s.tradeScraper.ethConnection.BlockNumber(ctx)
+	if err != nil {
+		return
+	}
+
+	for lo <= hi {
+		blockNum = (lo + hi) / 2
+
+		code, err = s.tradeScraper.ethConnection.CodeAt(ctx, contractAddr, new(big.Int).SetUint64(blockNum))
+		if err != nil {
+			return
+		}
+
+		if len(code) == 0 {
+			lo = blockNum
+		} else {
+			hi = blockNum
+		}
+
+		if hi == lo+1 {
+			blockNum = hi
+			break
+		}
+	}
+
+	block, err = s.tradeScraper.ethConnection.BlockByNumber(ctx, new(big.Int).SetUint64(blockNum))
+	if err != nil {
+		return
+	}
+
+	chainID, err = s.tradeScraper.ethConnection.NetworkID(ctx)
+	if err != nil {
+		return
+	}
+
+	signer := types.NewEIP155Signer(chainID)
+
+	for _, trx := range block.Transactions() {
+		// recipient must be nill for contract creation transactions
+		if trx.To() != nil {
+			continue
+		}
+
+		receipt, err = s.tradeScraper.ethConnection.TransactionReceipt(ctx, trx.Hash())
+		if err != nil {
+			return
+		}
+
+		// note that if the nft was created by another smart contract
+		// we can't find its creation info with this method
+		if bytes.Equal(receipt.ContractAddress.Bytes(), contractAddr.Bytes()) {
+			createdAt = time.Unix(int64(block.Time()), 0).UTC()
+			createdBy, err = types.Sender(signer, trx)
+			if err != nil {
+				return
+			}
+
+			return
+		}
+	}
+
+	return
+}
+
+func (s *OpenSeaScraper) readNFTAttr(ctx context.Context, uri string, timeout time.Duration, maxKB int) (map[string]interface{}, error) {
+	attrs := make(map[string]interface{})
+
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, errors.New("unable to read token attributes: " + resp.Status)
+	}
+
+	if err := json.NewDecoder(io.LimitReader(resp.Body, int64(maxKB*1024))).Decode(&attrs); err != nil {
+		return nil, err
+	}
+
+	return attrs, nil
 }
 
 // it finds the transfer events of ERC721 in the given transaction
@@ -417,6 +570,7 @@ func (s *OpenSeaScraper) findERC721Transfers(ctx context.Context, txHash common.
 			From:       transferLog.From,
 			To:         transferLog.To,
 			TokenID:    transferLog.TokenId,
+			TokenAttrs: make(map[string]interface{}),
 		}
 
 		if md, err := erc721.NewERC721Metadata(txLog.Address, s.tradeScraper.ethConnection); err != nil {
@@ -432,6 +586,15 @@ func (s *OpenSeaScraper) findERC721Transfers(ctx context.Context, txHash common.
 				log.Warnf("unable to read nft symbol from metadata interface of nft(addr: %s): %s", txLog.Address.Hex(), err.Error())
 			} else {
 				transfer.Symbol = &nftSymbol
+			}
+
+			if tokenURI, err := md.TokenURI(callOpts, transfer.TokenID); err != nil {
+				log.Warnf("unable to find token(%s) uri: %s", transfer.TokenID.String(), err.Error())
+			} else if attrs, err := s.readNFTAttr(ctx, tokenURI, openSeaFetchAttrsTimeout, openSeaFetchAttrsMaxSizeInKB); err != nil {
+				log.Warnf("unable to read token(%s) attributes: %s", transfer.TokenID.String(), err.Error())
+			} else {
+				transfer.TokenURI = &tokenURI
+				transfer.TokenAttrs = attrs
 			}
 		}
 

@@ -157,40 +157,25 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 }
 
 func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error) {
-	query := fmt.Sprintf("select nftclass_id,creation_time,creator_address,uri,attributes from %s where tokenid=$1", nftTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query, tokenID)
-	if err != nil {
-		return dia.NFT{}, err
-	}
-	defer rows.Close()
+	nft := dia.NFT{}
 
-	var nfts []dia.NFT
-	var classIDs []string
-	for rows.Next() {
-		var nft dia.NFT
-		var nftClassID string
-		err = rows.Scan(&nftClassID, &nft.CreationTime, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
-		if err != nil {
-			log.Error(err)
-		}
-		nfts = append(nfts, nft)
-		classIDs = append(classIDs, nftClassID)
-	}
-	// Find the correct underlying nft class separately due too "conn busy" error:
-	// https://github.com/jackc/pgx/issues/635
-	for i := range nfts {
-		var refclass dia.NFTClass
-		refclass, err = rdb.GetNFTClassByID(classIDs[i])
-		if err != nil {
-			log.Error("could not find underlying nft class: ", err)
-		}
-		if refclass.Address == address && refclass.Blockchain == blockchain {
-			nft := nfts[i]
-			nft.NFTClass = refclass
-			return nft, nil
-		}
-	}
-	return dia.NFT{}, err
+	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.tokenid, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.tokenid=$3", nftTable, nftclassTable)
+
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain, tokenID).Scan(
+		&nft.NFTClass.Address,
+		&nft.NFTClass.Symbol,
+		&nft.NFTClass.Name,
+		&nft.NFTClass.Blockchain,
+		&nft.NFTClass.ContractType,
+		&nft.NFTClass.Category,
+		&nft.TokenID,
+		&nft.CreationTime,
+		&nft.CreatorAddress,
+		&nft.URI,
+		&nft.Attributes,
+	)
+
+	return nft, err
 }
 
 // GetLastBlockheightTopshot returns the last block number before timestamp given by @upperBound.
