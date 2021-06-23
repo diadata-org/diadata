@@ -132,7 +132,7 @@ func (s *HitBTCScraper) mainLoop() {
 									QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 								}
 								if exchangepair.Verified {
-									log.Infoln("Got verified trade", t)
+									log.Infoln("Got verified trade: ", t)
 								}
 								ps.parent.chanTrades <- t
 							}

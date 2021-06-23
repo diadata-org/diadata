@@ -55,9 +55,10 @@ type SimexScraper struct {
 	chanTrades             chan *dia.Trade
 	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
-func NewSimexScraper(exchange dia.Exchange, scrape bool) *SimexScraper {
+func NewSimexScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *SimexScraper {
 	s := &SimexScraper{
 		shutdown:               make(chan nothing),
 		shutdownDone:           make(chan nothing),
@@ -67,6 +68,7 @@ func NewSimexScraper(exchange dia.Exchange, scrape bool) *SimexScraper {
 		chanTrades:             make(chan *dia.Trade),
 		currencySymbolName:     make(map[string]string),
 		isTickerMapInitialised: false,
+		db:                     relDB,
 	}
 	pairMap := map[string]*PairIdMap{}
 	//API call used for retrievi all pairs
@@ -128,6 +130,7 @@ func (s *SimexScraper) mainLoop() {
 					idInt := int(tradeReturn["id"].(float64))
 
 					if s.pairIdTrade[key].LastIdTrade < idInt {
+
 						if idInt > newId {
 							newId = idInt
 							atLeastOneUpdate = true
@@ -214,7 +217,7 @@ func (s *SimexScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
-func (s *SimexScraper) FetchTickerData(symbol string) (asset dia.Asset, err error) {
+func (s *SimexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
 	// Fetch Data
 	if !s.isTickerMapInitialised {

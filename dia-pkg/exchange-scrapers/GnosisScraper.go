@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	gnosis2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis"
-	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	gnosis2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/gnosis/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -188,7 +189,7 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 }
 
 func (scraper *GnosisScraper) processTrade(trade *gnosis2.GnosisTrade) {
-	symbol, foreignName, volume, price := scraper.getSwapDataGnosis(trade)
+	symbol, foreignName, volume, price, txHash := scraper.getSwapDataGnosis(trade)
 	timestamp := time.Now().Unix()
 
 	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
@@ -215,8 +216,9 @@ func (scraper *GnosisScraper) processTrade(trade *gnosis2.GnosisTrade) {
 			QuoteToken:     token1,
 			Volume:         volume,
 			Time:           time.Unix(timestamp, 0),
-			ForeignTradeID: "",
+			ForeignTradeID: txHash,
 			Source:         scraper.exchangeName,
+			VerifiedPair:   true,
 		}
 		pairScraper.parent.chanTrades <- trade
 		fmt.Println("got trade: ", trade)
@@ -262,7 +264,8 @@ func (scraper *GnosisScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis2.GnosisTrade) (symbol string, foreignName string, volume float64, price float64) {
+func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis2.GnosisTrade) (symbol string, foreignName string, volume float64, price float64, txHash string) {
+	txHash = s.Raw.TxHash.Hex()
 	buyToken := scraper.tokens[s.BuyToken]
 	sellToken := scraper.tokens[s.SellToken]
 	buyDecimals := buyToken.Decimals

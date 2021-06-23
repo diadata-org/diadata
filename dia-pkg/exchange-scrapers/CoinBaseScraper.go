@@ -105,9 +105,6 @@ func (s *CoinBaseScraper) mainLoop() {
 							if t.VerifiedPair {
 								log.Info("got verified trade: ", t)
 							}
-							// } else {
-							// 	log.Info("got unverified trade: ", t)
-							// }
 							ps.parent.chanTrades <- t
 						}
 					} else {

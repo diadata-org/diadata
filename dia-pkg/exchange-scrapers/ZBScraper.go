@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -47,10 +48,11 @@ type ZBScraper struct {
 	pairScrapers map[string]*ZBPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper(exchange dia.Exchange, scrape bool) *ZBScraper {
+func NewZBScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
@@ -59,6 +61,7 @@ func NewZBScraper(exchange dia.Exchange, scrape bool) *ZBScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(ZBSocketURL, nil)
@@ -86,6 +89,7 @@ func (s *ZBScraper) mainLoop() {
 		}
 
 		for _, trade := range message.Data {
+			var exchangepair dia.ExchangePair
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
 			if !ok {
 				log.Error("unknown pair: " + message.Channel)
@@ -108,6 +112,11 @@ func (s *ZBScraper) mainLoop() {
 				f64Volume = -f64Volume
 			}
 
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, strings.TrimSuffix(message.Channel, "_trades"))
+			if err != nil {
+				log.Error(err)
+			}
+
 			t := &dia.Trade{
 				Symbol:         ps.Pair().Symbol,
 				Pair:           strings.TrimSuffix(message.Channel, "_trades"),
@@ -116,6 +125,9 @@ func (s *ZBScraper) mainLoop() {
 				Time:           time.Unix(int64(trade.Date), 0),
 				ForeignTradeID: fmt.Sprint(trade.Tid),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
 			ps.parent.chanTrades <- t
 			log.Infoln("Trade recieved", t)
@@ -143,7 +155,7 @@ func (s *ZBScraper) cleanup(err error) {
 
 // FillSymbolData is not used by DEX scrapers.
 func (s *ZBScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // Close closes any existing API connections, as well as channels of

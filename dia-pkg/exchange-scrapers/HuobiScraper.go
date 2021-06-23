@@ -81,10 +81,11 @@ type HuobiScraper struct {
 	pairScrapers map[string]*HuobiPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewHuobiScraper returns a new HuobiScraper for the given pair
-func NewHuobiScraper(exchange dia.Exchange, scrape bool) *HuobiScraper {
+func NewHuobiScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HuobiScraper {
 
 	s := &HuobiScraper{
 		shutdown:     make(chan nothing),
@@ -93,6 +94,7 @@ func NewHuobiScraper(exchange dia.Exchange, scrape bool) *HuobiScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer

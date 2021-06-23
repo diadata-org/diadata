@@ -115,6 +115,7 @@ func (s *BittrexScraper) mainLoop() {
 						if tradeReturn["OrderType"] == "SELL" {
 							f64Volume = -f64Volume
 						}
+
 						exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, key)
 						if err != nil {
 							log.Error("Error Getting ExchangePair from cache", err)

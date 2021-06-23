@@ -143,7 +143,7 @@ func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 }
 
 func (s *KrakenScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs

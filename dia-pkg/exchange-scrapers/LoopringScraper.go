@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -76,6 +77,7 @@ type LoopringScraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	wsURL        string
+	db           *models.RelDB
 }
 
 type LoopringKey struct {
@@ -83,7 +85,7 @@ type LoopringKey struct {
 }
 
 // NewLoopringScraper returns a new LoopringScraper for the given pair
-func NewLoopringScraper(exchange dia.Exchange, scrape bool) *LoopringScraper {
+func NewLoopringScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *LoopringScraper {
 
 	decimalAsset := make(map[string]float64)
 	decimalAsset["ETH"] = 18
@@ -127,6 +129,7 @@ func NewLoopringScraper(exchange dia.Exchange, scrape bool) *LoopringScraper {
 		error:         nil,
 		chanTrades:    make(chan *dia.Trade),
 		decimalsAsset: decimalAsset,
+		db:            relDB,
 	}
 
 	// Get Loopring Key
@@ -231,17 +234,26 @@ func (s *LoopringScraper) mainLoop() {
 				if makemap.Data[0][2] == "SELL" {
 					volume = -volume
 				}
+
+				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, makemap.Topic.Market)
+				if err != nil {
+					log.Error(err)
+				}
 				t := &dia.Trade{
-					Symbol: asset[0],
-					Pair:   makemap.Topic.Market,
-					Price:  f64Price,
-					Time:   time.Unix(timestamp/1000, 0),
-					Volume: volume,
-					Source: s.exchangeName,
+					Symbol:       asset[0],
+					Pair:         makemap.Topic.Market,
+					Price:        f64Price,
+					Time:         time.Unix(timestamp/1000, 0),
+					Volume:       volume,
+					Source:       s.exchangeName,
+					VerifiedPair: exchangepair.Verified,
+					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+				}
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade: ", t)
 				}
 				s.chanTrades <- t
-				log.Error("-Got trade--", t)
-
 			} else {
 				log.Info("No data is received")
 			}
@@ -251,7 +263,7 @@ func (s *LoopringScraper) mainLoop() {
 }
 
 func (s *LoopringScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // func (s *LoopringScraper) cleanup(err error) {

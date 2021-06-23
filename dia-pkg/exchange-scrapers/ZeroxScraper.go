@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	zerox2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/zerox"
-	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/zerox/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	zerox2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/zerox"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/zerox/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -28,8 +29,11 @@ const (
 )
 
 type ZeroxToken struct {
-	Symbol   string
-	Decimals uint8
+	Symbol     string
+	Name       string
+	Address    string
+	Blockchain dia.BlockChain
+	Decimals   uint8
 }
 
 type ZeroxScraper struct {
@@ -52,7 +56,7 @@ type ZeroxScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*ZeroxToken
+	tokens      map[string]dia.Asset
 }
 
 func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
@@ -65,7 +69,7 @@ func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
 		pairScrapers:   make(map[string]*ZeroxPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*ZeroxToken),
+		tokens:         make(map[string]dia.Asset),
 	}
 	wsClient, err := ethclient.Dial(zeroxWsDial)
 	if err != nil {
@@ -89,9 +93,12 @@ func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
 func (scraper *ZeroxScraper) loadTokens() {
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &ZeroxToken{
-		Symbol:   "MKR",
-		Decimals: 18,
+	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = dia.Asset{
+		Symbol:     "MKR",
+		Name:       "Maker",
+		Decimals:   18,
+		Address:    "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
+		Blockchain: dia.ETHEREUM,
 	}
 
 	filterer, err := zerox2.NewZeroxFilterer(common.HexToAddress(zeroxContract), scraper.WsClient)
@@ -137,30 +144,37 @@ func (scraper *ZeroxScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil
 }
 
-func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxToken, error) {
+func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
 
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
 	}
+
 	tokenCaller, err := token2.NewTokenCaller(tokenAddress, scraper.RestClient)
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
 	}
 	symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
+	}
+	name, err := tokenCaller.Name(&bind.CallOpts{})
+	if err != nil {
+		log.Error("get token name: ", err)
 	}
 	decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
 	}
-	dfToken := &ZeroxToken{
-		Symbol:   symbol,
-		Decimals: uint8(decimals.Int64()),
+	dfToken := dia.Asset{
+		Symbol:     symbol,
+		Name:       name,
+		Address:    tokenAddress.Hex(),
+		Blockchain: dia.ETHEREUM,
+		Decimals:   uint8(decimals.Int64()),
 	}
-	dfToken.normalizeETH()
-	scraper.tokens[tokenStr] = dfToken
+	scraper.tokens[tokenStr] = normalizeETH(dfToken)
 	return dfToken, err
 
 }
@@ -212,7 +226,7 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 }
 
 func (scraper *ZeroxScraper) processTrade(trade *zerox2.ZeroxFill) {
-	symbol, foreignName, volume, price, err := scraper.getFillDataZerox(trade)
+	token0, token1, symbol, foreignName, volume, price, err := scraper.getFillDataZerox(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -227,6 +241,9 @@ func (scraper *ZeroxScraper) processTrade(trade *zerox2.ZeroxFill) {
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
+				BaseToken:      token1,
+				QuoteToken:     token0,
+				VerifiedPair:   true,
 			}
 			pairScraper.parent.chanTrades <- trade
 			fmt.Println("got trade: ", trade)
@@ -272,13 +289,13 @@ func (scraper *ZeroxScraper) mainLoop() {
 }
 
 // getfillData returns the foreign name, volume and price of a order fill
-func (scraper *ZeroxScraper) getFillDataZerox(s *zerox2.ZeroxFill) (symbol string, foreignName string, volume float64, price float64, err error) {
+func (scraper *ZeroxScraper) getFillDataZerox(s *zerox2.ZeroxFill) (buyToken, sellToken dia.Asset, symbol string, foreignName string, volume float64, price float64, err error) {
 
-	buyToken, err := scraper.loadTokenData(common.BytesToAddress(s.MakerAssetData))
+	buyToken, err = scraper.loadTokenData(common.BytesToAddress(s.MakerAssetData))
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(common.BytesToAddress(s.TakerAssetData))
+	sellToken, err = scraper.loadTokenData(common.BytesToAddress(s.TakerAssetData))
 	if err != nil {
 		log.Error(err)
 	}
@@ -341,10 +358,11 @@ func (scraper *ZeroxScraper) FetchTickerData(symbol string) (dia.Asset, error) {
 	return dia.Asset{}, nil
 }
 
-func (t *ZeroxToken) normalizeETH() {
+func normalizeETH(t dia.Asset) dia.Asset {
 	if t.Symbol == "WETH" {
 		t.Symbol = "ETH"
 	}
+	return t
 }
 
 func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {

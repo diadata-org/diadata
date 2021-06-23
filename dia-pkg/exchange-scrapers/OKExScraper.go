@@ -13,6 +13,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -54,10 +55,11 @@ type OKExScraper struct {
 	pairScrapers map[string]*OKExPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper(exchange dia.Exchange, scrape bool) *OKExScraper {
+func NewOKExScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
@@ -66,6 +68,7 @@ func NewOKExScraper(exchange dia.Exchange, scrape bool) *OKExScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -211,6 +214,11 @@ func (s *OKExScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
+							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.Arg.InstID)
+							if err != nil {
+								log.Error(err)
+							}
+
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
 								Pair:           message.Arg.InstID,
@@ -219,10 +227,14 @@ func (s *OKExScraper) mainLoop() {
 								Time:           timeStamp,
 								ForeignTradeID: message.Data[0].TradeID,
 								Source:         s.exchangeName,
+								VerifiedPair:   exchangepair.Verified,
+								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+							}
+							if exchangepair.Verified {
+								log.Infoln("Got verified trade", t)
 							}
 							ps.parent.chanTrades <- t
-							log.Infoln("Got trade", t)
-
 						} else {
 							log.Errorf("parsing volume %v", f64VolumeString)
 						}
@@ -360,6 +372,11 @@ func (s *OKExScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, er
 	}
 	return pair, nil
 
+}
+
+func (s *OKExScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	//  TO DO
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs

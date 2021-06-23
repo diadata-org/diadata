@@ -192,6 +192,10 @@ func (scraper *QuoineScraper) mainLoop() {
 				volume = -volume
 			}
 
+			exchangepair, err := scraper.db.GetExchangePairCache(scraper.exchangeName, pairScraper.pair.ForeignName)
+			if err != nil {
+				log.Error(err)
+			}
 			trade := &dia.Trade{
 				Symbol:         pairScraper.pair.Symbol,
 				Pair:           pairScraper.pair.ForeignName,
@@ -200,8 +204,13 @@ func (scraper *QuoineScraper) mainLoop() {
 				Time:           time.Unix(int64(data.CreatedAt), 0),
 				ForeignTradeID: strconv.Itoa(int(data.ID)),
 				Source:         scraper.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
-
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade: ", trade)
+			}
 			pairScraper.parent.chanTrades <- trade
 		}
 
@@ -258,7 +267,7 @@ func (scraper *QuoineScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 
 func (scraper *QuoineScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	// TO DO
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (scraper *QuoineScraper) readProductIds() error {

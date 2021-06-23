@@ -10,6 +10,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -70,10 +71,11 @@ type GateIOScraper struct {
 	chanTrades             chan *dia.Trade
 	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
-func NewGateIOScraper(exchange dia.Exchange, scrape bool) *GateIOScraper {
+func NewGateIOScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *GateIOScraper {
 
 	s := &GateIOScraper{
 		shutdown:               make(chan nothing),
@@ -84,6 +86,7 @@ func NewGateIOScraper(exchange dia.Exchange, scrape bool) *GateIOScraper {
 		chanTrades:             make(chan *dia.Trade),
 		currencySymbolName:     make(map[string]string),
 		isTickerMapInitialised: false,
+		db:                     relDB,
 	}
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
@@ -173,6 +176,7 @@ func (s *GateIOScraper) mainLoop() {
 		if ok {
 			var f64Price float64
 			var f64Volume float64
+			var exchangepair dia.ExchangePair
 			f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
@@ -189,6 +193,11 @@ func (s *GateIOScraper) mainLoop() {
 				f64Volume = -f64Volume
 			}
 
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.Result.CurrencyPair)
+			if err != nil {
+				log.Error(err)
+			}
+
 			t := &dia.Trade{
 				Symbol:         ps.pair.Symbol,
 				Pair:           message.Result.CurrencyPair,
@@ -197,10 +206,14 @@ func (s *GateIOScraper) mainLoop() {
 				Time:           time.Unix(int64(message.Result.CreateTime), 0),
 				ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			ps.parent.chanTrades <- t
-			log.Infoln("got trade", t)
-
 		}
 
 	}

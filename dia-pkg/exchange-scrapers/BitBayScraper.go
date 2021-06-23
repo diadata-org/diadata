@@ -184,7 +184,7 @@ func (s *BitBayScraper) mainLoop() {
 		}
 
 		for _, trade := range response.Message.Transactions {
-
+			var exchangepair dia.ExchangePair
 			f64Price, err := strconv.ParseFloat(trade.R, 64)
 			if err != nil {
 				log.Error("error parsing price: " + trade.R)
@@ -200,7 +200,10 @@ func (s *BitBayScraper) mainLoop() {
 			if trade.Ty == "Sell" {
 				f64Volume = -f64Volume
 			}
-
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, pair)
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Symbol:         ps.Pair().Symbol,
 				Pair:           pair,
@@ -209,8 +212,13 @@ func (s *BitBayScraper) mainLoop() {
 				Time:           time.Unix(timestamp/1e3, 0),
 				ForeignTradeID: trade.ID,
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
-			log.Info("got trade: ", t)
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
+			}
 			ps.parent.chanTrades <- t
 		}
 	}
@@ -271,7 +279,7 @@ func (s *BitBayScraper) Channel() chan *dia.Trade {
 
 func (s *BitBayScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	// TO DO
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 //FetchAvailablePairs returns a list with all available trade pairs

@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	curvefi2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi"
-	curvepool2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/curvepool"
-	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	curvefi2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi"
+	curvepool2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/curvepool"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/curvefi/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -334,6 +335,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool2.Curvepoo
 			Time:           time.Unix(timestamp, 0),
 			ForeignTradeID: swp.Raw.TxHash.Hex() + "-" + fmt.Sprint(swp.Raw.Index),
 			Source:         scraper.exchangeName,
+			VerifiedPair:   true,
 		}
 		log.Infoln("Got Trade  ", trade)
 
@@ -399,9 +401,10 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool2.Curve
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 	}
 	baseToken = dia.Asset{
-		Name:    fromToken.Name,
-		Address: fromToken.Address,
-		Symbol:  fromToken.Symbol,
+		Name:       fromToken.Name,
+		Address:    fromToken.Address,
+		Symbol:     fromToken.Symbol,
+		Blockchain: dia.ETHEREUM,
 	}
 	toToken, ok := scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
 	if !ok {
@@ -409,9 +412,10 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool2.Curve
 	}
 
 	quoteToken = dia.Asset{
-		Name:    toToken.Name,
-		Address: toToken.Address,
-		Symbol:  toToken.Symbol,
+		Name:       toToken.Name,
+		Address:    toToken.Address,
+		Symbol:     toToken.Symbol,
+		Blockchain: dia.ETHEREUM,
 	}
 
 	// amountIn := s.AmountSold. / math.Pow10( fromToken.Decimals )

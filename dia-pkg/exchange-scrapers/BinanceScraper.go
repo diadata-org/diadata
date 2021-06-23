@@ -85,7 +85,7 @@ func (s *BinanceScraper) mainLoop() {
 
 func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	// TO DO
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // closes all connected PairScrapers
@@ -134,6 +134,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 	}
 
 	wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
+		var exchangepair dia.ExchangePair
 
 		volume, err := strconv.ParseFloat(event.Quantity, 64)
 		price, err2 := strconv.ParseFloat(event.Price, 64)
@@ -143,6 +144,10 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Symbol:         pairNormalized.Symbol,
 				Pair:           pairNormalized.ForeignName,
@@ -151,9 +156,14 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 				Time:           time.Unix(event.TradeTime/1000, (event.TradeTime%1000)*int64(time.Millisecond)),
 				ForeignTradeID: strconv.FormatInt(event.AggTradeID, 16),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			ps.parent.chanTrades <- t
-			log.Info("got trade: ", t)
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}

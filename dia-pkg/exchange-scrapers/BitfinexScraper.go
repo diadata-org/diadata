@@ -13,6 +13,7 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -39,10 +40,11 @@ type BitfinexScraper struct {
 	symbols           map[string]string // pair to symbol mapping
 	exchangeName      string
 	chanTrades        chan *dia.Trade
+	db                *models.RelDB
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape bool) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -61,6 +63,7 @@ func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	// establish connection in the background
@@ -83,6 +86,7 @@ func (s *BitfinexScraper) mainLoop() {
 		select {
 		case msg, ok := <-listener:
 			if ok {
+				var exchangepair dia.ExchangePair
 				//	log.Printf("MSG RECV: %#v\n", msg)
 				// find out message type
 				switch m := msg.(type) {
@@ -92,6 +96,10 @@ func (s *BitfinexScraper) mainLoop() {
 						volume = -volume
 					}
 
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, m.Pair)
+					if err != nil {
+						log.Error(err)
+					}
 					// parse trade data structure
 					t := &dia.Trade{
 						Symbol:         s.symbols[m.Pair],
@@ -101,8 +109,13 @@ func (s *BitfinexScraper) mainLoop() {
 						Time:           time.Unix(m.MTS/1000, (m.MTS%1000)*int64(time.Millisecond)),
 						ForeignTradeID: strconv.FormatInt(m.ID, 16),
 						Source:         s.exchangeName,
+						VerifiedPair:   exchangepair.Verified,
+						BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 					}
-
+					if exchangepair.Verified {
+						log.Infoln("Got verified trade", t)
+					}
 					s.chanTrades <- t
 				case error:
 					s.cleanup(m)
@@ -222,6 +235,11 @@ func (s *BitfinexScraper) normalizeSymbol(pair dia.ExchangePair) (dia.ExchangePa
 		return pair, errors.New("Symbol is black listed:" + pair.Symbol)
 	}
 	return pair, nil
+}
+
+func (s *BitfinexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	// TO DO
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs

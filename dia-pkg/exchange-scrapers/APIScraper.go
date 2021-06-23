@@ -1,8 +1,9 @@
 package scrapers
 
 import (
-	"github.com/diadata-org/diadata/dia-pkg/datasource"
 	"io"
+
+	"github.com/diadata-org/diadata/dia-pkg/datasource"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -69,10 +70,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	switch exchange {
 	case dia.BinanceExchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
-	// case dia.BitBayExchange:
-	// 	return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
-	// case dia.BitfinexExchange:
-	// 	return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
+	case dia.BitBayExchange:
+		return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
+	case dia.BitfinexExchange:
+		return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
 	case dia.BittrexExchange:
 		return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape, relDB)
 	case dia.CoinBaseExchange:
@@ -83,34 +84,34 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape, relDB)
 	case dia.HitBTCExchange:
 		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape, relDB)
-	// case dia.SimexExchange:
-	// 	return NewSimexScraper(Exchanges[dia.SimexExchange], scrape, relDB)
-	// case dia.OKExExchange:
-	// 	return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
-	// case dia.HuobiExchange:
-	// 	return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape, relDB)
-	// case dia.LBankExchange:
-	// 	return NewLBankScraper(Exchanges[dia.LBankExchange], scrape, relDB)
-	// case dia.GateIOExchange:
-	// 	return NewGateIOScraper(Exchanges[dia.GateIOExchange], scrape, relDB)
-	// case dia.ZBExchange:
-	// 	return NewZBScraper(Exchanges[dia.ZBExchange], scrape, relDB)
-	// case dia.QuoineExchange:
-	// 	return NewQuoineScraper(Exchanges[dia.QuoineExchange], scrape, relDB)
-	// case dia.BancorExchange:
-	// 	return NewBancorScraper(Exchanges[dia.BancorExchange], scrape)
+	case dia.SimexExchange:
+		return NewSimexScraper(Exchanges[dia.SimexExchange], scrape, relDB)
+	case dia.OKExExchange:
+		return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
+	case dia.HuobiExchange:
+		return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape, relDB)
+	case dia.LBankExchange:
+		return NewLBankScraper(Exchanges[dia.LBankExchange], scrape, relDB)
+	case dia.GateIOExchange:
+		return NewGateIOScraper(Exchanges[dia.GateIOExchange], scrape, relDB)
+	case dia.ZBExchange:
+		return NewZBScraper(Exchanges[dia.ZBExchange], scrape, relDB)
+	case dia.QuoineExchange:
+		return NewQuoineScraper(Exchanges[dia.QuoineExchange], scrape, relDB)
+	case dia.BancorExchange:
+		return NewBancorScraper(Exchanges[dia.BancorExchange], scrape)
 	case dia.UniswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UniswapExchange], scrape)
-	// case dia.PanCakeSwap:
-	// 	return NewUniswapScraper(Exchanges[dia.PanCakeSwap], scrape)
-	// case dia.SushiSwapExchange:
-	// 	return NewUniswapScraper(Exchanges[dia.SushiSwapExchange], scrape)
-	// case dia.LoopringExchange:
-	// 	return NewLoopringScraper(Exchanges[dia.LoopringExchange], scrape)
-	// case dia.CurveFIExchange:
-	// 	return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape)
-	// case dia.GnosisExchange:
-	// 	return NewGnosisScraper(Exchanges[dia.GnosisExchange], scrape)
+	case dia.PanCakeSwap:
+		return NewUniswapScraper(Exchanges[dia.PanCakeSwap], scrape)
+	case dia.SushiSwapExchange:
+		return NewUniswapScraper(Exchanges[dia.SushiSwapExchange], scrape)
+	case dia.LoopringExchange:
+		return NewLoopringScraper(Exchanges[dia.LoopringExchange], scrape, relDB)
+	case dia.CurveFIExchange:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape)
+	case dia.GnosisExchange:
+		return NewGnosisScraper(Exchanges[dia.GnosisExchange], scrape)
 	// case dia.BalancerExchange:
 	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
 	// case dia.MakerExchange:
@@ -119,10 +120,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
 	// case dia.DforceExchange:
 	// 	return NewDforceScraper(Exchanges[dia.DforceExchange], scrape)
-	// case dia.ZeroxExchange:
-	// 	return NewZeroxScraper(Exchanges[dia.ZeroxExchange], scrape)
-	// case dia.KyberExchange:
-	// 	return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
+	case dia.ZeroxExchange:
+		return NewZeroxScraper(Exchanges[dia.ZeroxExchange], scrape)
+	case dia.KyberExchange:
+		return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.STEXExchange:

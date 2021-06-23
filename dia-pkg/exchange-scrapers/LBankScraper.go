@@ -10,6 +10,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -44,10 +45,11 @@ type LBankScraper struct {
 	pairScrapers map[string]*LBankPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper(exchange dia.Exchange, scrape bool) *LBankScraper {
+func NewLBankScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
@@ -56,6 +58,7 @@ func NewLBankScraper(exchange dia.Exchange, scrape bool) *LBankScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -86,6 +89,7 @@ func (s *LBankScraper) mainLoop() {
 		if ok {
 			var f64Price float64
 			var f64Volume float64
+			var exchangepair dia.ExchangePair
 
 			switch message.Trade.(type) {
 			case []interface{}:
@@ -105,6 +109,12 @@ func (s *LBankScraper) mainLoop() {
 			}
 
 			timeStamp := time.Now().UTC()
+
+			// TO DO: does the format of the pair correspond to the one saved in postgres?
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, strings.ToUpper(message.Pair))
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Symbol:         ps.pair.Symbol,
 				Pair:           strings.ToUpper(message.Pair),
@@ -113,6 +123,12 @@ func (s *LBankScraper) mainLoop() {
 				Time:           timeStamp,
 				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			ps.parent.chanTrades <- t
 		}
@@ -142,7 +158,7 @@ func (s *LBankScraper) cleanup(err error) {
 }
 
 func (s *LBankScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // Close closes any existing API connections, as well as channels of
