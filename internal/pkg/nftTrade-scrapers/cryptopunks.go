@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
@@ -14,6 +15,7 @@ import (
 
 	// "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -35,7 +37,7 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 	// if err != nil {
 	// 	log.Error("Error connecting Eth Client")
 	// }
-	connection, err := ethclient.Dial("add your infura link here")
+	connection, err := ethclient.Dial("node url")
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -94,8 +96,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() (trades []dia.NFTTrade, err erro
 			scraper.lastBlockNumber = big.NewInt(3919706)
 		}
 	}
-	// scraper.lastBlockNumber = big.NewInt(11606439)
-	scraper.lastBlockNumber = big.NewInt(3919706)
+	scraper.lastBlockNumber = big.NewInt(12653867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return nil, err
@@ -109,52 +110,101 @@ func (scraper *CryptoPunkScraper) FetchTrades() (trades []dia.NFTTrade, err erro
 
 	// TODO: It's a good practise to stay a litlle behind the head.
 	endBlockNumber := header.Number.Uint64() - 18
-	// endBlockNumber := uint64(12605795)
-
-	fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber.Uint64(), endBlockNumber)
-	// We're interested in the FilterPunkBought events when actual trades happened!
-	iter, err := filterer.FilterPunkBought(&bind.FilterOpts{
-		Start: scraper.lastBlockNumber.Uint64(),
-		End:   &endBlockNumber,
-	}, nil, nil, nil)
+	endBlockNumber = 12653869
+	// We need the cryptopunk abi to unpack the transfer event.
+	abi, err := abi.JSON(strings.NewReader(string(cryptopunk.CryptoPunksMarketABI)))
 	if err != nil {
-		fmt.Println("error filtering FilterPunkBought: ", err)
 		return nil, err
 	}
-	fmt.Println("iter: ", iter)
-
-	// Iter over FilterPunkBought events.
 	trades = make([]dia.NFTTrade, 0)
+	// Reduce the window size while there is an query limit error.
+	for {
+		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber.Uint64(), endBlockNumber)
+		// We're interested in the FilterPunkBought events when actual trades happened!
+		iter, err := filterer.FilterPunkBought(&bind.FilterOpts{
+			Start: scraper.lastBlockNumber.Uint64(),
+			End:   &endBlockNumber,
+		}, nil, nil, nil)
+
 	for iter.Next() {
 		fmt.Println("iter ")
 		// TODO: What value should i use for the blockchain argument?
 		nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
+
 		if err != nil {
-			// TODO: should we continue if we failed to get NFT from the db or should we fail!
-			// continue
+			if err.Error() == "query returned more than 10000 results" {
+				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber.Uint64() + (endBlockNumber-scraper.lastBlockNumber.Uint64())/2
+				continue
+			}
+			fmt.Println("error filtering FilterPunkBought: ", err)
 			return nil, err
 		}
-		trades = append(trades, dia.NFTTrade{
-			NFT:         nft,
-			BlockNumber: big.NewInt(int64(iter.Event.Raw.BlockNumber)),
-			// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
-			// a internal function?
-			PriceUSD:    float64(iter.Event.Value.Uint64()),
-			FromAddress: iter.Event.FromAddress,
-			ToAddress:   iter.Event.ToAddress,
-			// TODO: exchange name? any Idea?
-			Exchange: "",
-		})
-		log.Info("got trade: ")
-		log.Info("price: ", float64(iter.Event.Value.Uint64()))
-		log.Info("from address: ", iter.Event.FromAddress)
-		log.Info("to address: ", iter.Event.ToAddress)
-		log.Info("blockNumber: ", big.NewInt(int64(iter.Event.Raw.BlockNumber)))
-		log.Info("id: ", iter.Event.PunkIndex.String())
-		log.Info("-----------------------------------------------")
-		log.Info(" ")
-		log.Info("-----------------------------------------------")
 
+		log.Infof("iter: %v", iter)
+		// Iter over FilterPunkBought events.
+		for iter.Next() {
+			// TODO: What value should i use for the blockchain argument?
+			// nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress, "ethereum", iter.Event.PunkIndex.String())
+			// if err != nil {
+			// 	// TODO: should we continue if we failed to get NFT from the db or should we fail!
+			// 	// continue
+			// 	return nil, err
+			// }
+
+			// QUICK HACK: this is a workaround to a Cryptopunks contract bug that leads to an empty ToAddress.
+			tx, err := scraper.tradescraper.ethConnection.TransactionReceipt(context.TODO(), iter.Event.Raw.TxHash)
+			if err != nil {
+				// TODO: should we continue if we failed to get tx or should we fail!
+				// continue
+				return nil, err
+			}
+			log.Info("tx: ", tx.TxHash.Hex())
+
+			var transferEvent struct {
+				From  common.Address
+				To    common.Address
+				Value *big.Int
+			}
+
+			for _, vLog := range tx.Logs {
+				log.Info("log", vLog)
+				err := abi.UnpackIntoInterface(&transferEvent, "Transfer", vLog.Data)
+				if err == nil {
+					log.Info("found a Transfer event")
+
+					log.Info("event: ", transferEvent)
+					transferEvent.To = common.BytesToAddress(vLog.Topics[2].Bytes())
+					break
+				}
+			}
+
+			// trades = append(trades, dia.NFTTrade{
+			// 	NFT:         nft,
+			// 	BlockNumber: big.NewInt(int64(iter.Event.Raw.BlockNumber)),
+			// 	// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
+			// 	// a internal function?
+			// 	PriceUSD:    float64(iter.Event.Value.Uint64()),
+			// 	FromAddress: iter.Event.FromAddress,
+			// 	ToAddress:   iter.Event.ToAddress,
+			// 	// TODO: exchange name? any Idea?
+			// 	Exchange: "",
+			// })
+
+			log.Infof("got trade: ")
+			log.Infof("iter: %v", iter)
+			log.Info("price: ", float64(iter.Event.Value.Uint64()))
+			log.Info("from address: ", iter.Event.FromAddress)
+			log.Info("to address: ", iter.Event.ToAddress)
+			log.Info("to address(from the tx Transfer event): ", transferEvent.To)
+			log.Info("tx: ", iter.Event.Raw.TxHash)
+			log.Info("blockNumber: ", big.NewInt(int64(iter.Event.Raw.BlockNumber)))
+			log.Info("id: ", iter.Event.PunkIndex.String())
+			log.Info("-----------------------------------------------")
+			log.Info(" ")
+			log.Info("-----------------------------------------------")
+		}
+		break
 	}
 
 	// Update the last lastBlockNumber value.
