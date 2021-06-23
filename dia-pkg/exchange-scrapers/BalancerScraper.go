@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerfactory"
-	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerpool"
-	balancertoken2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerfactory"
+	"github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancerpool"
+	balancertoken2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/balancer/balancertoken"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
@@ -62,7 +63,7 @@ type BalancerScraper struct {
 	error     error
 	closed    bool
 
-	balancerTokensMap map[string]*BalancerToken
+	balancerTokensMap map[string]dia.Asset
 	pairScrapers      map[string]*BalancerPairScraper
 	productPairIds    map[string]int
 	chanTrades        chan *dia.Trade
@@ -82,7 +83,7 @@ func NewBalancerScraper(exchange dia.Exchange, scrape bool) *BalancerScraper {
 		productPairIds:    make(map[string]int),
 		pairScrapers:      make(map[string]*BalancerPairScraper),
 		chanTrades:        make(chan *dia.Trade),
-		balancerTokensMap: make(map[string]*BalancerToken),
+		balancerTokensMap: make(map[string]dia.Asset),
 		resubscribe:       make(chan string),
 		pools:             make(map[string]struct{}),
 	}
@@ -262,6 +263,9 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) (err error
 					Time:           time.Unix(swap.Timestamp, 0),
 					ForeignTradeID: swap.ID,
 					Source:         scraper.exchangeName,
+					BaseToken:      scraper.balancerTokensMap[vLog.TokenIn.Hex()],
+					QuoteToken:     scraper.balancerTokensMap[vLog.TokenOut.Hex()],
+					VerifiedPair:   true,
 				}
 				pairScraper.parent.chanTrades <- trade
 				fmt.Println("got trade: ", trade)
@@ -335,23 +339,28 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 	return tokenSet, err
 }
 
-func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, error) {
+func (scraper *BalancerScraper) getAllTokensMap() (map[string]dia.Asset, error) {
 	tokenAddressSet, err := scraper.getAllTokenAddress()
 	if err != nil {
 		log.Error(err)
 	}
 
-	tokenMap := make(map[string]*BalancerToken)
+	tokenMap := make(map[string]dia.Asset)
 
 	for token := range tokenAddressSet {
 		var tokenCaller *balancertoken2.BalancertokenCaller
 		var symbol string
+		var name string
 		var decimals *big.Int
 		tokenCaller, err = balancertoken2.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
 		symbol, err = tokenCaller.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		name, err = tokenCaller.Name(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
@@ -363,9 +372,12 @@ func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, er
 			log.Error(err)
 		}
 		if symbol != "" {
-			tokenMap[token] = &BalancerToken{
-				Symbol:   symbol,
-				Decimals: uint8(decimals.Uint64()),
+			tokenMap[token] = dia.Asset{
+				Symbol:     symbol,
+				Name:       name,
+				Decimals:   uint8(decimals.Uint64()),
+				Address:    common.HexToAddress(token).Hex(),
+				Blockchain: dia.ETHEREUM,
 			}
 		}
 	}

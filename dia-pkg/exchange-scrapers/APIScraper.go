@@ -112,14 +112,14 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape)
 	case dia.GnosisExchange:
 		return NewGnosisScraper(Exchanges[dia.GnosisExchange], scrape)
-	// case dia.BalancerExchange:
-	// 	return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
-	// case dia.MakerExchange:
-	// 	return NewMakerScraper(Exchanges[dia.MakerExchange], scrape)
+	case dia.BalancerExchange:
+		return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
+	case dia.MakerExchange:
+		return NewMakerScraper(Exchanges[dia.MakerExchange], scrape, relDB)
 	case dia.KuCoinExchange:
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
-	// case dia.DforceExchange:
-	// 	return NewDforceScraper(Exchanges[dia.DforceExchange], scrape)
+	case dia.DforceExchange:
+		return NewDforceScraper(Exchanges[dia.DforceExchange], scrape)
 	case dia.ZeroxExchange:
 		return NewZeroxScraper(Exchanges[dia.ZeroxExchange], scrape)
 	case dia.KyberExchange:

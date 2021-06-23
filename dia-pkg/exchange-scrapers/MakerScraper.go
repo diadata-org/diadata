@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"sync"
@@ -48,6 +49,7 @@ type MakerScraper struct {
 	pairScrapers   map[string]*MakerPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
+	db             *models.RelDB
 }
 
 type MakerTradeResponse struct {
@@ -63,7 +65,7 @@ type MakerTrade struct {
 	Time   time.Time `json:"time"`
 }
 
-func NewMakerScraper(exchange dia.Exchange, scrape bool) *MakerScraper {
+func NewMakerScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *MakerScraper {
 	scraper := &MakerScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -72,6 +74,7 @@ func NewMakerScraper(exchange dia.Exchange, scrape bool) *MakerScraper {
 		productPairIds: make(map[string]int),
 		pairScrapers:   make(map[string]*MakerPairScraper),
 		chanTrades:     make(chan *dia.Trade),
+		db:             relDB,
 	}
 
 	if scrape {
@@ -136,6 +139,11 @@ func (scraper *MakerScraper) mainLoop() {
 					return
 				}
 
+				exchangepair, err := scraper.db.GetExchangePairCache(scraper.exchangeName, pair)
+				if err != nil {
+					log.Error(err)
+				}
+
 				trade := &dia.Trade{
 					Symbol:         strings.Split(pair, "-")[0],
 					Pair:           pair,
@@ -144,8 +152,13 @@ func (scraper *MakerScraper) mainLoop() {
 					Time:           v.Time,
 					ForeignTradeID: strconv.Itoa(v.ID),
 					Source:         scraper.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 				}
-				log.Infoln("Got Trade  ", trade)
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade: ", trade)
+				}
 				scraper.chanTrades <- trade
 
 			}
@@ -182,7 +195,7 @@ func (scraper *MakerScraper) getPairs() (pairs []dia.ExchangePair, err error) {
 
 // FillSymbolData is not used by DEX scrapers.
 func (scraper *MakerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {

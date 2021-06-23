@@ -130,7 +130,9 @@ func (s *ZBScraper) mainLoop() {
 				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
 			ps.parent.chanTrades <- t
-			log.Infoln("Trade recieved", t)
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade: ", t)
+			}
 
 		}
 	}

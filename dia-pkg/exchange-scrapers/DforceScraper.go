@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	dforce2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce"
-	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	dforce2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce"
+	token2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers/dforce/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -51,7 +52,7 @@ type DforceScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*DforceToken
+	tokens      map[string]dia.Asset
 	contract    common.Address
 }
 
@@ -66,7 +67,7 @@ func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
 		pairScrapers:   make(map[string]*DforcePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*DforceToken),
+		tokens:         make(map[string]dia.Asset),
 	}
 
 	wsClient, err := ethclient.Dial(dforceWsDial)
@@ -91,9 +92,11 @@ func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
 func (scraper *DforceScraper) loadTokens() {
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = &DforceToken{
-		Symbol:   "USDx",
-		Decimals: 18,
+	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = dia.Asset{
+		Symbol:     "USDx",
+		Decimals:   18,
+		Address:    "0xeb269732ab75A6fD61Ea60b06fE994cD32a83549",
+		Blockchain: dia.ETHEREUM,
 	}
 
 	filterer, err := dforce2.NewDforceFilterer(scraper.contract, scraper.WsClient)
@@ -125,7 +128,7 @@ func (scraper *DforceScraper) loadTokens() {
 
 }
 
-func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*DforceToken, error) {
+func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
@@ -146,11 +149,12 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		if err != nil {
 			log.Error(err)
 		}
-		dfToken := &DforceToken{
-			Symbol:   symbol,
-			Decimals: uint8(decimals.Uint64()),
-			Address:  tokenAddress.String(),
-			Name:     name,
+		dfToken := dia.Asset{
+			Symbol:     symbol,
+			Name:       name,
+			Decimals:   uint8(decimals.Int64()),
+			Address:    tokenAddress.Hex(),
+			Blockchain: dia.ETHEREUM,
 		}
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
@@ -204,7 +208,7 @@ func (scraper *DforceScraper) subscribeToTrades() error {
 }
 
 func (scraper *DforceScraper) processTrade(trade *dforce2.DforceSwap) {
-	symbol, foreignName, volume, price, err := scraper.getSwapDataDforce(trade)
+	symbol, foreignName, volume, price, token0, token1, err := scraper.getSwapDataDforce(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -219,6 +223,9 @@ func (scraper *DforceScraper) processTrade(trade *dforce2.DforceSwap) {
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
+				BaseToken:      token1,
+				QuoteToken:     token0,
+				VerifiedPair:   true,
 			}
 			pairScraper.parent.chanTrades <- trade
 			fmt.Println("got trade: ", trade)
@@ -268,12 +275,12 @@ func (scraper *DforceScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *DforceScraper) getSwapDataDforce(s *dforce2.DforceSwap) (symbol string, foreignName string, volume float64, price float64, err error) {
-	buyToken, err := scraper.loadTokenData(s.Output)
+func (scraper *DforceScraper) getSwapDataDforce(s *dforce2.DforceSwap) (symbol string, foreignName string, volume float64, price float64, buyToken, sellToken dia.Asset, err error) {
+	buyToken, err = scraper.loadTokenData(s.Output)
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(s.Input)
+	sellToken, err = scraper.loadTokenData(s.Input)
 	if err != nil {
 		log.Error(err)
 	}
