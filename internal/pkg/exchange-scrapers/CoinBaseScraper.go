@@ -88,6 +88,7 @@ func (s *CoinBaseScraper) mainLoop() {
 								ForeignTradeID: strconv.FormatInt(int64(message.TradeID), 16),
 								Source:         s.exchangeName,
 							}
+							log.Info("go trade: ", t)
 							ps.parent.chanTrades <- t
 						}
 					} else {

@@ -161,11 +161,11 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) {
 	for _, nftClass := range submissions.AllItems {
 		// Get ID of underlying NFTClass.
-		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address), nftClass.Blockchain)
+		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address).Hex(), nftClass.Blockchain)
 		if err != nil {
 			log.Error("class not in db yet. set: ", nftClass)
 			err = relDB.SetNFTClass(dia.NFTClass{
-				Address:      common.HexToAddress(nftClass.Address),
+				Address:      common.HexToAddress(nftClass.Address).Hex(),
 				Symbol:       nftClass.Symbol,
 				Name:         nftClass.Name,
 				Blockchain:   nftClass.Blockchain,

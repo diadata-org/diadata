@@ -61,8 +61,6 @@ func main() {
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
-	//conn, err := ethclient.Dial("https://rpc-mainnet.matic.network")
-	//conn, err := ethclient.Dial("https://data-seed-prebsc-1-s1.binance.org:8545/")
 	conn, err := ethclient.Dial(*blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the EVM client: %v", err)
@@ -862,16 +860,29 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 			return err
 		}
 	} else {
+		gasPrice, err := conn.SuggestGasPrice(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Get 110% of the gas price
+		fGas := new(big.Float).SetInt(gasPrice)
+		fGas.Mul(fGas, big.NewFloat(1.1))
+		gasPrice, _ = fGas.Int(nil)
+
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
+		auth.GasPrice = gasPrice
 		addr, tx, *contract, err = oracleService.DeployDiaOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
 		}
+		fmt.Println(tx.GasPrice())
 		log.Printf("Contract pending deploy: 0x%x\n", addr)
-		log.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
+		log.Printf("Transaction waiting to be mined: 0x%x\n", tx.Hash())
+		log.Printf("Tx Nonce: %d\n\n", tx.Nonce())
 		time.Sleep(180000 * time.Millisecond)
 	}
 	return nil

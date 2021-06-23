@@ -46,11 +46,11 @@ type BalancerPoolScraper struct {
 // NewBalancerPoolScraper creates a new balancer scraper.
 func NewBalancerPoolScraper(scraper *PoolScraper) *BalancerPoolScraper {
 	// create rest and ws eth clients
-	restClient, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
 	}
-	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571")
+	wsClient, err := ethclient.Dial(wsDial)
 	if err != nil {
 		log.Fatal(err)
 	}

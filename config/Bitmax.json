@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "DAFI",
+            "ForeignName": "DAFI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "LBA",
             "ForeignName": "LBA/BTC",
             "Exchange": "Bitmax",

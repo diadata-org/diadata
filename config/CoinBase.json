@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "GTC-USD",
+      "Ignore": false,
+      "Symbol": "GTC"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "BCH-USD",
       "Ignore": false,
       "Symbol": "BCH"

@@ -2217,7 +2217,7 @@ func NameForSymbol(symbol string) string {
 	case "FDX":
 		return "FidentiaX"
 	case "GTC":
-		return "Game.com"
+		return "Gitcoin"
 	case "TAU":
 		return "Lamden"
 	case "BLT":

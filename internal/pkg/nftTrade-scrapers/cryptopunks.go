@@ -125,6 +125,12 @@ func (scraper *CryptoPunkScraper) FetchTrades() (trades []dia.NFTTrade, err erro
 			Start: scraper.lastBlockNumber.Uint64(),
 			End:   &endBlockNumber,
 		}, nil, nil, nil)
+
+	for iter.Next() {
+		fmt.Println("iter ")
+		// TODO: What value should i use for the blockchain argument?
+		nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
+
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")

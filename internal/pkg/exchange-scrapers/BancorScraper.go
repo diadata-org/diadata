@@ -105,14 +105,12 @@ type BancorScraper struct {
 func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
 	var wsClient, restClient *ethclient.Client
 
-	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/3c7bc809e9174a85ad56ee9abcb68d32")
-	// wsClient, err := ethclient.Dial(wsDial)
+	wsClient, err := ethclient.Dial(wsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	restClient, err = ethclient.Dial("https://mainnet.infura.io/v3/3c7bc809e9174a85ad56ee9abcb68d32")
-	// restClient, err = ethclient.Dial(restDial)
+	restClient, err = ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
 	}

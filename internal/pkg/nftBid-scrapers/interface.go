@@ -1,27 +1,23 @@
-package nftdatascrapers
+package nftbidscrapers
 
 import (
 	"sync"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-const (
-	refreshDelay = time.Hour * 24
-)
-
 type nothing struct{}
-type NFTDataScraper interface {
-	// NFT data should be streamed through dia.NFT channel.
-	GetDataChannel() chan dia.NFT
-	// Should fetch nft data and send it to the channel.
-	FetchData() error
+
+type NFTBidScraper interface {
+	// NFT bids should be streamed through dia.NFTBid channel.
+	GetBidChannel() chan dia.NFTBid
+	// Should fetch bids and send them to the channel.
+	FetchBids() error
 }
 
-type NFTScraper struct {
+type BidScraper struct {
 	// signaling channels
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -32,6 +28,6 @@ type NFTScraper struct {
 	error         error
 	closed        bool
 	ethConnection *ethclient.Client
-	relDB         models.RelDatastore
-	chanData      chan dia.NFT
+	datastore     models.RelDatastore
+	chanBid       chan dia.NFTBid
 }
