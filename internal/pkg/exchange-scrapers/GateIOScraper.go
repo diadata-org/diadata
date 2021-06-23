@@ -106,10 +106,15 @@ func (s *GateIOScraper) mainLoop() {
 		gresponse GateIPPairResponse
 		allPairs  []string
 	)
-
+	var err error
+	var f64Price float64
+	var f64Volume float64
 
 	b, _ := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
-	json.Unmarshal(b, &gresponse)
+	err = json.Unmarshal(b, &gresponse)
+	if err != nil {
+		log.Error("deconding currency pairs: ", err)
+	}
 
 	for _, v := range gresponse {
 		allPairs = append(allPairs, v.ID)
@@ -121,13 +126,13 @@ func (s *GateIOScraper) mainLoop() {
 		Channel: "spot.trades",
 		Payload: allPairs,
 	}
-	var err error
+
 	log.Infoln("subscribed", allPairs)
 	if err = s.wsClient.WriteJSON(a); err != nil {
 		log.Error(err.Error())
 	}
 
-	for true {
+	for {
 
 		var message GateIOResponseTrade
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -138,13 +143,13 @@ func (s *GateIOScraper) mainLoop() {
 		ps, ok := s.pairScrapers[message.Result.CurrencyPair]
 		if ok {
 
-			f64Price, err := strconv.ParseFloat(message.Result.Price, 64)
+			f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
 				continue
 			}
 
-			f64Volume, err := strconv.ParseFloat(message.Result.Amount, 64)
+			f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
 			if err != nil {
 				log.Errorln("error parsing float Price", err)
 				continue
@@ -164,7 +169,7 @@ func (s *GateIOScraper) mainLoop() {
 				Source:         s.exchangeName,
 			}
 			ps.parent.chanTrades <- t
-			log.Infoln("got trade",t)
+			log.Infoln("got trade", t)
 
 		}
 
