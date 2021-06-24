@@ -36,14 +36,14 @@ require (
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
-	github.com/jackc/pgconn v1.8.1
+	github.com/jackc/pgconn v1.8.1 // indirect
 	github.com/jackc/pgtype v1.7.0
-	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
-	github.com/jjjjpppp/quoinex-go-client v0.0.8
+	github.com/jjjjpppp/quoinex-go-client v0.0.8 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
+	github.com/karalabe/usb v0.0.0-20210518091819-4ea20957c210 // indirect
 	github.com/klauspost/compress v1.11.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.9.0 // indirect
@@ -59,7 +59,7 @@ require (
 	github.com/peterh/liner v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
-	github.com/prometheus/common v0.9.1
+	github.com/prometheus/common v0.9.1 // indirect
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/segmentio/kafka-go v0.3.7

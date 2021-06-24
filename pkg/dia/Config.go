@@ -2,10 +2,11 @@ package dia
 
 import (
 	"errors"
-	"github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
 	"os/user"
 	"strings"
+
+	"github.com/diadata-org/diadata/pkg/utils"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/tkanos/gonfig"
 )
@@ -48,37 +49,38 @@ const (
 
 func Exchanges() []string {
 	return []string{
+		KrakenExchange,
 		BinanceExchange,
-		KuCoinExchange,
-		// BalancerExchange,
-		// BancorExchange,
-		// BitBayExchange,
-		// BitfinexExchange,
+		BalancerExchange,
+		BancorExchange,
+		BitBayExchange,
+		BitfinexExchange,
 		BitMaxExchange,
 		BittrexExchange,
 		CoinBaseExchange,
 		CREX24Exchange,
-		// CurveFIExchange,
-		// DforceExchange,
-		// GateIOExchange,
-		// GnosisExchange,
+		CurveFIExchange,
+		DforceExchange,
+		GateIOExchange,
+		GnosisExchange,
 		HitBTCExchange,
-		// HuobiExchange,
-		KrakenExchange,
-		// KyberExchange,
-		// LBankExchange,
-		// LoopringExchange,
-		// MakerExchange,
-		// OKExExchange,
-		// PanCakeSwap,
-		// QuoineExchange,
-		// SimexExchange,
+		HuobiExchange,
+
+		KuCoinExchange,
+		KyberExchange,
+		LBankExchange,
+		LoopringExchange,
+		MakerExchange,
+		OKExExchange,
+		PanCakeSwap,
+		QuoineExchange,
+		SimexExchange,
 		STEXExchange,
-		// SushiSwapExchange,
+		SushiSwapExchange,
 		UniswapExchange,
-		// ZBExchange,
-		// ZeroxExchange,
-		// UnknownExchange,
+		ZBExchange,
+		ZeroxExchange,
+		UnknownExchange,
 	}
 }
 
@@ -92,7 +94,7 @@ type ConfigConnector struct {
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {
-	if utils.Getenv("USE_ENV","false") == "true" {
+	if utils.Getenv("USE_ENV", "false") == "true" {
 		return GetConfigFromEnv(exchange)
 	}
 	var configApi ConfigApi
@@ -104,17 +106,17 @@ func GetConfig(exchange string) (*ConfigApi, error) {
 }
 
 func GetConfigFromEnv(exchange string) (*ConfigApi, error) {
-	if utils.Getenv("USE_ENV","false") != "true" {
+	if utils.Getenv("USE_ENV", "false") != "true" {
 		return nil, errors.New("use of config by env without env activation ")
 	}
-	if utils.IsEnvExist("API_" + strings.ToUpper(exchange) + "_APIKEY") && utils.IsEnvExist("API_" + strings.ToUpper(exchange) + "_SECRETKEY") {
+	if utils.IsEnvExist("API_"+strings.ToUpper(exchange)+"_APIKEY") && utils.IsEnvExist("API_"+strings.ToUpper(exchange)+"_SECRETKEY") {
 		configApi := ConfigApi{
 			ApiKey:    utils.Getenv("API_"+strings.ToUpper(exchange)+"_APIKEY", ""),
 			SecretKey: utils.Getenv("API_"+strings.ToUpper(exchange)+"_SECRETKEY", ""),
 		}
 		return &configApi, nil
 	}
-	log.Info("no api keys found for exchange "+ exchange)
+	log.Info("no api keys found for exchange " + exchange)
 
 	return nil, nil
 }

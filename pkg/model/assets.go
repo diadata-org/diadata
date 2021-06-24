@@ -157,7 +157,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 // fiat currencies are uniquely defined by their symbol.
 func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error) {
 	var decimals string
-	query := fmt.Sprintf("select name,address,decimals from %s where symbol=$1 and blockchain='fiat'", assetTable)
+	query := fmt.Sprintf("select name,address,decimals from %s where symbol=$1 and blockchain='Fiat'", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol).Scan(&asset.Name, &asset.Address, &decimals)
 	if err != nil {
 		return
@@ -168,7 +168,7 @@ func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err erro
 	}
 	asset.Decimals = uint8(decimalsInt)
 	asset.Symbol = symbol
-	asset.Blockchain = "fiat"
+	asset.Blockchain = "Fiat"
 	// TO DO: Get Blockchain by name from postgres and add to asset
 	return
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -11,6 +10,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
 	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
@@ -158,10 +159,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 		exchangeMap := scrapers2.Exchanges
 		for _, exchange := range dia.Exchanges() {
 			dataTowrite := make(map[string][]dia.Asset)
-			// TO DO: the next cond is only for testing. Remove when deploying.
-			if exchange == "Uniswap" {
-				continue
-			}
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
@@ -180,18 +177,22 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 				if exchangeMap[exchange].Centralized {
 
 					// --------- 1. Step: collect pairs from Exchange API, DB and config file ---------
-					// Fetch pairs using the API scraper.
-					pairs, err := scraper.FetchAvailablePairs()
-					if err != nil {
-						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
-					}
-					log.Infof("fetched %v pairs for exchange %s.", len(pairs), exchange)
-					time.Sleep(60 * time.Second)
+					// TO DO: uncomment below block once all exchange scrapers are deployed.
+					// // Fetch pairs using the API scraper.
+					// pairs, err := scraper.FetchAvailablePairs()
+					// if err != nil {
+					// 	log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
+					// }
+					// log.Infof("fetched %v pairs for exchange %s.", len(pairs), exchange)
+					// time.Sleep(60 * time.Second)
+
+					var pairs []dia.ExchangePair
 					// If not in postgres yet, add fetched pairs to postgres pairs
 					pairs, err = addNewPairs(exchange, pairs, relDB)
 					if err != nil {
 						log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)
 					}
+
 					// Optional addition of pairs from config file.
 					pairs, err = addPairsFromConfig(exchange, pairs)
 					if err != nil {
@@ -201,13 +202,14 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					// --------- 2. Step: Try to verify all pairs collected above ---------
 
 					// 2.a Get list of symbols available on exchange and try to match to assets.
-
 					symbols, err := dia.GetAllSymbolsFromPairs(pairs)
 					if err != nil {
 						log.Error(err)
 					}
+
 					verificationCount := 0
 					for _, symbol := range symbols {
+						fmt.Printf("verifying symbol %s on exchange %s \n ", symbol, exchange)
 						var verified bool
 						var assetInfo dia.Asset
 						var assetCandidates []dia.Asset
@@ -261,7 +263,8 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						if len(assetCandidates) == 1 {
 							log.Infof("found asset candidate for %s on %s: %v", symbol, exchange, assetCandidates[0])
 							// Verify if this asset is in our verified asset list
-							isVerified := verifiedTokens.IsExists(assetCandidates[0])
+							// isVerified := verifiedTokens.IsExists(assetCandidates[0])
+							isVerified := true
 							if isVerified {
 								verificationCount++
 								assetID, err = relDB.GetAssetID(assetCandidates[0])
@@ -304,12 +307,14 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							fmt.Printf("pair %s already verified. Continue.\n", pair.ForeignName)
 							continue
 						}
+
 						// if not yet verified, try do do so
 						pairSymbols, err = dia.GetPairSymbols(pair)
 						if err != nil {
 							log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
 							continue
 						}
+
 						quotetokenID, quotetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
 						if err != nil {
 							log.Error(err)
