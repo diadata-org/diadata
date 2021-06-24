@@ -405,10 +405,10 @@ func GetCryptokittiesAddress(kittyResp []byte) (common.Address, error) {
 }
 
 // GetCryptokittiesCreationTime returns the creation time from Opensea
-func GetCryptokittiesCreationTime(punkResp []byte) (time.Time, error) {
-	var resp OpenSeaCryptopunkResponse
+func GetCryptokittiesCreationTime(kittyResp []byte) (time.Time, error) {
+	var resp OpenSeaCryptokittiesResponse
 	var t time.Time
-	if err := json.Unmarshal(punkResp, &resp); err != nil {
+	if err := json.Unmarshal(kittyResp, &resp); err != nil {
 		return t, err
 	}
 
