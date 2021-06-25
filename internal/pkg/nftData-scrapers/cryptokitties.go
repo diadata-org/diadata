@@ -238,12 +238,16 @@ type OpenSeaCryptokittiesResponse struct {
 }
 
 type CryptokittiesTraits struct {
-	TraitType   string      `json:"trait_type"` //ex: virginity
-	Value       string      `json:"value"`      //ex: virgin
-	DisplayType interface{} `json:"display_type"`
-	MaxValue    interface{} `json:"max_value"`
-	TraitCount  int         `json:"trait_count"` //ex: 994867
-	Order       interface{} `json:"order"`
+	IsGestating   bool
+	IsReady       bool
+	CooldownIndex *big.Int
+	NextActionAt  *big.Int
+	SiringWithId  *big.Int
+	BirthTime     *big.Int
+	MatronId      *big.Int
+	SireId        *big.Int
+	Generation    *big.Int
+	Genes         *big.Int
 }
 
 type CryptokittiesScraper struct {
@@ -255,7 +259,7 @@ type CryptokittiesScraper struct {
 }
 
 type CryptokittiesOutput struct {
-	Traits []CryptokittiesTraits `structs:",flatten"`
+	Traits CryptokittiesTraits `structs:",flatten"`
 }
 
 func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
@@ -358,41 +362,42 @@ func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
-func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, time.Time, error) {
+func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) (CryptokittiesTraits, common.Address, time.Time, error) {
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
 	respData, err := utils.GetRequest(url)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return CryptokittiesTraits{}, creatorAddress, creationTime, err
 	}
 
-	traits, err := GetCryptokittiesTraits(respData)
+	traits, err := GetCryptokittiesTraits(scraper, index)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return CryptokittiesTraits{}, creatorAddress, creationTime, err
 	}
 
 	creatorAddress, err = GetCryptokittiesAddress(respData)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return CryptokittiesTraits{}, creatorAddress, creationTime, err
 	}
 
 	creationTime, err = GetCryptokittiesCreationTime(respData)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return CryptokittiesTraits{}, creatorAddress, creationTime, err
 	}
 
 	return traits, creatorAddress, creationTime, nil
 
 }
 
-// GetCryptokittiesTraits returns the parsed traits data from Opensea for a given kitty
-func GetCryptokittiesTraits(kittyResp []byte) ([]CryptokittiesTraits, error) {
-	var resp OpenSeaCryptokittiesResponse
-	if err := json.Unmarshal(kittyResp, &resp); err != nil {
-		return nil, err
+// GetCryptokittiesTraits returns the traits data from onchain for a given kitty
+func GetCryptokittiesTraits(scraper *CryptokittiesScraper, kittyID *big.Int) (CryptokittiesTraits, error) {
+	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
+	if err != nil {
+		return CryptokittiesTraits{}, err
 	}
-	return resp.Traits, nil
+	traits, err := contract.GetKitty(&bind.CallOpts{}, kittyID)
+	return traits, nil
 }
 
 // GetCryptokittiesAddress returns the creator address from Opensea
