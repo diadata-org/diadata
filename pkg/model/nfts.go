@@ -193,6 +193,19 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 	return dia.NFT{}, err
 }
 
+func (rdb *RelDB) GetNFTID(address string, blockchain string, tokenID string) (ID string, err error) {
+	nftclassID, err := rdb.GetNFTClassID(address, blockchain)
+	if err != nil {
+		return
+	}
+	query := fmt.Sprintf("select nft_id from %s where nftclass_id=$1 and tokenID=$2 ", nftTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, nftclassID, tokenID).Scan(&ID)
+	if err != nil {
+		return
+	}
+	return
+}
+
 // GetLastBlockheightTopshot returns the last block number before timestamp given by @upperBound.
 func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error) {
 	query := fmt.Sprintf("select attributes from %s where nftclass_id=(select nftclass_id from %s where address='0x0b2a3299cc857e29' and blockchain='Flow') order by creation_time desc limit 1;", nftTable, nftclassTable)
@@ -220,14 +233,42 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error) {
 
 // SetNFTBid stores @bid.
 func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
-	// TO DO
+	nftID, err := rdb.GetNFTID(bid.NFT.NFTClass.Address, bid.NFT.NFTClass.Blockchain, bid.NFT.TokenID)
+	if err != nil {
+		return err
+	}
+	query := fmt.Sprintf("insert into %s (nft_id,time,blocknumber,blockposition,bid_value,currency,from_address,marketplace) values ($1,$2,$3,$4,$5,$6,$7,$8)", nftbidTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftID, bid.Time, bid.BlockNumber, bid.BlockPosition, bid.Value, bid.Currency, bid.FromAddress, bid.Exchange)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // GetLastBid returns the last bid on the nft with @address and @tokenID.
 // Here, 'last' refers to block number and block position smaller or equal
 // (in the case of block number) than @blockNumber and @blockPosition resp.
-func (rdb *RelDB) GetLastNFTBid(address string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error) {
+func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (nftBid dia.NFTBid, err error) {
+	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
+	if err != nil {
+		return
+	}
+
+	// First fetch biggest blocknumber<=@blockNumber for given nft.
+	subquery := fmt.Sprintf("select blocknumber from nftbid where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftID, blockNumber)
+	// Next, restrict to largest blockPosition in this block.
+	returnVars := "time,blocknumber,blockposition,bid_value,currency,from_address,tx_hash,marketplace"
+	query := fmt.Sprintf("select %s from nftbid where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftID, subquery)
+
+	var valueString string
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&nftBid.Time, &nftBid.BlockNumber, &nftBid.BlockPosition, &valueString, &nftBid.Currency, &nftBid.FromAddress, &nftBid.TxHash, &nftBid.Exchange)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error) {
 	// TO DO
-	return dia.NFTBid{}, nil
+	return 0, nil
 }

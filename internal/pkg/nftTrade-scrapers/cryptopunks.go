@@ -62,6 +62,10 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CryptoPunkScraper) mainLoop() {
+	err := scraper.FetchTrades()
+	if err != nil {
+		log.Error("fetching nft trades: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -133,6 +137,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 
 		for iter.Next() {
 			fmt.Println("iter ")
+			time.Sleep(1 * time.Second)
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
@@ -171,9 +176,9 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			// TO DO: Check that bid address is the same as trade toAddress.
 			// TO DO: Check that transaction input is acceptBidForPunk.
 			if price == 0 {
-				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
+				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
 				if err != nil {
-					log.Error("could not find last bid")
+					log.Error("could not find last bid: ", err)
 				}
 				fmt.Println("value is zero. Fetch from bids..")
 				fmt.Println(".. value: ", bid.Value)

@@ -115,8 +115,8 @@ type NFTBid struct {
 	NFT           NFT
 	Value         float64
 	Currency      string
-	FromAddress   common.Address
-	TxHash        common.Hash
+	FromAddress   string
+	TxHash        string
 	BlockNumber   uint64
 	BlockPosition uint
 	Time          time.Time

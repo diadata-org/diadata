@@ -91,7 +91,7 @@ CREATE TABLE nft (
     UNIQUE(nft_id)
 );
 
-CREATE TABLE nftsale (
+CREATE TABLE nfttrade (
     sale_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
     time timestamp,
@@ -111,8 +111,10 @@ CREATE TABLE nftbid (
     bid_value numeric,
     currency text,
     from_address text,
+    tx_hash text,
     marketplace text,
-    UNIQUE(offer_id)
+    UNIQUE(bid_id),
+    UNIQUE(nft_id, from_address, time)
 );
 
 CREATE TABLE nftoffer (

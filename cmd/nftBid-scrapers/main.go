@@ -27,7 +27,7 @@ func main() {
 
 	switch *scraperType {
 	case "Cryptopunk":
-		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunk")
+		log.Println("NFT Data Scraper: Start scraping bids from Cryptopunk")
 		scraper = nftbidscrapers.NewCryptoPunkScraper(rdb)
 	default:
 		for {
@@ -49,6 +49,9 @@ func handleBids(bidChannel chan dia.NFTBid, wg *sync.WaitGroup, rdb *models.RelD
 			log.Error("error")
 			return
 		}
-		rdb.SetNFTBid(nb)
+		err := rdb.SetNFTBid(nb)
+		if err != nil {
+			log.Error("setting nft bid: ", err)
+		}
 	}
 }

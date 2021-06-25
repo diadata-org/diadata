@@ -17,7 +17,7 @@ import (
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
 
-	// NFT methods
+	// NFT class methods
 	SetNFTClass(nftClass dia.NFTClass) error
 	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
 	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
@@ -27,13 +27,18 @@ type RelDatastore interface {
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 
+	// NFT methods
 	SetNFT(nft dia.NFT) error
 	GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error)
+	GetNFTID(address string, blockchain string, tokenID string) (string, error)
+
+	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
 	SetNFTBid(bid dia.NFTBid) error
-	GetLastNFTBid(address string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
+	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
+	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -46,7 +51,8 @@ const (
 	nftcategoryTable = "nftcategory"
 	nftclassTable    = "nftclass"
 	nftTable         = "nft"
-	nftsaleTable     = "nftsale"
+	nfttradeTable    = "nfttrade"
+	nftbidTable      = "nftbid"
 	nftofferTable    = "nftoffer"
 
 	// time format for blockchain genesis dates

@@ -27,7 +27,7 @@ type CryptoPunkScraper struct {
 	bidScraper      BidScraper
 	contractAddress common.Address
 	ticker          *time.Ticker
-	lastBlockNumber *big.Int
+	lastBlockNumber uint64
 }
 
 func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
@@ -60,6 +60,10 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CryptoPunkScraper) mainLoop() {
+	err := scraper.FetchBids()
+	if err != nil {
+		log.Fatal("fetching bids: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -80,12 +84,12 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 	log.Info("fetch bids...")
 
 	var err error
-	if scraper.lastBlockNumber == nil || scraper.lastBlockNumber.Uint64() == 0 {
+	if scraper.lastBlockNumber == 0 {
 		// TODO: what is the required value to the GetLastBlockNFTTrade method?
-		scraper.lastBlockNumber, err = scraper.bidScraper.datastore.GetLastBlockNFTTrade(dia.NFT{})
+		scraper.lastBlockNumber, err = scraper.bidScraper.datastore.GetLastBlockNFTBid(dia.NFTClass{})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = big.NewInt(3919706)
+			scraper.lastBlockNumber = uint64(3919706)
 		}
 	}
 	// scraper.lastBlockNumber = big.NewInt(12653867)
@@ -112,13 +116,13 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 	for {
 
 		iterBid, err := filterer.FilterPunkBidEntered(&bind.FilterOpts{
-			Start: scraper.lastBlockNumber.Uint64(),
+			Start: scraper.lastBlockNumber,
 			End:   &endBlockNumber,
 		}, nil, nil)
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
-				endBlockNumber = scraper.lastBlockNumber.Uint64() + (endBlockNumber-scraper.lastBlockNumber.Uint64())/2
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
 			fmt.Println("error filtering FilterPunkBought: ", err)
@@ -140,14 +144,14 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 				Value: value,
 				// TO DO: Switch to asset once deployed on IBM
 				Currency:      "ETH",
-				FromAddress:   iterBid.Event.FromAddress,
-				TxHash:        iterBid.Event.Raw.TxHash,
+				FromAddress:   iterBid.Event.FromAddress.Hex(),
+				TxHash:        iterBid.Event.Raw.TxHash.Hex(),
 				BlockNumber:   iterBid.Event.Raw.BlockNumber,
 				BlockPosition: iterBid.Event.Raw.Index,
 				Time:          time.Unix(int64(header.Time), 0),
 				Exchange:      "CryptopunkMarket",
 			}
-			fmt.Println("got bid: ", bid)
+			fmt.Printf("got bid at time %v: %v\n", bid.Time, bid)
 			scraper.GetBidChannel() <- bid
 		}
 		// ---------------------------------------------------------------------------------------------
@@ -155,7 +159,7 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 	}
 
 	// Update the last lastBlockNumber value.
-	scraper.lastBlockNumber = new(big.Int).SetUint64(endBlockNumber)
+	scraper.lastBlockNumber = endBlockNumber
 	return nil
 }
 
