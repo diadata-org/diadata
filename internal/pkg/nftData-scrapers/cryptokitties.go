@@ -363,27 +363,28 @@ func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
 
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
 func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) (CryptokittiesTraits, common.Address, time.Time, error) {
+	var traits CryptokittiesTraits
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
 	respData, err := utils.GetRequest(url)
 	if err != nil {
-		return CryptokittiesTraits{}, creatorAddress, creationTime, err
+		return traits, creatorAddress, creationTime, err
 	}
 
-	traits, err := GetCryptokittiesTraits(scraper, index)
+	traits, err = GetCryptokittiesTraits(scraper, index)
 	if err != nil {
-		return CryptokittiesTraits{}, creatorAddress, creationTime, err
+		return traits, creatorAddress, creationTime, err
 	}
 
 	creatorAddress, err = GetCryptokittiesAddress(respData)
 	if err != nil {
-		return CryptokittiesTraits{}, creatorAddress, creationTime, err
+		return traits, creatorAddress, creationTime, err
 	}
 
 	creationTime, err = GetCryptokittiesCreationTime(respData)
 	if err != nil {
-		return CryptokittiesTraits{}, creatorAddress, creationTime, err
+		return traits, creatorAddress, creationTime, err
 	}
 
 	return traits, creatorAddress, creationTime, nil
