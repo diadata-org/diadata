@@ -38,6 +38,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://testnet.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) |
+| Coinmarketcap Oracle | [0x42D44F1c45349d47D34976ce3a2fF0c3dd3210a8](https://testnet.bscscan.com/address/0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8) |
 
 ### Matic Mainnet
 
