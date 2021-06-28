@@ -29,7 +29,7 @@ type CryptoPunkScraper struct {
 	tradescraper    TradeScraper
 	contractAddress common.Address
 	ticker          *time.Ticker
-	lastBlockNumber *big.Int
+	lastBlockNumber uint64
 }
 
 func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
@@ -85,15 +85,16 @@ func (scraper *CryptoPunkScraper) mainLoop() {
 func (scraper *CryptoPunkScraper) FetchTrades() error {
 	log.Info("fetch trades...")
 	var err error
-	if scraper.lastBlockNumber == nil || scraper.lastBlockNumber.Uint64() == 0 {
+	if scraper.lastBlockNumber == 0 {
 		// TODO: what is the required value to the GetLastBlockNFTTrade method?
 		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTrade(dia.NFT{})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = big.NewInt(3919706)
+			scraper.lastBlockNumber = uint64(3919706)
 		}
 	}
-	scraper.lastBlockNumber = big.NewInt(12653867)
+
+	scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return err
@@ -116,16 +117,16 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	var iter *cryptopunk.CryptoPunksMarketPunkBoughtIterator
 	// Reduce the window size while there is an query limit error.
 	for {
-		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber.Uint64(), endBlockNumber)
+		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber, endBlockNumber)
 		// We're interested in the FilterPunkBought events when actual trades happened!
 		iter, err = filterer.FilterPunkBought(&bind.FilterOpts{
-			Start: scraper.lastBlockNumber.Uint64(),
+			Start: scraper.lastBlockNumber,
 			End:   &endBlockNumber,
 		}, nil, nil, nil)
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
-				endBlockNumber = scraper.lastBlockNumber.Uint64() + (endBlockNumber-scraper.lastBlockNumber.Uint64())/2
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
 			fmt.Println("error filtering FilterPunkBought: ", err)
@@ -181,8 +182,18 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 					log.Error("could not find last bid: ", err)
 				}
 				fmt.Println("value is zero. Fetch from bids..")
-				fmt.Println(".. value: ", bid.Value)
-				price = bid.Value
+				fmt.Println(".. value of bid: ", bid.Value)
+				fmt.Println("block of bid: ", bid.BlockNumber)
+				fmt.Println("position in block: ", bid.BlockPosition)
+				fmt.Println("from address of bid: ", bid.FromAddress)
+				fmt.Println("----------")
+				fmt.Println("block of trade: ", iter.Event.Raw.BlockNumber)
+				fmt.Println("to address of trade: ", transferEvent.To.Hex())
+				if transferEvent.To.Hex() == bid.FromAddress {
+					price = bid.Value
+				} else {
+					log.Warn("fromAddress of bid does not coincide with toAddress of trade: .")
+				}
 			}
 
 			trade := dia.NFTTrade{
@@ -190,10 +201,14 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				BlockNumber: big.NewInt(int64(iter.Event.Raw.BlockNumber)),
 				// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
 				// a internal function?
-				PriceUSD:    float64(iter.Event.Value.Uint64()),
-				FromAddress: iter.Event.FromAddress,
-				ToAddress:   transferEvent.To,
-				Exchange:    "CryptopunkMarket",
+				FromAddress:      iter.Event.FromAddress,
+				ToAddress:        transferEvent.To,
+				Exchange:         "CryptopunkMarket",
+				TxHash:           iter.Event.Raw.TxHash,
+				Price:            iter.Event.Value,
+				CurrencySymbol:   "WETH",
+				CurrencyDecimals: int32(18),
+				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
 			}
 			scraper.GetTradeChannel() <- trade
 
@@ -216,7 +231,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	}
 
 	// Update the last lastBlockNumber value.
-	scraper.lastBlockNumber = new(big.Int).SetUint64(endBlockNumber)
+	scraper.lastBlockNumber = endBlockNumber
 	return nil
 }
 

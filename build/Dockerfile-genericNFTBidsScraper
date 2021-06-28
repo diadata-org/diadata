@@ -1,0 +1,17 @@
+ARG protocol
+
+FROM golang:1.14 as build
+
+WORKDIR $GOPATH/src/
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/nftBid-scrapers
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/nftBid-scrapers /bin/nftBid-scrapers
+COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
+
+CMD ["nftbidsscraper"]

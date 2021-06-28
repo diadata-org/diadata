@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	if testOpenSeaScraper := true; testOpenSeaScraper {
+	if testOpenSeaScraper := false; testOpenSeaScraper {
 		rdb, err := models.NewRelDataStore()
 		if err != nil {
 			panic(err)
@@ -67,8 +67,8 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			log.Error("error")
 			return
 		}
-		if 1 > 0 {
-			fmt.Printf("got trade: %s -> (%s) -> %s for %s %s (%.4f USD) \n", fq.FromAddress.Hex(), fq.NFT.NFTClass.Name, fq.ToAddress.Hex(), fq.PriceDec.String(), fq.CurrencySymbol, fq.PriceUSD)
+		if 1 < 0 {
+			fmt.Printf("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", fq.FromAddress.Hex(), fq.NFT.NFTClass.Name, fq.ToAddress.Hex(), fq.CurrencySymbol, fq.PriceUSD)
 		}
 		// rdb.SetNFT(fq)
 	}

@@ -17,13 +17,13 @@ import (
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jackc/pgx/v4"
 	"github.com/shopspring/decimal"
 )
@@ -33,6 +33,8 @@ const (
 	openSeaNFTContractType = "ERC721"
 
 	OpenSea = "OpenSea"
+
+	alchemyapi = "https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
 )
 
 type OpenSeaScraperConfig struct {
@@ -159,7 +161,7 @@ func init() {
 func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 	ctx := context.Background()
 
-	eth, err := ethhelper.NewETHClient()
+	eth, err := ethclient.Dial(alchemyapi)
 	if err != nil {
 		log.Errorf("unable to get ethereum client: %s", err.Error())
 		return nil
@@ -459,18 +461,20 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 	}
 
 	trade := dia.NFTTrade{
-		NFT:             *nft,
-		BlockNumber:     new(big.Int).SetUint64(ev.Raw.BlockNumber),
-		PriceUSD:        usdPrice,
-		FromAddress:     transfer.From,
-		ToAddress:       transfer.To,
-		Exchange:        OpenSea,
-		TxHash:          ev.Raw.TxHash,
-		Price:           price,
-		PriceDec:        priceDec,
-		CurrencySymbol:  currSymbol,
-		CurrencyAddress: currAddr,
+		NFT:              *nft,
+		BlockNumber:      new(big.Int).SetUint64(ev.Raw.BlockNumber),
+		PriceUSD:         usdPrice,
+		FromAddress:      transfer.From,
+		ToAddress:        transfer.To,
+		Exchange:         OpenSea,
+		TxHash:           ev.Raw.TxHash,
+		Price:            price,
+		CurrencySymbol:   currSymbol,
+		CurrencyAddress:  currAddr,
+		CurrencyDecimals: priceDec.Exponent(),
 	}
+
+	fmt.Println("found trade: ", trade)
 
 	// handle close request if the chanTrade not consumed immediately
 	select {

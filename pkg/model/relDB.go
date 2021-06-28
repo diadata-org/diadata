@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"math/big"
 	"os"
 	"time"
 
@@ -35,7 +34,7 @@ type RelDatastore interface {
 	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
-	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
+	GetLastBlockNFTTrade(nft dia.NFT) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
 	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"math/big"
 	"strings"
 	"time"
 
@@ -216,11 +215,11 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	return nil
 }
 
-func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error) {
+func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (uint64, error) {
 	// TO DO:
 	// Return highest block number of recorded trades for @nft.
 	// Returns 0 if no trade recorded.
-	return big.NewInt(0), nil
+	return 0, nil
 }
 
 // SetNFTBid stores @bid.
@@ -251,11 +250,13 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	// Next, restrict to largest blockPosition in this block.
 	returnVars := "time,blocknumber,blockposition,bid_value,currency,from_address,tx_hash,marketplace"
 	query := fmt.Sprintf("select %s from nftbid where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftID, subquery)
-
-	var valueString string
-	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&nftBid.Time, &nftBid.BlockNumber, &nftBid.BlockPosition, &valueString, &nftBid.Currency, &nftBid.FromAddress, &nftBid.TxHash, &nftBid.Exchange)
+	var txHash sql.NullString
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&nftBid.Time, &nftBid.BlockNumber, &nftBid.BlockPosition, &nftBid.Value, &nftBid.Currency, &nftBid.FromAddress, &txHash, &nftBid.Exchange)
 	if err != nil {
 		return
+	}
+	if txHash.Valid {
+		nftBid.TxHash = txHash.String
 	}
 	return
 }

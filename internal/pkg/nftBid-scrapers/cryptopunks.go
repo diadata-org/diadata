@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Second * 60
+	CryptoPunkRefreshDelay = time.Minute * 60 * 2
 )
 
 type CryptoPunkScraper struct {
@@ -92,7 +92,7 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 			scraper.lastBlockNumber = uint64(3919706)
 		}
 	}
-	// scraper.lastBlockNumber = big.NewInt(12653867)
+	scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.bidScraper.ethConnection)
 	if err != nil {
 		return err
