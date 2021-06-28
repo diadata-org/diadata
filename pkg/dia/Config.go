@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/tkanos/gonfig"
 )
 
@@ -109,14 +107,10 @@ func GetConfigFromEnv(exchange string) (*ConfigApi, error) {
 	if utils.Getenv("USE_ENV", "false") != "true" {
 		return nil, errors.New("use of config by env without env activation ")
 	}
-	if utils.IsEnvExist("API_"+strings.ToUpper(exchange)+"_APIKEY") && utils.IsEnvExist("API_"+strings.ToUpper(exchange)+"_SECRETKEY") {
-		configApi := ConfigApi{
-			ApiKey:    utils.Getenv("API_"+strings.ToUpper(exchange)+"_APIKEY", ""),
-			SecretKey: utils.Getenv("API_"+strings.ToUpper(exchange)+"_SECRETKEY", ""),
-		}
-		return &configApi, nil
-	}
-	log.Info("no api keys found for exchange " + exchange)
 
-	return nil, nil
+	configApi := ConfigApi{
+		ApiKey:    utils.Getenv("API_"+strings.ToUpper(exchange)+"_APIKEY", ""),
+		SecretKey: utils.Getenv("API_"+strings.ToUpper(exchange)+"_SECRETKEY", ""),
+	}
+	return &configApi, nil
 }
