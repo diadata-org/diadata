@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"math/big"
 	"strings"
@@ -161,19 +162,25 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 
 	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.tokenid, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.tokenid=$3", nftTable, nftclassTable)
 
+	var classCat sql.NullString
+
 	err := rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain, tokenID).Scan(
 		&nft.NFTClass.Address,
 		&nft.NFTClass.Symbol,
 		&nft.NFTClass.Name,
 		&nft.NFTClass.Blockchain,
 		&nft.NFTClass.ContractType,
-		&nft.NFTClass.Category,
+		&classCat,
 		&nft.TokenID,
 		&nft.CreationTime,
 		&nft.CreatorAddress,
 		&nft.URI,
 		&nft.Attributes,
 	)
+
+	if classCat.Valid {
+		nft.NFTClass.Category = classCat.String
+	}
 
 	return nft, err
 }

@@ -878,6 +878,305 @@ func (_ERC721 *ERC721Filterer) ParseTransfer(log types.Log) (*ERC721Transfer, er
 	return event, nil
 }
 
+// ERC721CompatABI is the input ABI used to generate the binding from.
+const ERC721CompatABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"}]"
+
+// ERC721Compat is an auto generated Go binding around an Ethereum contract.
+type ERC721Compat struct {
+	ERC721CompatCaller     // Read-only binding to the contract
+	ERC721CompatTransactor // Write-only binding to the contract
+	ERC721CompatFilterer   // Log filterer for contract events
+}
+
+// ERC721CompatCaller is an auto generated read-only Go binding around an Ethereum contract.
+type ERC721CompatCaller struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ERC721CompatTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type ERC721CompatTransactor struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ERC721CompatFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type ERC721CompatFilterer struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// ERC721CompatSession is an auto generated Go binding around an Ethereum contract,
+// with pre-set call and transact options.
+type ERC721CompatSession struct {
+	Contract     *ERC721Compat     // Generic contract binding to set the session for
+	CallOpts     bind.CallOpts     // Call options to use throughout this session
+	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
+}
+
+// ERC721CompatCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// with pre-set call options.
+type ERC721CompatCallerSession struct {
+	Contract *ERC721CompatCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts       // Call options to use throughout this session
+}
+
+// ERC721CompatTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// with pre-set transact options.
+type ERC721CompatTransactorSession struct {
+	Contract     *ERC721CompatTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts       // Transaction auth options to use throughout this session
+}
+
+// ERC721CompatRaw is an auto generated low-level Go binding around an Ethereum contract.
+type ERC721CompatRaw struct {
+	Contract *ERC721Compat // Generic contract binding to access the raw methods on
+}
+
+// ERC721CompatCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type ERC721CompatCallerRaw struct {
+	Contract *ERC721CompatCaller // Generic read-only contract binding to access the raw methods on
+}
+
+// ERC721CompatTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type ERC721CompatTransactorRaw struct {
+	Contract *ERC721CompatTransactor // Generic write-only contract binding to access the raw methods on
+}
+
+// NewERC721Compat creates a new instance of ERC721Compat, bound to a specific deployed contract.
+func NewERC721Compat(address common.Address, backend bind.ContractBackend) (*ERC721Compat, error) {
+	contract, err := bindERC721Compat(address, backend, backend, backend)
+	if err != nil {
+		return nil, err
+	}
+	return &ERC721Compat{ERC721CompatCaller: ERC721CompatCaller{contract: contract}, ERC721CompatTransactor: ERC721CompatTransactor{contract: contract}, ERC721CompatFilterer: ERC721CompatFilterer{contract: contract}}, nil
+}
+
+// NewERC721CompatCaller creates a new read-only instance of ERC721Compat, bound to a specific deployed contract.
+func NewERC721CompatCaller(address common.Address, caller bind.ContractCaller) (*ERC721CompatCaller, error) {
+	contract, err := bindERC721Compat(address, caller, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &ERC721CompatCaller{contract: contract}, nil
+}
+
+// NewERC721CompatTransactor creates a new write-only instance of ERC721Compat, bound to a specific deployed contract.
+func NewERC721CompatTransactor(address common.Address, transactor bind.ContractTransactor) (*ERC721CompatTransactor, error) {
+	contract, err := bindERC721Compat(address, nil, transactor, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &ERC721CompatTransactor{contract: contract}, nil
+}
+
+// NewERC721CompatFilterer creates a new log filterer instance of ERC721Compat, bound to a specific deployed contract.
+func NewERC721CompatFilterer(address common.Address, filterer bind.ContractFilterer) (*ERC721CompatFilterer, error) {
+	contract, err := bindERC721Compat(address, nil, nil, filterer)
+	if err != nil {
+		return nil, err
+	}
+	return &ERC721CompatFilterer{contract: contract}, nil
+}
+
+// bindERC721Compat binds a generic wrapper to an already deployed contract.
+func bindERC721Compat(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(ERC721CompatABI))
+	if err != nil {
+		return nil, err
+	}
+	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_ERC721Compat *ERC721CompatRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ERC721Compat.Contract.ERC721CompatCaller.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_ERC721Compat *ERC721CompatRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Compat.Contract.ERC721CompatTransactor.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_ERC721Compat *ERC721CompatRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ERC721Compat.Contract.ERC721CompatTransactor.contract.Transact(opts, method, params...)
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_ERC721Compat *ERC721CompatCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ERC721Compat.Contract.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_ERC721Compat *ERC721CompatTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC721Compat.Contract.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_ERC721Compat *ERC721CompatTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ERC721Compat.Contract.contract.Transact(opts, method, params...)
+}
+
+// ERC721CompatTransferIterator is returned from FilterTransfer and is used to iterate over the raw logs and unpacked data for Transfer events raised by the ERC721Compat contract.
+type ERC721CompatTransferIterator struct {
+	Event *ERC721CompatTransfer // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *ERC721CompatTransferIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(ERC721CompatTransfer)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(ERC721CompatTransfer)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *ERC721CompatTransferIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *ERC721CompatTransferIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// ERC721CompatTransfer represents a Transfer event raised by the ERC721Compat contract.
+type ERC721CompatTransfer struct {
+	From    common.Address
+	To      common.Address
+	TokenId *big.Int
+	Raw     types.Log // Blockchain specific contextual infos
+}
+
+// FilterTransfer is a free log retrieval operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
+//
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _tokenId)
+func (_ERC721Compat *ERC721CompatFilterer) FilterTransfer(opts *bind.FilterOpts, _from []common.Address, _to []common.Address) (*ERC721CompatTransferIterator, error) {
+
+	var _fromRule []interface{}
+	for _, _fromItem := range _from {
+		_fromRule = append(_fromRule, _fromItem)
+	}
+	var _toRule []interface{}
+	for _, _toItem := range _to {
+		_toRule = append(_toRule, _toItem)
+	}
+
+	logs, sub, err := _ERC721Compat.contract.FilterLogs(opts, "Transfer", _fromRule, _toRule)
+	if err != nil {
+		return nil, err
+	}
+	return &ERC721CompatTransferIterator{contract: _ERC721Compat.contract, event: "Transfer", logs: logs, sub: sub}, nil
+}
+
+// WatchTransfer is a free log subscription operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
+//
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _tokenId)
+func (_ERC721Compat *ERC721CompatFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *ERC721CompatTransfer, _from []common.Address, _to []common.Address) (event.Subscription, error) {
+
+	var _fromRule []interface{}
+	for _, _fromItem := range _from {
+		_fromRule = append(_fromRule, _fromItem)
+	}
+	var _toRule []interface{}
+	for _, _toItem := range _to {
+		_toRule = append(_toRule, _toItem)
+	}
+
+	logs, sub, err := _ERC721Compat.contract.WatchLogs(opts, "Transfer", _fromRule, _toRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(ERC721CompatTransfer)
+				if err := _ERC721Compat.contract.UnpackLog(event, "Transfer", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseTransfer is a log parse operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
+//
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _tokenId)
+func (_ERC721Compat *ERC721CompatFilterer) ParseTransfer(log types.Log) (*ERC721CompatTransfer, error) {
+	event := new(ERC721CompatTransfer)
+	if err := _ERC721Compat.contract.UnpackLog(event, "Transfer", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
 // ERC721EnumerableABI is the input ABI used to generate the binding from.
 const ERC721EnumerableABI = "[{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"},{\"name\":\"_index\",\"type\":\"uint256\"}],\"name\":\"tokenOfOwnerByIndex\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_index\",\"type\":\"uint256\"}],\"name\":\"tokenByIndex\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 

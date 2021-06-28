@@ -134,3 +134,8 @@ interface ERC721Enumerable /* is ERC721 */ {
     ///   (sort order not specified)
     function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256);
 }
+
+/// for non-indexed tokenId params
+interface ERC721Compat {
+    event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
+}

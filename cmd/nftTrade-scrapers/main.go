@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"sync"
 	"time"
 
+	nfttradescrapers "github.com/diadata-org/diadata/internal/pkg/nftTrade-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	nfttradescrapers "github.com/diadata-org/diadata/internal/pkg/nftTrade-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -67,7 +68,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			return
 		}
 		if 1 > 0 {
-			log.Infof("got trade: %#v", fq)
+			fmt.Printf("got trade: %s -> (%s) -> %s for %s %s (%.4f USD) \n", fq.FromAddress.Hex(), fq.NFT.NFTClass.Name, fq.ToAddress.Hex(), fq.PriceDec.String(), fq.CurrencySymbol, fq.PriceUSD)
 		}
 		// rdb.SetNFT(fq)
 	}
