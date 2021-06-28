@@ -127,3 +127,11 @@ CREATE TABLE nftoffer (
     marketplace text,
     UNIQUE(offer_id)
 );
+
+CREATE TABLE IF NOT EXISTS scrapers
+(
+    name character varying(255) NOT NULL,
+	conf json,
+	state json,
+    CONSTRAINT pk_scrapers PRIMARY KEY(name)
+);

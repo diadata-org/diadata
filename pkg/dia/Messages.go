@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/shopspring/decimal"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -90,12 +91,17 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT         NFT
-	BlockNumber *big.Int
-	PriceUSD    float64
-	FromAddress common.Address
-	ToAddress   common.Address
-	Exchange    string
+	NFT             NFT
+	BlockNumber     *big.Int
+	PriceUSD        float64
+	FromAddress     common.Address
+	ToAddress       common.Address
+	Exchange        string
+	TxHash          common.Hash
+	Price           *big.Int
+	PriceDec        decimal.Decimal
+	CurrencySymbol  string
+	CurrencyAddress common.Address
 }
 
 // MarshalBinary for DefiProtocolState

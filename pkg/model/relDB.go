@@ -42,6 +42,12 @@ type RelDatastore interface {
 
 	// General methods
 	GetKeys(table string) ([]string, error)
+
+	// Scraper config and state
+	GetScraperState(ctx context.Context, scraperName string, state ScraperState) error
+	SetScraperState(ctx context.Context, scraperName string, state ScraperState) error
+	GetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
+	SetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
 }
 
 const (
