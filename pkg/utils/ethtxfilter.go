@@ -41,12 +41,6 @@ type EthFilteredTx struct {
 	Logs      []types.Log // list of matched log records if Events or EvAddrs were used, otherwise all logs of the transaction
 }
 
-// EthFilteredTxLog contains RLP encoded log data with its index
-type EthFilteredTxLog struct {
-	LogIndex uint
-	Data     []byte
-}
-
 // EthFilterTXs returns transactions filtered by log records
 func EthFilterTXs(ctx context.Context, ethClient *ethclient.Client, filter EthTxFilterCriteria) (*EthTxFilterResult, error) {
 	endBlockNum, synced, err := ethFilterTXsCalcEndBlockNum(ctx, ethClient, filter.StartBlockNum, uint64(filter.BehindHighestBlock), uint64(filter.LimitBlocks))
