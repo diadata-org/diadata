@@ -354,6 +354,7 @@ func (s *OpenSeaScraper) FetchTrades() error {
 
 func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (bool, error) {
 	log.Tracef("process tx -> block: %d, tx index: %d, tx hash: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
+
 	// skip if the transaction has multiple OrdersMatched logs
 	if len(tx.Logs) != 1 {
 		return true, nil
@@ -391,7 +392,7 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 	currAddr := common.Address{}
 	currDecimals := 18
 
-	// if used an ERC20 token for trade
+	// if an ERC20 token used for the trade
 	if new(big.Int).Cmp(txData.Value()) == 0 {
 		tokenTransfers, err := s.findERC20Transfers(ctx, receipt, ev.Price)
 		if err != nil {
@@ -407,12 +408,6 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 				currSymbol = *v
 			}
 		}
-	}
-
-	receipt, err = s.tradeScraper.ethConnection.TransactionReceipt(ctx, tx.TXHash)
-	if err != nil {
-		log.Errorf("unable to read transaction(%s) receipt: %s", tx.TXHash, err.Error())
-		return false, err
 	}
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
@@ -464,11 +459,8 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 	}
 
 	trade := dia.NFTTrade{
-		NFT:         *nft,
-		BlockNumber: new(big.Int).SetUint64(ev.Raw.BlockNumber),
-		// different NFTs can use different asset instead of eth for trades,
-		// it could be found the used asset token by checking more log records
-		// for now we assume eth is used for trades
+		NFT:             *nft,
+		BlockNumber:     new(big.Int).SetUint64(ev.Raw.BlockNumber),
 		PriceUSD:        usdPrice,
 		FromAddress:     transfer.From,
 		ToAddress:       transfer.To,
