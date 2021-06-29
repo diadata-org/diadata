@@ -20,6 +20,33 @@ import (
 	structs "github.com/fatih/structs"
 )
 
+type Kitty struct {
+	IsGestating   bool
+	IsReady       bool
+	CooldownIndex *big.Int
+	NextActionAt  *big.Int
+	SiringWithId  *big.Int
+	BirthTime     *big.Int
+	MatronId      *big.Int
+	SireId        *big.Int
+	Generation    *big.Int
+	Genes         *big.Int
+}
+
+type CryptokittiesTraits struct {
+	TraitType   string      `json:"trait_type"`
+	Value       string      `json:"value"`
+	DisplayType interface{} `json:"display_type"`
+	MaxValue    interface{} `json:"max_value"`
+	TraitCount  int         `json:"trait_count"`
+	Order       interface{} `json:"order"`
+}
+
+type CryptokittiesOutput struct {
+	Traits []CryptokittiesTraits `structs:",flatten"`
+	Kitty  Kitty               `structs:",flatten"`
+}
+
 type OpenSeaCryptokittiesResponse struct {
 	ID                   int         `json:"id"`
 	TokenID              string      `json:"token_id"`
@@ -59,7 +86,7 @@ type OpenSeaCryptokittiesResponse struct {
 		PayoutAddress               interface{} `json:"payout_address"`
 	} `json:"asset_contract"`
 	Owner struct {
-		User          interface{} `json:"user"` // CHECK
+		User          interface{} `json:"user"`
 		ProfileImgURL string      `json:"profile_img_url"`
 		Address       string      `json:"address"`
 		Config        string      `json:"config"`
@@ -72,7 +99,7 @@ type OpenSeaCryptokittiesResponse struct {
 			Symbol   string  `json:"symbol"`
 			Address  string  `json:"address"`
 			ImageURL string  `json:"image_url"`
-			Name     string  `json:"name"` //CHECK - CAN BE NULL
+			Name     string  `json:"name"`
 			Decimals int     `json:"decimals"`
 			EthPrice float64 `json:"eth_price"`
 			UsdPrice float64 `json:"usd_price"`
@@ -101,7 +128,7 @@ type OpenSeaCryptokittiesResponse struct {
 			SellerFeeBasisPoints        int         `json:"seller_fee_basis_points"`
 			PayoutAddress               interface{} `json:"payout_address"`
 		} `json:"primary_asset_contracts"`
-		Traits struct { // CHECK - generation, cooldown_index, fancy_ranking, purrstige_ranking
+		Traits struct { 
 		} `json:"traits"`
 		Stats struct {
 			OneDayVolume          float64 `json:"one_day_volume"`
@@ -167,7 +194,7 @@ type OpenSeaCryptokittiesResponse struct {
 		Address       string `json:"address"`
 		Config        string `json:"config"`
 		DiscordID     string `json:"discord_id"`
-	} `json:"creator"` // CHECK - SAME AS OWNER
+	} `json:"creator"`
 	Traits   []CryptokittiesTraits `json:"traits"`
 	LastSale struct {
 		Asset struct {
@@ -193,7 +220,7 @@ type OpenSeaCryptokittiesResponse struct {
 			BlockHash   string `json:"block_hash"`
 			BlockNumber string `json:"block_number"`
 			FromAccount struct {
-				User          interface{} `json:"user"` // CHECK
+				User          interface{} `json:"user"`
 				ProfileImgURL string      `json:"profile_img_url"`
 				Address       string      `json:"address"`
 				Config        string      `json:"config"`
@@ -202,7 +229,7 @@ type OpenSeaCryptokittiesResponse struct {
 			ID        int    `json:"id"`
 			Timestamp string `json:"timestamp"`
 			ToAccount struct {
-				User          interface{} `json:"user"` // CHECK
+				User          interface{} `json:"user"`
 				ProfileImgURL string      `json:"profile_img_url"`
 				Address       string      `json:"address"`
 				Config        string      `json:"config"`
@@ -225,7 +252,7 @@ type OpenSeaCryptokittiesResponse struct {
 	SupportsWyvern          bool          `json:"supports_wyvern"`
 	TopOwnerships           []struct {
 		Owner struct {
-			User          interface{} `json:"user"` // CHECK
+			User          interface{} `json:"user"`
 			ProfileImgURL string      `json:"profile_img_url"`
 			Address       string      `json:"address"`
 			Config        string      `json:"config"`
@@ -237,29 +264,12 @@ type OpenSeaCryptokittiesResponse struct {
 	HighestBuyerCommitment interface{} `json:"highest_buyer_commitment"`
 }
 
-type CryptokittiesTraits struct {
-	IsGestating   bool
-	IsReady       bool
-	CooldownIndex *big.Int
-	NextActionAt  *big.Int
-	SiringWithId  *big.Int
-	BirthTime     *big.Int
-	MatronId      *big.Int
-	SireId        *big.Int
-	Generation    *big.Int
-	Genes         *big.Int
-}
-
 type CryptokittiesScraper struct {
 	nftscraper       NFTScraper
 	address          common.Address
 	apiURLOpensea    string
 	cryptokittiesURL string
 	ticker           *time.Ticker
-}
-
-type CryptokittiesOutput struct {
-	Traits CryptokittiesTraits `structs:",flatten"`
 }
 
 func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
@@ -332,13 +342,21 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 		var creatorAddress common.Address
 		var creationTime time.Time
 
+		// 1. fetch data from onchain
+		out.Kitty, err = scraper.GetKitty(big.NewInt(int64(i)))
+		if err != nil {
+			log.Errorf("Error getting kitty data: %+v", err)
+		}
+
+		// 2. fetch data from offchain
 		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
 		if err != nil {
 			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
-		nft := dia.NFT{
+		// Set output object
+		cryptoKittiesNFT := dia.NFT{
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptokittiesNFTClass,
 			CreationTime:   creationTime,
@@ -346,8 +364,8 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 			Attributes:     result,
 			URI:            scraper.cryptokittiesURL + strconv.Itoa(i),
 		}
-		fmt.Println("get nft: ", nft)
-		scraper.GetDataChannel() <- nft
+		fmt.Println("get nft: ", cryptoKittiesNFT)
+		scraper.GetDataChannel() <- cryptoKittiesNFT
 	}
 	return nil
 }
@@ -361,9 +379,18 @@ func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
 	return contract.TotalSupply(&bind.CallOpts{})
 }
 
+// GetKitty returns the kitty attributes of the NFT from on-chain.
+func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
+	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
+	if err != nil {
+		fmt.Println("error getting contract: ", err)
+	}
+	return contract.GetKitty(&bind.CallOpts{}, kittyId)
+}
+
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
-func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) (CryptokittiesTraits, common.Address, time.Time, error) {
-	var traits CryptokittiesTraits
+func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, time.Time, error) {
+	var traits []CryptokittiesTraits
 	var creatorAddress common.Address
 	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
@@ -372,7 +399,7 @@ func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) (Cryptokitt
 		return traits, creatorAddress, creationTime, err
 	}
 
-	traits, err = GetCryptokittiesTraits(scraper, index)
+	traits, err = GetCryptokittiesTraits(respData)
 	if err != nil {
 		return traits, creatorAddress, creationTime, err
 	}
@@ -391,14 +418,13 @@ func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) (Cryptokitt
 
 }
 
-// GetCryptokittiesTraits returns the traits data from onchain for a given kitty
-func GetCryptokittiesTraits(scraper *CryptokittiesScraper, kittyID *big.Int) (CryptokittiesTraits, error) {
-	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
-	if err != nil {
-		return CryptokittiesTraits{}, err
+// GetCryptokittiesTraits returns the traits data from Opensea for a given kitty
+func GetCryptokittiesTraits(kittyResp []byte) ([]CryptokittiesTraits, error) {
+	var resp OpenSeaCryptokittiesResponse
+	if err := json.Unmarshal(kittyResp, &resp); err != nil {
+		return nil, err
 	}
-	traits, err := contract.GetKitty(&bind.CallOpts{}, kittyID)
-	return traits, nil
+	return resp.Traits, nil
 }
 
 // GetCryptokittiesAddress returns the creator address from Opensea
