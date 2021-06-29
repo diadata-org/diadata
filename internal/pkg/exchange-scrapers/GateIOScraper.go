@@ -104,7 +104,6 @@ type GateIOResponseTrade struct {
 func (s *GateIOScraper) mainLoop() {
 	var (
 		gresponse GateIPPairResponse
-		allPairs  []string
 	)
 	var err error
 	var f64Price float64
@@ -117,19 +116,17 @@ func (s *GateIOScraper) mainLoop() {
 	}
 
 	for _, v := range gresponse {
-		allPairs = append(allPairs, v.ID)
-	}
 
-	a := &SubscribeGate{
-		Event:   "subscribe",
-		Time:    time.Now().Unix(),
-		Channel: "spot.trades",
-		Payload: allPairs,
-	}
-
-	log.Infoln("subscribed", allPairs)
-	if err = s.wsClient.WriteJSON(a); err != nil {
-		log.Error(err.Error())
+		a := &SubscribeGate{
+			Event:   "subscribe",
+			Time:    time.Now().Unix(),
+			Channel: "spot.trades",
+			Payload: []string{v.ID},
+		}
+		log.Infof("Subscribed for Pair %v", v.ID)
+		if err = s.wsClient.WriteJSON(a); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	for {
