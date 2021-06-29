@@ -228,13 +228,44 @@ func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
 	if err != nil {
 		return err
 	}
-	query := fmt.Sprintf("insert into %s (nft_id,time,blocknumber,blockposition,bid_value,currency,from_address,marketplace) values ($1,$2,$3,$4,$5,$6,$7,$8)", nftbidTable)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, nftID, bid.Time, bid.BlockNumber, bid.BlockPosition, bid.Value, bid.Currency, bid.FromAddress, bid.Exchange)
+	bidVars := "nft_id,bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,bid_time,tx_hash,marketplace"
+	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", nftbidTable, bidVars)
+	_, err = rdb.postgresClient.Exec(
+		context.Background(),
+		query,
+		nftID,
+		bid.Value,
+		bid.FromAddress,
+		bid.CurrencySymbol,
+		bid.CurrencyAddress,
+		bid.CurrencyDecimals,
+		bid.BlockNumber,
+		bid.BlockPosition,
+		bid.Timestamp,
+		bid.TxHash,
+		bid.Exchange,
+	)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
+// type NFTBid struct {
+
+// 	Value       float64
+// 	FromAddress string
+
+// 	CurrencySymbol   string
+// 	CurrencyAddress  string
+// 	CurrencyDecimals int32
+
+// 	BlockNumber   uint64
+// 	BlockPosition uint
+// 	Timestamp     time.Time
+// 	TxHash        string
+// 	Exchange      string
+// }
 
 // GetLastBid returns the last bid on the nft with @address and @tokenID.
 // Here, 'last' refers to block number and block position smaller or equal
@@ -244,16 +275,34 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	if err != nil {
 		return
 	}
+	nftBid.NFT.NFTClass.Address = address
+	nftBid.NFT.NFTClass.Blockchain = blockchain
+	nftBid.NFT.TokenID = tokenID
 
 	// First fetch biggest blocknumber<=@blockNumber for given nft.
 	subquery := fmt.Sprintf("select blocknumber from nftbid where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftID, blockNumber)
 	// Next, restrict to largest blockPosition in this block.
-	returnVars := "time,blocknumber,blockposition,bid_value,currency,from_address,tx_hash,marketplace"
+	returnVars := "bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,bid_time,tx_hash,marketplace"
 	query := fmt.Sprintf("select %s from nftbid where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftID, subquery)
 	var txHash sql.NullString
-	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&nftBid.Time, &nftBid.BlockNumber, &nftBid.BlockPosition, &nftBid.Value, &nftBid.Currency, &nftBid.FromAddress, &txHash, &nftBid.Exchange)
+	var bidTime sql.NullTime
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(
+		&nftBid.Value,
+		&nftBid.FromAddress,
+		&nftBid.CurrencySymbol,
+		&nftBid.CurrencyAddress,
+		&nftBid.CurrencyDecimals,
+		&nftBid.BlockNumber,
+		&nftBid.BlockPosition,
+		&bidTime,
+		&txHash,
+		&nftBid.Exchange,
+	)
 	if err != nil {
 		return
+	}
+	if bidTime.Valid {
+		nftBid.Timestamp = bidTime.Time
 	}
 	if txHash.Valid {
 		nftBid.TxHash = txHash.String

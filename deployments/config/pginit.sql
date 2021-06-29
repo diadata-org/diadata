@@ -94,27 +94,36 @@ CREATE TABLE nft (
 CREATE TABLE nfttrade (
     sale_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
-    time timestamp,
+    price numeric,
     price_usd numeric,
     transfer_from text,
     transfer_to text,
+    currency_symbol text,
+    currency_address text,
+    currency_decimals numeric,
+    block_number numeric,
+    trade_time timestamp,
+    tx_hash text,    
     marketplace text,
-    UNIQUE(sale_id)
+    UNIQUE(sale_id),
+    UNIQUE(nft_id, trade_time)
 );
 
 CREATE TABLE nftbid (
     bid_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
-    time timestamp,
+    bid_value numeric,
+    from_address text,
+    currency_symbol text,
+    currency_address text,
+    currency_decimals numeric,
     blocknumber numeric,
     blockposition numeric,
-    bid_value numeric,
-    currency text,
-    from_address text,
+    bid_time timestamp,
     tx_hash text,
     marketplace text,
     UNIQUE(bid_id),
-    UNIQUE(nft_id, from_address, time)
+    UNIQUE(nft_id, from_address, bid_time)
 );
 
 CREATE TABLE nftoffer (

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/jackc/pgconn"
 
 	nftbidscrapers "github.com/diadata-org/diadata/internal/pkg/nftBid-scrapers"
 	log "github.com/sirupsen/logrus"
@@ -44,14 +46,26 @@ func main() {
 func handleBids(bidChannel chan dia.NFTBid, wg *sync.WaitGroup, rdb *models.RelDB) {
 	defer wg.Done()
 	for {
-		nb, ok := <-bidChannel
+		bid, ok := <-bidChannel
 		if !ok {
 			log.Error("error")
 			return
 		}
-		err := rdb.SetNFTBid(nb)
+		err := rdb.SetNFTBid(bid)
 		if err != nil {
-			log.Error("setting nft bid: ", err)
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				if pgErr.Code == "23505" {
+					log.Infof("bid with tx hash %s already in db. continue.", bid.TxHash)
+					continue
+				} else {
+					log.Errorf("postgres error saving bid with tx hash %s: %v", bid.TxHash, err)
+				}
+			} else {
+				log.Errorf("Error saving bid with tx hash %s: %v", bid.TxHash, err)
+			}
+		} else {
+			log.Infof("successfully set bid with tx hash %s", bid.TxHash)
 		}
 	}
 }

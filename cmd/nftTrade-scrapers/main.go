@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	nfttradescrapers "github.com/diadata-org/diadata/internal/pkg/nftTrade-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/jackc/pgconn"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -62,15 +64,30 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 	defer wg.Done()
 
 	for {
-		fq, ok := <-tradeChannel
+		trade, ok := <-tradeChannel
 		if !ok {
 			log.Error("error")
 			return
 		}
 		if 1 < 0 {
-			fmt.Printf("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", fq.FromAddress.Hex(), fq.NFT.NFTClass.Name, fq.ToAddress.Hex(), fq.CurrencySymbol, fq.PriceUSD)
+			fmt.Printf("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress.Hex(), trade.NFT.NFTClass.Name, trade.ToAddress.Hex(), trade.CurrencySymbol, trade.PriceUSD)
 		}
-		// rdb.SetNFT(fq)
+		err := rdb.SetNFTTrade(trade)
+		if err != nil {
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				if pgErr.Code == "23505" {
+					log.Infof("trade with tx hash %s already in db. continue.", trade.TxHash)
+					continue
+				} else {
+					log.Errorf("postgres error saving trade with tx hash %s: %v", trade.TxHash, err)
+				}
+			} else {
+				log.Errorf("Error saving trade with tx hash %s: %v", trade.TxHash, err)
+			}
+		} else {
+			log.Infof("successfully set trade with tx hash %s", trade.TxHash)
+		}
 	}
 
 }

@@ -35,7 +35,7 @@ type Kitty struct {
 
 type CryptokittiesTraits struct {
 	TraitType   string      `json:"trait_type"`
-	Value       string      `json:"value"`
+	Value       interface{} `json:"value"`
 	DisplayType interface{} `json:"display_type"`
 	MaxValue    interface{} `json:"max_value"`
 	TraitCount  int         `json:"trait_count"`
@@ -44,7 +44,7 @@ type CryptokittiesTraits struct {
 
 type CryptokittiesOutput struct {
 	Traits []CryptokittiesTraits `structs:",flatten"`
-	Kitty  Kitty               `structs:",flatten"`
+	Kitty  Kitty                 `structs:",flatten"`
 }
 
 type OpenSeaCryptokittiesResponse struct {
@@ -128,7 +128,7 @@ type OpenSeaCryptokittiesResponse struct {
 			SellerFeeBasisPoints        int         `json:"seller_fee_basis_points"`
 			PayoutAddress               interface{} `json:"payout_address"`
 		} `json:"primary_asset_contracts"`
-		Traits struct { 
+		Traits struct {
 		} `json:"traits"`
 		Stats struct {
 			OneDayVolume          float64 `json:"one_day_volume"`

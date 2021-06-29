@@ -320,6 +320,12 @@ func (scraper *CryptopunkScraper) FetchData() (err error) {
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
+		fmt.Println("...................................")
+		for i := range result {
+			fmt.Println("key-value pair: ", i, result[i])
+		}
+		fmt.Println("..................................")
+		time.Sleep(3 * time.Second)
 		nft := dia.NFT{
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptopunkNFTClass,

@@ -141,17 +141,20 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 					NFTClass: nftclass,
 					TokenID:  iterBid.Event.PunkIndex.String(),
 				},
-				Value: value,
+				Value:       value,
+				FromAddress: iterBid.Event.FromAddress.Hex(),
 				// TO DO: Switch to asset once deployed on IBM
-				Currency:      "ETH",
-				FromAddress:   iterBid.Event.FromAddress.Hex(),
-				TxHash:        iterBid.Event.Raw.TxHash.Hex(),
+				CurrencySymbol:   "WETH",
+				CurrencyAddress:  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				CurrencyDecimals: int32(18),
+
 				BlockNumber:   iterBid.Event.Raw.BlockNumber,
-				BlockPosition: iterBid.Event.Raw.Index,
-				Time:          time.Unix(int64(header.Time), 0),
+				BlockPosition: uint64(iterBid.Event.Raw.Index),
+				Timestamp:     time.Unix(int64(header.Time), 0),
+				TxHash:        iterBid.Event.Raw.TxHash.Hex(),
 				Exchange:      "CryptopunkMarket",
 			}
-			fmt.Printf("got bid at time %v: %v\n", bid.Time, bid)
+			fmt.Printf("got bid at time %v: %v\n", bid.Timestamp, bid)
 			scraper.GetBidChannel() <- bid
 		}
 		// ---------------------------------------------------------------------------------------------

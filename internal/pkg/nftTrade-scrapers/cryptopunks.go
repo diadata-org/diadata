@@ -133,11 +133,8 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			return err
 		}
 
-		log.Infof("iter: %v", iter)
 		// Iter over FilterPunkBought events.
-
 		for iter.Next() {
-			fmt.Println("iter ")
 			time.Sleep(1 * time.Second)
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
 			if err != nil {
@@ -165,8 +162,6 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				err := abi.UnpackIntoInterface(&transferEvent, "Transfer", vLog.Data)
 				if err == nil {
 					log.Info("found a Transfer event")
-
-					log.Info("event: ", transferEvent)
 					transferEvent.To = common.BytesToAddress(vLog.Topics[2].Bytes())
 					break
 				}
@@ -174,7 +169,6 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 
 			price := float64(iter.Event.Value.Uint64())
 			// If acceptBidForPunk is called, get the bid value from the bidding history.
-			// TO DO: Check that bid address is the same as trade toAddress.
 			// TO DO: Check that transaction input is acceptBidForPunk.
 			if price == 0 {
 				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
@@ -198,7 +192,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 
 			trade := dia.NFTTrade{
 				NFT:         nft,
-				BlockNumber: big.NewInt(int64(iter.Event.Raw.BlockNumber)),
+				BlockNumber: iter.Event.Raw.BlockNumber,
 				// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
 				// a internal function?
 				FromAddress:      iter.Event.FromAddress,
