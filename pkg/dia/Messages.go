@@ -123,7 +123,7 @@ func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
 
 type NFTBid struct {
 	NFT         NFT
-	Value       float64
+	Value       *big.Int
 	FromAddress string
 
 	CurrencySymbol   string

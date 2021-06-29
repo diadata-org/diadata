@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"time"
 
@@ -135,13 +134,12 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 			if err != nil {
 				return err
 			}
-			value, _ := new(big.Float).Quo(new(big.Float).SetInt(iterBid.Event.Value), big.NewFloat(math.Pow10(18))).Float64()
 			bid := dia.NFTBid{
 				NFT: dia.NFT{
 					NFTClass: nftclass,
 					TokenID:  iterBid.Event.PunkIndex.String(),
 				},
-				Value:       value,
+				Value:       iterBid.Event.Value,
 				FromAddress: iterBid.Event.FromAddress.Hex(),
 				// TO DO: Switch to asset once deployed on IBM
 				CurrencySymbol:   "WETH",

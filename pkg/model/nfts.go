@@ -211,7 +211,21 @@ func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error
 
 // SetNFTTTrade stores @trade.
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
-	// TO DO
+	nftclassID, err := rdb.GetNFTClassID(trade.NFT.NFTClass.Address, trade.NFT.NFTClass.Blockchain)
+	if err != nil {
+		return err
+	}
+	nftID, err := rdb.GetNFTID(trade.NFT.NFTClass.Address, trade.NFT.NFTClass.Blockchain, trade.NFT.TokenID)
+	if err != nil {
+		return err
+	}
+	price := trade.Price.String()
+	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
+	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress.Hex(), trade.ToAddress.Hex(), trade.CurrencySymbol, trade.CurrencyAddress.Hex(), trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash.Hex(), trade.Exchange)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -219,6 +233,34 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (uint64, error) {
 	// TO DO:
 	// Return highest block number of recorded trades for @nft.
 	// Returns 0 if no trade recorded.
+	return 0, nil
+}
+
+// GetNFTTrades returns all trades done on @nft.
+func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
+	var rows pgx.Rows
+	query := fmt.Sprintf("select category from %s", nftcategoryTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category string
+		err := rows.Scan(&category)
+		if err != nil {
+			log.Error(err)
+		}
+
+	}
+
+	return
+}
+
+// GetNFTPrice30Days returns the average price of all NFTs in @nftclass over the last 30 days.
+func (rdb *RelDB) GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error) {
+	// TO DO
 	return 0, nil
 }
 
@@ -250,22 +292,6 @@ func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
 	}
 	return nil
 }
-
-// type NFTBid struct {
-
-// 	Value       float64
-// 	FromAddress string
-
-// 	CurrencySymbol   string
-// 	CurrencyAddress  string
-// 	CurrencyDecimals int32
-
-// 	BlockNumber   uint64
-// 	BlockPosition uint
-// 	Timestamp     time.Time
-// 	TxHash        string
-// 	Exchange      string
-// }
 
 // GetLastBid returns the last bid on the nft with @address and @tokenID.
 // Here, 'last' refers to block number and block position smaller or equal

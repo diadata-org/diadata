@@ -33,6 +33,8 @@ type RelDatastore interface {
 
 	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
+	GetNFTTrades(nft dia.NFT) ([]dia.NFTTrade, error)
+	GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	GetLastBlockNFTTrade(nft dia.NFT) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error

@@ -136,6 +136,10 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 		// Iter over FilterPunkBought events.
 		for iter.Next() {
 			time.Sleep(1 * time.Second)
+			currHeader, err := scraper.tradescraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
+			if err != nil {
+				log.Error("could not fetch current block header: ", err)
+			}
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
@@ -167,10 +171,10 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				}
 			}
 
-			price := float64(iter.Event.Value.Uint64())
+			price := iter.Event.Value
 			// If acceptBidForPunk is called, get the bid value from the bidding history.
 			// TO DO: Check that transaction input is acceptBidForPunk.
-			if price == 0 {
+			if price.Cmp(big.NewInt(0)) == 0 {
 				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
 				if err != nil {
 					log.Error("could not find last bid: ", err)
@@ -199,10 +203,11 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				ToAddress:        transferEvent.To,
 				Exchange:         "CryptopunkMarket",
 				TxHash:           iter.Event.Raw.TxHash,
-				Price:            iter.Event.Value,
+				Price:            price,
 				CurrencySymbol:   "WETH",
 				CurrencyDecimals: int32(18),
 				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+				Timestamp:        time.Unix(int64(currHeader.Time), 0),
 			}
 			scraper.GetTradeChannel() <- trade
 

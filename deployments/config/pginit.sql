@@ -93,8 +93,9 @@ CREATE TABLE nft (
 
 CREATE TABLE nfttrade (
     sale_id UUID DEFAULT gen_random_uuid(),
+    nftclass_id uuid REFERENCES nftclass(nftclass_id),
     nft_id uuid REFERENCES nft(nft_id),
-    price numeric,
+    price text,
     price_usd numeric,
     transfer_from text,
     transfer_to text,
