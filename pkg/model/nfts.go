@@ -4,10 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
@@ -229,17 +231,21 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	return nil
 }
 
-func (rdb *RelDB) GetLastBlockNFTTrade(nft dia.NFT) (uint64, error) {
-	// TO DO:
-	// Return highest block number of recorded trades for @nft.
-	// Returns 0 if no trade recorded.
-	return 0, nil
+func (rdb *RelDB) GetLastBlockNFTTradeScraper(nftclass dia.NFTClass) (blocknumber uint64, err error) {
+	query := fmt.Sprintf("select block_number from %s where nftclass_id=(select nftclass_id from %s where address='%s' and blockchain='%s') order by block_number desc limit 1;", nfttradeTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // GetNFTTrades returns all trades done on @nft.
 func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select category from %s", nftcategoryTable)
+	nftID, err := rdb.GetNFTID(nft.NFTClass.Address, nft.NFTClass.Blockchain, nft.TokenID)
+	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
+	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by trade_time desc", tradeVars, nfttradeTable, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -247,14 +253,42 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var category string
-		err := rows.Scan(&category)
+		var trade dia.NFTTrade
+		var price string
+		var fromaddress string
+		var toaddress string
+		var currencyaddress string
+		var txhash sql.NullString
+		err := rows.Scan(
+			&price,
+			&trade.PriceUSD,
+			&fromaddress,
+			&toaddress,
+			&trade.CurrencySymbol,
+			&currencyaddress,
+			&trade.CurrencyDecimals,
+			&trade.BlockNumber,
+			&trade.Timestamp,
+			&txhash,
+			&trade.Exchange,
+		)
 		if err != nil {
-			log.Error(err)
+			return []dia.NFTTrade{}, err
 		}
-
+		n := new(big.Int)
+		n, ok := n.SetString(price, 10)
+		if !ok {
+			return []dia.NFTTrade{}, err
+		}
+		trade.Price = n
+		trade.FromAddress = common.HexToAddress(fromaddress)
+		trade.ToAddress = common.HexToAddress(toaddress)
+		trade.CurrencyAddress = common.HexToAddress(currencyaddress)
+		if txhash.Valid {
+			trade.TxHash = common.HexToHash(txhash.String)
+		}
+		trades = append(trades, trade)
 	}
-
 	return
 }
 
@@ -336,7 +370,11 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	return
 }
 
-func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error) {
-	// TO DO
-	return 0, nil
+func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (blocknumber uint64, err error) {
+	query := fmt.Sprintf("select block_number from %s where nftclass_id=(select nftclass_id from %s where address='%s' and blockchain='%s') order by block_number desc limit 1;", nftbidTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
+	if err != nil {
+		return
+	}
+	return
 }

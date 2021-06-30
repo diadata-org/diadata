@@ -87,7 +87,10 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	var err error
 	if scraper.lastBlockNumber == 0 {
 		// TODO: what is the required value to the GetLastBlockNFTTrade method?
-		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTrade(dia.NFT{})
+		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTradeScraper(dia.NFTClass{
+			Address:    scraper.contractAddress.Hex(),
+			Blockchain: dia.ETHEREUM,
+		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
 			scraper.lastBlockNumber = uint64(3919706)
