@@ -88,7 +88,6 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 		}
 	}
 
-	scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptokitties.NewClockAuctionFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return err
@@ -126,7 +125,19 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 
 		for iter.Next() {
 			fmt.Println("iter ")
+			caller, err := cryptokitties.NewClockAuctionCaller(scraper.contractAddress, scraper.tradescraper.ethConnection)
+			if err != nil {
+				return err
+			}
+
 			time.Sleep(1 * time.Second)
+
+			auction, err := caller.GetAuction(&bind.CallOpts{
+				Pending: false,
+			}, iter.Event.TokenId)
+			if err != nil {
+				return err
+			}
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.TokenId.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
@@ -139,7 +150,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			trade := dia.NFTTrade{
 				NFT:              nft,
 				BlockNumber:      iter.Event.Raw.BlockNumber,
-				FromAddress:      common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
+				FromAddress:      auction.Seller,
 				ToAddress:        iter.Event.Winner,
 				Exchange:         "CryptokittiesAuction",
 				TxHash:           iter.Event.Raw.TxHash,
@@ -153,7 +164,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			log.Infof("got trade: ")
 			log.Infof("iter: %v", iter)
 			log.Info("price: ", price)
-			log.Info("from address: ", common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"))
+			log.Info("from address: ", auction.Seller)
 			log.Info("to address: ", iter.Event.Winner)
 			log.Info("tx: ", iter.Event.Raw.TxHash)
 			log.Info("blockNumber: ", iter.Event.Raw.BlockNumber)
