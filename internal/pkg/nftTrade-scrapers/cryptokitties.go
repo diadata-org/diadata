@@ -6,17 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	// "math/big"
-	// "strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
-	// "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
-	// "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -37,10 +33,6 @@ func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
-	// connection, err := ethclient.Dial("node url")
-	// if err != nil {
-	// 	log.Error("Error connecting Eth Client")
-	// }
 
 	tradeScraper := TradeScraper{
 		shutdown:      make(chan nothing),
@@ -111,12 +103,6 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 	// TODO: It's a good practise to stay a little behind the head.
 	endBlockNumber := header.Number.Uint64() - 18
 
-	// We need the cryptokitties abi to unpack the transfer event.
-	// abi, err := abi.JSON(strings.NewReader(string(cryptokitties.KittyAuctionABI)))
-	if err != nil {
-		return err
-	}
-	// var iter *cryptokitties.ClockAuctionAuctionSuccessfulIterator
 	// Reduce the window size while there is an query limit error.
 	for {
 		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber, endBlockNumber)
