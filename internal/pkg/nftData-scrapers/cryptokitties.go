@@ -3,6 +3,7 @@ package nftdatascrapers
 // Please implement the scraping of coingecko quotations here.
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,7 +18,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
+)
+
+const (
+	openseaAPIWait = 250
+	crFirstBlock   = uint64(4605167)
+	batchSize      = 5000
 )
 
 type Kitty struct {
@@ -328,19 +336,19 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
+	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.Ethereum)
 	if err != nil {
-		log.Error("getting nftclass ID: ", err)
+		log.Error("getting nftclass: ", err)
 	}
-	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClassByID(nftClassID)
+
+	creationMap, err := scraper.GetCryptokittiesCreationTime()
 	if err != nil {
-		log.Error("getting nft by ID: ", err)
+		log.Error("creation time: ", err)
 	}
 
 	for i := 0; i < int(totalSupply.Int64()); i++ {
 		var out CryptokittiesOutput
 		var creatorAddress common.Address
-		var creationTime time.Time
 
 		// 1. fetch data from onchain
 		out.Kitty, err = scraper.GetKitty(big.NewInt(int64(i)))
@@ -349,7 +357,7 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 		}
 
 		// 2. fetch data from offchain
-		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
+		out.Traits, creatorAddress, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
 		if err != nil {
 			log.Errorf("Error getting Opensea data: %+v", err)
 		}
@@ -359,7 +367,7 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 		cryptoKittiesNFT := dia.NFT{
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptokittiesNFTClass,
-			CreationTime:   creationTime,
+			CreationTime:   creationMap[uint64(i)],
 			CreatorAddress: creatorAddress.Hex(),
 			Attributes:     result,
 			URI:            scraper.cryptokittiesURL + strconv.Itoa(i),
@@ -389,32 +397,34 @@ func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 }
 
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
-func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, time.Time, error) {
+func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
 	var traits []CryptokittiesTraits
 	var creatorAddress common.Address
-	var creationTime time.Time
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	respData, err := utils.GetRequest(url)
+	respData, statusCode, err := utils.GetRequestWithStatus(url)
 	if err != nil {
-		return traits, creatorAddress, creationTime, err
+		if statusCode != 429 {
+			return traits, creatorAddress, err
+		}
+		// Retry get request once
+		time.Sleep(time.Millisecond * openseaAPIWait)
+		respData, _, err = utils.GetRequestWithStatus(url)
+		if err != nil {
+			return traits, creatorAddress, err
+		}
 	}
 
 	traits, err = GetCryptokittiesTraits(respData)
 	if err != nil {
-		return traits, creatorAddress, creationTime, err
+		return traits, creatorAddress, err
 	}
 
 	creatorAddress, err = GetCryptokittiesAddress(respData)
 	if err != nil {
-		return traits, creatorAddress, creationTime, err
+		return traits, creatorAddress, err
 	}
 
-	creationTime, err = GetCryptokittiesCreationTime(respData)
-	if err != nil {
-		return traits, creatorAddress, creationTime, err
-	}
-
-	return traits, creatorAddress, creationTime, nil
+	return traits, creatorAddress, nil
 
 }
 
@@ -436,22 +446,51 @@ func GetCryptokittiesAddress(kittyResp []byte) (common.Address, error) {
 	return common.HexToAddress(resp.Creator.Address), nil
 }
 
-// GetCryptokittiesCreationTime returns the creation time from Opensea
-func GetCryptokittiesCreationTime(kittyResp []byte) (time.Time, error) {
-	var resp OpenSeaCryptokittiesResponse
-	var t time.Time
-	if err := json.Unmarshal(kittyResp, &resp); err != nil {
-		return t, err
-	}
-
-	layout := "2006-01-02T15:04:05"
-	t, err := time.Parse(layout, resp.AssetContract.CreatedDate)
-
+// GetCryptokittiesCreationTime returns a map[uint64]uint64 mapping a
+func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
+	creationMap := make(map[uint64]time.Time)
+	filterer, err := cryptokitties.NewKittyBaseFilterer(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
-		return t, err
+		return creationMap, err
 	}
 
-	return t, nil
+	header, err := scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return creationMap, err
+	}
+	endBlockNumber := header.Number.Uint64() - 8
+	startBlockNumber := crFirstBlock
+
+	for endBlockNumber <= header.Number.Uint64()-8 {
+		var iter *cryptokitties.KittyBaseBirthIterator
+		iter, err = filterer.FilterBirth(&bind.FilterOpts{
+			Start: startBlockNumber,
+			End:   &endBlockNumber,
+		})
+		if err != nil {
+			if err.Error() == "query returned more than 10000 results" {
+				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
+				continue
+			}
+			fmt.Println("error filtering kitty birth: ", err)
+			return creationMap, err
+		}
+
+		for iter.Next() {
+			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
+			var header *types.Header
+			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			if err != nil {
+				log.Error("fetching header by number: ", err)
+			}
+			// TO DO: Write service which caches block information such as timestamp in postgres
+			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(header.Time), 0)
+		}
+		startBlockNumber = endBlockNumber
+		endBlockNumber = endBlockNumber + batchSize
+	}
+	return creationMap, err
 }
 
 // GetDataChannel returns the scrapers data channel.
