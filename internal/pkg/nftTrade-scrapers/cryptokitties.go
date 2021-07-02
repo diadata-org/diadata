@@ -43,7 +43,7 @@ func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
 		chanTrade:     make(chan dia.NFTTrade),
 	}
 	s := &CryptoKittiesScraper{
-		contractAddress: common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
+		contractAddress: common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"),
 		tradescraper:    tradeScraper,
 		ticker:          time.NewTicker(CryptoKittiesRefreshDelay),
 	}
@@ -84,11 +84,11 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to Cryptokitties first block number!
-			scraper.lastBlockNumber = uint64(4605167)
+			scraper.lastBlockNumber = uint64(4605169)
 		}
 	}
 
-	filterer, err := cryptokitties.NewClockAuctionFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
+	filterer, err := cryptokitties.NewSaleClockAuctionFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return err
 	}
@@ -125,19 +125,12 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 
 		for iter.Next() {
 			fmt.Println("iter ")
-			caller, err := cryptokitties.NewClockAuctionCaller(scraper.contractAddress, scraper.tradescraper.ethConnection)
 			if err != nil {
 				return err
 			}
 
 			time.Sleep(1 * time.Second)
 
-			auction, err := caller.GetAuction(&bind.CallOpts{
-				Pending: false,
-			}, iter.Event.TokenId)
-			if err != nil {
-				return err
-			}
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.TokenId.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
@@ -150,7 +143,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			trade := dia.NFTTrade{
 				NFT:              nft,
 				BlockNumber:      iter.Event.Raw.BlockNumber,
-				FromAddress:      auction.Seller,
+				FromAddress:      common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"),
 				ToAddress:        iter.Event.Winner,
 				Exchange:         "CryptokittiesAuction",
 				TxHash:           iter.Event.Raw.TxHash,
@@ -164,7 +157,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			log.Infof("got trade: ")
 			log.Infof("iter: %v", iter)
 			log.Info("price: ", price)
-			log.Info("from address: ", auction.Seller)
+			log.Info("from address: ", common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"))
 			log.Info("to address: ", iter.Event.Winner)
 			log.Info("tx: ", iter.Event.Raw.TxHash)
 			log.Info("blockNumber: ", iter.Event.Raw.BlockNumber)
