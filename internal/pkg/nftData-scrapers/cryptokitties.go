@@ -469,11 +469,11 @@ func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 		})
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
-				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
 				continue
 			}
-			fmt.Println("error filtering kitty birth: ", err)
+			log.Error("filtering kitty birth: ", err)
 			return creationMap, err
 		}
 

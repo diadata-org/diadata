@@ -138,8 +138,7 @@ CREATE TABLE nftoffer (
     UNIQUE(offer_id)
 );
 
-CREATE TABLE IF NOT EXISTS scrapers
-(
+CREATE TABLE IF NOT EXISTS scrapers (
     name character varying(255) NOT NULL,
 	conf json,
 	state json,

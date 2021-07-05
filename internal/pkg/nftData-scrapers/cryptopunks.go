@@ -3,6 +3,7 @@ package nftdatascrapers
 // Please implement the scraping of coingecko quotations here.
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,7 +18,12 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
+)
+
+const (
+	cpFirstBlock = uint64(3918000)
 )
 
 type OpenSeaCryptopunkResponse struct {
@@ -309,32 +315,28 @@ func (scraper *CryptopunkScraper) FetchData() (err error) {
 		log.Error("getting nft by ID: ", err)
 	}
 
+	creationTimeMap, creatorMap, err := scraper.GetCreationEvents()
+	if err != nil {
+		log.Error("getting nft creation data: ", err)
+	}
+
 	for i := 0; i < int(totalSupply.Int64()); i++ {
 		var out CryptopunkOutput
-		var creatorAddress common.Address
-		var creationTime time.Time
 
-		out.Traits, creatorAddress, creationTime, err = scraper.GetOpenSeaPunk(big.NewInt(int64(i)))
+		out.Traits, err = scraper.GetOpenSeaPunk(big.NewInt(int64(i)))
 		if err != nil {
 			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
-		fmt.Println("...................................")
-		for i := range result {
-			fmt.Println("key-value pair: ", i, result[i])
-		}
-		fmt.Println("..................................")
-		time.Sleep(3 * time.Second)
 		nft := dia.NFT{
 			TokenID:        strconv.Itoa(i),
 			NFTClass:       cryptopunkNFTClass,
-			CreationTime:   creationTime,
-			CreatorAddress: creatorAddress.Hex(),
+			CreationTime:   creationTimeMap[uint64(i)],
+			CreatorAddress: creatorMap[uint64(i)].Hex(),
 			Attributes:     result,
 			URI:            scraper.cryptopunkURL + strconv.Itoa(i),
 		}
-		fmt.Println("get nft: ", nft)
 		scraper.GetDataChannel() <- nft
 	}
 	return nil
@@ -359,32 +361,81 @@ func (scraper *CryptopunkScraper) TokenByIndex(index *big.Int) (common.Address, 
 }
 
 // GetOpenSeaPunk returns the scraped data from Opensea for a given punk
-func (scraper *CryptopunkScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, common.Address, time.Time, error) {
-	var creatorAddress common.Address
-	var creationTime time.Time
+func (scraper *CryptopunkScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
+	var traits []CryptopunkTraits
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	respData, err := utils.GetRequest(url)
+
+	respData, statusCode, err := utils.GetRequestWithStatus(url)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		if statusCode != 429 {
+			return traits, err
+		}
+		// Retry get request once
+		time.Sleep(time.Millisecond * openseaAPIWait)
+		respData, _, err = utils.GetRequestWithStatus(url)
+		if err != nil {
+			return traits, err
+		}
 	}
 
-	traits, err := GetCryptopunkTraits(respData)
+	traits, err = GetCryptopunkTraits(respData)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return nil, err
 	}
 
-	creatorAddress, err = GetCryptopunkAddress(respData)
+	return traits, nil
+
+}
+
+// GetCreationEvents returns maps for creation time and creator address by filtering 'assign punk' events.
+func (scraper *CryptopunkScraper) GetCreationEvents() (map[uint64]time.Time, map[uint64]common.Address, error) {
+	creationTimeMap := make(map[uint64]time.Time)
+	creatorAddressMap := make(map[uint64]common.Address)
+	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return creationTimeMap, creatorAddressMap, err
 	}
 
-	creationTime, err = GetCryptopunkCreationTime(respData)
+	header, err := scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), nil)
 	if err != nil {
-		return nil, creatorAddress, creationTime, err
+		return creationTimeMap, creatorAddressMap, err
 	}
 
-	return traits, creatorAddress, creationTime, nil
+	endBlockNumber := header.Number.Uint64() - 8
+	startBlockNumber := cpFirstBlock
 
+	for endBlockNumber <= header.Number.Uint64()-8 {
+		var iter *cryptopunk.CryptoPunksMarketAssignIterator
+		fmt.Printf("startblock -- endblock: %v -- %v \n", startBlockNumber, endBlockNumber)
+		iter, err = filterer.FilterAssign(&bind.FilterOpts{
+			Start: startBlockNumber,
+			End:   &endBlockNumber,
+		}, nil)
+		if err != nil {
+			if err.Error() == "query returned more than 10000 results" {
+				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
+				continue
+			}
+			log.Error("filtering assign punk: ", err)
+			return creationTimeMap, creatorAddressMap, err
+		}
+
+		for iter.Next() {
+
+			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
+			var header *types.Header
+			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			if err != nil {
+				log.Error("fetching header by number: ", err)
+			}
+			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(header.Time), 0)
+			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
+		}
+		startBlockNumber = endBlockNumber
+		endBlockNumber = endBlockNumber + batchSize
+	}
+	return creationTimeMap, creatorAddressMap, err
 }
 
 // GetCryptopunkTraits returns the parsed traits data from Opensea for a given punk
@@ -400,24 +451,6 @@ func GetCryptopunkTraits(punkResp []byte) ([]CryptopunkTraits, error) {
 func GetCryptopunkAddress(punkResp []byte) (common.Address, error) {
 
 	return common.HexToAddress("0xc352b534e8b987e036a93539fd6897f53488e56a"), nil
-}
-
-// GetCryptopunkCreationTime returns the creation time from Opensea
-func GetCryptopunkCreationTime(punkResp []byte) (time.Time, error) {
-	var resp OpenSeaCryptopunkResponse
-	var t time.Time
-	if err := json.Unmarshal(punkResp, &resp); err != nil {
-		return t, err
-	}
-
-	layout := "2006-01-02T15:04:05"
-	t, err := time.Parse(layout, resp.AssetContract.CreatedDate)
-
-	if err != nil {
-		return t, err
-	}
-
-	return t, nil
 }
 
 // GetDataChannel returns the scrapers data channel.
