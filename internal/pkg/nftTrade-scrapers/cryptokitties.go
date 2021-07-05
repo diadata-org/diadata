@@ -141,8 +141,9 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			price := float64(iter.Event.TotalPrice.Uint64())
 
 			trade := dia.NFTTrade{
-				NFT:              nft,
-				BlockNumber:      iter.Event.Raw.BlockNumber,
+				NFT:         nft,
+				BlockNumber: iter.Event.Raw.BlockNumber,
+				// TO DO: Fix FromAddress using data from CryptoKitties Offers Scraper (WIP)
 				FromAddress:      common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"),
 				ToAddress:        iter.Event.Winner,
 				Exchange:         "CryptokittiesAuction",
@@ -162,8 +163,6 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			log.Info("tx: ", iter.Event.Raw.TxHash)
 			log.Info("blockNumber: ", iter.Event.Raw.BlockNumber)
 			log.Info("id: ", iter.Event.TokenId.String())
-			log.Info("input data: ", iter.Event.Raw.Data)
-			log.Info("input data string: ", iter.Event.Raw.Data)
 			log.Info("-----------------------------------------------")
 			log.Info(" ")
 			log.Info("-----------------------------------------------")
