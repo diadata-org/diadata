@@ -49,18 +49,24 @@ type RelDatastore interface {
 	SetScraperState(ctx context.Context, scraperName string, state ScraperState) error
 	GetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
 	SetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
+
+	// Blockchain data
+	SetBlockData(dia.BlockData) error
+	GetBlockData(blockchain string, blocknumber string) (dia.BlockData, error)
 }
 
 const (
 	postgresKey = "postgres_credentials.txt"
 
 	blockchainTable  = "blockchain"
+	blockdataTable   = "blockdata"
 	nftcategoryTable = "nftcategory"
 	nftclassTable    = "nftclass"
 	nftTable         = "nft"
 	nfttradeTable    = "nfttrade"
 	nftbidTable      = "nftbid"
 	nftofferTable    = "nftoffer"
+	scrapersTable    = "scrapers"
 
 	// time format for blockchain genesis dates
 	timeFormatBlockchain = "2006-01-02"
@@ -136,6 +142,8 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		val, err := rows.Values()
 		if err != nil {

@@ -150,6 +150,15 @@ func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+// BlockData stores information on a specific block in a given blockchain.
+type BlockData struct {
+	// Name of the blockchain, as found for instance in dia.ETHEREUM
+	BlockchainName string
+	// In order to keep it general, BlockNumber is a string
+	Number string
+	Data   map[string]interface{}
+}
+
 type Exchange struct {
 	Name          string
 	Centralized   bool

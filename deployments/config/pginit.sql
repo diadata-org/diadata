@@ -145,3 +145,12 @@ CREATE TABLE IF NOT EXISTS scrapers
 	state json,
     CONSTRAINT pk_scrapers PRIMARY KEY(name)
 );
+
+CREATE TABLE blockdata (
+    blockdata_id UUID DEFAULT gen_random_uuid(),
+    blockchain text not null,
+    block_number text not null,
+    block_data jsonb,
+    UNIQUE(blockchain, block_number),
+    UNIQUE(blockdata_id)
+);
