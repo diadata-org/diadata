@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
@@ -224,7 +223,7 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	price := trade.Price.String()
 	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
 	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress.Hex(), trade.ToAddress.Hex(), trade.CurrencySymbol, trade.CurrencyAddress.Hex(), trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash.Hex(), trade.Exchange)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, trade.CurrencySymbol, trade.CurrencyAddress, trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
 	}
@@ -255,21 +254,17 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 	for rows.Next() {
 		var trade dia.NFTTrade
 		var price string
-		var fromaddress string
-		var toaddress string
-		var currencyaddress string
-		var txhash sql.NullString
 		err := rows.Scan(
 			&price,
 			&trade.PriceUSD,
-			&fromaddress,
-			&toaddress,
+			&trade.FromAddress,
+			&trade.ToAddress,
 			&trade.CurrencySymbol,
-			&currencyaddress,
+			&trade.CurrencyAddress,
 			&trade.CurrencyDecimals,
 			&trade.BlockNumber,
 			&trade.Timestamp,
-			&txhash,
+			&trade.TxHash,
 			&trade.Exchange,
 		)
 		if err != nil {
@@ -281,12 +276,6 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 			return []dia.NFTTrade{}, err
 		}
 		trade.Price = n
-		trade.FromAddress = common.HexToAddress(fromaddress)
-		trade.ToAddress = common.HexToAddress(toaddress)
-		trade.CurrencyAddress = common.HexToAddress(currencyaddress)
-		if txhash.Valid {
-			trade.TxHash = common.HexToHash(txhash.String)
-		}
 		trades = append(trades, trade)
 	}
 	return
@@ -377,4 +366,9 @@ func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (blocknumber uint64,
 		return
 	}
 	return
+}
+
+func (rdb *RelDB) SetNFTOffer(offer dia.NFTOffer) error {
+	// TO DO
+	return nil
 }

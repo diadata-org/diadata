@@ -29,7 +29,7 @@ func main() {
 
 	switch *scraperType {
 	case "Cryptopunk":
-		log.Println("NFT Data Scraper: Start scraping bids from Cryptopunk")
+		log.Println("NFT Bids Scraper: Start scraping bids from Cryptopunk")
 		scraper = nftbidscrapers.NewCryptoPunkScraper(rdb)
 	default:
 		for {

@@ -134,8 +134,8 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.TokenId.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
-				continue
-				// 	return nil, err
+				// continue
+				return err
 			}
 
 			price := float64(iter.Event.TotalPrice.Uint64())
@@ -144,14 +144,14 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 				NFT:         nft,
 				BlockNumber: iter.Event.Raw.BlockNumber,
 				// TO DO: Fix FromAddress using data from CryptoKitties Offers Scraper (WIP)
-				FromAddress:      common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"),
-				ToAddress:        iter.Event.Winner,
+				FromAddress:      common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C").Hex(),
+				ToAddress:        iter.Event.Winner.Hex(),
 				Exchange:         "CryptokittiesAuction",
-				TxHash:           iter.Event.Raw.TxHash,
+				TxHash:           iter.Event.Raw.TxHash.Hex(),
 				Price:            iter.Event.TotalPrice,
 				CurrencySymbol:   "WETH",
 				CurrencyDecimals: int32(18),
-				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").Hex(),
 			}
 			scraper.GetTradeChannel() <- trade
 

@@ -202,14 +202,14 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				BlockNumber: iter.Event.Raw.BlockNumber,
 				// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
 				// a internal function?
-				FromAddress:      iter.Event.FromAddress,
-				ToAddress:        transferEvent.To,
+				FromAddress:      iter.Event.FromAddress.Hex(),
+				ToAddress:        transferEvent.To.Hex(),
 				Exchange:         "CryptopunkMarket",
-				TxHash:           iter.Event.Raw.TxHash,
+				TxHash:           iter.Event.Raw.TxHash.Hex(),
 				Price:            price,
 				CurrencySymbol:   "WETH",
 				CurrencyDecimals: int32(18),
-				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").Hex(),
 				Timestamp:        time.Unix(int64(currHeader.Time), 0),
 			}
 			scraper.GetTradeChannel() <- trade
@@ -223,8 +223,6 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			log.Info("tx: ", iter.Event.Raw.TxHash)
 			log.Info("blockNumber: ", big.NewInt(int64(iter.Event.Raw.BlockNumber)))
 			log.Info("id: ", iter.Event.PunkIndex.String())
-			log.Info("input data: ", iter.Event.Raw.Data)
-			log.Info("input data string: ", iter.Event.Raw.Data)
 			log.Info("-----------------------------------------------")
 			log.Info(" ")
 			log.Info("-----------------------------------------------")

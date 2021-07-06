@@ -16,7 +16,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	ds, err := models.NewRelDataStore()
+	rdb, err := models.NewRelDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
@@ -28,7 +28,7 @@ func main() {
 	switch *scraperType {
 	case "Ethereum":
 		log.Println("Block-scraper: Start scraping block data from Ethereum")
-		blockscraper = scrapers.NewEthereumScraper(ds)
+		blockscraper = scrapers.NewEthereumScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -36,12 +36,12 @@ func main() {
 	}
 
 	wg.Add(1)
-	go handleBlockData(blockscraper.GetDataChannel(), &wg, ds)
+	go handleBlockData(blockscraper.GetDataChannel(), &wg, rdb)
 	defer wg.Wait()
 
 }
 
-func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, ds models.RelDatastore) {
+func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, rdb *models.RelDB) {
 	defer wg.Done()
 
 	for {
@@ -51,7 +51,7 @@ func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, ds
 			return
 		}
 		log.Infof("got block number %s: %v", blockdata.Number, blockdata.Data)
-		err := ds.SetBlockData(blockdata)
+		err := rdb.SetBlockData(blockdata)
 		if err != nil {
 			log.Error("setting block data: ", err)
 			return

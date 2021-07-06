@@ -465,13 +465,13 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		NFT:              *nft,
 		Price:            price,
 		PriceUSD:         usdPrice,
-		FromAddress:      transfer.From,
-		ToAddress:        transfer.To,
+		FromAddress:      transfer.From.Hex(),
+		ToAddress:        transfer.To.Hex(),
 		CurrencySymbol:   currSymbol,
-		CurrencyAddress:  currAddr,
+		CurrencyAddress:  currAddr.Hex(),
 		CurrencyDecimals: priceDec.Exponent(),
 		BlockNumber:      ev.Raw.BlockNumber,
-		TxHash:           ev.Raw.TxHash,
+		TxHash:           ev.Raw.TxHash.Hex(),
 		Exchange:         OpenSea,
 	}
 

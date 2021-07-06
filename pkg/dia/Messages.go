@@ -92,19 +92,17 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT      NFT
-	Price    *big.Int
-	PriceUSD float64
-	// TO DO: Change the below fields to strings. As of now,
-	// they do not apply to blockchains other than Ethereum.
-	FromAddress      common.Address
-	ToAddress        common.Address
+	NFT              NFT
+	Price            *big.Int
+	PriceUSD         float64
+	FromAddress      string
+	ToAddress        string
 	CurrencySymbol   string
-	CurrencyAddress  common.Address
+	CurrencyAddress  string
 	CurrencyDecimals int32
 	BlockNumber      uint64
 	Timestamp        time.Time
-	TxHash           common.Hash
+	TxHash           string
 	Exchange         string
 }
 
@@ -145,6 +143,40 @@ func (nb *NFTBid) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary for DefiProtocolState
 func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &nb); err != nil {
+		return err
+	}
+	return nil
+}
+
+type NFTOffer struct {
+	NFT        NFT
+	StartValue *big.Int
+	EndValue   *big.Int
+	// Duration of the offer/auction measured in seconds
+	Duration    time.Duration
+	FromAddress string
+	// Type of offer can be auction, simple offer,...
+	Type string
+
+	CurrencySymbol   string
+	CurrencyAddress  string
+	CurrencyDecimals int32
+
+	BlockNumber   uint64
+	BlockPosition uint64
+	Timestamp     time.Time
+	TxHash        string
+	Exchange      string
+}
+
+// MarshalBinary for DefiProtocolState
+func (no *NFTOffer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(no)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (no *NFTOffer) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &no); err != nil {
 		return err
 	}
 	return nil

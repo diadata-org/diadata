@@ -40,6 +40,7 @@ type RelDatastore interface {
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
 	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)
+	SetNFTOffer(offer dia.NFTOffer) error
 
 	// General methods
 	GetKeys(table string) ([]string, error)
