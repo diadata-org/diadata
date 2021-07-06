@@ -61,7 +61,6 @@ DIA's data feeds are being used by a range of market actors in the DeFi and CeFi
 * [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.
 * [Hedget](https://www.hedget.com/) - Designed to be a DeFi option trading platform. DIA supplies price feeds to value Hedget’s derivative products.
 * [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
-* [FINOA](https://finoa.io/) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 
 ## **Feedback**

@@ -679,6 +679,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
             "Symbol": "MGT",
             "ForeignName": "MGT-BNT",
             "Exchange": "Bancor",
@@ -777,12 +783,6 @@
         {
             "Symbol": "CRTS",
             "ForeignName": "CRTS-BNT",
-            "Exchange": "Bancor",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CHZ",
-            "ForeignName": "CHZ-BNT",
             "Exchange": "Bancor",
             "Ignore": false
         },
@@ -1509,6 +1509,66 @@
         {
             "Symbol": "1INCH",
             "ForeignName": "1INCH-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPACE",
+            "ForeignName": "SPACE-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZIL",
+            "ForeignName": "ZIL-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOG",
+            "ForeignName": "DOG-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HOT",
+            "ForeignName": "HOT-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RNB",
+            "ForeignName": "RNB-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NOIA",
+            "ForeignName": "NOIA-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHZ",
+            "ForeignName": "CHZ-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FARM",
+            "ForeignName": "FARM-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LQTY",
+            "ForeignName": "LQTY-BNT",
+            "Exchange": "Bancor",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RUNE",
+            "ForeignName": "RUNE-BNT",
             "Exchange": "Bancor",
             "Ignore": false
         }

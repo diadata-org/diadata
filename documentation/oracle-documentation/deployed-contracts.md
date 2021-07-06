@@ -24,6 +24,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0xb73db1A6a85219742fbd0fC7cc275c62209aA660](https://kovan.etherscan.io/address/0xb73db1A6a85219742fbd0fC7cc275c62209aA660) |
+| Coingecko Oracle | [0x50e087d98A33cEB1CED159ad9255D6F228f2eF1C](https://kovan.etherscan.io/address/0x50e087d98a33ceb1ced159ad9255d6f228f2ef1c) |
 
 ### Binance Smart Chain Mainnet
 
@@ -38,6 +39,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | Contract Name | Contract Address |
 | :--- | :--- |
 | DIA Oracle | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://testnet.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) |
+| Coinmarketcap Oracle | [0x42D44F1c45349d47D34976ce3a2fF0c3dd3210a8](https://testnet.bscscan.com/address/0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8) |
 
 ### Matic Mainnet
 

@@ -29,7 +29,7 @@ type CryptoPunkScraper struct {
 	tradescraper    TradeScraper
 	contractAddress common.Address
 	ticker          *time.Ticker
-	lastBlockNumber *big.Int
+	lastBlockNumber uint64
 }
 
 func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
@@ -62,6 +62,10 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CryptoPunkScraper) mainLoop() {
+	err := scraper.FetchTrades()
+	if err != nil {
+		log.Error("fetching nft trades: ", err)
+	}
 	for {
 		select {
 		case <-scraper.ticker.C:
@@ -81,15 +85,19 @@ func (scraper *CryptoPunkScraper) mainLoop() {
 func (scraper *CryptoPunkScraper) FetchTrades() error {
 	log.Info("fetch trades...")
 	var err error
-	if scraper.lastBlockNumber == nil || scraper.lastBlockNumber.Uint64() == 0 {
+	if scraper.lastBlockNumber == 0 {
 		// TODO: what is the required value to the GetLastBlockNFTTrade method?
-		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTrade(dia.NFT{})
+		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTradeScraper(dia.NFTClass{
+			Address:    scraper.contractAddress.Hex(),
+			Blockchain: dia.ETHEREUM,
+		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = big.NewInt(3919706)
+			scraper.lastBlockNumber = uint64(3919706)
 		}
 	}
-	scraper.lastBlockNumber = big.NewInt(12653867)
+
+	scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return err
@@ -112,27 +120,29 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	var iter *cryptopunk.CryptoPunksMarketPunkBoughtIterator
 	// Reduce the window size while there is an query limit error.
 	for {
-		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber.Uint64(), endBlockNumber)
+		fmt.Println("lastBlockNumber, endBlockNumber: ", scraper.lastBlockNumber, endBlockNumber)
 		// We're interested in the FilterPunkBought events when actual trades happened!
 		iter, err = filterer.FilterPunkBought(&bind.FilterOpts{
-			Start: scraper.lastBlockNumber.Uint64(),
+			Start: scraper.lastBlockNumber,
 			End:   &endBlockNumber,
 		}, nil, nil, nil)
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
-				endBlockNumber = scraper.lastBlockNumber.Uint64() + (endBlockNumber-scraper.lastBlockNumber.Uint64())/2
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
 			fmt.Println("error filtering FilterPunkBought: ", err)
 			return err
 		}
 
-		log.Infof("iter: %v", iter)
 		// Iter over FilterPunkBought events.
-
 		for iter.Next() {
-			fmt.Println("iter ")
+			time.Sleep(1 * time.Second)
+			currHeader, err := scraper.tradescraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
+			if err != nil {
+				log.Error("could not fetch current block header: ", err)
+			}
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
@@ -159,36 +169,48 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				err := abi.UnpackIntoInterface(&transferEvent, "Transfer", vLog.Data)
 				if err == nil {
 					log.Info("found a Transfer event")
-
-					log.Info("event: ", transferEvent)
 					transferEvent.To = common.BytesToAddress(vLog.Topics[2].Bytes())
 					break
 				}
 			}
 
-			price := float64(iter.Event.Value.Uint64())
+			price := iter.Event.Value
 			// If acceptBidForPunk is called, get the bid value from the bidding history.
-			// TO DO: Check that bid address is the same as trade toAddress.
 			// TO DO: Check that transaction input is acceptBidForPunk.
-			if price == 0 {
-				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
+			if price.Cmp(big.NewInt(0)) == 0 {
+				bid, err := scraper.tradescraper.datastore.GetLastNFTBid(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.PunkIndex.String(), uint64(iter.Event.Raw.BlockNumber), iter.Event.Raw.Index)
 				if err != nil {
-					log.Error("could not find last bid")
+					log.Error("could not find last bid: ", err)
 				}
 				fmt.Println("value is zero. Fetch from bids..")
-				fmt.Println(".. value: ", bid.Value)
-				price = bid.Value
+				fmt.Println(".. value of bid: ", bid.Value)
+				fmt.Println("block of bid: ", bid.BlockNumber)
+				fmt.Println("position in block: ", bid.BlockPosition)
+				fmt.Println("from address of bid: ", bid.FromAddress)
+				fmt.Println("----------")
+				fmt.Println("block of trade: ", iter.Event.Raw.BlockNumber)
+				fmt.Println("to address of trade: ", transferEvent.To.Hex())
+				if transferEvent.To.Hex() == bid.FromAddress {
+					price = bid.Value
+				} else {
+					log.Warn("fromAddress of bid does not coincide with toAddress of trade: .")
+				}
 			}
 
 			trade := dia.NFTTrade{
 				NFT:         nft,
-				BlockNumber: big.NewInt(int64(iter.Event.Raw.BlockNumber)),
+				BlockNumber: iter.Event.Raw.BlockNumber,
 				// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
 				// a internal function?
-				PriceUSD:    float64(iter.Event.Value.Uint64()),
-				FromAddress: iter.Event.FromAddress,
-				ToAddress:   transferEvent.To,
-				Exchange:    "CryptopunkMarket",
+				FromAddress:      iter.Event.FromAddress,
+				ToAddress:        transferEvent.To,
+				Exchange:         "CryptopunkMarket",
+				TxHash:           iter.Event.Raw.TxHash,
+				Price:            price,
+				CurrencySymbol:   "WETH",
+				CurrencyDecimals: int32(18),
+				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
+				Timestamp:        time.Unix(int64(currHeader.Time), 0),
 			}
 			scraper.GetTradeChannel() <- trade
 
@@ -211,7 +233,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	}
 
 	// Update the last lastBlockNumber value.
-	scraper.lastBlockNumber = new(big.Int).SetUint64(endBlockNumber)
+	scraper.lastBlockNumber = endBlockNumber
 	return nil
 }
 

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"math/big"
 	"os"
 	"time"
 
@@ -17,7 +16,7 @@ import (
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
 type RelDatastore interface {
 
-	// NFT methods
+	// NFT class methods
 	SetNFTClass(nftClass dia.NFTClass) error
 	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
 	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
@@ -27,27 +26,47 @@ type RelDatastore interface {
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 
+	// NFT methods
 	SetNFT(nft dia.NFT) error
 	GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error)
+	GetNFTID(address string, blockchain string, tokenID string) (string, error)
+
+	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
+	GetNFTTrades(nft dia.NFT) ([]dia.NFTTrade, error)
+	GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
-	GetLastBlockNFTTrade(nft dia.NFT) (*big.Int, error)
+	GetLastBlockNFTTradeScraper(nftclass dia.NFTClass) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
-	GetLastNFTBid(address string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
+	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
+	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
+
+	// Scraper config and state
+	GetScraperState(ctx context.Context, scraperName string, state ScraperState) error
+	SetScraperState(ctx context.Context, scraperName string, state ScraperState) error
+	GetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
+	SetScraperConfig(ctx context.Context, scraperName string, config ScraperConfig) error
+
+	// Blockchain data
+	SetBlockData(dia.BlockData) error
+	GetBlockData(blockchain string, blocknumber string) (dia.BlockData, error)
 }
 
 const (
 	postgresKey = "postgres_credentials.txt"
 
 	blockchainTable  = "blockchain"
+	blockdataTable   = "blockdata"
 	nftcategoryTable = "nftcategory"
 	nftclassTable    = "nftclass"
 	nftTable         = "nft"
-	nftsaleTable     = "nftsale"
+	nfttradeTable    = "nfttrade"
+	nftbidTable      = "nftbid"
 	nftofferTable    = "nftoffer"
+	scrapersTable    = "scrapers"
 
 	// time format for blockchain genesis dates
 	timeFormatBlockchain = "2006-01-02"
@@ -123,6 +142,8 @@ func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
 	if err != nil {
 		return
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		val, err := rows.Values()
 		if err != nil {

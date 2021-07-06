@@ -316,6 +316,20 @@ services:
     secrets:
       - oracle_keys_pcws_bsc
 
+  diadafioracleservice:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x35B49eDdB46dbc33336F3A0410008B7be98D4A3a --secretsFile=/run/secrets/oracle_keys_dafi_bsc --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=1
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_dafi_bsc
+
   diaxdaioracleservice-sokol:
     build:
       context: $GOPATH
@@ -343,6 +357,21 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys_bsc_cmc
+      - Coinmarketcap-API.key
+
+  diacoinmarketcaporacleservice-bsc-testnet:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-bsc-testnet
+    networks:
+      - scrapers-network
+    command: --numCoins=50 --deployedContract=0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8 --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=86400 --secretsFile=/run/secrets/oracle_keys_cmc_bsc_testnet --chainId=97
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_cmc_bsc_testnet
       - Coinmarketcap-API.key
 
   diascifioracleservice:
@@ -374,6 +403,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_wow_bsc.txt
   oracle_keys_pcws_bsc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_pcws_bsc.txt
+  oracle_keys_dafi_bsc:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_bsc.txt
   oracle_keys_cardstack_sokol:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cardstack_sokol.txt
   oracle_keys_ropsten:
@@ -388,6 +419,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_defi100_bsc.txt
   oracle_keys_bsc_cmc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc.txt
+  oracle_keys_cmc_bsc_testnet:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc_testnet.txt
   oracle_keys_matic_coingecko:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coingecko_matic.txt
   oracle_keys_bsc_coingecko:

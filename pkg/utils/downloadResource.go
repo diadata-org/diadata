@@ -70,6 +70,33 @@ func GetRequest(url string) ([]byte, error) {
 	return XMLdata, err
 }
 
+// GetRequest performs a get request on @url and returns the response body
+// as a slice of byte data.
+func GetRequestWithStatus(url string) ([]byte, int, error) {
+
+	// Get url
+	response, err := http.Get(url)
+
+	// Check, whether the request was successful
+	if err != nil {
+		log.Error(err)
+		return []byte{}, response.StatusCode, err
+	}
+
+	// Close response body after function
+	defer response.Body.Close()
+
+	// Read the response body
+	XMLdata, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		log.Error(err)
+		return []byte{}, response.StatusCode, err
+	}
+
+	return XMLdata, response.StatusCode, err
+}
+
 // PostRequest performs a POST request on @url and returns the response body
 // as a slice of byte data.
 func PostRequest(url string, body io.Reader) ([]byte, error) {

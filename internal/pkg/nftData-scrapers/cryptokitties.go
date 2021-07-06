@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	cryptopunk "github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
+	cryptokitties "github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -23,10 +23,39 @@ import (
 )
 
 const (
-	cpFirstBlock = uint64(3918000)
+	openseaAPIWait = 250
+	crFirstBlock   = uint64(4605167)
+	batchSize      = 5000
 )
 
-type OpenSeaCryptopunkResponse struct {
+type Kitty struct {
+	IsGestating   bool
+	IsReady       bool
+	CooldownIndex *big.Int
+	NextActionAt  *big.Int
+	SiringWithId  *big.Int
+	BirthTime     *big.Int
+	MatronId      *big.Int
+	SireId        *big.Int
+	Generation    *big.Int
+	Genes         *big.Int
+}
+
+type CryptokittiesTraits struct {
+	TraitType   string      `json:"trait_type"`
+	Value       interface{} `json:"value"`
+	DisplayType interface{} `json:"display_type"`
+	MaxValue    interface{} `json:"max_value"`
+	TraitCount  int         `json:"trait_count"`
+	Order       interface{} `json:"order"`
+}
+
+type CryptokittiesOutput struct {
+	Traits []CryptokittiesTraits `structs:",flatten"`
+	Kitty  Kitty                 `structs:",flatten"`
+}
+
+type OpenSeaCryptokittiesResponse struct {
 	ID                   int         `json:"id"`
 	TokenID              string      `json:"token_id"`
 	NumSales             int         `json:"num_sales"`
@@ -110,18 +139,26 @@ type OpenSeaCryptopunkResponse struct {
 		Traits struct {
 		} `json:"traits"`
 		Stats struct {
-			SevenDayVolume       float64 `json:"seven_day_volume"`
-			TotalVolume          float64 `json:"total_volume"`
-			SevenDayChange       float64 `json:"seven_day_change"`
-			SevenDaySales        float64 `json:"seven_day_sales"`
-			TotalSales           float64 `json:"total_sales"`
-			TotalSupply          float64 `json:"total_supply"`
-			Count                float64 `json:"count"`
-			NumOwners            int     `json:"num_owners"`
-			SevenDayAveragePrice float64 `json:"seven_day_average_price"`
-			AveragePrice         float64 `json:"average_price"`
-			NumReports           int     `json:"num_reports"`
-			MarketCap            float64 `json:"market_cap"`
+			OneDayVolume          float64 `json:"one_day_volume"`
+			OneDayChange          float64 `json:"one_day_change"`
+			OneDaySales           float64 `json:"one_day_sales"`
+			OneDayAveragePrice    float64 `json:"one_day_average_price"`
+			SevenDayVolume        float64 `json:"seven_day_volume"`
+			SevenDayChange        float64 `json:"seven_day_change"`
+			SevenDaySales         float64 `json:"seven_day_sales"`
+			SevenDayAveragePrice  float64 `json:"seven_day_average_price"`
+			ThirtyDayVolume       float64 `json:"thirty_day_volume"`
+			ThirtyDayChange       float64 `json:"thirty_day_change"`
+			ThirtyDaySales        float64 `json:"thirty_day_sales"`
+			ThirtyDayAveragePrice float64 `json:"thirty_day_average_price"`
+			TotalVolume           float64 `json:"total_volume"`
+			TotalSales            float64 `json:"total_sales"`
+			TotalSupply           float64 `json:"total_supply"`
+			Count                 float64 `json:"count"`
+			NumOwners             int     `json:"num_owners"`
+			AveragePrice          float64 `json:"average_price"`
+			NumReports            int     `json:"num_reports"`
+			MarketCap             float64 `json:"market_cap"`
 		} `json:"stats"`
 		BannerImageURL          string      `json:"banner_image_url"`
 		ChatURL                 interface{} `json:"chat_url"`
@@ -156,12 +193,18 @@ type OpenSeaCryptopunkResponse struct {
 		InstagramUsername           interface{} `json:"instagram_username"`
 		WikiURL                     interface{} `json:"wiki_url"`
 	} `json:"collection"`
-	Decimals      interface{}        `json:"decimals"`
-	TokenMetadata string             `json:"token_metadata"`
-	SellOrders    interface{}        `json:"sell_orders"`
-	Creator       interface{}        `json:"creator"`
-	Traits        []CryptopunkTraits `json:"traits"`
-	LastSale      struct {
+	Decimals      interface{} `json:"decimals"`
+	TokenMetadata string      `json:"token_metadata"`
+	SellOrders    interface{} `json:"sell_orders"`
+	Creator       struct {
+		User          interface{}
+		ProfileImgUrl string `json:"profile_img_url"`
+		Address       string `json:"address"`
+		Config        string `json:"config"`
+		DiscordID     string `json:"discord_id"`
+	} `json:"creator"`
+	Traits   []CryptokittiesTraits `json:"traits"`
+	LastSale struct {
 		Asset struct {
 			TokenID  string      `json:"token_id"`
 			Decimals interface{} `json:"decimals"`
@@ -229,28 +272,15 @@ type OpenSeaCryptopunkResponse struct {
 	HighestBuyerCommitment interface{} `json:"highest_buyer_commitment"`
 }
 
-type CryptopunkTraits struct {
-	TraitType   string      `json:"trait_type"`
-	Value       string      `json:"value"`
-	DisplayType interface{} `json:"display_type"`
-	MaxValue    interface{} `json:"max_value"`
-	TraitCount  int         `json:"trait_count"`
-	Order       interface{} `json:"order"`
+type CryptokittiesScraper struct {
+	nftscraper       NFTScraper
+	address          common.Address
+	apiURLOpensea    string
+	cryptokittiesURL string
+	ticker           *time.Ticker
 }
 
-type CryptopunkScraper struct {
-	nftscraper    NFTScraper
-	address       common.Address
-	apiURLOpensea string
-	cryptopunkURL string
-	ticker        *time.Ticker
-}
-
-type CryptopunkOutput struct {
-	Traits []CryptopunkTraits `structs:",flatten"`
-}
-
-func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
+func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -264,12 +294,12 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 		relDB:         rdb,
 		chanData:      make(chan dia.NFT),
 	}
-	s := &CryptopunkScraper{
-		address:       common.HexToAddress("0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"),
-		apiURLOpensea: "https://api.opensea.io/api/v1/",
-		cryptopunkURL: "https://www.larvalabs.com/cryptopunks/details/",
-		nftscraper:    nftScraper,
-		ticker:        time.NewTicker(refreshDelay),
+	s := &CryptokittiesScraper{
+		address:          common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
+		apiURLOpensea:    "https://api.opensea.io/api/v1/",
+		cryptokittiesURL: "https://www.cryptokitties.co/",
+		nftscraper:       nftScraper,
+		ticker:           time.NewTicker(refreshDelay),
 	}
 
 	go s.mainLoop()
@@ -277,7 +307,7 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *CryptopunkScraper) mainLoop() {
+func (scraper *CryptokittiesScraper) mainLoop() {
 	err := scraper.FetchData()
 	if err != nil {
 		log.Error("error updating NFT: ", err)
@@ -290,7 +320,7 @@ func (scraper *CryptopunkScraper) mainLoop() {
 				log.Error("error updating NFT: ", err)
 			}
 		case <-scraper.nftscraper.shutdown: // user requested shutdown
-			log.Printf("Cryptopunk scraper shutting down")
+			log.Printf("Cryptokitties scraper shutting down")
 			err := scraper.Close()
 			scraper.cleanup(err)
 			return
@@ -298,7 +328,7 @@ func (scraper *CryptopunkScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptopunkScraper) FetchData() (err error) {
+func (scraper *CryptokittiesScraper) FetchData() (err error) {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return
@@ -306,160 +336,170 @@ func (scraper *CryptopunkScraper) FetchData() (err error) {
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
+	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.Ethereum)
 	if err != nil {
-		log.Error("getting nftclass ID: ", err)
-	}
-	cryptopunkNFTClass, err := scraper.nftscraper.relDB.GetNFTClassByID(nftClassID)
-	if err != nil {
-		log.Error("getting nft by ID: ", err)
+		log.Error("getting nftclass: ", err)
 	}
 
-	creationTimeMap, creatorMap, err := scraper.GetCreationEvents()
+	creationMap, err := scraper.GetCryptokittiesCreationTime()
 	if err != nil {
-		log.Error("getting nft creation data: ", err)
+		log.Error("creation time: ", err)
 	}
 
 	for i := 0; i < int(totalSupply.Int64()); i++ {
-		var out CryptopunkOutput
+		var out CryptokittiesOutput
+		var creatorAddress common.Address
 
-		out.Traits, err = scraper.GetOpenSeaPunk(big.NewInt(int64(i)))
+		// 1. fetch data from onchain
+		out.Kitty, err = scraper.GetKitty(big.NewInt(int64(i)))
+		if err != nil {
+			log.Errorf("Error getting kitty data: %+v", err)
+		}
+
+		// 2. fetch data from offchain
+		out.Traits, creatorAddress, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
 		if err != nil {
 			log.Errorf("Error getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
-		nft := dia.NFT{
+		// Set output object
+		cryptoKittiesNFT := dia.NFT{
 			TokenID:        strconv.Itoa(i),
-			NFTClass:       cryptopunkNFTClass,
-			CreationTime:   creationTimeMap[uint64(i)],
-			CreatorAddress: creatorMap[uint64(i)].Hex(),
+			NFTClass:       cryptokittiesNFTClass,
+			CreationTime:   creationMap[uint64(i)],
+			CreatorAddress: creatorAddress.Hex(),
 			Attributes:     result,
-			URI:            scraper.cryptopunkURL + strconv.Itoa(i),
+			URI:            scraper.cryptokittiesURL + strconv.Itoa(i),
 		}
-		scraper.GetDataChannel() <- nft
+		fmt.Println("get nft: ", cryptoKittiesNFT)
+		scraper.GetDataChannel() <- cryptoKittiesNFT
 	}
 	return nil
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
-func (scraper *CryptopunkScraper) GetTotalSupply() (*big.Int, error) {
-	contract, err := cryptopunk.NewCryptoPunksMarketCaller(scraper.address, scraper.nftscraper.ethConnection)
+func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
+	contract, err := cryptokitties.NewKittyAuctionCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
 	}
 	return contract.TotalSupply(&bind.CallOpts{})
 }
 
-// TokenByIndex returns the address of a punk whose id is passed as a parameter from on-chain.
-func (scraper *CryptopunkScraper) TokenByIndex(index *big.Int) (common.Address, error) {
-	contract, err := cryptopunk.NewCryptoPunksMarketCaller(scraper.address, scraper.nftscraper.ethConnection)
+// GetKitty returns the kitty attributes of the NFT from on-chain.
+func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
+	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
 	}
-	return contract.PunkIndexToAddress(&bind.CallOpts{}, index)
+	return contract.GetKitty(&bind.CallOpts{}, kittyId)
 }
 
-// GetOpenSeaPunk returns the scraped data from Opensea for a given punk
-func (scraper *CryptopunkScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
-	var traits []CryptopunkTraits
+// GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
+func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
+	var traits []CryptokittiesTraits
+	var creatorAddress common.Address
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-
 	respData, statusCode, err := utils.GetRequestWithStatus(url)
 	if err != nil {
 		if statusCode != 429 {
-			return traits, err
+			return traits, creatorAddress, err
 		}
 		// Retry get request once
 		time.Sleep(time.Millisecond * openseaAPIWait)
 		respData, _, err = utils.GetRequestWithStatus(url)
 		if err != nil {
-			return traits, err
+			return traits, creatorAddress, err
 		}
 	}
 
-	traits, err = GetCryptopunkTraits(respData)
+	traits, err = GetCryptokittiesTraits(respData)
 	if err != nil {
-		return nil, err
+		return traits, creatorAddress, err
 	}
 
-	return traits, nil
+	creatorAddress, err = GetCryptokittiesAddress(respData)
+	if err != nil {
+		return traits, creatorAddress, err
+	}
+
+	return traits, creatorAddress, nil
 
 }
 
-// GetCreationEvents returns maps for creation time and creator address by filtering 'assign punk' events.
-func (scraper *CryptopunkScraper) GetCreationEvents() (map[uint64]time.Time, map[uint64]common.Address, error) {
-	creationTimeMap := make(map[uint64]time.Time)
-	creatorAddressMap := make(map[uint64]common.Address)
-	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.address, scraper.nftscraper.ethConnection)
+// GetCryptokittiesTraits returns the traits data from Opensea for a given kitty
+func GetCryptokittiesTraits(kittyResp []byte) ([]CryptokittiesTraits, error) {
+	var resp OpenSeaCryptokittiesResponse
+	if err := json.Unmarshal(kittyResp, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Traits, nil
+}
+
+// GetCryptokittiesAddress returns the creator address from Opensea
+func GetCryptokittiesAddress(kittyResp []byte) (common.Address, error) {
+	var resp OpenSeaCryptokittiesResponse
+	if err := json.Unmarshal(kittyResp, &resp); err != nil {
+		return common.Address{}, err
+	}
+	return common.HexToAddress(resp.Creator.Address), nil
+}
+
+// GetCryptokittiesCreationTime returns a map[uint64]uint64 mapping a
+func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
+	creationMap := make(map[uint64]time.Time)
+	filterer, err := cryptokitties.NewKittyBaseFilterer(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
-		return creationTimeMap, creatorAddressMap, err
+		return creationMap, err
 	}
 
 	header, err := scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), nil)
 	if err != nil {
-		return creationTimeMap, creatorAddressMap, err
+		return creationMap, err
 	}
-
 	endBlockNumber := header.Number.Uint64() - 8
-	startBlockNumber := cpFirstBlock
+	startBlockNumber := crFirstBlock
 
 	for endBlockNumber <= header.Number.Uint64()-8 {
-		var iter *cryptopunk.CryptoPunksMarketAssignIterator
-		fmt.Printf("startblock -- endblock: %v -- %v \n", startBlockNumber, endBlockNumber)
-		iter, err = filterer.FilterAssign(&bind.FilterOpts{
+		var iter *cryptokitties.KittyBaseBirthIterator
+		iter, err = filterer.FilterBirth(&bind.FilterOpts{
 			Start: startBlockNumber,
 			End:   &endBlockNumber,
-		}, nil)
+		})
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
 				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
 				continue
 			}
-			log.Error("filtering assign punk: ", err)
-			return creationTimeMap, creatorAddressMap, err
+			log.Error("filtering kitty birth: ", err)
+			return creationMap, err
 		}
 
 		for iter.Next() {
-
 			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
 			var header *types.Header
 			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
 			if err != nil {
 				log.Error("fetching header by number: ", err)
 			}
-			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(header.Time), 0)
-			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
+			// TO DO: Write service which caches block information such as timestamp in postgres
+			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(header.Time), 0)
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize
 	}
-	return creationTimeMap, creatorAddressMap, err
-}
-
-// GetCryptopunkTraits returns the parsed traits data from Opensea for a given punk
-func GetCryptopunkTraits(punkResp []byte) ([]CryptopunkTraits, error) {
-	var resp OpenSeaCryptopunkResponse
-	if err := json.Unmarshal(punkResp, &resp); err != nil {
-		return nil, err
-	}
-	return resp.Traits, nil
-}
-
-// GetCryptopunkAddress returns the creator address from Opensea
-func GetCryptopunkAddress(punkResp []byte) (common.Address, error) {
-
-	return common.HexToAddress("0xc352b534e8b987e036a93539fd6897f53488e56a"), nil
+	return creationMap, err
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *CryptopunkScraper) GetDataChannel() chan dia.NFT {
+func (scraper *CryptokittiesScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *CryptopunkScraper) cleanup(err error) {
+func (scraper *CryptokittiesScraper) cleanup(err error) {
 	scraper.nftscraper.errorLock.Lock()
 	defer scraper.nftscraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -471,7 +511,7 @@ func (scraper *CryptopunkScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *CryptopunkScraper) Close() error {
+func (scraper *CryptokittiesScraper) Close() error {
 	if scraper.nftscraper.closed {
 		return errors.New("scraper already closed")
 	}

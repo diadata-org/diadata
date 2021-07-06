@@ -91,28 +91,40 @@ CREATE TABLE nft (
     UNIQUE(nft_id)
 );
 
-CREATE TABLE nftsale (
+CREATE TABLE nfttrade (
     sale_id UUID DEFAULT gen_random_uuid(),
+    nftclass_id uuid REFERENCES nftclass(nftclass_id),
     nft_id uuid REFERENCES nft(nft_id),
-    time timestamp,
+    price text,
     price_usd numeric,
     transfer_from text,
     transfer_to text,
+    currency_symbol text,
+    currency_address text,
+    currency_decimals numeric,
+    block_number numeric,
+    trade_time timestamp,
+    tx_hash text,    
     marketplace text,
-    UNIQUE(sale_id)
+    UNIQUE(sale_id),
+    UNIQUE(nft_id, trade_time)
 );
 
 CREATE TABLE nftbid (
     bid_id UUID DEFAULT gen_random_uuid(),
     nft_id uuid REFERENCES nft(nft_id),
-    time timestamp,
+    bid_value numeric,
+    from_address text,
+    currency_symbol text,
+    currency_address text,
+    currency_decimals numeric,
     blocknumber numeric,
     blockposition numeric,
-    bid_value numeric,
-    currency text,
-    from_address text,
+    bid_time timestamp,
+    tx_hash text,
     marketplace text,
-    UNIQUE(offer_id)
+    UNIQUE(bid_id),
+    UNIQUE(nft_id, from_address, bid_time)
 );
 
 CREATE TABLE nftoffer (
@@ -124,4 +136,20 @@ CREATE TABLE nftoffer (
     from_address text,
     marketplace text,
     UNIQUE(offer_id)
+);
+
+CREATE TABLE IF NOT EXISTS scrapers (
+    name character varying(255) NOT NULL,
+	conf json,
+	state json,
+    CONSTRAINT pk_scrapers PRIMARY KEY(name)
+);
+
+CREATE TABLE blockdata (
+    blockdata_id UUID DEFAULT gen_random_uuid(),
+    blockchain text not null,
+    block_number text not null,
+    block_data jsonb,
+    UNIQUE(blockchain, block_number),
+    UNIQUE(blockdata_id)
 );

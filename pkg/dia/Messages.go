@@ -56,7 +56,9 @@ type NFT struct {
 	CreationTime   time.Time
 	CreatorAddress string
 	URI            string
-	Attributes     NFTAttributes
+	// @Attributes is a collection of attributes from on- and off-chain
+	// TO DO: Should we split up into two fields?
+	Attributes NFTAttributes
 }
 
 // NFTAttributes can be stored as jasonb in postgres:
@@ -90,12 +92,20 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT         NFT
-	BlockNumber *big.Int
-	PriceUSD    float64
-	FromAddress common.Address
-	ToAddress   common.Address
-	Exchange    string
+	NFT      NFT
+	Price    *big.Int
+	PriceUSD float64
+	// TO DO: Change the below fields to strings. As of now,
+	// they do not apply to blockchains other than Ethereum.
+	FromAddress      common.Address
+	ToAddress        common.Address
+	CurrencySymbol   string
+	CurrencyAddress  common.Address
+	CurrencyDecimals int32
+	BlockNumber      uint64
+	Timestamp        time.Time
+	TxHash           common.Hash
+	Exchange         string
 }
 
 // MarshalBinary for DefiProtocolState
@@ -112,14 +122,18 @@ func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
 }
 
 type NFTBid struct {
-	NFT           NFT
-	Value         float64
-	Currency      string
-	FromAddress   common.Address
-	TxHash        common.Hash
+	NFT         NFT
+	Value       *big.Int
+	FromAddress string
+
+	CurrencySymbol   string
+	CurrencyAddress  string
+	CurrencyDecimals int32
+
 	BlockNumber   uint64
-	BlockPosition uint
-	Time          time.Time
+	BlockPosition uint64
+	Timestamp     time.Time
+	TxHash        string
 	Exchange      string
 }
 
@@ -134,6 +148,15 @@ func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+// BlockData stores information on a specific block in a given blockchain.
+type BlockData struct {
+	// Name of the blockchain, as found for instance in dia.ETHEREUM
+	BlockchainName string
+	// In order to keep it general, BlockNumber is a string
+	Number string
+	Data   map[string]interface{}
 }
 
 type Exchange struct {

@@ -1,6 +1,9 @@
 package nftdatascrapers
 
-// Please implement the scraping of coingecko quotations here.
+// Credits to Eric Ren, author of the medium post:
+// https://medium.com/@eric.ren_51534/polling-nba-top-shot-p2p-market-purchase-events-from-flow-blockchain-using-flow-go-sdk-3ec80119e75f
+// and the underlying github repository:
+// https://github.com/rrrkren/topshot-sales
 
 import (
 	"context"
