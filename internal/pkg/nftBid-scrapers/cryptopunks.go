@@ -22,14 +22,14 @@ const (
 	CryptoPunkRefreshDelay = time.Minute * 60 * 2
 )
 
-type CryptoPunkScraper struct {
+type CryptoPunksScraper struct {
 	bidScraper      BidScraper
 	contractAddress common.Address
 	ticker          *time.Ticker
 	lastBlockNumber uint64
 }
 
-func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
+func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -47,7 +47,7 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 		datastore:     rdb,
 		chanBid:       make(chan dia.NFTBid),
 	}
-	s := &CryptoPunkScraper{
+	s := &CryptoPunksScraper{
 		contractAddress: common.HexToAddress("0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB"),
 		bidScraper:      bidScraper,
 		ticker:          time.NewTicker(CryptoPunkRefreshDelay),
@@ -58,7 +58,7 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *CryptoPunkScraper) mainLoop() {
+func (scraper *CryptoPunksScraper) mainLoop() {
 	err := scraper.FetchBids()
 	if err != nil {
 		log.Fatal("fetching bids: ", err)
@@ -79,7 +79,7 @@ func (scraper *CryptoPunkScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptoPunkScraper) FetchBids() error {
+func (scraper *CryptoPunksScraper) FetchBids() error {
 	log.Info("fetch bids...")
 
 	var err error
@@ -91,7 +91,7 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = uint64(3919706)
+			scraper.lastBlockNumber = uint64(3918000)
 		}
 	}
 	scraper.lastBlockNumber = uint64(12453867)
@@ -168,12 +168,12 @@ func (scraper *CryptoPunkScraper) FetchBids() error {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *CryptoPunkScraper) GetBidChannel() chan dia.NFTBid {
+func (scraper *CryptoPunksScraper) GetBidChannel() chan dia.NFTBid {
 	return scraper.bidScraper.chanBid
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *CryptoPunkScraper) cleanup(err error) {
+func (scraper *CryptoPunksScraper) cleanup(err error) {
 	scraper.bidScraper.errorLock.Lock()
 	defer scraper.bidScraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -185,7 +185,7 @@ func (scraper *CryptoPunkScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *CryptoPunkScraper) Close() error {
+func (scraper *CryptoPunksScraper) Close() error {
 	if scraper.bidScraper.closed {
 		return errors.New("scraper already closed")
 	}

@@ -23,11 +23,14 @@ func main() {
 		log.Fatal("relational datastore error: ", err)
 	}
 
-	scraperType := flag.String("nftclass", "CryptoKitties", "which NFT class")
+	scraperType := flag.String("nftclass", "CryptoPunks", "which NFT class")
 	flag.Parse()
 	var scraper nftofferscrapers.NFTOfferScraper
 
 	switch *scraperType {
+	case "CryptoPunks":
+		log.Println("NFT Offers Scraper: Start scraping bids from CryptoPunks")
+		scraper = nftofferscrapers.NewCryptoPunksScraper(rdb)
 	case "CryptoKitties":
 		log.Println("NFT Offers Scraper: Start scraping bids from CryptoKitties")
 		scraper = nftofferscrapers.NewCryptokittiesScraper(rdb)
@@ -56,16 +59,16 @@ func handleOffers(offerChannel chan dia.NFTOffer, wg *sync.WaitGroup, rdb *model
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
 				if pgErr.Code == "23505" {
-					log.Infof("bid with tx hash %s already in db. continue.", offer.TxHash)
+					log.Infof("offer with tx hash %s already in db. continue.", offer.TxHash)
 					continue
 				} else {
-					log.Errorf("postgres error saving bid with tx hash %s: %v", offer.TxHash, err)
+					log.Errorf("postgres error saving offer with tx hash %s: %v", offer.TxHash, err)
 				}
 			} else {
-				log.Errorf("Error saving bid with tx hash %s: %v", offer.TxHash, err)
+				log.Errorf("Error saving offer with tx hash %s: %v", offer.TxHash, err)
 			}
 		} else {
-			log.Infof("successfully set bid with tx hash %s", offer.TxHash)
+			log.Infof("successfully set offer with tx hash %s", offer.TxHash)
 		}
 	}
 }

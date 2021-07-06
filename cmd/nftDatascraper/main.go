@@ -31,15 +31,15 @@ func main() {
 	case "Sorare":
 		log.Println("NFT Data Scraper: Start scraping data from Sorare")
 		scraper = nftdatascrapers.NewSorareScraper(rdb)
-	case "Cryptopunk":
-		log.Println("NFT Data Scraper: Start scraping data from Cryptopunk")
-		scraper = nftdatascrapers.NewCryptopunkScraper(rdb)
+	case "CryptoPunks":
+		log.Println("NFT Data Scraper: Start scraping data from CryptoPunks")
+		scraper = nftdatascrapers.NewCryptoPunksScraper(rdb)
 	case "Topshot":
 		log.Println("NFT Data Scraper: Start scraping data from NBA Topshot")
 		scraper = nftdatascrapers.NewNBATopshotScraper(rdb)
-	case "Cryptokitties":
-		log.Println("NFT Data Scraper: Start scraping data from Cryptokitties")
-		scraper = nftdatascrapers.NewCryptokittiesScraper(rdb)
+	case "CryptoKitties":
+		log.Println("NFT Data Scraper: Start scraping data from CryptoKitties")
+		scraper = nftdatascrapers.NewCryptoKittiesScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)

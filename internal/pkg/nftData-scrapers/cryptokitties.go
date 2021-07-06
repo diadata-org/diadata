@@ -272,7 +272,7 @@ type OpenSeaCryptokittiesResponse struct {
 	HighestBuyerCommitment interface{} `json:"highest_buyer_commitment"`
 }
 
-type CryptokittiesScraper struct {
+type CryptoKittiesScraper struct {
 	nftscraper       NFTScraper
 	address          common.Address
 	apiURLOpensea    string
@@ -280,7 +280,7 @@ type CryptokittiesScraper struct {
 	ticker           *time.Ticker
 }
 
-func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
+func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -294,7 +294,7 @@ func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
 		relDB:         rdb,
 		chanData:      make(chan dia.NFT),
 	}
-	s := &CryptokittiesScraper{
+	s := &CryptoKittiesScraper{
 		address:          common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
 		apiURLOpensea:    "https://api.opensea.io/api/v1/",
 		cryptokittiesURL: "https://www.cryptokitties.co/",
@@ -307,7 +307,7 @@ func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *CryptokittiesScraper) mainLoop() {
+func (scraper *CryptoKittiesScraper) mainLoop() {
 	err := scraper.FetchData()
 	if err != nil {
 		log.Error("error updating NFT: ", err)
@@ -328,7 +328,7 @@ func (scraper *CryptokittiesScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptokittiesScraper) FetchData() (err error) {
+func (scraper *CryptoKittiesScraper) FetchData() (err error) {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return
@@ -379,7 +379,7 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
-func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
+func (scraper *CryptoKittiesScraper) GetTotalSupply() (*big.Int, error) {
 	contract, err := cryptokitties.NewKittyAuctionCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -388,7 +388,7 @@ func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // GetKitty returns the kitty attributes of the NFT from on-chain.
-func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
+func (scraper *CryptoKittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -397,7 +397,7 @@ func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 }
 
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
-func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
+func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
 	var traits []CryptokittiesTraits
 	var creatorAddress common.Address
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
@@ -447,7 +447,7 @@ func GetCryptokittiesAddress(kittyResp []byte) (common.Address, error) {
 }
 
 // GetCryptokittiesCreationTime returns a map[uint64]uint64 mapping a
-func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
+func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
 	creationMap := make(map[uint64]time.Time)
 	filterer, err := cryptokitties.NewKittyBaseFilterer(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
@@ -494,12 +494,12 @@ func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *CryptokittiesScraper) GetDataChannel() chan dia.NFT {
+func (scraper *CryptoKittiesScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *CryptokittiesScraper) cleanup(err error) {
+func (scraper *CryptoKittiesScraper) cleanup(err error) {
 	scraper.nftscraper.errorLock.Lock()
 	defer scraper.nftscraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -511,7 +511,7 @@ func (scraper *CryptokittiesScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *CryptokittiesScraper) Close() error {
+func (scraper *CryptoKittiesScraper) Close() error {
 	if scraper.nftscraper.closed {
 		return errors.New("scraper already closed")
 	}

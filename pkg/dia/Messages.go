@@ -149,7 +149,9 @@ func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 }
 
 type NFTOffer struct {
-	NFT        NFT
+	NFT NFT
+	// Start and EndValue are for auction types. Otherwise, use StartValue
+	// and leave EndValue blank.
 	StartValue *big.Int
 	EndValue   *big.Int
 	// Duration of the offer/auction measured in seconds

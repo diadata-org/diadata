@@ -34,7 +34,21 @@ services:
   cryptopunkscraper:
     depends_on: [genericnftdatascraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
-    command: /bin/nftDatascraper -nftclass=Cryptopunk
+    command: /bin/nftDatascraper -nftclass=CryptoPunks
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+    
+  cryptokittiescraper:
+    depends_on: [genericnftdatascraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftdatascraper:latest
+    command: /bin/nftDatascraper -nftclass=CryptoKitties
     networks:
       - postgres-network
     secrets:
