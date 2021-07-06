@@ -147,7 +147,7 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 				},
 				StartValue:  iter.Event.MinValue,
 				FromAddress: sender.Hex(),
-				Type:        "OfferMinValue",
+				AuctionType: "OfferMinValue",
 				// TO DO: Switch to asset once deployed on IBM
 				CurrencySymbol:   "WETH",
 				CurrencyAddress:  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -163,7 +163,6 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 			fmt.Println("startValue: ", offer.StartValue)
 			fmt.Println("fromaddress: ", offer.FromAddress)
 
-			time.Sleep(10 * time.Second)
 			scraper.GetOfferChannel() <- offer
 		}
 		break

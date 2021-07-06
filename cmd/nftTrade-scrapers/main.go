@@ -45,9 +45,12 @@ func main() {
 	var scraper nfttradescrapers.NFTTradeScraper
 
 	switch *scraperType {
-	case "Cryptopunk":
-		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunk")
+	case "CryptoPunks":
+		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunks")
 		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
+	case "CryptoKitties":
+		log.Println("NFT Data Scraper: Start scraping trades from CryptoKitties")
+		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)

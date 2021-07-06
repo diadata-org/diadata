@@ -158,7 +158,7 @@ type NFTOffer struct {
 	Duration    time.Duration
 	FromAddress string
 	// Type of offer can be auction, simple offer,...
-	Type string
+	AuctionType string
 
 	CurrencySymbol   string
 	CurrencyAddress  string

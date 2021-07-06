@@ -155,7 +155,7 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 				StartValue:  iter.Event.StartingPrice,
 				EndValue:    iter.Event.EndingPrice,
 				FromAddress: dat[0].(common.Address).Hex(),
-				Type:        "Auction",
+				AuctionType: "Auction",
 				// TO DO: Switch to asset once deployed on IBM
 				CurrencySymbol:   "WETH",
 				CurrencyAddress:  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",

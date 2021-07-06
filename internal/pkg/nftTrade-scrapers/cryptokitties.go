@@ -6,15 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
@@ -29,7 +30,8 @@ type CryptoKittiesScraper struct {
 }
 
 func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
+	// connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -120,46 +122,48 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			return err
 		}
 
-		log.Infof("iter: %v", iter)
-		// Iter over FilterAuctionSuccessful events.
-
+		// Iterate over FilterAuctionSuccessful events.
 		for iter.Next() {
-			fmt.Println("iter ")
+			currHeader, err := scraper.tradescraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
 			if err != nil {
-				return err
+				log.Error("could not fetch current block header: ", err)
 			}
-
 			time.Sleep(1 * time.Second)
 
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.TokenId.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
 				// continue
+				// return err
+			}
+
+			lastOffer, err := scraper.tradescraper.datastore.GetLastNFTOffer(nft.NFTClass.Address, nft.NFTClass.Blockchain, nft.TokenID, iter.Event.Raw.BlockNumber, iter.Event.Raw.Index)
+			if err != nil {
 				return err
 			}
 
 			price := float64(iter.Event.TotalPrice.Uint64())
 
 			trade := dia.NFTTrade{
-				NFT:         nft,
-				BlockNumber: iter.Event.Raw.BlockNumber,
-				// TO DO: Fix FromAddress using data from CryptoKitties Offers Scraper (WIP)
-				FromAddress:      common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C").Hex(),
-				ToAddress:        iter.Event.Winner.Hex(),
-				Exchange:         "CryptokittiesAuction",
-				TxHash:           iter.Event.Raw.TxHash.Hex(),
+				NFT:              nft,
 				Price:            iter.Event.TotalPrice,
+				FromAddress:      lastOffer.FromAddress,
+				ToAddress:        iter.Event.Winner.Hex(),
 				CurrencySymbol:   "WETH",
 				CurrencyDecimals: int32(18),
 				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").Hex(),
+				BlockNumber:      iter.Event.Raw.BlockNumber,
+				Timestamp:        time.Unix(int64(currHeader.Time), 0),
+				Exchange:         "CryptokittiesAuction",
+				TxHash:           iter.Event.Raw.TxHash.Hex(),
 			}
 			scraper.GetTradeChannel() <- trade
 
 			log.Infof("got trade: ")
 			log.Infof("iter: %v", iter)
 			log.Info("price: ", price)
-			log.Info("from address: ", common.HexToAddress("0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"))
-			log.Info("to address: ", iter.Event.Winner)
+			log.Info("from address: ", trade.FromAddress)
+			log.Info("to address: ", trade.ToAddress)
 			log.Info("tx: ", iter.Event.Raw.TxHash)
 			log.Info("blockNumber: ", iter.Event.Raw.BlockNumber)
 			log.Info("id: ", iter.Event.TokenId.String())
