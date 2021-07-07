@@ -189,8 +189,8 @@ type BlockData struct {
 	// Name of the blockchain, as found for instance in dia.ETHEREUM
 	BlockchainName string
 	// In order to keep it general, BlockNumber is a string
-	Number string
-	Data   map[string]interface{}
+	BlockNumber string
+	Data        map[string]interface{}
 }
 
 type Exchange struct {

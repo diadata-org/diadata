@@ -9,7 +9,7 @@ import (
 
 func (rdb *RelDB) SetBlockData(blockdata dia.BlockData) error {
 	query := fmt.Sprintf("insert into %s (blockchain,block_number,block_data) values ($1,$2,$3)", blockdataTable)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, blockdata.BlockchainName, blockdata.Number, blockdata.Data)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, blockdata.BlockchainName, blockdata.BlockNumber, blockdata.Data)
 	if err != nil {
 		return err
 	}
@@ -28,6 +28,6 @@ func (rdb *RelDB) GetBlockData(blockchain string, blocknumber string) (dia.Block
 		return blockdata, err
 	}
 	blockdata.BlockchainName = blockchain
-	blockdata.Number = blocknumber
+	blockdata.BlockNumber = blocknumber
 	return blockdata, nil
 }

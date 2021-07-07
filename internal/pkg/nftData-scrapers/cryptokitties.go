@@ -484,7 +484,7 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 			if err != nil {
 				log.Error("fetching header by number: ", err)
 			}
-			// TO DO: Write service which caches block information such as timestamp in postgres
+			// TO DO: Switch to postgres call once the ethereum block scraper is deployed
 			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(header.Time), 0)
 		}
 		startBlockNumber = endBlockNumber

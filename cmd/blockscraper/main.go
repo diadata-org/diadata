@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/jackc/pgconn"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/block-scrapers"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +23,7 @@ func main() {
 		log.Fatal("datastore error: ", err)
 	}
 
-	scraperType := flag.String("blockchain", "", "which blockchain")
+	scraperType := flag.String("blockchain", "Ethereum", "which blockchain")
 	flag.Parse()
 	var blockscraper scrapers.BlockScraperInterface
 
@@ -47,14 +49,27 @@ func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, rd
 	for {
 		blockdata, ok := <-blockdatachannel
 		if !ok {
-			log.Error("error")
+			log.Error("blockdatachannel error")
 			return
 		}
-		log.Infof("got block number %s: %v", blockdata.Number, blockdata.Data)
+		log.Infof("got block number %s: %v", blockdata.BlockNumber, blockdata.Data)
 		err := rdb.SetBlockData(blockdata)
 		if err != nil {
-			log.Error("setting block data: ", err)
-			return
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				if pgErr.Code == "23505" {
+					log.Infof("block %s from chain %s already in db. continue.", blockdata.BlockNumber, blockdata.BlockchainName)
+					continue
+				} else {
+					log.Errorf("postgres error saving block %s: %v", blockdata.BlockNumber, err)
+					return
+				}
+			} else {
+				log.Errorf("Error saving block %s from chain %s: %v", blockdata.BlockNumber, blockdata.BlockchainName, err)
+				return
+			}
+		} else {
+			log.Infof("successfully set block %s from chain %s \n", blockdata.BlockNumber, blockdata.BlockchainName)
 		}
 	}
 
