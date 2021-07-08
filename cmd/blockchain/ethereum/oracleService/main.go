@@ -26,6 +26,7 @@ func main() {
 	/*
 	 * Read in Oracle address
 	 */
+	// TODO: export this to env vars
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
 	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
 	var blockchainNode = flag.String("blockchainNode", "http://159.69.120.42:8545/", "Node address for blockchain connection")
