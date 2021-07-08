@@ -1,0 +1,23 @@
+version: "3.2"
+services:
+  restserver:
+    environment:
+      - EXEC_MODE=production
+    ports:
+      - "1111:1111"
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-graphqlServer
+    networks:
+      - kafka-network
+      - redis-network
+      - influxdb-network
+      - postgres-network
+    secrets:
+      - api_diadata
+      - postgres_credentials
+    logging:
+      options:
+        max-size: "50m"
+    volumes:
+      - /home/srv/restServer/charts:/charts
