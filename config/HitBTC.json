@@ -1,1 +1,4516 @@
-{"Coins":[{"Symbol":"LEO","ForeignName":"LEOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"STEEM","ForeignName":"STEEMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SC","ForeignName":"SCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZAP","ForeignName":"ZAPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XUC","ForeignName":"XUCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"WAVES","ForeignName":"WAVESBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"CEL","ForeignName":"CELETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"TRST","ForeignName":"TRSTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ART","ForeignName":"ARTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DATX","ForeignName":"DATXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ATM","ForeignName":"ATMUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"HVN","ForeignName":"HVNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DNA","ForeignName":"DNABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"PHX","ForeignName":"PHXETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"UTK","ForeignName":"UTKUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCUSDC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DAG","ForeignName":"DAGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCH","ForeignName":"BCHDAI","Exchange":"HitBTC","Ignore":true},{"Symbol":"MTX","ForeignName":"MTXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAID","ForeignName":"MAIDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IOTX","ForeignName":"IOTXBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"REM","ForeignName":"REMBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DOGE","ForeignName":"DOGEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"STRAT","ForeignName":"STRATBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEN","ForeignName":"ZENUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETP","ForeignName":"ETPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LND","ForeignName":"LNDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"LUNA","ForeignName":"LUNAUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"NGC","ForeignName":"NGCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NXT","ForeignName":"NXTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZRX","ForeignName":"ZRXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"APPC","ForeignName":"APPCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"AXPR","ForeignName":"AXPRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EMC","ForeignName":"EMCUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLR","ForeignName":"PLRETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PRO","ForeignName":"PROBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"EURS","ForeignName":"EURSUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"PBT","ForeignName":"PBTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"IGNIS","ForeignName":"IGNISBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"FREE","ForeignName":"FREEUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"BTC","ForeignName":"BTCPAX","Exchange":"HitBTC","Ignore":true},{"Symbol":"AMB","ForeignName":"AMBUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"EDG","ForeignName":"EDGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DATA","ForeignName":"DATABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NANO","ForeignName":"NANOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ARDR","ForeignName":"ARDRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"C20","ForeignName":"C20BTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNK","ForeignName":"BNKETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FUN","ForeignName":"FUNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAN","ForeignName":"MANUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BDG","ForeignName":"BDGBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCN","ForeignName":"BCNEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"DCT","ForeignName":"DCTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FTT","ForeignName":"FTTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"TRX","ForeignName":"TRXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEXO","ForeignName":"NEXOETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"RFR","ForeignName":"RFRUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ADA","ForeignName":"ADABCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MITH","ForeignName":"MITHETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"KRL","ForeignName":"KRLBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DOT","ForeignName":"DOTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"QKC","ForeignName":"QKCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETH","ForeignName":"ETHDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"POA","ForeignName":"POADAI","Exchange":"HitBTC","Ignore":true},{"Symbol":"FIL","ForeignName":"FILHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"ACAT","ForeignName":"ACATUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUPER","ForeignName":"SUPERUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SCL","ForeignName":"SCLBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"TEL","ForeignName":"TELETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CVT","ForeignName":"CVTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"IHT","ForeignName":"IHTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ATM","ForeignName":"ATMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNB","ForeignName":"BNBUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XLM","ForeignName":"XLMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PART","ForeignName":"PARTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"AMB","ForeignName":"AMBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCDDRST","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETH","ForeignName":"ETHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XBP","ForeignName":"XBPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SNC","ForeignName":"SNCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"HMQ","ForeignName":"HMQETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ONT","ForeignName":"ONTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"AVA","ForeignName":"AVAUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DIT","ForeignName":"DITBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"HGT","ForeignName":"HGTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MYST","ForeignName":"MYSTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEC","ForeignName":"ZECBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"OKB","ForeignName":"OKBUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"CHP","ForeignName":"CHPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SWFTC","ForeignName":"SWFTCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LSK","ForeignName":"LSKUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SIG","ForeignName":"SIGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XEM","ForeignName":"XEMEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"AMB","ForeignName":"AMBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DASH","ForeignName":"DASHBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"SPC","ForeignName":"SPCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMREOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAY","ForeignName":"DAYETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NKN","ForeignName":"NKNUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"BRD","ForeignName":"BRDETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"ZIL","ForeignName":"ZILBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"CLO","ForeignName":"CLOBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BNB","ForeignName":"BNBHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"LOC","ForeignName":"LOCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DRT","ForeignName":"DRTUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"C20","ForeignName":"C20ETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"STORJ","ForeignName":"STORJBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETH","ForeignName":"ETHEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"MFT","ForeignName":"MFTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"STRAT","ForeignName":"STRATUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"CVT","ForeignName":"CVTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XLM","ForeignName":"XLMETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRX","ForeignName":"TRXBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MANA","ForeignName":"MANABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOT","ForeignName":"DOTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ACT","ForeignName":"ACTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"STX","ForeignName":"STXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MKR","ForeignName":"MKRUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZSC","ForeignName":"ZSCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PMA","ForeignName":"PMAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRX","ForeignName":"TRXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MIR","ForeignName":"MIRBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"RLC","ForeignName":"RLCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEC","ForeignName":"ZECUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAY","ForeignName":"DAYBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"TUSD","ForeignName":"TUSDDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"NXT","ForeignName":"NXTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BERRY","ForeignName":"BERRYUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BOS","ForeignName":"BOSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"STORJ","ForeignName":"STORJUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SENT","ForeignName":"SENTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"GBX","ForeignName":"GBXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETH","ForeignName":"ETHPAX","Exchange":"HitBTC","Ignore":true},{"Symbol":"SUB","ForeignName":"SUBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DENT","ForeignName":"DENTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"PRO","ForeignName":"PROETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"LEO","ForeignName":"LEOBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"INK","ForeignName":"INKETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ATOM","ForeignName":"ATOMBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCH","ForeignName":"BCHBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"REN","ForeignName":"RENBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DIT","ForeignName":"DITETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PNT","ForeignName":"PNTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"OCC","ForeignName":"OCCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"OKB","ForeignName":"OKBBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETH","ForeignName":"ETHTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"REP","ForeignName":"REPUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"MANA","ForeignName":"MANAUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"ONT","ForeignName":"ONTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCPT","ForeignName":"BCPTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FDZ","ForeignName":"FDZUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCPT","ForeignName":"BCPTUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTT","ForeignName":"BTTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MITX","ForeignName":"MITXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DRG","ForeignName":"DRGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMRBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"GNO","ForeignName":"GNOETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZRX","ForeignName":"ZRXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NLC2","ForeignName":"NLC2BTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XLM","ForeignName":"XLMBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"DRT","ForeignName":"DRTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUR","ForeignName":"SURBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PPC","ForeignName":"PPCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"GNX","ForeignName":"GNXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRX","ForeignName":"TRXEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"FIL","ForeignName":"FILBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"COMP","ForeignName":"COMPETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MIR","ForeignName":"MIRUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"CDT","ForeignName":"CDTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ELEC","ForeignName":"ELECETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"INSUR","ForeignName":"INSURBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"QTUM","ForeignName":"QTUMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EURS","ForeignName":"EURSEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"MITX","ForeignName":"MITXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IHT","ForeignName":"IHTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"FTT","ForeignName":"FTTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"TOMO","ForeignName":"TOMOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SRN","ForeignName":"SRNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CENNZ","ForeignName":"CENNZBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CDT","ForeignName":"CDTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ERT","ForeignName":"ERTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"STAR","ForeignName":"STARETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SBD","ForeignName":"SBDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PPC","ForeignName":"PPCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ADA","ForeignName":"ADABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NKN","ForeignName":"NKNBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BNT","ForeignName":"BNTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"AUC","ForeignName":"AUCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FLP","ForeignName":"FLPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETN","ForeignName":"ETNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EMC","ForeignName":"EMCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"KMD","ForeignName":"KMDUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MTL","ForeignName":"MTLBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BMH","ForeignName":"BMHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLBT","ForeignName":"PLBTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOGE","ForeignName":"DOGEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"VIB","ForeignName":"VIBUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"WINGS","ForeignName":"WINGSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DGB","ForeignName":"DGBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PAY","ForeignName":"PAYBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"TNC","ForeignName":"TNCUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ADA","ForeignName":"ADAUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MTH","ForeignName":"MTHETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"AXPR","ForeignName":"AXPRETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"REM","ForeignName":"REMETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MLN","ForeignName":"MLNETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"LINA","ForeignName":"LINAUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"XEM","ForeignName":"XEMUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"HT","ForeignName":"HTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DCR","ForeignName":"DCRUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SBTC","ForeignName":"SBTCUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZAP","ForeignName":"ZAPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNK","ForeignName":"BNKUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"USE","ForeignName":"USEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"OMG","ForeignName":"OMGBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"TV","ForeignName":"TVUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"STC","ForeignName":"STCUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"EOS","ForeignName":"EOSEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"COV","ForeignName":"COVBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"VIB","ForeignName":"VIBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LA","ForeignName":"LAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"UUU","ForeignName":"UUUBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"KMD","ForeignName":"KMDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"HSR","ForeignName":"HSRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EDG","ForeignName":"EDGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"GNO","ForeignName":"GNOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"VTC","ForeignName":"VTCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"YCC","ForeignName":"YCCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNI","ForeignName":"UNIUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"TV","ForeignName":"TVBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BAT","ForeignName":"BATETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SOL","ForeignName":"SOLHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"SNC","ForeignName":"SNCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"HTML","ForeignName":"HTMLBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETC","ForeignName":"ETCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAV","ForeignName":"DAVETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BRD","ForeignName":"BRDBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"GAS","ForeignName":"GASETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NCT","ForeignName":"NCTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCH","ForeignName":"BCHHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"BTT","ForeignName":"BTTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"NGC","ForeignName":"NGCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LRC","ForeignName":"LRCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FLP","ForeignName":"FLPUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XVG","ForeignName":"XVGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRX","ForeignName":"TRXHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"TEL","ForeignName":"TELBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SMART","ForeignName":"SMARTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ARK","ForeignName":"ARKBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"HMQ","ForeignName":"HMQBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"HIT","ForeignName":"HITETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"DRG","ForeignName":"DRGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FLP","ForeignName":"FLPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNI","ForeignName":"UNIBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"SPC","ForeignName":"SPCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOV","ForeignName":"DOVBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTT","ForeignName":"BTTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ELF","ForeignName":"ELFUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LOOM","ForeignName":"LOOMBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ACM","ForeignName":"ACMUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"CDT","ForeignName":"CDTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNB","ForeignName":"BNBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNB","ForeignName":"BNBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FDZ","ForeignName":"FDZBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"POLY","ForeignName":"POLYBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DGB","ForeignName":"DGBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"APPC","ForeignName":"APPCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAI","ForeignName":"DAIEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"BTG","ForeignName":"BTGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNI","ForeignName":"UNIHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"FTT","ForeignName":"FTTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"SWM","ForeignName":"SWMETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"XLM","ForeignName":"XLMUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DGB","ForeignName":"DGBUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SALT","ForeignName":"SALTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"GBX","ForeignName":"GBXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEODAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"OAX","ForeignName":"OAXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAI","ForeignName":"DAIUSDC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DCN","ForeignName":"DCNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CENNZ","ForeignName":"CENNZUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"QTUM","ForeignName":"QTUMUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"TAU","ForeignName":"TAUBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IQN","ForeignName":"IQNBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"CHAT","ForeignName":"CHATBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAID","ForeignName":"MAIDUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XEM","ForeignName":"XEMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"GNX","ForeignName":"GNXBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"OPT","ForeignName":"OPTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CVC","ForeignName":"CVCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"DASH","ForeignName":"DASHUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"HTML","ForeignName":"HTMLETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TUSD","ForeignName":"TUSDUSDC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ACAT","ForeignName":"ACATBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SWFTC","ForeignName":"SWFTCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEBL","ForeignName":"NEBLETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CPAY","ForeignName":"CPAYETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZPR","ForeignName":"ZPRETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"WTC","ForeignName":"WTCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"AE","ForeignName":"AEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"OCN","ForeignName":"OCNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ACT","ForeignName":"ACTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLU","ForeignName":"PLUBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MFT","ForeignName":"MFTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"AUC","ForeignName":"AUCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CVC","ForeignName":"CVCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"HGT","ForeignName":"HGTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"GOLD","ForeignName":"GOLDUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"PLBT","ForeignName":"PLBTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"AEON","ForeignName":"AEONBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"QTUM","ForeignName":"QTUMETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRX","ForeignName":"TRXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DLT","ForeignName":"DLTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZSC","ForeignName":"ZSCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTG","ForeignName":"BTGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"AUTO","ForeignName":"AUTOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEBL","ForeignName":"NEBLBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOT","ForeignName":"DOTHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"SHIP","ForeignName":"SHIPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTX","ForeignName":"BTXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLR","ForeignName":"PLRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CURE","ForeignName":"CUREBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"XMR","ForeignName":"XMRHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"AVA","ForeignName":"AVAETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"CENNZ","ForeignName":"CENNZETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DGTX","ForeignName":"DGTXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"STX","ForeignName":"STXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XTZ","ForeignName":"XTZHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"BERRY","ForeignName":"BERRYBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BNT","ForeignName":"BNTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BOX","ForeignName":"BOXEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEXO","ForeignName":"NEXOUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DICE","ForeignName":"DICEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"UUU","ForeignName":"UUUETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"WAVES","ForeignName":"WAVESBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CRPT","ForeignName":"CRPTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"UTT","ForeignName":"UTTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"IHT","ForeignName":"IHTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCH","ForeignName":"BCHETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"SEELE","ForeignName":"SEELEUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DASH","ForeignName":"DASHETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"VTHO","ForeignName":"VTHOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"IOST","ForeignName":"IOSTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"IPL","ForeignName":"IPLBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DASH","ForeignName":"DASHHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"LSK","ForeignName":"LSKETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EMC","ForeignName":"EMCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DATA","ForeignName":"DATAUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"EKO","ForeignName":"EKOETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAN","ForeignName":"MANETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NCT","ForeignName":"NCTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"MTH","ForeignName":"MTHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUR","ForeignName":"SURUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEC","ForeignName":"ZECEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"XTZ","ForeignName":"XTZBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DENT","ForeignName":"DENTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ADA","ForeignName":"ADAHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"OCC","ForeignName":"OCCUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"GAS","ForeignName":"GASBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"XMR","ForeignName":"XMRDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCN","ForeignName":"BCNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"STC","ForeignName":"STCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BNT","ForeignName":"BNTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"KMD","ForeignName":"KMDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SMT","ForeignName":"SMTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"FOTA","ForeignName":"FOTABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTG","ForeignName":"BTGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCD","ForeignName":"BCDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMC","ForeignName":"XMCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IQN","ForeignName":"IQNETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"XUC","ForeignName":"XUCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMRUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LCC","ForeignName":"LCCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IDH","ForeignName":"IDHETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"HBT","ForeignName":"HBTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCN","ForeignName":"BCNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ELEC","ForeignName":"ELECUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"UTT","ForeignName":"UTTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FUN","ForeignName":"FUNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IGNIS","ForeignName":"IGNISETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"USE","ForeignName":"USEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TUSD","ForeignName":"TUSDEOSDT","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETC","ForeignName":"ETCBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NEU","ForeignName":"NEUBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"CHSB","ForeignName":"CHSBUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SBTC","ForeignName":"SBTCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CHSB","ForeignName":"CHSBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"KIND","ForeignName":"KINDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XVG","ForeignName":"XVGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SBTC","ForeignName":"SBTCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"GVT","ForeignName":"GVTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ANT","ForeignName":"ANTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DCR","ForeignName":"DCRETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"BRD","ForeignName":"BRDUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"BMC","ForeignName":"BMCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"REX","ForeignName":"REXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAV","ForeignName":"DAVBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNO","ForeignName":"UNOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETN","ForeignName":"ETNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"UTT","ForeignName":"UTTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAID","ForeignName":"MAIDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUB","ForeignName":"SUBUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"UBT","ForeignName":"UBTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"LINK","ForeignName":"LINKBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"FYP","ForeignName":"FYPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCPT","ForeignName":"BCPTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LINK","ForeignName":"LINKHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"SENT","ForeignName":"SENTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNO","ForeignName":"UNOBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"KIN","ForeignName":"KINBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ABYSS","ForeignName":"ABYSSETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POA","ForeignName":"POAETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"TRUE","ForeignName":"TRUEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"ABYSS","ForeignName":"ABYSSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"WIKI","ForeignName":"WIKIUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MAN","ForeignName":"MANBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"INK","ForeignName":"INKBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTB","ForeignName":"BTBBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCH","ForeignName":"BCHEURS","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCD","ForeignName":"BCDUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BOX","ForeignName":"BOXEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"LOC","ForeignName":"LOCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"EVX","ForeignName":"EVXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLU","ForeignName":"PLUETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"C20","ForeignName":"C20USD","Exchange":"HitBTC","Ignore":true},{"Symbol":"FDZ","ForeignName":"FDZETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"PAY","ForeignName":"PAYETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"STAK","ForeignName":"STAKUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"IPL","ForeignName":"IPLUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"FTX","ForeignName":"FTXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LINK","ForeignName":"LINKBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ZEC","ForeignName":"ZECHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"LTC","ForeignName":"LTCDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"TRAC","ForeignName":"TRACETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TNC","ForeignName":"TNCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BOX","ForeignName":"BOXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DCR","ForeignName":"DCRBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"THETA","ForeignName":"THETABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ZEC","ForeignName":"ZECETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"COMP","ForeignName":"COMPBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ACT","ForeignName":"ACTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DENT","ForeignName":"DENTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"AVA","ForeignName":"AVABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"OMG","ForeignName":"OMGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ATOM","ForeignName":"ATOMETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MITH","ForeignName":"MITHUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DASH","ForeignName":"DASHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NMR","ForeignName":"NMRBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"STX","ForeignName":"STXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SHIP","ForeignName":"SHIPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SWT","ForeignName":"SWTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MKR","ForeignName":"MKRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LSK","ForeignName":"LSKBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"OMG","ForeignName":"OMGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SWM","ForeignName":"SWMUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ARDR","ForeignName":"ARDRUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETC","ForeignName":"ETCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"OMG","ForeignName":"OMGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"HTML","ForeignName":"HTMLUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"FACE","ForeignName":"FACEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XUC","ForeignName":"XUCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SOC","ForeignName":"SOCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ADK","ForeignName":"ADKBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"WAVES","ForeignName":"WAVESUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"EVX","ForeignName":"EVXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LUN","ForeignName":"LUNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZAP","ForeignName":"ZAPUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SBD","ForeignName":"SBDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"UNO","ForeignName":"UNOETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NEO","ForeignName":"NEOUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ADA","ForeignName":"ADAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SOL","ForeignName":"SOLBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"AVT","ForeignName":"AVTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FACE","ForeignName":"FACEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"MKR","ForeignName":"MKRETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NXT","ForeignName":"NXTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"REM","ForeignName":"REMUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"XRP","ForeignName":"XRPEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"EKO","ForeignName":"EKOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"HVN","ForeignName":"HVNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"KIND","ForeignName":"KINDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POLY","ForeignName":"POLYETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"DGD","ForeignName":"DGDBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SMART","ForeignName":"SMARTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"INK","ForeignName":"INKUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SNGLS","ForeignName":"SNGLSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"HIT","ForeignName":"HITUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETC","ForeignName":"ETCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"REX","ForeignName":"REXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SMART","ForeignName":"SMARTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PPT","ForeignName":"PPTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"ICX","ForeignName":"ICXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POST","ForeignName":"POSTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"CRPT","ForeignName":"CRPTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"NPX","ForeignName":"NPXETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"PPT","ForeignName":"PPTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BANCA","ForeignName":"BANCAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEU","ForeignName":"NEUETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"WIKI","ForeignName":"WIKIBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZIL","ForeignName":"ZILUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"PRE","ForeignName":"PREBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"TIME","ForeignName":"TIMEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"PBT","ForeignName":"PBTETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NEU","ForeignName":"NEUUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"GTC","ForeignName":"GTCBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"WIN","ForeignName":"WINUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"MTL","ForeignName":"MTLETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NAV","ForeignName":"NAVBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"SWM","ForeignName":"SWMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ELEC","ForeignName":"ELECBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BANCA","ForeignName":"BANCAUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"MTX","ForeignName":"MTXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ARK","ForeignName":"ARKUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"IHF","ForeignName":"IHFUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"LINA","ForeignName":"LINABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"PMA","ForeignName":"PMABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZSC","ForeignName":"ZSCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XTZ","ForeignName":"XTZUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XDN","ForeignName":"XDNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCN","ForeignName":"BCNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETH","ForeignName":"ETHUSDC","Exchange":"HitBTC","Ignore":true},{"Symbol":"SRN","ForeignName":"SRNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PNT","ForeignName":"PNTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IQN","ForeignName":"IQNUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"BMC","ForeignName":"BMCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMRTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"REP","ForeignName":"REPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"IND","ForeignName":"INDETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EVX","ForeignName":"EVXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DGTX","ForeignName":"DGTXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETP","ForeignName":"ETPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ENJ","ForeignName":"ENJBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMRETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CHAT","ForeignName":"CHATUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DCN","ForeignName":"DCNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"POE","ForeignName":"POEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"RVN","ForeignName":"RVNBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"SPC","ForeignName":"SPCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PKT","ForeignName":"PKTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MOF","ForeignName":"MOFBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"REP","ForeignName":"REPBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SNC","ForeignName":"SNCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MDA","ForeignName":"MDABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"CLO","ForeignName":"CLOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"GTC","ForeignName":"GTCUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DRT","ForeignName":"DRTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZRX","ForeignName":"ZRXTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"RFR","ForeignName":"RFRBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"XRP","ForeignName":"XRPETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SNT","ForeignName":"SNTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"STORJ","ForeignName":"STORJETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"TKY","ForeignName":"TKYBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EDG","ForeignName":"EDGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"KIN","ForeignName":"KINUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"WIKI","ForeignName":"WIKIETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FOTA","ForeignName":"FOTAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POWR","ForeignName":"POWRBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"UTK","ForeignName":"UTKBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"STC","ForeignName":"STCETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"DRGN","ForeignName":"DRGNBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"NAV","ForeignName":"NAVUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DICE","ForeignName":"DICEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SMT","ForeignName":"SMTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EURS","ForeignName":"EURSTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"CLO","ForeignName":"CLOETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"LTC","ForeignName":"LTCEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"DATX","ForeignName":"DATXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BMC","ForeignName":"BMCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XVG","ForeignName":"XVGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"VITAE","ForeignName":"VITAEBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ZEN","ForeignName":"ZENBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"PHX","ForeignName":"PHXBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"MLN","ForeignName":"MLNBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ROX","ForeignName":"ROXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XDN","ForeignName":"XDNETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BANCA","ForeignName":"BANCABTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOV","ForeignName":"DOVETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"LOOM","ForeignName":"LOOMETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"EURS","ForeignName":"EURSDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"BDG","ForeignName":"BDGETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"IPL","ForeignName":"IPLETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CPT","ForeignName":"CPTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"VIB","ForeignName":"VIBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZRC","ForeignName":"ZRCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BOX","ForeignName":"BOXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMR","ForeignName":"XMREURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"DASH","ForeignName":"DASHEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"KIN","ForeignName":"KINETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"IDH","ForeignName":"IDHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"MANA","ForeignName":"MANAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"HIT","ForeignName":"HITBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ETP","ForeignName":"ETPUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"DOGE","ForeignName":"DOGEUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XEM","ForeignName":"XEMETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NMR","ForeignName":"NMRUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DOT","ForeignName":"DOTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ICX","ForeignName":"ICXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"OAX","ForeignName":"OAXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POE","ForeignName":"POEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"MYST","ForeignName":"MYSTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEC","ForeignName":"ZECBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"FXT","ForeignName":"FXTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETH","ForeignName":"ETHEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"HT","ForeignName":"HTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"SAN","ForeignName":"SANETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NRG","ForeignName":"NRGBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"VIBE","ForeignName":"VIBEBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SBD","ForeignName":"SBDUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"PLR","ForeignName":"PLRUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTS","ForeignName":"BTSBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NEO","ForeignName":"NEOEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"SENT","ForeignName":"SENTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"CEL","ForeignName":"CELBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BCH","ForeignName":"BCHTUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"PHX","ForeignName":"PHXUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"VTHO","ForeignName":"VTHOBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"FIL","ForeignName":"FILUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"INSUR","ForeignName":"INSURUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"XMC","ForeignName":"XMCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PMA","ForeignName":"PMAUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"XRP","ForeignName":"XRPEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETH","ForeignName":"ETHUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"NANO","ForeignName":"NANOUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LINK","ForeignName":"LINKUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"LINK","ForeignName":"LINKETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"DATA","ForeignName":"DATAETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NGC","ForeignName":"NGCETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ATOM","ForeignName":"ATOMBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BTX","ForeignName":"BTXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"QKC","ForeignName":"QKCETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"STAK","ForeignName":"STAKBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"DNT","ForeignName":"DNTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"IOST","ForeignName":"IOSTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SNT","ForeignName":"SNTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZRX","ForeignName":"ZRXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"OCC","ForeignName":"OCCETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"ATOM","ForeignName":"ATOMUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"XTZ","ForeignName":"XTZETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"GBX","ForeignName":"GBXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SALT","ForeignName":"SALTBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"XMR","ForeignName":"XMRBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"LTC","ForeignName":"LTCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"BAT","ForeignName":"BATBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BTC","ForeignName":"BTCBUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SWFTC","ForeignName":"SWFTCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUPER","ForeignName":"SUPERBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"BNK","ForeignName":"BNKBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEC","ForeignName":"ZECEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"FTX","ForeignName":"FTXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ZEN","ForeignName":"ZENETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"ONT","ForeignName":"ONTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"TKN","ForeignName":"TKNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SOL","ForeignName":"SOLUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DGTX","ForeignName":"DGTXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"OCN","ForeignName":"OCNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FTT","ForeignName":"FTTHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"TIME","ForeignName":"TIMEETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"STRAT","ForeignName":"STRATETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"FXT","ForeignName":"FXTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"THETA","ForeignName":"THETAUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"PRE","ForeignName":"PREETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"SMT","ForeignName":"SMTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ENJ","ForeignName":"ENJETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETH","ForeignName":"ETHGUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"APPC","ForeignName":"APPCUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SRN","ForeignName":"SRNUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"UTK","ForeignName":"UTKETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"PKT","ForeignName":"PKTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"POA","ForeignName":"POAUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"SNT","ForeignName":"SNTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"XLM","ForeignName":"XLMHIT","Exchange":"HitBTC","Ignore":true},{"Symbol":"DGB","ForeignName":"DGBTUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"CVT","ForeignName":"CVTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"BCH","ForeignName":"BCHUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"DAY","ForeignName":"DAYUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"ACAT","ForeignName":"ACATETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NIM","ForeignName":"NIMBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"POA","ForeignName":"POABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"XDN","ForeignName":"XDNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"SEELE","ForeignName":"SEELEBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"LRC","ForeignName":"LRCBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EOS","ForeignName":"EOSPAX","Exchange":"HitBTC","Ignore":true},{"Symbol":"ICX","ForeignName":"ICXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LUNA","ForeignName":"LUNABTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"EOS","ForeignName":"EOSBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MITH","ForeignName":"MITHBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"ETN","ForeignName":"ETNBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PTOY","ForeignName":"PTOYETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"OAX","ForeignName":"OAXBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"MTX","ForeignName":"MTXETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NCT","ForeignName":"NCTBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"GAS","ForeignName":"GASUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"XAUR","ForeignName":"XAURBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XAUR","ForeignName":"XAURETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"EXP","ForeignName":"EXPBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"LTC","ForeignName":"LTCBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"COV","ForeignName":"COVETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"COMP","ForeignName":"COMPUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"CHAT","ForeignName":"CHATETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DAG","ForeignName":"DAGBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"NIM","ForeignName":"NIMETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TV","ForeignName":"TVETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BAT","ForeignName":"BATUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUB","ForeignName":"SUBETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"NANO","ForeignName":"NANOETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"SWT","ForeignName":"SWTETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"TOMO","ForeignName":"TOMOBTC","Exchange":"HitBTC","Ignore":true},{"Symbol":"ENJ","ForeignName":"ENJUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"AUTO","ForeignName":"AUTOUSD","Exchange":"HitBTC","Ignore":true},{"Symbol":"ELF","ForeignName":"ELFBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"PTOY","ForeignName":"PTOYBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"XMC","ForeignName":"XMCUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"REX","ForeignName":"REXUSD","Exchange":"HitBTC","Ignore":false},{"Symbol":"LSK","ForeignName":"LSKEOS","Exchange":"HitBTC","Ignore":false},{"Symbol":"ONT","ForeignName":"ONTBCH","Exchange":"HitBTC","Ignore":true},{"Symbol":"NEXO","ForeignName":"NEXOBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"EKO","ForeignName":"EKOUSDT","Exchange":"HitBTC","Ignore":false},{"Symbol":"SUR","ForeignName":"SURETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"BERRY","ForeignName":"BERRYETH","Exchange":"HitBTC","Ignore":false},{"Symbol":"DASH","ForeignName":"DASHEURS","Exchange":"HitBTC","Ignore":false},{"Symbol":"POWR","ForeignName":"POWRETH","Exchange":"HitBTC","Ignore":true},{"Symbol":"MKR","ForeignName":"MKRDAI","Exchange":"HitBTC","Ignore":false},{"Symbol":"CHSB","ForeignName":"CHSBBTC","Exchange":"HitBTC","Ignore":false},{"Symbol":"FUN","ForeignName":"FUNETH","Exchange":"HitBTC","Ignore":false}]}
+{
+  "Coins": [
+    {
+      "Symbol": "LEO",
+      "ForeignName": "LEOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STEEM",
+      "ForeignName": "STEEMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SC",
+      "ForeignName": "SCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZAP",
+      "ForeignName": "ZAPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XUC",
+      "ForeignName": "XUCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WAVES",
+      "ForeignName": "WAVESBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CEL",
+      "ForeignName": "CELETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRST",
+      "ForeignName": "TRSTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ART",
+      "ForeignName": "ARTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DATX",
+      "ForeignName": "DATXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATM",
+      "ForeignName": "ATMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HVN",
+      "ForeignName": "HVNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DNA",
+      "ForeignName": "DNABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHX",
+      "ForeignName": "PHXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTK",
+      "ForeignName": "UTKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSDC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAG",
+      "ForeignName": "DAGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTX",
+      "ForeignName": "MTXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAID",
+      "ForeignName": "MAIDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IOTX",
+      "ForeignName": "IOTXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REM",
+      "ForeignName": "REMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STRAT",
+      "ForeignName": "STRATBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEN",
+      "ForeignName": "ZENUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETP",
+      "ForeignName": "ETPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LND",
+      "ForeignName": "LNDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LUNA",
+      "ForeignName": "LUNAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NGC",
+      "ForeignName": "NGCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NXT",
+      "ForeignName": "NXTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "APPC",
+      "ForeignName": "APPCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AXPR",
+      "ForeignName": "AXPRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EMC",
+      "ForeignName": "EMCUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLR",
+      "ForeignName": "PLRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PRO",
+      "ForeignName": "PROBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURS",
+      "ForeignName": "EURSUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PBT",
+      "ForeignName": "PBTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IGNIS",
+      "ForeignName": "IGNISBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FREE",
+      "ForeignName": "FREEUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCPAX",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AMB",
+      "ForeignName": "AMBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EDG",
+      "ForeignName": "EDGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DATA",
+      "ForeignName": "DATABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NANO",
+      "ForeignName": "NANOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARDR",
+      "ForeignName": "ARDRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "C20",
+      "ForeignName": "C20BTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNK",
+      "ForeignName": "BNKETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FUN",
+      "ForeignName": "FUNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAN",
+      "ForeignName": "MANUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BDG",
+      "ForeignName": "BDGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCT",
+      "ForeignName": "DCTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTT",
+      "ForeignName": "FTTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEXO",
+      "ForeignName": "NEXOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RFR",
+      "ForeignName": "RFRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADABCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MITH",
+      "ForeignName": "MITHETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KRL",
+      "ForeignName": "KRLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOT",
+      "ForeignName": "DOTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QKC",
+      "ForeignName": "QKCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POA",
+      "ForeignName": "POADAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIL",
+      "ForeignName": "FILHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACAT",
+      "ForeignName": "ACATUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUPER",
+      "ForeignName": "SUPERUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SCL",
+      "ForeignName": "SCLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TEL",
+      "ForeignName": "TELETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVT",
+      "ForeignName": "CVTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IHT",
+      "ForeignName": "IHTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATM",
+      "ForeignName": "ATMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PART",
+      "ForeignName": "PARTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AMB",
+      "ForeignName": "AMBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCDDRST",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XBP",
+      "ForeignName": "XBPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNC",
+      "ForeignName": "SNCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HMQ",
+      "ForeignName": "HMQETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AVA",
+      "ForeignName": "AVAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DIT",
+      "ForeignName": "DITBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HGT",
+      "ForeignName": "HGTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MYST",
+      "ForeignName": "MYSTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OKB",
+      "ForeignName": "OKBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHP",
+      "ForeignName": "CHPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWFTC",
+      "ForeignName": "SWFTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SIG",
+      "ForeignName": "SIGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName": "XEMEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AMB",
+      "ForeignName": "AMBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPC",
+      "ForeignName": "SPCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMREOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAY",
+      "ForeignName": "DAYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NKN",
+      "ForeignName": "NKNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRD",
+      "ForeignName": "BRDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZIL",
+      "ForeignName": "ZILBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CLO",
+      "ForeignName": "CLOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LOC",
+      "ForeignName": "LOCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRT",
+      "ForeignName": "DRTUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "C20",
+      "ForeignName": "C20ETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STORJ",
+      "ForeignName": "STORJBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MFT",
+      "ForeignName": "MFTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STRAT",
+      "ForeignName": "STRATUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVT",
+      "ForeignName": "CVTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MANA",
+      "ForeignName": "MANABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOT",
+      "ForeignName": "DOTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACT",
+      "ForeignName": "ACTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STX",
+      "ForeignName": "STXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZSC",
+      "ForeignName": "ZSCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PMA",
+      "ForeignName": "PMAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MIR",
+      "ForeignName": "MIRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RLC",
+      "ForeignName": "RLCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAY",
+      "ForeignName": "DAYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TUSD",
+      "ForeignName": "TUSDDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NXT",
+      "ForeignName": "NXTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BERRY",
+      "ForeignName": "BERRYUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOS",
+      "ForeignName": "BOSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STORJ",
+      "ForeignName": "STORJUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SENT",
+      "ForeignName": "SENTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GBX",
+      "ForeignName": "GBXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHPAX",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUB",
+      "ForeignName": "SUBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DENT",
+      "ForeignName": "DENTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PRO",
+      "ForeignName": "PROETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LEO",
+      "ForeignName": "LEOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INK",
+      "ForeignName": "INKETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATOM",
+      "ForeignName": "ATOMBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REN",
+      "ForeignName": "RENBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DIT",
+      "ForeignName": "DITETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PNT",
+      "ForeignName": "PNTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OCC",
+      "ForeignName": "OCCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OKB",
+      "ForeignName": "OKBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MANA",
+      "ForeignName": "MANAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCPT",
+      "ForeignName": "BCPTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FDZ",
+      "ForeignName": "FDZUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCPT",
+      "ForeignName": "BCPTUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTT",
+      "ForeignName": "BTTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MITX",
+      "ForeignName": "MITXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRG",
+      "ForeignName": "DRGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GNO",
+      "ForeignName": "GNOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NLC2",
+      "ForeignName": "NLC2BTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRT",
+      "ForeignName": "DRTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUR",
+      "ForeignName": "SURBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PPC",
+      "ForeignName": "PPCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GNX",
+      "ForeignName": "GNXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIL",
+      "ForeignName": "FILBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "COMP",
+      "ForeignName": "COMPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MIR",
+      "ForeignName": "MIRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CDT",
+      "ForeignName": "CDTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ELEC",
+      "ForeignName": "ELECETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INSUR",
+      "ForeignName": "INSURBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURS",
+      "ForeignName": "EURSEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MITX",
+      "ForeignName": "MITXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IHT",
+      "ForeignName": "IHTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTT",
+      "ForeignName": "FTTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TOMO",
+      "ForeignName": "TOMOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SRN",
+      "ForeignName": "SRNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CENNZ",
+      "ForeignName": "CENNZBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CDT",
+      "ForeignName": "CDTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ERT",
+      "ForeignName": "ERTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STAR",
+      "ForeignName": "STARETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBD",
+      "ForeignName": "SBDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PPC",
+      "ForeignName": "PPCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NKN",
+      "ForeignName": "NKNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNT",
+      "ForeignName": "BNTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AUC",
+      "ForeignName": "AUCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FLP",
+      "ForeignName": "FLPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETN",
+      "ForeignName": "ETNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EMC",
+      "ForeignName": "EMCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KMD",
+      "ForeignName": "KMDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTL",
+      "ForeignName": "MTLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BMH",
+      "ForeignName": "BMHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLBT",
+      "ForeignName": "PLBTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VIB",
+      "ForeignName": "VIBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WINGS",
+      "ForeignName": "WINGSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGB",
+      "ForeignName": "DGBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PAY",
+      "ForeignName": "PAYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TNC",
+      "ForeignName": "TNCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTH",
+      "ForeignName": "MTHETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AXPR",
+      "ForeignName": "AXPRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REM",
+      "ForeignName": "REMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MLN",
+      "ForeignName": "MLNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINA",
+      "ForeignName": "LINAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName": "XEMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HT",
+      "ForeignName": "HTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBTC",
+      "ForeignName": "SBTCUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZAP",
+      "ForeignName": "ZAPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNK",
+      "ForeignName": "BNKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USE",
+      "ForeignName": "USEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TV",
+      "ForeignName": "TVUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STC",
+      "ForeignName": "STCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "COV",
+      "ForeignName": "COVBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VIB",
+      "ForeignName": "VIBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LA",
+      "ForeignName": "LAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UUU",
+      "ForeignName": "UUUBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KMD",
+      "ForeignName": "KMDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HSR",
+      "ForeignName": "HSRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EDG",
+      "ForeignName": "EDGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GNO",
+      "ForeignName": "GNOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VTC",
+      "ForeignName": "VTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YCC",
+      "ForeignName": "YCCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNI",
+      "ForeignName": "UNIUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TV",
+      "ForeignName": "TVBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BAT",
+      "ForeignName": "BATETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOLHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNC",
+      "ForeignName": "SNCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HTML",
+      "ForeignName": "HTMLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAV",
+      "ForeignName": "DAVETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRD",
+      "ForeignName": "BRDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GAS",
+      "ForeignName": "GASETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NCT",
+      "ForeignName": "NCTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTT",
+      "ForeignName": "BTTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NGC",
+      "ForeignName": "NGCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LRC",
+      "ForeignName": "LRCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FLP",
+      "ForeignName": "FLPUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XVG",
+      "ForeignName": "XVGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TEL",
+      "ForeignName": "TELBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMART",
+      "ForeignName": "SMARTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARK",
+      "ForeignName": "ARKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HMQ",
+      "ForeignName": "HMQBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HIT",
+      "ForeignName": "HITETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRG",
+      "ForeignName": "DRGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FLP",
+      "ForeignName": "FLPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNI",
+      "ForeignName": "UNIBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPC",
+      "ForeignName": "SPCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOV",
+      "ForeignName": "DOVBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTT",
+      "ForeignName": "BTTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ELF",
+      "ForeignName": "ELFUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LOOM",
+      "ForeignName": "LOOMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACM",
+      "ForeignName": "ACMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CDT",
+      "ForeignName": "CDTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FDZ",
+      "ForeignName": "FDZBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POLY",
+      "ForeignName": "POLYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGB",
+      "ForeignName": "DGBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "APPC",
+      "ForeignName": "APPCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAI",
+      "ForeignName": "DAIEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNI",
+      "ForeignName": "UNIHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTT",
+      "ForeignName": "FTTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWM",
+      "ForeignName": "SWMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGB",
+      "ForeignName": "DGBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SALT",
+      "ForeignName": "SALTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GBX",
+      "ForeignName": "GBXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEODAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OAX",
+      "ForeignName": "OAXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAI",
+      "ForeignName": "DAIUSDC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCN",
+      "ForeignName": "DCNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CENNZ",
+      "ForeignName": "CENNZUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TAU",
+      "ForeignName": "TAUBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IQN",
+      "ForeignName": "IQNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHAT",
+      "ForeignName": "CHATBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAID",
+      "ForeignName": "MAIDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName": "XEMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GNX",
+      "ForeignName": "GNXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OPT",
+      "ForeignName": "OPTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVC",
+      "ForeignName": "CVCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HTML",
+      "ForeignName": "HTMLETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TUSD",
+      "ForeignName": "TUSDUSDC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACAT",
+      "ForeignName": "ACATBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWFTC",
+      "ForeignName": "SWFTCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEBL",
+      "ForeignName": "NEBLETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CPAY",
+      "ForeignName": "CPAYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZPR",
+      "ForeignName": "ZPRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WTC",
+      "ForeignName": "WTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AE",
+      "ForeignName": "AEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OCN",
+      "ForeignName": "OCNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACT",
+      "ForeignName": "ACTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLU",
+      "ForeignName": "PLUBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MFT",
+      "ForeignName": "MFTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AUC",
+      "ForeignName": "AUCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVC",
+      "ForeignName": "CVCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HGT",
+      "ForeignName": "HGTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GOLD",
+      "ForeignName": "GOLDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLBT",
+      "ForeignName": "PLBTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AEON",
+      "ForeignName": "AEONBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QTUM",
+      "ForeignName": "QTUMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DLT",
+      "ForeignName": "DLTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZSC",
+      "ForeignName": "ZSCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AUTO",
+      "ForeignName": "AUTOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEBL",
+      "ForeignName": "NEBLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOT",
+      "ForeignName": "DOTHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SHIP",
+      "ForeignName": "SHIPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTX",
+      "ForeignName": "BTXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLR",
+      "ForeignName": "PLRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CURE",
+      "ForeignName": "CUREBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AVA",
+      "ForeignName": "AVAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CENNZ",
+      "ForeignName": "CENNZETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGTX",
+      "ForeignName": "DGTXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STX",
+      "ForeignName": "STXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BERRY",
+      "ForeignName": "BERRYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNT",
+      "ForeignName": "BNTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOX",
+      "ForeignName": "BOXEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEXO",
+      "ForeignName": "NEXOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DICE",
+      "ForeignName": "DICEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UUU",
+      "ForeignName": "UUUETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WAVES",
+      "ForeignName": "WAVESBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CRPT",
+      "ForeignName": "CRPTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTT",
+      "ForeignName": "UTTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IHT",
+      "ForeignName": "IHTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SEELE",
+      "ForeignName": "SEELEUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VTHO",
+      "ForeignName": "VTHOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IOST",
+      "ForeignName": "IOSTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IPL",
+      "ForeignName": "IPLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EMC",
+      "ForeignName": "EMCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DATA",
+      "ForeignName": "DATAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EKO",
+      "ForeignName": "EKOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAN",
+      "ForeignName": "MANETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NCT",
+      "ForeignName": "NCTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTH",
+      "ForeignName": "MTHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUR",
+      "ForeignName": "SURUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DENT",
+      "ForeignName": "DENTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OCC",
+      "ForeignName": "OCCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GAS",
+      "ForeignName": "GASBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STC",
+      "ForeignName": "STCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNT",
+      "ForeignName": "BNTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KMD",
+      "ForeignName": "KMDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMT",
+      "ForeignName": "SMTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FOTA",
+      "ForeignName": "FOTABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTG",
+      "ForeignName": "BTGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCD",
+      "ForeignName": "BCDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMC",
+      "ForeignName": "XMCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IQN",
+      "ForeignName": "IQNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XUC",
+      "ForeignName": "XUCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LCC",
+      "ForeignName": "LCCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IDH",
+      "ForeignName": "IDHETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HBT",
+      "ForeignName": "HBTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ELEC",
+      "ForeignName": "ELECUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTT",
+      "ForeignName": "UTTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FUN",
+      "ForeignName": "FUNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IGNIS",
+      "ForeignName": "IGNISETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USE",
+      "ForeignName": "USEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TUSD",
+      "ForeignName": "TUSDEOSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEU",
+      "ForeignName": "NEUBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHSB",
+      "ForeignName": "CHSBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBTC",
+      "ForeignName": "SBTCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHSB",
+      "ForeignName": "CHSBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KIND",
+      "ForeignName": "KINDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XVG",
+      "ForeignName": "XVGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBTC",
+      "ForeignName": "SBTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GVT",
+      "ForeignName": "GVTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ANT",
+      "ForeignName": "ANTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRD",
+      "ForeignName": "BRDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BMC",
+      "ForeignName": "BMCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REX",
+      "ForeignName": "REXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAV",
+      "ForeignName": "DAVBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNO",
+      "ForeignName": "UNOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETN",
+      "ForeignName": "ETNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTT",
+      "ForeignName": "UTTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAID",
+      "ForeignName": "MAIDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUB",
+      "ForeignName": "SUBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UBT",
+      "ForeignName": "UBTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINKBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FYP",
+      "ForeignName": "FYPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCPT",
+      "ForeignName": "BCPTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINKHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SENT",
+      "ForeignName": "SENTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNO",
+      "ForeignName": "UNOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KIN",
+      "ForeignName": "KINBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ABYSS",
+      "ForeignName": "ABYSSETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POA",
+      "ForeignName": "POAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "false",
+      "ForeignName": "falseBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ABYSS",
+      "ForeignName": "ABYSSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WIKI",
+      "ForeignName": "WIKIUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MAN",
+      "ForeignName": "MANBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INK",
+      "ForeignName": "INKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTB",
+      "ForeignName": "BTBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCD",
+      "ForeignName": "BCDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOX",
+      "ForeignName": "BOXEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LOC",
+      "ForeignName": "LOCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EVX",
+      "ForeignName": "EVXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLU",
+      "ForeignName": "PLUETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "C20",
+      "ForeignName": "C20USD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FDZ",
+      "ForeignName": "FDZETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PAY",
+      "ForeignName": "PAYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STAK",
+      "ForeignName": "STAKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IPL",
+      "ForeignName": "IPLUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTX",
+      "ForeignName": "FTXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRAC",
+      "ForeignName": "TRACETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TNC",
+      "ForeignName": "TNCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOX",
+      "ForeignName": "BOXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCR",
+      "ForeignName": "DCRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "THETA",
+      "ForeignName": "THETABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "COMP",
+      "ForeignName": "COMPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACT",
+      "ForeignName": "ACTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DENT",
+      "ForeignName": "DENTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AVA",
+      "ForeignName": "AVABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATOM",
+      "ForeignName": "ATOMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MITH",
+      "ForeignName": "MITHUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NMR",
+      "ForeignName": "NMRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STX",
+      "ForeignName": "STXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SHIP",
+      "ForeignName": "SHIPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWT",
+      "ForeignName": "SWTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWM",
+      "ForeignName": "SWMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARDR",
+      "ForeignName": "ARDRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OMG",
+      "ForeignName": "OMGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HTML",
+      "ForeignName": "HTMLUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FACE",
+      "ForeignName": "FACEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XUC",
+      "ForeignName": "XUCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOC",
+      "ForeignName": "SOCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADK",
+      "ForeignName": "ADKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WAVES",
+      "ForeignName": "WAVESUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EVX",
+      "ForeignName": "EVXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LUN",
+      "ForeignName": "LUNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZAP",
+      "ForeignName": "ZAPUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBD",
+      "ForeignName": "SBDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNO",
+      "ForeignName": "UNOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOLBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AVT",
+      "ForeignName": "AVTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FACE",
+      "ForeignName": "FACEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NXT",
+      "ForeignName": "NXTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REM",
+      "ForeignName": "REMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EKO",
+      "ForeignName": "EKOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HVN",
+      "ForeignName": "HVNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KIND",
+      "ForeignName": "KINDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POLY",
+      "ForeignName": "POLYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGD",
+      "ForeignName": "DGDBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMART",
+      "ForeignName": "SMARTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INK",
+      "ForeignName": "INKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNGLS",
+      "ForeignName": "SNGLSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HIT",
+      "ForeignName": "HITUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REX",
+      "ForeignName": "REXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMART",
+      "ForeignName": "SMARTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PPT",
+      "ForeignName": "PPTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ICX",
+      "ForeignName": "ICXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POST",
+      "ForeignName": "POSTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CRPT",
+      "ForeignName": "CRPTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NPX",
+      "ForeignName": "NPXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PPT",
+      "ForeignName": "PPTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BANCA",
+      "ForeignName": "BANCAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEU",
+      "ForeignName": "NEUETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WIKI",
+      "ForeignName": "WIKIBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZIL",
+      "ForeignName": "ZILUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PRE",
+      "ForeignName": "PREBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TIME",
+      "ForeignName": "TIMEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PBT",
+      "ForeignName": "PBTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEU",
+      "ForeignName": "NEUUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GTC",
+      "ForeignName": "GTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WIN",
+      "ForeignName": "WINUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTL",
+      "ForeignName": "MTLETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NAV",
+      "ForeignName": "NAVBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWM",
+      "ForeignName": "SWMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ELEC",
+      "ForeignName": "ELECBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BANCA",
+      "ForeignName": "BANCAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTX",
+      "ForeignName": "MTXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARK",
+      "ForeignName": "ARKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IHF",
+      "ForeignName": "IHFUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINA",
+      "ForeignName": "LINABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PMA",
+      "ForeignName": "PMABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZSC",
+      "ForeignName": "ZSCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XDN",
+      "ForeignName": "XDNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCN",
+      "ForeignName": "BCNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SRN",
+      "ForeignName": "SRNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PNT",
+      "ForeignName": "PNTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IQN",
+      "ForeignName": "IQNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BMC",
+      "ForeignName": "BMCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IND",
+      "ForeignName": "INDETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EVX",
+      "ForeignName": "EVXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGTX",
+      "ForeignName": "DGTXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETP",
+      "ForeignName": "ETPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ENJ",
+      "ForeignName": "ENJBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHAT",
+      "ForeignName": "CHATUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DCN",
+      "ForeignName": "DCNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POE",
+      "ForeignName": "POEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RVN",
+      "ForeignName": "RVNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPC",
+      "ForeignName": "SPCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PKT",
+      "ForeignName": "PKTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MOF",
+      "ForeignName": "MOFBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REP",
+      "ForeignName": "REPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNC",
+      "ForeignName": "SNCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MDA",
+      "ForeignName": "MDABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CLO",
+      "ForeignName": "CLOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GTC",
+      "ForeignName": "GTCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRT",
+      "ForeignName": "DRTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RFR",
+      "ForeignName": "RFRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STORJ",
+      "ForeignName": "STORJETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TKY",
+      "ForeignName": "TKYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EDG",
+      "ForeignName": "EDGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KIN",
+      "ForeignName": "KINUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WIKI",
+      "ForeignName": "WIKIETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FOTA",
+      "ForeignName": "FOTAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POWR",
+      "ForeignName": "POWRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTK",
+      "ForeignName": "UTKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STC",
+      "ForeignName": "STCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DRGN",
+      "ForeignName": "DRGNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NAV",
+      "ForeignName": "NAVUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DICE",
+      "ForeignName": "DICEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMT",
+      "ForeignName": "SMTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURS",
+      "ForeignName": "EURSTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CLO",
+      "ForeignName": "CLOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DATX",
+      "ForeignName": "DATXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BMC",
+      "ForeignName": "BMCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XVG",
+      "ForeignName": "XVGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VITAE",
+      "ForeignName": "VITAEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEN",
+      "ForeignName": "ZENBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHX",
+      "ForeignName": "PHXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MLN",
+      "ForeignName": "MLNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ROX",
+      "ForeignName": "ROXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XDN",
+      "ForeignName": "XDNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BANCA",
+      "ForeignName": "BANCABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOV",
+      "ForeignName": "DOVETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LOOM",
+      "ForeignName": "LOOMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURS",
+      "ForeignName": "EURSDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BDG",
+      "ForeignName": "BDGETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IPL",
+      "ForeignName": "IPLETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CPT",
+      "ForeignName": "CPTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VIB",
+      "ForeignName": "VIBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRC",
+      "ForeignName": "ZRCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOX",
+      "ForeignName": "BOXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMREURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KIN",
+      "ForeignName": "KINETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IDH",
+      "ForeignName": "IDHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MANA",
+      "ForeignName": "MANAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HIT",
+      "ForeignName": "HITBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETP",
+      "ForeignName": "ETPUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGEUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XEM",
+      "ForeignName": "XEMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NMR",
+      "ForeignName": "NMRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOT",
+      "ForeignName": "DOTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ICX",
+      "ForeignName": "ICXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OAX",
+      "ForeignName": "OAXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POE",
+      "ForeignName": "POEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MYST",
+      "ForeignName": "MYSTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FXT",
+      "ForeignName": "FXTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HT",
+      "ForeignName": "HTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAN",
+      "ForeignName": "SANETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NRG",
+      "ForeignName": "NRGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VIBE",
+      "ForeignName": "VIBEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SBD",
+      "ForeignName": "SBDUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLR",
+      "ForeignName": "PLRUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTS",
+      "ForeignName": "BTSBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEO",
+      "ForeignName": "NEOEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SENT",
+      "ForeignName": "SENTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CEL",
+      "ForeignName": "CELBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHX",
+      "ForeignName": "PHXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VTHO",
+      "ForeignName": "VTHOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIL",
+      "ForeignName": "FILUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INSUR",
+      "ForeignName": "INSURUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMC",
+      "ForeignName": "XMCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PMA",
+      "ForeignName": "PMAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NANO",
+      "ForeignName": "NANOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINKUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINKETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DATA",
+      "ForeignName": "DATAETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NGC",
+      "ForeignName": "NGCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATOM",
+      "ForeignName": "ATOMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTX",
+      "ForeignName": "BTXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QKC",
+      "ForeignName": "QKCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STAK",
+      "ForeignName": "STAKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DNT",
+      "ForeignName": "DNTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IOST",
+      "ForeignName": "IOSTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRX",
+      "ForeignName": "ZRXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OCC",
+      "ForeignName": "OCCETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATOM",
+      "ForeignName": "ATOMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XTZ",
+      "ForeignName": "XTZETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GBX",
+      "ForeignName": "GBXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SALT",
+      "ForeignName": "SALTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMRBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BAT",
+      "ForeignName": "BATBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCBUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWFTC",
+      "ForeignName": "SWFTCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUPER",
+      "ForeignName": "SUPERBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNK",
+      "ForeignName": "BNKBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEC",
+      "ForeignName": "ZECEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTX",
+      "ForeignName": "FTXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZEN",
+      "ForeignName": "ZENETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TKN",
+      "ForeignName": "TKNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOLUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGTX",
+      "ForeignName": "DGTXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OCN",
+      "ForeignName": "OCNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTT",
+      "ForeignName": "FTTHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TIME",
+      "ForeignName": "TIMEETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STRAT",
+      "ForeignName": "STRATETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FXT",
+      "ForeignName": "FXTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "THETA",
+      "ForeignName": "THETAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PRE",
+      "ForeignName": "PREETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SMT",
+      "ForeignName": "SMTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ENJ",
+      "ForeignName": "ENJETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHGUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "APPC",
+      "ForeignName": "APPCUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SRN",
+      "ForeignName": "SRNUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UTK",
+      "ForeignName": "UTKETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PKT",
+      "ForeignName": "PKTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POA",
+      "ForeignName": "POAUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SNT",
+      "ForeignName": "SNTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLMHIT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DGB",
+      "ForeignName": "DGBTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVT",
+      "ForeignName": "CVTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAY",
+      "ForeignName": "DAYUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ACAT",
+      "ForeignName": "ACATETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NIM",
+      "ForeignName": "NIMBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POA",
+      "ForeignName": "POABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XDN",
+      "ForeignName": "XDNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SEELE",
+      "ForeignName": "SEELEBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LRC",
+      "ForeignName": "LRCBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSPAX",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ICX",
+      "ForeignName": "ICXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LUNA",
+      "ForeignName": "LUNABTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MITH",
+      "ForeignName": "MITHBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETN",
+      "ForeignName": "ETNBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PTOY",
+      "ForeignName": "PTOYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "OAX",
+      "ForeignName": "OAXBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MTX",
+      "ForeignName": "MTXETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NCT",
+      "ForeignName": "NCTBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GAS",
+      "ForeignName": "GASUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XAUR",
+      "ForeignName": "XAURBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XAUR",
+      "ForeignName": "XAURETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EXP",
+      "ForeignName": "EXPBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "COV",
+      "ForeignName": "COVETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "COMP",
+      "ForeignName": "COMPUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHAT",
+      "ForeignName": "CHATETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAG",
+      "ForeignName": "DAGBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NIM",
+      "ForeignName": "NIMETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TV",
+      "ForeignName": "TVETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BAT",
+      "ForeignName": "BATUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUB",
+      "ForeignName": "SUBETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NANO",
+      "ForeignName": "NANOETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SWT",
+      "ForeignName": "SWTETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TOMO",
+      "ForeignName": "TOMOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ENJ",
+      "ForeignName": "ENJUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AUTO",
+      "ForeignName": "AUTOUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ELF",
+      "ForeignName": "ELFBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PTOY",
+      "ForeignName": "PTOYBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMC",
+      "ForeignName": "XMCUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "REX",
+      "ForeignName": "REXUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LSK",
+      "ForeignName": "LSKEOS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ONT",
+      "ForeignName": "ONTBCH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEXO",
+      "ForeignName": "NEXOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EKO",
+      "ForeignName": "EKOUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUR",
+      "ForeignName": "SURETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BERRY",
+      "ForeignName": "BERRYETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DASH",
+      "ForeignName": "DASHEURS",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POWR",
+      "ForeignName": "POWRETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MKR",
+      "ForeignName": "MKRDAI",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CHSB",
+      "ForeignName": "CHSBBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FUN",
+      "ForeignName": "FUNETH",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    }
+  ]
+}
