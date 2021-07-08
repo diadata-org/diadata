@@ -54,8 +54,8 @@ type RelDatastore interface {
 
 	// Blockchain data
 	SetBlockData(dia.BlockData) error
-	GetBlockData(blockchain string, blocknumber string) (dia.BlockData, error)
-	GetLastBlockBlockscraper(blockchain string) (string, error)
+	GetBlockData(blockchain string, blocknumber int64) (dia.BlockData, error)
+	GetLastBlockBlockscraper(blockchain string) (int64, error)
 }
 
 const (

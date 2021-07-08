@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"math/big"
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -97,7 +96,7 @@ func (scraper *EthereumScraper) FetchData() error {
 	if err != nil {
 		log.Errorf("could not find last scraped block: %v. Start from block 0.", err)
 	} else {
-		lastBlockNumber, err = strconv.Atoi(blockNumber)
+		lastBlockNumber = int(blockNumber)
 		if err != nil {
 			log.Error("parse last block number: ", err)
 		}
@@ -133,7 +132,7 @@ func (scraper *EthereumScraper) FetchData() error {
 		ethblockdata.UncleHash = block.UncleHash()
 
 		blockdata.BlockchainName = dia.ETHEREUM
-		blockdata.BlockNumber = strconv.Itoa(int(ethblockdata.Number))
+		blockdata.BlockNumber = int64(ethblockdata.Number)
 		blockdata.Data = structs.Map(ethblockdata)
 
 		scraper.GetDataChannel() <- blockdata

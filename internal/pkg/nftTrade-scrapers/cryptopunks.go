@@ -23,6 +23,7 @@ import (
 
 const (
 	CryptoPunkRefreshDelay = time.Second * 60
+	cryptoPunksFirstBlock  = 3918000
 )
 
 type CryptoPunkScraper struct {
@@ -93,7 +94,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = uint64(3919706)
+			scraper.lastBlockNumber = uint64(cryptoPunksFirstBlock)
 		}
 	}
 
@@ -109,8 +110,8 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 		return err
 	}
 
-	// TODO: It's a good practise to stay a little behind the head.
-	endBlockNumber := header.Number.Uint64() - 18
+	// It's a good practise to stay a little behind the head.
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
 
 	// We need the cryptopunk abi to unpack the transfer event.
 	abi, err := abi.JSON(strings.NewReader(string(cryptopunk.CryptoPunksMarketABI)))

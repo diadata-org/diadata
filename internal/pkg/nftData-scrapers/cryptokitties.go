@@ -18,14 +18,13 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
 )
 
 const (
-	openseaAPIWait = 250
-	crFirstBlock   = uint64(4605167)
-	batchSize      = 5000
+	openseaAPIWait          = 250
+	cryptoKittiesFirstBlock = uint64(4605167)
+	batchSize               = 5000
 )
 
 type Kitty struct {
@@ -328,10 +327,10 @@ func (scraper *CryptoKittiesScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptoKittiesScraper) FetchData() (err error) {
+func (scraper *CryptoKittiesScraper) FetchData() error {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
-		return
+		return err
 	}
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
@@ -341,11 +340,6 @@ func (scraper *CryptoKittiesScraper) FetchData() (err error) {
 		log.Error("getting nftclass: ", err)
 	}
 
-	creationMap, err := scraper.GetCryptokittiesCreationTime()
-	if err != nil {
-		log.Error("creation time: ", err)
-	}
-
 	for i := 0; i < int(totalSupply.Int64()); i++ {
 		var out CryptokittiesOutput
 		var creatorAddress common.Address
@@ -353,13 +347,20 @@ func (scraper *CryptoKittiesScraper) FetchData() (err error) {
 		// 1. fetch data from onchain
 		out.Kitty, err = scraper.GetKitty(big.NewInt(int64(i)))
 		if err != nil {
-			log.Errorf("Error getting kitty data: %+v", err)
+			log.Errorf("getting kitty data: %+v", err)
+			return err
+		}
+
+		creationMap, err := scraper.GetCryptokittiesCreationTime()
+		if err != nil {
+			log.Errorf("getting creation map: %+v", err)
+			return err
 		}
 
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
 		if err != nil {
-			log.Errorf("Error getting Opensea data: %+v", err)
+			log.Errorf("getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
@@ -458,10 +459,10 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 	if err != nil {
 		return creationMap, err
 	}
-	endBlockNumber := header.Number.Uint64() - 8
-	startBlockNumber := crFirstBlock
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	startBlockNumber := cryptoKittiesFirstBlock
 
-	for endBlockNumber <= header.Number.Uint64()-8 {
+	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptokitties.KittyBaseBirthIterator
 		iter, err = filterer.FilterBirth(&bind.FilterOpts{
 			Start: startBlockNumber,
@@ -477,15 +478,14 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 			return creationMap, err
 		}
 
+		// map kitty id to timestamp of creation event.
+		var blockData dia.BlockData
 		for iter.Next() {
-			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
-			var header *types.Header
-			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
 			if err != nil {
-				log.Error("fetching header by number: ", err)
+				log.Errorf("getting blockdata: %+v", err)
 			}
-			// TO DO: Switch to postgres call once the ethereum block scraper is deployed
-			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(header.Time), 0)
+			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize

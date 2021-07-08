@@ -20,6 +20,7 @@ import (
 
 const (
 	CryptoPunkRefreshDelay = time.Minute * 60 * 2
+	cryptoPunksFirstBlock  = 3918000
 )
 
 type CryptoPunksScraper struct {
@@ -91,7 +92,7 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to CryptoPunks first block number!
-			scraper.lastBlockNumber = uint64(3918000)
+			scraper.lastBlockNumber = uint64(cryptoPunksFirstBlock)
 		}
 	}
 	scraper.lastBlockNumber = uint64(12453867)

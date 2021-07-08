@@ -20,6 +20,7 @@ import (
 
 const (
 	CryptoKittiesRefreshDelay = time.Second * 60
+	cryptoKittiesFirstBlock   = 4605169
 )
 
 type CryptoKittiesScraper struct {
@@ -86,7 +87,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 		})
 		if err != nil {
 			// We couldn't find a last block number, fallback to Cryptokitties first block number!
-			scraper.lastBlockNumber = uint64(4605169)
+			scraper.lastBlockNumber = uint64(cryptoKittiesFirstBlock)
 		}
 	}
 
@@ -101,8 +102,8 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 		return err
 	}
 
-	// TODO: It's a good practise to stay a little behind the head.
-	endBlockNumber := header.Number.Uint64() - 18
+	// It's a good practise to stay a little behind the head.
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
 
 	// Reduce the window size while there is an query limit error.
 	for {
@@ -128,13 +129,12 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			if err != nil {
 				log.Error("could not fetch current block header: ", err)
 			}
-			time.Sleep(1 * time.Second)
 
 			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.ETHEREUM, iter.Event.TokenId.String())
 			if err != nil {
 				// TODO: should we continue if we failed to get NFT from the db or should we fail!
 				// continue
-				// return err
+				return err
 			}
 
 			lastOffer, err := scraper.tradescraper.datastore.GetLastNFTOffer(nft.NFTClass.Address, nft.NFTClass.Blockchain, nft.TokenID, iter.Event.Raw.BlockNumber, iter.Event.Raw.Index)

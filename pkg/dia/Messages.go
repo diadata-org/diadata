@@ -189,7 +189,7 @@ type BlockData struct {
 	// Name of the blockchain, as found for instance in dia.ETHEREUM
 	BlockchainName string
 	// In order to keep it general, BlockNumber is a string
-	BlockNumber string
+	BlockNumber int64
 	Data        map[string]interface{}
 }
 

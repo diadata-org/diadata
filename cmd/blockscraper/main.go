@@ -52,24 +52,24 @@ func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, rd
 			log.Error("blockdatachannel error")
 			return
 		}
-		log.Infof("got block number %s: %v", blockdata.BlockNumber, blockdata.Data)
+		log.Infof("got block number %v: %v", blockdata.BlockNumber, blockdata.Data)
 		err := rdb.SetBlockData(blockdata)
 		if err != nil {
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
 				if pgErr.Code == "23505" {
-					log.Infof("block %s from chain %s already in db. continue.", blockdata.BlockNumber, blockdata.BlockchainName)
+					log.Infof("block %v from chain %s already in db. continue.", blockdata.BlockNumber, blockdata.BlockchainName)
 					continue
 				} else {
-					log.Errorf("postgres error saving block %s: %v", blockdata.BlockNumber, err)
+					log.Errorf("postgres error saving block %v: %v", blockdata.BlockNumber, err)
 					return
 				}
 			} else {
-				log.Errorf("Error saving block %s from chain %s: %v", blockdata.BlockNumber, blockdata.BlockchainName, err)
+				log.Errorf("Error saving block %v from chain %s: %v", blockdata.BlockNumber, blockdata.BlockchainName, err)
 				return
 			}
 		} else {
-			log.Infof("successfully set block %s from chain %s \n", blockdata.BlockNumber, blockdata.BlockchainName)
+			log.Infof("successfully set block %v from chain %s \n", blockdata.BlockNumber, blockdata.BlockchainName)
 		}
 	}
 

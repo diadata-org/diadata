@@ -18,12 +18,11 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
 )
 
 const (
-	cpFirstBlock = uint64(3918000)
+	cryptoPunksFirstBlock = uint64(3918000)
 )
 
 type OpenSeaCryptopunkResponse struct {
@@ -401,10 +400,10 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 		return creationTimeMap, creatorAddressMap, err
 	}
 
-	endBlockNumber := header.Number.Uint64() - 8
-	startBlockNumber := cpFirstBlock
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	startBlockNumber := cryptoPunksFirstBlock
 
-	for endBlockNumber <= header.Number.Uint64()-8 {
+	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptopunk.CryptoPunksMarketAssignIterator
 		fmt.Printf("startblock -- endblock: %v -- %v \n", startBlockNumber, endBlockNumber)
 		iter, err = filterer.FilterAssign(&bind.FilterOpts{
@@ -421,15 +420,15 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 			return creationTimeMap, creatorAddressMap, err
 		}
 
+		// map punk index to timestamp of creation event and to creator address.
+		var blockData dia.BlockData
 		for iter.Next() {
 
-			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
-			var header *types.Header
-			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
 			if err != nil {
-				log.Error("fetching header by number: ", err)
+				log.Errorf("getting blockdata: %+v", err)
 			}
-			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(header.Time), 0)
+			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
 			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
 		}
 		startBlockNumber = endBlockNumber
