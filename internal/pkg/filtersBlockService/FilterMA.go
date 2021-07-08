@@ -30,6 +30,10 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 	}
 	return s
 }
+func (s *FilterMA) FinalCompute(t time.Time) float64 {
+	return s.finalCompute(t)
+}
+
 func (s *FilterMA) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
@@ -46,12 +50,22 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 		div = len(s.previousPrices)
 	}
 	s.value = total / float64(div)
+	log.Println("Final compute", s.value)
+
 	return s.value
 }
 
+func (s *FilterMA) FilterPointForBlock() *dia.FilterPoint {
+	return s.filterPointForBlock()
+}
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" {
-		return nil
+		return &dia.FilterPoint{
+			Symbol: s.symbol,
+			Value:  s.value,
+			Name:   "MA" + strconv.Itoa(s.param),
+			Time:   s.currentTime,
+		}
 	} else {
 		return &dia.FilterPoint{
 			Symbol: s.symbol,
@@ -63,13 +77,16 @@ func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
 }
 
 func (s *FilterMA) fill(t time.Time, price float64) {
+
 	diff := int(t.Sub(s.currentTime).Seconds())
 	if diff > 1 {
+
 		for diff > 1 {
 			s.previousPrices = append([]float64{price}, s.previousPrices...)
 			diff--
 		}
 	} else {
+
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]
@@ -84,6 +101,10 @@ func (s *FilterMA) fill(t time.Time, price float64) {
 	s.currentTime = t
 }
 
+func (s *FilterMA) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+
 func (s *FilterMA) compute(trade dia.Trade) {
 	s.modified = true
 	if s.lastTrade != nil {
@@ -94,8 +115,10 @@ func (s *FilterMA) compute(trade dia.Trade) {
 			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
 		}
 	}
+
 	s.fill(trade.Time, trade.EstimatedUSDPrice)
 	s.lastTrade = &trade
+
 }
 
 func (s *FilterMA) save(ds models.Datastore) error {

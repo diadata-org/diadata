@@ -36,6 +36,5 @@ func (qr *QuotationResolver) Time(ctx context.Context) (*graphql.Time, error) {
 }
 
 func (qr *QuotationResolver) MAIR(ctx context.Context) (*graphql.Time, error) {
-	120
 	return &graphql.Time{Time: qr.q.Time}, nil
 }

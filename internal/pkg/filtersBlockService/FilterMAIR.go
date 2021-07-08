@@ -3,11 +3,12 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // FilterMAIR contains the configuration parameters of the filter
@@ -43,6 +44,11 @@ func (s *FilterMAIR) processDataPoint(price float64) {
 	}
 	s.previousPrices = append([]float64{price}, s.previousPrices...)
 }
+
+func (s *FilterMAIR) FinalCompute(t time.Time) float64 {
+	return s.finalCompute(t)
+}
+
 func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
@@ -54,9 +60,19 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	s.value = computeMean(cleanPrices)
 	return s.value
 }
+
+func (s *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
+	return s.filterPointForBlock()
+}
+
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
-		return nil
+		return &dia.FilterPoint{
+			Symbol: s.symbol,
+			Value:  s.value,
+			Name:   s.filterName,
+			Time:   s.currentTime,
+		}
 	}
 	return &dia.FilterPoint{
 		Symbol: s.symbol,
@@ -83,6 +99,11 @@ func (s *FilterMAIR) fill(t time.Time, price float64) {
 	}
 	s.currentTime = t
 }
+
+func (s *FilterMAIR) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+
 func (s *FilterMAIR) compute(trade dia.Trade) {
 	s.modified = true
 	if s.lastTrade != nil {

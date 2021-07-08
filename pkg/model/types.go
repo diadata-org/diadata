@@ -38,11 +38,17 @@ type Quotation struct {
 	ITIN               string
 }
 
+type ChartPoint struct {
+	Time     time.Time
+	Exchange string
+	Value    float64
+}
+
 type Price struct {
-	Symbol     string
-	Name       string
-	Price      float64
-	Time       time.Time
+	Symbol string
+	Name   string
+	Price  float64
+	Time   time.Time
 }
 
 type InterestRate struct {
