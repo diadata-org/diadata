@@ -31,3 +31,15 @@ func (rdb *RelDB) GetBlockData(blockchain string, blocknumber string) (dia.Block
 	blockdata.BlockNumber = blocknumber
 	return blockdata, nil
 }
+
+// GetLastBlockBlockscraper returns the last scraped block on @blockchain for block data scrapers.
+func (rdb *RelDB) GetLastBlockBlockscraper(blockchain string) (blockNumber string, err error) {
+	query := fmt.Sprintf("select block_number from %s where blockchain=$1 order by block_number desc limit 1", blockdataTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, blockchain).Scan(
+		&blockNumber,
+	)
+	if err != nil {
+		return
+	}
+	return
+}

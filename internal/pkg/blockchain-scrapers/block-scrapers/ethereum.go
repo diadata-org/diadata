@@ -12,40 +12,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/fatih/structs"
-	"github.com/jackc/pgx/v4"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
-	EthereumBlocks = "EthereumBlockScraper"
+	followDist = 8
 )
-
-var (
-	defEthereumBlockScraperConfig = &EthereumBlockScraperConfig{
-		FollowDist: uint64(8),
-	}
-
-	// Start from genesis block when no state is stored.
-	defEthereumBlockScraperState = &EthereumBlockScraperState{LastBlockNum: 0}
-)
-
-type EthereumBlockScraperConfig struct {
-	// Stay @FollowDist behind the head
-	FollowDist uint64 `json:"following_distance_blocks"`
-}
-
-type EthereumBlockScraperState struct {
-	// last block number has been processed
-	LastBlockNum uint64 `json:"last_block_num"`
-}
 
 type EthereumScraper struct {
 	blockscraper BlockScraper
 	client       *ethclient.Client
 	ticker       *time.Ticker
-	config       *EthereumBlockScraperConfig
-	state        *EthereumBlockScraperState
 }
 
 type EthereumBlockData struct {
@@ -83,49 +61,10 @@ func NewEthereumScraper(rdb *models.RelDB) *EthereumScraper {
 		blockscraper: blockScraper,
 		client:       connection,
 		ticker:       time.NewTicker(refreshDelay),
-		config:       &EthereumBlockScraperConfig{},
-		state:        &EthereumBlockScraperState{},
-	}
-
-	err = s.initScraper(context.Background())
-	if err != nil {
-		log.Error("could not initialize scraper config and state: ", err)
-		return nil
 	}
 
 	go s.mainLoop()
 	return s
-}
-
-// init scraper
-// if there are no values stored previously, use defaults and store them
-func (s *EthereumScraper) initScraper(ctx context.Context) error {
-	if err := s.loadConfig(ctx); err != nil {
-		if !errors.Is(err, pgx.ErrNoRows) {
-			log.Errorf("unable to read scraper config from rdb: %s", err.Error())
-			return err
-		}
-
-		// use & store defaults if there is no record in the scraper table
-
-		defConf := *defEthereumBlockScraperConfig
-		s.config = &defConf
-		if err := s.blockscraper.relDB.SetScraperConfig(ctx, EthereumBlocks, s.config); err != nil {
-			log.Errorf("unable to store scraper config on rdb: %s", err.Error())
-			return err
-		}
-
-		defState := *defEthereumBlockScraperState
-		s.state = &defState
-		if err := s.blockscraper.relDB.SetScraperState(ctx, EthereumBlocks, s.state); err != nil {
-			log.Errorf("unable to store scraper state on rdb: %s", err.Error())
-			return err
-		}
-
-		return nil
-	}
-
-	return s.loadState(ctx)
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
@@ -152,12 +91,24 @@ func (scraper *EthereumScraper) mainLoop() {
 
 func (scraper *EthereumScraper) FetchData() error {
 
+	// Fetch last scraped block number from db.
+	var lastBlockNumber int
+	blockNumber, err := scraper.blockscraper.relDB.GetLastBlockBlockscraper(dia.ETHEREUM)
+	if err != nil {
+		log.Errorf("could not find last scraped block: %v. Start from block 0.", err)
+	} else {
+		lastBlockNumber, err = strconv.Atoi(blockNumber)
+		if err != nil {
+			log.Error("parse last block number: ", err)
+		}
+	}
+
 	block, err := scraper.client.BlockByNumber(context.Background(), nil)
 	if err != nil {
 		return err
 	}
 	currentBlockNumber := block.NumberU64()
-	for i := scraper.state.LastBlockNum + 1; i < currentBlockNumber-scraper.config.FollowDist; i++ {
+	for i := lastBlockNumber; i < int(currentBlockNumber)-followDist; i++ {
 		var ethblockdata EthereumBlockData
 		var blockdata dia.BlockData
 		block, err := scraper.client.BlockByNumber(context.Background(), big.NewInt(int64(i)))
@@ -182,33 +133,17 @@ func (scraper *EthereumScraper) FetchData() error {
 		ethblockdata.UncleHash = block.UncleHash()
 
 		blockdata.BlockchainName = dia.ETHEREUM
-		blockdata.Number = strconv.Itoa(int(ethblockdata.Number))
+		blockdata.BlockNumber = strconv.Itoa(int(ethblockdata.Number))
 		blockdata.Data = structs.Map(ethblockdata)
 
 		scraper.GetDataChannel() <- blockdata
 
-		err = scraper.storeState(context.Background())
-		if err != nil {
-			log.Error("store scraper state: ", err)
-		}
 	}
 	return nil
 }
 
 func (scraper *EthereumScraper) GetDataChannel() chan dia.BlockData {
 	return scraper.blockscraper.chanData
-}
-
-func (s *EthereumScraper) loadConfig(ctx context.Context) error {
-	return s.blockscraper.relDB.GetScraperConfig(ctx, EthereumBlocks, s.config)
-}
-
-func (s *EthereumScraper) loadState(ctx context.Context) error {
-	return s.blockscraper.relDB.GetScraperState(ctx, EthereumBlocks, s.state)
-}
-
-func (s *EthereumScraper) storeState(ctx context.Context) error {
-	return s.blockscraper.relDB.SetScraperState(ctx, EthereumBlocks, s.state)
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
