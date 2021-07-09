@@ -190,6 +190,24 @@ func periodicOracleUpdateHelper(topCoins *int, sleepSeconds int, auth *bind.Tran
 	}
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 
+	// USDC Quotation
+	rawUSDCQ, err := getQuotationFromDia("USDC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve USDC quotation data from DIA: %v", err)
+		return err
+	}
+	rawUSDCS, err := getSupplyFromDia("USDC")
+	if err != nil {
+		log.Fatalf("Failed to retrieve USDC supply data from DIA: %v", err)
+		return err
+	}
+	err = updateQuotation(rawUSDCQ, rawUSDCS, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update USDC Oracle: %v", err)
+		return err
+	}
+	time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
 	// --------------------------------------------------------
 	// LENDING/BORROWING RATES
 	// --------------------------------------------------------
