@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -270,9 +270,9 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// This environment variable is either set in docker-compose or empty
-	executionMode := os.Getenv("EXEC_MODE")
+	executionMode := utils.Getenv("EXEC_MODE", "")
 	if executionMode == "production" {
-		err = r.Run(":8080")
+		err = r.Run(utils.Getenv("LISTEN_PORT", ":8080"))
 		if err != nil {
 			log.Error(err)
 		}

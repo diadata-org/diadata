@@ -1,0 +1,7 @@
+FROM us.icr.io/dia-registry/oracles/oracleservice:latest
+
+WORKDIR $GOPATH
+
+WORKDIR $GOPATH/src/
+
+COPY ./secrets/oracle_keys_plasm.txt.dusty /run/secrets/oracle_keys_plasm_dusty

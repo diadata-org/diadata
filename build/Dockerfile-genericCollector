@@ -1,6 +1,6 @@
 ARG exchange
 
-FROM us.icr.io/dia-registry/devops/build:v1.0.1-tekton-ci-beta-16 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
