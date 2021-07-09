@@ -11,5 +11,6 @@ FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/restServer /bin/restServer
 COPY --from=build /config/ /config/
+COPY ./secrets/api_diadata.json /root/secrets/api_diadata.json
 
 CMD ["restServer"]
