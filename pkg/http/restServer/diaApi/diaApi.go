@@ -1197,6 +1197,15 @@ func (env *Env) GetAsset(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetAllBlockchains(c *gin.Context) {
+	blockchains, err := env.RelDB.GetAllBlockchains()
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, blockchains)
+	}
+}
+
 // -----------------------------------------------------------------------------
 // NFT
 // -----------------------------------------------------------------------------

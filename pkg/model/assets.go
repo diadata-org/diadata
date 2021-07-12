@@ -243,6 +243,7 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 	return nil
 }
 
+// GetAssets returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 ", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, symbol)
@@ -252,11 +253,18 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
+		var decimals string
+		var decimalsInt int
 		asset := dia.Asset{}
-		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return []dia.Asset{}, err
 		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
 		assets = append(assets, asset)
 	}
 	return
@@ -472,6 +480,28 @@ func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err err
 	}
 	blockchain.GenesisDate = genesisDate
 	return
+}
+
+// GetAllBlockchains returns all blockchain names existent in the asset table.
+func (rdb *RelDB) GetAllBlockchains() ([]string, error) {
+	var blockchains []string
+	query := fmt.Sprintf("select distinct blockchain from %s order by blockchain asc", assetTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return []string{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var blockchain string
+		err := rows.Scan(&blockchain)
+		if err != nil {
+			return []string{}, err
+		}
+		blockchains = append(blockchains, blockchain)
+	}
+
+	return blockchains, nil
 }
 
 // -------------------------------------------------------------

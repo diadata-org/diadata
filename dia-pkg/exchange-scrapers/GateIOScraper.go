@@ -314,30 +314,30 @@ func (s *GateIOScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 // FetchTickerData collects all available information on an asset traded on GateIO
 func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
-	// Fetch Data
-	if !s.isTickerMapInitialised {
-		var (
-			response GateIOTickerData
-			data     []byte
-		)
-		data, _, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
-		if err != nil {
-			return
-		}
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return
-		}
+	// // Fetch Data
+	// if !s.isTickerMapInitialised {
+	// 	var (
+	// 		response GateIOTickerData
+	// 		data     []byte
+	// 	)
+	// 	data, _, err = utils.GetRequest("https://data.gateapi.io/api2/1/marketlist")
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = json.Unmarshal(data, &response)
+	// 	if err != nil {
+	// 		return
+	// 	}
 
-		for _, gateioasset := range response.Data {
-			s.currencySymbolName[gateioasset.Symbol] = gateioasset.Name
-		}
-		s.isTickerMapInitialised = true
+	// 	for _, gateioasset := range response.Data {
+	// 		s.currencySymbolName[gateioasset.Symbol] = gateioasset.Name
+	// 	}
+	// 	s.isTickerMapInitialised = true
 
-	}
+	// }
 
-	asset.Symbol = symbol
-	asset.Name = s.currencySymbolName[symbol]
+	// asset.Symbol = symbol
+	// asset.Name = s.currencySymbolName[symbol]
 	return asset, nil
 }
 

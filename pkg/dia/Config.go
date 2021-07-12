@@ -60,7 +60,6 @@ func Exchanges() []string {
 		SimexExchange,
 
 		BinanceExchange,
-		BitMaxExchange,
 		CREX24Exchange,
 		HuobiExchange,
 		LBankExchange,
@@ -80,6 +79,7 @@ func Exchanges() []string {
 		ZBExchange,
 		ZeroxExchange,
 		BalancerExchange,
+		BitMaxExchange,
 		UnknownExchange,
 	}
 }

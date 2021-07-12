@@ -302,18 +302,18 @@ func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 
 // FillSymbolData collects all available information on an asset traded on HitBTC
 func (ps *HitBTCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-	var response HitBTCAsset
-	data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		return
-	}
-	asset.Symbol = response.ID
-	asset.Name = response.FullName
-	return asset, nil
+	// var response HitBTCAsset
+	// data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
+	// if err != nil {
+	// 	return
+	// }
+	// err = json.Unmarshal(data, &response)
+	// if err != nil {
+	// 	return
+	// }
+	// asset.Symbol = response.ID
+	// asset.Name = response.FullName
+	return
 }
 
 // Error returns an error when the channel Channel() is closed

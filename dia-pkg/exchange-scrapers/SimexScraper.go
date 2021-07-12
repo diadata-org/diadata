@@ -219,31 +219,31 @@ func (s *SimexScraper) cleanup(err error) {
 
 func (s *SimexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 
-	// Fetch Data
-	if !s.isTickerMapInitialised {
-		var (
-			response SimexTicker
-			data     []byte
-		)
-		data, _, err = utils.GetRequest("https://simex.global/api/currencies")
-		if err != nil {
-			return
-		}
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return
-		}
+	// // Fetch Data
+	// if !s.isTickerMapInitialised {
+	// 	var (
+	// 		response SimexTicker
+	// 		data     []byte
+	// 	)
+	// 	data, _, err = utils.GetRequest("https://simex.global/api/currencies")
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = json.Unmarshal(data, &response)
+	// 	if err != nil {
+	// 		return
+	// 	}
 
-		for _, asset := range response.Data {
-			s.currencySymbolName[asset.Name] = asset.Description
-		}
-		s.isTickerMapInitialised = true
+	// 	for _, asset := range response.Data {
+	// 		s.currencySymbolName[asset.Name] = asset.Description
+	// 	}
+	// 	s.isTickerMapInitialised = true
 
-	}
+	// }
 
-	asset.Symbol = symbol
-	asset.Name = s.currencySymbolName[symbol]
-	return asset, nil
+	// asset.Symbol = symbol
+	// asset.Name = s.currencySymbolName[symbol]
+	return
 }
 
 // Close closes any existing API connections, as well as channels of

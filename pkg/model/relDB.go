@@ -40,6 +40,7 @@ type RelDatastore interface {
 
 	// ----------------- blockchain methods -------------------
 	GetBlockchain(name string) (dia.BlockChain, error)
+	GetAllBlockchains() ([]string, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
