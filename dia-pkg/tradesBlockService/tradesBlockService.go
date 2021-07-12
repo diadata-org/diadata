@@ -85,7 +85,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
 	if t.VerifiedPair {
-		if t.BaseToken.Symbol == "USD" && t.BaseToken.Blockchain == "fiat" {
+		if t.BaseToken.Symbol == "USD" && t.BaseToken.Blockchain == dia.FIAT {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
 			verifiedTrade = true
@@ -94,7 +94,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
 			val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
 			if err != nil {
-				log.Errorf("Cannot use trade %s. Can't find quotation for base token", t.Pair)
+				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
 				if val > 0.0 {
 					log.Infof("price of trade %s: %v", t.Pair, t.Price)

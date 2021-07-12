@@ -272,18 +272,21 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 
 // FillSymbolData adds the name to the asset underlying @symbol on kucoin.
 func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-	resp, err := s.apiService.Currency(symbol, "")
-	if err != nil {
-		log.Errorf("error fetching %s from kucoin api: %v", symbol, err)
-	}
-	var kc KucoinCurrency
-	err = resp.ReadData(&kc)
-	if err != nil {
-		log.Errorf("error reading data for %s: %v", symbol, err)
-	}
-	asset.Symbol = symbol
-	asset.Name = kc.Name
-	asset.Address = kc.Address
+	// Comment Philipp:
+	// Kucoin's notations for symbols differ too often from the ones used in the underlying contracts.
+
+	// resp, err := s.apiService.Currency(symbol, "")
+	// if err != nil {
+	// 	log.Errorf("error fetching %s from kucoin api: %v", symbol, err)
+	// }
+	// var kc KucoinCurrency
+	// err = resp.ReadData(&kc)
+	// if err != nil {
+	// 	log.Errorf("error reading data for %s: %v", symbol, err)
+	// }
+	// asset.Symbol = symbol
+	// asset.Name = kc.Name
+	// asset.Address = kc.Address
 	return
 }
 
