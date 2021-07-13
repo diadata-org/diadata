@@ -118,10 +118,10 @@ func (s *BitBayScraper) ping() {
 		Action: "ping",
 	}
 
-	log.Infoln("Ping", a)
+	log.Debugln("Ping", a)
 
 	if err := s.wsClient.WriteJSON(a); err != nil {
-		log.Println(err.Error())
+		log.Errorln(err.Error())
 	}
 }
 
@@ -137,7 +137,7 @@ func (s *BitBayScraper) subscribe() {
 			Path:   "transactions/" + market,
 		}
 
-		log.Println("subscribing", a)
+		log.Infoln("subscribing", a)
 
 		if err := s.wsClient.WriteJSON(a); err != nil {
 			log.Println(err.Error())
@@ -154,19 +154,18 @@ func (s *BitBayScraper) mainLoop() {
 	pingTimer := time.NewTicker(10 * time.Second)
 	go func() {
 		for {
-			select {
-			case <-pingTimer.C:
-				go s.ping()
-			}
+			<-pingTimer.C
+			go s.ping()
 		}
 	}()
 
-	for true {
+	for {
 
 		var response BitBayWSResponse
 
 		if s.error = s.wsClient.ReadJSON(&response); s.error != nil {
 			log.Error(s.error.Error())
+			s.mainLoop()
 			break
 		}
 
@@ -179,6 +178,7 @@ func (s *BitBayScraper) mainLoop() {
 		timestamp, err := strconv.ParseInt(response.Timestamp, 10, 64)
 		if err != nil {
 			log.Error("Error Parsing time", err)
+			continue
 		}
 
 		pair := strings.TrimPrefix(response.Topic, "trading/transactions/")
