@@ -53,8 +53,8 @@ func main() {
 	)
 	task := &Task{
 		closed: make(chan struct{}),
-		/// Retrieve every hour
-		ticker: time.NewTicker(time.Second * 30 * 60),
+		/// Retrieve every 4 hours
+		ticker: time.NewTicker(time.Second * 4 * 60),
 	}
 	relDB, err = models.NewRelDataStore()
 	if err != nil {
