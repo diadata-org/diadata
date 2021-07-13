@@ -86,14 +86,20 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Symbol               graphql.NullString
 	StartTime            graphql.NullTime
 	EndTime              graphql.NullTime
+	Exchanges            *[]graphql.NullString
 }) (*[]*FilterPointResolver, error) {
 	filter := args.Filter.Value
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
 	symbol := string(*args.Symbol.Value)
 	starttime := args.StartTime.Value.Time
 	endtime := args.EndTime.Value.Time
+	exchanges := args.Exchanges
+	var exchangesString []string
+	for _, v := range *exchanges {
+		exchangesString = append(exchangesString, *v.Value)
+	}
 
-	trades, err := r.DS.GetTradesByExchange(symbol, "Binance", starttime, endtime, 0)
+	trades, err := r.DS.GetTradesByExchange(symbol, exchangesString, starttime, endtime, 0)
 	if err != nil {
 		return nil, nil
 	}
@@ -125,12 +131,12 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	case "mair":
 		{
-			filterPoints = filterMAIR(tradeBlocks)
+			filterPoints = filterMAIR(tradeBlocks, symbol)
 		}
 
 	case "ma":
 		{
-			filterPoints = filterMA(tradeBlocks)
+			filterPoints = filterMA(tradeBlocks, symbol)
 		}
 	}
 
@@ -148,12 +154,12 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	return &sr, nil
 }
 
-func filterMA(tradeBlocks []TradeBlock) (filterPoints []dia.FilterPoint) {
+func filterMA(tradeBlocks []TradeBlock, symbol string) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMA("BTC", "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterMA(symbol, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
 
 		for _, trade := range block.Trades {
-			log.Println(trade)
+
 			maFilter.Compute(trade)
 		}
 
@@ -164,12 +170,12 @@ func filterMA(tradeBlocks []TradeBlock) (filterPoints []dia.FilterPoint) {
 	return filterPoints
 }
 
-func filterMAIR(tradeBlocks []TradeBlock) (filterPoints []dia.FilterPoint) {
+func filterMAIR(tradeBlocks []TradeBlock, symbol string) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMAIR("BTC", "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterMAIR(symbol, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
 
 		for _, trade := range block.Trades {
-			log.Println(trade)
+
 			maFilter.Compute(trade)
 		}
 

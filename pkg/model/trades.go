@@ -143,9 +143,20 @@ func (db *DB) GetLastTradesAllExchanges(symbol string, maxTrades int) ([]dia.Tra
 	return r, nil
 }
 
-func (db *DB) GetTradesByExchange(symbol string, exchange string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+func (db *DB) GetTradesByExchange(symbol string, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and exchange='%s' and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, exchange, startTime.UnixNano(), endTime.UnixNano())
+	subquery := ""
+	for count, exchange := range exchanges {
+
+		if len(exchanges)-1 == count {
+			subquery = subquery + fmt.Sprintf("exchange='%s'", exchange)
+		} else {
+			subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
+
+		}
+
+	}
+	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and %s and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
 	log.Infoln("GetTradesByExchange Query", q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
