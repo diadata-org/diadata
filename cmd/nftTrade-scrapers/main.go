@@ -40,7 +40,7 @@ func main() {
 		log.Fatal("relational datastore error: ", err)
 	}
 
-	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
+	scraperType := flag.String("nftclass", "Topshot", "which NFT class")
 	flag.Parse()
 	var scraper nfttradescrapers.NFTTradeScraper
 
@@ -51,12 +51,18 @@ func main() {
 	case "CryptoKitties":
 		log.Println("NFT Data Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
+	case "Topshot":
+		log.Println("NFT Data Scraper: Start sraping trades from NBA Topshot")
+		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
 		}
 	}
-
+	err = scraper.FetchTrades()
+	if err != nil {
+		log.Info("Error is there")
+	}
 	wg.Add(1)
 	go handleData(scraper.GetTradeChannel(), &wg, rdb)
 	defer wg.Wait()

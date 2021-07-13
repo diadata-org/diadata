@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/onflow/cadence"
 	"github.com/onflow/flow-go-sdk"
 	"github.com/onflow/flow-go-sdk/client"
@@ -32,7 +33,7 @@ func (evt MomentPurchased) Id() uint64 {
 }
 
 func (evt MomentPurchased) Price() float64 {
-	return float64(evt.Fields[1].(cadence.UFix64).ToGoValue().(uint64))/1e8 // ufixed 64 have 8 digits of precision
+	return float64(evt.Fields[1].(cadence.UFix64).ToGoValue().(uint64)) / 1e8 // ufixed 64 have 8 digits of precision
 }
 
 func (evt MomentPurchased) Seller() *flow.Address {
@@ -122,21 +123,14 @@ func (s SaleMoment) SerialNumber() uint32 {
 func (s SaleMoment) String() string {
 	playData := s.Play()
 	return fmt.Sprintf("saleMoment: serialNumber: %d, setID: %d, setName: %s, playID: %d, playerName: %s",
-		s.SerialNumber(), s.SetID(),s.SetName(), s.PlayID(), playData["FullName"])
+		s.SerialNumber(), s.SetID(), s.SetName(), s.PlayID(), playData["FullName"])
 }
 
-
-
-
-
-// ***********************************************************
-// Medium Code Ends
-// ***********************************************************
-
 type NBATopshotScraper struct {
-	tradescraper TradeScraper
-	flowClient *client.Client
-	ticker     *time.Ticker
+	tradescraper    TradeScraper
+	contractAddress common.Address
+	flowClient      *client.Client
+	ticker          *time.Ticker
 	lastBlockNumber uint64
 }
 
@@ -167,17 +161,18 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 	}
 
 	tradescraper := TradeScraper{
-		shutdown:      make(chan nothing),
-		shutdownDone:  make(chan nothing),
-		error:         nil,
-		datastore:     rdb,
-		chanTrade:     make(chan dia.NFTTrade),
+		shutdown:     make(chan nothing),
+		shutdownDone: make(chan nothing),
+		error:        nil,
+		datastore:    rdb,
+		chanTrade:    make(chan dia.NFTTrade),
 	}
 
 	s := &NBATopshotScraper{
-		tradescraper: tradescraper,
-		flowClient: flowClient,
-		ticker:     time.NewTicker(refreshDelay),
+		contractAddress: common.HexToAddress(TopshotAddress),
+		tradescraper:    tradescraper,
+		flowClient:      flowClient,
+		ticker:          time.NewTicker(refreshDelay),
 	}
 
 	go s.mainLoop()
@@ -215,10 +210,10 @@ func (scraper *NBATopshotScraper) FetchTrades() (err error) {
 	if err != nil {
 		return err
 	}
-	
+
 	blockEvents, err := scraper.flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
 		Type:        "A.c1e4f4f4c4257510.Market.MomentPurchased",
-		StartHeight: latestBlock.Height - 500,
+		StartHeight: latestBlock.Height - 50,
 		EndHeight:   latestBlock.Height,
 	})
 
@@ -230,19 +225,23 @@ func (scraper *NBATopshotScraper) FetchTrades() (err error) {
 		for _, purchaseEvent := range blockEvent.Events {
 			// loop through the Market.MomentPurchased events in this blockEvent
 			e := MomentPurchased(purchaseEvent.Value)
-			// fmt.Println(e)
-			// saleMoment, err := GetSaleMomentFromOwnerAtBlock(scraper.flowClient, blockEvent.Height-1, *e.Seller(), e.Id())
+
+			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.contractAddress.Hex(), dia.FLOW, fmt.Sprintf("%d", e.Id()))
 			if err != nil {
+				// TODO: should we continue if we failed to get NFT from the db or should we fail!
+				// continue
 				return err
 			}
 
-
+			fmt.Println(e.Price(), e.Seller().Hex(), blockEvent.Height)
 			trade := dia.NFTTrade{
-				PriceUSD: e.Price(),
+				NFT:         nft,
+				PriceUSD:    e.Price(),
 				FromAddress: e.Seller().Hex(),
 				BlockNumber: blockEvent.Height,
-				TxHash: purchaseEvent.TransactionID.Hex(),
-				Timestamp: blockEvent.BlockTimestamp,
+				Timestamp:   blockEvent.BlockTimestamp,
+				Exchange:    "TopshotMarket",
+				TxHash:      purchaseEvent.TransactionID.Hex(),
 			}
 			scraper.GetTradeChannel() <- trade
 			log.Info("Topshot purchase: ")
