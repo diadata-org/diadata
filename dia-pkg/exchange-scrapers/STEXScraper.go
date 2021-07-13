@@ -206,35 +206,35 @@ func (s *STEXScraper) scrapePair(pair dia.ExchangePair) {
 }
 
 // FillSymbolData collects all available information on an asset traded on STEX
-func (s *STEXScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+func (s *STEXScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 
 	// Fetch Data
-	if !s.isTickerMapInitialised {
-		var (
-			response STEXTickerData
-			data     []byte
-		)
-		data, _, err = utils.GetRequest("https://api3.stex.com/public/currencies")
-		if err != nil {
-			return
-		}
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return
-		}
+	// if !s.isTickerMapInitialised {
+	// 	var (
+	// 		response STEXTickerData
+	// 		data     []byte
+	// 	)
+	// 	data, _, err = utils.GetRequest("https://api3.stex.com/public/currencies")
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = json.Unmarshal(data, &response)
+	// 	if err != nil {
+	// 		return
+	// 	}
 
-		for _, asset := range response.Data {
-			s.currencySymbolName[asset.Code] = asset.Name
-		}
-		s.isTickerMapInitialised = true
+	// 	for _, asset := range response.Data {
+	// 		s.currencySymbolName[asset.Code] = asset.Name
+	// 	}
+	// 	s.isTickerMapInitialised = true
 
-	}
-	asset.Symbol = symbol
-	asset.Name = s.currencySymbolName[symbol]
+	// }
+	// asset.Symbol = symbol
+	// asset.Name = s.currencySymbolName[symbol]
 
-	fmt.Printf("name for symbol %s on exchange STEX: %s\n", symbol, asset.Name)
+	// fmt.Printf("name for symbol %s on exchange STEX: %s\n", symbol, asset.Name)
 
-	return asset, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // GetNewTrades fetches new trades from the STEX restAPI dating back until @fromTimestamp

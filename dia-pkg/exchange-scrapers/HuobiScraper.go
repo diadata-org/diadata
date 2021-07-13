@@ -207,22 +207,22 @@ func (s *HuobiScraper) mainLoop() {
 }
 
 // FillSymbolData collects all available information on an asset traded on huobi
-func (s *HuobiScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-	var response HuobiCurrency
-	data, _, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		return
-	}
+func (s *HuobiScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	// var response HuobiCurrency
+	// data, _, err := utils.GetRequest("https://api.huobi.pro/v2/reference/currencies?currency=" + symbol)
+	// if err != nil {
+	// 	return
+	// }
+	// err = json.Unmarshal(data, &response)
+	// if err != nil {
+	// 	return
+	// }
 
-	// Loop through chain if ETH is available put ETH chain details
-	// TO DO: This has to be extended. So far, we only have symbol, which we already had before.
-	asset.Symbol = response.Data[0].Currency
-	asset.Name = response.Data[0].Currency
-	return asset, nil
+	// // Loop through chain if ETH is available put ETH chain details
+	// // TO DO: This has to be extended. So far, we only have symbol, which we already had before.
+	// asset.Symbol = response.Data[0].Currency
+	// asset.Name = response.Data[0].Currency
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (s *HuobiScraper) cleanup(err error) {
