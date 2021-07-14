@@ -92,34 +92,36 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
+		log.Info(utils.Getenv("ETH_URI_REST", restDial))
+		log.Info(utils.Getenv("ETH_URI_WS", wsDial))
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(wsDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(wsDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(wsDialBSC)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}
-		restClient, err = ethclient.Dial(restDialBSC)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}
