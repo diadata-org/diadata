@@ -284,7 +284,7 @@ func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 	// if err != nil {
 	// 	log.Errorf("error reading data for %s: %v", symbol, err)
 	// }
-	// asset.Symbol = symbol
+	asset.Symbol = symbol
 	// asset.Name = kc.Name
 	// asset.Address = kc.Address
 	return
