@@ -26,7 +26,7 @@ type EventType struct {
 }
 
 type ResponseType struct {
-	Id     int64       `json:"id,omitempty"`
+	Id     string      `json:"id,omitempty"`
 	Status string      `json:"status,omitempty"`
 	Subbed string      `json:"subbed,omitempty"`
 	Ts     int64       `json:"ts,omitempty"`
@@ -173,7 +173,7 @@ func (s *HuobiScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
-							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, forName)
 							if err != nil {
 								log.Error(err)
 							}

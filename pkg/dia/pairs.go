@@ -15,6 +15,12 @@ func GetPairSymbols(pair ExchangePair) ([]string, error) {
 		baseToken := strings.TrimPrefix(foreignName, quoteToken)
 		return []string{quoteToken, baseToken}, nil
 	}
+	if pair.Exchange == ZBExchange || pair.Exchange == BitfinexExchange {
+		foreignName := pair.ForeignName
+		quoteToken := pair.Symbol
+		baseToken := strings.TrimPrefix(strings.ToUpper(foreignName), quoteToken)
+		return []string{quoteToken, baseToken}, nil
+	}
 	foreignName := pair.ForeignName
 	quoteToken := pair.Symbol
 
@@ -74,6 +80,7 @@ func GetAllSymbolsFromPairs(pairs []ExchangePair) ([]string, error) {
 		}
 		symbols = append(symbols, pairsymbols[0], pairsymbols[1])
 	}
+
 	uniqueSymbols := utils.UniqueStrings(symbols)
 	return uniqueSymbols, nil
 }
