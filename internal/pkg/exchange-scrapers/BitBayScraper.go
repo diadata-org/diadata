@@ -161,7 +161,7 @@ func (s *BitBayScraper) mainLoop() {
 		}
 	}()
 
-	for true {
+	for {
 
 		var response BitBayWSResponse
 
@@ -174,7 +174,10 @@ func (s *BitBayScraper) mainLoop() {
 		//
 		//log.Infoln("Message",string(b[:]))
 
-		log.Infoln("message", response)
+		if len(response.Message.Transactions) == 0 {
+			log.Warn("empty message - continue")
+			continue
+		}
 
 		timestamp, err := strconv.ParseInt(response.Timestamp, 10, 64)
 		if err != nil {
@@ -182,6 +185,10 @@ func (s *BitBayScraper) mainLoop() {
 		}
 
 		pair := strings.TrimPrefix(response.Topic, "trading/transactions/")
+		if response.Topic == "" {
+			log.Warn("empty response - continue.")
+			continue
+		}
 		pair = strings.Replace(pair, "-", "", -1)
 		pair = strings.ToUpper(pair)
 
@@ -272,6 +279,7 @@ func (s *BitBayScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 func (s *BitBayScraper) normalizeSymbol(baseCurrency string, name string) (symbol string, err error) {
 	return "", errors.New(s.exchangeName + "Scraper:normalizeSymbol() not implemented.")
 }
+
 func (s *BitBayScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	return dia.Pair{}, nil
 }
