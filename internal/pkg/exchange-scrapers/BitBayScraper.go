@@ -104,9 +104,12 @@ func (s *BitBayScraper) getMarkets() (markets []string) {
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 	}
-	json.Unmarshal(b, &bbm)
+	err = json.Unmarshal(b, &bbm)
+	if err != nil {
+		log.Error("getting markets: ", err)
+	}
 
-	for key, _ := range bbm.Items {
+	for key := range bbm.Items {
 		markets = append(markets, key)
 	}
 	return
@@ -118,7 +121,7 @@ func (s *BitBayScraper) ping() {
 		Action: "ping",
 	}
 
-	log.Infoln("Ping", a)
+	log.Infoln("Ping: ", a.Action)
 
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		log.Println(err.Error())
@@ -153,11 +156,8 @@ func (s *BitBayScraper) mainLoop() {
 
 	pingTimer := time.NewTicker(10 * time.Second)
 	go func() {
-		for {
-			select {
-			case <-pingTimer.C:
-				go s.ping()
-			}
+		for range pingTimer.C {
+			go s.ping()
 		}
 	}()
 
@@ -166,8 +166,8 @@ func (s *BitBayScraper) mainLoop() {
 		var response BitBayWSResponse
 
 		if s.error = s.wsClient.ReadJSON(&response); s.error != nil {
-			log.Error(s.error.Error())
-			break
+			log.Error("ws connection error: ", s.error.Error())
+			s.subscribe()
 		}
 
 		//b,_ := json.Marshal(message)
