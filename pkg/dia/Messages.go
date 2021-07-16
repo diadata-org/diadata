@@ -20,6 +20,7 @@ const (
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
+	FLOW                                    = "Flow"
 )
 
 type VerificationMechanism string
