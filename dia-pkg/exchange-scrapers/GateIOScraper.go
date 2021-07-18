@@ -336,7 +336,7 @@ func (s *GateIOScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 
 	// }
 
-	// asset.Symbol = symbol
+	asset.Symbol = symbol
 	// asset.Name = s.currencySymbolName[symbol]
 	return asset, nil
 }

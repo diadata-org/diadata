@@ -241,8 +241,9 @@ func (s *SimexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error
 
 	// }
 
-	// asset.Symbol = symbol
+	asset.Symbol = symbol
 	// asset.Name = s.currencySymbolName[symbol]
+
 	return
 }
 

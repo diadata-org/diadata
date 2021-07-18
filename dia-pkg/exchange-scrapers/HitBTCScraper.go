@@ -313,6 +313,7 @@ func (ps *HitBTCScraper) FillSymbolData(symbol string) (asset dia.Asset, err err
 	// }
 	// asset.Symbol = response.ID
 	// asset.Name = response.FullName
+	asset.Symbol = symbol
 	return
 }
 
