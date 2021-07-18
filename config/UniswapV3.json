@@ -1472,12 +1472,6 @@
         },
         {
             "Symbol": "ETH",
-            "ForeignName": "ETH-FOX",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
             "ForeignName": "ETH-XYS",
             "Exchange": "UniswapV2",
             "Ignore": false
