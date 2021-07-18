@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family:  'Helvetica';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#walletconnect-qrcode-modal > div.walletconnect-modal__base {
+  max-width: 300px;
+}
