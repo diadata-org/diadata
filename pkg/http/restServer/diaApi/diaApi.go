@@ -14,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -429,8 +430,11 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 func (env *Env) GetCviIndex(c *gin.Context) {
 	starttimeStr := c.DefaultQuery("starttime", "noRange")
 	endtimeStr := c.Query("endtime")
+	symbol := c.Query("symbol")
 
 	var starttime, endtime time.Time
+	var q []dia.CviDataPoint
+	var err error
 
 	if starttimeStr == "noRange" || endtimeStr == "" {
 		starttime = time.Unix(0, 0)
@@ -449,10 +453,12 @@ func (env *Env) GetCviIndex(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	q, err := env.DataStore.GetCVIInflux(starttime, endtime)
-	for i := range q {
-		q[i].Value /= 2430.5812295231785
-	}
+
+	q, err = env.DataStore.GetCVIInflux(starttime, endtime, symbol)
+
+	//for i := range q {
+	//	q[i].Value /= 2430.5812295231785
+	//}
 	if len(q) == 0 {
 		c.JSON(http.StatusOK, make([]string, 0))
 	}
@@ -1247,4 +1253,50 @@ func (env *Env) GetNFTClasses(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 	c.JSON(http.StatusOK, q)
+}
+
+// GetNFT returns an NFT.
+func (env *Env) GetNFT(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	id := c.Param("id")
+	q, err := env.RelDB.GetNFT(common.HexToAddress(address).Hex(), blockchain, id)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTTrades returns all trades of the unique NFT with given parameters.
+func (env *Env) GetNFTTrades(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	// Sanitize address
+	address := common.HexToAddress(c.Param("address")).Hex()
+	id := c.Param("id")
+
+	nft, err := env.RelDB.GetNFT(address, blockchain, id)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	q, err := env.RelDB.GetNFTTrades(nft)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
+// GetNFTPrice30Days returns the average price of the whole nft class over the last 30 days.
+func (env *Env) GetNFTPrice30Days(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
+	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	avgPrice, err := env.RelDB.GetNFTPrice30Days(nftClass)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, avgPrice)
 }

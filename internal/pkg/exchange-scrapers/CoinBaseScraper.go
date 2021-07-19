@@ -105,6 +105,7 @@ func (s *CoinBaseScraper) mainLoop() {
 							if t.VerifiedPair {
 								log.Info("got verified trade: ", t)
 							}
+							log.Info("go trade: ", t)
 							ps.parent.chanTrades <- t
 						}
 					} else {

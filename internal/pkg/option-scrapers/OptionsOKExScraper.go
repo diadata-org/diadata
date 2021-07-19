@@ -110,12 +110,19 @@ type OKExInstruments struct {
 //}
 
 func NewOKExOptionsScraper(pollFreq int8) *OKExOptionsScraper {
+	ds, err := models.NewDataStore()
+	if err != nil {
+		logger.WithFields(logrus.Fields{"prefix": "OKEx"}).Error(err)
+
+	}
 	rl := rate.NewLimiter(rate.Every(2*time.Second), 10) // 10 request every 2 seconds
 	optionsScraper := &OKExOptionsScraper{
 		PollFrequency: pollFreq,
+		DataStore:     ds,
 		chanOrderBook: make(chan *dia.OptionOrderbookDatum),
 		Ratelimiter:   rl, // if pollFreq = 1 second. can have 10 goroutines at the same time
 	}
+	optionsScraper.GetAndStoreOptionsMeta()
 	return optionsScraper
 }
 
@@ -128,27 +135,29 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 		return
 	}
 	var resolvedAskPX float64
-	resolvedAskPX, err = strconv.ParseFloat(datum.Asks[0][0], 64)
-	if err != nil {
-		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-		return
+	var resolvedAskSize float64
+	if len(datum.Asks) > 1 && len(datum.Asks[0]) > 1 {
+		resolvedAskPX, err = strconv.ParseFloat(datum.Asks[0][0], 64)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+			return
+		}
+
+		resolvedAskSize, err = strconv.ParseFloat(datum.Asks[0][1], 64)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
+			return
+		}
+
 	}
-	var resolvedBidPX float64
+
+	var resolvedBidPX, resolvedBidSize float64
 	if len(datum.Bids) > 0 {
 		resolvedBidPX, err = strconv.ParseFloat(datum.Bids[0][0], 64)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
 			return
 		}
-	}
-	var resolvedAskSize float64
-	resolvedAskSize, err = strconv.ParseFloat(datum.Asks[0][1], 64)
-	if err != nil {
-		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
-		return
-	}
-	var resolvedBidSize float64
-	if len(datum.Bids) > 0 {
 
 		resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
 		if err != nil {
@@ -183,7 +192,10 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 
 	for _, pair := range underlying {
 		var instruments OKExInstrumentDetails
-		log.Println(pair)
+		log.Infoln("Scraping pair ", pair)
+		if pair != "ETH-USD" {
+			continue
+		}
 
 		b, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/" + pair)
 		if err != nil {
@@ -238,8 +250,6 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 		return
 	}
 
-	log.Println("rawOB", rawOB)
-
 	var obEntry dia.OptionOrderbookDatum
 	obEntry, err = s.parseObDatum(&rawOB, market)
 	if err != nil {
@@ -247,16 +257,18 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 		return
 	}
 
+	log.Errorln("obEntry", obEntry)
+
 	s.chanOrderBook <- &obEntry
 
 }
 
-func (s *AllOKExOptionsScrapers) MetaOnOptionIsAvailable(option OKExInstrument) (available bool, err error) {
+func (s *OKExOptionsScraper) MetaOnOptionIsAvailable(option OKExInstrument) (available bool, err error) {
 	available = false
 	err = nil
 
 	// TODO: can make this faster by specifying BaseCurrency/QuoteCurrency instead
-	optionMetas, err := s.ds.GetOptionMeta(option.SettlementCurrency)
+	optionMetas, err := s.DataStore.GetOptionMeta(option.SettlementCurrency)
 	if err != nil {
 		return
 	}
@@ -270,8 +282,8 @@ func (s *AllOKExOptionsScrapers) MetaOnOptionIsAvailable(option OKExInstrument) 
 	return
 }
 
-func (s *AllOKExOptionsScrapers) GetAndStoreOptionsMeta() (err error) {
-	body, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/BTC-USD")
+func (s *OKExOptionsScraper) GetAndStoreOptionsMeta() (err error) {
+	body, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/ETH-USD")
 	if err != nil {
 		return
 	}
@@ -318,10 +330,8 @@ func (s *AllOKExOptionsScrapers) GetAndStoreOptionsMeta() (err error) {
 				OptionType:     optionType,
 			}
 
-			err = s.ds.SetOptionMeta(&optionMeta)
-			if err != nil {
-				log.Error(err)
-			}
+			s.DataStore.SetOptionMeta(&optionMeta)
+
 		}
 	}
 

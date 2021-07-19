@@ -98,7 +98,7 @@ func (s *BitBayScraper) getMarkets() (markets []string) {
 	}
 	err = json.Unmarshal(b, &bbm)
 	if err != nil {
-		log.Error(err)
+		log.Error("getting markets: ", err)
 	}
 
 	for key := range bbm.Items {
@@ -113,7 +113,7 @@ func (s *BitBayScraper) ping() {
 		Action: "ping",
 	}
 
-	log.Infoln("Ping", a)
+	log.Infoln("Ping: ", a.Action)
 
 	if err := s.wsClient.WriteJSON(a); err != nil {
 		log.Println(err.Error())
@@ -158,15 +158,18 @@ func (s *BitBayScraper) mainLoop() {
 		var response BitBayWSResponse
 
 		if s.error = s.wsClient.ReadJSON(&response); s.error != nil {
-			log.Error(s.error.Error())
-			break
+			log.Error("ws connection error: ", s.error.Error())
+			s.subscribe()
 		}
 
 		//b,_ := json.Marshal(message)
 		//
 		//log.Infoln("Message",string(b[:]))
 
-		log.Infoln("message", response)
+		if len(response.Message.Transactions) == 0 {
+			log.Warn("empty message - continue")
+			continue
+		}
 
 		timestamp, err := strconv.ParseInt(response.Timestamp, 10, 64)
 		if err != nil {
@@ -174,6 +177,10 @@ func (s *BitBayScraper) mainLoop() {
 		}
 
 		pair := strings.TrimPrefix(response.Topic, "trading/transactions/")
+		if response.Topic == "" {
+			log.Warn("empty response - continue.")
+			continue
+		}
 		pair = strings.Replace(pair, "-", "", -1)
 		pair = strings.ToUpper(pair)
 

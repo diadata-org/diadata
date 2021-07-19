@@ -3,8 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -12,8 +10,11 @@ import (
 	"sync"
 	"time"
 
+	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -150,7 +151,7 @@ func (s *UniswapScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
@@ -170,14 +171,31 @@ func (s *UniswapScraper) mainLoop() {
 		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := 0; i < numPairs; i++ {
-		if s.exchangeName == "PanCakeSwap" {
-			time.Sleep(200 * time.Millisecond)
-		}
-
-		pair, err := s.GetPairByID(int64(i))
-		if err != nil {
-			log.Error("error fetching pair: ", err)
+	for i := -1; i < numPairs; i++ {
+		var pair UniswapPair
+		var err error
+		if i == -1 && s.exchangeName == "PanCakeSwap" {
+			token0 := UniswapToken{
+				Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
+				Symbol:   "WOW",
+				Decimals: uint8(18),
+			}
+			token1 := UniswapToken{
+				Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
+				Symbol:   "BUSD",
+				Decimals: uint8(18),
+			}
+			pair = UniswapPair{
+				Token0:      token0,
+				Token1:      token1,
+				ForeignName: "WOW-BUSD",
+				Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
+			}
+		} else {
+			pair, err = s.GetPairByID(int64(i))
+			if err != nil {
+				log.Error("error fetching pair: ", err)
+			}
 		}
 		if !pair.pairHealthCheck() {
 			continue
@@ -241,6 +259,9 @@ func (s *UniswapScraper) mainLoop() {
 							log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
 							ps.parent.chanTrades <- t
 						}
+						if price == 0 {
+							log.Info("Got zero trade: ", t)
+						}
 					}
 				}
 			}()
@@ -277,7 +298,8 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var reverseTokens []string
 
 	// Load file and read data
-	jsonFile, err := os.Open(fmt.Sprintf("../config/uniswap/%s.json", filename))
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
 	if err != nil {
 		return &[]string{}, err
 	}
@@ -304,7 +326,7 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var allAssets lockedAssetList
 	err = json.Unmarshal(byteData, &allAssets)
 	if err != nil {
-		return nil, err
+		return &[]string{}, err
 	}
 
 	// Extract addresses

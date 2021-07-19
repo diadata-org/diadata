@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
@@ -54,7 +55,7 @@ type Datastore interface {
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
-	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
+	GetCVIInflux(time.Time, time.Time, string) ([]dia.CviDataPoint, error)
 	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
 	// Get24VolumeExchange(exchange string) (float64, error)
@@ -147,14 +148,13 @@ type DB struct {
 }
 
 const (
-	influxDbName                = "dia"
-	influxDbTradesTable         = "trades"
-	influxDbFiltersTable        = "filters"
-	influxDbFiatQuotationsTable = "fiat"
-	influxDbOptionsTable        = "options"
-	influxDbCVITable            = "cvi"
-	influxDbSupplyTable         = "supplies"
-	// influxDbSupplyTableOld               = "supply"
+	influxDbName                         = "dia"
+	influxDbTradesTable                  = "trades"
+	influxDbFiltersTable                 = "filters"
+	influxDbFiatQuotationsTable          = "fiat"
+	influxDbOptionsTable                 = "options"
+	influxDbCVITable                     = "cvi"
+	influxDbSupplyTable                  = "supplies"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"
 	influxDbPoolTable                    = "defiPools"
@@ -515,9 +515,35 @@ func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	return err
 }
 
-func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+func (db *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) error {
+	fields := map[string]interface{}{
+		"value": cviValue,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbETHCVITable, nil, fields, observationTime)
+	if err != nil {
+		log.Errorln("NewOptionInflux:", err)
+	} else {
+		db.addPoint(pt)
+	}
+
+	err = db.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+	}
+
+	return err
+}
+
+func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time, symbol string) ([]dia.CviDataPoint, error) {
 	retval := []dia.CviDataPoint{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	var q string
+	if symbol == "ETH" {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbETHCVITable, starttime.UnixNano(), endtime.UnixNano())
+
+	} else {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	}
+
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -568,6 +594,7 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	retval := dia.OptionOrderbookDatum{}
 	q := fmt.Sprintf("SELECT LAST(askPrice), bidPrice, askSize, bidSize, observationTime FROM %s WHERE instrumentName ='%s'", influxDbOptionsTable, t.InstrumentName)
 	res, err := queryInfluxDB(db.influxClient, q)
+
 	if err != nil {
 		return retval, err
 	}

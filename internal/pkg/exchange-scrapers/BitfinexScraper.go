@@ -12,7 +12,6 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
@@ -116,6 +115,7 @@ func (s *BitfinexScraper) mainLoop() {
 					if exchangepair.Verified {
 						log.Infoln("Got verified trade", t)
 					}
+					log.Info("got trade: ", t)
 					s.chanTrades <- t
 				case error:
 					s.cleanup(m)
@@ -223,19 +223,20 @@ func (s *BitfinexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 	return pair, nil
 
 }
-func (s *BitfinexScraper) normalizeSymbol(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	pair.Symbol = strings.ToUpper(pair.ForeignName[0:3])
-	if helpers.NameForSymbol(pair.Symbol) == pair.Symbol {
-		if !helpers.SymbolIsName(pair.Symbol) {
-			pair, _ = s.NormalizePair(pair)
-			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + pair.Symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(pair.Symbol) {
-		return pair, errors.New("Symbol is black listed:" + pair.Symbol)
-	}
-	return pair, nil
-}
+
+// func (s *BitfinexScraper) normalizeSymbol(pair dia.Pair) (dia.Pair, error) {
+// 	pair.Symbol = strings.ToUpper(pair.ForeignName[0:3])
+// 	if helpers.NameForSymbol(pair.Symbol) == pair.Symbol {
+// 		if !helpers.SymbolIsName(pair.Symbol) {
+// 			pair, _ = s.NormalizePair(pair)
+// 			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + pair.Symbol)
+// 		}
+// 	}
+// 	if helpers.SymbolIsBlackListed(pair.Symbol) {
+// 		return pair, errors.New("Symbol is black listed:" + pair.Symbol)
+// 	}
+// 	return pair, nil
+// }
 
 func (s *BitfinexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	// TO DO
@@ -251,14 +252,15 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-
-		pairToNormalize := dia.ExchangePair{
-			Symbol:      p,
-			ForeignName: p,
-			Exchange:    s.exchangeName,
+		var pairToNormalize dia.ExchangePair
+		if len(p) == 6 {
+			pairToNormalize.Symbol = strings.ToUpper(p[0:3])
+		} else {
+			pairToNormalize.Symbol = strings.ToUpper(strings.Split(p, ":")[0])
 		}
-
-		pair, serr := s.normalizeSymbol(pairToNormalize)
+		pairToNormalize.ForeignName = strings.ToUpper(p)
+		pairToNormalize.Exchange = s.exchangeName
+		pair, serr := s.NormalizePair(pairToNormalize)
 		if serr == nil {
 			pairs = append(pairs, pair)
 		} else {

@@ -3,19 +3,21 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	ConverterRegistry "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor"
-	BancorNetwork "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/BancorNetwork"
-	ConverterTypeFour "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeFour"
-	ConvertertypeOne "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeOne"
-	ConverterTypeThree "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeThree"
-	ConverterTypeZero "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeZero"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
+	"fmt"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
 
+	ConverterRegistry "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor"
+	BancorNetwork "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/BancorNetwork"
+	ConverterTypeFour "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeFour"
+	ConvertertypeOne "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeOne"
+	ConverterTypeThree "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeThree"
+	ConverterTypeZero "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeZero"
+
+	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -146,17 +148,18 @@ func (scraper *BancorScraper) mainLoop() {
 		for {
 
 			rawSwap := <-sink
+			revRawSwap := reverseBNTSwap(*rawSwap)
 
 			var address []common.Address
-			swap, err := scraper.normalizeSwap(rawSwap)
+			swap, err := scraper.normalizeSwap(revRawSwap)
 			if err != nil {
 				log.Error("error normalizeSwap: ", err)
 
 			}
 
 			price, volume := scraper.getSwapData(swap)
-			address = append(address, rawSwap.FromToken)
-			address = append(address, rawSwap.ToToken)
+			address = append(address, revRawSwap.FromToken)
+			address = append(address, revRawSwap.ToToken)
 
 			pair := scraper.GetPair(address)
 
@@ -166,7 +169,7 @@ func (scraper *BancorScraper) mainLoop() {
 				Price:          price,
 				Volume:         volume,
 				Time:           time.Now(),
-				ForeignTradeID: rawSwap.Raw.TxHash.String(),
+				ForeignTradeID: revRawSwap.Raw.TxHash.String(),
 				Source:         scraper.exchangeName,
 				BaseToken:      pair.UnderlyingPair.BaseToken,
 				QuoteToken:     pair.UnderlyingPair.QuoteToken,
@@ -182,6 +185,21 @@ func (scraper *BancorScraper) mainLoop() {
 		scraper.error = errors.New("Main loop terminated by Close().")
 	}
 	scraper.cleanup(nil)
+}
+
+// Reverse swap involving BNT such that pair is always XXX-BNT.
+func reverseBNTSwap(rawSwap BancorNetwork.BancorNetworkConversion) BancorNetwork.BancorNetworkConversion {
+	var revRawSwap BancorNetwork.BancorNetworkConversion
+	fmt.Println("raw swap ToToken: ", rawSwap.ToToken.Hex())
+	if rawSwap.FromToken.Hex() == "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C" {
+		revRawSwap.ToAmount = rawSwap.FromAmount
+		revRawSwap.FromAmount = rawSwap.ToAmount
+		revRawSwap.FromToken = rawSwap.ToToken
+		revRawSwap.ToToken = rawSwap.FromToken
+		revRawSwap.Raw = rawSwap.Raw
+		return revRawSwap
+	}
+	return rawSwap
 }
 
 func (scraper *BancorScraper) GetpoolAddress() {
@@ -224,13 +242,13 @@ func (scraper *BancorScraper) GetConversion() (chan *BancorNetwork.BancorNetwork
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkConversion) (BancorSwap, error) {
+func (scrapper *BancorScraper) normalizeSwap(swap BancorNetwork.BancorNetworkConversion) (BancorSwap, error) {
 	var normalizedSwap BancorSwap
 	if swap.FromToken.Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
 		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.FromAmount), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
 		normalizedSwap.FromAmount = amount0
 	} else {
-		fromToken, err := uniswap.NewIERC20(swap.FromToken, scrapper.RestClient)
+		fromToken, err := uniswapcontract.NewIERC20(swap.FromToken, scrapper.RestClient)
 		if err != nil {
 			return normalizedSwap, err
 		}
@@ -247,7 +265,7 @@ func (scrapper *BancorScraper) normalizeSwap(swap *BancorNetwork.BancorNetworkCo
 		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.ToAmount), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
 		normalizedSwap.ToAmount = amount1
 	} else {
-		toToken, err := uniswap.NewIERC20(swap.ToToken, scrapper.RestClient)
+		toToken, err := uniswapcontract.NewIERC20(swap.ToToken, scrapper.RestClient)
 		if err != nil {
 			return normalizedSwap, err
 		}
@@ -274,8 +292,8 @@ func (scrapper *BancorScraper) getSwapData(swap BancorSwap) (price float64, volu
 	return
 }
 
-func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
+func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {
@@ -401,7 +419,7 @@ func (scraper *BancorScraper) ConverterTypeFour(address common.Address) (tokenAd
 }
 
 func (scraper *BancorScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
@@ -459,11 +477,11 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 	var symbol0 string
 	var symbol1 string
 
-	token0, err := uniswap.NewIERC20Caller(address[0], scraper.RestClient)
+	token0, err := uniswapcontract.NewIERC20Caller(address[0], scraper.RestClient)
 	if err != nil {
 		log.Errorln("Error Getting token 0 ", err)
 	}
-	token1, err := uniswap.NewIERC20Caller(address[1], scraper.RestClient)
+	token1, err := uniswapcontract.NewIERC20Caller(address[1], scraper.RestClient)
 	if err != nil {
 		log.Errorln("Error Getting token 1 ", err)
 	}

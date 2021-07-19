@@ -20,6 +20,7 @@ require (
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.25
+	github.com/fatih/structs v1.1.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/gin-contrib/cache v1.1.0
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
@@ -36,7 +37,7 @@ require (
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
-	github.com/jackc/pgconn v1.8.1 // indirect
+	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/pgx/v4 v4.11.0
@@ -49,10 +50,11 @@ require (
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/onflow/cadence v0.15.0
+	github.com/onflow/flow-go-sdk v0.20.0
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.4 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
@@ -64,6 +66,7 @@ require (
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/segmentio/kafka-go v0.3.7
 	github.com/shirou/gopsutil v3.20.11+incompatible // indirect
+	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
@@ -79,6 +82,9 @@ require (
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	golang.org/x/tools v0.1.0 // indirect
+	gonum.org/v1/netlib v0.0.0-20201012070519-2390d26c3658 // indirect
+	gonum.org/v1/plot v0.7.0
+	google.golang.org/grpc v1.31.1
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.6 // indirect

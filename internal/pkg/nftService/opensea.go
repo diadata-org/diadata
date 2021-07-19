@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	openseaAPIurl = "https://api.opensea.io/api/v1/"
+	openseaAPIurl  = "https://api.opensea.io/api/v1/"
+	openseaAPIWait = 250
 )
 
 type openseaAPIResponse struct {
@@ -65,10 +66,20 @@ func (ons *OpenseaNFTSource) Close() chan bool {
 
 // retrieve nft classes from opensea api. Ordered by number of sales in descending order.
 func fetchClasses(offset, limit int, order_direction string) (acs []AssetContract, err error) {
-	resp, _, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
+	url := openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count"
+	resp, statusCode, err := utils.GetRequestWithStatus(url)
 	if err != nil {
-		return
+		if statusCode != 429 {
+			return
+		}
+		// Retry get request once
+		time.Sleep(time.Millisecond * openseaAPIWait)
+		resp, _, err = utils.GetRequestWithStatus(url)
+		if err != nil {
+			return
+		}
 	}
+
 	var openseaResponse openseaAPIResponse
 	err = json.Unmarshal(resp, &openseaResponse)
 	if err != nil {
@@ -87,20 +98,15 @@ func fetchClasses(offset, limit int, order_direction string) (acs []AssetContrac
 
 func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 	// totalPages := 50 * 200 - this is the limit on offset parameter in the api endpoint
-	checkmap := make(map[common.Address]struct{})
+	checkmap := make(map[string]struct{})
 	for k := 0; k < 200; k++ {
 		assetContracts, err := fetchClasses(k*50, 50, "desc")
 		if err != nil {
 			log.Error(err)
 		}
-		assetContractsAsc, err := fetchClasses(k*50, 50, "asc")
-		assetContracts = append(assetContracts, assetContractsAsc...)
-		if err != nil {
-			log.Error(err)
-		}
 		for _, contract := range assetContracts {
 			nftClass := dia.NFTClass{
-				Address:      common.HexToAddress(contract.Address),
+				Address:      common.HexToAddress(contract.Address).Hex(),
 				Symbol:       contract.Symbol,
 				Name:         contract.Name,
 				Blockchain:   dia.ETHEREUM,

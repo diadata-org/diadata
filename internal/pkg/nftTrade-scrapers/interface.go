@@ -12,7 +12,7 @@ type nothing struct{}
 
 type NFTTradeScraper interface {
 	GetTradeChannel() chan dia.NFTTrade
-	FetchTrades() ([]dia.NFTTrade, error)
+	FetchTrades() error
 }
 
 type TradeScraper struct {
@@ -26,7 +26,7 @@ type TradeScraper struct {
 	error         error
 	closed        bool
 	ethConnection *ethclient.Client
-	datastore     models.RelDB
+	datastore     models.RelDatastore
 	chanTrade     chan dia.NFTTrade
-	// source        string
+	source        string
 }

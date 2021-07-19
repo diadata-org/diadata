@@ -136,7 +136,6 @@ type GateIOResponseTrade struct {
 func (s *GateIOScraper) mainLoop() {
 	var (
 		gresponse GateIPPairResponse
-		allPairs  []string
 	)
 
 	b, _, err := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
@@ -149,19 +148,17 @@ func (s *GateIOScraper) mainLoop() {
 	}
 
 	for _, v := range gresponse {
-		allPairs = append(allPairs, v.ID)
-	}
 
-	a := &SubscribeGate{
-		Event:   "subscribe",
-		Time:    time.Now().Unix(),
-		Channel: "spot.trades",
-		Payload: allPairs,
-	}
-
-	log.Infoln("subscribed", allPairs)
-	if err = s.wsClient.WriteJSON(a); err != nil {
-		log.Error(err.Error())
+		a := &SubscribeGate{
+			Event:   "subscribe",
+			Time:    time.Now().Unix(),
+			Channel: "spot.trades",
+			Payload: []string{v.ID},
+		}
+		log.Infof("Subscribed for Pair %v", v.ID)
+		if err = s.wsClient.WriteJSON(a); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	for {
@@ -214,6 +211,8 @@ func (s *GateIOScraper) mainLoop() {
 				log.Infoln("Got verified trade", t)
 			}
 			ps.parent.chanTrades <- t
+			log.Infoln("got trade", t)
+
 		}
 
 	}

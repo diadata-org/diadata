@@ -134,6 +134,7 @@ func (s *HitBTCScraper) mainLoop() {
 								if exchangepair.Verified {
 									log.Infoln("Got verified trade: ", t)
 								}
+								log.Info("got trade: ", t)
 								ps.parent.chanTrades <- t
 							}
 						} else {

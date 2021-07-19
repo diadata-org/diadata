@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -169,10 +168,13 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		}
 	}
 	errHandler := func(err error) {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 	_, _, err := binance.WsAggTradeServe(pair.ForeignName, wsAggTradeHandler, errHandler)
+	if err != nil {
+		log.Errorf("serving pair %s", pair.ForeignName)
+	}
 
 	return ps, err
 }

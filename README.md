@@ -4,7 +4,7 @@ description: 'Our Mission: Wikipedia for Financial Data'
 
 # Introduction
 
-[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls) [![Netlify Status](https://api.netlify.com/api/v1/badges/4be89751-9655-472f-9bfe-c8e57b9528b2/deploy-status)](https://coinhub.diadata.org)
+[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
 ![](.gitbook/assets/180926_dia_assets-57.png)
 
@@ -24,7 +24,7 @@ If you want to dive into our API without further ado, feel free to take the belo
 
 | Class | Description | API Example | API Documentation | Oracle | Number of Assets |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| CoinMarketCap Quotation | Actual price of the top 50 crypto assets as listed on CMC | [DIA Price](https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/DIA) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#guest-quotation) for a detailed description | [CoinMarketCap Oracle](https://etherscan.io/address/0x48760771feda4be44a6ed3bff13ecbc445159b1d) | 50 |
+| CoinMarketCap Quotation | Actual price of the top 50 crypto assets as listed on CMC | [DIA Price](https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/DIA) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#guest-quotation) for a detailed description | [CoinMarketCap Oracle](https://bscscan.com/address/0xbafee71d40babc12a3d0b2b8937ee62d3a070835) | 50 |
 | Crypto Price | Actual price of a crypto asset such as Bitcoin \(BTC\) or Ether \(ETH\) | [BTC Price](https://api.diadata.org/v1/quotation/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) for a detailed description. | Oracle for [crypto assets](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | ~800 |
 | Supply | Actual circulating supply of a crypto asset | [BTC Supply](https://api.diadata.org/v1/supply/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) for a detailed description | Oracle for [crypto assets](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | ~150 |
 | Exchange | Centralized and decentralized crypto exchanges | [List of exchanges](https://api.diadata.org/v1/exchanges) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) for a detailed description |  | 28 |
@@ -61,7 +61,6 @@ DIA's data feeds are being used by a range of market actors in the DeFi and CeFi
 * [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.
 * [Hedget](https://www.hedget.com/) - Designed to be a DeFi option trading platform. DIA supplies price feeds to value Hedget’s derivative products.
 * [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
-* [FINOA](https://finoa.io/) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI
 * [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
 
 ## **Feedback**
