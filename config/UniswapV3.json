@@ -10879,12 +10879,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-TT",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "USDT",
             "ForeignName": "USDT-LKSC",
             "Exchange": "UniswapV2",
