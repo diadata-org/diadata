@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	ratescrapers2 "github.com/diadata-org/diadata/internal/ratescrapers"
-	staticscrapers2 "github.com/diadata-org/diadata/internal/static-scrapers"
+	ratescrapers2 "github.com/diadata-org/diadata/dia-pkg/ratescrapers"
+	staticscrapers2 "github.com/diadata-org/diadata/dia-pkg/static-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"

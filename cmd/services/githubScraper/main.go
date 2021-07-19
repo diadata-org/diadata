@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
-	githubservice2 "github.com/diadata-org/diadata/internal/githubService"
+	githubservice2 "github.com/diadata-org/diadata/dia-pkg/githubService"
 	"os"
 	"time"
 

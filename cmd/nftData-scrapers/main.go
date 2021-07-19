@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	nftdatascrapers2 "github.com/diadata-org/diadata/internal/nftData-scrapers"
+	nftdatascrapers2 "github.com/diadata-org/diadata/dia-pkg/nftData-scrapers"
 	"sync"
 	"time"
 

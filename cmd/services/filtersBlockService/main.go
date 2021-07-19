@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	filters "github.com/diadata-org/diadata/internal/filtersBlockService"
+	filters "github.com/diadata-org/diadata/dia-pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
