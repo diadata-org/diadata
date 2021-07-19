@@ -1,0 +1,82 @@
+{
+  "Batches": [
+    {
+      "Exchange": "Binance",
+      "BatchNumber": "1",
+      "VerifiedBy": ["baptistegarcin, slightlyskepticalpotat, jerrynoah"] 
+      
+    },
+    {
+      "Exchange": "Kraken",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "Huobi",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "GateIO",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "ZB",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "Bittrex",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "HitBTC",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "OKEx",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "LBank",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "Quoine",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "CREX24",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    },
+    {
+      "Exchange": "STEX",
+      "BatchNumber": "1",
+      "VerifiedBy": [""] 
+      
+    }
+  ]
+}
