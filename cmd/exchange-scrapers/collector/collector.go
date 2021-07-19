@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	scrapers2 "github.com/diadata-org/diadata/internal/exchange-scrapers"
+	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"sync"
 	"time"

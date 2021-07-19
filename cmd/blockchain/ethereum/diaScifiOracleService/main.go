@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	diaScifiOracleService2 "github.com/diadata-org/diadata/internal/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
+	diaScifiOracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
 	"log"
 	"math/big"
 	"os"

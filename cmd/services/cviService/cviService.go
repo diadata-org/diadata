@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	filters "github.com/diadata-org/diadata/internal/filtersOptionService"
+	filters "github.com/diadata-org/diadata/dia-pkg/filtersOptionService"
 	log "github.com/sirupsen/logrus"
 )
 
