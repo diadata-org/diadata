@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/dia-pkg/foreign-scrapers"
+	"github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -21,7 +21,7 @@ func main() {
 
 	scraperType := flag.String("foreignType", "", "which foreignQuotation")
 	flag.Parse()
-	var sc foreignscrapers.ForeignScrapperer
+	var sc foreignscrapers.foreignscrapers
 
 	switch *scraperType {
 	case "Coingecko":

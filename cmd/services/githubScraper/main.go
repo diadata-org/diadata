@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
-	githubservice2 "github.com/diadata-org/diadata/dia-pkg/githubService"
+	"github.com/diadata-org/diadata/internal/pkg/githubService"
 	"os"
 	"time"
 
@@ -36,7 +36,7 @@ func main() {
 	// If no commit is in the DB, fetch all commits until now
 	if (latestCommit) == (models.GithubCommit{}) {
 		log.Info("populate database...")
-		commits, err := githubservice2.FetchAllCommits(*nameUser, *nameRepository, 100, apiSecret)
+		commits, err := githubservice.FetchAllCommits(*nameUser, *nameRepository, 100, apiSecret)
 		if err != nil {
 			log.Fatal("error fetching all commits: ", err)
 		}
@@ -64,7 +64,7 @@ func main() {
 			// Remark: if between two ticker signals no new commits are added, the latest commit is fetched again nevertheless,
 			// because FetchCommitsByDate includes the borders. This does not hurt as the set of tags is the same and hence, data
 			// is only stored once in influx.
-			commits, err := githubservice2.FetchCommitsByDate("diadata-org", "diadata", apiKey, latestCommit.Timestamp, time.Now())
+			commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, latestCommit.Timestamp, time.Now())
 			if err != nil {
 				log.Fatal(err)
 			}

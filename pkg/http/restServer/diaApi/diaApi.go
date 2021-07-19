@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	indexCalculationService2 "github.com/diadata-org/diadata/dia-pkg/indexCalculationService"
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -1116,7 +1116,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		return
 	}
 	// Get constituents information
-	constituents, err := indexCalculationService2.GetIndexBasket(constituentsAddresses)
+	constituents, err := indexCalculationService.GetIndexBasket(constituentsAddresses)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1124,7 +1124,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Calculate relative weights
-	err = indexCalculationService2.CalculateWeights(indexSymbol, &constituents)
+	err = indexCalculationService.CalculateWeights(indexSymbol, &constituents)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1145,7 +1145,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	if indexSymbol == "SCIFI" {
 		// Determine new divisor
 		currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
-		newIndexRawValue = indexCalculationService2.GetIndexValue(indexSymbol, constituents)
+		newIndexRawValue = indexCalculationService.GetIndexValue(indexSymbol, constituents)
 		newDivisor = (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
 		newIndexValue = newIndexRawValue / newDivisor
 	} else {

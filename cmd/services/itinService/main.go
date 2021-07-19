@@ -1,7 +1,7 @@
 package main
 
 import (
-	itinService2 "github.com/diadata-org/diadata/dia-pkg/itinService"
+	"github.com/diadata-org/diadata/internal/pkg/itinService"
 	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	for {
-		itins, err := itinService2.GetItins(itinUrl)
+		itins, err := itinService.GetItins(itinUrl)
 		if err != nil {
 			log.Error(err)
 			return

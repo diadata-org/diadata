@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	diaCoinmarketcapOracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
+	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
 	"log"
 	"math/big"
 	"net/http"
@@ -80,7 +80,7 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaCoinmarketcapOracleService2.DIACoinmarketcapOracle
+	var contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle
 	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -102,7 +102,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, sleepSeconds int, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService2.DIACoinmarketcapOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(numCoins *int, sleepSeconds int, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle, conn *ethclient.Client) error {
 
 	time.Sleep(time.Duration(sleepSeconds) * time.Second)
 	topCoins, err := getTopCoinsFromCoinmarketcap(*numCoins)
@@ -127,7 +127,7 @@ func periodicOracleUpdateHelper(numCoins *int, sleepSeconds int, auth *bind.Tran
 	return nil
 }
 
-func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService2.DIACoinmarketcapOracle, conn *ethclient.Client) error {
+func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bind.TransactOpts, contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle, conn *ethclient.Client) error {
 	symbol := foreignQuotation.Symbol
 	price := foreignQuotation.Price
 	timestamp := foreignQuotation.Time.Unix()
@@ -229,10 +229,10 @@ func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation
 	return &quotation, nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoinmarketcapOracleService2.DIACoinmarketcapOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCoinmarketcapOracleService.DIACoinmarketcapOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaCoinmarketcapOracleService2.NewDIACoinmarketcapOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaCoinmarketcapOracleService.NewDIACoinmarketcapOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -240,7 +240,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaCoinmarketcapOracleService2.DeployDIACoinmarketcapOracle(auth, conn)
+		addr, tx, *contract, err = diaCoinmarketcapOracleService.DeployDIACoinmarketcapOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -254,7 +254,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 
 func updateOracle(
 	client *ethclient.Client,
-	contract *diaCoinmarketcapOracleService2.DIACoinmarketcapOracle,
+	contract *diaCoinmarketcapOracleService.DIACoinmarketcapOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,

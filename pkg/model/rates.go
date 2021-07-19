@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	ratederivatives2 "github.com/diadata-org/diadata/dia-pkg/rateDerivatives"
+	"github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"math"
 	"sort"
 	"strconv"
@@ -290,7 +290,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	}
 
 	// Get compounded rate
-	compRate, err := ratederivatives2.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
+	compRate, err := ratederivatives.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -370,7 +370,7 @@ func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Ti
 	// Iterate through all remaining business days
 	for i := 0; i < len(ratesAPI)-1; i++ {
 
-		n, _ := ratederivatives2.RateFactor(ratesAPI[i].EffectiveDate, holidays)
+		n, _ := ratederivatives.RateFactor(ratesAPI[i].EffectiveDate, holidays)
 		factor := 1 + (ratesAPI[i].Value/100)*float64(n)/float64(daysPerYear)
 		value *= factor
 
@@ -450,7 +450,7 @@ func WeightedRates(intRates []*InterestRate, dateInit, dateFinal time.Time, holi
 
 	// Compute compounded rate for period [dateInit, dateFinal]
 	for utils.AfterDay(dateFinal, intRates[startIndex].EffectiveDate) && startIndex < len(intRates)-1 {
-		ratefactor, _ := ratederivatives2.RateFactor(intRates[startIndex].EffectiveDate, holidays)
+		ratefactor, _ := ratederivatives.RateFactor(intRates[startIndex].EffectiveDate, holidays)
 		rateMap[intRates[startIndex].EffectiveDate] = float64(ratefactor) * intRates[startIndex].Value
 		startIndex++
 	}
@@ -540,7 +540,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 				}
 			}
 
-			compRate, err := ratederivatives2.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+			compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 			if err != nil || utils.ContainsDay(holidays, dateInit) {
 				dateInit = dateInit.AddDate(0, 0, 1)
@@ -668,7 +668,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 			ratesPeriod = append(ratesPeriod, mapRates[auxDate])
 			auxDate = auxDate.AddDate(0, 0, 1)
 		}
-		compRate, err := ratederivatives2.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+		compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 		if err != nil {
 			dateInit = dateInit.AddDate(0, 0, 1)

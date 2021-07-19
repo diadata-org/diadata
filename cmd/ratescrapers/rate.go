@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	ratescrapers2 "github.com/diadata-org/diadata/dia-pkg/ratescrapers"
-	staticscrapers2 "github.com/diadata-org/diadata/dia-pkg/static-scrapers"
+	"github.com/diadata-org/diadata/internal/pkg/ratescrapers"
+	"github.com/diadata-org/diadata/internal/pkg/static-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -43,19 +43,19 @@ func main() {
 	} else {
 
 		// Download historic data (in case there is)
-		err = staticscrapers2.LoadHistoricRate(*rateType)
+		err = staticscrapers.LoadHistoricRate(*rateType)
 		if err != nil {
 			log.Errorf("Error downloading resources for rate %s: %v", *rateType, err)
 		}
 
 		// Writing historic data into database
-		err = staticscrapers2.WriteHistoricRate(ds, *rateType)
+		err = staticscrapers.WriteHistoricRate(ds, *rateType)
 		if err != nil {
 			log.Errorf("Error writing rate %s: %v", *rateType, err)
 		}
 
 		// Spawn the corresponding rate scraper
-		sRate := ratescrapers2.SpawnRateScraper(ds, *rateType)
+		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)
 		defer func() {
 			cerr := sRate.Close()
 			if err == nil {
