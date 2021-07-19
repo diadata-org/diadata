@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	indexCalculationService2 "github.com/diadata-org/diadata/dia-pkg/indexCalculationService"
+	indexCalculationService2 "github.com/diadata-org/diadata/internal/indexCalculationService"
 	"io/ioutil"
 	"net/http"
 	"strconv"

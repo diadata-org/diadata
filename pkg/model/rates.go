@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	ratederivatives2 "github.com/diadata-org/diadata/dia-pkg/rateDerivatives"
+	ratederivatives2 "github.com/diadata-org/diadata/internal/rateDerivatives"
 	"math"
 	"sort"
 	"strconv"

@@ -5,7 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	oracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
+	oracleService2 "github.com/diadata-org/diadata/internal/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"log"
 	"math/big"
 	"os"

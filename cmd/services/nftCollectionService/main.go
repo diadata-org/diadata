@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgconn"
 
-	nftsource "github.com/diadata-org/diadata/dia-pkg/nftService"
+	nftsource "github.com/diadata-org/diadata/internal/nftService"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"

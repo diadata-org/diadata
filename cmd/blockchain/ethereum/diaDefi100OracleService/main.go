@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	diaDefi100OracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
+	diaDefi100OracleService2 "github.com/diadata-org/diadata/internal/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"math/big"
 	"net/http"
 	"os"

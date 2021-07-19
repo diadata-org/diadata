@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	diaCoinmarketcapOracleService2 "github.com/diadata-org/diadata/dia-pkg/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
+	diaCoinmarketcapOracleService2 "github.com/diadata-org/diadata/internal/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
 	"log"
 	"math/big"
 	"net/http"

@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	pool2 "github.com/diadata-org/diadata/dia-pkg/farming-pool-scraper"
+	pool2 "github.com/diadata-org/diadata/internal/farming-pool-scraper"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"

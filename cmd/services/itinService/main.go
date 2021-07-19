@@ -1,7 +1,7 @@
 package main
 
 import (
-	itinService2 "github.com/diadata-org/diadata/dia-pkg/itinService"
+	itinService2 "github.com/diadata-org/diadata/internal/itinService"
 	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"

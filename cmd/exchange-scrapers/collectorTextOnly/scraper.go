@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	scrapers2 "github.com/diadata-org/diadata/dia-pkg/exchange-scrapers"
+	scrapers2 "github.com/diadata-org/diadata/internal/exchange-scrapers"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
