@@ -28,7 +28,7 @@ type Cvault struct {
 	scraper       *PoolScraper
 	RestClient    *ethclient.Client
 	WsClient      *ethclient.Client
-	DepositEvent  chan *cvaultpoolcontract.cvaultpoolcontract
+	DepositEvent  chan *cvaultpoolcontract.CvaultpoolcontractDeposit
 	WithDrawEvent chan *cvaultpoolcontract.CvaultpoolcontractWithdraw
 }
 

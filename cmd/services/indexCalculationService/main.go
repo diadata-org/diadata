@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/diadata-org/diadata/dia-pkg/indexCalculationService"
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"

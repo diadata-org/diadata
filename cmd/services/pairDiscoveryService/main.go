@@ -13,8 +13,8 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/utils"
 
-	"github.com/diadata-org/diadata/dia-pkg/assetservice/verifiedTokens"
-	scrapers2 "github.com/diadata-org/diadata/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/internal/pkg/assetservice/verifiedTokens"
+	scrapers "github.com/diadata-org/diadata/pkg/exchange-scrapers"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
@@ -156,20 +156,20 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	} else {
 
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
-		exchangeMap := scrapers2.Exchanges
+		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
 			dataTowrite := make(map[string][]dia.Asset)
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
-			var scraper scrapers2.APIScraper
+			var scraper scrapers.APIScraper
 			config, err := dia.GetConfig(exchange)
 			if err == nil {
-				scraper = scrapers2.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
+				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
 			} else {
 				log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
 				log.Info("Proceeding with no API secrets")
-				scraper = scrapers2.NewAPIScraper(exchange, false, "", "", relDB)
+				scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
 			}
 
 			// If no error, fetch pairs by method implemented for each scraper resp.
@@ -361,7 +361,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
-					go func(s scrapers2.APIScraper, exchange string) {
+					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
 						err = s.Close()
@@ -389,7 +389,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					// 	log.Error(err)
 					// }
 
-					go func(s scrapers2.APIScraper, exchange string) {
+					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
 						err = s.Close()

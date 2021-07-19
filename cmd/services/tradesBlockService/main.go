@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/diadata-org/diadata/dia-pkg/tradesBlockService"
+	"github.com/diadata-org/diadata/internal/pkg/tradesBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
