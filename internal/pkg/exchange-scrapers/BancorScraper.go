@@ -292,8 +292,8 @@ func (scrapper *BancorScraper) getSwapData(swap BancorSwap) (price float64, volu
 	return
 }
 
-func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {

@@ -32,9 +32,7 @@ const (
 
 	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
-
-	// restDial = "https://mainnet.infura.io/v3/3c7bc809e9174a85ad56ee9abcb68d32"
-	// wsDial   = "wss://mainnet.infura.io/ws/v3/3c7bc809e9174a85ad56ee9abcb68d32"
+	
 	// restDial = "https://mainnet.infura.io/v3/9020e59e34ca4cf59cb243ecefb4e39e"
 	// wsDial   = "wss://mainnet.infura.io/ws/v3/9020e59e34ca4cf59cb243ecefb4e39e"
 
@@ -96,12 +94,14 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		log.Info(utils.Getenv("ETH_URI_REST", restDial))
 		log.Info(utils.Getenv("ETH_URI_WS", wsDial))
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
+		restClient, err = ethclient.Dial(restDial)
+		// restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
+		wsClient, err = ethclient.Dial(wsDial)
+		// wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -200,6 +200,7 @@ func (s *UniswapScraper) mainLoop() {
 		if !pair.pairHealthCheck() {
 			continue
 		}
+		pair.normalizeUniPair()
 
 		ps, ok := s.pairScrapers[pair.ForeignName]
 		if ok {
@@ -218,7 +219,6 @@ func (s *UniswapScraper) mainLoop() {
 							log.Error("error normalizing swap: ", err)
 						}
 						price, volume := getSwapData(swap)
-						pair.normalizeUniPair()
 						token0 := dia.Asset{
 							Address:    pair.Token0.Address.Hex(),
 							Symbol:     pair.Token0.Symbol,
@@ -266,7 +266,7 @@ func (s *UniswapScraper) mainLoop() {
 				}
 			}()
 		} else {
-			log.Info("Skipping pair due to no pairScraper being available")
+			log.Infof("Skipping pair %s due to no pairScraper being available", pair.ForeignName)
 		}
 	}
 
@@ -463,9 +463,6 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 }
 
 func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	// if pair.ForeignName == "WETH" {
-	// 	pair.Symbol = "ETH"
-	// }
 	return pair, nil
 }
 

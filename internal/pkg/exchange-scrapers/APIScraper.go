@@ -161,9 +161,9 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.STEXExchange:
-		return NewSTEXScraper(Exchanges[dia.STEXExchange])
+		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape, relDB)
 	case dia.UniswapExchangeV3:
-		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3])
+		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3], scrape)
 
 	default:
 		return nil

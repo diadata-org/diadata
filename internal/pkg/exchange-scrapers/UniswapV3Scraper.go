@@ -54,7 +54,7 @@ type UniswapV3Scraper struct {
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
-func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
+func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var err error
@@ -71,8 +71,6 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
 	}
 
 	s := &UniswapV3Scraper{
@@ -88,7 +86,9 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 	s.WsClient = wsClient
 	s.RestClient = restClient
 
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -138,7 +138,9 @@ func (s *UniswapV3Scraper) mainLoop() {
 			continue
 		}
 		pair.normalizeUniPair()
-		if true {
+		ps, ok := s.pairScrapers[pair.ForeignName]
+
+		if ok {
 			log.Info(": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
 			sink, err := s.GetSwapsChannel(pair.Address)
 			if err != nil {
@@ -154,15 +156,32 @@ func (s *UniswapV3Scraper) mainLoop() {
 							log.Error("error normalizing swap: ", err)
 						}
 						price, volume := s.getSwapData(swap)
+						token0 := dia.Asset{
+							Address:    pair.Token0.Address.Hex(),
+							Symbol:     pair.Token0.Symbol,
+							Name:       pair.Token0.Name,
+							Decimals:   pair.Token0.Decimals,
+							Blockchain: dia.ETHEREUM,
+						}
+						token1 := dia.Asset{
+							Address:    pair.Token1.Address.Hex(),
+							Symbol:     pair.Token1.Symbol,
+							Name:       pair.Token1.Name,
+							Decimals:   pair.Token1.Decimals,
+							Blockchain: dia.ETHEREUM,
+						}
 
 						t := &dia.Trade{
-							Symbol:         pair.Token0.Symbol,
-							Pair:           pair.ForeignName,
+							Symbol:         ps.pair.Symbol,
+							Pair:           ps.pair.ForeignName,
 							Price:          price,
 							Volume:         volume,
+							BaseToken:      token1,
+							QuoteToken:     token0,
 							Time:           time.Unix(swap.Timestamp, 0),
 							ForeignTradeID: swap.ID,
 							Source:         s.exchangeName,
+							VerifiedPair:   true,
 						}
 						// If we need quotation of a base token, reverse pair
 						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
@@ -179,7 +198,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 				}
 			}()
 		} else {
-			log.Info("Skipping pair due to no pairScraper being available")
+			log.Infof("Skipping pair %s due to no pairScraper being available", pair.ForeignName)
 		}
 	}
 }
@@ -301,12 +320,15 @@ func (s *UniswapV3Scraper) GetPairByAddress(pairAddress common.Address) (pair Un
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs as dia.Pair for the pairDiscorvery service
-func (s *UniswapV3Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-
+func (s *UniswapV3Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return
 }
 
-func (s *UniswapV3Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *UniswapV3Scraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
+func (s *UniswapV3Scraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	if pair.ForeignName == "WETH" {
 		pair.Symbol = "ETH"
 	}
@@ -447,7 +469,7 @@ func (s *UniswapV3Scraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *UniswapV3Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *UniswapV3Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -468,7 +490,7 @@ func (s *UniswapV3Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 // UniswapPairScraper implements PairScraper for Uniswap
 type UniswapPairV3Scraper struct {
 	parent *UniswapV3Scraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -492,6 +514,6 @@ func (ps *UniswapPairV3Scraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *UniswapPairV3Scraper) Pair() dia.Pair {
+func (ps *UniswapPairV3Scraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
