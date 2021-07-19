@@ -154,6 +154,7 @@ const (
 	influxDbFiatQuotationsTable          = "fiat"
 	influxDbOptionsTable                 = "options"
 	influxDbCVITable                     = "cvi"
+	influxDbETHCVITable                  = "cviETH"
 	influxDbSupplyTable                  = "supplies"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"

@@ -124,8 +124,13 @@ github.com/deckarep/golang-set v1.7.1/go.mod h1:93vsz/8Wt4joVM7c2AVqh+YRMiUSc14y
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
+github.com/diadata-org/diadata v1.0.0 h1:ePt7kKHbunh7lHwMvgc0uZnYNDZ3x/JQCGfYLRnXkfY=
 github.com/diadata-org/diadata v1.0.1-tekton-ci-beta-18 h1:uXOGj/oFAyoB9LkFCuOOjjFo51Sbf5kZT7CW+hwpzzI=
 github.com/diadata-org/diadata v1.0.1-tekton-ci-beta-18/go.mod h1:/mxL20DElnR/wiQspR0eo9VBQfosDPz2VT8cWQNsLwo=
+github.com/diadata-org/diadata v1.1.0-rc-2 h1:jd3XC7FvsL+a4aB1oOFfC5s/6nD8Jd9Jp/y3VOkn4cc=
+github.com/diadata-org/diadata v1.1.0-rc-2/go.mod h1:za3QQGXVsUUY/hptDS7ntwgNgJoSM368LGKTJVo/bPs=
+github.com/diadata-org/diadata v1.1.1-rc-10 h1:Qo/9OqzMWkQSS2e/0eAozKa7D7PGsox5LC8R6SH5c7s=
+github.com/diadata-org/diadata v1.1.1-rc-10/go.mod h1:za3QQGXVsUUY/hptDS7ntwgNgJoSM368LGKTJVo/bPs=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/dop251/goja v0.0.0-20200721192441-a695b0cdd498/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
@@ -380,6 +385,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 h1:ZHuwnjpP8LsVsUYqTqeVAI+GfDfJ6UNPrExZF+vX/DQ=
 github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
+github.com/karalabe/usb v0.0.0-20210518091819-4ea20957c210 h1:vDAFkg6YQvLD281dzcwQwVLQV9fb/6RbqDcTMOOg64g=
+github.com/karalabe/usb v0.0.0-20210518091819-4ea20957c210/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
