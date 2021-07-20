@@ -20,7 +20,7 @@ type RelDatastore interface {
 	SetAsset(asset dia.Asset) error
 	GetAsset(address, blockchain string) (dia.Asset, error)
 	GetAssetByID(ID string) (dia.Asset, error)
-	GetAssetBySymbolName(symbol, name string) ([]dia.Asset, error)
+	GetAssetsBySymbolName(symbol, name string) ([]dia.Asset, error)
 	GetAllAssets(blockchain string) ([]dia.Asset, error)
 	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
 	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
@@ -29,7 +29,7 @@ type RelDatastore interface {
 	Count() (uint32, error)
 
 	// --------------- asset methods for exchanges ---------------
-	SetExchangePair(exchange string, pair dia.ExchangePair)
+	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
 	GetExchangePair(exchange string, foreignname string) (exchangepair dia.ExchangePair, err error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetPairs(exchange string) ([]dia.ExchangePair, error)
@@ -45,7 +45,7 @@ type RelDatastore interface {
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
-	GetAssetCache(symbol, name string) (dia.Asset, error)
+	GetAssetCache(assetID string) (dia.Asset, error)
 	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 	CountCache() (uint32, error)

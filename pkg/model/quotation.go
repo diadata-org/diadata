@@ -214,7 +214,7 @@ func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 // GetTopAsset returns the asset with highest market cap among all assets with symbol @symbol.
 // This method allows us to use all API endpoints called on a symbol.
 func (db *DB) GetTopAsset(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
-	assets, err := relDB.GetAssetsBySymbolName(symbol, "")
+	assets, err := relDB.GetAssets(symbol)
 	if err != nil {
 		return dia.Asset{}, err
 	}

@@ -14,7 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/verifiedTokens"
-	scrapers "github.com/diadata-org/diadata/pkg/exchange-scrapers"
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"

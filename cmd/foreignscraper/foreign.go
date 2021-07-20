@@ -21,7 +21,7 @@ func main() {
 
 	scraperType := flag.String("foreignType", "", "which foreignQuotation")
 	flag.Parse()
-	var sc scrapers.Foreignscrapperer
+	var sc scrapers.ForeignScrapperer
 
 	switch *scraperType {
 	case "Coingecko":
