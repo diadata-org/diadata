@@ -246,7 +246,8 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 // GetAssets returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 ", assetTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query, symbol)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
 		return
 	}
@@ -272,7 +273,8 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 
 func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
 	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false", exchangesymbolTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
 		return
 	}
