@@ -9,15 +9,19 @@ services:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-graphqlServer
     networks:
-      - kafka-network
       - redis-network
       - influxdb-network
-      - postgres-network
-    secrets:
-      - api_diadata
-      - postgres_credentials
+
     logging:
       options:
         max-size: "50m"
     volumes:
       - /home/srv/restServer/charts:/charts
+
+networks:
+  redis-network:
+    external:
+      name: redis_redis-network
+  influxdb-network:
+    external:
+      name: influxdb_influxdb-network
