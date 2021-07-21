@@ -7,6 +7,7 @@ import (
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -25,17 +26,7 @@ type Env struct {
 	RelDB     models.RelDB
 }
 
-// PostSupply godoc
-// @Summary Post the circulating supply
-// @Description Post the circulating supply
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param Symbol query string true "Coin symbol"
-// @Param CirculatingSupply query float64 true "number of coins in circulating supply"
-// @Success 200 {object} dia.Supply	"success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/supply [post]
+// PostSupply deprecated? TO DO
 func (env *Env) PostSupply(c *gin.Context) {
 
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -74,17 +65,8 @@ func (env *Env) PostSupply(c *gin.Context) {
 	}
 }
 
-// GetQuotation godoc
-// @Summary Get quotation
-// @Description GetQuotation
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} models.Quotation "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/quotation/:symbol: [get]
+// GetQuotation returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
 	// Fetch underlying asset for symbol
@@ -411,16 +393,16 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			}
 			s = append(s, sExch...)
 		}
-
+		s = utils.UniqueStrings(s)
 	} else {
 		s, err = env.RelDB.GetExchangeSymbols(exchange)
 	}
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
 	} else {
+		sort.Strings(s)
 		c.JSON(http.StatusOK, s)
 	}
-
 }
 
 // -----------------------------------------------------------------------------

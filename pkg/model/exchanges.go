@@ -4,6 +4,7 @@ import (
 	// "encoding/json"
 	"context"
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
@@ -19,6 +20,7 @@ func (db *DB) GetExchanges() (allExchanges []string) {
 			allExchanges = append(allExchanges, exchange)
 		}
 	}
+	sort.Strings(allExchanges)
 	return
 }
 

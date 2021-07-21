@@ -118,7 +118,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 	// First attempt to get latest quotation from redis cache
 	quotation, err := db.GetAssetQuotationCache(asset)
 	if err == nil {
-		log.Infof("got asset quotation for %s from cache.", asset.Symbol)
+		log.Infof("got asset quotation for %s from cache: %v", asset.Symbol, quotation)
 		return quotation, nil
 	}
 
@@ -201,12 +201,12 @@ func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	circSupply, err := db.GetSupplyInflux(asset, time.Time{}, time.Time{})
+	supply, err := db.GetSupplyInflux(asset, time.Time{}, time.Time{})
 	if err != nil {
 		return 0, err
 	}
-	if len(circSupply) > 0 {
-		return price * circSupply[0].CirculatingSupply, nil
+	if len(supply) > 0 {
+		return price * supply[0].CirculatingSupply, nil
 	}
 	return 0, errors.New("no circulating supply available")
 }
@@ -224,7 +224,7 @@ func (db *DB) GetTopAsset(symbol string, relDB *RelDB) (topAsset dia.Asset, err 
 	var mcap float64
 	for _, asset := range assets {
 		value, err := db.GetAssetsMarketCap(asset)
-		if mcap == 0 {
+		if value == 0 {
 			continue
 		}
 		if err != nil {
