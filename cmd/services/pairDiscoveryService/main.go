@@ -528,9 +528,6 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 	return
 }
 
-// TO DO: At some point we can add a consensus mechanism involving several submissions
-// for the same bounty.
-
 // setGitcoinSymbols writes all mappings from submissions into exchangesymbol table.
 func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error {
 	for _, submission := range submissions.AllItems {
