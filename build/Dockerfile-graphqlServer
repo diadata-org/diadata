@@ -2,10 +2,14 @@ FROM golang:1.14 as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
+RUN ls
+
+COPY github.com/diadata-org $GOPATH/src/github.com/diadata-org
+
 
 WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/http/graphqlServer
 
+RUN go build
 RUN go install
 
 FROM gcr.io/distroless/base
@@ -15,3 +19,6 @@ COPY --from=build /go/src/github.com/diadata-org/diadata/config/ /config/
 
 
 CMD ["graphqlServer"]
+
+
+

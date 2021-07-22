@@ -8,6 +8,7 @@ services:
     build:
       context: ../../../..
       dockerfile: github.com/diadata-org/diadata/build/Dockerfile-graphqlServer
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_graphqlserver:latest
     networks:
       - redis-network
       - influxdb-network
@@ -15,8 +16,6 @@ services:
     logging:
       options:
         max-size: "50m"
-    volumes:
-      - /home/srv/restServer/charts:/charts
 
 networks:
   redis-network:
