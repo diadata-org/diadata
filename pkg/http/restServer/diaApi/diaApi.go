@@ -73,6 +73,7 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	asset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
+		return
 	}
 	q, err := env.DataStore.GetAssetQuotation(asset)
 	if err != nil {

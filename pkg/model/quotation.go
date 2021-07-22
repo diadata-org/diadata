@@ -142,7 +142,7 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 		}
 		log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
 	} else {
-		return quotation, errors.New("error parsing trade from database")
+		return quotation, errors.New("no assetQuotation in influx")
 	}
 	quotation.Asset = asset
 	quotation.Source = dia.Diadata
@@ -216,25 +216,32 @@ func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 func (db *DB) GetTopAsset(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
 	assets, err := relDB.GetAssets(symbol)
 	if err != nil {
-		return dia.Asset{}, err
+		return
 	}
 	if len(assets) == 0 {
-		return dia.Asset{}, errors.New("no matching asset")
+		err = errors.New("no matching asset")
+		return
 	}
 	var mcap float64
 	for _, asset := range assets {
-		value, err := db.GetAssetsMarketCap(asset)
-		if value == 0 {
-			continue
-		}
+		var value float64
+		value, err = db.GetAssetsMarketCap(asset)
 		if err != nil {
 			log.Error(err)
+			continue
+		}
+		if value == 0 {
 			continue
 		}
 		if value > mcap {
 			mcap = value
 			topAsset = asset
 		}
+	}
+	if mcap == 0 {
+		err = errors.New("no quotation for symbol")
+	} else {
+		err = nil
 	}
 	return
 }
