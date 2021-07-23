@@ -9,6 +9,7 @@ type Query {
     Symbol: String!
     StartTime: Time!
     EndTime: Time!
+    Exchanges: [String!]
   ): [FilterPoint]
 }
 
