@@ -99,7 +99,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		exchangesString = append(exchangesString, *v.Value)
 	}
 
-	trades, err := r.DS.GetTradesByExchange(symbol, exchangesString, starttime, endtime, 0)
+	trades, err := r.DS.GetTradesByExchanges(symbol, exchangesString, starttime, endtime, 0)
 	if err != nil {
 		return nil, nil
 	}

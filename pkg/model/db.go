@@ -36,6 +36,8 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
 	GetTradesByExchange(symbol string, exchange string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+	GetTradesByExchanges(symbol string, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+
 	SaveTradeInflux(t *dia.Trade) error
 	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error

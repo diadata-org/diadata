@@ -143,7 +143,7 @@ func (db *DB) GetLastTradesAllExchanges(symbol string, maxTrades int) ([]dia.Tra
 	return r, nil
 }
 
-func (db *DB) GetTradesByExchange(symbol string, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
 	subquery := ""
 	for count, exchange := range exchanges {
@@ -157,6 +157,30 @@ func (db *DB) GetTradesByExchange(symbol string, exchanges []string, startTime, 
 
 	}
 	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and %s and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
+	log.Infoln("GetTradesByExchange Query", q)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Errorln("GetLastTrades", err)
+		return r, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			t := parseTrade(row)
+			if t != nil {
+				r = append(r, *t)
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", symbol)
+	}
+	return r, nil
+}
+
+func (db *DB) GetTradesByExchange(symbol string, exchange string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+	r := []dia.Trade{}
+
+	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and exchange='%s' and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, exchange, startTime.UnixNano(), endTime.UnixNano())
 	log.Infoln("GetTradesByExchange Query", q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
