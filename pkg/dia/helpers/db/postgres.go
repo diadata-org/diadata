@@ -23,7 +23,7 @@ func GetPostgresClient() *pgx.Conn {
 	postgresClient, err = pgx.Connect(context.Background(), GetPostgresURL())
 	if err != nil {
 		log.Error(err)
-		return nil
+		return &pgx.Conn{}
 	}
 	log.Info("...connection to postgres server established.")
 
