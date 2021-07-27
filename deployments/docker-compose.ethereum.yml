@@ -260,6 +260,21 @@ services:
     secrets:
       - oracle_keys_kovan
 
+  diacoinmarketcaporacleservice-kovan:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-kovan
+    networks:
+      - scrapers-network
+    command: --deployedContract=0xc7a9b2332681ee3a82c6a90b87ec73388ef6b745 --numCoins=100 --secretsFile=/run/secrets/oracle_keys_cmc_kovan --blockchainNode="https://kovan.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=42
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_cmc_kovan
+      - Coinmarketcap-API.key
+
   diajoosoracleservice:
     build:
       context: $GOPATH
@@ -427,6 +442,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.ropsten2
   oracle_keys_kovan:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.kovan
+  oracle_keys_cmc_kovan:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coinmarketcap.txt.kovan
   oracle_keys_bsc_testnet:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt.testnet
   oracle_keys_bsc_testnet_defi100:
