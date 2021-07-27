@@ -198,7 +198,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					if err != nil {
 						log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 					}
-
 					// --------- 2. Step: Try to verify all pairs collected above ---------
 
 					// 2.a Get list of symbols available on exchange and try to match to assets.

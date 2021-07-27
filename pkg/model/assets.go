@@ -408,7 +408,7 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 	defer rows.Close()
 
 	for rows.Next() {
-		pair := dia.ExchangePair{}
+		pair := dia.ExchangePair{Exchange: exchange}
 		err = rows.Scan(&pair.Symbol, &pair.ForeignName)
 		if err != nil {
 			return []dia.ExchangePair{}, err

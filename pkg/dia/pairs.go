@@ -15,7 +15,7 @@ func GetPairSymbols(pair ExchangePair) ([]string, error) {
 		baseToken := strings.TrimPrefix(foreignName, quoteToken)
 		return []string{quoteToken, baseToken}, nil
 	}
-	if pair.Exchange == ZBExchange || pair.Exchange == BitfinexExchange {
+	if pair.Exchange == ZBExchange {
 		foreignName := pair.ForeignName
 		quoteToken := pair.Symbol
 		baseToken := strings.TrimPrefix(strings.ToUpper(foreignName), quoteToken)
@@ -74,6 +74,7 @@ func normalizeKrakenPair(pair ExchangePair) ExchangePair {
 func GetAllSymbolsFromPairs(pairs []ExchangePair) ([]string, error) {
 	var symbols []string
 	for _, pair := range pairs {
+
 		pairsymbols, err := GetPairSymbols(pair)
 		if err != nil {
 			return []string{}, err
