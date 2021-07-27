@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	postgresKey = "postgres_credentials.txt"
+	postgresKey          = "postgres_credentials.txt"
+	reconnectWaitSeconds = 5
+	maxRetry             = 120
 )
 
 var postgresClient *pgx.Conn
@@ -40,9 +42,10 @@ func PostgresDatabase() *pgx.Conn {
 		}
 	}
 
-	for !connected {
+	count := 0
+	for !connected && count < maxRetry {
 		log.Info("Connection to Postgres was lost. Waiting for 5s...")
-		time.Sleep(5 * time.Second)
+		time.Sleep(reconnectWaitSeconds * time.Second)
 		log.Info("Reconnecting to Postgres...")
 		postgresClient, err = GetPostgresClient()
 		if err == nil {
@@ -54,7 +57,7 @@ func PostgresDatabase() *pgx.Conn {
 
 func GetPostgresURL() (url string) {
 	if os.Getenv("USE_ENV") == "true" {
-		return "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + "@" + os.Getenv("POSTGRES_HOST") + "/" + os.Getenv("POSTGRES_DATABASE")
+		return "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + "@" + os.Getenv("POSTGRES_HOST") + "/" + os.Getenv("POSTGRES_DB")
 	}
 	if utils.Getenv("EXEC_MODE", "") == "production" {
 		return "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets()
