@@ -51,6 +51,7 @@ func PostgresDatabase() *pgx.Conn {
 		if err == nil {
 			connected = true
 		}
+		count++
 	}
 	return postgresClient
 }
