@@ -16,37 +16,38 @@ const (
 
 var postgresClient *pgx.Conn
 
-func GetPostgresClient() *pgx.Conn {
+func GetPostgresClient() (*pgx.Conn, error) {
 	var err error
-
 	log.Info("connect to postgres server...")
 	postgresClient, err = pgx.Connect(context.Background(), GetPostgresURL())
 	if err != nil {
 		log.Error(err)
-		return &pgx.Conn{}
+		return &pgx.Conn{}, err
 	}
 	log.Info("...connection to postgres server established.")
 
-	return postgresClient
+	return postgresClient, err
 }
 
 func PostgresDatabase() *pgx.Conn {
+	var connected bool
+	var err error
 	if postgresClient == nil {
 		// during startup - if it does not exist, create it
-		postgresClient = GetPostgresClient()
-	}
-	closed := postgresClient.IsClosed()
-	for closed {
-		// reconnect if we lost connection
-		log.Println("Connection to Postgres was lost. Waiting for 5s...")
-		err := postgresClient.Close(context.Background())
-		if err != nil {
-			log.Error("closing postgres client: ", err)
+		postgresClient, err = GetPostgresClient()
+		if err == nil {
+			connected = true
 		}
+	}
+
+	for !connected {
+		log.Info("Connection to Postgres was lost. Waiting for 5s...")
 		time.Sleep(5 * time.Second)
-		log.Println("Reconnecting to Postgres...")
-		postgresClient = GetPostgresClient()
-		closed = postgresClient.IsClosed()
+		log.Info("Reconnecting to Postgres...")
+		postgresClient, err = GetPostgresClient()
+		if err == nil {
+			connected = true
+		}
 	}
 	return postgresClient
 }
