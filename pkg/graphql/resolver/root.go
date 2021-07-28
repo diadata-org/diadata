@@ -2,11 +2,13 @@ package resolver
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
-	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
+	queryhelper "github.com/diadata-org/diadata/pkg/dia/helpers/queryHelper"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	graphql "github.com/graph-gophers/graphql-go"
 	"github.com/sirupsen/logrus"
@@ -106,40 +108,28 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		return nil, nil
 	}
 
-	var tradeBlocks []TradeBlock
-	var tradeBlock TradeBlock
+	tradeBlocks := queryhelper.NewBlockGenerator(trades, blockSizeSeconds).Generate()
 
-	firstBlockStartTime := trades[0].Time.UnixNano()
-	currentBlockStartTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
+	b, _ := json.Marshal(trades)
 
-	for _, trade := range trades {
+	log.Infoln("Total Trades", string(b[:]))
 
-		if trade.Time.UnixNano() >= firstBlockStartTime {
-			if trade.Time.UnixNano() > currentBlockStartTime {
-				currentBlockStartTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
-				tradeBlocks = append(tradeBlocks, tradeBlock)
-				tradeBlock = TradeBlock{}
-			} else {
-				tradeBlock.Trades = append(tradeBlock.Trades, trade)
-			}
+	log.Infoln("Total Trades", len(trades))
+	log.Infoln("Total tradeBlocks", len(tradeBlocks))
 
-		} else {
-			log.Infoln("Trade is out of initial block time Trdae time", trade.Time.UnixNano(), firstBlockStartTime)
-		}
-
-	}
 	var filterPoints []dia.FilterPoint
 
 	switch *filter {
 
 	case "mair":
 		{
-			filterPoints = filterMAIR(tradeBlocks, symbol)
+
+			filterPoints = queryhelper.FilterMAIR(tradeBlocks, symbol)
 		}
 
 	case "ma":
 		{
-			filterPoints = filterMA(tradeBlocks, symbol)
+			filterPoints = queryhelper.FilterMA(tradeBlocks, symbol)
 		}
 	}
 
@@ -155,36 +145,4 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	// log.Println("End Time", trades[0].Time)
 
 	return &sr, nil
-}
-
-func filterMA(tradeBlocks []TradeBlock, symbol string) (filterPoints []dia.FilterPoint) {
-	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMA(symbol, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
-
-		for _, trade := range block.Trades {
-
-			maFilter.Compute(trade)
-		}
-
-		maFilter.FinalCompute(block.Trades[0].Time)
-		fp := maFilter.FilterPointForBlock()
-		filterPoints = append(filterPoints, *fp)
-	}
-	return filterPoints
-}
-
-func filterMAIR(tradeBlocks []TradeBlock, symbol string) (filterPoints []dia.FilterPoint) {
-	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMAIR(symbol, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
-
-		for _, trade := range block.Trades {
-
-			maFilter.Compute(trade)
-		}
-
-		maFilter.FinalCompute(block.Trades[0].Time)
-		fp := maFilter.FilterPointForBlock()
-		filterPoints = append(filterPoints, *fp)
-	}
-	return filterPoints
 }
