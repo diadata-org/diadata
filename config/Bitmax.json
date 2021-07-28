@@ -1327,12 +1327,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTC-PERP",
-            "ForeignName": "BTC-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "XNS",
             "ForeignName": "XNS/USDT",
             "Exchange": "Bitmax",
@@ -1945,32 +1939,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "ETH-PERP",
-            "ForeignName": "ETH-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "XPRT",
             "ForeignName": "XPRT/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH-PERP",
-            "ForeignName": "BCH-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT-PERP",
-            "ForeignName": "DOT-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK-PERP",
-            "ForeignName": "LINK-PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -2013,18 +1983,6 @@
         {
             "Symbol": "CRWNY",
             "ForeignName": "CRWNY/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE-PERP",
-            "ForeignName": "DOGE-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP-PERP",
-            "ForeignName": "XRP-PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -2083,24 +2041,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "SRM-PERP",
-            "ForeignName": "SRM-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL-PERP",
-            "ForeignName": "SOL-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BNB-PERP",
-            "ForeignName": "BNB-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "LKR",
             "ForeignName": "LKR/USDT",
             "Exchange": "Bitmax",
@@ -2113,38 +2053,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "CSPR-PERP",
-            "ForeignName": "CSPR-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "HTR",
             "ForeignName": "HTR/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ADA-PERP",
-            "ForeignName": "ADA-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MATIC-PERP",
-            "ForeignName": "MATIC-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "TRX-PERP",
-            "ForeignName": "TRX-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OMI-PERP",
-            "ForeignName": "OMI-PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -2157,42 +2067,6 @@
         {
             "Symbol": "PHX",
             "ForeignName": "PHX/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTT-PERP",
-            "ForeignName": "FTT-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FIL-PERP",
-            "ForeignName": "FIL-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETC-PERP",
-            "ForeignName": "ETC-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "UNI-PERP",
-            "ForeignName": "UNI-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONE-PERP",
-            "ForeignName": "ONE-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VET-PERP",
-            "ForeignName": "VET-PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -2223,24 +2097,6 @@
         {
             "Symbol": "CLOUT",
             "ForeignName": "CLOUT/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WOO-PERP",
-            "ForeignName": "WOO-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EGLD-PERP",
-            "ForeignName": "EGLD-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AKT-PERP",
-            "ForeignName": "AKT-PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },
