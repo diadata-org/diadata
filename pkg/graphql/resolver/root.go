@@ -95,8 +95,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	endtime := args.EndTime.Value.Time
 	exchanges := args.Exchanges
 	var exchangesString []string
-	for _, v := range *exchanges {
-		exchangesString = append(exchangesString, *v.Value)
+	if exchanges != nil {
+		for _, v := range *exchanges {
+			exchangesString = append(exchangesString, *v.Value)
+		}
 	}
 
 	trades, err := r.DS.GetTradesByExchanges(symbol, exchangesString, starttime, endtime, 0)
@@ -127,6 +129,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	}
 	var filterPoints []dia.FilterPoint
+
 	switch *filter {
 
 	case "mair":
