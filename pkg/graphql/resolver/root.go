@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -108,14 +107,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		return nil, nil
 	}
 
-	tradeBlocks := queryhelper.NewBlockGenerator(trades, blockSizeSeconds).Generate()
-
-	b, _ := json.Marshal(trades)
-
-	log.Infoln("Total Trades", string(b[:]))
-
-	log.Infoln("Total Trades", len(trades))
-	log.Infoln("Total tradeBlocks", len(tradeBlocks))
+	tradeBlocks := queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
 
 	var filterPoints []dia.FilterPoint
 

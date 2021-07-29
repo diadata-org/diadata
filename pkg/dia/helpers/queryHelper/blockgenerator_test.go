@@ -7,11 +7,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
+var trades []dia.Trade
+
 func setupGenerator() []Block {
-	var trades []dia.Trade
 	json.Unmarshal([]byte(jsonTrades), &trades)
-	bg := NewBlockGenerator(trades, 8)
-	blocks := bg.generate()
+
+	// trades = trades[9:]
+	bg := NewBlockGenerator(trades)
+	blocks := bg.GenerateSize(8)
 
 	return blocks
 }
@@ -40,4 +43,27 @@ func TestIfAnytradeisrepeadted(t *testing.T) {
 
 		}
 	}
+}
+
+func TestFirstTrade(t *testing.T) {
+	blocks := setupGenerator()
+	tradeToCheck := blocks[0].Trades[0]
+	if trades[0].ForeignTradeID != tradeToCheck.ForeignTradeID {
+		t.Error("Firts Trade is not equa to block first trade")
+	}
+}
+
+func TestIfTradesAreMissed(t *testing.T) {
+	blocks := setupGenerator()
+	totalTradesProvided := len(trades)
+	tradesinblock := 0
+
+	for _, block := range blocks {
+		tradesinblock = tradesinblock + len(block.Trades)
+	}
+
+	if totalTradesProvided != tradesinblock {
+		t.Errorf("Trades count Mimatched total %d in blocks its %d", totalTradesProvided, tradesinblock)
+	}
+
 }
