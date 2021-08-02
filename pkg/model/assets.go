@@ -272,7 +272,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 }
 
 func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
-	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false", exchangesymbolTable)
+	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false order by symbol asc", exchangesymbolTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
