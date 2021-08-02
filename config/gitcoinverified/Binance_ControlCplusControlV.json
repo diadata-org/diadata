@@ -1,0 +1,682 @@
+{
+    "Tokens" : [
+    {
+        "Symbol" : "AKRO",
+        "Blockchain" :"Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+    },
+    {
+        "Symbol" : "PERP",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
+    },
+    {
+        "Symbol" : "SUPER",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55"
+    },
+    {
+        "Symbol" : "BNB",
+        "Blockchain" : "BinanceSmartChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "ADX",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xADE00C28244d5CE17D72E40330B1c318cD12B7c3"
+    },
+    {
+        "Symbol" : "AE",
+        "Blockchain" : "Ethereum", 
+        "Exchange" : "Binance",
+        "Address" : "0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d"
+    },
+    {
+        "Symbol" : "AGI",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5b7533812759b45c2b44c19e320ba2cd2681b542",
+        "Comment" : "Data provided for AGIX. AGI doesn't seem to be a token on Binance, but AGIX is and matches the description provided by the endpoint, while the address shown seem to duplicates of AGIX"
+    },
+    {
+        "Symbol" : "AION",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x4CEdA7906a5Ed2179785Cd3A40A69ee8bc99C466"
+    },
+    {
+        "Symbol" : "AMB",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x4DC3643DbC642b72C158E7F3d2ff232df61cb6CE"
+    },
+    {
+        "Symbol" : "APPC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x1a7a8BD9106F2B8D977E08582DC7d24c723ab0DB"
+    },
+    {
+        "Symbol" : "ARDR",
+        "Blockchain" : "ArdorChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "ARK",
+        "Blockchain" : "ArkChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "ARN",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xBA5F11b16B155792Cf3B2E6880E8706859A8AEB6"
+    },
+    {
+        "Symbol" : "AST",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x27054b13b1b798b345b591a4d22e6562d47ea75a"
+    },
+    {
+        "Symbol" : "BCD",
+        "Blockchain" : "BitcoinDiamondChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "BCPT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x1c4481750daa5Ff521A2a7490d9981eD46465Dbd"
+    },
+    {
+        "Symbol" : "ETHOS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5Af2Be193a6ABCa9c8817001F45744777Db30756",
+        "Comment" : "Rebranded to Voyager"
+    },
+    {
+        "Symbol" : "BQXBTC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5Af2Be193a6ABCa9c8817001F45744777Db30756",
+        "Comment" : "Same token as ETHOS, both are Voyager"
+    },
+    {
+        "Symbol" : "BQXETH",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5Af2Be193a6ABCa9c8817001F45744777Db30756",
+        "Comment" : "Same token as ETHOS, both are Voyager"
+    },
+    {
+        "Symbol" : "BRD",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x558ec3152e2eb2174905cd19aea4e34a23de9ad6"
+    },
+    {
+        "Symbol" : "BTG",
+        "Blockchain" : "BitcoinGoldChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "BTS",
+        "Blockchain" : "BitSharesChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "CDT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x177d39ac676ed1c67a2b268ad7f1e58826e5b0af"
+    },
+    {
+        "Symbol" : "CLOAK",
+        "Blockchain" : "CloakChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "CND",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xd4c435f5b09f855c3317c8524cb1f586e42795fas"
+    },
+    {
+        "Symbol" : "CVC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x41e5560054824ea6b0732e656e3ad64e20e94e45"
+    },
+    {
+        "Symbol" : "DATA",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x0cf0ee63788a0849fe5297f3407f701e122cc023"
+    },
+    {
+        "Symbol" : "DENT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Addresss" : "0x3597bfd533a99c9aa083587b074434e61eb0a258"
+    },
+    {
+        "Symbol" : "DGD",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
+    },
+    {
+        "Symbol" : "DLT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x07e3c70653548B04f0A75970C1F81B4CBbFB606f"
+    },
+    {
+        "Symbol" : "DNT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x0abdace70d3790235af448c88547603b945604ea"
+    },
+    {
+        "Symbol" : "DOCK",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xe5dada80aa6477e85d09747f2842f7993d0df71c"
+    },
+    {
+        "Symbol" : "EDO",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xced4e93198734ddaff8492d525bd258d49eb388e"
+    },
+    {
+        "Symbol" : "ELF",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+    },
+    {
+        "Symbol" : "ENG", 
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xf0Ee6b27b759C9893Ce4f094b49ad28fd15A23e4"
+    },
+    {
+        "Symbol" : "EVX",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xf3db5fa2c66b7af3eb0c0b782510816cbe4813b8"
+    },
+    {
+        "Symbol" : "FUEL",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xea38eaa3c86c8f9b751533ba2e562deb9acded40"
+    },
+    {
+        "Symbol" : "FUN",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x419d0d8bdd9af5e606ae2232ed285aff190e711b"
+    },
+    {
+        "Symbol" : "GAS",
+        "Blockchain" : "Neo",
+        "Exchange" : "Binance",
+        "Addresss" : "602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7"
+    },
+    {
+        "Symbol" : "GNT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429",
+        "Comment" : "GNT migrated to GLM, so GLM address is shown"
+    },
+    {
+        "Symbol" : "GO",
+        "Blockchain" : "GoChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "GRS",
+        "Blockchain" : "GroestlChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "GTO",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xc5bbae50781be1669306b9e001eff57a2957b09d"
+    },
+    {
+        "Symbol" : "GVT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address ": "0x103c3a209da59d3e7c4a89307e66521e081cfdf0"
+    },
+    {
+        "Symbol" : "GXS",
+        "Blockchain" : "GXChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "INS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5b2e4a700dfbc560061e957edec8f6eeeb74a320"
+    },
+    {
+        "Symbol" : "IOTA",
+        "Blockchain" : "Iota",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "IOTX",
+        "Blockchian" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69"
+    },
+    {
+        "Symbol" : "KMD",
+        "Blockchain" : "KomodoChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "LEND",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03"
+    },
+    {
+        "Symbol" : "LOOM",
+        "Blockchain" : "BinanceSmartChain",
+        "Exchange" : "Binance",
+        "Address" : "0xe6ce27025f13f5213bbc560dc275e292965a392f"
+    },
+    {
+        "Symbol" : "LRC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd"
+    },
+    {
+        "Symbol" : "LSK",
+        "Blockchain" : "LiskChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "LUN",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xfa05A73FfE78ef8f1a739473e462c54bae6567D9"
+    },
+    {
+        "Symbol" : "MCO",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xb63b606ac810a52cca15e44bb630fd42d8d1d83d"
+    },
+    {
+        "Symbol" : "MDA",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x51db5ad35c671a87207d88fc11d593ac0c8415bd"
+    },
+    {
+        "Symbol" : "MFT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xdf2c7238198ad8b389666574f2d8bc411a4b7428"
+    },
+    {
+        "Symbol" : "MITH",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x3893b9422Cd5D70a81eDeFfe3d5A1c6A978310BB"
+    },
+    {
+        "Symbol" : "MOD",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x957c30ab0426e0c93cd8241e2c60392d08c6ac8e"
+    },
+    {
+        "Symbol" : "MTH",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xaf4dce16da2877f8c9e00544c93b62ac40631f16"
+    },
+    {
+        "Symbol" : "MTL",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xF433089366899D83a9f26A773D59ec7eCF30355e"
+    },
+    {
+        "Symbol" : "NANO",
+        "Blockchain" : "NANO",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "NAS",
+        "Blockchain" : "NebulaChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "NAV",
+        "Blockchain" : "NAVChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "NCASH",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x809826cceab68c387726af962713b64cb5cb3cca"
+    },
+    {
+        "Symbol" : "NEBL",
+        "Blockchain" : "NebulioChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "NPXS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xA15C7Ebe1f07CaF6bFF097D8a589fb8AC49Ae5B3"
+    },
+    {
+        "Symbol" : "NULS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xa2791bdf2d5055cda4d46ec17f9f429568275047"
+    },
+    {
+        "Symbol" : "NXS",
+        "Blockchain" : "Nexus",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "OAX",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x701c244b988a513c945973defa05de933b23fe1d"
+    },
+    {
+        "Symbol" : "OST",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca"
+    },
+    {
+        "Symbol" : "PHX",
+        "Blockchain" : "BinanceSmartChain",
+        "Exchange" : "Binance",
+        "Address" : "0xb98d864ddcb573567b3a2258c9e5cab58fe7974eD" 
+    },
+    {
+        "Symbol" : "PIVX",
+        "Blockchain" : "PIVXChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "POA",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x6758B7d441a9739b98552B373703d8d3d14f9e62"
+    },
+    {
+        "Symbol" : "POE",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x0e0989b1f9b8a38983c2ba8053269ca62ec9b195"
+    },
+    {
+        "Symbol" : "POLY",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x9992ec3cf6a55b00978cddf2b27bc6882d88d1ec"
+    },
+    {
+        "Symbol" : "POWR",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x595832f8fc6bf59c85c527fec3740a1b7a361269"
+    },
+    {
+        "Symbol" : "PPT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a"
+    },
+    {
+        "Symbol" : "QKC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xea26c4ac16d4a5a106820bc8aee85fd0b7b2b664"
+    },
+    {
+        "Symbol" : "QLC",
+        "Blockchain" : "Neo",
+        "Exchange" : "Binance",
+        "Address" : "0d821bd7b6d53f5c2b40e217c6defc8bbe896cf5"
+    },
+    {
+        "Symbol" : "QSP",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x99ea4db9ee77acd40b119bd1dc4e33e1c070b80d"
+    },
+    {
+        "Symbol" : "RDN",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6"
+    },
+    {
+        "Symbol" : "REP",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x1985365e9f78359a9B6AD760e32412f4a445E862"
+    },
+    {
+        "Symbol" : "REQ",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x8f8221afbb33998d8584a2b05749ba73c37a938a"
+    },
+    {
+        "Symbol" : "RLC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x607F4C5BB672230e8672085532f7e901544a7375"
+    },
+    {
+        "Symbol" : "SALT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x4156D3342D5c385a87D264F90653733592000581"
+    },
+    {
+        "Symbol" : "SC",
+        "Blockchain" : "SiaChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "SKY",
+        "Blockchain" : "SkyChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "SNGLS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Addresss" : "0xaec2e87e0a235266d9c5adc9deb4b2e29b54d009"
+    },
+    {
+        "Symbol" : "SNM",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x983f6d60db79ea8ca4eb9968c6aff8cfa04b3c63"
+    },
+    {
+        "Symbol" : "SNT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+    },
+    {
+        "Symbol" : "STEEM",
+        "Blockchain" : "SteemChain",
+        "Exchange" :  "Binance",
+        "Addresss" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "STORJ",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac"
+    },
+    {
+        "Symbol" : "STORM",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xbE9375C6a420D2eEB258962efB95551A5b722803"
+    },
+    {
+        "Symbol" : "STRAT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xa3c22370de5f9544f0c4de126b1e46ceadf0a51b",
+        "Comment" : "STRAT has migrated to STRAX, so STRAX is described above"
+    },
+    {
+        "Symbol" : "SUB",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x8d75959f1e61ec2571aa72798237101f084de63a"
+    },
+    {
+        "Symbol" : "SYS",
+        "Blockchain" : "SysChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "TNB",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xf7920b0768ecb20a123fac32311d07d193381d6f"   
+    },
+    {
+        "Symbol" : "TNT",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x08f5a9235b08173b7569f83645d2c7fb55e8ccd8"
+    },
+    {
+        "Symbol" : "VIA",
+        "Blockchain" : "ViaChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "VIB",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x2c974b2d0ba1716e644c1fc59982a89ddd2ff724"
+    },
+    {
+        "Symbol" : "VIBE",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xe8ff5c9c75deb346acac493c463c8950be03dfba"
+    },
+    {
+        "Symbol" : "WABI",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x286bda1413a2df81731d4930ce2f862a35a609fe"
+    },
+    {
+        "Symbol" : "WAN",
+        "Blockchain" : "WanChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "WAVES",
+        "Blockchain" : "WaveChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "WINGS",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
+    },
+    {
+        "Symbol" : "WPR",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x4CF488387F035FF08c371515562CBa712f9015d4"
+    },
+    {
+        "Symbol" : "WTC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74"
+    },
+    {
+        "Symbol" : "XVG",
+        "Blockchain" : "Verge",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "XZC",
+        "Blockchain" : "Ethereum",
+        "Exchange" : "Binance",
+        "Address" : "0x5eb191d30665EAB255b25Ce797052878dDD3BB6F"
+    },
+    {
+        "Symbol" : "YOYOW",
+        "Blockchain" : "YOYOWChain",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol" : "ZEN",
+        "Blockchain" : "Horizen",
+        "Exchange" : "Binance",
+        "Address" : "0x0000000000000000000000000000000000000000"
+    }
+    ]
+}
