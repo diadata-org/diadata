@@ -35,8 +35,8 @@ const (
 	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
 	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
 
-	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/grDC3x0iVGgFtJTF6Ox36wPhs-7cG2Mi"
-	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/grDC3x0iVGgFtJTF6Ox36wPhs-7cG2Mi"
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
 )
 
 type UniswapToken struct {

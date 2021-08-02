@@ -252,7 +252,7 @@ func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	if s.closed {
-		return nil, errors.New("LoopringScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("KucoinScraper: Call ScrapePair on closed scraper")
 	}
 
 	ps := &KuCoinPairScraper{
