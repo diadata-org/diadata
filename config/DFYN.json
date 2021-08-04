@@ -1,0 +1,124 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-DAI",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-USDC",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GHST",
+            "ForeignName": "GHST-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GHST",
+            "ForeignName": "GHST-DAI",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-UNI",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QUICK",
+            "ForeignName": "QUICK-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QUICK",
+            "ForeignName": "QUICK-DAI",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DFYN",
+            "ForeignName": "DFYN-AAVE",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DFYN",
+            "ForeignName": "DFYN-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-DFYN",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-renBTC",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUNA",
+            "ForeignName": "LUNA-USDC",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WMATIC",
+            "ForeignName": "WMATIC-DFYN",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WMATIC",
+            "ForeignName": "WMATIC-USDT",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WMATIC",
+            "ForeignName": "WMATIC-QUICK",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRV",
+            "ForeignName": "CRV-USDC",
+            "Exchange": "DFYN",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRV",
+            "ForeignName": "CRV-DAI",
+            "Exchange": "DFYN",
+            "Ignore": false
+        }
+    ]
+}

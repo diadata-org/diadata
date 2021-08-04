@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "DFYN",
+            "ForeignName": "DFYN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "CARD",
             "ForeignName": "CARD-USDT",
             "Exchange": "KuCoin",

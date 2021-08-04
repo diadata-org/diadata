@@ -47,6 +47,7 @@ const (
 	CREX24Exchange    = "CREX24"
 	STEXExchange      = "STEX"
 	Deribit           = "Deribit"
+	DfynNetwork       = "DFYN"
 )
 
 const (
@@ -88,6 +89,7 @@ func Exchanges() []string {
 		ZBExchange,
 		ZeroxExchange,
 		UnknownExchange,
+		DfynNetwork,
 	}
 }
 

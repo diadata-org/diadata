@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "DFYN_USDT",
+      "Ignore": false,
+      "Symbol": "DFYN"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "HEGIC_USDT",
       "Ignore": false,
       "Symbol": "HEGIC"

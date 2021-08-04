@@ -65,6 +65,12 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) |
 
+### Celo
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
+
 ### NEAR Testnet
 
 | Contract Name | Contract Address |

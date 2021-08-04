@@ -35,6 +35,8 @@ const (
 	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
 	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
 
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
 )
 
 type UniswapToken struct {
@@ -111,7 +113,6 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 			log.Fatal(err)
 		}
 
-		break
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(wsDialBSC)
@@ -119,6 +120,18 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 			log.Fatal(err)
 		}
 		restClient, err = ethclient.Dial(restDialBSC)
+		if err != nil {
+			log.Fatal(err)
+		}
+		exchangeFactoryContractAddress = exchange.Contract.String()
+
+	case dia.DfynNetwork:
+		log.Infoln("Init ws and rest client for Polygon chain")
+		wsClient, err = ethclient.Dial(wsDialPolygon)
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(restDialPolygon)
 		if err != nil {
 			log.Fatal(err)
 		}
