@@ -5,8 +5,6 @@ description: How to use request data from a DIA Oracle in your Celo Dapp using s
 
 # DIA Data Oracles on Celo
 
-![DIA Banner](../images/dia/dia-banner.png)
-
 ## Introduction
 
 DIA is an ecosystem for open financial data in a financial smart contract ecosystem.
