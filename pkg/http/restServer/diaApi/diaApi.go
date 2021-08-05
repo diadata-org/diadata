@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"io/ioutil"
 	"net/http"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
@@ -70,12 +71,32 @@ func (env *Env) PostSupply(c *gin.Context) {
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
 	// Fetch underlying asset for symbol
-	asset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	assets, err := env.RelDB.GetAssets(symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	q, err := env.DataStore.GetAssetQuotation(asset)
+	var quotations []models.AssetQuotation
+	var volumes []float64
+	for _, asset := range assets {
+		quotation, err := env.DataStore.GetAssetQuotation(asset)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		volume, err := env.DataStore.GetVolume(asset)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		quotations = append(quotations, *quotation)
+		volumes = append(volumes, *volume)
+		log.Info("TO DO: Sort quotations wrt volumes", quotations)
+		log.Info("TO DO: ", volumes)
+	}
+	var quotationsSorted []models.AssetQuotation
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -83,7 +104,7 @@ func (env *Env) GetQuotation(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		c.JSON(http.StatusOK, quotationsSorted)
 	}
 }
 
