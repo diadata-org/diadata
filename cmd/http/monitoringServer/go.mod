@@ -10,7 +10,7 @@ replace (
 require (
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
-	github.com/diadata-org/diadata v1.1.1-rc-12
+	github.com/diadata-org/diadata v1.1.1-rc-17
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19 // indirect
 	github.com/gin-gonic/gin v1.7.2
