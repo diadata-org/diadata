@@ -65,7 +65,7 @@ func (sts *SynthetixScraper) scrapePools() error {
 	// https://synthetix.community/docs/claiming-rewards
 	// https://docs.synthetix.io/addresses/
 
-	sntxBase, err := synthetixcontract.synthetixcontract.NewISynthetixCaller(common.HexToAddress(synthetixBaseAddress), sts.restClient)
+	sntxBase, err := synthetixcontract.NewISynthetixCaller(common.HexToAddress(synthetixBaseAddress), sts.restClient)
 	if err != nil {
 		log.Info(err)
 		return err
