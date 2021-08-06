@@ -2,7 +2,7 @@ package defiscrapers
 
 import (
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/compound"
 	"math"
 	"math/big"
 	"strconv"
@@ -137,7 +137,7 @@ func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 	if asset == "ETH" {
 		decs = big.NewInt(18)
 	} else {
-		var cContract *compoundcontract.CErc20Caller
+		var cContract *compoundcontract.compoundcontract
 		cContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
 		if err != nil {
 			return CompoundRate{}, err

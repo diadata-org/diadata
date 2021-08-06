@@ -2,7 +2,7 @@ package defiscrapers
 
 import (
 	"fmt"
-	bzxcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/bzx"
+	bzxcontract "github.com/diadata-org/diadata/pkg/dia/defiscrapers/bzx"
 	"math"
 	"math/big"
 	"strconv"

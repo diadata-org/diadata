@@ -2,8 +2,8 @@ package defiscrapers
 
 import (
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2/token"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/fortubev2"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/fortubev2/token"
 	"math"
 	"math/big"
 	"strconv"

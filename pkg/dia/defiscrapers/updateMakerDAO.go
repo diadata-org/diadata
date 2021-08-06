@@ -2,9 +2,9 @@ package defiscrapers
 
 import (
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/erc20contract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/jugcontract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/potcontract"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/makerdao/erc20contract"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/makerdao/jugcontract"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers/makerdao/potcontract"
 	"math"
 	"math/big"
 	"strconv"
