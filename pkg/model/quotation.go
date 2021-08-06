@@ -204,12 +204,12 @@ func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, er
 		var err error
 		quotation, err = db.GetAssetQuotation(asset)
 		if err != nil {
-			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address.Hex(), asset.Blockchain, err)
+			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
 		}
 		volume, err = db.GetVolume(asset)
 		if err != nil {
-			log.Error("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address.Hex(), asset.Blockchain, err)
+			log.Error("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
 		}
 		quotations = append(quotations, *quotation)
