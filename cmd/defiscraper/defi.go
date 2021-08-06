@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers"
+	"github.com/diadata-org/diadata/pkg/dia/defiscrapers"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
