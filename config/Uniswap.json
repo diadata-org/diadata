@@ -13928,7 +13928,7 @@
         },
         {
             "Symbol": "BOND",
-            "ForeignName": "BOND-ETH",
+            "ForeignName": "BOND-USDC",
             "Exchange": "UniswapV2",
             "Ignore": false
         },

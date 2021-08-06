@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF",
+      "Symbol": "RARI"
+    },
+    {
       "Address": "0xFc979087305A826c2B2a0056cFAbA50aad3E6439",
       "Symbol": "DAFI"
     },

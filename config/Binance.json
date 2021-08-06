@@ -2,6 +2,24 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "NMRUSDT",
+            "Ignore": false,
+            "Symbol": "NMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NMRBTC",
+            "Ignore": false,
+            "Symbol": "NMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BONDUSDT",
+            "Ignore": false,
+            "Symbol": "BOND"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MLNUSDT",
             "Ignore": false,
             "Symbol": "MLN"
@@ -224,45 +242,15 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "AMBBNB",
-            "Ignore": true,
-            "Symbol": "AMB"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "AMBBTC",
             "Ignore": true,
             "Symbol": "AMB"
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "AMBETH",
-            "Ignore": true,
-            "Symbol": "AMB"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "APPCBNB",
-            "Ignore": true,
-            "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "APPCBTC",
             "Ignore": true,
             "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "APPCETH",
-            "Ignore": true,
-            "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARDRBNB",
-            "Ignore": true,
-            "Symbol": "ARDR"
         },
         {
             "Exchange": "Binance",
@@ -287,18 +275,6 @@
             "ForeignName": "ARKETH",
             "Ignore": true,
             "Symbol": "ARK"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARNBTC",
-            "Ignore": true,
-            "Symbol": "ARN"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARNETH",
-            "Ignore": true,
-            "Symbol": "ARN"
         },
         {
             "Exchange": "Binance",
