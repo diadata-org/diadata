@@ -2,7 +2,7 @@ package pool
 
 import (
 	"context"
-	strategy "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/yficontracts/strategy"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/yficontracts/strategy"
 	"math"
 	"math/big"
 	"time"
