@@ -9,31 +9,30 @@
     {
       "Exchange": "Kraken",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
+      "VerifiedBy": ["jppade"] 
       
     },
     {
       "Exchange": "Huobi",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
+      "VerifiedBy": ["jppade"] 
       
     },
     {
       "Exchange": "KuCoin",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
+      "VerifiedBy": ["antonyip"] 
       
     },
     {
       "Exchange": "GateIO",
       "BatchNumber": "1",
-      "VerifiedBy": ["ControlCplusControlV"] 
-      
+      "VerifiedBy": ["tn024687","ControlCplusControlV"]       
     },
     {
       "Exchange": "ZB",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
+      "VerifiedBy": ["sidduHERE"] 
       
     },
     {
@@ -57,7 +56,7 @@
     {
       "Exchange": "LBank",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
+      "VerifiedBy": ["sidduHERE"] 
       
     },
     {
