@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sort"
 	"strconv"
 	"time"
 
@@ -70,42 +69,18 @@ func (env *Env) PostSupply(c *gin.Context) {
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
-	// Fetch underlying asset for symbol
+	// Fetch underlying assets for symbol
 	assets, err := env.RelDB.GetAssets(symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	var quotations []models.AssetQuotation
-	var volumes []float64
-	for _, asset := range assets {
-		quotation, err := env.DataStore.GetAssetQuotation(asset)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
-		volume, err := env.DataStore.GetVolume(asset)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
-		quotations = append(quotations, *quotation)
-		volumes = append(volumes, *volume)
-		log.Info("TO DO: Sort quotations wrt volumes", quotations)
-		log.Info("TO DO: ", volumes)
+	quotationsSorted, err := env.DataStore.GetSortedAssetQuotations(assets)
+	if len(quotationsSorted) == 0 {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
 	}
-	var quotationsSorted []models.AssetQuotation
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, quotationsSorted)
-	}
+	c.JSON(http.StatusOK, quotationsSorted)
 }
 
 func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
