@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 )
@@ -189,6 +191,41 @@ func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) 
 	}
 	price = quotation.Price
 	return
+}
+
+// GetSortedQuotations returns quotations for all assets in @assets, sorted by 24h volume
+// in descending order.
+func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error) {
+	var quotations []AssetQuotation
+	var volumes []float64
+	for _, asset := range assets {
+		var quotation *AssetQuotation
+		var volume *float64
+		var err error
+		quotation, err = db.GetAssetQuotation(asset)
+		if err != nil {
+			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address.Hex(), asset.Blockchain, err)
+			continue
+		}
+		volume, err = db.GetVolume(asset)
+		if err != nil {
+			log.Error("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address.Hex(), asset.Blockchain, err)
+			continue
+		}
+		quotations = append(quotations, *quotation)
+		volumes = append(volumes, *volume)
+	}
+	if len(quotations) == 0 {
+		return quotations, nil
+	}
+
+	var quotationsSorted []AssetQuotation
+	volumesSorted := utils.NewFloat64Slice(sort.Float64Slice(volumes))
+	sort.Sort(volumesSorted)
+	for _, ind := range volumesSorted.Ind() {
+		quotationsSorted = append([]AssetQuotation{quotations[ind]}, quotationsSorted...)
+	}
+	return quotationsSorted, nil
 }
 
 // ------------------------------------------------------------------------------

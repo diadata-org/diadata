@@ -27,8 +27,7 @@
     {
       "Exchange": "GateIO",
       "BatchNumber": "1",
-      "VerifiedBy": ["tn024687"] 
-      
+      "VerifiedBy": ["tn024687","ControlCplusControlV"]       
     },
     {
       "Exchange": "ZB",
