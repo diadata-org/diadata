@@ -99,7 +99,6 @@ github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e/go.mod
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
-github.com/bep/debounce v1.2.0 h1:wXds8Kq8qRfwAOpAxHrJDbCXgC5aHSzgQb/0gKsHQqo=
 github.com/bep/debounce v1.2.0/go.mod h1:H8yggRPQKLUhUoqrJC1bO2xNya7vanpDl7xR3ISbCJ0=
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25/go.mod h1:EYvYCELewpjai+8gjABVvnGVVJJl5Z298HUhmE+efWI=
@@ -166,8 +165,8 @@ github.com/deckarep/golang-set v1.7.1/go.mod h1:93vsz/8Wt4joVM7c2AVqh+YRMiUSc14y
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/diadata-org/diadata v1.1.1-feature-pkg-0-5 h1:lhjHLnx+1boi0FFbF1uSwi1Ru1v/Z5IOuMooYjcZ9+0=
-github.com/diadata-org/diadata v1.1.1-feature-pkg-0-5/go.mod h1:qDbLJtg1g0RjJdNh1GywdcYuIPCBbBM5JXTZeP8M3hY=
+github.com/diadata-org/diadata v1.1.1-feature-pkg-0-7 h1:aeU1jG3JpK/1Q0Od1FV5M75XwYt/lmXIrJfnRnXsRZI=
+github.com/diadata-org/diadata v1.1.1-feature-pkg-0-7/go.mod h1:qDbLJtg1g0RjJdNh1GywdcYuIPCBbBM5JXTZeP8M3hY=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/dop251/goja v0.0.0-20200721192441-a695b0cdd498/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
