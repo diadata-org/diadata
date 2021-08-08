@@ -21,18 +21,23 @@
     {
       "Exchange": "KuCoin",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip"] 
+      "VerifiedBy": ["antonyip", "chemrah"] 
       
     },
     {
       "Exchange": "GateIO",
       "BatchNumber": "1",
-      "VerifiedBy": ["tn024687","ControlCplusControlV"]       
+      "VerifiedBy": ["tn024687","ControlCplusControlV", "chemrah"] 
     },
     {
       "Exchange": "ZB",
       "BatchNumber": "1",
       "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"] 
+    },
+    {
+      "Exchange": "LBank",
+      "BatchNumber": "1",
+      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"]      
     },
     {
       "Exchange": "Bittrex",
@@ -51,11 +56,6 @@
       "BatchNumber": "1",
       "VerifiedBy": [""] 
       
-    },
-    {
-      "Exchange": "LBank",
-      "BatchNumber": "1",
-      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"]      
     },
     {
       "Exchange": "Quoine",
