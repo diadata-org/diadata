@@ -399,9 +399,9 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 
 // GetExchangePairSymbols returns all foreign names on @exchange from exchangepair table.
 func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangePair, err error) {
-	// TO DO: Should we also return verified?
 	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
 		return
 	}
@@ -411,12 +411,11 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 		pair := dia.ExchangePair{Exchange: exchange}
 		err = rows.Scan(&pair.Symbol, &pair.ForeignName)
 		if err != nil {
-			return []dia.ExchangePair{}, err
+			return
 		}
 		pairs = append(pairs, pair)
 	}
-
-	return pairs, nil
+	return
 }
 
 // SetExchangePair adds @pair to exchangepair table.
