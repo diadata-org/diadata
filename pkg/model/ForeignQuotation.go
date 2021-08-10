@@ -147,6 +147,7 @@ func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err
 		for _, val := range vals {
 			if _, ok := set[val[1].(string)]; !ok {
 				symsUnique = append(symsUnique, val[1].(string))
+				set[val[1].(string)] = struct{}{}
 			}
 		}
 
