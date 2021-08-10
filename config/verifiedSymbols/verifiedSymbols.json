@@ -3,26 +3,27 @@
     {
       "Exchange": "Binance",
       "BatchNumber": "1",
-      "VerifiedBy": ["baptistegarcin, slightlyskepticalpotat, jerrynoah"] 
-      
+      "VerifiedBy": ["baptistegarcin, slightlyskepticalpotat, jerrynoah"]      
     },
     {
       "Exchange": "Kraken",
       "BatchNumber": "1",
-      "VerifiedBy": ["jppade"] 
-      
+      "VerifiedBy": ["jppade"]      
     },
     {
       "Exchange": "Huobi",
       "BatchNumber": "1",
-      "VerifiedBy": ["jppade"] 
-      
+      "VerifiedBy": ["jppade"]      
     },
     {
       "Exchange": "KuCoin",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip", "chemrah"] 
-      
+      "VerifiedBy": ["antonyip", "chemrah"]  
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "2",
+      "VerifiedBy": []
     },
     {
       "Exchange": "GateIO",
@@ -42,38 +43,32 @@
     {
       "Exchange": "Bittrex",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip"] 
-      
+      "VerifiedBy": ["antonyip"]     
     },
     {
       "Exchange": "HitBTC",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
-      
+      "VerifiedBy": [""]     
     },
     {
       "Exchange": "OKEx",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip"] 
-      
+      "VerifiedBy": ["antonyip"]      
     },
     {
       "Exchange": "Quoine",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
-      
+      "VerifiedBy": [""]      
     },
     {
       "Exchange": "CREX24",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
-      
+      "VerifiedBy": [""]       
     },
     {
       "Exchange": "STEX",
       "BatchNumber": "1",
-      "VerifiedBy": [""] 
-      
+      "VerifiedBy": [""]      
     }
   ]
 }
