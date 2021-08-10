@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"io/ioutil"
 	"net/http"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
@@ -69,22 +70,18 @@ func (env *Env) PostSupply(c *gin.Context) {
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
-	// Fetch underlying asset for symbol
-	asset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	// Fetch underlying assets for symbol
+	assets, err := env.RelDB.GetAssets(symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	q, err := env.DataStore.GetAssetQuotation(asset)
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
+	quotationsSorted, err := env.DataStore.GetSortedAssetQuotations(assets)
+	if len(quotationsSorted) == 0 {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
 	}
+	c.JSON(http.StatusOK, quotationsSorted)
 }
 
 func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {

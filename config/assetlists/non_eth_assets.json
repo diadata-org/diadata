@@ -357,6 +357,27 @@
         "Decimals": 0,
         "Blockchain": "Qtum",
         "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "BTG",
+        "Name": "Bitcoin Gold",
+        "Decimals": 8,
+        "Blockchain": "BitcoinGold",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "LSK",
+        "Name": "Lisk",
+        "Decimals": 0,
+        "Blockchain": "Lisk",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "STEEM",
+        "Name": "Steem",
+        "Decimals": 3,
+        "Blockchain": "Steem",
+        "Address": "0x0000000000000000000000000000000000000000"
       }
     ]
   }

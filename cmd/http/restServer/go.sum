@@ -175,6 +175,8 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZm
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
 github.com/diadata-org/diadata v1.1.1-rc-13 h1:dVd+VnWR/P2vaKJBekRLYkv98LnqiRnXkvZ7eBUfnm8=
 github.com/diadata-org/diadata v1.1.1-rc-13/go.mod h1:5gG3AgJfg0E9Zq90xX708FlfJrxdT0MWQSnqEjMfQJ8=
+github.com/diadata-org/diadata v1.1.1-rc-17 h1:9fEZz662Mrhz2ZXMTJjPGP80giPuRuo8/tL3xnIL3ls=
+github.com/diadata-org/diadata v1.1.1-rc-17/go.mod h1:5gG3AgJfg0E9Zq90xX708FlfJrxdT0MWQSnqEjMfQJ8=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/dop251/goja v0.0.0-20200721192441-a695b0cdd498/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
