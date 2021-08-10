@@ -18,6 +18,16 @@ func setupGenerator() []Block {
 
 	return blocks
 }
+
+func setupGeneratorSizeShift() []Block {
+	json.Unmarshal([]byte(jsonTrades), &trades)
+
+	// trades = trades[9:]
+	bg := NewBlockGenerator(trades)
+	blocks := bg.GenerateShift(8, 7)
+
+	return blocks
+}
 func TestBlockGeneratorFirstAndLastTimeDiff(t *testing.T) {
 	blocks := setupGenerator()
 	for k := range blocks {
