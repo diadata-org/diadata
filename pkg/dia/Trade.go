@@ -5,8 +5,13 @@ import (
 	"strings"
 )
 
-// BaseToken returns the base token of a trading pair
-func (t *Trade) BaseToken() string {
+// GetBaseToken returns the base token of a trading pair
+// TO DO (20/11/2020): This method is no longer needed once we switch to new Token/Trade structs
+func (t *Trade) GetBaseToken() string {
+
+	if t.BaseToken.Symbol != "" {
+		return t.BaseToken.Symbol
+	}
 
 	pair := strings.ToUpper(t.Pair)
 	if len(pair) > 3 {
@@ -48,7 +53,7 @@ func SwapTrade(t Trade) (Trade, error) {
 		return t, errors.New("zero price. cannot swap trade")
 	}
 	symbol := t.Symbol
-	baseToken := (&t).BaseToken()
+	baseToken := (&t).GetBaseToken()
 	t.Symbol = baseToken
 	t.Pair = baseToken + "-" + symbol
 	t.Volume = -t.Price * t.Volume

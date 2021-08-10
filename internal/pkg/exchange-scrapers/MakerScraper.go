@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"sync"
@@ -48,6 +49,7 @@ type MakerScraper struct {
 	pairScrapers   map[string]*MakerPairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
+	db             *models.RelDB
 }
 
 type MakerTradeResponse struct {
@@ -63,7 +65,7 @@ type MakerTrade struct {
 	Time   time.Time `json:"time"`
 }
 
-func NewMakerScraper(exchange dia.Exchange) *MakerScraper {
+func NewMakerScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *MakerScraper {
 	scraper := &MakerScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -72,9 +74,12 @@ func NewMakerScraper(exchange dia.Exchange) *MakerScraper {
 		productPairIds: make(map[string]int),
 		pairScrapers:   make(map[string]*MakerPairScraper),
 		chanTrades:     make(chan *dia.Trade),
+		db:             relDB,
 	}
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
@@ -95,11 +100,14 @@ func (scraper *MakerScraper) GetNewTrades(pair string, startTradeID string) ([]M
 		url = "https://api.oasisdex.com/v2/trades/" + pair + "?limit=100?fromId+" + strconv.Itoa(next)
 	}
 
-	bytes, err = utils.GetRequest(url)
+	bytes, _, err = utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
 	err = json.Unmarshal(bytes, &makertraderesponse)
+	if err != nil {
+		log.Error(err)
+	}
 	return makertraderesponse.MakerTrades, nil
 }
 
@@ -109,7 +117,7 @@ func (scraper *MakerScraper) mainLoop() {
 
 	for scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Maker: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 			break
 		}
@@ -131,6 +139,11 @@ func (scraper *MakerScraper) mainLoop() {
 					return
 				}
 
+				exchangepair, err := scraper.db.GetExchangePairCache(scraper.exchangeName, pair)
+				if err != nil {
+					log.Error(err)
+				}
+
 				trade := &dia.Trade{
 					Symbol:         strings.Split(pair, "-")[0],
 					Pair:           pair,
@@ -139,8 +152,13 @@ func (scraper *MakerScraper) mainLoop() {
 					Time:           v.Time,
 					ForeignTradeID: strconv.Itoa(v.ID),
 					Source:         scraper.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 				}
-				log.Infoln("Got Trade  ", trade)
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade: ", trade)
+				}
 				scraper.chanTrades <- trade
 
 			}
@@ -151,37 +169,43 @@ func (scraper *MakerScraper) mainLoop() {
 	}
 
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
 
-func (scraper *MakerScraper) getPairs() (pairs []dia.Pair, err error) {
+func (scraper *MakerScraper) getPairs() (pairs []dia.ExchangePair, err error) {
 	var response MakerPairResponse
-	byte, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
+	byte, _, err := utils.GetRequest("https://api.oasisdex.com/v2/pairs")
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(byte, &response)
 	for i, v := range response.Data {
 		pair := strings.Split(i, "/")
-		pairs = append(pairs, dia.Pair{
+		pairs = append(pairs, dia.ExchangePair{
 			Symbol:      v.Base,
 			ForeignName: pair[0] + "-" + pair[1],
 			Exchange:    scraper.exchangeName,
-			Ignore:      false,
 		})
 
 	}
 	return
 }
 
-func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+// FillSymbolData is not used by DEX scrapers.
+func (scraper *MakerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
+func (scraper *MakerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return scraper.getPairs()
 }
 
-
-func (scraper *MakerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *MakerScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
-func (scraper *MakerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *MakerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -226,11 +250,11 @@ func (scraper *MakerScraper) Close() error {
 
 type MakerPairScraper struct {
 	parent *MakerScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *MakerPairScraper) Pair() dia.Pair {
+func (pairScraper *MakerPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

@@ -6,7 +6,7 @@ services:
       ethereum/client-go:stable
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true
+    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
     ports: 
       - mode: host
         target: 8545
@@ -330,6 +330,20 @@ services:
     secrets:
       - oracle_keys_dafi_bsc
 
+  diadafioracleservice-eth:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x09B114dAC9b0848819a59E944D631B98E06CDfA3 --secretsFile=/run/secrets/oracle_keys_dafi_eth --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=20 --blockchainNode="http://159.69.120.42:8545" --chainId=1
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_dafi_eth
+
   diaxdaioracleservice-sokol:
     build:
       context: $GOPATH
@@ -405,6 +419,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_pcws_bsc.txt
   oracle_keys_dafi_bsc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_bsc.txt
+  oracle_keys_dafi_eth:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_eth.txt
   oracle_keys_cardstack_sokol:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cardstack_sokol.txt
   oracle_keys_ropsten:

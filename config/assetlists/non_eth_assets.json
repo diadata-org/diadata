@@ -1,0 +1,383 @@
+{
+    "Assets": [
+      {
+        "Symbol": "BTC",
+        "Name": "Bitcoin",
+        "Decimals": 8,
+        "Blockchain": "Bitcoin",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "ETH",
+        "Name": "Ether",
+        "Decimals": 18,
+        "Blockchain": "Ethereum",
+        "Address": "0x0000000000000000000000000000000000000000"        
+      },
+      {
+        "Symbol": "ADA",
+        "Name": "Cardano",
+        "Decimals": 6,
+        "Blockchain": "Cardano",
+        "Address": "0x0000000000000000000000000000000000000000"
+        
+      },
+      {
+        "Symbol": "DOT",
+        "Name": "Polkadot",
+        "Decimals": 10,
+        "Blockchain": "Polygon",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "XRP",
+        "Name": "XRP",
+        "Decimals": 6,
+        "Blockchain": "Ripple",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "THETA",
+        "Name": "Theta Network",
+        "Decimals": 0,
+        "Blockchain": "Theta",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "LTC",
+        "Name": "Litecoin",
+        "Decimals": 8,
+        "Blockchain": "Litecoin",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "BCH",
+        "Name": "Bitcoin Cash",
+        "Decimals": 8,
+        "Blockchain": "BitcoinCash",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "XLM",
+        "Name": "Stellar",
+        "Decimals": 8,
+        "Blockchain": "Stellar",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "FIL",
+        "Name": "Filecoin",
+        "Decimals": 8,
+        "Blockchain": "Filecoin",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "LUNA",
+        "Name": "Terra",
+        "Decimals": 9,
+        "Blockchain": "Terra",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "DOGE",
+        "Name": "Dogecoin",
+        "Decimals": 8,
+        "Blockchain": "Dogechain",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "VET",
+        "Name": "VeChain",
+        "Decimals": 18,
+        "Blockchain": "VeChain",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "VTHO",
+        "Name": "VeThor",
+        "Decimals": 18,
+        "Blockchain": "VeChain",
+        "Address": "0x0000000000000000000000000000456e65726779" 
+      },
+      {
+        "Symbol": "SOL",
+        "Name": "Solana",
+        "Decimals": 0,
+        "Blockchain": "Solana",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "KSM",
+        "Name": "Kusama",
+        "Decimals": 12,
+        "Blockchain": "Kusama",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ATOM",
+        "Name": "Cosmos",
+        "Decimals": 6,
+        "Blockchain": "Cosmos",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "TRX",
+        "Name": "Tron",
+        "Decimals": 6,
+        "Blockchain": "Tron",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "WTRX",
+        "Name": "Wrapped TRX",
+        "Decimals": 6,
+        "Blockchain": "Tron",
+        "Address": "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR" 
+      },
+      {
+        "Symbol": "XMR",
+        "Name": "Monero",
+        "Decimals": 12,
+        "Blockchain": "Monero",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "MIOTA",
+        "Name": "IOTA",
+        "Decimals": 0,
+        "Blockchain": "Iota",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "EOS",
+        "Name": "EOS",
+        "Decimals": 4,
+        "Blockchain": "EOS.IO",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "BSV",
+        "Name": "Bitcoin SV",
+        "Decimals": 8,
+        "Blockchain": "BitcoinSV",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "AVAX",
+        "Name": "Avalanche",
+        "Decimals": 0,
+        "Blockchain": "Avalanche",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "XTZ",
+        "Name": "Tezos",
+        "Decimals": 6,
+        "Blockchain": "Tezos",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ALGO",
+        "Name": "Algorand",
+        "Decimals": 6,
+        "Blockchain": "Algorand",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "XEM",
+        "Name": "NEM",
+        "Decimals": 0,
+        "Blockchain": "NEM",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "NEO",
+        "Name": "NEO",
+        "Decimals": 0,
+        "Blockchain": "NEO",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "HBAR",
+        "Name": "Hedera Hashgraph",
+        "Decimals": 9,
+        "Blockchain": "Hedera",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "BTT",
+        "Name": "Bittorrent",
+        "Decimals": 6,
+        "Blockchain": "BitTorrent",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "EGLD",
+        "Name": "Elrond",
+        "Decimals": 18,
+        "Blockchain": "Elrond",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "MATIC",
+        "Name": "Matic Token",
+        "Decimals": 18,
+        "Blockchain": "Matic",
+        "Address": "0x0000000000000000000000000000000000001010" 
+      },
+      {
+        "Symbol": "DCR",
+        "Name": "Decred",
+        "Decimals": 0,
+        "Blockchain": "Decred",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "DASH",
+        "Name": "Dash",
+        "Decimals": 8,
+        "Blockchain": "Dash",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ZIL",
+        "Name": "Ziliqa",
+        "Decimals": 15,
+        "Blockchain": "Ziliqa",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "NEAR",
+        "Name": "Near",
+        "Decimals": 0,
+        "Blockchain": "NEAR",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ONE",
+        "Name": "Harmony",
+        "Decimals": 18,
+        "Blockchain": "Harmony",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "OMI",
+        "Name": "OMI Token",
+        "Decimals": 18,
+        "Blockchain": "GoChain",
+        "Address": "0x5347FDeA6AA4d7770B31734408Da6d34a8a07BdF" 
+      },
+      {
+        "Symbol": "RVN",
+        "Name": "Ravencoin",
+        "Decimals": 0,
+        "Blockchain": "Ravencoin",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "RUNE",
+        "Name": "THORChain",
+        "Decimals": 0,
+        "Blockchain": "Thorchain",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ZEC",
+        "Name": "Zcash",
+        "Decimals": 8,
+        "Blockchain": "Zcash",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ICX",
+        "Name": "ICON",
+        "Decimals": 0,
+        "Blockchain": "ICON",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ETC",
+        "Name": "Ethereum Classic",
+        "Decimals": 18,
+        "Blockchain": "EthereumClassic",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "ONT",
+        "Name": "Ontology",
+        "Decimals": 0,
+        "Blockchain": "Ontology",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "STX",
+        "Name": "Stacks",
+        "Decimals": 6,
+        "Blockchain": "Stacks",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "SIA",
+        "Name": "Siacoin",
+        "Decimals": 24,
+        "Blockchain": "Sia",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "AR",
+        "Name": "Arweave",
+        "Decimals": 0,
+        "Blockchain": "Arweave",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "FLOW",
+        "Name": "Flow",
+        "Decimals": 0,
+        "Blockchain": "Flow",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "DGB",
+        "Name": "DigiByte",
+        "Decimals": 8,
+        "Blockchain": "DigiByte",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "IOST",
+        "Name": "IOST",
+        "Decimals": 8,
+        "Blockchain": "IOST",
+        "Address": "0x0000000000000000000000000000000000000000" 
+      },
+      {
+        "Symbol": "QTUM",
+        "Name": "Qtum",
+        "Decimals": 0,
+        "Blockchain": "Qtum",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "BTG",
+        "Name": "Bitcoin Gold",
+        "Decimals": 8,
+        "Blockchain": "BitcoinGold",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "LSK",
+        "Name": "Lisk",
+        "Decimals": 0,
+        "Blockchain": "Lisk",
+        "Address": "0x0000000000000000000000000000000000000000"
+      },
+      {
+        "Symbol": "STEEM",
+        "Name": "Steem",
+        "Decimals": 3,
+        "Blockchain": "Steem",
+        "Address": "0x0000000000000000000000000000000000000000"
+      }
+    ]
+  }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -44,10 +45,11 @@ type LBankScraper struct {
 	pairScrapers map[string]*LBankPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewLBankScraper returns a new LBankScraper for the given pair
-func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
+func NewLBankScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *LBankScraper {
 
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
@@ -56,17 +58,19 @@ func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_LBankSocketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -74,7 +78,7 @@ func NewLBankScraper(exchange dia.Exchange) *LBankScraper {
 func (s *LBankScraper) mainLoop() {
 	var err error
 
-	for true {
+	for {
 		message := &ResponseLBank{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			println(err.Error())
@@ -85,6 +89,7 @@ func (s *LBankScraper) mainLoop() {
 		if ok {
 			var f64Price float64
 			var f64Volume float64
+			var exchangepair dia.ExchangePair
 
 			switch message.Trade.(type) {
 			case []interface{}:
@@ -104,6 +109,12 @@ func (s *LBankScraper) mainLoop() {
 			}
 
 			timeStamp := time.Now().UTC()
+
+			// TO DO: does the format of the pair correspond to the one saved in postgres?
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, strings.ToUpper(message.Pair))
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Symbol:         ps.pair.Symbol,
 				Pair:           strings.ToUpper(message.Pair),
@@ -112,6 +123,12 @@ func (s *LBankScraper) mainLoop() {
 				Time:           timeStamp,
 				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			ps.parent.chanTrades <- t
 		}
@@ -121,7 +138,10 @@ func (s *LBankScraper) mainLoop() {
 
 func hash(s string) uint32 {
 	h := fnv.New32a()
-	h.Write([]byte(s))
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		log.Error(err)
+	}
 	return h.Sum32()
 }
 
@@ -137,6 +157,10 @@ func (s *LBankScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
+func (s *LBankScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *LBankScraper) Close() error {
@@ -144,7 +168,10 @@ func (s *LBankScraper) Close() error {
 	if s.closed {
 		return errors.New("LBankScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -154,7 +181,7 @@ func (s *LBankScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *LBankScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
@@ -179,7 +206,7 @@ func (s *LBankScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *LBankScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *LBankScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	str := strings.Split(pair.ForeignName, "_")
 	symbol := strings.ToUpper(str[0])
 	pair.Symbol = symbol
@@ -195,15 +222,15 @@ func (s *LBankScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
+	data, _, err := utils.GetRequest("https://api.lbkex.com/v1/currencyPairs.do")
 	if err != nil {
 		return
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		pairToNormalize := dia.Pair{
+		pairToNormalize := dia.ExchangePair{
 			Symbol:      "",
 			ForeignName: strings.ToUpper(p),
 			Exchange:    s.exchangeName,
@@ -222,12 +249,13 @@ func (s *LBankScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // LBankPairScraper implements PairScraper for LBank exchange
 type LBankPairScraper struct {
 	parent *LBankScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *LBankPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -246,6 +274,6 @@ func (ps *LBankPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *LBankPairScraper) Pair() dia.Pair {
+func (ps *LBankPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

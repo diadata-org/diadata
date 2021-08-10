@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"net/url"
 	"os"
 	"os/signal"
@@ -10,7 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
@@ -41,7 +41,12 @@ func NewFTXFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &FTXFuturesScraper{
 		WaitGroup: &wg,
@@ -107,13 +112,32 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 		func() {
 			u := url.URL{Scheme: "wss", Host: "ftx.com", Path: "/ws"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
-			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			ws, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
 				s.Logger.Errorf("could not dial ftx websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			defer func() {
+				err = ws.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
+			defer func() {
+				err = s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			err = s.send(&map[string]string{"market": market, "channel": "trades", "op": "subscribe"}, market, ws)
 			if err != nil {
 				s.Logger.Errorf("could not send a channel subscription message. retrying, err: %s", err)
@@ -130,10 +154,10 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 			// and we may fail sending ping before we get any message on a market, thus
 			// forcing FTX to close our websocket out.
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						s.send(&map[string]string{"op": "ping"}, market, ws)
+				for range tick.C {
+					err := s.send(&map[string]string{"op": "ping"}, market, ws)
+					if err != nil {
+						log.Error(err)
 					}
 				}
 			}()
@@ -141,7 +165,10 @@ func (s *FTXFuturesScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					_, message, err := ws.ReadMessage()

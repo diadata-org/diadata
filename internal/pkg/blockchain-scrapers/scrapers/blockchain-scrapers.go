@@ -61,12 +61,12 @@ func (s *BlockchainScraper) Run() {
 		if err == nil {
 			log.Println("GetBlockchainInfo:", rinfo)
 			m := time.Unix(rinfo.Mediantime, 0)
-			l := time.Now().Sub(m)
+			l := time.Since(m)
 			circulatingSupply := s.numberOfCoinsFor(rinfo.Blocks)
 			log.Println("ElapsedTime block:", l, circulatingSupply)
 			if l < s.elapsedTime {
 				err = s.client.SendSupply(&dia.Supply{
-					Symbol:            s.symbol,
+					Asset:             dia.Asset{Symbol: s.symbol},
 					CirculatingSupply: circulatingSupply,
 				})
 				if err != nil {

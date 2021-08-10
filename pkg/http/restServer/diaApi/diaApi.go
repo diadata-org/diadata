@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
+
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -26,17 +27,7 @@ type Env struct {
 	RelDB     models.RelDB
 }
 
-// PostSupply godoc
-// @Summary Post the circulating supply
-// @Description Post the circulating supply
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param Symbol query string true "Coin symbol"
-// @Param CirculatingSupply query float64 true "number of coins in circulating supply"
-// @Success 200 {object} dia.Supply	"success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/supply [post]
+// PostSupply deprecated? TO DO
 func (env *Env) PostSupply(c *gin.Context) {
 
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -48,9 +39,9 @@ func (env *Env) PostSupply(c *gin.Context) {
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		} else {
-			if t.Symbol == "" || t.CirculatingSupply == 0.0 {
+			if t.Asset.Symbol == "" || t.CirculatingSupply == 0.0 {
 				log.Errorln("received supply:", t)
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("Missing Symbol or CirculatingSupply value"))
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("missing symbol or circulating supply value"))
 			} else {
 				log.Println("received supply:", t)
 				source := dia.Diadata
@@ -59,8 +50,7 @@ func (env *Env) PostSupply(c *gin.Context) {
 				}
 				s := &dia.Supply{
 					Time:              t.Time,
-					Name:              helpers.NameForSymbol(t.Symbol),
-					Symbol:            t.Symbol,
+					Asset:             t.Asset,
 					Source:            source,
 					CirculatingSupply: t.CirculatingSupply}
 
@@ -76,35 +66,28 @@ func (env *Env) PostSupply(c *gin.Context) {
 	}
 }
 
-// GetQuotation godoc
-// @Summary Get quotation
-// @Description GetQuotation
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} models.Quotation "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/quotation/:symbol: [get]
+// GetQuotation returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetQuotation(symbol)
+	// Fetch underlying assets for symbol
+	assets, err := env.RelDB.GetAssets(symbol)
 	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
 	}
+	quotationsSorted, err := env.DataStore.GetSortedAssetQuotations(assets)
+	if len(quotationsSorted) == 0 {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+	c.JSON(http.StatusOK, quotationsSorted)
 }
 
 func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
 	q, err := env.DataStore.GetPaxgQuotationOunces()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -117,7 +100,7 @@ func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
 func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	q, err := env.DataStore.GetPaxgQuotationGrams()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -127,65 +110,12 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
-func (env *Env) GetLastPriceBeforeAllExchanges(c *gin.Context) {
-	symbol := c.Param("symbol")
-	filter := c.Param("filter")
-	timestampStr := c.Param("timestamp")
-
-	var timestamp time.Time
-	if timestampStr == "" {
-		timestamp = time.Now()
-	} else {
-		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		timestamp = time.Unix(timestampInt, 0)
-	}
-
-	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, "", timestamp)
-
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, price)
-	}
-}
-
-func (env *Env) GetLastPriceBefore(c *gin.Context) {
-	symbol := c.Param("symbol")
-	filter := c.Param("filter")
-	exchange := c.Param("exchange")
-	timestampStr := c.Param("timestamp")
-
-	var timestamp time.Time
-	if timestampStr == "" {
-		timestamp = time.Now()
-	} else {
-		timestampInt, err := strconv.ParseInt(timestampStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		timestamp = time.Unix(timestampInt, 0)
-	}
-
-	price, err := env.DataStore.GetLastPriceBefore(symbol, filter, exchange, timestamp)
-
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, price)
-	}
-}
-
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
 	s, err := env.DataStore.GetLatestSupply(symbol)
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -221,7 +151,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	s, err := env.DataStore.GetSupplyInflux(symbol, starttime, endtime)
+	s, err := env.DataStore.GetSupply(symbol, starttime, endtime)
 	if len(s) == 0 {
 		c.JSON(http.StatusOK, make([]string, 0))
 		return
@@ -262,7 +192,11 @@ func (env *Env) GetVolume(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	v, err := env.DataStore.GetVolumeInflux(symbol, starttime, endtime)
+	// TO DO: Adapt to new asset struct
+	preliminaryAsset := dia.Asset{
+		Symbol: symbol,
+	}
+	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
@@ -309,63 +243,11 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 
 // GetPairs returns all pairs
 func (env *Env) GetPairs(c *gin.Context) {
-	p, err := env.DataStore.GetPairs("")
+	p, err := env.RelDB.GetPairs("")
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
 		c.JSON(http.StatusOK, &models.Pairs{Pairs: p})
-	}
-}
-
-// GetSymbolDetails godoc
-// @Summary Get Symbol Details
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Success 200 {object} models.SymbolDetails "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/symbol/:symbol: [get]
-func (env *Env) GetSymbolDetails(c *gin.Context) {
-	symbol := c.Param("symbol")
-
-	s, err := env.DataStore.GetSymbolDetails(symbol)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, s)
-	}
-}
-
-func roundUpTime(t time.Time, roundOn time.Duration) time.Time {
-	t = t.Round(roundOn)
-	if time.Since(t) >= 0 {
-		t = t.Add(roundOn)
-	}
-	return t
-}
-
-// GetCoins godoc
-// @Summary Get coins
-// @Description GetCoins
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} models.Coins "success"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/coins [get]
-func (env *Env) GetCoins(c *gin.Context) {
-	coins, err := env.DataStore.GetCoins()
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, coins)
 	}
 }
 
@@ -380,19 +262,7 @@ func (env *Env) GetExchanges(c *gin.Context) {
 }
 
 // GetChartPoints godoc
-// @Summary Get chart points for
-// @Description Get Symbol Details
-// @Tags dia
-// @Accept  json
-// @Produce  json
-// @Param   symbol     path    string     true        "Some symbol"
-// @Param   exchange     path    string     true        "Some exchange"
-// @Param   filter     path    string     true        "Some filter"
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
-// @Success 200 {object} models.Points "success"
-// @Failure 404 {object} restApi.APIError "Symbol not found"
-// @Failure 500 {object} restApi.APIError "error"
-// @Router /v1/chartPoints/:filter/:exchange:/:symbol: [get]
 func (env *Env) GetChartPoints(c *gin.Context) {
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
@@ -504,26 +374,33 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	}
 }
 
-// GetAllSymbols returns all symbols available in our (redis) database.
-// Optional query parameter exchange returns only symbols available on this exchange.
+// GetAllSymbols returns all Symbols on @exchange.
+// If @exchange is not set, it returns all symbols across all exchanges.
+// TO DO: store all symbols for DEXes in postgres
 func (env *Env) GetAllSymbols(c *gin.Context) {
+	var s []string
+	var err error
 	exchange := c.DefaultQuery("exchange", "noRange")
 	if exchange == "noRange" {
-		s := env.DataStore.GetAllSymbols()
-		if len(s) == 0 {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
-		} else {
-			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
+		exchanges := env.DataStore.GetExchanges()
+		for _, exch := range exchanges {
+			var sExch []string
+			sExch, err = env.RelDB.GetExchangeSymbols(exch)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+			}
+			s = append(s, sExch...)
 		}
+		s = utils.UniqueStrings(s)
 	} else {
-		s := env.DataStore.GetSymbolsByExchange(exchange)
-		if len(s) == 0 {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("cant find symbols"))
-		} else {
-			c.JSON(http.StatusOK, dia.Symbols{Symbols: s})
-		}
+		s, err = env.RelDB.GetExchangeSymbols(exchange)
 	}
-
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+	} else {
+		sort.Strings(s)
+		c.JSON(http.StatusOK, s)
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -586,7 +463,7 @@ func (env *Env) GetCryptoDerivative(c *gin.Context) {
 
 	// q, err := env.DataStore.GetCryptoIndex(indexType)
 	// if err != nil {
-	// 	if err == redis.Nil {
+	// 	if errors.Is(err, redis.Nil) {
 	// 		restApi.SendError(c, http.StatusNotFound, err)
 	// 	} else {
 	// 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -641,7 +518,7 @@ func (env *Env) GetDefiRate(c *gin.Context) {
 
 		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -660,7 +537,7 @@ func (env *Env) GetDefiRate(c *gin.Context) {
 		}
 		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -698,7 +575,7 @@ func (env *Env) GetDefiState(c *gin.Context) {
 
 		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -717,7 +594,7 @@ func (env *Env) GetDefiState(c *gin.Context) {
 		}
 		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -738,7 +615,7 @@ func (env *Env) GetDefiState(c *gin.Context) {
 func (env *Env) GetFarmingPools(c *gin.Context) {
 	q, err := env.DataStore.GetFarmingPools()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -776,7 +653,7 @@ func (env *Env) GetFarmingPoolData(c *gin.Context) {
 
 		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -795,7 +672,7 @@ func (env *Env) GetFarmingPoolData(c *gin.Context) {
 		}
 		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -823,7 +700,7 @@ func (env *Env) GetInterestRate(c *gin.Context) {
 	if dateInit == "noRange" {
 		q, err := env.DataStore.GetInterestRate(symbol, date)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -834,7 +711,7 @@ func (env *Env) GetInterestRate(c *gin.Context) {
 	} else {
 		q, err := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -866,7 +743,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 	if dateInitstring == "noRange" {
 
-		date := time.Time{}
+		var date time.Time
 		if datestring == "" {
 			// If date is omitted in API call, take most recent date
 			date = time.Now()
@@ -879,7 +756,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 		q, err := env.DataStore.GetCompoundedIndex(symbol, date, daysPerYear, rounding)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -901,7 +778,7 @@ func (env *Env) GetCompoundedRate(c *gin.Context) {
 
 		q, err := env.DataStore.GetCompoundedIndexRange(symbol, dateInit, dateFinal, daysPerYear, rounding)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -924,6 +801,9 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 	date, _ := time.Parse("2006-01-02", datestring)
 	days := c.Param("days")
 	calDays, err := strconv.Atoi(days)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	}
 	dpy := c.Param("dpy")
 	daysPerYear, err := strconv.Atoi(dpy)
 	if err != nil {
@@ -941,7 +821,7 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 		// Compute compunded rate and return if no error
 		q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, rounding)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -963,7 +843,7 @@ func (env *Env) GetCompoundedAvg(c *gin.Context) {
 
 		q, err := env.DataStore.GetCompoundedAvgRange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -989,6 +869,9 @@ func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
 	date, _ := time.Parse("2006-01-02", datestring)
 	days := c.Param("days")
 	calDays, err := strconv.Atoi(days)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	}
 	dpy := c.Param("dpy")
 	daysPerYear, err := strconv.Atoi(dpy)
 	if err != nil {
@@ -1009,7 +892,7 @@ func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
 		q, err := env.DataStore.GetCompoundedAvgDIARange(symbol, date, dateFinal, calDays, daysPerYear, rounding)
 
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1031,7 +914,7 @@ func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
 
 		q, err := env.DataStore.GetCompoundedAvgDIARange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1067,7 +950,7 @@ func (env *Env) GetRates(c *gin.Context) {
 func (env *Env) GetFiatQuotations(c *gin.Context) {
 	q, err := env.DataStore.GetCurrencyChange()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1099,7 +982,7 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	}
 	q, err := env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1115,7 +998,7 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 
 	q, err := env.DataStore.GetForeignSymbolsInflux(source)
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1182,26 +1065,19 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-func (env *Env) GetCryptoIndexMintAmounts(c *gin.Context) {
-	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetCryptoIndexMintAmounts(symbol)
-	if err != nil {
-		if err == redis.Nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
-	}
-}
-
 // Get last 1000 trades of an asset
 func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
-	q, err := env.DataStore.GetLastTradesAllExchanges(symbol, 1000)
+
+	// First get asset with @symbol with largest market cap.
+	topAsset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
 	if err != nil {
-		if err == redis.Nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+	}
+
+	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1211,6 +1087,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	}
 }
 
+// Post data must now be a slice of (EThereum-)addresses
 func (env *Env) PostIndexRebalance(c *gin.Context) {
 	indexSymbol := c.Param("symbol")
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -1218,14 +1095,14 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
 		return
 	}
-	var constituentsSymbols []string
-	err = json.Unmarshal(body, &constituentsSymbols)
+	var constituentsAddresses []string
+	err = json.Unmarshal(body, &constituentsAddresses)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
 	// Get constituents information
-	constituents, err := indexCalculationService.GetIndexBasket(constituentsSymbols)
+	constituents, err := indexCalculationService.GetIndexBasket(constituentsAddresses)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1268,7 +1145,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	var newIndex models.CryptoIndex
-	newIndex.Name = indexSymbol
+	newIndex.Asset.Name = indexSymbol
 	newIndex.Constituents = constituents
 	newIndex.Value = newIndexRawValue
 	newIndex.Price = currIndex[0].Price
@@ -1281,6 +1158,38 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, constituents)
+}
+
+// GetMissingExchangeSymbol returns all unverified symbol
+func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
+	exchange := c.Param("exchange")
+
+	symbols, err := env.RelDB.GetUnverifiedExchangeSymbols(exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, symbols)
+	}
+}
+
+func (env *Env) GetAsset(c *gin.Context) {
+	symbol := c.Param("symbol")
+
+	symbols, err := env.RelDB.GetAssets(symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, symbols)
+	}
+}
+
+func (env *Env) GetAllBlockchains(c *gin.Context) {
+	blockchains, err := env.RelDB.GetAllBlockchains()
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, blockchains)
+	}
 }
 
 // -----------------------------------------------------------------------------

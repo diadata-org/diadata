@@ -41,10 +41,15 @@ func (s *DefiScraper) mainLoop(rateType string) {
 	for {
 		select {
 		case <-s.tickerRate.C:
-			s.UpdateRates(rateType)
+			err := s.UpdateRates(rateType)
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.tickerState.C:
-			s.UpdateState(rateType)
-
+			err := s.UpdateState(rateType)
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("DefiScraper shutting down")
 			s.cleanup(nil)
@@ -237,7 +242,10 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 
 	}
 
-	s.datastore.SetDefiProtocol(protocol)
+	err := s.datastore.SetDefiProtocol(protocol)
+	if err != nil {
+		log.Error(err)
+	}
 	return helper.UpdateRate()
 }
 

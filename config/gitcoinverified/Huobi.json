@@ -1,0 +1,35 @@
+{
+  "Tokens": [
+    {
+      "Symbol": "AKRO",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
+      
+    },
+    {
+        "Symbol": "BTG",
+        "Exchange": "Huobi",
+        "Blockchain": "BitcoinGold",
+        "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol": "LSK",
+        "Exchange": "Huobi",
+        "Blockchain": "Lisk",
+        "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+        "Symbol": "SNT",
+        "Exchange": "Huobi",
+        "Blockchain": "Ethereum",
+        "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
+    },
+    {
+        "Symbol": "STEEM",
+        "Exchange": "Huobi",
+        "Blockchain": "Steem",
+        "Address": "0x0000000000000000000000000000000000000000"
+    }
+  ]
+}

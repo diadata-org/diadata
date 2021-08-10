@@ -2,9 +2,10 @@ package main
 
 import (
 	"github.com/diadata-org/diadata/internal/pkg/itinService"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -34,5 +35,4 @@ func main() {
 		}
 		time.Sleep(24 * time.Hour)
 	}
-	return
 }

@@ -36,7 +36,10 @@ func (c *Client) refresh() error {
 
 	url := c.url + "auth/refresh_token"
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil) //nolint:noctx
+	if err != nil {
+		return err
+	}
 
 	bytes, err := c.DoRequest(req, false)
 	if err != nil {
@@ -72,7 +75,10 @@ func (c *Client) login() error {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //nolint:noctx
+	if err != nil {
+		return err
+	}
 
 	req.Header.Set("Content-Type", "application/json")
 
@@ -81,7 +87,12 @@ func (c *Client) login() error {
 		log.Println(err)
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -101,7 +112,7 @@ func GetSupply(symbol string) (*Supply, error) {
 	url := BaseUrl + "/v1/supply/" + symbol
 	log.Println("Checking supply for", symbol, "on", url)
 
-	contents, err := utils.GetRequest(url)
+	contents, _, err := utils.GetRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +133,7 @@ func GetSupply(symbol string) (*Supply, error) {
 func GetSymbolsList(url string) ([]string, error) {
 	log.Println("getSymbolList")
 
-	contents, err := utils.GetRequest(url + "/v1/symbols")
+	contents, _, err := utils.GetRequest(url + "/v1/symbols")
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +208,13 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -205,7 +222,7 @@ func (c *Client) DoRequest(req *http.Request, refresh bool) ([]byte, error) {
 
 	log.Debug("StatusCode", resp.StatusCode)
 
-	if 200 != resp.StatusCode {
+	if resp.StatusCode != 200 {
 
 		if refresh {
 			if resp.StatusCode == 401 {
@@ -248,7 +265,10 @@ func (c *Client) sendSupply(s *Supply) error {
 
 	url := c.url + "v1/supply"
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr)) //nolint:noctx
+	if err != nil {
+		return err
+	}
 
 	_, err = c.DoRequest(req, true)
 	if err != nil {

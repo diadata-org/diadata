@@ -1,0 +1,74 @@
+{
+  "Batches": [
+    {
+      "Exchange": "Binance",
+      "BatchNumber": "1",
+      "VerifiedBy": ["baptistegarcin, slightlyskepticalpotat, jerrynoah"]      
+    },
+    {
+      "Exchange": "Kraken",
+      "BatchNumber": "1",
+      "VerifiedBy": ["jppade"]      
+    },
+    {
+      "Exchange": "Huobi",
+      "BatchNumber": "1",
+      "VerifiedBy": ["jppade"]      
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip", "chemrah"]  
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "2",
+      "VerifiedBy": []
+    },
+    {
+      "Exchange": "GateIO",
+      "BatchNumber": "1",
+      "VerifiedBy": ["tn024687","ControlCplusControlV", "chemrah"] 
+    },
+    {
+      "Exchange": "ZB",
+      "BatchNumber": "1",
+      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"] 
+    },
+    {
+      "Exchange": "LBank",
+      "BatchNumber": "1",
+      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"]      
+    },
+    {
+      "Exchange": "Bittrex",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip"]     
+    },
+    {
+      "Exchange": "HitBTC",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]     
+    },
+    {
+      "Exchange": "OKEx",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip","sidduHERE"]      
+    },
+    {
+      "Exchange": "Quoine",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]      
+    },
+    {
+      "Exchange": "CREX24",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]       
+    },
+    {
+      "Exchange": "STEX",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]      
+    }
+  ]
+}

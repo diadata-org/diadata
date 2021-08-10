@@ -20,7 +20,7 @@ services:
   cryptopunkscraper:
     depends_on: [genericnftbidsscraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftbidsscraper:latest
-    command: /bin/nftBid-scrapers -nftclass=Cryptopunk
+    command: /bin/nftBid-scrapers -nftclass=CryptoPunks
     networks:
       - postgres-network
     secrets:

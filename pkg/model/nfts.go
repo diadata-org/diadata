@@ -9,10 +9,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
-	log "github.com/sirupsen/logrus"
 )
 
 // SetNFTClass stores @nftClass in postgres.
@@ -224,7 +222,7 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	price := trade.Price.String()
 	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
 	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress.Hex(), trade.ToAddress.Hex(), trade.CurrencySymbol, trade.CurrencyAddress.Hex(), trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash.Hex(), trade.Exchange)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, trade.CurrencySymbol, trade.CurrencyAddress, trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
 	}
@@ -255,21 +253,17 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 	for rows.Next() {
 		var trade dia.NFTTrade
 		var price string
-		var fromaddress string
-		var toaddress string
-		var currencyaddress string
-		var txhash sql.NullString
 		err := rows.Scan(
 			&price,
 			&trade.PriceUSD,
-			&fromaddress,
-			&toaddress,
+			&trade.FromAddress,
+			&trade.ToAddress,
 			&trade.CurrencySymbol,
-			&currencyaddress,
+			&trade.CurrencyAddress,
 			&trade.CurrencyDecimals,
 			&trade.BlockNumber,
 			&trade.Timestamp,
-			&txhash,
+			&trade.TxHash,
 			&trade.Exchange,
 		)
 		if err != nil {
@@ -281,12 +275,6 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 			return []dia.NFTTrade{}, err
 		}
 		trade.Price = n
-		trade.FromAddress = common.HexToAddress(fromaddress)
-		trade.ToAddress = common.HexToAddress(toaddress)
-		trade.CurrencyAddress = common.HexToAddress(currencyaddress)
-		if txhash.Valid {
-			trade.TxHash = common.HexToHash(txhash.String)
-		}
 		trades = append(trades, trade)
 	}
 	return
@@ -310,7 +298,7 @@ func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
 		context.Background(),
 		query,
 		nftID,
-		bid.Value,
+		bid.Value.String(),
 		bid.FromAddress,
 		bid.CurrencySymbol,
 		bid.CurrencyAddress,
@@ -327,7 +315,7 @@ func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
 	return nil
 }
 
-// GetLastBid returns the last bid on the nft with @address and @tokenID.
+// GetLastNFTBid returns the last bid on the nft with @address and @tokenID.
 // Here, 'last' refers to block number and block position smaller or equal
 // (in the case of block number) than @blockNumber and @blockPosition resp.
 func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (nftBid dia.NFTBid, err error) {
@@ -340,14 +328,15 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	nftBid.NFT.TokenID = tokenID
 
 	// First fetch biggest blocknumber<=@blockNumber for given nft.
-	subquery := fmt.Sprintf("select blocknumber from nftbid where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftID, blockNumber)
+	subquery := fmt.Sprintf("select blocknumber from %s where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftbidTable, nftID, blockNumber)
 	// Next, restrict to largest blockPosition in this block.
 	returnVars := "bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,bid_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from nftbid where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftID, subquery)
+	query := fmt.Sprintf("select %s from %s where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftbidTable, nftID, subquery)
 	var txHash sql.NullString
 	var bidTime sql.NullTime
+	var value string
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(
-		&nftBid.Value,
+		&value,
 		&nftBid.FromAddress,
 		&nftBid.CurrencySymbol,
 		&nftBid.CurrencyAddress,
@@ -367,14 +356,113 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	if txHash.Valid {
 		nftBid.TxHash = txHash.String
 	}
+	n := new(big.Int)
+	n, ok := n.SetString(value, 10)
+	if !ok {
+		return
+	}
+	nftBid.Value = n
 	return
 }
 
+// GetLastBlockNFTBid returns the last blocknumber that was scraped in @nftclass.
 func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (blocknumber uint64, err error) {
 	query := fmt.Sprintf("select block_number from %s where nftclass_id=(select nftclass_id from %s where address='%s' and blockchain='%s') order by block_number desc limit 1;", nftbidTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
 	if err != nil {
 		return
 	}
+	return
+}
+
+// SetNFTOffer stores @offer in postgres.
+func (rdb *RelDB) SetNFTOffer(offer dia.NFTOffer) error {
+	nftID, err := rdb.GetNFTID(offer.NFT.NFTClass.Address, offer.NFT.NFTClass.Blockchain, offer.NFT.TokenID)
+	if err != nil {
+		return err
+	}
+	bidVars := "nft_id,start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,offer_time,tx_hash,marketplace"
+	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)", nftofferTable, bidVars)
+	_, err = rdb.postgresClient.Exec(
+		context.Background(),
+		query,
+		nftID,
+		offer.StartValue.String(),
+		offer.EndValue.String(),
+		offer.Duration,
+		offer.FromAddress,
+		offer.AuctionType,
+		offer.CurrencySymbol,
+		offer.CurrencyAddress,
+		offer.CurrencyDecimals,
+		offer.BlockNumber,
+		offer.BlockPosition,
+		offer.Timestamp,
+		offer.TxHash,
+		offer.Exchange,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetLastNFTOffer returns the last offer on the nft with @address and @tokenID.
+// Here, 'last' refers to block number and block position smaller or equal
+// (in the case of block number) than @blockNumber and @blockPosition resp.
+func (rdb *RelDB) GetLastNFTOffer(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (offer dia.NFTOffer, err error) {
+	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
+	if err != nil {
+		return
+	}
+	offer.NFT.NFTClass.Address = address
+	offer.NFT.NFTClass.Blockchain = blockchain
+	offer.NFT.TokenID = tokenID
+
+	// First fetch biggest blocknumber<=@blockNumber for given nft.
+	subquery := fmt.Sprintf("select blocknumber from %s where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftofferTable, nftID, blockNumber)
+	// Next, restrict to largest blockPosition in this block.
+	returnVars := "start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,offer_time,tx_hash,marketplace"
+	query := fmt.Sprintf("select %s from %s where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftofferTable, nftID, subquery)
+	var txHash sql.NullString
+	var offerTime sql.NullTime
+	var startValue string
+	var endValue string
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(
+		&startValue,
+		&endValue,
+		&offer.Duration,
+		&offer.FromAddress,
+		&offer.AuctionType,
+		&offer.CurrencySymbol,
+		&offer.CurrencyAddress,
+		&offer.CurrencyDecimals,
+		&offer.BlockNumber,
+		&offer.BlockPosition,
+		&offerTime,
+		&txHash,
+		&offer.Exchange,
+	)
+	if err != nil {
+		return
+	}
+	if offerTime.Valid {
+		offer.Timestamp = offerTime.Time
+	}
+	if txHash.Valid {
+		offer.TxHash = txHash.String
+	}
+	n := new(big.Int)
+	n, ok := n.SetString(startValue, 10)
+	if !ok {
+		return
+	}
+	offer.StartValue = n
+	n = new(big.Int)
+	n, ok = n.SetString(endValue, 10)
+	if !ok {
+		return
+	}
+	offer.EndValue = n
 	return
 }

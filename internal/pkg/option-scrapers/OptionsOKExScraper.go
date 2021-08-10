@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"golang.org/x/time/rate"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var logger = logrus.New()
@@ -45,17 +46,17 @@ type OKExOptionsScraper struct {
 	PollFrequency      int8
 	ScraperIsRunning   bool
 	ScraperIsRunningMu sync.Mutex
-	optionsWaitGroup   *sync.WaitGroup
-	DataStore          *models.DB
-	chanOrderBook      chan *dia.OptionOrderbookDatum
-	Ratelimiter        *rate.Limiter
+	// optionsWaitGroup   *sync.WaitGroup
+	DataStore     *models.DB
+	chanOrderBook chan *dia.OptionOrderbookDatum
+	Ratelimiter   *rate.Limiter
 }
 
 type AllOKExOptionsScrapers struct {
 	Scrapers []*OKExOptionsScraper
 	Markets  []string
 	ds       *models.DB
-	owg      *sync.WaitGroup
+	// owg      *sync.WaitGroup
 }
 
 type rawOKExOBDatum struct {
@@ -135,7 +136,7 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 	}
 	var resolvedAskPX float64
 	var resolvedAskSize float64
-	if len(datum.Asks) > 1  && len(datum.Asks[0]) > 1 {
+	if len(datum.Asks) > 1 && len(datum.Asks[0]) > 1 {
 		resolvedAskPX, err = strconv.ParseFloat(datum.Asks[0][0], 64)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
@@ -150,7 +151,7 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 
 	}
 
-	var resolvedBidPX ,resolvedBidSize float64
+	var resolvedBidPX, resolvedBidSize float64
 	if len(datum.Bids) > 0 {
 		resolvedBidPX, err = strconv.ParseFloat(datum.Bids[0][0], 64)
 		if err != nil {
@@ -158,8 +159,7 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 			return
 		}
 
-
- 		resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
+		resolvedBidSize, err = strconv.ParseFloat(datum.Bids[0][1], 64)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
 			return
@@ -179,13 +179,16 @@ func (s *OKExOptionsScraper) parseObDatum(datum *rawOKExOBDatum, market string) 
 func (s *OKExOptionsScraper) FetchInstruments() {
 
 	// Get underlying pairs https://www.okex.com/api/option/v3/underlying
-	b, err := utils.GetRequest("https://www.okex.com/api/option/v3/underlying")
+	b, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/underlying")
 	if err != nil {
 		log.Errorln("Error gettinb underlying assets", err)
 	}
 
 	var underlying []string
-	json.Unmarshal(b, &underlying)
+	err = json.Unmarshal(b, &underlying)
+	if err != nil {
+		log.Error(err)
+	}
 
 	for _, pair := range underlying {
 		var instruments OKExInstrumentDetails
@@ -194,19 +197,21 @@ func (s *OKExOptionsScraper) FetchInstruments() {
 			continue
 		}
 
-		b, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/" + pair)
+		b, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/" + pair)
 		if err != nil {
 			log.Errorln("Error getting instrumentId")
 		}
 
-		json.Unmarshal(b, &instruments)
+		err = json.Unmarshal(b, &instruments)
+		if err != nil {
+			log.Error(err)
+		}
 
 		for _, v := range instruments {
 			s.Markets = append(s.Markets, v.InstrumentID)
 		}
 
 	}
-	return
 }
 func (s *OKExOptionsScraper) Scrape() {
 
@@ -233,7 +238,7 @@ func (s *OKExOptionsScraper) ScrapeInstrument(market string) {
 	url := fmt.Sprintf("https://www.okex.com/api/option/v3/instruments/%s/book?size=1", market)
 	log.Infoln("Requesting Url ", url)
 	// * change size query param to larger number for greater depth. the largest you can go to is 200
-	body, err := utils.GetRequest(url)
+	body, _, err := utils.GetRequest(url)
 	if err != nil {
 		logger.WithFields(logrus.Fields{"prefix": "OKEx", "market": market}).Error(err)
 		return
@@ -278,7 +283,7 @@ func (s *OKExOptionsScraper) MetaOnOptionIsAvailable(option OKExInstrument) (ava
 }
 
 func (s *OKExOptionsScraper) GetAndStoreOptionsMeta() (err error) {
-	body, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/ETH-USD")
+	body, _, err := utils.GetRequest("https://www.okex.com/api/option/v3/instruments/ETH-USD")
 	if err != nil {
 		return
 	}

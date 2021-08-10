@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"sync"
 	"time"
 
@@ -45,9 +44,12 @@ func main() {
 	var scraper nfttradescrapers.NFTTradeScraper
 
 	switch *scraperType {
-	case "Cryptopunk":
-		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunk")
+	case "CryptoPunks":
+		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunks")
 		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
+	case "CryptoKitties":
+		log.Println("NFT Data Scraper: Start scraping trades from CryptoKitties")
+		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -70,7 +72,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			return
 		}
 		if 1 < 0 {
-			fmt.Printf("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress.Hex(), trade.NFT.NFTClass.Name, trade.ToAddress.Hex(), trade.CurrencySymbol, trade.PriceUSD)
+			log.Info("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.CurrencySymbol, trade.PriceUSD)
 		}
 		err := rdb.SetNFTTrade(trade)
 		if err != nil {

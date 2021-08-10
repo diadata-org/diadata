@@ -8,6 +8,10 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_ecb:latest
     networks:
       - redis-network
+      - influxdb-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -21,19 +25,25 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
   
-  crex24collector:
+  crexcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
     command: /bin/collector -exchange=CREX24
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -47,37 +57,40 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
 
-  gateiocollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=GateIO
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # gateiocollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=GateIO
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
-  bancorcollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Bancor
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # bancorcollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Bancor
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
 
   # loopringcollector:
@@ -100,6 +113,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -132,45 +148,45 @@ services:
     environment:
       - EXEC_MODE=production
 
-  pancakeswapcollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=PanCakeSwap
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # pancakeswapcollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=PanCakeSwap
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
     
-  gnosiscollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Gnosis
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production  
+  # gnosiscollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Gnosis
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production  
 
-  curveficollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Curvefi
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # curveficollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Curvefi
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   kucoincollector:
     depends_on: [genericcollector]
@@ -179,6 +195,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -233,6 +252,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -246,50 +268,53 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
 
-  balancercollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Balancer
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # balancercollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Balancer
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
-  dforcecollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Dforce
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # dforcecollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Dforce
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
-  lbankcollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=LBank
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # lbankcollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=LBank
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   okexcollector:
     depends_on: [genericcollector]
@@ -304,18 +329,18 @@ services:
     environment:
       - EXEC_MODE=production
 
-  huobicollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Huobi
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # huobicollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Huobi
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   coinbasecollector:
     depends_on: [genericcollector]
@@ -324,26 +349,31 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
     environment:
       - EXEC_MODE=production
 
-  binancecollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Binance
-    networks:
-      - kafka-network
-      - redis-network
-    secrets:
-      - api_binance
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # binancecollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Binance
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #     - postgres-network
+  #   secrets:
+  #     - postgres_credentials
+  #     - api_binance
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
   # bitfinexcollector:
   #   depends_on: [genericcollector]
@@ -367,7 +397,9 @@ services:
     networks:
       - kafka-network
       - redis-network
+      - postgres-network
     secrets:
+      - postgres_credentials
       - api_kraken
     logging:
       options:
@@ -414,31 +446,31 @@ services:
     environment:
       - EXEC_MODE=production
 
-  zeroxcollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=0x
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # zeroxcollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=0x
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
-  kybercollector:
-    depends_on: [genericcollector]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-    command: /bin/collector -exchange=Kyber
-    networks:
-      - kafka-network
-      - redis-network
-    logging:
-      options:
-        max-size: "50m"
-    environment:
-      - EXEC_MODE=production
+  # kybercollector:
+  #   depends_on: [genericcollector]
+  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+  #   command: /bin/collector -exchange=Kyber
+  #   networks:
+  #     - kafka-network
+  #     - redis-network
+  #   logging:
+  #     options:
+  #       max-size: "50m"
+  #   environment:
+  #     - EXEC_MODE=production
 
 secrets:
   api_binance:
@@ -447,6 +479,8 @@ secrets:
     file: ../secrets/api_bitfinex.json
   api_kraken:
     file: ../secrets/api_kraken.json
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
 
 networks:
   kafka-network:
@@ -458,3 +492,6 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  postgres-network:
+    external:
+        name: postgres_postgres-network

@@ -1,15 +1,13 @@
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/services/indexCalculationService
-
+COPY ./cmd/services/indexCalculationService ./
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/indexCalculationService /bin/indexCalculationService
+COPY --from=build /config/ /config/
 
 ENTRYPOINT ["indexCalculationService"]

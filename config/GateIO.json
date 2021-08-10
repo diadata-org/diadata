@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "HEGIC_USDT",
+      "Ignore": false,
+      "Symbol": "HEGIC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "INJ_USDT",
+      "Ignore": false,
+      "Symbol": "INJ"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "DAFI_USDT",
       "Ignore": false,
       "Symbol": "DAFI"

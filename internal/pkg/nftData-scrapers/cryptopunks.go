@@ -18,12 +18,11 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
 )
 
 const (
-	cpFirstBlock = uint64(3918000)
+	cryptoPunksFirstBlock = uint64(3918000)
 )
 
 type OpenSeaCryptopunkResponse struct {
@@ -238,7 +237,7 @@ type CryptopunkTraits struct {
 	Order       interface{} `json:"order"`
 }
 
-type CryptopunkScraper struct {
+type CryptoPunksScraper struct {
 	nftscraper    NFTScraper
 	address       common.Address
 	apiURLOpensea string
@@ -250,7 +249,7 @@ type CryptopunkOutput struct {
 	Traits []CryptopunkTraits `structs:",flatten"`
 }
 
-func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
+func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -264,7 +263,7 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 		relDB:         rdb,
 		chanData:      make(chan dia.NFT),
 	}
-	s := &CryptopunkScraper{
+	s := &CryptoPunksScraper{
 		address:       common.HexToAddress("0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"),
 		apiURLOpensea: "https://api.opensea.io/api/v1/",
 		cryptopunkURL: "https://www.larvalabs.com/cryptopunks/details/",
@@ -277,7 +276,7 @@ func NewCryptopunkScraper(rdb *models.RelDB) *CryptopunkScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *CryptopunkScraper) mainLoop() {
+func (scraper *CryptoPunksScraper) mainLoop() {
 	err := scraper.FetchData()
 	if err != nil {
 		log.Error("error updating NFT: ", err)
@@ -298,7 +297,7 @@ func (scraper *CryptopunkScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptopunkScraper) FetchData() (err error) {
+func (scraper *CryptoPunksScraper) FetchData() (err error) {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
 		return
@@ -306,7 +305,7 @@ func (scraper *CryptopunkScraper) FetchData() (err error) {
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
+	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.ETHEREUM)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
 	}
@@ -343,7 +342,7 @@ func (scraper *CryptopunkScraper) FetchData() (err error) {
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
-func (scraper *CryptopunkScraper) GetTotalSupply() (*big.Int, error) {
+func (scraper *CryptoPunksScraper) GetTotalSupply() (*big.Int, error) {
 	contract, err := cryptopunk.NewCryptoPunksMarketCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -352,7 +351,7 @@ func (scraper *CryptopunkScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // TokenByIndex returns the address of a punk whose id is passed as a parameter from on-chain.
-func (scraper *CryptopunkScraper) TokenByIndex(index *big.Int) (common.Address, error) {
+func (scraper *CryptoPunksScraper) TokenByIndex(index *big.Int) (common.Address, error) {
 	contract, err := cryptopunk.NewCryptoPunksMarketCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -361,7 +360,7 @@ func (scraper *CryptopunkScraper) TokenByIndex(index *big.Int) (common.Address, 
 }
 
 // GetOpenSeaPunk returns the scraped data from Opensea for a given punk
-func (scraper *CryptopunkScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
+func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
 	var traits []CryptopunkTraits
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
 
@@ -388,7 +387,7 @@ func (scraper *CryptopunkScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTr
 }
 
 // GetCreationEvents returns maps for creation time and creator address by filtering 'assign punk' events.
-func (scraper *CryptopunkScraper) GetCreationEvents() (map[uint64]time.Time, map[uint64]common.Address, error) {
+func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, map[uint64]common.Address, error) {
 	creationTimeMap := make(map[uint64]time.Time)
 	creatorAddressMap := make(map[uint64]common.Address)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.address, scraper.nftscraper.ethConnection)
@@ -401,10 +400,10 @@ func (scraper *CryptopunkScraper) GetCreationEvents() (map[uint64]time.Time, map
 		return creationTimeMap, creatorAddressMap, err
 	}
 
-	endBlockNumber := header.Number.Uint64() - 8
-	startBlockNumber := cpFirstBlock
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	startBlockNumber := cryptoPunksFirstBlock
 
-	for endBlockNumber <= header.Number.Uint64()-8 {
+	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptopunk.CryptoPunksMarketAssignIterator
 		fmt.Printf("startblock -- endblock: %v -- %v \n", startBlockNumber, endBlockNumber)
 		iter, err = filterer.FilterAssign(&bind.FilterOpts{
@@ -421,15 +420,15 @@ func (scraper *CryptopunkScraper) GetCreationEvents() (map[uint64]time.Time, map
 			return creationTimeMap, creatorAddressMap, err
 		}
 
+		// map punk index to timestamp of creation event and to creator address.
+		var blockData dia.BlockData
 		for iter.Next() {
 
-			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
-			var header *types.Header
-			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
 			if err != nil {
-				log.Error("fetching header by number: ", err)
+				log.Errorf("getting blockdata: %+v", err)
 			}
-			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(header.Time), 0)
+			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
 			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
 		}
 		startBlockNumber = endBlockNumber
@@ -454,12 +453,12 @@ func GetCryptopunkAddress(punkResp []byte) (common.Address, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *CryptopunkScraper) GetDataChannel() chan dia.NFT {
+func (scraper *CryptoPunksScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *CryptopunkScraper) cleanup(err error) {
+func (scraper *CryptoPunksScraper) cleanup(err error) {
 	scraper.nftscraper.errorLock.Lock()
 	defer scraper.nftscraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -471,7 +470,7 @@ func (scraper *CryptopunkScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *CryptopunkScraper) Close() error {
+func (scraper *CryptoPunksScraper) Close() error {
 	if scraper.nftscraper.closed {
 		return errors.New("scraper already closed")
 	}

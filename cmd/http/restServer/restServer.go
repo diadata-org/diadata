@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -68,9 +68,9 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
-	cachingTimeShort  = time.Minute * 2
-	cachingTimeMedium = time.Minute * 10
-	cachingTimeLong   = time.Minute * 100
+	cachingTimeShort = time.Minute * 2
+	// cachingTimeMedium = time.Minute * 10
+	cachingTimeLong = time.Minute * 100
 )
 
 var identityKey = "id"
@@ -207,15 +207,14 @@ func main() {
 		// Endpoints for cryptocurrencies/exchanges
 		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
 		dia.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
-		dia.GET("/lastPriceBefore/:filter/:exchange/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBefore))
-		dia.GET("/lastPriceBeforeAllExchanges/:filter/:symbol/:timestamp", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetLastPriceBeforeAllExchanges))
 		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
 		dia.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
-		dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
+		//  Deprectated - > split up in specific endpoints
+		// dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
 		dia.GET("/symbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		dia.GET("/volume/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		dia.GET("/volume24/:exchange", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
-		dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
+		// Deprectated: dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
 		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
 		dia.GET("/exchanges", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		dia.GET("/defiLendingProtocols", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
@@ -226,6 +225,10 @@ func main() {
 		dia.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
 		dia.GET("/defiLendingState/:protocol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
 		dia.GET("/defiLendingState/:protocol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
+
+		dia.GET("/missingToken/:exchange", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
+		dia.GET("/token/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
+		dia.GET("/blockchains", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 
 		dia.GET("/FarmingPools", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
 		dia.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
@@ -258,7 +261,6 @@ func main() {
 
 		// Index
 		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
-		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))
 
 		// Endpoints for NFTs
 		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
@@ -273,11 +275,18 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// This environment variable is either set in docker-compose or empty
-	executionMode := os.Getenv("EXEC_MODE")
+	executionMode := utils.Getenv("EXEC_MODE", "")
 	if executionMode == "production" {
-		r.Run(":8080")
+		err = r.Run(utils.Getenv("LISTEN_PORT", ":8080"))
+		if err != nil {
+			log.Error(err)
+		}
 	} else {
-		r.Run(":8081")
+		err = r.Run(":8081")
+		if err != nil {
+			log.Error(err)
+		}
+
 	}
 
 }

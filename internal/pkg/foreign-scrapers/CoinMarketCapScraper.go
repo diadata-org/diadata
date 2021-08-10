@@ -2,10 +2,10 @@ package foreignscrapers
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -82,10 +83,13 @@ func NewCoinMarketCapScraper(datastore models.Datastore) *CoinMarketCapScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CoinMarketCapScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateQuotation()
+			err := scraper.UpdateQuotation()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("CoinMarketCapscraper shutting down")
 			return
@@ -156,25 +160,31 @@ func (scraper *CoinMarketCapScraper) GetQuoteChannel() chan *models.ForeignQuota
 
 func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	// There must be a pro coinmarketcap api key for this to work properly
-		var lines []string
+	var lines []string
 	file, err := os.Open("/run/secrets/Coinmarketcap-API.key") // Read in key information
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		cerr := file.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 1 {
 		log.Fatal("Secrets file for coinmarketcap API key should have exactly one line")
 	}
 	apiKey := lines[0]
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
+
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
 		return
@@ -191,13 +201,12 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	req.Header.Add("X-CMC_PRO_API_KEY", apiKey)
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := client.Do(req)
+	response, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		fmt.Println("Error sending request to server")
 		os.Exit(1)
 	}
-	fmt.Println(resp.Status)
-	response, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(statusCode)
 
 	err = json.Unmarshal(response, &listing)
 	if err != nil {
@@ -206,6 +215,7 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	return
 }
 
+/*
 // closes all connected Scrapers. Must only be called from mainLoop
 func (scraper *CoinMarketCapScraper) cleanup(err error) {
 
@@ -222,11 +232,11 @@ func (scraper *CoinMarketCapScraper) cleanup(err error) {
 
 	close(scraper.foreignScrapper.shutdownDone) // signal that shutdown is complete
 }
-
+*/
 // Close closes any existing API connections
 func (scraper *CoinMarketCapScraper) Close() error {
 	if scraper.foreignScrapper.closed {
-		return errors.New("Scraper: Already closed")
+		return errors.New("scraper already closed")
 	}
 	close(scraper.foreignScrapper.shutdown)
 	<-scraper.foreignScrapper.shutdownDone

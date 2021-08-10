@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersOptionService"
 	log "github.com/sirupsen/logrus"
 )
@@ -39,7 +40,7 @@ func main() {
 		}
 
 		if optionMetaNear[0].GeneralizedInstrumentName != "" &&
-			 optionMetaNext[0].GeneralizedInstrumentName != "" {
+			optionMetaNext[0].GeneralizedInstrumentName != "" {
 			omINear, err := filters.GetOptionMetaIndex("BTC", optionMetaNear[0].GeneralizedInstrumentName[4:11])
 			if err != nil {
 				log.Error(err)

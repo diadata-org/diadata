@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -28,6 +27,8 @@ const (
 type GnosisToken struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type GnosisScraper struct {
@@ -54,7 +55,7 @@ type GnosisScraper struct {
 	contract    common.Address
 }
 
-func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
+func NewGnosisScraper(exchange dia.Exchange, scrape bool) *GnosisScraper {
 	scraper := &GnosisScraper{
 		exchangeName:   exchange.Name,
 		contract:       exchange.Contract,
@@ -81,7 +82,9 @@ func NewGnosisScraper(exchange dia.Exchange) *GnosisScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 func (scraper *GnosisScraper) loadTokens() {
@@ -115,15 +118,27 @@ func (scraper *GnosisScraper) loadTokens() {
 		if err != nil {
 			log.Error(err)
 		}
-		scraper.tokens[count] = &GnosisToken{
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+
+		scraper.tokens[i] = &GnosisToken{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Int64()),
+			Address:  tokenAddress.String(),
+			Name:     name,
 		}
 		scraper.tokens[count].normalizeETH()
 		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
 		count++
 	}
 	fmt.Println("i, tokenAddress.Hex(), symbol, decimals")
+}
+
+// FillSymbolData is not used by DEX scrapers.
+func (s *GnosisScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
 }
 
 func (scraper *GnosisScraper) subscribeToTrades() error {
@@ -155,7 +170,7 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -173,25 +188,39 @@ func (scraper *GnosisScraper) subscribeToTrades() error {
 }
 
 func (scraper *GnosisScraper) processTrade(trade *gnosis.GnosisTrade) {
-	symbol, foreignName, volume, price, err := scraper.getSwapDataGnosis(trade)
+	symbol, foreignName, volume, price, txHash := scraper.getSwapDataGnosis(trade)
 	timestamp := time.Now().Unix()
-	if err != nil {
-		log.Error(err)
-	} else {
-		if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
 
-			trade := &dia.Trade{
-				Symbol:         symbol,
-				Pair:           pairScraper.pair.ForeignName,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(timestamp, 0),
-				ForeignTradeID: "",
-				Source:         scraper.exchangeName,
-			}
-			pairScraper.parent.chanTrades <- trade
-			fmt.Println("got trade: ", trade)
+	if pairScraper, ok := scraper.pairScrapers[foreignName]; ok {
+
+		buyToken := scraper.tokens[trade.BuyToken]
+		sellToken := scraper.tokens[trade.SellToken]
+
+		token0 := dia.Asset{
+			Address: buyToken.Address,
+			Symbol:  buyToken.Symbol,
+			Name:    buyToken.Name,
 		}
+		token1 := dia.Asset{
+			Address: sellToken.Address,
+			Symbol:  sellToken.Symbol,
+			Name:    sellToken.Name,
+		}
+
+		trade := &dia.Trade{
+			Symbol:         symbol,
+			Pair:           pairScraper.pair.ForeignName,
+			Price:          price,
+			BaseToken:      token0,
+			QuoteToken:     token1,
+			Volume:         volume,
+			Time:           time.Unix(timestamp, 0),
+			ForeignTradeID: txHash,
+			Source:         scraper.exchangeName,
+			VerifiedPair:   true,
+		}
+		pairScraper.parent.chanTrades <- trade
+		fmt.Println("got trade: ", trade)
 	}
 
 }
@@ -200,20 +229,27 @@ func (scraper *GnosisScraper) mainLoop() {
 
 	scraper.run = true
 	log.Info("subscribe to trades...")
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
+
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Gnosis: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -227,7 +263,8 @@ func (scraper *GnosisScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
+func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol string, foreignName string, volume float64, price float64, txHash string) {
+	txHash = s.Raw.TxHash.Hex()
 	buyToken := scraper.tokens[s.BuyToken]
 	sellToken := scraper.tokens[s.SellToken]
 	buyDecimals := buyToken.Decimals
@@ -244,7 +281,7 @@ func (scraper *GnosisScraper) getSwapDataGnosis(s *gnosis.GnosisTrade) (symbol s
 	return
 }
 
-func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -255,22 +292,20 @@ func (scraper *GnosisScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -287,11 +322,11 @@ func (t *GnosisToken) normalizeETH() {
 	}
 }
 
-func (scraper *GnosisScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *GnosisScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *GnosisScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *GnosisScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -338,11 +373,11 @@ func (scraper *GnosisScraper) Close() error {
 
 type GnosisPairScraper struct {
 	parent *GnosisScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *GnosisPairScraper) Pair() dia.Pair {
+func (pairScraper *GnosisPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

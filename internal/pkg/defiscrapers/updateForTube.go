@@ -2,13 +2,13 @@ package defiscrapers
 
 import (
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2/token"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/fortubev2/token"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 
@@ -130,7 +130,7 @@ func (proto *ForTubeProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
 	markets, err := proto.fetchALL()
 	if err != nil {
-		log.Error("error fetching rates %+v\n ", err)
+		log.Errorf("error fetching rates %v: ", err)
 		return err
 	}
 

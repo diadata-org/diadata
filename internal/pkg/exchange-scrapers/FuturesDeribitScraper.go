@@ -12,7 +12,7 @@ import (
 	zap "go.uber.org/zap"
 )
 
-const scrapeDataSaveLocationDeribit = ""
+// const scrapeDataSaveLocationDeribit = ""
 
 type deribitRefreshMessage struct {
 	Result struct {
@@ -50,7 +50,12 @@ type ParsedDeribitOptionOrderbookEntry struct {
 func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper DeribitScraper = DeribitScraper{
 		WaitGroup: &wg,
@@ -164,7 +169,7 @@ func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, err
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported market. only btc & eth are supported")
 	}
-	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
+	body, _, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
 		return nil, err
 	}
@@ -195,11 +200,11 @@ func deribitMarkets(market string, marketKind DeribitScraperKind) ([]string, err
 func allDeribitMarketsOfKind(marketKind DeribitScraperKind) ([]string, error) {
 	BTCMarkets, err := deribitMarkets("BTC", marketKind)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch btc futures markets, err: %s", err)
+		return nil, fmt.Errorf("could not fetch btc futures markets: %w", err)
 	}
 	ETHMarkets, err := deribitMarkets("ETH", marketKind)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch eth futures markets, err: %s", err)
+		return nil, fmt.Errorf("could not fetch eth futures markets: %w", err)
 	}
 	return append(BTCMarkets, ETHMarkets...), nil
 }

@@ -2,18 +2,19 @@ package pool
 
 import (
 	"context"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/bond"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/lp"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/stablecoin"
 	"math/big"
 	"time"
 
-	bondvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/bond"
-	lpvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/lp"
-	stablecoinvault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/barnbridge/vaults/stablecoin"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+/*
 var (
 	daiTokenAddress   = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
 	usdTokenAddress   = common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
@@ -22,6 +23,7 @@ var (
 	uniLPTokenAddress = common.HexToAddress("0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244")
 	stakingAddress    = common.HexToAddress("0xb0fa2beee3cf36a7ac7e99b885b48538ab364853")
 )
+*/
 
 type BARNBRIDGEScraper struct {
 	scraper    *PoolScraper
@@ -50,16 +52,14 @@ func (bd *BARNBRIDGEScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-bd.scraper.tickerRate.C:
-				err := bd.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scrapping", err)
-				}
+		for range bd.scraper.tickerRate.C {
+			err := bd.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scrapping", err)
 			}
 		}
 	}()
+	select {}
 
 }
 
@@ -85,12 +85,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "USDC_BOND_UNI_LP":
 			vault, err := lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
@@ -98,12 +107,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "BOND":
 			vault, err := bondvault.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
@@ -111,12 +129,21 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 				return err
 			}
 			currEpoch, err = vault.GetCurrentEpoch(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			balanceBig, err = vault.GetPoolSize(&bind.CallOpts{}, currEpoch)
 			if err != nil {
 				return err
 			}
 			reward, err = vault.TOTALDISTRIBUTEDAMOUNT(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochsBig, err := vault.NROFEPOCHS(&bind.CallOpts{})
+			if err != nil {
+				return err
+			}
 			numEpochs = float64(numEpochsBig.Int64())
 		}
 		poolBalance, _ = new(big.Float).Quo(new(big.Float).SetInt(balanceBig), new(big.Float).SetFloat64(1e18)).Float64()

@@ -4,22 +4,48 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"math"
 	"sort"
 	"strconv"
 	"time"
 
-	ratederivatives "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
-	ratedevs "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
 	keyAllRates     = "all_rates"
 	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
+
+type InterestRate struct {
+	Symbol          string
+	Value           float64
+	PublicationTime time.Time
+	EffectiveDate   time.Time
+	Source          string
+}
+
+// MarshalBinary for interest rates
+func (e *InterestRate) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary for interest rates
+func (e *InterestRate) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
+type InterestRateMeta struct {
+	Symbol    string
+	FirstDate time.Time
+	Decimals  int
+	Issuer    string
+}
 
 // ---------------------------------------------------------------------------------------
 // Setter and getter for interest rates
@@ -72,7 +98,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 	ir := &InterestRate{}
 	err := db.redisClient.Get(key).Scan(ir)
 	if err != nil {
-		if err != redis.Nil {
+		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
 		}
 		return ir, err
@@ -255,7 +281,8 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	// Check, whether first day is a holiday or weekend. If so, prepend rate of
 	// preceding business day (outside the considered time range!).
 	if utils.ContainsDay(holidays, dateInit) || !utils.CheckWeekDay(dateInit) {
-		firstRate, err := db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
+		var firstRate *InterestRate
+		firstRate, err = db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
 		if err != nil {
 			return &InterestRate{}, err
 		}
@@ -263,7 +290,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	}
 
 	// Get compounded rate
-	compRate, err := ratedevs.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
+	compRate, err := ratederivatives.CompoundedRate(rates, dateInit, date, holidays, daysPerYear, rounding)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -513,7 +540,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 				}
 			}
 
-			compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+			compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 			if err != nil || utils.ContainsDay(holidays, dateInit) {
 				dateInit = dateInit.AddDate(0, 0, 1)
@@ -641,7 +668,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 			ratesPeriod = append(ratesPeriod, mapRates[auxDate])
 			auxDate = auxDate.AddDate(0, 0, 1)
 		}
-		compRate, err := ratedevs.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
+		compRate, err := ratederivatives.CompoundedRateSimple(ratesPeriod, dateStart, dateInit, daysPerYear, 0)
 
 		if err != nil {
 			dateInit = dateInit.AddDate(0, 0, 1)
@@ -680,10 +707,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 func (db *DB) ExistInterestRate(symbol, date string) bool {
 	pattern := "*" + symbol + "_" + date + "*"
 	strSlice := db.redisClient.Keys(pattern).Val()
-	if len(strSlice) == 0 {
-		return false
-	}
-	return true
+	return len(strSlice) != 0
 }
 
 // matchKeyInterestRate returns the key in the database db with the youngest timestamp
@@ -691,6 +715,7 @@ func (db *DB) ExistInterestRate(symbol, date string) bool {
 func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	exDate, err := db.findLastDay(symbol, date)
 	if err != nil {
+		return "", err
 	}
 	// Determine all database entries with given date
 	pattern := "*" + symbol + "_" + exDate + "*"

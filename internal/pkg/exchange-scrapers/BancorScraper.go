@@ -11,11 +11,12 @@ import (
 	"time"
 
 	ConverterRegistry "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/BancorNetwork"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeFour"
+	BancorNetwork "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/BancorNetwork"
+	ConverterTypeFour "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeFour"
 	ConvertertypeOne "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeOne"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeThree"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeZero"
+	ConverterTypeThree "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeThree"
+	ConverterTypeZero "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/bancor/ConverterTypeZero"
+
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -75,7 +76,7 @@ type BancorPools struct {
 }
 
 type BancorSwap struct {
-	Pair       dia.Pair
+	Pair       dia.ExchangePair
 	FromAmount float64
 	ToAmount   float64
 	ID         string
@@ -103,15 +104,15 @@ type BancorScraper struct {
 	chanTrades     chan *dia.Trade
 }
 
-func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
+func NewBancorScraper(exchange dia.Exchange, scrape bool) *BancorScraper {
 	var wsClient, restClient *ethclient.Client
 
-	wsClient, err := ethclient.Dial("wss://mainnet.infura.io/ws/v3/9020e59e34ca4cf59cb243ecefb4e39e")
+	wsClient, err := ethclient.Dial(wsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	restClient, err = ethclient.Dial("https://mainnet.infura.io/v3/9020e59e34ca4cf59cb243ecefb4e39e")
+	restClient, err = ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,7 +129,9 @@ func NewBancorScraper(exchange dia.Exchange) *BancorScraper {
 		chanTrades:     make(chan *dia.Trade),
 	}
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
@@ -168,6 +171,9 @@ func (scraper *BancorScraper) mainLoop() {
 				Time:           time.Now(),
 				ForeignTradeID: revRawSwap.Raw.TxHash.String(),
 				Source:         scraper.exchangeName,
+				BaseToken:      pair.UnderlyingPair.BaseToken,
+				QuoteToken:     pair.UnderlyingPair.QuoteToken,
+				VerifiedPair:   true,
 			}
 
 			log.Info("Got Trade: ", trade)
@@ -286,8 +292,8 @@ func (scrapper *BancorScraper) getSwapData(swap BancorSwap) (price float64, volu
 	return
 }
 
-func (scraper *BancorScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {
@@ -412,7 +418,11 @@ func (scraper *BancorScraper) ConverterTypeFour(address common.Address) (tokenAd
 
 }
 
-func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *BancorScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
+func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	pools, err := scraper.readPools()
 	if err != nil {
 		log.Error("Couldn't obtain Bancor product ids:", err)
@@ -463,7 +473,7 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	return
 }
 
-func (scraper *BancorScraper) GetPair(address []common.Address) dia.Pair {
+func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair {
 	var symbol0 string
 	var symbol1 string
 
@@ -493,16 +503,28 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.Pair {
 		}
 	}
 
-	return dia.Pair{
-		ForeignName: symbol0 + "-" + symbol1,
-		Symbol:      symbol0,
-		Exchange:    scraper.exchangeName,
+	basetoken := dia.Asset{
+		Symbol:     symbol1,
+		Address:    address[1].Hex(),
+		Blockchain: dia.ETHEREUM,
+	}
+	quotetoken := dia.Asset{
+		Symbol:     symbol0,
+		Address:    address[0].Hex(),
+		Blockchain: dia.ETHEREUM,
+	}
+
+	return dia.ExchangePair{
+		ForeignName:    symbol0 + "-" + symbol1,
+		Symbol:         symbol0,
+		Exchange:       scraper.exchangeName,
+		UnderlyingPair: dia.Pair{BaseToken: basetoken, QuoteToken: quotetoken},
 	}
 }
 
 func (scraper *BancorScraper) readPools() ([]BancorPool, error) {
 	var bpools BancorPools
-	pairs, err := utils.GetRequest("https://api-v2.bancor.network/pools")
+	pairs, _, err := utils.GetRequest("https://api-v2.bancor.network/pools")
 	if err != nil {
 		return nil, err
 	}
@@ -515,7 +537,7 @@ func (scraper *BancorScraper) readPools() ([]BancorPool, error) {
 
 }
 
-func (scraper *BancorScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *BancorScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -560,11 +582,11 @@ func (scraper *BancorScraper) Close() error {
 
 type BancorPairScraper struct {
 	parent *BancorScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *BancorPairScraper) Pair() dia.Pair {
+func (pairScraper *BancorPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

@@ -13,6 +13,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -54,10 +55,11 @@ type OKExScraper struct {
 	pairScrapers map[string]*OKExPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewOKExScraper returns a new OKExScraper for the given pair
-func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
+func NewOKExScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *OKExScraper {
 
 	s := &OKExScraper{
 		shutdown:     make(chan nothing),
@@ -66,6 +68,7 @@ func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
@@ -75,7 +78,9 @@ func NewOKExScraper(exchange dia.Exchange) *OKExScraper {
 	}
 
 	s.wsClient = SwConn
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -130,7 +135,7 @@ func (s *OKExScraper) subscribeToALL() {
 		allPairs []OKEXArgs
 	)
 
-	b, err := utils.GetRequest("https://aws.okex.com/api/v5/public/instruments?instType=SPOT")
+	b, _, err := utils.GetRequest("https://aws.okex.com/api/v5/public/instruments?instType=SPOT")
 	if err != nil {
 		log.Errorln("Error getting OKex market", err)
 	}
@@ -209,6 +214,11 @@ func (s *OKExScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
+							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, message.Arg.InstID)
+							if err != nil {
+								log.Error(err)
+							}
+
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,
 								Pair:           message.Arg.InstID,
@@ -217,10 +227,14 @@ func (s *OKExScraper) mainLoop() {
 								Time:           timeStamp,
 								ForeignTradeID: message.Data[0].TradeID,
 								Source:         s.exchangeName,
+								VerifiedPair:   exchangepair.Verified,
+								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+							}
+							if exchangepair.Verified {
+								log.Infoln("Got verified trade", t)
 							}
 							ps.parent.chanTrades <- t
-							log.Infoln("Got trade", t)
-
 						} else {
 							log.Errorf("parsing volume %v", f64VolumeString)
 						}
@@ -236,11 +250,17 @@ func (s *OKExScraper) mainLoop() {
 	s.cleanup(errors.New("main loop terminated by Close()"))
 }
 
-func GzipDecode(in []byte) ([]byte, error) {
+func GzipDecode(in []byte) (content []byte, err error) {
 	reader := flate.NewReader(bytes.NewReader(in))
-	defer reader.Close()
+	defer func() {
+		cerr := reader.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	content, err = ioutil.ReadAll(reader)
 
-	return ioutil.ReadAll(reader)
+	return
 }
 
 func (s *OKExScraper) cleanup(err error) {
@@ -278,7 +298,7 @@ func (s *OKExScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *OKExScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -310,6 +330,8 @@ func (s *OKExScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
+
+/*
 func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
 	symbol = strings.ToUpper(baseCurrency)
 	if helpers.NameForSymbol(symbol) == symbol {
@@ -328,8 +350,9 @@ func (s *OKExScraper) normalizeSymbol(foreignName string, baseCurrency string) (
 	}
 	return symbol, nil
 }
+*/
 
-func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *OKExScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 
@@ -351,14 +374,19 @@ func (s *OKExScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 
 }
 
+func (s *OKExScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	//  TO DO
+	return dia.Asset{Symbol: symbol}, nil
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type APIResponse struct {
 		Id           string `json:"instrument_id"`
 		BaseCurrency string `json:"base_currency"`
 	}
 
-	data, err := utils.GetRequest("https://www.okex.com/api/spot/v3/products")
+	data, _, err := utils.GetRequest("https://www.okex.com/api/spot/v3/products")
 
 	if err != nil {
 		return
@@ -368,7 +396,7 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
 				Exchange:    s.exchangeName,
@@ -387,12 +415,13 @@ func (s *OKExScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // OKExPairScraper implements PairScraper for OKEx exchange
 type OKExPairScraper struct {
 	parent *OKExScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *OKExPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -411,6 +440,6 @@ func (ps *OKExPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *OKExPairScraper) Pair() dia.Pair {
+func (ps *OKExPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "INJ",
+            "ForeignName": "INJ-WBNB",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
             "Symbol": "WBNB",
             "ForeignName": "WBNB-pCWS",
             "Exchange": "PanCakeSwap",

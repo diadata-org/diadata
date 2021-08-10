@@ -1,0 +1,95 @@
+{
+    "Assets": [
+        {
+            "Symbol": "USD",
+            "Name": "United States dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "EUR",
+            "Name": "Euro",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "JPY",
+            "Name": "Japanese yen",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "392"
+        },
+        {
+            "Symbol": "BGN",
+            "Name": "Bulgarian lev",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "975"
+        },
+        {
+            "Symbol": "CZK",
+            "Name": "Czech coruna",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "203"
+        },
+        {
+            "Symbol": "DKK",
+            "Name": "Danish krone",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "208"
+        },
+        {
+            "Symbol": "GBP",
+            "Name": "Pound sterling",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
+            "Symbol": "HUF",
+            "Name": "Hungarian forint",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "348"
+        },
+        {
+            "Symbol": "PLN",
+            "Name": "Polish zloty",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "985"
+        },
+        {
+            "Symbol": "RON",
+            "Name": "Romanian leu",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "946"
+        },
+        {
+            "Symbol": "SEK",
+            "Name": "Swedish krona",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "752"
+        },
+        {
+            "Symbol": "CHF",
+            "Name": "Swiss franc",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "756"
+        },
+        {
+            "Symbol": "NOK",
+            "Name": "Norwegian krone",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "578"
+        }
+    ]
+}

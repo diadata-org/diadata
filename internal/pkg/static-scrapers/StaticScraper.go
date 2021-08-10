@@ -65,7 +65,7 @@ func WriteHistoricRate(ds models.Datastore, rateType string) error {
 	case "SONIA":
 		log.Info("No historic scraper for SONIA")
 	default:
-		err := errors.New("Error: Rate type not recognized")
+		err := errors.New("rate type not recognized")
 		log.Errorln(err)
 		return err
 	}

@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	models "github.com/diadata-org/diadata/pkg/model"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
@@ -26,6 +28,16 @@ type Confirm struct {
 
 var _apiurl string = "https://simex.global/api"
 
+type SimexTicker struct {
+	Data []SimexAsset `json:"data"`
+}
+
+type SimexAsset struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type SimexScraper struct {
 	// signaling channels for session initialization and finishing
 	run          bool
@@ -37,20 +49,26 @@ type SimexScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*SimexPairScraper
-	pairIdTrade  map[string]*PairIdMap
-	exchangeName string
-	chanTrades   chan *dia.Trade
+	pairScrapers           map[string]*SimexPairScraper
+	pairIdTrade            map[string]*PairIdMap
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	currencySymbolName     map[string]string
+	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
-func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
+func NewSimexScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *SimexScraper {
 	s := &SimexScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*SimexPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		pairScrapers:           make(map[string]*SimexPairScraper),
+		exchangeName:           exchange.Name,
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		currencySymbolName:     make(map[string]string),
+		isTickerMapInitialised: false,
+		db:                     relDB,
 	}
 	pairMap := map[string]*PairIdMap{}
 	//API call used for retrievi all pairs
@@ -71,12 +89,19 @@ func NewSimexScraper(exchange dia.Exchange) *SimexScraper {
 		pairMap[base+quote] = pim
 	}
 	s.pairIdTrade = pairMap
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
 // runs in a goroutine until s is closed
 func (s *SimexScraper) mainLoop() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		panic("Couldn't initialize relDB, error: " + err.Error())
+	}
+
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
 	layout := "2006-01-02 15:04:05"
@@ -105,6 +130,7 @@ func (s *SimexScraper) mainLoop() {
 					idInt := int(tradeReturn["id"].(float64))
 
 					if s.pairIdTrade[key].LastIdTrade < idInt {
+
 						if idInt > newId {
 							newId = idInt
 							atLeastOneUpdate = true
@@ -129,6 +155,11 @@ func (s *SimexScraper) mainLoop() {
 						}
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["created_at"].(string))
+						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["name"].(string))
+						if err != nil {
+							log.Error("Error Getting ExchangePair from cache", err)
+						}
+
 						t := &dia.Trade{
 							Symbol:         s.pairIdTrade[key].Symbol,
 							Pair:           key,
@@ -137,7 +168,14 @@ func (s *SimexScraper) mainLoop() {
 							Time:           timeStamp,
 							ForeignTradeID: strconv.FormatInt(int64(tradeReturn["id"].(float64)), 16),
 							Source:         s.exchangeName,
+							VerifiedPair:   exchangepair.Verified,
+							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 						}
+						if exchangepair.Verified {
+							log.Infoln("Got verified trade", t)
+						}
+
 						el.parent.chanTrades <- t
 					}
 				}
@@ -155,7 +193,7 @@ func (s *SimexScraper) mainLoop() {
 
 func getAPICall(params ...string) []interface{} {
 
-	body, err := utils.GetRequest(_apiurl + params[0])
+	body, _, err := utils.GetRequest(_apiurl + params[0])
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -179,6 +217,36 @@ func (s *SimexScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
+func (s *SimexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+
+	// // Fetch Data
+	// if !s.isTickerMapInitialised {
+	// 	var (
+	// 		response SimexTicker
+	// 		data     []byte
+	// 	)
+	// 	data, _, err = utils.GetRequest("https://simex.global/api/currencies")
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = json.Unmarshal(data, &response)
+	// 	if err != nil {
+	// 		return
+	// 	}
+
+	// 	for _, asset := range response.Data {
+	// 		s.currencySymbolName[asset.Name] = asset.Description
+	// 	}
+	// 	s.isTickerMapInitialised = true
+
+	// }
+
+	asset.Symbol = symbol
+	// asset.Name = s.currencySymbolName[symbol]
+
+	return
+}
+
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *SimexScraper) Close() error {
@@ -196,7 +264,7 @@ func (s *SimexScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *SimexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -219,7 +287,7 @@ func (s *SimexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *SimexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 	pair.ForeignName = symbol + pair.ForeignName
@@ -237,7 +305,7 @@ func (s *SimexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type NameT struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -250,8 +318,7 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		Data []DataT `json:"data"`
 	}
 
-	data, err := utils.GetRequest("https://simex.global/api/pairs")
-
+	data, _, err := utils.GetRequest("https://simex.global/api/pairs")
 	if err != nil {
 		return
 	}
@@ -261,7 +328,7 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	if err == nil {
 		for _, p := range ar.Data {
 
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.Base.Name,
 				ForeignName: p.Base.Name,
 				Exchange:    s.exchangeName,
@@ -280,12 +347,13 @@ func (s *SimexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // SimexPairScraper implements PairScraper for Simex
 type SimexPairScraper struct {
 	parent *SimexScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *SimexPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -304,6 +372,6 @@ func (ps *SimexPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *SimexPairScraper) Pair() dia.Pair {
+func (ps *SimexPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

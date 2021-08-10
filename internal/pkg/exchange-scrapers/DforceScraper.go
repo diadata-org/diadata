@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/dforce"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/dforce/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/dforce"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/dforce/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -28,6 +27,8 @@ const (
 type DforceToken struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type DforceScraper struct {
@@ -50,11 +51,11 @@ type DforceScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*DforceToken
+	tokens      map[string]dia.Asset
 	contract    common.Address
 }
 
-func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
+func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
 	scraper := &DforceScraper{
 		contract:       exchange.Contract,
 		exchangeName:   exchange.Name,
@@ -65,7 +66,7 @@ func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 		pairScrapers:   make(map[string]*DforcePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*DforceToken),
+		tokens:         make(map[string]dia.Asset),
 	}
 
 	wsClient, err := ethclient.Dial(dforceWsDial)
@@ -81,16 +82,20 @@ func NewDforceScraper(exchange dia.Exchange) *DforceScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
 func (scraper *DforceScraper) loadTokens() {
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = &DforceToken{
-		Symbol:   "USDx",
-		Decimals: 18,
+	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = dia.Asset{
+		Symbol:     "USDx",
+		Decimals:   18,
+		Address:    "0xeb269732ab75A6fD61Ea60b06fE994cD32a83549",
+		Blockchain: dia.ETHEREUM,
 	}
 
 	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
@@ -122,7 +127,7 @@ func (scraper *DforceScraper) loadTokens() {
 
 }
 
-func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*DforceToken, error) {
+func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
@@ -139,9 +144,16 @@ func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (*Dforc
 		if err != nil {
 			log.Error(err)
 		}
-		dfToken := &DforceToken{
-			Symbol:   symbol,
-			Decimals: uint8(decimals.Uint64()),
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		dfToken := dia.Asset{
+			Symbol:     symbol,
+			Name:       name,
+			Decimals:   uint8(decimals.Int64()),
+			Address:    tokenAddress.Hex(),
+			Blockchain: dia.ETHEREUM,
 		}
 		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
@@ -177,7 +189,7 @@ func (scraper *DforceScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -195,7 +207,7 @@ func (scraper *DforceScraper) subscribeToTrades() error {
 }
 
 func (scraper *DforceScraper) processTrade(trade *dforce.DforceSwap) {
-	symbol, foreignName, volume, price, err := scraper.getSwapDataDforce(trade)
+	symbol, foreignName, volume, price, token0, token1, err := scraper.getSwapDataDforce(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -210,6 +222,9 @@ func (scraper *DforceScraper) processTrade(trade *dforce.DforceSwap) {
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
+				BaseToken:      token1,
+				QuoteToken:     token0,
+				VerifiedPair:   true,
 			}
 			pairScraper.parent.chanTrades <- trade
 			fmt.Println("got trade: ", trade)
@@ -218,24 +233,34 @@ func (scraper *DforceScraper) processTrade(trade *dforce.DforceSwap) {
 
 }
 
+func (scraper *DforceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *DforceScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Dforce: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -249,12 +274,12 @@ func (scraper *DforceScraper) mainLoop() {
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func (scraper *DforceScraper) getSwapDataDforce(s *dforce.DforceSwap) (symbol string, foreignName string, volume float64, price float64, err error) {
-	buyToken, err := scraper.loadTokenData(s.Output)
+func (scraper *DforceScraper) getSwapDataDforce(s *dforce.DforceSwap) (symbol string, foreignName string, volume float64, price float64, buyToken, sellToken dia.Asset, err error) {
+	buyToken, err = scraper.loadTokenData(s.Output)
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(s.Input)
+	sellToken, err = scraper.loadTokenData(s.Input)
 	if err != nil {
 		log.Error(err)
 	}
@@ -272,7 +297,7 @@ func (scraper *DforceScraper) getSwapDataDforce(s *dforce.DforceSwap) (symbol st
 	return
 }
 
-func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -283,22 +308,20 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -309,11 +332,11 @@ func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.Pair, err error
 	return
 }
 
-func (scraper *DforceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *DforceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *DforceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *DforceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -360,11 +383,11 @@ func (scraper *DforceScraper) Close() error {
 
 type DforcePairScraper struct {
 	parent *DforceScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *DforcePairScraper) Pair() dia.Pair {
+func (pairScraper *DforcePairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

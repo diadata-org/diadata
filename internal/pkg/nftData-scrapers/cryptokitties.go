@@ -18,14 +18,13 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	structs "github.com/fatih/structs"
 )
 
 const (
-	openseaAPIWait = 250
-	crFirstBlock   = uint64(4605167)
-	batchSize      = 5000
+	openseaAPIWait          = 250
+	cryptoKittiesFirstBlock = uint64(4605167)
+	batchSize               = 5000
 )
 
 type Kitty struct {
@@ -272,7 +271,7 @@ type OpenSeaCryptokittiesResponse struct {
 	HighestBuyerCommitment interface{} `json:"highest_buyer_commitment"`
 }
 
-type CryptokittiesScraper struct {
+type CryptoKittiesScraper struct {
 	nftscraper       NFTScraper
 	address          common.Address
 	apiURLOpensea    string
@@ -280,7 +279,7 @@ type CryptokittiesScraper struct {
 	ticker           *time.Ticker
 }
 
-func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
+func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
 	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -294,7 +293,7 @@ func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
 		relDB:         rdb,
 		chanData:      make(chan dia.NFT),
 	}
-	s := &CryptokittiesScraper{
+	s := &CryptoKittiesScraper{
 		address:          common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
 		apiURLOpensea:    "https://api.opensea.io/api/v1/",
 		cryptokittiesURL: "https://www.cryptokitties.co/",
@@ -307,7 +306,7 @@ func NewCryptokittiesScraper(rdb *models.RelDB) *CryptokittiesScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *CryptokittiesScraper) mainLoop() {
+func (scraper *CryptoKittiesScraper) mainLoop() {
 	err := scraper.FetchData()
 	if err != nil {
 		log.Error("error updating NFT: ", err)
@@ -328,22 +327,17 @@ func (scraper *CryptokittiesScraper) mainLoop() {
 	}
 }
 
-func (scraper *CryptokittiesScraper) FetchData() (err error) {
+func (scraper *CryptoKittiesScraper) FetchData() error {
 	totalSupply, err := scraper.GetTotalSupply()
 	if err != nil {
-		return
+		return err
 	}
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.Ethereum)
+	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.ETHEREUM)
 	if err != nil {
 		log.Error("getting nftclass: ", err)
-	}
-
-	creationMap, err := scraper.GetCryptokittiesCreationTime()
-	if err != nil {
-		log.Error("creation time: ", err)
 	}
 
 	for i := 0; i < int(totalSupply.Int64()); i++ {
@@ -353,13 +347,20 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 		// 1. fetch data from onchain
 		out.Kitty, err = scraper.GetKitty(big.NewInt(int64(i)))
 		if err != nil {
-			log.Errorf("Error getting kitty data: %+v", err)
+			log.Errorf("getting kitty data: %+v", err)
+			return err
+		}
+
+		creationMap, err := scraper.GetCryptokittiesCreationTime()
+		if err != nil {
+			log.Errorf("getting creation map: %+v", err)
+			return err
 		}
 
 		// 2. fetch data from offchain
 		out.Traits, creatorAddress, err = scraper.GetOpenSeaKitty(big.NewInt(int64(i)))
 		if err != nil {
-			log.Errorf("Error getting Opensea data: %+v", err)
+			log.Errorf("getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
@@ -379,7 +380,7 @@ func (scraper *CryptokittiesScraper) FetchData() (err error) {
 }
 
 // GetTotalSupply returns the total supply of the NFT from on-chain.
-func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
+func (scraper *CryptoKittiesScraper) GetTotalSupply() (*big.Int, error) {
 	contract, err := cryptokitties.NewKittyAuctionCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -388,7 +389,7 @@ func (scraper *CryptokittiesScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // GetKitty returns the kitty attributes of the NFT from on-chain.
-func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
+func (scraper *CryptoKittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 	contract, err := cryptokitties.NewKittyCoreCaller(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
 		fmt.Println("error getting contract: ", err)
@@ -397,7 +398,7 @@ func (scraper *CryptokittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 }
 
 // GetOpenSeaKitty returns the scraped data from Opensea for a given kitty
-func (scraper *CryptokittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
+func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
 	var traits []CryptokittiesTraits
 	var creatorAddress common.Address
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
@@ -447,7 +448,7 @@ func GetCryptokittiesAddress(kittyResp []byte) (common.Address, error) {
 }
 
 // GetCryptokittiesCreationTime returns a map[uint64]uint64 mapping a
-func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
+func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]time.Time, error) {
 	creationMap := make(map[uint64]time.Time)
 	filterer, err := cryptokitties.NewKittyBaseFilterer(scraper.address, scraper.nftscraper.ethConnection)
 	if err != nil {
@@ -458,10 +459,10 @@ func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 	if err != nil {
 		return creationMap, err
 	}
-	endBlockNumber := header.Number.Uint64() - 8
-	startBlockNumber := crFirstBlock
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	startBlockNumber := cryptoKittiesFirstBlock
 
-	for endBlockNumber <= header.Number.Uint64()-8 {
+	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptokitties.KittyBaseBirthIterator
 		iter, err = filterer.FilterBirth(&bind.FilterOpts{
 			Start: startBlockNumber,
@@ -477,15 +478,14 @@ func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 			return creationMap, err
 		}
 
+		// map kitty id to timestamp of creation event.
+		var blockData dia.BlockData
 		for iter.Next() {
-			blockInt := big.NewInt(int64(iter.Event.Raw.BlockNumber))
-			var header *types.Header
-			header, err = scraper.nftscraper.ethConnection.HeaderByNumber(context.Background(), blockInt)
+			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
 			if err != nil {
-				log.Error("fetching header by number: ", err)
+				log.Errorf("getting blockdata: %+v", err)
 			}
-			// TO DO: Write service which caches block information such as timestamp in postgres
-			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(header.Time), 0)
+			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize
@@ -494,12 +494,12 @@ func (scraper *CryptokittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *CryptokittiesScraper) GetDataChannel() chan dia.NFT {
+func (scraper *CryptoKittiesScraper) GetDataChannel() chan dia.NFT {
 	return scraper.nftscraper.chanData
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *CryptokittiesScraper) cleanup(err error) {
+func (scraper *CryptoKittiesScraper) cleanup(err error) {
 	scraper.nftscraper.errorLock.Lock()
 	defer scraper.nftscraper.errorLock.Unlock()
 	scraper.ticker.Stop()
@@ -511,7 +511,7 @@ func (scraper *CryptokittiesScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *CryptokittiesScraper) Close() error {
+func (scraper *CryptoKittiesScraper) Close() error {
 	if scraper.nftscraper.closed {
 		return errors.New("scraper already closed")
 	}

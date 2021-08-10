@@ -6,7 +6,6 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 type GithubCommit struct {
@@ -27,7 +26,7 @@ type Author struct {
 }
 
 // SetCommit stores a github commit in influx
-func (db *DB) SetCommit(commit *GithubCommit) error {
+func (db *DB) SetCommit(commit GithubCommit) error {
 	log.Info("set commit: ", commit)
 	fields := map[string]interface{}{
 		"numAdditions":    commit.NumAdditions,

@@ -5,18 +5,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
 	"log"
 	"math/big"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaScifiOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -42,12 +41,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 2 {
@@ -76,16 +81,19 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 	indexName := "SCIFI"
-	periodicOracleUpdateHelper(indexName, auth, contract)
+	err = periodicOracleUpdateHelper(indexName, auth, contract)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(indexName, auth, contract)
+		for range ticker.C {
+			err := periodicOracleUpdateHelper(indexName, auth, contract)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
 			}
 		}
 	}()
@@ -108,10 +116,10 @@ func periodicOracleUpdateHelper(indexName string, auth *bind.TransactOpts, contr
 }
 
 func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract *diaScifiOracleService.DIAScifiOracle) error {
-	symbol := iv.Name
+	symbol := iv.Asset.Name
 	value := iv.Value
 	timestamp := iv.CalculationTime.Unix()
-	err := updateOracle(contract, auth, symbol, int64(value * 10000), timestamp)
+	err := updateOracle(contract, auth, symbol, int64(value*10000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -121,19 +129,14 @@ func updateIndexValue(iv *models.CryptoIndex, auth *bind.TransactOpts, contract 
 }
 
 func getIndexValueFromDia(symbol string) (*models.CryptoIndex, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200 * time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/index/" + symbol + "?starttime=" + strconv.FormatInt(time.Now().Add(-200*time.Second).Unix(), 10) + "&endtime=" + strconv.FormatInt(time.Now().Unix(), 10))
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var indices []models.CryptoIndex
 	err = json.Unmarshal([]byte(contents), &indices)
 	if err != nil {

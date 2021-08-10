@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/curvepool"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/token"
 	"math"
 	"math/big"
 	"sync"
@@ -13,14 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/curvepool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/curvefi/token"
 )
 
 const (
-	curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
+	// curveFiContract       = "0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"
 	curveFiLookBackBlocks = 6 * 60 * 24 * 20
 	curveWsDial           = "ws://159.69.120.42:8546/"
 	curveRestDial         = "http://159.69.120.42:8545/"
@@ -29,6 +28,8 @@ const (
 type CurveCoin struct {
 	Symbol   string
 	Decimals uint8
+	Address  string
+	Name     string
 }
 
 type Pools struct {
@@ -59,7 +60,7 @@ func (p *Pools) poolsAddressNoLock() []string {
 	p.poolsLock.RLock()
 	defer p.poolsLock.RUnlock()
 	var values []string
-	for key, _ := range p.pools {
+	for key := range p.pools {
 		values = append(values, key)
 	}
 	return values
@@ -90,7 +91,7 @@ type CurveFIScraper struct {
 	contract    common.Address
 }
 
-func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	scraper := &CurveFIScraper{
 		exchangeName:   exchange.Name,
 		contract:       exchange.Contract,
@@ -118,9 +119,14 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 	}
 	scraper.RestClient = restClient
 
-	scraper.loadPoolsAndCoins()
+	err = scraper.loadPoolsAndCoins()
+	if err != nil {
+		log.Error(err)
+	}
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
@@ -128,7 +134,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 	scraper.run = true
 
 	for _, pool := range scraper.pools.poolsAddressNoLock() {
-		scraper.watchSwaps(pool)
+		err := scraper.watchSwaps(pool)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	scraper.watchNewPools()
 
@@ -142,7 +151,10 @@ func (scraper *CurveFIScraper) mainLoop() {
 					scraper.watchNewPools()
 				} else {
 					log.Info("resubscribe to swaps from Pool: " + p)
-					scraper.watchSwaps(p)
+					err := scraper.watchSwaps(p)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -150,7 +162,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Curvefi: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -158,7 +170,7 @@ func (scraper *CurveFIScraper) mainLoop() {
 	time.Sleep(10 * time.Second)
 
 	if scraper.error == nil {
-		scraper.error = errors.New("Main loop terminated by Close().")
+		scraper.error = errors.New("main loop terminated by Close()")
 	}
 	scraper.cleanup(nil)
 }
@@ -190,7 +202,7 @@ func (scraper *CurveFIScraper) watchNewPools() {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -201,13 +213,23 @@ func (scraper *CurveFIScraper) watchNewPools() {
 			case vLog := <-sink:
 
 				if _, ok := scraper.pools.getPool(vLog.Pool.Hex()); !ok {
-					scraper.loadPoolData(vLog.Pool.Hex())
-					scraper.watchSwaps(vLog.Pool.Hex())
+					err = scraper.loadPoolData(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
+					err = scraper.watchSwaps(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
 	}()
 
+}
+
+func (scraper *CurveFIScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
 }
 
 // contract.poolList.map(contract.GetPoolCoins(pool).)
@@ -221,12 +243,16 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins() error {
 		log.Error(err)
 	}
 	for i := 0; i < int(poolCount.Int64()); i++ {
-		pool, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
+		var pool common.Address
+		pool, err = contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if err != nil {
 			log.Error(err)
 		}
 
-		scraper.loadPoolData(pool.Hex())
+		err = scraper.loadPoolData(pool.Hex())
+		if err != nil {
+			return err
+		}
 
 	}
 	return err
@@ -246,18 +272,26 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 	}
 
 	for cIdx, c := range poolCoins.Coins {
-
-		coinCaller, err := token.NewTokenCaller(c, scraper.RestClient)
+		var coinCaller *token.TokenCaller
+		var symbol string
+		var decimals *big.Int
+		var name string
+		coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 			continue
 		}
-		symbol, err := coinCaller.Symbol(&bind.CallOpts{})
+		symbol, err = coinCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err, c.Hex())
 			continue
 		}
-		decimals, err := coinCaller.Decimals(&bind.CallOpts{})
+		decimals, err = coinCaller.Decimals(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		name, err = coinCaller.Name(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 			continue
@@ -266,6 +300,8 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 		poolCoinsMap[cIdx] = &CurveCoin{
 			Symbol:   symbol,
 			Decimals: uint8(decimals.Uint64()),
+			Name:     name,
+			Address:  c.String(),
 		}
 		scraper.curveCoins[c.Hex()] = &CurveCoin{
 			Symbol:   symbol,
@@ -280,7 +316,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string) error {
 
 func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.CurvepoolTokenExchange) {
 
-	foreignName, volume, price, err := scraper.getSwapDataCurve(pool, swp)
+	foreignName, volume, price, baseToken, quoteToken, err := scraper.getSwapDataCurve(pool, swp)
 	if err != nil {
 		log.Error(err)
 	}
@@ -291,11 +327,14 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 		trade := &dia.Trade{
 			Symbol:         pairScraper.pair.Symbol,
 			Pair:           foreignName,
+			BaseToken:      baseToken,
+			QuoteToken:     quoteToken,
 			Price:          price,
 			Volume:         volume,
 			Time:           time.Unix(timestamp, 0),
 			ForeignTradeID: swp.Raw.TxHash.Hex() + "-" + fmt.Sprint(swp.Raw.Index),
 			Source:         scraper.exchangeName,
+			VerifiedPair:   true,
 		}
 		log.Infoln("Got Trade  ", trade)
 
@@ -331,7 +370,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 		for scraper.run && subscribed {
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -351,7 +390,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
 
 	// fromToken, _ := scraper.curveCoins[s.TokenSold.Hex()]
 	// toToken, _ := scraper.curveCoins[s.TokenBought.Hex()]
@@ -360,9 +399,22 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	if !ok {
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 	}
+	baseToken = dia.Asset{
+		Name:       fromToken.Name,
+		Address:    fromToken.Address,
+		Symbol:     fromToken.Symbol,
+		Blockchain: dia.ETHEREUM,
+	}
 	toToken, ok := scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
 	if !ok {
 		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+	}
+
+	quoteToken = dia.Asset{
+		Name:       toToken.Name,
+		Address:    toToken.Address,
+		Symbol:     toToken.Symbol,
+		Blockchain: dia.ETHEREUM,
 	}
 
 	// amountIn := s.AmountSold. / math.Pow10( fromToken.Decimals )
@@ -379,7 +431,7 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	return
 }
 
-func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.curveCoins {
@@ -390,22 +442,20 @@ func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -416,11 +466,11 @@ func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.Pair, err erro
 	return
 }
 
-func (scraper *CurveFIScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *CurveFIScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *CurveFIScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *CurveFIScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -467,11 +517,11 @@ func (scraper *CurveFIScraper) Close() error {
 
 type CurveFIPairScraper struct {
 	parent *CurveFIScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *CurveFIPairScraper) Pair() dia.Pair {
+func (pairScraper *CurveFIPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

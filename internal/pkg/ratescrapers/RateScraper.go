@@ -53,7 +53,10 @@ func (s *RateScraper) mainLoop(rateType string) {
 	for {
 		select {
 		case <-s.ticker.C:
-			s.Update(rateType)
+			err := s.Update(rateType)
+			if err != nil {
+				log.Error(err)
+			}
 		case <-s.shutdown: // user requested shutdown
 			log.Println("RateScraper shutting down")
 			s.cleanup(nil)

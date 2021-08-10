@@ -33,21 +33,21 @@ func CompoundedRate(rates []float64, dateInit, dateFinal time.Time, holidays []t
 	// Check feasibility and consistency of input data
 	if !utils.CheckWeekDay(dateFinal) || utils.ContainsDay(holidays, dateFinal) {
 		// log.Info("No rate information for holidays or weekends")
-		return float64(0), errors.New("No rate information for holidays or weekends")
+		return float64(0), errors.New("no rate information for holidays or weekends")
 	}
 	if utils.AfterDay(dateInit, dateFinal) {
 		log.Info("The final date cannot be before the initial date.")
-		return float64(0), errors.New("The final date cannot be before the initial date")
+		return float64(0), errors.New("the final date cannot be before the initial date")
 	}
 	if daysPerYear == 0 {
 		log.Info("Days per year must be a positive integer.")
-		return float64(0), errors.New("Days per year must be a positive integer")
+		return float64(0), errors.New("days per year must be a positive integer")
 	}
 	NumBusinessDays, _ := utils.CountDays(dateInit, dateFinal, true)
 	NumBusinessDays -= len(holidays)
 	if NumBusinessDays == 0 {
 		log.Info("No business days in period of interest.")
-		return float64(0), errors.New("No business days in period of interest")
+		return float64(0), errors.New("no business days in period of interest")
 	}
 
 	if !utils.CheckWeekDay(dateInit) || utils.ContainsDay(holidays, dateInit) {
@@ -91,11 +91,11 @@ func CompoundedRateSimple(rates []float64, dateInit, dateFinal time.Time, daysPe
 	// Check feasibility and consistency of input data
 	if utils.AfterDay(dateInit, dateFinal) {
 		log.Info("The final date cannot be before the initial date.")
-		return float64(0), errors.New("The final date cannot be before the initial date")
+		return float64(0), errors.New("the final date cannot be before the initial date")
 	}
 	if daysPerYear == 0 {
 		log.Info("Days per year must be a positive integer.")
-		return float64(0), errors.New("Days per year must be a positive integer")
+		return float64(0), errors.New("days per year must be a positive integer")
 	}
 
 	// Iterate through business days to compute the compounded rate

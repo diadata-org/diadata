@@ -55,10 +55,13 @@ func NewCoingeckoScraper(datastore models.Datastore) *CoingeckoScraper {
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (scraper *CoingeckoScraper) mainLoop() {
-	for true {
+	for {
 		select {
 		case <-scraper.ticker.C:
-			scraper.UpdateQuotation()
+			err := scraper.UpdateQuotation()
+			if err != nil {
+				log.Error(err)
+			}
 		case <-scraper.foreignScrapper.shutdown: // user requested shutdown
 			log.Printf("Coingeckoscraper shutting down")
 			return
@@ -124,7 +127,7 @@ func (scraper *CoingeckoScraper) GetQuoteChannel() chan *models.ForeignQuotation
 }
 
 func getCoingeckoData() (coins []CoingeckoCoin, err error) {
-	response, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false")
+	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false")
 	if err != nil {
 		return
 	}
@@ -135,6 +138,7 @@ func getCoingeckoData() (coins []CoingeckoCoin, err error) {
 	return
 }
 
+/*
 // closes all connected Scrapers. Must only be called from mainLoop
 func (scraper *CoingeckoScraper) cleanup(err error) {
 
@@ -151,11 +155,11 @@ func (scraper *CoingeckoScraper) cleanup(err error) {
 
 	close(scraper.foreignScrapper.shutdownDone) // signal that shutdown is complete
 }
-
+*/
 // Close closes any existing API connections
 func (scraper *CoingeckoScraper) Close() error {
 	if scraper.foreignScrapper.closed {
-		return errors.New("Scraper: Already closed")
+		return errors.New("scraper already closed")
 	}
 	close(scraper.foreignScrapper.shutdown)
 	<-scraper.foreignScrapper.shutdownDone
