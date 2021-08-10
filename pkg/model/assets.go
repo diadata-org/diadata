@@ -50,7 +50,7 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	if err != nil {
 		return
 	}
-	return ID, nil
+	return
 }
 
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
@@ -66,7 +66,6 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		return
 	}
 	asset.Decimals = uint8(decimalsInt)
-	// TO DO: Get Blockchain by name from postgres and add to asset
 	return
 }
 
@@ -83,7 +82,6 @@ func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 		return
 	}
 	asset.Decimals = uint8(decimalsInt)
-	// TO DO: Get Blockchain by name from postgres and add to asset
 	return
 }
 
@@ -110,7 +108,6 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 		}
 		asset.Decimals = uint8(decimalsInt)
 		asset.Blockchain = blockchain
-		// TO DO: Get Blockchain by name from postgres and add to asset
 		assets = append(assets, asset)
 	}
 	return
@@ -137,17 +134,17 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	}
 	defer rows.Close()
 	for rows.Next() {
+		var decimalsInt int
 		var asset dia.Asset
-		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
-			return []dia.Asset{}, err
+			return
 		}
-		decimalsInt, err := strconv.Atoi(decimals)
+		decimalsInt, err = strconv.Atoi(decimals)
 		if err != nil {
-			return []dia.Asset{}, err
+			return
 		}
 		asset.Decimals = uint8(decimalsInt)
-		// TO DO: Get Blockchain by name from postgres and add to asset
 		assets = append(assets, asset)
 	}
 	return
@@ -215,7 +212,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
-			return []dia.Asset{}, err
+			return
 		}
 		intDecimals, err := strconv.Atoi(decimals)
 		if err != nil {
@@ -259,7 +256,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
-			return []dia.Asset{}, err
+			return
 		}
 		decimalsInt, err = strconv.Atoi(decimals)
 		if err != nil {
@@ -271,6 +268,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	return
 }
 
+// GetUnverifiedExchangeSymbols returns all symbols from @exchange which haven't been verified yet.
 func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
 	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false order by symbol asc", exchangesymbolTable)
 	var rows pgx.Rows
