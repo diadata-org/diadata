@@ -10,8 +10,7 @@ import (
 )
 
 // FilterVWAP ...
-type FilterVWAP struct {
-	asset           dia.Asset
+type FilterVWAPIR struct {
 	exchange        string
 	currentTime     time.Time
 	previousPrices  []float64
@@ -20,11 +19,12 @@ type FilterVWAP struct {
 	param           int
 	value           float64
 	modified        bool
+	asset           dia.Asset
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAP {
-	s := &FilterVWAP{
+func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
+	s := &FilterVWAPIR{
 		asset:          asset,
 		exchange:       exchange,
 		previousPrices: []float64{},
@@ -35,25 +35,43 @@ func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, para
 }
 
 // FinalCompute ...
-func (s *FilterVWAP) FinalCompute(t time.Time) float64 {
+func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
 	return s.finalCompute(t)
 }
 
-func (s *FilterVWAP) finalCompute(t time.Time) float64 {
-	// if s.lastTrade == nil {
-	// 	return 0.0
-	// } else {
+func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
+	if s.lastTrade == nil {
+		return 0.0
+	}
+
+	//else {
 	// 	s.fill(t, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)
 	// }
+
+	// s.processDataPoint(*s.lastTrade)
+	cleanPrices, bounds := removeOutliers(s.previousPrices)
+
+	priceVolume := []float64{}
+
+	// TODO handle bounds
+	if len(bounds) == 0 {
+		return 0.0
+	}
+
+	cleanedVolumes := s.previousVolumes[bounds[0]:bounds[1]]
+
+	for index, price := range cleanPrices {
+		priceVolume = append(priceVolume, price*math.Abs(cleanedVolumes[index]))
+	}
 
 	var total float64 = 0
 	var totalVolume float64 = 0
 
-	for _, v := range s.previousVolumes {
+	for _, v := range cleanedVolumes {
 		totalVolume += v
 	}
 
-	for _, v := range s.previousPrices {
+	for _, v := range priceVolume {
 		total += v
 	}
 
@@ -63,31 +81,31 @@ func (s *FilterVWAP) finalCompute(t time.Time) float64 {
 }
 
 // FilterPointForBlock ...
-func (s *FilterVWAP) FilterPointForBlock() *dia.FilterPoint {
+func (s *FilterVWAPIR) FilterPointForBlock() *dia.FilterPoint {
 	return s.filterPointForBlock()
 }
-func (s *FilterVWAP) filterPointForBlock() *dia.FilterPoint {
+func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" {
 		return &dia.FilterPoint{
 			Value: s.value,
-			Name:  "VWAP" + strconv.Itoa(s.param),
+			Name:  "FilterVWAPIR" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
 		}
 	} else {
 		return &dia.FilterPoint{
 			Value: s.value,
-			Name:  "VWAP" + strconv.Itoa(s.param),
+			Name:  "FilterVWAPIR" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
 		}
 	}
 }
 
-func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
+func (s *FilterVWAPIR) fill(t time.Time, price float64, volume float64) {
 	volume = math.Abs(volume)
 	diff := int(t.Sub(s.currentTime).Seconds())
 	if diff > 1 {
 		for diff > 1 {
-			s.previousPrices = append([]float64{price * volume}, s.previousPrices...)
+			s.previousPrices = append([]float64{price}, s.previousPrices...)
 			s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
 
 			diff--
@@ -100,7 +118,7 @@ func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
 				s.previousVolumes = s.previousVolumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{price * volume}, s.previousPrices...)
+		s.previousPrices = append([]float64{price}, s.previousPrices...)
 		s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
 
 	}
@@ -112,15 +130,15 @@ func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
 }
 
 // Compute ...
-func (s *FilterVWAP) Compute(trade dia.Trade) {
+func (s *FilterVWAPIR) Compute(trade dia.Trade) {
 	s.compute(trade)
 }
 
-func (s *FilterVWAP) compute(trade dia.Trade) {
+func (s *FilterVWAPIR) compute(trade dia.Trade) {
 	s.modified = true
 	if s.lastTrade != nil {
 		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterVWAP: Ignoring Trade out of order ", s.currentTime, trade.Time)
+			log.Errorln("FilterVWAPIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
 		} else {
 			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)

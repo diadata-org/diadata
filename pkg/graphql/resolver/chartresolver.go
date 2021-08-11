@@ -16,7 +16,7 @@ func (qr *FilterPointResolver) Name(ctx context.Context) (*string, error) {
 }
 
 func (qr *FilterPointResolver) Symbol(ctx context.Context) (*string, error) {
-	return &qr.q.Symbol, nil
+	return &qr.q.Asset.Symbol, nil
 }
 
 func (qr *FilterPointResolver) Time(ctx context.Context) (*graphql.Time, error) {

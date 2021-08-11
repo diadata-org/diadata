@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -54,28 +53,28 @@ func (r *DiaResolver) GetSupplies(ctx context.Context, args struct{ Symbol graph
 	return &sr, nil
 }
 
-func (r *DiaResolver) GetSymbols(ctx context.Context, args struct{ Exchange graphql.NullString }) (*[]*string, error) {
-	exchange := args.Exchange.Value
-	var allSymbols []string
+// func (r *DiaResolver) GetSymbols(ctx context.Context, args struct{ Exchange graphql.NullString }) (*[]*string, error) {
+// 	exchange := args.Exchange.Value
+// 	var allSymbols []string
 
-	if *exchange == "" {
-		allSymbols = r.DS.GetAllSymbols()
-		if len(allSymbols) == 0 {
-			return nil, errors.New("error No symbols")
-		}
-	} else {
-		allSymbols = r.DS.GetSymbolsByExchange(*exchange)
-		if len(allSymbols) == 0 {
-			return nil, errors.New("error No Symbols for exchange " + *exchange)
-		}
-	}
-	var sr []*string
+// 	if *exchange == "" {
+// 		allSymbols = r.DS.GetAllSymbols()
+// 		if len(allSymbols) == 0 {
+// 			return nil, errors.New("error No symbols")
+// 		}
+// 	} else {
+// 		allSymbols = r.DS.GetSymbolsByExchange(*exchange)
+// 		if len(allSymbols) == 0 {
+// 			return nil, errors.New("error No Symbols for exchange " + *exchange)
+// 		}
+// 	}
+// 	var sr []*string
 
-	for _, symbol := range allSymbols {
-		sr = append(sr, &symbol)
-	}
-	return &sr, nil
-}
+// 	for _, symbol := range allSymbols {
+// 		sr = append(sr, &symbol)
+// 	}
+// 	return &sr, nil
+// }
 
 type TradeBlock struct {
 	Trades []dia.Trade
@@ -115,13 +114,19 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	case "mair":
 		{
-
 			filterPoints = queryhelper.FilterMAIR(tradeBlocks, symbol)
 		}
-
 	case "ma":
 		{
 			filterPoints = queryhelper.FilterMA(tradeBlocks, symbol)
+		}
+	case "vwap":
+		{
+			filterPoints = queryhelper.FilterVWAP(tradeBlocks, symbol)
+		}
+	case "vwapir":
+		{
+			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, symbol)
 		}
 	}
 

@@ -17,7 +17,7 @@ func getTrades() (trades []dia.Trade) {
 func TestVWAP(t *testing.T) {
 	var filterPoints []dia.FilterPoint
 	trades := getTrades()
-	maFilter := NewFilterVWAP("symbol", "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
+	maFilter := NewFilterVWAP(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
 
 	totalVolume := 0.0
 	totalPrice := 0.0
@@ -38,4 +38,22 @@ func TestVWAP(t *testing.T) {
 		t.Errorf("Error vwap expected %v  and got %v ", expectedAns, filterPoints[0].Value)
 	}
 
+}
+
+//BenchmarkVWAP-8   	 1438806	       828.6 ns/op	    1104 B/op	      21 allocs/op
+//BenchmarkVWAP-8   	  343592	      3280 ns/op	    5011 B/op	      84 allocs/op
+
+func BenchmarkVWAP(b *testing.B) {
+
+	trades := getTrades()
+	for n := 0; n < b.N; n++ {
+		maFilter := NewFilterVWAP(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
+
+		for _, trade := range trades {
+
+			maFilter.Compute(trade)
+		}
+
+		maFilter.FinalCompute(trades[0].Time)
+	}
 }

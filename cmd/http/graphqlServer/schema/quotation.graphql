@@ -2,7 +2,6 @@ type Query {
   GetQuotation(symbol: String!): Quotation
   GetSupply(symbol: String!): Supply
   GetSupplies(symbol: String!): [Supply]
-  GetSymbols(exchange: String!): [String]
   GetChart(
     filter: String!
     BlockDurationSeconds: Int!

@@ -12,11 +12,11 @@ type SupplyResolver struct {
 }
 
 func (qr *SupplyResolver) Symbol(ctx context.Context) (*string, error) {
-	return &qr.q.Symbol, nil
+	return &qr.q.Asset.Symbol, nil
 }
 
 func (qr *SupplyResolver) Name(ctx context.Context) (*string, error) {
-	return &qr.q.Name, nil
+	return &qr.q.Asset.Name, nil
 }
 
 func (qr *SupplyResolver) Source(ctx context.Context) (*string, error) {
