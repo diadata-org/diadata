@@ -28,13 +28,13 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/google/uuid v1.1.2 // indirect
+	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgtype v1.7.0
-	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
@@ -65,9 +65,9 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
-	github.com/uptrace/bun v0.4.0
-	github.com/uptrace/bun/dialect/pgdialect v0.4.0
-	github.com/uptrace/bun/driver/pgdriver v0.4.0
+	github.com/uptrace/bun v0.3.9
+	github.com/uptrace/bun/dialect/pgdialect v0.3.9
+	github.com/uptrace/bun/driver/pgdriver v0.3.9
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/zap v1.15.0
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
