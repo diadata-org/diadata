@@ -123,6 +123,10 @@ type Datastore interface {
 	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
 	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
 	GetLatestCommit(user, repository string) (GithubCommit, error)
+
+	// Stock methods
+	SetStockQuotation(sq StockQuotation) error
+	GetStockQuotation(symbol string, timestamp time.Time) (StockQuotation, error)
 }
 
 const (
@@ -152,6 +156,7 @@ const (
 	influxDbCryptoIndexTable             = "cryptoindex"
 	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
 	influxDbGithubCommitTable            = "githubcommits"
+	influxDbStockQuotationsTable         = "stockquotations"
 )
 
 // queryInfluxDB convenience function to query the database

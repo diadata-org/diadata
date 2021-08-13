@@ -38,11 +38,23 @@ type Quotation struct {
 	ITIN               string
 }
 
+type StockQuotation struct {
+	Symbol   string
+	Name     string
+	PriceAsk float64
+	PriceBid float64
+	SizeAsk  float64
+	SizeBid  float64
+	Source   string
+	Time     time.Time
+	ISIN     string
+}
+
 type Price struct {
-	Symbol     string
-	Name       string
-	Price      float64
-	Time       time.Time
+	Symbol string
+	Name   string
+	Price  float64
+	Time   time.Time
 }
 
 type InterestRate struct {
