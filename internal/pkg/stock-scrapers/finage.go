@@ -7,14 +7,14 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
-type FineageScraper struct {
+type FinageScraper struct {
 	stockScraper               StockScraper
 	apiRestURL                 string
 	apiWsURL                   string
 	timeResolutionMilliseconds int
 }
 
-func NewFineageScraper(db *models.DB) *FineageScraper {
+func NewFinageScraper(db *models.DB) *FinageScraper {
 
 	stockScraper := StockScraper{
 		shutdown:     make(chan nothing),
@@ -22,9 +22,9 @@ func NewFineageScraper(db *models.DB) *FineageScraper {
 		error:        nil,
 		datastore:    db,
 		chanStock:    make(chan models.StockQuotation),
-		source:       "Fineage",
+		source:       "Finage",
 	}
-	s := &FineageScraper{
+	s := &FinageScraper{
 		stockScraper: stockScraper,
 		// TO DO: Will be fetched as secret as soon as in production
 		apiWsURL:   "",
@@ -38,7 +38,7 @@ func NewFineageScraper(db *models.DB) *FineageScraper {
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (scraper *FineageScraper) mainLoop() {
+func (scraper *FinageScraper) mainLoop() {
 
 	// Either call FetchQuotes or implement quote fetching here and
 	// leave FetchQuotes blank.
@@ -46,19 +46,19 @@ func (scraper *FineageScraper) mainLoop() {
 }
 
 // FetchQuotes fetches quotes from an API and feeds them into the channel.
-func (scraper *FineageScraper) FetchQuotes() error {
+func (scraper *FinageScraper) FetchQuotes() error {
 	// ...
 	// scraper.GetStockChannel() <- quote
 	return nil
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *FineageScraper) GetStockQuotationChannel() chan models.StockQuotation {
+func (scraper *FinageScraper) GetStockQuotationChannel() chan models.StockQuotation {
 	return scraper.stockScraper.chanStock
 }
 
 // closes all connected Scrapers. Must only be called from mainLoop
-func (scraper *FineageScraper) cleanup(err error) {
+func (scraper *FinageScraper) cleanup(err error) {
 	scraper.stockScraper.errorLock.Lock()
 	defer scraper.stockScraper.errorLock.Unlock()
 	if err != nil {
@@ -69,7 +69,7 @@ func (scraper *FineageScraper) cleanup(err error) {
 }
 
 // Close closes any existing API connections
-func (scraper *FineageScraper) Close() error {
+func (scraper *FinageScraper) Close() error {
 	if scraper.stockScraper.closed {
 		return errors.New("scraper already closed")
 	}

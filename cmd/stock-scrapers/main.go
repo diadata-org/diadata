@@ -20,14 +20,14 @@ func main() {
 		log.Fatal("datastore error: ", err)
 	}
 
-	scraperType := flag.String("source", "Fineage", "which source for stock quotes")
+	scraperType := flag.String("source", "Finage", "which source for stock quotes")
 	flag.Parse()
 	var scraper stockscrapers.StockScraperInterface
 
 	switch *scraperType {
-	case "Fineage":
-		log.Println("Stock Quote Scraper: Start scraping trades from Fineage")
-		scraper = stockscrapers.NewFineageScraper(ds)
+	case "Finage":
+		log.Println("Stock Quote Scraper: Start scraping trades from Finage")
+		scraper = stockscrapers.NewFinageScraper(ds)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
