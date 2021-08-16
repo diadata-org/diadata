@@ -5,6 +5,7 @@ type Query {
   GetChart(
     filter: String!
     BlockDurationSeconds: Int!
+    BlockShiftSeconds: Int
     Symbol: String!
     StartTime: Time!
     EndTime: Time!

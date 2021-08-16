@@ -50,31 +50,30 @@ func (bg *Blockgenerator) GenerateSize(blockSizeSeconds int64) (tradeBlocks []Bl
 	return
 }
 
-// func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int64) (tradeBlocks []Block) {
-// 	var tradeBlock Block
-// 	var nextBlock Block
+func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int64) (tradeBlocks []Block) {
+	var tradeBlock Block
 
-// 	firstBlockStartTime := bg.trades[0].Time.UnixNano()
-// 	currentBlockStartTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
-// 	nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
+	firstBlockStartTime := bg.trades[0].Time.UnixNano()
+	currentBlockStartTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
+	nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
 
-// 	for _, trade := range bg.trades {
-// 		if trade.Time.UnixNano() >= firstBlockStartTime {
-// 			if trade.Time.UnixNano() > currentBlockStartTime {
-// 				currentBlockStartTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
-// 				tradeBlocks = append(tradeBlocks, tradeBlock)
-// 				tradeBlock = Block{}
-// 			} else {
-// 				if trade.Time.UnixNano() >= nextBlockStartTime {
-// 					nextBlock = Block{}
-// 				}
-// 				tradeBlock.Trades = append(tradeBlock.Trades, trade)
-// 			}
+	for _, trade := range bg.trades {
+		if trade.Time.UnixNano() >= firstBlockStartTime {
+			if trade.Time.UnixNano() > currentBlockStartTime {
+				currentBlockStartTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
+				tradeBlocks = append(tradeBlocks, tradeBlock)
+				tradeBlock = Block{}
+			} else {
+				if trade.Time.UnixNano() >= nextBlockStartTime {
 
-// 		} else {
-// 			log.Infoln("Trade is out of initial block time Trdae time", trade.Time.UnixNano(), firstBlockStartTime)
-// 		}
+				}
+				tradeBlock.Trades = append(tradeBlock.Trades, trade)
+			}
 
-// 	}
-// 	return
-// }
+		} else {
+			log.Infoln("Trade is out of initial block time Trdae time", trade.Time.UnixNano(), firstBlockStartTime)
+		}
+
+	}
+	return
+}

@@ -83,13 +83,21 @@ type TradeBlock struct {
 func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Filter               graphql.NullString
 	BlockDurationSeconds graphql.NullInt
+	BlockShiftSeconds    graphql.NullInt
 	Symbol               graphql.NullString
 	StartTime            graphql.NullTime
 	EndTime              graphql.NullTime
 	Exchanges            *[]graphql.NullString
 }) (*[]*FilterPointResolver, error) {
+	var (
+		blockShiftSeconds int64
+		tradeBlocks       []queryhelper.Block
+	)
 	filter := args.Filter.Value
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
+	if args.BlockShiftSeconds.Value != nil {
+		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
+	}
 	symbol := string(*args.Symbol.Value)
 	starttime := args.StartTime.Value.Time
 	endtime := args.EndTime.Value.Time
@@ -106,7 +114,12 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		return nil, nil
 	}
 
-	tradeBlocks := queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
+	if blockShiftSeconds != 0 {
+		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
+
+	} else {
+		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(blockSizeSeconds, blockShiftSeconds)
+	}
 
 	var filterPoints []dia.FilterPoint
 
