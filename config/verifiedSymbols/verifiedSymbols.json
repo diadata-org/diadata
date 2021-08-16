@@ -3,7 +3,7 @@
     {
       "Exchange": "Binance",
       "BatchNumber": "1",
-      "VerifiedBy": ["baptistegarcin, slightlyskepticalpotat, jerrynoah"]      
+      "VerifiedBy": ["baptistegarcin,slightlyskepticalpotat,jerrynoah"]      
     },
     {
       "Exchange": "Kraken",
@@ -18,17 +18,17 @@
     {
       "Exchange": "KuCoin",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip", "chemrah"]  
+      "VerifiedBy": ["antonyip","chemrah"]  
     },
     {
       "Exchange": "KuCoin",
       "BatchNumber": "2",
-      "VerifiedBy": ["icebert04"]
+      "VerifiedBy": ["echolon166","codegazer584","icebert04"]
     },
     {
       "Exchange": "GateIO",
       "BatchNumber": "1",
-      "VerifiedBy": ["tn024687","ControlCplusControlV", "chemrah"] 
+      "VerifiedBy": ["tn024687","ControlCplusControlV","chemrah"] 
     },
     {
       "Exchange": "ZB",
