@@ -33,3 +33,4 @@ cmd/services/graphService/graphService
 cmd/services/itinService/itinService
 cmd/services/pairDiscoveryService/pairDiscoveryService
 cmd/services/supplyService/supplyService
+vendor/
