@@ -30,7 +30,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write(page)
+		_, err := w.Write(page)
+		if err != nil {
+			return
+		}
 	}))
 
 	mux.Handle("/query", &relay.Handler{Schema: diaSchema})
