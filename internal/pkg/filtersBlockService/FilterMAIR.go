@@ -39,6 +39,10 @@ func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memo
 	return s
 }
 
+func (s *FilterMAIR) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+
 func (s *FilterMAIR) compute(trade dia.Trade) {
 	s.modified = true
 	if s.lastTrade != nil {
@@ -81,6 +85,10 @@ func (s *FilterMAIR) processDataPoint(trade dia.Trade) {
 	s.previousVolumes = append([]float64{trade.Volume}, s.previousVolumes...)
 }
 
+func (s *FilterMAIR) FinalCompute(t time.Time) float64 {
+	return s.finalCompute(t)
+}
+
 func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
@@ -97,9 +105,17 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	return s.value
 }
 
+func (s *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
+	return s.filterPointForBlock()
+}
+
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
-		return nil
+		return &dia.FilterPoint{
+			Value: s.value,
+			Name:  s.filterName,
+			Time:  s.currentTime,
+		}
 	}
 	return &dia.FilterPoint{
 		Asset: s.asset,

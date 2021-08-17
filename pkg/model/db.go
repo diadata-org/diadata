@@ -42,6 +42,8 @@ type Datastore interface {
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
+	GetTradesByExchanges(symbol string, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error

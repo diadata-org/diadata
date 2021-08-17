@@ -67,19 +67,59 @@ func parseTrade(row []interface{}) *dia.Trade {
 				Volume:            volume,
 				ForeignTradeID:    foreignTradeID,
 			}
+
 			return &trade
 		}
-		log.Errorln("Parsing ", t)
 
 	}
 	return nil
+}
+
+func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+	r := []dia.Trade{}
+	subquery := ""
+	query := ""
+	if len(exchanges) > 0 {
+		for count, exchange := range exchanges {
+			if len(exchanges)-1 == count {
+				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange)
+			} else {
+				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
+
+			}
+
+		}
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s' and %s and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
+
+	}
+	// query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s'  and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, startTime.UnixNano(), endTime.UnixNano())
+
+	log.Infoln("GetTradesByExchanges Query", query)
+	res, err := queryInfluxDB(db.influxClient, query)
+
+	if err != nil {
+		log.Errorln("GetLastTrades", err)
+		return r, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			t := parseTrade(row)
+			if t != nil {
+				r = append(r, *t)
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", symbol)
+	}
+	return r, nil
 }
 
 // GetAllTrades returns at most @maxTrades trades from influx with timestamp > @t. Only used by replayInflux option.
 func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
 	// TO DO: Substitute select * with precise statment select estimatedUSDPrice, source,...
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
+	q := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
 	log.Debug(q)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -89,6 +129,7 @@ func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
 			t := parseTrade(row)
+			log.Errorln("row trade parseTrade", row)
 			if t != nil {
 				r = append(r, *t)
 			}
@@ -115,6 +156,7 @@ func (db *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
+	log.Errorln("res", res)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
 		return r, err
