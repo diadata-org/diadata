@@ -1070,7 +1070,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
 
 	// First get asset with @symbol with largest market cap.
-	topAsset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 	}

@@ -26,7 +26,7 @@ func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supp
 		log.Errorln("NewDataStore:", err)
 	}
 	// First get asset with @symbol with largest market cap.
-	topAsset, err := db.GetTopAsset(symbol, relDB)
+	topAsset, err := db.GetTopAssetByVolume(symbol, relDB)
 	if err != nil {
 		log.Error(err)
 		return []dia.Supply{}, err
