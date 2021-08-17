@@ -1,13 +1,14 @@
 package main
 
 import (
+	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/graphql/resolver"
 	models "github.com/diadata-org/diadata/pkg/model"
-	graphql "github.com/graph-gophers/graphql-go"
+	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,17 +30,17 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/graphql/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
 			return
 		}
 	}))
 
-	mux.Handle("/query", &relay.Handler{Schema: diaSchema})
+	mux.Handle("/graphql/query", &relay.Handler{Schema: diaSchema})
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
-	log.Fatal(http.ListenAndServe(":1111", logged(mux)))
+	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
 }
 
 var page = []byte(`
@@ -56,7 +57,7 @@ var page = []byte(`
 		<div id="graphiql" style="height: 100vh;">Loading...</div>
 		<script>
 			function graphQLFetcher(graphQLParams) {
-				return fetch("/query", {
+				return fetch("/graphql/query", {
 					method: "post",
 					body: JSON.stringify(graphQLParams),
 					credentials: "include",
