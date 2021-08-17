@@ -67,9 +67,6 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
-	github.com/uptrace/bun v0.4.0
-	github.com/uptrace/bun/dialect/pgdialect v0.4.0
-	github.com/uptrace/bun/driver/pgdriver v0.4.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/zap v1.15.0
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
