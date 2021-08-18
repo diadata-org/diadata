@@ -18,6 +18,7 @@ const (
 	FlowAPI7       = "access-001.mainnet7.nodes.onflow.org:9000"
 	FlowAPI8       = "access-001.mainnet8.nodes.onflow.org:9000"
 	FlowAPI9       = "access-001.mainnet9.nodes.onflow.org:9000"
+	FlowAPI10      = "access-001.mainnet10.nodes.onflow.org:9000"
 	FlowAPICurrent = "access.mainnet.nodes.onflow.org:9000"
 	RequestLimit   = uint64(249)
 )
@@ -32,15 +33,31 @@ var (
 	RootHeight7       = uint64(13404174)
 	RootHeight8       = uint64(13950742)
 	RootHeight9       = uint64(14892104)
-	RootHeightCurrent = uint64(15791891)
-	RootHeights       = []uint64{RootHeight1, RootHeight2, RootHeight3, RootHeight4, RootHeight5, RootHeight6, RootHeight7, RootHeight8, RootHeight9, RootHeightCurrent}
+	RootHeight10      = uint64(15791891)
+	RootHeightCurrent = uint64(16755602)
+	RootHeights       = []uint64{
+		RootHeight1,
+		RootHeight2,
+		RootHeight3,
+		RootHeight4,
+		RootHeight5,
+		RootHeight6,
+		RootHeight7,
+		RootHeight8,
+		RootHeight9,
+		RootHeight10,
+		RootHeightCurrent,
+	}
 )
 
 // GetFlowClient returns a feasible client corresponding to the block's startheight.
+// https://docs.onflow.org/node-operation/past-sporks/
 func GetFlowClient(startheight uint64) (*client.Client, error) {
 	if startheight >= RootHeightCurrent {
 		fmt.Printf("make flow client at current level with: %s\n", FlowAPICurrent)
 		return client.New(FlowAPICurrent, grpc.WithInsecure())
+	} else if startheight >= RootHeight10 {
+		return client.New(FlowAPI10, grpc.WithInsecure())
 	} else if startheight >= RootHeight9 {
 		return client.New(FlowAPI9, grpc.WithInsecure())
 	} else if startheight >= RootHeight8 {
