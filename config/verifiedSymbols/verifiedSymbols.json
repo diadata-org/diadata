@@ -48,12 +48,12 @@
     {
       "Exchange": "HitBTC",
       "BatchNumber": "1",
-      "VerifiedBy": ["goojal","antonyip"]     
+      "VerifiedBy": ["goojal"]     
     },
     {
       "Exchange": "HitBTC",
       "BatchNumber": "2",
-      "VerifiedBy": []     
+      "VerifiedBy": ["antonyip"]     
     },
     {
       "Exchange": "OKEx",
