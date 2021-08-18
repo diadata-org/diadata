@@ -23,7 +23,7 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 		"name":   sq.Name,
 		"isin":   sq.ISIN,
 	}
-	pt, err := clientInfluxdb.NewPoint(influxDbForeignQuotationTable, tags, fields, sq.Time)
+	pt, err := clientInfluxdb.NewPoint(influxDbStockQuotationsTable, tags, fields, sq.Time)
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
@@ -42,7 +42,7 @@ func (db *DB) GetStockQuotation(symbol string, timestamp time.Time) (StockQuotat
 	retval := StockQuotation{}
 
 	unixtime := timestamp.UnixNano()
-	q := fmt.Sprintf("SELECT priceAsk,priceBid,sizeAsk,sizeBid,source,\"isin\",\"name\" FROM %s WHERE \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, symbol, unixtime)
+	q := fmt.Sprintf("SELECT priceAsk,priceBid,sizeAsk,sizeBid,source,\"isin\",\"name\" FROM %s WHERE \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbStockQuotationsTable, symbol, unixtime)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")

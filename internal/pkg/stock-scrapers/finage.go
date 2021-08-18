@@ -1,24 +1,27 @@
 package stockscrapers
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"sync"
+
+	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/gorilla/websocket"
-	"time"
 )
 
 const (
 	msciWorldIndexTop10 = "AAPL,MSFT,AMZN,FB,GOOGL,GOOG,TSLA,NVDA,JPM,JNJ"
 	subscribeMessage    = "{\"action\": \"subscribe\", \"symbols\":\"" + msciWorldIndexTop10 + "\"}"
+	apiKey              = "api_finage"
 )
 
 type FinageScraper struct {
 	stockScraper               StockScraper
-	apiRestURL                 string
 	apiWsURL                   string
 	timeResolutionMilliseconds int
 }
@@ -35,11 +38,8 @@ func NewFinageScraper(db *models.DB) *FinageScraper {
 		source:       "Finage",
 	}
 	s := &FinageScraper{
-		stockScraper: stockScraper,
-		// TO DO: Will be fetched as secret as soon as in production
-		apiWsURL:   "",
-		apiRestURL: "",
-		// TimeResolution
+		stockScraper:               stockScraper,
+		apiWsURL:                   getAPIKeyFromSecrets(),
 		timeResolutionMilliseconds: 1000,
 	}
 	fmt.Println("scraper built. Start main loop.")
@@ -150,7 +150,7 @@ func (scraper *FinageScraper) unmarshalQuotationJSON(data []byte) (models.StockQ
 		PriceAsk: receivedQuotation.PriceAsk,
 		PriceBid: receivedQuotation.PriceBid,
 		SizeAsk:  receivedQuotation.SizeAsk,
-		SizeBid:  receivedQuotation.PriceAsk,
+		SizeBid:  receivedQuotation.SizeBid,
 		Source:   scraper.stockScraper.source,
 		Time:     time.Unix(0, receivedQuotation.Time*int64(time.Millisecond)),
 		ISIN:     isin,
@@ -181,4 +181,35 @@ func getCompanyDetails(symbol string) (name string, isin string) {
 		return "JOHNSON & JOHNSON ", "US4781601046"
 	}
 	return "", ""
+}
+
+// getAPIKeyFromSecrets returns a github api key
+func getAPIKeyFromSecrets() string {
+	var lines []string
+	executionMode := os.Getenv("EXEC_MODE")
+	var file *os.File
+	var err error
+	if executionMode == "production" {
+		file, err = os.Open("/run/secrets/" + apiKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		file, err = os.Open("../../secrets/" + apiKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file should have exactly one line")
+	}
+	return lines[0]
 }

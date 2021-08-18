@@ -1,0 +1,40 @@
+version: '3.2'
+services:
+
+  finagescraper:
+    depends_on: [genericstockscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericstockscraper:latest
+    command: /bin/stock-scrapers -source=Finage
+    networks:
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    secrets:
+      - api_finage
+    logging:
+      options:
+        max-size: "50m"
+
+
+  genericstockscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericStockScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericstockscraper:latest
+    restart: "no"
+    networks:
+      - influxdb-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+networks:
+  influxdb-network:
+    external:
+        name: influxdb_influxdb-network
+
+secrets:
+  api_finage:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_finage

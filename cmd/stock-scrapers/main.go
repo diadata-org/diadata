@@ -55,6 +55,7 @@ func handleData(stockQuotationChannel chan models.StockQuotation, wg *sync.WaitG
 			return
 		} else {
 			log.Infof("successfully set stock quotation for %s", quote.Symbol)
+			log.Infof("timestamp: %v; ask price: %v; bid price: %v", quote.Time, quote.PriceAsk, quote.PriceBid)
 		}
 	}
 
