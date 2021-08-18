@@ -1,10 +1,19 @@
 package stockscrapers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/gorilla/websocket"
+	"time"
+)
+
+const (
+	msciWorldIndexTop10 = "AAPL,MSFT,AMZN,FB,GOOGL,GOOG,TSLA,NVDA,JPM,JNJ"
+	subscribeMessage    = "{\"action\": \"subscribe\", \"symbols\":\"" + msciWorldIndexTop10 + "\"}"
 )
 
 type FinageScraper struct {
@@ -19,6 +28,7 @@ func NewFinageScraper(db *models.DB) *FinageScraper {
 	stockScraper := StockScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
+		errorLock:    new(sync.RWMutex),
 		error:        nil,
 		datastore:    db,
 		chanStock:    make(chan models.StockQuotation),
@@ -43,6 +53,41 @@ func (scraper *FinageScraper) mainLoop() {
 	// Either call FetchQuotes or implement quote fetching here and
 	// leave FetchQuotes blank.
 
+	defer close(scraper.GetStockQuotationChannel())
+
+	c, _, err := websocket.DefaultDialer.Dial(scraper.apiWsURL, nil)
+	if err != nil {
+		log.Error("connecting to web socket: ", err)
+		scraper.cleanup(err)
+		return
+	}
+	defer c.Close()
+
+	if subscribeErr := c.WriteMessage(websocket.TextMessage, []byte(subscribeMessage)); subscribeErr != nil {
+		log.Error("creating subscription for the stock quotations: ", err)
+		scraper.cleanup(err)
+		return
+	}
+
+	for {
+		select {
+		case <-scraper.stockScraper.shutdown:
+			scraper.cleanup(nil)
+			return
+		default:
+			_, message, readErr := c.ReadMessage()
+			if readErr != nil {
+				log.Error("reading the response: ", readErr)
+				scraper.cleanup(err)
+				return
+			}
+			if quotation, unmarshalErr := scraper.unmarshalQuotationJSON(message); unmarshalErr != nil {
+				log.Error("parsing quotation from response: ", unmarshalErr)
+			} else {
+				scraper.GetStockQuotationChannel() <- quotation
+			}
+		}
+	}
 }
 
 // FetchQuotes fetches quotes from an API and feeds them into the channel.
@@ -78,4 +123,62 @@ func (scraper *FinageScraper) Close() error {
 	scraper.stockScraper.errorLock.RLock()
 	defer scraper.stockScraper.errorLock.RUnlock()
 	return scraper.stockScraper.error
+}
+
+// unmarshalQuotationJSON unmarshalls the JSON response into an auxiliary struct
+// and converts it into models.StockQuotation
+func (scraper *FinageScraper) unmarshalQuotationJSON(data []byte) (models.StockQuotation, error) {
+	receivedQuotation := struct {
+		Symbol   string  `json:"s"`
+		PriceAsk float64 `json:"ap"`
+		PriceBid float64 `json:"bp"`
+		SizeAsk  float64 `json:"as"`
+		SizeBid  float64 `json:"bs"`
+		Time     int64   `json:"t"`
+	}{}
+	err := json.Unmarshal(data, &receivedQuotation)
+	if err != nil {
+		return models.StockQuotation{}, err
+	}
+	if len(receivedQuotation.Symbol) == 0 {
+		return models.StockQuotation{}, errors.New("not a valid stock quotation")
+	}
+	name, isin := getCompanyDetails(receivedQuotation.Symbol)
+	return models.StockQuotation{
+		Symbol:   receivedQuotation.Symbol,
+		Name:     name,
+		PriceAsk: receivedQuotation.PriceAsk,
+		PriceBid: receivedQuotation.PriceBid,
+		SizeAsk:  receivedQuotation.SizeAsk,
+		SizeBid:  receivedQuotation.PriceAsk,
+		Source:   scraper.stockScraper.source,
+		Time:     time.Unix(0, receivedQuotation.Time*int64(time.Millisecond)),
+		ISIN:     isin,
+	}, nil
+}
+
+func getCompanyDetails(symbol string) (name string, isin string) {
+	switch symbol {
+	case "AAPL":
+		return "APPLE", "US0378331005"
+	case "MSFT":
+		return "MICROSOFT CORP", "US5949181045"
+	case "AMZN":
+		return "AMAZON.COM", "US0231351067"
+	case "FB":
+		return "FACEBOOK A", "US30303M1027"
+	case "GOOGL":
+		return "ALPHABET A", "US02079K3059"
+	case "GOOG":
+		return "ALPHABET C", "US02079K1079"
+	case "TSLA":
+		return "TESLA", "US88160R1014"
+	case "NVDA":
+		return "NVIDIA", "US67066G1040"
+	case "JPM":
+		return "JPMORGAN CHASE & CO ", "US46625H1005"
+	case "JNJ":
+		return "JOHNSON & JOHNSON ", "US4781601046"
+	}
+	return "", ""
 }
