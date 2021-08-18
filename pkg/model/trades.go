@@ -94,9 +94,8 @@ func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime,
 
 	log.Infoln("GetTradesByExchanges Query", query)
 	res, err := queryInfluxDB(db.influxClient, query)
-
 	if err != nil {
-		log.Errorln("GetLastTrades", err)
+		log.Errorln("GetTradesByExchanges query: ", err)
 		return r, err
 	}
 

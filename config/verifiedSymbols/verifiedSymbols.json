@@ -48,17 +48,17 @@
     {
       "Exchange": "HitBTC",
       "BatchNumber": "1",
-      "VerifiedBy": [""]     
+      "VerifiedBy": ["goojal"]     
     },
     {
       "Exchange": "OKEx",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip","sidduHERE"]      
+      "VerifiedBy": ["antonyip","sidduHERE", "manyrios"]      
     },
     {
       "Exchange": "Quoine",
       "BatchNumber": "1",
-      "VerifiedBy": [""]      
+      "VerifiedBy": ["echolon166", "antonyip"]      
     },
     {
       "Exchange": "CREX24",
