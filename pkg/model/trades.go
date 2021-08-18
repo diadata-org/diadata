@@ -85,11 +85,9 @@ func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime,
 				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange)
 			} else {
 				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
-
 			}
-
 		}
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s' and %s and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s' and (%s) and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
 
 	}
 	// query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s'  and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, startTime.UnixNano(), endTime.UnixNano())
