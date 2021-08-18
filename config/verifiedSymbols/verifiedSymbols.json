@@ -51,6 +51,11 @@
       "VerifiedBy": ["goojal"]     
     },
     {
+      "Exchange": "HitBTC",
+      "BatchNumber": "2",
+      "VerifiedBy": []     
+    },
+    {
       "Exchange": "OKEx",
       "BatchNumber": "1",
       "VerifiedBy": ["antonyip","sidduHERE", "manyrios"]      
