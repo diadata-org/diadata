@@ -8,7 +8,6 @@ require (
 	github.com/adshao/go-binance v0.0.0-20200724005944-6a0c3995d85c
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/anaskhan96/soup v1.1.1
-	github.com/appleboy/gin-jwt/v2 v2.6.4
 	github.com/aristanetworks/goarista v0.0.0-20201218012658-e901e4a75e4f // indirect
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bep/debounce v1.2.0
@@ -21,8 +20,6 @@ require (
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/structs v1.1.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
-	github.com/gin-contrib/cache v1.1.0
-	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/spec v0.19.9 // indirect
@@ -34,10 +31,11 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
+	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgtype v1.7.0
-	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
@@ -58,6 +56,7 @@ require (
 	github.com/peterh/liner v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
+	github.com/prometheus/common v0.9.1
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/segmentio/kafka-go v0.3.7
@@ -65,7 +64,6 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
-	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
