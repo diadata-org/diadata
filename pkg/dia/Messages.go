@@ -19,6 +19,7 @@ const (
 	PROOF_OF_WORK     VerificationMechanism = "pow"
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
+	FLOW                                    = "Flow"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 )
 

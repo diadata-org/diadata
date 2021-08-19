@@ -11,15 +11,15 @@ import (
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
-	CryptoKittiesRefreshDelay = time.Second * 60
+	CryptoKittiesRefreshDelay = time.Second * 60 * 10
 	cryptoKittiesFirstBlock   = 4605169
 )
 
@@ -31,8 +31,7 @@ type CryptoKittiesScraper struct {
 }
 
 func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
-	connection, err := ethclient.Dial("https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571")
-	// connection, err := ethhelper.NewETHClient()
+	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -68,7 +67,7 @@ func (scraper *CryptoKittiesScraper) mainLoop() {
 			if err != nil {
 				log.Error("fetching nft trades: ", err)
 			}
-		case <-scraper.tradescraper.shutdown: // user requested shutdown
+		case <-scraper.tradescraper.shutdown:
 			log.Printf("Cryptokitties scraper shutting down")
 			err := scraper.Close()
 			scraper.cleanup(err)
@@ -149,9 +148,9 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 				Price:            iter.Event.TotalPrice,
 				FromAddress:      lastOffer.FromAddress,
 				ToAddress:        iter.Event.Winner.Hex(),
-				CurrencySymbol:   "WETH",
+				CurrencySymbol:   "ETH",
 				CurrencyDecimals: int32(18),
-				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").Hex(),
+				CurrencyAddress:  common.HexToAddress("0x0000000000000000000000000000000000000000").Hex(),
 				BlockNumber:      iter.Event.Raw.BlockNumber,
 				Timestamp:        time.Unix(int64(currHeader.Time), 0),
 				Exchange:         "CryptokittiesAuction",

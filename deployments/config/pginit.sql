@@ -78,16 +78,16 @@ CREATE TABLE nftclass (
 );
 
 -- an element from nft is a specific non-fungible nft, unqiuely
--- identified by the pair (address(on blockchain), tokenID)
+-- identified by the pair (address(on blockchain), token_id)
 CREATE TABLE nft (
     nft_id UUID DEFAULT gen_random_uuid(),
     nftclass_id uuid REFERENCES nftclass(nftclass_id),
-    tokenID text not null,
+    token_id text not null,
     creation_time timestamp,
     creator_address text,
     uri text,
     attributes jsonb,
-    UNIQUE(nftclass_id, tokenID),
+    UNIQUE(nftclass_id, token_id),
     UNIQUE(nft_id)
 );
 
@@ -126,7 +126,6 @@ CREATE TABLE nftbid (
     UNIQUE(bid_id),
     UNIQUE(nft_id, from_address, bid_time)
 );
-
 
 CREATE TABLE nftoffer (
     offer_id UUID DEFAULT gen_random_uuid(),

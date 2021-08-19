@@ -18,7 +18,7 @@ import (
 
 const (
 	TopshotAddress    = "0x0b2a3299cc857e29"
-	refreshDelayTrade = time.Second * 60
+	refreshDelayTrade = time.Second * 60 * 10
 )
 
 type NBATopshotScraper struct {
@@ -26,6 +26,7 @@ type NBATopshotScraper struct {
 	flowClient      *client.Client
 	ticker          *time.Ticker
 	lastBlockNumber uint64
+	address         string
 }
 
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
@@ -50,6 +51,7 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 		tradescraper: tradeScraper,
 		flowClient:   flowClient,
 		ticker:       time.NewTicker(refreshDelayTrade),
+		address:      TopshotAddress,
 	}
 
 	go s.mainLoop()
@@ -129,21 +131,26 @@ func (scraper *NBATopshotScraper) FetchTrades() (err error) {
 			}
 
 			metadata["blocknumber"] = blockEvent.Height
-			nft := dia.NFT{
-				NFTClass: dia.NFTClass{
-					Address:      TopshotAddress,
-					Symbol:       "TS",
-					Name:         "TopShot",
-					Blockchain:   "Flow",
-					ContractType: "non-fungible",
-					Category:     "Collectibles",
-				},
-				TokenID:        strconv.Itoa(int(e.Id())),
-				CreationTime:   blockEvent.BlockTimestamp,
-				CreatorAddress: "",
-				URI:            "not available",
-				Attributes:     metadata,
+			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.address, dia.FLOW, strconv.Itoa(int(e.Id())))
+			if err != nil {
+				log.Error("fetch NFT: ", err)
+				return err
 			}
+			// nft := dia.NFT{
+			// 	NFTClass: dia.NFTClass{
+			// 		Address:      TopshotAddress,
+			// 		Symbol:       "TS",
+			// 		Name:         "TopShot",
+			// 		Blockchain:   "Flow",
+			// 		ContractType: "non-fungible",
+			// 		Category:     "Collectibles",
+			// 	},
+			// 	TokenID:        strconv.Itoa(int(e.Id())),
+			// 	CreationTime:   blockEvent.BlockTimestamp,
+			// 	CreatorAddress: "",
+			// 	URI:            "not available",
+			// 	Attributes:     metadata,
+			// }
 			trade := dia.NFTTrade{
 				NFT:              nft,
 				BlockNumber:      blockEvent.Height,

@@ -264,7 +264,7 @@ func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
 		chanData:      make(chan dia.NFT),
 	}
 	s := &CryptoPunksScraper{
-		address:       common.HexToAddress("0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"),
+		address:       common.HexToAddress("0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB"),
 		apiURLOpensea: "https://api.opensea.io/api/v1/",
 		cryptopunkURL: "https://www.larvalabs.com/cryptopunks/details/",
 		nftscraper:    nftScraper,
@@ -388,6 +388,7 @@ func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkT
 
 // GetCreationEvents returns maps for creation time and creator address by filtering 'assign punk' events.
 func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, map[uint64]common.Address, error) {
+	log.Info("fetching creation events ...")
 	creationTimeMap := make(map[uint64]time.Time)
 	creatorAddressMap := make(map[uint64]common.Address)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.address, scraper.nftscraper.ethConnection)
@@ -405,7 +406,7 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 
 	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptopunk.CryptoPunksMarketAssignIterator
-		fmt.Printf("startblock -- endblock: %v -- %v \n", startBlockNumber, endBlockNumber)
+		fmt.Printf("startblock -- endblock: %v -- %v ...\n", startBlockNumber, endBlockNumber)
 		iter, err = filterer.FilterAssign(&bind.FilterOpts{
 			Start: startBlockNumber,
 			End:   &endBlockNumber,
@@ -423,7 +424,6 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 		// map punk index to timestamp of creation event and to creator address.
 		var blockData dia.BlockData
 		for iter.Next() {
-
 			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
 			if err != nil {
 				log.Errorf("getting blockdata: %+v", err)

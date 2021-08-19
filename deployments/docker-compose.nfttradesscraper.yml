@@ -31,6 +31,48 @@ services:
       options:
         max-size: "50m"
 
+  cryptopunksscraper:
+    depends_on: [genericnfttradesscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnfttradesscraper:latest
+    command: /bin/nftTrade-scrapers -nftclass=CryptoPunks
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+    
+  cryptokittiesscraper:
+    depends_on: [genericnfttradesscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnfttradesscraper:latest
+    command: /bin/nftTrade-scrapers -nftclass=CryptoKitties
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  topshotscraper:
+    depends_on: [genericnfttradesscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnfttradesscraper:latest
+    command: /bin/nftTrade-scrapers -nftclass=Topshot
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
 secrets:
   postgres_credentials:
     file: ../secrets/postgres_credentials.txt

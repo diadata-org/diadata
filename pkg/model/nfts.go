@@ -149,7 +149,7 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 	if err != nil {
 		return err
 	}
-	query := fmt.Sprintf("insert into %s (nftclass_id,tokenID,creation_time,creator_address,uri,attributes) values ($1,$2,$3,$4,$5,$6)", nftTable)
+	query := fmt.Sprintf("insert into %s (nftclass_id,token_id,creation_time,creator_address,uri,attributes) values ($1,$2,$3,$4,$5,$6)", nftTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, nftClassID, nft.TokenID, nft.CreationTime, nft.CreatorAddress, nft.URI, nft.Attributes)
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error) {
 	nft := dia.NFT{}
 
-	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.tokenid, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.tokenid=$3", nftTable, nftclassTable)
+	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.token_id, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.token_id=$3", nftTable, nftclassTable)
 
 	var classCat sql.NullString
 
@@ -190,7 +190,7 @@ func (rdb *RelDB) GetNFTID(address string, blockchain string, tokenID string) (I
 	if err != nil {
 		return
 	}
-	query := fmt.Sprintf("select nft_id from %s where nftclass_id=$1 and tokenID=$2 ", nftTable)
+	query := fmt.Sprintf("select nft_id from %s where nftclass_id=$1 and token_id=$2 ", nftTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, nftclassID, tokenID).Scan(&ID)
 	if err != nil {
 		return

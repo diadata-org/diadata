@@ -29,6 +29,7 @@ type NBATopshotScraper struct {
 	nftscraper NFTScraper
 	flowClient *client.Client
 	ticker     *time.Ticker
+	address    string
 }
 
 type Play struct {
@@ -68,6 +69,7 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 		nftscraper: nftScraper,
 		flowClient: flowClient,
 		ticker:     time.NewTicker(refreshDelay),
+		address:    TopshotAddress,
 	}
 
 	go s.mainLoop()
@@ -127,7 +129,13 @@ func (scraper *NBATopshotScraper) FetchData() (err error) {
 			PlayID: uint32(m.PlayID()),
 		}]
 		metadata["blocknumber"] = blocknumbers[i]
+		// nftclass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address, dia.FLOW)
+		// if err != nil {
+		// 	log.Error("fetch NFT class: ", err)
+		// 	return err
+		// }
 		nft := dia.NFT{
+			// NFTClass:       nftclass,
 			NFTClass: dia.NFTClass{
 				Address:      TopshotAddress,
 				Symbol:       "TS",

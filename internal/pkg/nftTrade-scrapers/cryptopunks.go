@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Second * 60
+	CryptoPunkRefreshDelay = time.Second * 60 * 10
 	cryptoPunksFirstBlock  = 3918000
 )
 
@@ -199,18 +199,16 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			}
 
 			trade := dia.NFTTrade{
-				NFT:         nft,
-				BlockNumber: iter.Event.Raw.BlockNumber,
-				// TODO: Event.Value is in ETH value, how we can convert it to a USD value using
-				// a internal function?
+				NFT:              nft,
+				BlockNumber:      iter.Event.Raw.BlockNumber,
 				FromAddress:      iter.Event.FromAddress.Hex(),
 				ToAddress:        transferEvent.To.Hex(),
 				Exchange:         "CryptopunkMarket",
 				TxHash:           iter.Event.Raw.TxHash.Hex(),
 				Price:            price,
-				CurrencySymbol:   "WETH",
+				CurrencySymbol:   "ETH",
 				CurrencyDecimals: int32(18),
-				CurrencyAddress:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2").Hex(),
+				CurrencyAddress:  common.HexToAddress("0x0000000000000000000000000000000000000000").Hex(),
 				Timestamp:        time.Unix(int64(currHeader.Time), 0),
 			}
 			scraper.GetTradeChannel() <- trade

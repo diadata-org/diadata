@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	CryptoPunksRefreshDelay = time.Minute * 60 * 2
+	CryptoPunksRefreshDelay = time.Minute * 60 * 10
 	cryptoPunksFirstBlock   = 3918000
 )
 
@@ -146,12 +146,11 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 					NFTClass: nftclass,
 					TokenID:  iter.Event.PunkIndex.String(),
 				},
-				StartValue:  iter.Event.MinValue,
-				FromAddress: sender.Hex(),
-				AuctionType: "OfferMinValue",
-				// TO DO: Switch to asset once deployed on IBM
-				CurrencySymbol:   "WETH",
-				CurrencyAddress:  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				StartValue:       iter.Event.MinValue,
+				FromAddress:      sender.Hex(),
+				AuctionType:      "OfferMinValue",
+				CurrencySymbol:   "ETH",
+				CurrencyAddress:  "0x0000000000000000000000000000000000000000",
 				CurrencyDecimals: int32(18),
 				BlockNumber:      iter.Event.Raw.BlockNumber,
 				BlockPosition:    uint64(iter.Event.Raw.Index),

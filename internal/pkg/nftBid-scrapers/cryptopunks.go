@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Minute * 60 * 2
+	CryptoPunkRefreshDelay = time.Minute * 60 * 10
 	cryptoPunksFirstBlock  = 3918000
 )
 
@@ -35,10 +35,6 @@ func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
-	// connection, err := ethclient.Dial("node url")
-	// if err != nil {
-	// 	log.Error("Error connecting Eth Client")
-	// }
 
 	bidScraper := BidScraper{
 		shutdown:      make(chan nothing),
@@ -95,7 +91,6 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 			scraper.lastBlockNumber = uint64(cryptoPunksFirstBlock)
 		}
 	}
-	scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.bidScraper.ethConnection)
 	if err != nil {
 		return err
@@ -109,7 +104,6 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 
 	// It's a good practise to stay a little behind the head.
 	endBlockNumber := header.Number.Uint64() - 18
-	// endBlockNumber = 12653869
 
 	nftclass, err := scraper.bidScraper.datastore.GetNFTClass(scraper.contractAddress.Hex(), dia.ETHEREUM)
 	if err != nil {
@@ -143,11 +137,10 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 					NFTClass: nftclass,
 					TokenID:  iterBid.Event.PunkIndex.String(),
 				},
-				Value:       iterBid.Event.Value,
-				FromAddress: iterBid.Event.FromAddress.Hex(),
-				// TO DO: Switch to asset once deployed on IBM
-				CurrencySymbol:   "WETH",
-				CurrencyAddress:  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				Value:            iterBid.Event.Value,
+				FromAddress:      iterBid.Event.FromAddress.Hex(),
+				CurrencySymbol:   "ETH",
+				CurrencyAddress:  "0x0000000000000000000000000000000000000000",
 				CurrencyDecimals: int32(18),
 
 				BlockNumber:   iterBid.Event.Raw.BlockNumber,
@@ -159,7 +152,6 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 			fmt.Printf("got bid at time %v: %v\n", bid.Timestamp, bid)
 			scraper.GetBidChannel() <- bid
 		}
-		// ---------------------------------------------------------------------------------------------
 		break
 	}
 

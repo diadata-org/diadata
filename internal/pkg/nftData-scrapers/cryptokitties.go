@@ -294,7 +294,7 @@ func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
 		chanData:      make(chan dia.NFT),
 	}
 	s := &CryptoKittiesScraper{
-		address:          common.HexToAddress("0x06012c8cf97bead5deae237070f9587f8e7a266d"),
+		address:          common.HexToAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"),
 		apiURLOpensea:    "https://api.opensea.io/api/v1/",
 		cryptokittiesURL: "https://www.cryptokitties.co/",
 		nftscraper:       nftScraper,
