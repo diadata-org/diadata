@@ -42,6 +42,8 @@ type Datastore interface {
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
+	GetTradesByExchanges(symbol string, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
@@ -72,7 +74,8 @@ type Datastore interface {
 	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
 	GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error)
-	GetTopAsset(symbol string, relDB *RelDB) (dia.Asset, error)
+	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)
+	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
 
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)

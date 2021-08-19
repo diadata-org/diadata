@@ -27,8 +27,8 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
-	// First get asset with @symbol with largest market cap.
-	topAsset, err := db.GetTopAsset(symbol, relDB)
+	// First get asset with @symbol with largest volume.
+	topAsset, err := db.GetTopAssetByVolume(symbol, relDB)
 	if err != nil {
 		log.Error(err)
 		return &Points{}, err

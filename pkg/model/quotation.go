@@ -209,14 +209,14 @@ func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, er
 		}
 		volume, err = db.GetVolume(asset)
 		if err != nil {
-			log.Error("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
+			log.Errorf("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
 		}
 		quotations = append(quotations, *quotation)
 		volumes = append(volumes, *volume)
 	}
 	if len(quotations) == 0 {
-		return quotations, nil
+		return quotations, errors.New("no quotations available")
 	}
 
 	var quotationsSorted []AssetQuotation
@@ -248,9 +248,43 @@ func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 	return 0, errors.New("no circulating supply available")
 }
 
-// GetTopAsset returns the asset with highest market cap among all assets with symbol @symbol.
+// GetTopAssetByVolume returns the asset with highest volume among all assets with symbol @symbol.
 // This method allows us to use all API endpoints called on a symbol.
-func (db *DB) GetTopAsset(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
+func (db *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
+	assets, err := relDB.GetAssets(symbol)
+	if err != nil {
+		return
+	}
+	if len(assets) == 0 {
+		err = errors.New("no matching asset")
+		return
+	}
+	var volume float64
+	for _, asset := range assets {
+		var value *float64
+		value, err = db.GetVolume(asset)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		if value == nil {
+			continue
+		}
+		if *value > volume {
+			volume = *value
+			topAsset = asset
+		}
+	}
+	if volume == 0 {
+		err = errors.New("no quotation for symbol")
+	} else {
+		err = nil
+	}
+	return
+}
+
+// GetTopAssetByMcap returns the asset with highest market cap among all assets with symbol @symbol.
+func (db *DB) GetTopAssetByMcap(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
 	assets, err := relDB.GetAssets(symbol)
 	if err != nil {
 		return
