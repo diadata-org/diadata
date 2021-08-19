@@ -40,6 +40,10 @@ func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, param 
 	return s
 }
 
+func (s *FilterMA) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+
 func (s *FilterMA) compute(trade dia.Trade) {
 	s.modified = true
 	if s.lastTrade != nil {
@@ -61,12 +65,14 @@ func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 	currPrice := trade.EstimatedUSDPrice
 	currVolume := trade.Volume
 	if diff > 1 {
+
 		for diff > 1 {
 			s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
 			s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 			diff--
 		}
 	} else {
+
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]
@@ -84,6 +90,10 @@ func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 		s.previousVolumes = s.previousVolumes[0:s.param]
 	}
 	s.currentTime = t
+}
+
+func (s *FilterMA) FinalCompute(t time.Time) float64 {
+	return s.finalCompute(t)
 }
 
 func (s *FilterMA) finalCompute(t time.Time) float64 {
@@ -112,6 +122,10 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 	}
 	s.value = totalPrice / totalVolume
 	return s.value
+}
+
+func (s *FilterMA) FilterPointForBlock() *dia.FilterPoint {
+	return s.filterPointForBlock()
 }
 
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {

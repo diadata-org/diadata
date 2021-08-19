@@ -1,0 +1,47 @@
+type Query {
+  GetQuotation(symbol: String!): Quotation
+  GetSupply(symbol: String!): Supply
+  GetSupplies(symbol: String!): [Supply]
+  GetChart(
+    filter: String!
+    BlockDurationSeconds: Int!
+    BlockShiftSeconds: Int
+    Symbol: String!
+    StartTime: Time!
+    EndTime: Time!
+    Exchanges: [String!]
+  ): [FilterPoint]
+}
+
+scalar Time
+
+type Quotation {
+  Symbol: String
+  Name: String
+  Price: Float
+  Source: String
+  ITIN: String
+  Time: Time
+}
+
+type Supply {
+  Symbol: String
+  Name: String
+  Supply: Float
+  Source: String
+  CirculatingSupply: Float
+  Time: Time
+}
+
+type ChartPoint {
+  Time: Time
+  Exchange: String
+  Value: Float
+}
+
+type FilterPoint {
+  Symbol: String
+  Value: Float
+  Name: String
+  Time: Time
+}
