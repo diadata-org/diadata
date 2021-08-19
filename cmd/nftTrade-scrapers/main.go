@@ -51,6 +51,9 @@ func main() {
 	case "CryptoKitties":
 		log.Println("NFT Data Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
+	case "Topshot":
+		log.Println("NFT Data Scraper: Start scraping trades from NBA Topshot")
+		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
