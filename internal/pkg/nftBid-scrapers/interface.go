@@ -28,6 +28,6 @@ type BidScraper struct {
 	error         error
 	closed        bool
 	ethConnection *ethclient.Client
-	datastore     models.RelDatastore
+	datastore     *models.RelDB
 	chanBid       chan dia.NFTBid
 }

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	refreshDelay = time.Hour * 24
+	refreshDelay = time.Minute * 2
 )
 
 type nothing struct{}

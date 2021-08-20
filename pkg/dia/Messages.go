@@ -194,6 +194,24 @@ type BlockData struct {
 	Data        map[string]interface{}
 }
 
+type EthereumBlockData struct {
+	GasLimit    uint64             `json:"gas_limit"`
+	GasUsed     uint64             `json:"gas_used"`
+	Difficulty  *big.Int           `json:"difficulty"`
+	Time        uint64             `json:"time"`
+	Size        common.StorageSize `json:"size"`
+	Number      uint64             `json:"number"`
+	MixDigest   common.Hash        `json:"mix_digest"`
+	Nonce       uint64             `json:"nonce"`
+	Coinbase    common.Address     `json:"coinbase"`
+	Root        common.Hash        `json:"root"`
+	ParentHash  common.Hash        `json:"parent_hash"`
+	TxHash      common.Hash        `json:"tx_hash"`
+	ReceiptHash common.Hash        `json:"receipt_hash"`
+	UncleHash   common.Hash        `json:"uncle_hash"`
+	Extra       []byte             `json:"extra"`
+}
+
 type Exchange struct {
 	Name          string
 	Centralized   bool

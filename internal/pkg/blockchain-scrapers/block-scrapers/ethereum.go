@@ -3,44 +3,24 @@ package blockscrapers
 import (
 	"context"
 	"errors"
-	"math/big"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/fatih/structs"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
-	followDist = 8
+	followDist = 2
 )
 
 type EthereumScraper struct {
-	blockscraper BlockScraper
-	client       *ethclient.Client
-	ticker       *time.Ticker
-}
-
-type EthereumBlockData struct {
-	GasLimit    uint64             `json:"gas_limit"`
-	GasUsed     uint64             `json:"gas_used"`
-	Difficulty  *big.Int           `json:"difficulty"`
-	Time        uint64             `json:"time"`
-	Size        common.StorageSize `json:"size"`
-	Number      uint64             `json:"number"`
-	MixDigest   common.Hash        `json:"mix_digest"`
-	Nonce       uint64             `json:"nonce"`
-	Coinbase    common.Address     `json:"coinbase"`
-	Root        common.Hash        `json:"root"`
-	ParentHash  common.Hash        `json:"parent_hash"`
-	TxHash      common.Hash        `json:"tx_hash"`
-	ReceiptHash common.Hash        `json:"receipt_hash"`
-	UncleHash   common.Hash        `json:"uncle_hash"`
-	Extra       []byte             `json:"extra"`
+	blockscraper    BlockScraper
+	client          *ethclient.Client
+	ticker          *time.Ticker
+	lastBlockNumber int64
 }
 
 func NewEthereumScraper(rdb *models.RelDB) *EthereumScraper {
@@ -90,15 +70,12 @@ func (scraper *EthereumScraper) mainLoop() {
 
 func (scraper *EthereumScraper) FetchData() error {
 
-	// Fetch last scraped block number from db.
-	var lastBlockNumber int
-	blockNumber, err := scraper.blockscraper.relDB.GetLastBlockBlockscraper(dia.ETHEREUM)
-	if err != nil {
-		log.Errorf("could not find last scraped block: %v. Start from block 0.", err)
-	} else {
-		lastBlockNumber = int(blockNumber)
+	// Fetch last scraped block number from db upon initialization.
+	if scraper.lastBlockNumber == 0 {
+		var err error
+		scraper.lastBlockNumber, err = scraper.blockscraper.relDB.GetLastBlockBlockscraper(dia.ETHEREUM)
 		if err != nil {
-			log.Error("parse last block number: ", err)
+			log.Errorf("could not find last scraped block: %v. Start from block 0.", err)
 		}
 	}
 
@@ -107,37 +84,15 @@ func (scraper *EthereumScraper) FetchData() error {
 		return err
 	}
 	currentBlockNumber := block.NumberU64()
-	for i := lastBlockNumber; i < int(currentBlockNumber)-followDist; i++ {
-		var ethblockdata EthereumBlockData
-		var blockdata dia.BlockData
-		block, err := scraper.client.BlockByNumber(context.Background(), big.NewInt(int64(i)))
+	for i := int(scraper.lastBlockNumber); i < int(currentBlockNumber)-followDist; i++ {
+		blockdata, err := ethhelper.GetBlockDataOnChain(int64(i), scraper.client)
 		if err != nil {
 			return err
 		}
-
-		ethblockdata.Coinbase = block.Coinbase()
-		ethblockdata.Difficulty = block.Difficulty()
-		ethblockdata.Extra = block.Extra()
-		ethblockdata.GasLimit = block.GasLimit()
-		ethblockdata.GasUsed = block.GasUsed()
-		ethblockdata.MixDigest = block.MixDigest()
-		ethblockdata.Nonce = block.Nonce()
-		ethblockdata.Number = block.NumberU64()
-		ethblockdata.ParentHash = block.ParentHash()
-		ethblockdata.ReceiptHash = block.ReceiptHash()
-		ethblockdata.Root = block.Root()
-		ethblockdata.Size = block.Size()
-		ethblockdata.Time = block.Time()
-		ethblockdata.TxHash = block.TxHash()
-		ethblockdata.UncleHash = block.UncleHash()
-
-		blockdata.BlockchainName = dia.ETHEREUM
-		blockdata.BlockNumber = int64(ethblockdata.Number)
-		blockdata.Data = structs.Map(ethblockdata)
-
 		scraper.GetDataChannel() <- blockdata
-
+		scraper.lastBlockNumber = int64(i)
 	}
+
 	return nil
 }
 

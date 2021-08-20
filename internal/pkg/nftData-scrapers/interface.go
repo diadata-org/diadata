@@ -32,6 +32,6 @@ type NFTScraper struct {
 	error         error
 	closed        bool
 	ethConnection *ethclient.Client
-	relDB         models.RelDatastore
+	relDB         *models.RelDB
 	chanData      chan dia.NFT
 }

@@ -26,7 +26,7 @@ type TradeScraper struct {
 	error         error
 	closed        bool
 	ethConnection *ethclient.Client
-	datastore     models.RelDatastore
+	datastore     *models.RelDB
 	chanTrade     chan dia.NFTTrade
 	source        string
 }

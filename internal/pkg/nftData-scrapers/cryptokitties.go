@@ -481,11 +481,11 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 		// map kitty id to timestamp of creation event.
 		var blockData dia.BlockData
 		for iter.Next() {
-			blockData, err = scraper.nftscraper.relDB.GetBlockData(dia.ETHEREUM, int64(iter.Event.Raw.BlockNumber))
+			blockData, err = ethhelper.GetBlockData(int64(iter.Event.Raw.BlockNumber), scraper.nftscraper.relDB, scraper.nftscraper.ethConnection)
 			if err != nil {
 				log.Errorf("getting blockdata: %+v", err)
 			}
-			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
+			creationMap[iter.Event.KittyId.Uint64()] = time.Unix(int64(blockData.Data["Time"].(uint64)), 0)
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize
