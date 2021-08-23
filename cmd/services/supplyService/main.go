@@ -22,8 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	// conn, err := ethclient.Dial("http://159.69.120.42:8545/")
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/806b0419b2d041869fc83727e0043236")
+	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
 	if err != nil {
 		log.Fatal(err)
 	}
