@@ -448,6 +448,19 @@ func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, c
 		}
 	}
 
+	count := 0
+	for statusCode == 429 && count < 20 {
+		// Retry get request
+		log.Info("sleep")
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		respData, statusCode, err = utils.GetRequestWithStatus(url)
+		log.Info("statusCode, err in second try: ", statusCode, err)
+		if err != nil {
+			return nil, creatorAddress, creationTime, err
+		}
+		count++
+	}
+
 	traits, err := GetPlayerTraits(respData)
 	if err != nil {
 		return nil, creatorAddress, creationTime, err

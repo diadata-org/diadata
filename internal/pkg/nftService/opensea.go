@@ -80,6 +80,19 @@ func fetchClasses(offset, limit int, order_direction string) (acs []AssetContrac
 		}
 	}
 
+	count := 0
+	for statusCode == 429 && count < 20 {
+		// Retry get request
+		log.Info("sleep")
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		resp, statusCode, err = utils.GetRequestWithStatus(url)
+		log.Info("statusCode, err in second try: ", statusCode, err)
+		if err != nil {
+			return
+		}
+		count++
+	}
+
 	var openseaResponse openseaAPIResponse
 	err = json.Unmarshal(resp, &openseaResponse)
 	if err != nil {

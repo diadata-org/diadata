@@ -365,6 +365,7 @@ func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkT
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
 
 	respData, statusCode, err := utils.GetRequestWithStatus(url)
+	log.Info("statusCode, err: ", statusCode, err)
 	if err != nil {
 		if statusCode != 429 {
 			return traits, err
@@ -375,6 +376,19 @@ func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkT
 		if err != nil {
 			return traits, err
 		}
+	}
+
+	count := 0
+	for statusCode == 429 && count < 20 {
+		// Retry get request
+		log.Info("sleep")
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		respData, statusCode, err = utils.GetRequestWithStatus(url)
+		log.Info("statusCode, err in second try: ", statusCode, err)
+		if err != nil {
+			return traits, err
+		}
+		count++
 	}
 
 	traits, err = GetCryptopunkTraits(respData)
@@ -423,13 +437,20 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 
 		// map punk index to timestamp of creation event and to creator address.
 		var blockData dia.BlockData
+		count := 0
 		for iter.Next() {
+			log.Info("block number: ", iter.Event.Raw.BlockNumber)
+			log.Info("number count: ", count)
+			count++
 			blockData, err = ethhelper.GetBlockData(int64(iter.Event.Raw.BlockNumber), scraper.nftscraper.relDB, scraper.nftscraper.ethConnection)
 			if err != nil {
 				log.Errorf("getting blockdata: %+v", err)
 			}
 			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(uint64)), 0)
 			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
+			if count > 100 {
+				break
+			}
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize

@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	openseaAPIWait          = 250
+	openseaAPIWait          = 1000
 	cryptoKittiesFirstBlock = uint64(4605167)
 	batchSize               = 5000
 )
@@ -413,6 +413,19 @@ func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]Cryptoki
 		if err != nil {
 			return traits, creatorAddress, err
 		}
+	}
+
+	count := 0
+	for statusCode == 429 && count < 20 {
+		// Retry get request
+		log.Info("sleep")
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		respData, statusCode, err = utils.GetRequestWithStatus(url)
+		log.Info("statusCode, err in second try: ", statusCode, err)
+		if err != nil {
+			return traits, creatorAddress, err
+		}
+		count++
 	}
 
 	traits, err = GetCryptokittiesTraits(respData)
