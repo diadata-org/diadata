@@ -18,6 +18,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	structs "github.com/fatih/structs"
 )
 
@@ -250,7 +251,8 @@ type CryptopunkOutput struct {
 }
 
 func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial("https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6")
+	// connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -324,7 +326,7 @@ func (scraper *CryptoPunksScraper) FetchData() (err error) {
 
 		out.Traits, err = scraper.GetOpenSeaPunk(big.NewInt(int64(i)))
 		if err != nil {
-			log.Errorf("Error getting Opensea data: %+v", err)
+			log.Errorf("getting Opensea data: %+v", err)
 		}
 		// 3. combine both in order to fill dia.NFT
 		result := structs.Map(out)
@@ -366,28 +368,14 @@ func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkT
 
 	respData, statusCode, err := utils.GetRequestWithStatus(url)
 	log.Info("statusCode, err: ", statusCode, err)
-	if err != nil {
-		if statusCode != 429 {
-			return traits, err
-		}
-		// Retry get request once
-		time.Sleep(time.Millisecond * openseaAPIWait)
-		respData, _, err = utils.GetRequestWithStatus(url)
-		if err != nil {
-			return traits, err
-		}
-	}
 
 	count := 0
-	for statusCode == 429 && count < 20 {
+	for statusCode != 200 && count < 40 {
 		// Retry get request
-		log.Infof("sleep for %v milliseconds", openseaAPIWait*count)
+		log.Infof("sleep for %v seconds", count)
 		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
 		respData, statusCode, err = utils.GetRequestWithStatus(url)
-		log.Info("statusCode, err in second try: ", statusCode, err)
-		if err != nil {
-			return traits, err
-		}
+		log.Info("statusCode, err in retry: ", statusCode, err)
 		count++
 	}
 
@@ -437,20 +425,19 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 
 		// map punk index to timestamp of creation event and to creator address.
 		var blockData dia.BlockData
-		count := 0
 		for iter.Next() {
-			log.Info("block number: ", iter.Event.Raw.BlockNumber)
-			log.Info("number count: ", count)
-			count++
+
 			blockData, err = ethhelper.GetBlockData(int64(iter.Event.Raw.BlockNumber), scraper.nftscraper.relDB, scraper.nftscraper.ethConnection)
 			if err != nil {
 				log.Errorf("getting blockdata: %+v", err)
 			}
-			creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(uint64)), 0)
-			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
-			if count > 100 {
-				break
+			switch blockData.Data["Time"].(type) {
+			case float64:
+				creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
+			case uint64:
+				creationTimeMap[iter.Event.PunkIndex.Uint64()] = time.Unix(int64(blockData.Data["Time"].(uint64)), 0)
 			}
+			creatorAddressMap[iter.Event.PunkIndex.Uint64()] = iter.Event.To
 		}
 		startBlockNumber = endBlockNumber
 		endBlockNumber = endBlockNumber + batchSize
