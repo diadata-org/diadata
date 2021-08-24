@@ -75,7 +75,7 @@ func parseTrade(row []interface{}) *dia.Trade {
 	return nil
 }
 
-func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
 	r := []dia.Trade{}
 	subquery := ""
 	query := ""
@@ -87,7 +87,7 @@ func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime,
 				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
 			}
 		}
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s' and (%s) and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, subquery, startTime.UnixNano(), endTime.UnixNano())
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and (%s) and  time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, subquery, startTime.UnixNano(), endTime.UnixNano())
 
 	}
 	// query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s'  and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, startTime.UnixNano(), endTime.UnixNano())
@@ -107,7 +107,7 @@ func (db *DB) GetTradesByExchanges(symbol string, exchanges []string, startTime,
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", symbol)
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
 	}
 	return r, nil
 }

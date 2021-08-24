@@ -26,3 +26,10 @@ func (qr *FilterPointResolver) Time(ctx context.Context) (*graphql.Time, error) 
 func (qr *FilterPointResolver) Value(ctx context.Context) (*float64, error) {
 	return &qr.q.Value, nil
 }
+func (qr *FilterPointResolver) Address(ctx context.Context) (*string, error) {
+	return &qr.q.Asset.Address, nil
+}
+
+func (qr *FilterPointResolver) Blockchain(ctx context.Context) (*string, error) {
+	return &qr.q.Asset.Blockchain, nil
+}
