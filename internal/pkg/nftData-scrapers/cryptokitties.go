@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 	"time"
 
 	cryptokitties "github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
@@ -471,7 +472,7 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 			End:   &endBlockNumber,
 		})
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
 				continue

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 	"time"
 
 	cryptopunk "github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
@@ -414,7 +415,7 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 			End:   &endBlockNumber,
 		}, nil)
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
 				continue
