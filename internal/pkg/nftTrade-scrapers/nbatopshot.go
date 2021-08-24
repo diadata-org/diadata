@@ -22,11 +22,10 @@ const (
 )
 
 type NBATopshotScraper struct {
-	tradescraper    TradeScraper
-	flowClient      *client.Client
-	ticker          *time.Ticker
-	lastBlockNumber uint64
-	address         string
+	tradescraper TradeScraper
+	flowClient   *client.Client
+	ticker       *time.Ticker
+	address      string
 }
 
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
@@ -81,159 +80,256 @@ func (scraper *NBATopshotScraper) mainLoop() {
 }
 
 func (scraper *NBATopshotScraper) FetchTrades() (err error) {
-	log.Info("fetch trades...")
-	if scraper.lastBlockNumber == 0 {
-		nftclass := dia.NFTClass{
-			Address:      TopshotAddress,
-			Symbol:       "TS",
-			Name:         "TopShot",
-			Blockchain:   "Flow",
-			ContractType: "non-fungible",
-			Category:     "Collectibles",
+	var lastBlock uint64
+	lastBlock, err = scraper.tradescraper.datastore.GetLastBlockheightTopshot(time.Now())
+	if err != nil {
+		log.Error("fetch last topshot block: ", err)
+	}
+	if lastBlock == uint64(0) {
+		// No last block in db. Start from genesis block.
+		lastBlock = flowhelper.RootHeight1
+	}
+	log.Info("current height: ", lastBlock)
+
+	// get all recipients from block
+	recipientsMap := make(map[string]string)
+	allDepositMoments, blocknumbers, err := scraper.GetAllDepositMoments(lastBlock)
+	if err != nil {
+		return err
+	}
+
+	for i, moment := range allDepositMoments {
+		e := DepositEvent(moment)
+		// GetNFT from token Id
+		tokenId := strconv.Itoa(int(e.Id()))
+		recipientAddress := e.Recipient().Hex()
+		BlockNumber := strconv.Itoa(int(blocknumbers[i]))
+		recipientsMap[tokenId+","+BlockNumber] = recipientAddress
+	}
+
+	// get all purchased moments from block, add to trade db
+	allMomentsPurchased, timestamps, blocknumbers, err := scraper.GetAllMomentsPurchased(lastBlock)
+	if err != nil {
+		return err
+	}
+
+	for i, moment := range allMomentsPurchased {
+		e := MomentPurchasedEvent(moment.Value)
+
+		nft, err := scraper.tradescraper.datastore.GetNFT(scraper.address, dia.FLOW, strconv.Itoa(int(e.Id())))
+		if err != nil {
+			log.Error("fetch NFT: ", err)
+			return err
 		}
 
-		// fetch latest block
-		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTradeScraper(nftclass)
-		if err != nil {
-			// We couldn't find a last block number, fallback to NBATopshot first block number!
-			scraper.lastBlockNumber = flowhelper.RootHeight1
+		// GetNFT from token Id
+		tokenId := strconv.Itoa(int(e.Id()))
+		BlockNumber := strconv.Itoa(int(blocknumbers[i]))
+		recipientAddress := recipientsMap[tokenId+","+BlockNumber]
+
+		trade := dia.NFTTrade{
+			NFT:              nft,
+			BlockNumber:      blocknumbers[i],
+			FromAddress:      e.Seller().Hex(),
+			ToAddress:        recipientAddress,
+			Exchange:         "NBATopshotMarket",
+			TxHash:           moment.TransactionID.Hex(),
+			PriceUSD:         e.Price(),
+			CurrencySymbol:   "USD",
+			CurrencyDecimals: int32(18),
+			CurrencyAddress:  "",
+			Timestamp:        timestamps[i],
+		}
+		scraper.GetTradeChannel() <- trade
+
+	}
+
+	return nil
+}
+
+// ---------------------------------------------------------
+// Get Data
+// ---------------------------------------------------------
+
+// GetAllMomentsPurchased returns all moments from genesis to the latest block by iterating through
+// blocks and looking for MomentPurchased events.
+func (scraper *NBATopshotScraper) GetAllMomentsPurchased(startheight uint64) (purchasedMoments []flow.Event, timestamps []time.Time, blocknumbers []uint64, err error) {
+	log.Info("Getting purchased moments...")
+	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
+	if err != nil {
+		log.Error(err)
+	}
+
+	// Get first interval.
+	var currentIndex int
+	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
+		currentIndex = len(flowhelper.RootHeights)
+	} else {
+		for i, root := range flowhelper.RootHeights {
+			if startheight < root {
+				currentIndex = i
+				break
+			}
 		}
 	}
-	log.Info("current height: ", scraper.lastBlockNumber)
 
-	scraper.flowClient, err = flowhelper.GetFlowClient(scraper.lastBlockNumber)
+	log.Infof("make flow client at startheight %v: ", startheight)
+	log.Infof("currentIndex: %v\n", currentIndex)
+
+	flowClient, err := flowhelper.GetFlowClient(startheight)
 	if err != nil {
 		return
 	}
 
-	// fetch block events of topshot Market.MomentPurchased events for the past 1000 blocks
-	blockEvents, err := scraper.flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
+	for startheight < latestBlock.Height {
+
+		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
+			// all blocks within the range of given client.
+			m, t, b, err := GetPurchasedMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
+			if err != nil {
+				log.Error("getting purchased moments: ", err)
+			}
+			purchasedMoments = append(purchasedMoments, m...)
+			timestamps = append(timestamps, t...)
+			blocknumbers = append(blocknumbers, b...)
+			startheight += flowhelper.RequestLimit
+			fmt.Println("current startheight: ", startheight)
+		} else {
+			// Reached new block range and thus need new client.
+			fmt.Println("reached new block range")
+			m, t, b, err := GetPurchasedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
+			if err != nil {
+				log.Error(err)
+			}
+			purchasedMoments = append(purchasedMoments, m...)
+			timestamps = append(timestamps, t...)
+			blocknumbers = append(blocknumbers, b...)
+
+			startheight = flowhelper.RootHeights[currentIndex]
+			currentIndex += 1
+			flowClient, err = flowhelper.GetFlowClient(startheight)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+	}
+	log.Info("... done getting purchased moments.")
+	return
+}
+
+// GetPurchasedMoments returns all moments minted between blocks @startheight and @endheight.
+// The difference @endheight-@starthight is limited to 250.
+// The range @startheight, @endheight must not be spread over more than the given @flowClient.
+// https://docs.onflow.org/node-operation/past-sporks/
+func GetPurchasedMoments(startheight, endheight uint64, flowClient *client.Client) (purchasedMoments []flow.Event, timestamps []time.Time, blockNumbers []uint64, err error) {
+
+	blockEvents, err := flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
 		Type:        "A.c1e4f4f4c4257510.Market.MomentPurchased",
-		StartHeight: scraper.lastBlockNumber,
-		EndHeight:   scraper.lastBlockNumber + flowhelper.RequestLimit,
+		StartHeight: startheight,
+		EndHeight:   endheight,
 	})
 	if err != nil {
-		log.Error("flowClient.GetEventsForHeightRange: ", err)
+		return
+	}
+	for _, blockEvent := range blockEvents {
+		timestamp := blockEvent.BlockTimestamp
+		for _, momentPurchasedEvent := range blockEvent.Events {
+			fmt.Printf("got purchased moment %v at time %v: \n", momentPurchasedEvent.Value, timestamp)
+			timestamps = append(timestamps, timestamp)
+			blockNumbers = append(blockNumbers, blockEvent.Height)
+			purchasedMoments = append(purchasedMoments, momentPurchasedEvent)
+		}
+	}
+	return
+}
+
+// GetAllDepositMoments returns all moments from genesis to the latest block by iterating through
+// blocks and looking for Deposit events.
+func (scraper *NBATopshotScraper) GetAllDepositMoments(startheight uint64) (depositMoments []cadence.Event, blocknumbers []uint64, err error) {
+	log.Info("Getting Deposit moments...")
+	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
+	if err != nil {
+		log.Error(err)
 	}
 
-	for _, blockEvent := range blockEvents {
-		for _, purchaseEvent := range blockEvent.Events {
-			// loop through the Market.MomentPurchased events in this blockEvent
-			e := MomentPurchasedEvent(purchaseEvent.Value)
-			saleMoment, err := GetSaleMomentFromOwnerAtBlock(scraper.flowClient, blockEvent.Height-1, *e.Seller(), e.Id())
-			if err != nil {
-				log.Error("GetSaleMomentFromOwnerAtBlock: ", err)
+	// Get first interval.
+	var currentIndex int
+	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
+		currentIndex = len(flowhelper.RootHeights)
+	} else {
+		for i, root := range flowhelper.RootHeights {
+			if startheight < root {
+				currentIndex = i
+				break
 			}
-
-			metadata, err := scraper.GetMetadata(uint32(saleMoment.SetID()), uint32(saleMoment.PlayID()))
-			if err != nil {
-				return err
-			}
-
-			metadata["blocknumber"] = blockEvent.Height
-			nft, err := scraper.tradescraper.datastore.GetNFT(scraper.address, dia.FLOW, strconv.Itoa(int(e.Id())))
-			if err != nil {
-				log.Error("fetch NFT: ", err)
-				return err
-			}
-			// nft := dia.NFT{
-			// 	NFTClass: dia.NFTClass{
-			// 		Address:      TopshotAddress,
-			// 		Symbol:       "TS",
-			// 		Name:         "TopShot",
-			// 		Blockchain:   "Flow",
-			// 		ContractType: "non-fungible",
-			// 		Category:     "Collectibles",
-			// 	},
-			// 	TokenID:        strconv.Itoa(int(e.Id())),
-			// 	CreationTime:   blockEvent.BlockTimestamp,
-			// 	CreatorAddress: "",
-			// 	URI:            "not available",
-			// 	Attributes:     metadata,
-			// }
-			trade := dia.NFTTrade{
-				NFT:              nft,
-				BlockNumber:      blockEvent.Height,
-				FromAddress:      e.Seller().Hex(),
-				ToAddress:        "",
-				Exchange:         "NBATopshotMarket",
-				TxHash:           purchaseEvent.TransactionID.Hex(),
-				PriceUSD:         e.Price(),
-				CurrencySymbol:   "USD",
-				CurrencyDecimals: int32(18),
-				CurrencyAddress:  "",
-				Timestamp:        blockEvent.BlockTimestamp,
-			}
-			scraper.GetTradeChannel() <- trade
-
-			log.Info(saleMoment)
-			log.Infof("transactionID: %s, block height: %d\n",
-				purchaseEvent.TransactionID.String(), blockEvent.Height)
-			log.Info(" ")
 		}
 	}
 
-	// Update the last lastBlockNumber value.
-	scraper.lastBlockNumber = scraper.lastBlockNumber + flowhelper.RequestLimit
-	return nil
+	log.Infof("make flow client at startheight %v: ", startheight)
+	log.Infof("currentIndex: %v\n", currentIndex)
+
+	flowClient, err := flowhelper.GetFlowClient(startheight)
+	if err != nil {
+		return
+	}
+
+	for startheight < latestBlock.Height {
+
+		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
+			// all blocks within the range of given client.
+			m, b, err := GetDepositMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
+			if err != nil {
+				log.Error("getting deposit moments: ", err)
+			}
+			depositMoments = append(depositMoments, m...)
+			blocknumbers = append(blocknumbers, b...)
+			startheight += flowhelper.RequestLimit
+			fmt.Println("current startheight: ", startheight)
+		} else {
+			// Reached new block range and thus need new client.
+			fmt.Println("reached new block range")
+			m, b, err := GetDepositMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
+			if err != nil {
+				log.Error(err)
+			}
+			depositMoments = append(depositMoments, m...)
+			blocknumbers = append(blocknumbers, b...)
+
+			startheight = flowhelper.RootHeights[currentIndex]
+			currentIndex += 1
+			flowClient, err = flowhelper.GetFlowClient(startheight)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+	}
+	log.Info("... done getting deposit moments.")
+	return
 }
 
-// GetMetadata returns the metadata associated to the play with @playid in the set with @setid.
-func (scraper *NBATopshotScraper) GetMetadata(setid uint32, playid uint32) (map[string]interface{}, error) {
-	getPlaysScript := `
-	import TopShot from 0x0b2a3299cc857e29
+// GetDepositMoments returns all moments minted between blocks @startheight and @endheight.
+// The difference @endheight-@starthight is limited to 250.
+// The range @startheight, @endheight must not be spread over more than the given @flowClient.
+// https://docs.onflow.org/node-operation/past-sporks/
+func GetDepositMoments(startheight, endheight uint64, flowClient *client.Client) (depositMoments []cadence.Event, blockNumbers []uint64, err error) {
 
-	pub struct MomentData  {
-		pub var seriesId: UInt32
-		pub var setId: UInt32
-		pub var playId: UInt32
-		
-  
-		pub var play: {String: String}	 
-		pub var setName: String
-		pub var numMoments: UInt32
-	  
-		init(playid: UInt32, setid: UInt32) {
-		  self.seriesId = TopShot.getSetSeries(setID: setid)!
-		  self.playId = playid
-		  self.setId = setid
-		   
-		  self.play = TopShot.getPlayMetaData(playID: self.playId)!
-		  self.setName = TopShot.getSetName(setID: self.setId)!
-		  self.numMoments = TopShot.getNumMomentsInEdition(setID: self.setId, playID: self.playId)!
-		  
-		}  
-	  }
-	
-	pub fun main(setid: UInt32, playid: UInt32): MomentData {
-		var mom: MomentData = MomentData(playid: playid, setid: setid)		
-		return mom
-	}
-	
-`
-	res, err := scraper.flowClient.ExecuteScriptAtLatestBlock(context.Background(), []byte(getPlaysScript), []cadence.Value{
-		cadence.UInt32(setid),
-		cadence.UInt32(playid),
+	blockEvents, err := flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
+		Type:        "A.0b2a3299cc857e29.TopShot.Deposit",
+		StartHeight: startheight,
+		EndHeight:   endheight,
 	})
 	if err != nil {
-		return make(map[string]interface{}), fmt.Errorf("error fetching sale moment from flow: %w", err)
+		return
 	}
-
-	return cadenceMomentToMap(res.(cadence.Struct)), nil
-}
-
-// cadenceMomentToMap is a helper for GetMetadata and converts a moment to a map.
-func cadenceMomentToMap(cadenceMoment cadence.Value) map[string]interface{} {
-	castPlay := cadenceMoment.ToGoValue().([]interface{})
-
-	numMoments := castPlay[5].(uint32)
-	auxAttributes := castPlay[3].(map[interface{}]interface{})
-	attributes := make(map[string]interface{})
-	for key := range auxAttributes {
-		attributes[key.(string)] = auxAttributes[key]
+	for _, blockEvent := range blockEvents {
+		timestamp := blockEvent.BlockTimestamp
+		for _, momentDepositEvent := range blockEvent.Events {
+			fmt.Printf("got deposit moment %v at time %v: \n", momentDepositEvent.Value, timestamp)
+			depositMoments = append(depositMoments, momentDepositEvent.Value)
+			blockNumbers = append(blockNumbers, blockEvent.Height)
+		}
 	}
-	attributes["numMomentsInEdition"] = numMoments
-	return attributes
+	return
 }
 
 // GetDataChannel returns the scrapers data channel.
@@ -266,8 +362,31 @@ func (scraper *NBATopshotScraper) Close() error {
 }
 
 // ---------------------------------------------------------
-// Get Trade
+// Get Trade Event
 // ---------------------------------------------------------
+
+//  pub event Deposit(id: UInt64, to: Address?)
+type DepositEvent cadence.Event
+
+// Token Id
+func (evt DepositEvent) Id() uint64 {
+	return uint64(evt.Fields[0].(cadence.UInt64))
+}
+
+// Recipient address
+func (evt DepositEvent) Recipient() *flow.Address {
+	optionalAddress := (evt.Fields[1]).(cadence.Optional)
+	if cadenceAddress, ok := optionalAddress.Value.(cadence.Address); ok {
+		recipientAddress := flow.BytesToAddress(cadenceAddress.Bytes())
+		return &recipientAddress
+	}
+	return nil
+}
+
+func (evt DepositEvent) String() string {
+	return fmt.Sprintf("deposit: momentid: %d, recipient: %s",
+		evt.Id(), evt.Recipient())
+}
 
 // pub event MomentPurchased(id: UInt64, price: UFix64, seller: Address?)
 type MomentPurchasedEvent cadence.Event
@@ -292,80 +411,4 @@ func (evt MomentPurchasedEvent) Seller() *flow.Address {
 func (evt MomentPurchasedEvent) String() string {
 	return fmt.Sprintf("moment purchased: momentid: %d, price: %f, seller: %s",
 		evt.Id(), evt.Price(), evt.Seller())
-}
-
-func GetSaleMomentFromOwnerAtBlock(flowClient *client.Client, blockHeight uint64, ownerAddress flow.Address, momentFlowID uint64) (*SaleMoment, error) {
-	getSaleMomentScript := `
-		import TopShot from 0x0b2a3299cc857e29
-        import Market from 0xc1e4f4f4c4257510
-        pub struct SaleMoment {
-          pub var id: UInt64
-          pub var playId: UInt32
-          pub var play: {String: String}
-          pub var setId: UInt32
-          pub var setName: String
-          pub var serialNumber: UInt32
-          pub var price: UFix64
-          init(moment: &TopShot.NFT, price: UFix64) {
-            self.id = moment.id
-            self.playId = moment.data.playID
-            self.play = TopShot.getPlayMetaData(playID: self.playId)!
-            self.setId = moment.data.setID
-            self.setName = TopShot.getSetName(setID: self.setId)!
-            self.serialNumber = moment.data.serialNumber
-            self.price = price
-          }
-        }
-		pub fun main(owner:Address, momentID:UInt64): SaleMoment {
-			let acct = getAccount(owner)
-            let collectionRef = acct.getCapability(/public/topshotSaleCollection)!.borrow<&{Market.SalePublic}>() ?? panic("Could not borrow capability from public collection")
-			return SaleMoment(moment: collectionRef.borrowMoment(id: momentID)!,price: collectionRef.getPrice(tokenID: momentID)!)
-		}
-`
-	res, err := flowClient.ExecuteScriptAtBlockHeight(context.Background(), blockHeight, []byte(getSaleMomentScript), []cadence.Value{
-		cadence.BytesToAddress(ownerAddress.Bytes()),
-		cadence.UInt64(momentFlowID),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error fetching sale moment from flow: %w", err)
-	}
-	saleMoment := SaleMoment(res.(cadence.Struct))
-	return &saleMoment, nil
-}
-
-type SaleMoment cadence.Struct
-
-func (s SaleMoment) ID() uint64 {
-	return uint64(s.Fields[0].(cadence.UInt64))
-}
-
-func (s SaleMoment) PlayID() uint32 {
-	return uint32(s.Fields[1].(cadence.UInt32))
-}
-
-func (s SaleMoment) SetName() string {
-	return string(s.Fields[4].(cadence.String))
-}
-
-func (s SaleMoment) SetID() uint32 {
-	return uint32(s.Fields[3].(cadence.UInt32))
-}
-
-func (s SaleMoment) Play() map[string]string {
-	dict := s.Fields[2].(cadence.Dictionary)
-	res := map[string]string{}
-	for _, kv := range dict.Pairs {
-		res[string(kv.Key.(cadence.String))] = string(kv.Value.(cadence.String))
-	}
-	return res
-}
-
-func (s SaleMoment) SerialNumber() uint32 {
-	return uint32(s.Fields[5].(cadence.UInt32))
-}
-
-func (s SaleMoment) String() string {
-	playData := s.Play()
-	return fmt.Sprintf("saleMoment: serialNumber: %d, setID: %d, setName: %s, playID: %d, playerName: %s",
-		s.SerialNumber(), s.SetID(), s.SetName(), s.PlayID(), playData["FullName"])
 }
