@@ -418,7 +418,7 @@ func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]Cryptoki
 	count := 0
 	for statusCode == 429 && count < 20 {
 		// Retry get request
-		log.Info("sleep")
+		log.Infof("sleep for %v milliseconds", openseaAPIWait*count)
 		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
 		respData, statusCode, err = utils.GetRequestWithStatus(url)
 		log.Info("statusCode, err in second try: ", statusCode, err)

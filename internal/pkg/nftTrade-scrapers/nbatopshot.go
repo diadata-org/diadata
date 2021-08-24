@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -18,7 +19,7 @@ import (
 
 const (
 	TopshotAddress    = "0x0b2a3299cc857e29"
-	refreshDelayTrade = time.Second * 60 * 10
+	refreshDelayTrade = time.Second * 60 * 60
 )
 
 type NBATopshotScraper struct {
@@ -181,18 +182,26 @@ func (scraper *NBATopshotScraper) GetAllMomentsPurchased(startheight uint64) (pu
 		return
 	}
 
+	numQueriedBlocks := flowhelper.RequestLimit
 	for startheight < latestBlock.Height {
 
-		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
+		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
 			// all blocks within the range of given client.
-			m, t, b, err := GetPurchasedMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
+			m, t, b, err := GetPurchasedMoments(startheight, startheight+numQueriedBlocks, flowClient)
 			if err != nil {
+				if strings.Contains(err.Error(), "ResourceExhausted") {
+					log.Warn("resource exhausted, decrease number of queried blocks.")
+					numQueriedBlocks /= 2
+					continue
+				}
 				log.Error("getting purchased moments: ", err)
 			}
 			purchasedMoments = append(purchasedMoments, m...)
 			timestamps = append(timestamps, t...)
 			blocknumbers = append(blocknumbers, b...)
-			startheight += flowhelper.RequestLimit
+			// Increase start height ad reset numQueriedBlocks to default
+			startheight += numQueriedBlocks
+			numQueriedBlocks = flowhelper.RequestLimit
 			fmt.Println("current startheight: ", startheight)
 		} else {
 			// Reached new block range and thus need new client.
@@ -273,17 +282,25 @@ func (scraper *NBATopshotScraper) GetAllDepositMoments(startheight uint64) (depo
 		return
 	}
 
+	numQueriedBlocks := flowhelper.RequestLimit
 	for startheight < latestBlock.Height {
 
-		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
+		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
 			// all blocks within the range of given client.
-			m, b, err := GetDepositMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
+			m, b, err := GetDepositMoments(startheight, startheight+numQueriedBlocks, flowClient)
 			if err != nil {
+				if strings.Contains(err.Error(), "ResourceExhausted") {
+					log.Warn("resource exhausted, decrease number of queried blocks.")
+					numQueriedBlocks /= 2
+					continue
+				}
 				log.Error("getting deposit moments: ", err)
 			}
 			depositMoments = append(depositMoments, m...)
 			blocknumbers = append(blocknumbers, b...)
-			startheight += flowhelper.RequestLimit
+			// Increase start height ad reset numQueriedBlocks to default
+			startheight += numQueriedBlocks
+			numQueriedBlocks = flowhelper.RequestLimit
 			fmt.Println("current startheight: ", startheight)
 		} else {
 			// Reached new block range and thus need new client.

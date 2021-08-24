@@ -76,7 +76,7 @@ func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB)
 				log.Errorf("Error saving nft from class %s with id %s: %v", nft.NFTClass.Name, nft.TokenID, err)
 			}
 		} else {
-			log.Infof("successfully set nft %s with id: %s \n", nft.NFTClass.Name, nft.TokenID)
+			log.Infof("successfully set nft %s with id: %s", nft.NFTClass.Name, nft.TokenID)
 		}
 	}
 

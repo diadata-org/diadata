@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/onflow/cadence"
@@ -111,11 +112,11 @@ func (scraper *NBATopshotScraper) FetchData() (err error) {
 		lastBlock = flowhelper.RootHeight1
 	}
 
-	var nbaTopshotNFTs []dia.NFT
 	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(lastBlock)
 	if err != nil {
 		return err
 	}
+	log.Infof("got %v moments.", len(allMoments))
 
 	attributeMap, err := scraper.GetAttributeMap()
 	if err != nil {
@@ -135,7 +136,7 @@ func (scraper *NBATopshotScraper) FetchData() (err error) {
 		// 	return err
 		// }
 		nft := dia.NFT{
-			// NFTClass:       nftclass,
+			// NFTClass: nftclass,
 			NFTClass: dia.NFTClass{
 				Address:      TopshotAddress,
 				Symbol:       "TS",
@@ -150,9 +151,9 @@ func (scraper *NBATopshotScraper) FetchData() (err error) {
 			URI:            "not available",
 			Attributes:     metadata,
 		}
+
 		scraper.GetDataChannel() <- nft
 	}
-	fmt.Println("results: ", nbaTopshotNFTs)
 
 	return nil
 }
@@ -191,22 +192,30 @@ func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMomen
 		return
 	}
 
+	numQueriedBlocks := flowhelper.RequestLimit
 	for startheight < latestBlock.Height {
 
-		if currentIndex == len(flowhelper.RootHeights) || startheight+flowhelper.RequestLimit < flowhelper.RootHeights[currentIndex] {
+		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
 			// all blocks within the range of given client.
-			m, t, b, err := GetMintedMoments(startheight, startheight+flowhelper.RequestLimit, flowClient)
+			m, t, b, err := GetMintedMoments(startheight, startheight+numQueriedBlocks, flowClient)
 			if err != nil {
+				if strings.Contains(err.Error(), "ResourceExhausted") {
+					log.Warn("resource exhausted, decrease number of queried blocks.")
+					numQueriedBlocks /= 2
+					continue
+				}
 				log.Error("getting minted moments: ", err)
 			}
 			mintedMoments = append(mintedMoments, m...)
 			timestamps = append(timestamps, t...)
 			blocknumbers = append(blocknumbers, b...)
-			startheight += flowhelper.RequestLimit
-			fmt.Println("current startheight: ", startheight)
+			// Increase start height ad reset numQueriedBlocks to default
+			startheight += numQueriedBlocks
+			numQueriedBlocks = flowhelper.RequestLimit
+			log.Info("current startheight: ", startheight)
 		} else {
 			// Reached new block range and thus need new client.
-			fmt.Println("reached new block range")
+			log.Info("reached new block range")
 			m, t, b, err := GetMintedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
 			if err != nil {
 				log.Error(err)
@@ -244,7 +253,7 @@ func GetMintedMoments(startheight, endheight uint64, flowClient *client.Client) 
 	for _, blockEvent := range blockEvents {
 		timestamp := blockEvent.BlockTimestamp
 		for _, momentMintedEvent := range blockEvent.Events {
-			fmt.Printf("got moment %v at time %v: \n", momentMintedEvent.Value, timestamp)
+			log.Infof("got moment %v at time %v: \n", momentMintedEvent.Value, timestamp)
 			timestamps = append(timestamps, timestamp)
 			blockNumbers = append(blockNumbers, blockEvent.Height)
 			mintedMoments = append(mintedMoments, momentMintedEvent.Value)
@@ -375,7 +384,7 @@ func (scraper *NBATopshotScraper) GetPlaysBySet(setid uint32) ([]cadence.Value, 
 	type Plays cadence.Array
 
 	setID := Plays(res.(cadence.Array))
-	fmt.Println("number of plays: ", len(setID.Values))
+	log.Info("number of plays: ", len(setID.Values))
 	return setID.Values, nil
 }
 
@@ -412,11 +421,13 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 	if err != nil {
 		return attrMap, err
 	}
+
+	log.Infof("got %v sets.", numSets)
 	for i := 1; i < int(numSets); i++ {
 
 		values, err := scraper.GetPlaysBySet(uint32(i))
 		if err != nil {
-			fmt.Println("getting setID: ", err)
+			log.Error("getting setID: ", err)
 		}
 		for _, val := range values {
 			play := cadenceplayToPlay(val)
@@ -433,7 +444,6 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 			attributes["playID"] = play.PlayID
 			attributes["setName"] = play.SetName
 			attrMap[idfier] = attributes
-			fmt.Println("attributes: ", attributes)
 		}
 
 	}
