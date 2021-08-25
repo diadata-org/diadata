@@ -42,7 +42,7 @@ type Datastore interface {
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
-	GetTradesByExchanges(symbol string, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
 
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -340,6 +340,8 @@ select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time 
 func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error) {
 	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and exchange='%s' and filter='%s' and time > now() - 1d"
 	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, exchange, filter)
+	log.Infoln("Running influx query ", q)
+
 	var errorString string
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {

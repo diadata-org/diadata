@@ -44,4 +44,8 @@ type FilterPoint {
   Value: Float
   Name: String
   Time: Time
+  Address:String
+  Blockchain :String
 }
+
+ 

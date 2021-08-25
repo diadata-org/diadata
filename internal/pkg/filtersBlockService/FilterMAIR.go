@@ -112,6 +112,7 @@ func (s *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return &dia.FilterPoint{
+			Asset: s.asset,
 			Value: s.value,
 			Name:  s.filterName,
 			Time:  s.currentTime,

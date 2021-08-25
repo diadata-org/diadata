@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/diadata-org/diadata/pkg/utils"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/graphql/resolver"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -23,10 +24,15 @@ func main() {
 
 	datastore, err := models.NewDataStore()
 	if err != nil {
-		panic(err)
+		log.Errorln("NewDataStore", err)
 	}
 
-	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore}, graphql.UseStringDescriptions())
+	relStore, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("NewRelDataStore", err)
+	}
+
+	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore}, graphql.UseStringDescriptions())
 
 	mux := http.NewServeMux()
 

@@ -18,7 +18,7 @@
     {
       "Exchange": "KuCoin",
       "BatchNumber": "1",
-      "VerifiedBy": ["antonyip","chemrah"]  
+      "VerifiedBy": ["antonyip","chemrah","ControlCplusControlV"]  
     },
     {
       "Exchange": "KuCoin",
@@ -48,7 +48,12 @@
     {
       "Exchange": "HitBTC",
       "BatchNumber": "1",
-      "VerifiedBy": ["goojal"]     
+      "VerifiedBy": ["goojal","sidduHERE"]     
+    },
+    {
+      "Exchange": "HitBTC",
+      "BatchNumber": "2",
+      "VerifiedBy": ["antonyip", "goojal", "echolon166"]     
     },
     {
       "Exchange": "OKEx",
@@ -58,7 +63,7 @@
     {
       "Exchange": "Quoine",
       "BatchNumber": "1",
-      "VerifiedBy": ["echolon166", "antonyip"]      
+      "VerifiedBy": ["echolon166", "antonyip", "0xGlacier"]      
     },
     {
       "Exchange": "CREX24",

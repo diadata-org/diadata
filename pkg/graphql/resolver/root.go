@@ -12,12 +12,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var log = logrus.New()
+
 // Resolver is the root resolver
 type DiaResolver struct {
-	DS models.DB
+	DS    models.DB
+	RelDB models.RelDB
 }
-
-var log = logrus.New()
 
 // GetQuotation Get quotation
 func (r *DiaResolver) GetQuotation(ctx context.Context, args struct{ Symbol graphql.NullString }) (*QuotationResolver, error) {
@@ -109,14 +110,21 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		}
 	}
 
-	trades, err := r.DS.GetTradesByExchanges(symbol, exchangesString, starttime, endtime, 0)
+	asset, err := r.DS.GetTopAssetByVolume(symbol, &r.RelDB)
 	if err != nil {
+		log.Errorln("Asset not found with symbol %s ", symbol)
+	}
+
+	log.Println("asset", asset)
+
+	trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 0)
+	if err != nil {
+
 		return nil, nil
 	}
 
-	if blockShiftSeconds != 0 {
+	if blockShiftSeconds == 0 {
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
-
 	} else {
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(blockSizeSeconds, blockShiftSeconds)
 	}
@@ -127,11 +135,13 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIR(tradeBlocks, symbol)
+			filterPoints = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "ma":
 		{
+
 			filterPoints = queryhelper.FilterMA(tradeBlocks, symbol)
+
 		}
 	case "vwap":
 		{
