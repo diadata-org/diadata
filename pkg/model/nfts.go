@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
@@ -159,6 +160,9 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 
 func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error) {
 	nft := dia.NFT{}
+	if blockchain == dia.ETHEREUM {
+		address = common.HexToAddress(address).Hex()
+	}
 
 	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.token_id, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.token_id=$3", nftTable, nftclassTable)
 

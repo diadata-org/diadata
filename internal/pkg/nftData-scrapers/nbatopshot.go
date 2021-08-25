@@ -31,6 +31,7 @@ type NBATopshotScraper struct {
 	flowClient *client.Client
 	ticker     *time.Ticker
 	address    string
+	attrMap    map[identifier]map[string]interface{}
 }
 
 type Play struct {
@@ -71,6 +72,12 @@ func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 		flowClient: flowClient,
 		ticker:     time.NewTicker(refreshDelay),
 		address:    TopshotAddress,
+		attrMap:    make(map[identifier]map[string]interface{}),
+	}
+
+	err = s.GetAttributeMap()
+	if err != nil {
+		log.Error("get attribute map: ", err)
 	}
 
 	go s.mainLoop()
@@ -99,36 +106,104 @@ func (scraper *NBATopshotScraper) mainLoop() {
 	}
 }
 
-// FetchData returns a slice of all NFTs fetched.
-func (scraper *NBATopshotScraper) FetchData() (err error) {
+// ---------------------------------------------------------
+// Get Data
+// ---------------------------------------------------------
 
-	var lastBlock uint64
-	lastBlock, err = scraper.nftscraper.relDB.GetLastBlockheightTopshot(time.Now())
+func (scraper *NBATopshotScraper) FetchData() error {
+	var startheight uint64
+	var err error
+	startheight, err = scraper.nftscraper.relDB.GetLastBlockheightTopshot(time.Now())
 	if err != nil {
 		log.Error("fetch last topshot block: ", err)
 	}
-	if lastBlock == uint64(0) {
+	if startheight == uint64(0) {
 		// No last block in db. Start from genesis block.
-		lastBlock = flowhelper.RootHeight1
+		startheight = flowhelper.RootHeight1
+	}
+	log.Infof("make flow client at startheight %v: ", startheight)
+
+	// ---------- Fetch data from on-chain -------------
+	log.Info("Getting moments...")
+	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
+	if err != nil {
+		log.Error(err)
 	}
 
-	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(lastBlock)
+	// Get first interval.
+	var currentIndex int
+	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
+		currentIndex = len(flowhelper.RootHeights)
+	} else {
+		for i, root := range flowhelper.RootHeights {
+			if startheight < root {
+				currentIndex = i
+				break
+			}
+		}
+	}
+
+	log.Infof("currentIndex: %v\n", currentIndex)
+	time.Sleep(2 * time.Second)
+
+	flowClient, err := flowhelper.GetFlowClient(startheight)
 	if err != nil {
 		return err
 	}
-	log.Infof("got %v moments.", len(allMoments))
 
-	attributeMap, err := scraper.GetAttributeMap()
-	if err != nil {
-		return err
+	numQueriedBlocks := flowhelper.RequestLimit
+	for startheight < latestBlock.Height {
+		var moments []cadence.Event
+		var times []time.Time
+		var blocknumbers []uint64
+		var err error
+		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
+			// all blocks within the range of given client.
+			moments, times, blocknumbers, err = GetMintedMoments(startheight, startheight+numQueriedBlocks, flowClient)
+			if err != nil {
+				if strings.Contains(err.Error(), "ResourceExhausted") {
+					log.Warn("resource exhausted, decrease number of queried blocks.")
+					numQueriedBlocks /= 2
+					continue
+				}
+				log.Error("getting minted moments: ", err)
+			}
+
+			// Increase start height and reset numQueriedBlocks to default.
+			startheight += numQueriedBlocks
+			numQueriedBlocks = flowhelper.RequestLimit
+			log.Info("current startheight: ", startheight)
+		} else {
+			// Reached new block range and thus need new client.
+			log.Info("reached new block range")
+			moments, times, blocknumbers, err = GetMintedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
+			if err != nil {
+				log.Error(err)
+			}
+
+			// Increase start height and reset numQueriedBlocks to default.
+			startheight = flowhelper.RootHeights[currentIndex]
+			currentIndex += 1
+			flowClient, err = flowhelper.GetFlowClient(startheight)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+		// Handle moments and send them to main through a channel.
+		scraper.handleMoments(moments, times, blocknumbers)
 	}
+	return nil
+}
 
-	for i, moment := range allMoments {
+func (scraper *NBATopshotScraper) handleMoments(mintedMoments []cadence.Event, timestamps []time.Time, blocknumbers []uint64) {
+	for i, moment := range mintedMoments {
 		m := MomentMintedEvent(moment)
-		metadata := attributeMap[identifier{
+		// Deep copy entry of attrMap corresponding to ident.
+		ident := identifier{
 			SetID:  uint32(m.SetID()),
 			PlayID: uint32(m.PlayID()),
-		}]
+		}
+		metadata := scraper.deepCopyAttribute(ident)
 		metadata["blocknumber"] = blocknumbers[i]
 		// nftclass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address, dia.FLOW)
 		// if err != nil {
@@ -154,86 +229,6 @@ func (scraper *NBATopshotScraper) FetchData() (err error) {
 
 		scraper.GetDataChannel() <- nft
 	}
-
-	return nil
-}
-
-// ---------------------------------------------------------
-// Get Data
-// ---------------------------------------------------------
-
-// GetAllMoments returns all moments from genesis to the latest block by iterating through
-// blocks and looking for MomentMinted events.
-func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMoments []cadence.Event, timestamps []time.Time, blocknumbers []uint64, err error) {
-	log.Info("Getting moments...")
-	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
-	if err != nil {
-		log.Error(err)
-	}
-
-	// Get first interval.
-	var currentIndex int
-	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
-		currentIndex = len(flowhelper.RootHeights)
-	} else {
-		for i, root := range flowhelper.RootHeights {
-			if startheight < root {
-				currentIndex = i
-				break
-			}
-		}
-	}
-
-	log.Infof("make flow client at startheight %v: ", startheight)
-	log.Infof("currentIndex: %v\n", currentIndex)
-
-	flowClient, err := flowhelper.GetFlowClient(startheight)
-	if err != nil {
-		return
-	}
-
-	numQueriedBlocks := flowhelper.RequestLimit
-	for startheight < latestBlock.Height {
-
-		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
-			// all blocks within the range of given client.
-			m, t, b, err := GetMintedMoments(startheight, startheight+numQueriedBlocks, flowClient)
-			if err != nil {
-				if strings.Contains(err.Error(), "ResourceExhausted") {
-					log.Warn("resource exhausted, decrease number of queried blocks.")
-					numQueriedBlocks /= 2
-					continue
-				}
-				log.Error("getting minted moments: ", err)
-			}
-			mintedMoments = append(mintedMoments, m...)
-			timestamps = append(timestamps, t...)
-			blocknumbers = append(blocknumbers, b...)
-			// Increase start height ad reset numQueriedBlocks to default
-			startheight += numQueriedBlocks
-			numQueriedBlocks = flowhelper.RequestLimit
-			log.Info("current startheight: ", startheight)
-		} else {
-			// Reached new block range and thus need new client.
-			log.Info("reached new block range")
-			m, t, b, err := GetMintedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
-			if err != nil {
-				log.Error(err)
-			}
-			mintedMoments = append(mintedMoments, m...)
-			timestamps = append(timestamps, t...)
-			blocknumbers = append(blocknumbers, b...)
-
-			startheight = flowhelper.RootHeights[currentIndex]
-			currentIndex += 1
-			flowClient, err = flowhelper.GetFlowClient(startheight)
-			if err != nil {
-				log.Error(err)
-			}
-		}
-	}
-	log.Info("... done getting moments.")
-	return
 }
 
 // GetMintedMoments returns all moments minted between blocks @startheight and @endheight.
@@ -414,12 +409,12 @@ type identifier struct {
 
 // GetAttributesMap returns a map that uniquely maps an identifier consisting of setID and playID
 // onto the corresponding attributes.
-func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]interface{}, error) {
+func (scraper *NBATopshotScraper) GetAttributeMap() error {
 	log.Info("Get attribute map...")
-	attrMap := make(map[identifier]map[string]interface{})
+
 	numSets, err := scraper.GetNumSets()
 	if err != nil {
-		return attrMap, err
+		return err
 	}
 
 	log.Infof("got %v sets.", numSets)
@@ -443,12 +438,12 @@ func (scraper *NBATopshotScraper) GetAttributeMap() (map[identifier]map[string]i
 			attributes["setID"] = play.SetID
 			attributes["playID"] = play.PlayID
 			attributes["setName"] = play.SetName
-			attrMap[idfier] = attributes
+			scraper.attrMap[idfier] = attributes
 		}
 
 	}
 	log.Info("... done getting attribute map.")
-	return attrMap, nil
+	return nil
 }
 
 // cadenceplayToPlay casts a play given as a cadence.Value to the struct @Play.
@@ -497,3 +492,149 @@ func (scraper *NBATopshotScraper) Close() error {
 	defer scraper.nftscraper.errorLock.RUnlock()
 	return scraper.nftscraper.error
 }
+
+func (scraper *NBATopshotScraper) deepCopyAttribute(ident identifier) map[string]interface{} {
+	metadata := make(map[string]interface{})
+	for i, v := range scraper.attrMap {
+		if i == ident {
+			for j, w := range v {
+				metadata[j] = w
+			}
+			return metadata
+		}
+	}
+	return metadata
+}
+
+// // FetchData returns a slice of all NFTs fetched.
+// func (scraper *NBATopshotScraper) FetchData() (err error) {
+
+// 	var lastBlock uint64
+// 	lastBlock, err = scraper.nftscraper.relDB.GetLastBlockheightTopshot(time.Now())
+// 	if err != nil {
+// 		log.Error("fetch last topshot block: ", err)
+// 	}
+// 	if lastBlock == uint64(0) {
+// 		// No last block in db. Start from genesis block.
+// 		lastBlock = flowhelper.RootHeight1
+// 	}
+
+// 	attributeMap, err := scraper.GetAttributeMap()
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	allMoments, timestamps, blocknumbers, err := scraper.GetAllMoments(lastBlock)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.Infof("got %v moments.", len(allMoments))
+
+// 	for i, moment := range allMoments {
+// 		m := MomentMintedEvent(moment)
+// 		metadata := attributeMap[identifier{
+// 			SetID:  uint32(m.SetID()),
+// 			PlayID: uint32(m.PlayID()),
+// 		}]
+// 		metadata["blocknumber"] = blocknumbers[i]
+// 		// nftclass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address, dia.FLOW)
+// 		// if err != nil {
+// 		// 	log.Error("fetch NFT class: ", err)
+// 		// 	return err
+// 		// }
+// 		nft := dia.NFT{
+// 			// NFTClass: nftclass,
+// 			NFTClass: dia.NFTClass{
+// 				Address:      TopshotAddress,
+// 				Symbol:       "TS",
+// 				Name:         "TopShot",
+// 				Blockchain:   "Flow",
+// 				ContractType: "non-fungible",
+// 				Category:     "Collectibles",
+// 			},
+// 			TokenID:        strconv.Itoa(int(m.ID())),
+// 			CreationTime:   timestamps[i],
+// 			CreatorAddress: "",
+// 			URI:            "not available",
+// 			Attributes:     metadata,
+// 		}
+
+// 		scraper.GetDataChannel() <- nft
+// 	}
+
+// 	return nil
+// }
+
+// // GetAllMoments returns all moments from startheight to the latest block by iterating through
+// // blocks and looking for MomentMinted events.
+// func (scraper *NBATopshotScraper) GetAllMoments(startheight uint64) (mintedMoments []cadence.Event, timestamps []time.Time, blocknumbers []uint64, err error) {
+// 	log.Info("Getting moments...")
+// 	latestBlock, err := scraper.flowClient.GetLatestBlock(context.Background(), false)
+// 	if err != nil {
+// 		log.Error(err)
+// 	}
+
+// 	// Get first interval.
+// 	var currentIndex int
+// 	if startheight > flowhelper.RootHeights[len(flowhelper.RootHeights)-1] {
+// 		currentIndex = len(flowhelper.RootHeights)
+// 	} else {
+// 		for i, root := range flowhelper.RootHeights {
+// 			if startheight < root {
+// 				currentIndex = i
+// 				break
+// 			}
+// 		}
+// 	}
+
+// 	log.Infof("make flow client at startheight %v: ", startheight)
+// 	log.Infof("currentIndex: %v\n", currentIndex)
+
+// 	flowClient, err := flowhelper.GetFlowClient(startheight)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	numQueriedBlocks := flowhelper.RequestLimit
+// 	for startheight < latestBlock.Height {
+
+// 		if currentIndex == len(flowhelper.RootHeights) || startheight+numQueriedBlocks < flowhelper.RootHeights[currentIndex] {
+// 			// all blocks within the range of given client.
+// 			m, t, b, err := GetMintedMoments(startheight, startheight+numQueriedBlocks, flowClient)
+// 			if err != nil {
+// 				if strings.Contains(err.Error(), "ResourceExhausted") {
+// 					log.Warn("resource exhausted, decrease number of queried blocks.")
+// 					numQueriedBlocks /= 2
+// 					continue
+// 				}
+// 				log.Error("getting minted moments: ", err)
+// 			}
+// 			mintedMoments = append(mintedMoments, m...)
+// 			timestamps = append(timestamps, t...)
+// 			blocknumbers = append(blocknumbers, b...)
+// 			// Increase start height ad reset numQueriedBlocks to default
+// 			startheight += numQueriedBlocks
+// 			numQueriedBlocks = flowhelper.RequestLimit
+// 			log.Info("current startheight: ", startheight)
+// 		} else {
+// 			// Reached new block range and thus need new client.
+// 			log.Info("reached new block range")
+// 			m, t, b, err := GetMintedMoments(startheight, flowhelper.RootHeights[currentIndex]-1, flowClient)
+// 			if err != nil {
+// 				log.Error(err)
+// 			}
+// 			mintedMoments = append(mintedMoments, m...)
+// 			timestamps = append(timestamps, t...)
+// 			blocknumbers = append(blocknumbers, b...)
+
+// 			startheight = flowhelper.RootHeights[currentIndex]
+// 			currentIndex += 1
+// 			flowClient, err = flowhelper.GetFlowClient(startheight)
+// 			if err != nil {
+// 				log.Error(err)
+// 			}
+// 		}
+// 	}
+// 	log.Info("... done getting moments.")
+// 	return
+// }

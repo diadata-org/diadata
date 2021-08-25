@@ -1331,7 +1331,7 @@ func (env *Env) GetNFT(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
 	id := c.Param("id")
-	q, err := env.RelDB.GetNFT(common.HexToAddress(address).Hex(), blockchain, id)
+	q, err := env.RelDB.GetNFT(address, blockchain, id)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
