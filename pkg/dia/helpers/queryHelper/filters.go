@@ -5,9 +5,9 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func FilterMA(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoint) {
+func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMA(dia.Asset{Symbol: "symbol"}, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterMA(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 		for _, trade := range block.Trades {
 
@@ -27,7 +27,7 @@ func FilterMA(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoin
 
 func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMAIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
+		maFilter := filters.NewFilterMAIR(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 		for _, trade := range block.Trades {
 			maFilter.Compute(trade)
@@ -40,9 +40,9 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 	return filterPoints
 }
 
-func FilterVWAP(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoint) {
+func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterVWAP(dia.Asset{Symbol: "symbol"}, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterVWAP(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 		for _, trade := range block.Trades {
 
@@ -56,9 +56,9 @@ func FilterVWAP(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPo
 	return filterPoints
 }
 
-func FilterVWAPIR(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoint) {
+func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterVWAPIR(dia.Asset{Symbol: "symbol"}, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterVWAPIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 		for _, trade := range block.Trades {
 

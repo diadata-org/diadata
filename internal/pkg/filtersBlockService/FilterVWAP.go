@@ -72,12 +72,14 @@ func (s *FilterVWAP) filterPointForBlock() *dia.FilterPoint {
 			Value: s.value,
 			Name:  "VWAP" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	} else {
 		return &dia.FilterPoint{
 			Value: s.value,
 			Name:  "VWAP" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	}
 }

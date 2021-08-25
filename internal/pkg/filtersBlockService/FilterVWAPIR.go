@@ -88,14 +88,16 @@ func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" {
 		return &dia.FilterPoint{
 			Value: s.value,
-			Name:  "FilterVWAPIR" + strconv.Itoa(s.param),
+			Name:  "VWAPIR" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	} else {
 		return &dia.FilterPoint{
 			Value: s.value,
-			Name:  "FilterVWAPIR" + strconv.Itoa(s.param),
+			Name:  "VWAPIR" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	}
 }

@@ -140,16 +140,16 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	case "ma":
 		{
 
-			filterPoints = queryhelper.FilterMA(tradeBlocks, symbol)
+			filterPoints = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
 
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAP(tradeBlocks, symbol)
+			filterPoints = queryhelper.FilterVWAP(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, symbol)
+			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	}
 
