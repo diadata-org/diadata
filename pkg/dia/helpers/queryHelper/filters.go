@@ -3,11 +3,7 @@ package queryhelper
 import (
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
-
-	"github.com/sirupsen/logrus"
 )
-
-var logruslog = logrus.New()
 
 func FilterMA(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
@@ -29,9 +25,9 @@ func FilterMA(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoin
 	return filterPoints
 }
 
-func FilterMAIR(tradeBlocks []Block, symbol string) (filterPoints []dia.FilterPoint) {
+func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMAIR(dia.Asset{Symbol: "symbol"}, "Binance", block.Trades[len(block.Trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := filters.NewFilterMAIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 		for _, trade := range block.Trades {
 			maFilter.Compute(trade)
