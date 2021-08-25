@@ -7,19 +7,21 @@ import (
 
 func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterMA(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
+		if len(block.Trades) > 0 {
+			maFilter := filters.NewFilterMA(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
-		for _, trade := range block.Trades {
+			for _, trade := range block.Trades {
 
-			maFilter.Compute(trade)
+				maFilter.Compute(trade)
 
-		}
+			}
 
-		maFilter.FinalCompute(block.Trades[0].Time)
-		fp := maFilter.FilterPointForBlock()
+			maFilter.FinalCompute(block.Trades[0].Time)
+			fp := maFilter.FilterPointForBlock()
 
-		if fp != nil {
-			filterPoints = append(filterPoints, *fp)
+			if fp != nil {
+				filterPoints = append(filterPoints, *fp)
+			}
 		}
 	}
 	return filterPoints
@@ -44,32 +46,39 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 
 func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterVWAP(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
+		if len(block.Trades) > 0 {
+			maFilter := filters.NewFilterVWAP(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
-		for _, trade := range block.Trades {
+			for _, trade := range block.Trades {
 
-			maFilter.Compute(trade)
+				maFilter.Compute(trade)
+			}
+
+			maFilter.FinalCompute(block.Trades[0].Time)
+			fp := maFilter.FilterPointForBlock()
+			filterPoints = append(filterPoints, *fp)
 		}
-
-		maFilter.FinalCompute(block.Trades[0].Time)
-		fp := maFilter.FilterPointForBlock()
-		filterPoints = append(filterPoints, *fp)
 	}
 	return filterPoints
 }
 
 func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for _, block := range tradeBlocks {
-		maFilter := filters.NewFilterVWAPIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
+		if len(block.Trades) > 0 {
+			maFilter := filters.NewFilterVWAPIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
 
-		for _, trade := range block.Trades {
+			for _, trade := range block.Trades {
 
-			maFilter.Compute(trade)
+				maFilter.Compute(trade)
+			}
+
+			maFilter.FinalCompute(block.Trades[0].Time)
+			fp := maFilter.FilterPointForBlock()
+			if fp.Value > 0 {
+				filterPoints = append(filterPoints, *fp)
+
+			}
 		}
-
-		maFilter.FinalCompute(block.Trades[0].Time)
-		fp := maFilter.FilterPointForBlock()
-		filterPoints = append(filterPoints, *fp)
 	}
 	return filterPoints
 }
