@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -157,6 +159,58 @@ func GraphQLGet(url string, query []byte, bearer string) ([]byte, error) {
 		return []byte{}, err
 	}
 	return body, nil
+}
+
+// OpenseaGetRequest returns the data for a get request on @url with an Opensea API key.
+func OpenseaGetRequest(OpenseaURL string) ([]byte, int, error) {
+	var lines []string
+	executionMode := os.Getenv("EXEC_MODE")
+	var file *os.File
+	var err error
+	if executionMode == "production" {
+		file, err = os.Open("/run/secrets/Opensea-API.key")
+	} else {
+		file, err = os.Open("../../secrets/Opensea-API.key")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err = scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file for opensea API key should have exactly one line")
+	}
+	apiKey := lines[0]
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", OpenseaURL, nil)
+	if err != nil {
+		log.Print(err)
+		return []byte{}, 0, err
+	}
+
+	q := url.Values{}
+	req.Header.Set("Accepts", "application/json")
+	req.Header.Add("X-API-KEY", apiKey)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request to server")
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	respData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Error("read response body: ", err)
+		return respData, resp.StatusCode, err
+	}
+	return respData, resp.StatusCode, nil
 }
 
 // GetCoinPrice Gets the price in USD of coin through our API.

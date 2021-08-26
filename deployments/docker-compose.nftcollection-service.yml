@@ -32,10 +32,13 @@ services:
       - postgres-network
     secrets:
       - postgres_credentials
+      - Opensea-API.key
 
 secrets:
   postgres_credentials:
     file: ../secrets/postgres_credentials.txt
+  Opensea-API.key:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Opensea-API.key
 
 networks:
   redis-network:

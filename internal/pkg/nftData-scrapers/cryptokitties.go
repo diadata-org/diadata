@@ -404,8 +404,8 @@ func (scraper *CryptoKittiesScraper) GetKitty(kittyId *big.Int) (Kitty, error) {
 func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]CryptokittiesTraits, common.Address, error) {
 	var traits []CryptokittiesTraits
 	var creatorAddress common.Address
-	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	respData, statusCode, err := utils.GetRequestWithStatus(url)
+	openseaURL := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
+	respData, statusCode, err := utils.OpenseaGetRequest(openseaURL)
 	log.Info("statusCode, err: ", statusCode, err)
 
 	count := 0
@@ -413,7 +413,7 @@ func (scraper *CryptoKittiesScraper) GetOpenSeaKitty(index *big.Int) ([]Cryptoki
 		// Retry get request
 		log.Infof("sleep for %v seconds", count)
 		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
-		respData, statusCode, err = utils.GetRequestWithStatus(url)
+		respData, statusCode, err = utils.OpenseaGetRequest(openseaURL)
 		log.Info("statusCode, err in retry: ", statusCode, err)
 		count++
 	}
@@ -467,6 +467,7 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 
 	for endBlockNumber <= header.Number.Uint64()-blockDelayEthereum {
 		var iter *cryptokitties.KittyBaseBirthIterator
+		log.Info("get filter iterator...")
 		iter, err = filterer.FilterBirth(&bind.FilterOpts{
 			Start: startBlockNumber,
 			End:   &endBlockNumber,
@@ -481,6 +482,7 @@ func (scraper *CryptoKittiesScraper) GetCryptokittiesCreationTime() (map[uint64]
 			log.Error("filtering kitty birth: ", err)
 			return creationMap, err
 		}
+		log.Info("...got filter iterator")
 
 		// map kitty id to timestamp of creation event.
 		var blockData dia.BlockData

@@ -434,8 +434,8 @@ func (scraper *SorareScraper) GetClub(index uint16) (SorareClub, error) {
 func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, common.Address, time.Time, error) {
 	var creatorAddress common.Address
 	var creationTime time.Time
-	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
-	respData, statusCode, err := utils.GetRequestWithStatus(url)
+	openseaURL := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
+	respData, statusCode, err := utils.OpenseaGetRequest(openseaURL)
 	log.Info("statusCode, err: ", statusCode, err)
 
 	count := 0
@@ -443,7 +443,7 @@ func (scraper *SorareScraper) GetOpenSeaPlayer(index *big.Int) ([]SorareTrait, c
 		// Retry get request
 		log.Infof("sleep for %v seconds", count)
 		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
-		respData, statusCode, err = utils.GetRequestWithStatus(url)
+		respData, statusCode, err = utils.GetRequestWithStatus(openseaURL)
 		log.Info("statusCode, err in retry: ", statusCode, err)
 		count++
 	}

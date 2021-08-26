@@ -363,7 +363,7 @@ func (scraper *CryptoPunksScraper) TokenByIndex(index *big.Int) (common.Address,
 }
 
 // GetOpenSeaPunk returns the scraped data from Opensea for a given punk
-func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
+func (scraper *CryptoPunksScraper) GetOpenSeaPunkOld(index *big.Int) ([]CryptopunkTraits, error) {
 	var traits []CryptopunkTraits
 	url := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
 
@@ -387,6 +387,32 @@ func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkT
 
 	return traits, nil
 
+}
+
+func (scraper *CryptoPunksScraper) GetOpenSeaPunk(index *big.Int) ([]CryptopunkTraits, error) {
+	var traits []CryptopunkTraits
+	openseaURL := scraper.apiURLOpensea + "asset/" + scraper.address.String() + "/" + index.String()
+
+	respData, statusCode, err := utils.OpenseaGetRequest(openseaURL)
+	if err != nil {
+		return traits, err
+	}
+
+	count := 0
+	for statusCode != 200 && count < 40 {
+		// Retry get request
+		log.Infof("sleep for %v seconds", count)
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		respData, statusCode, err = utils.OpenseaGetRequest(openseaURL)
+		log.Info("statusCode, err in retry: ", statusCode, err)
+		count++
+	}
+
+	traits, err = GetCryptopunkTraits(respData)
+	if err != nil {
+		return nil, err
+	}
+	return traits, nil
 }
 
 // GetCreationEvents returns maps for creation time and creator address by filtering 'assign punk' events.

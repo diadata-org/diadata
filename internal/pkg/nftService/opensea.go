@@ -66,27 +66,19 @@ func (ons *OpenseaNFTSource) Close() chan bool {
 
 // retrieve nft classes from opensea api. Ordered by number of sales in descending order.
 func fetchClasses(offset, limit int, order_direction string) (acs []AssetContract, err error) {
-	url := openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count"
-	resp, statusCode, err := utils.GetRequestWithStatus(url)
+	openseaURL := openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count"
+	resp, statusCode, err := utils.OpenseaGetRequest(openseaURL)
 	if err != nil {
-		if statusCode != 429 {
-			return
-		}
-		// Retry get request once
-		time.Sleep(time.Millisecond * openseaAPIWait)
-		resp, _, err = utils.GetRequestWithStatus(url)
-		if err != nil {
-			return
-		}
+		return
 	}
 
 	count := 0
-	for statusCode == 429 && count < 20 {
+	for statusCode == 429 && count < 40 {
 		// Retry get request
 		log.Info("sleep")
 		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
-		resp, statusCode, err = utils.GetRequestWithStatus(url)
-		log.Info("statusCode, err in second try: ", statusCode, err)
+		resp, statusCode, err = utils.OpenseaGetRequest(openseaURL)
+		log.Info("statusCode, err in retry: ", statusCode, err)
 		if err != nil {
 			return
 		}
@@ -130,7 +122,6 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 				checkmap[nftClass.Address] = struct{}{}
 			}
 		}
-		time.Sleep(2 * time.Second)
 	}
 
 	// Gracefully close channel after iterating through all classes
