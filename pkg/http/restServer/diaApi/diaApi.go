@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/api"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -1071,7 +1070,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
 
 	// First get asset with @symbol with largest market cap.
-	topAsset, err := env.DataStore.GetTopAsset(symbol, &env.RelDB)
+	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 	}
@@ -1165,7 +1164,8 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
 	exchange := c.Param("exchange")
 
-	symbols, err := api.GetUnverifiedExchangeSymbols(exchange)
+	//symbols, err := api.GetUnverifiedExchangeSymbols(exchange)
+	symbols, err := env.RelDB.GetUnverifiedExchangeSymbols(exchange)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {

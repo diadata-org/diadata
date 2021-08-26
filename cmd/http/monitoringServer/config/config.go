@@ -2,6 +2,8 @@ package config
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/http/monitoringServer/enums"
+	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -10,28 +12,51 @@ import (
 	"path/filepath"
 )
 
-func GetInClusterConfig() (*kubernetes.Clientset, error) {
+func GetKubernetesConnection() *kubernetes.Clientset {
+	switch utils.Getenv("KUBERNETES_CONFIG", string(enums.KubernetesConfigInCluster)) {
+	case string(enums.KubernetesConfigInCluster):
+		return GetInClusterConfig()
+	case string(enums.KubernetesConfigFromFile):
+		return GetConfigFromPath(utils.Getenv("KUBERNETES_CONFIG_PATH", ""))
+	}
+	return nil
+}
+
+func GetInClusterConfig() *kubernetes.Clientset {
 	log.Infoln("Using in cluster config")
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return kubernetes.NewForConfig(config)
+	kube, configErr := kubernetes.NewForConfig(config)
+	if configErr != nil {
+		log.Error(configErr)
+	}
+	if kube == nil {
+		log.Error("could not get kubernetes clientSet")
+	}
+	return kube
 }
 
-func GetConfigFromPath(path string) (*kubernetes.Clientset, error) {
-	var kubeconfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+func GetConfigFromPath(path string) *kubernetes.Clientset {
+	var kubeConfig *string
+	if len(path) == 0 || path == "" {
+		path = filepath.Join(homedir.HomeDir(), ".kube", "config")
 	}
+	kubeConfig = flag.String("kubeconfig", path, "(optional) absolute path to the kubeconfig file")
 	flag.Parse()
 	// uses the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	// creates the clientset
-	return kubernetes.NewForConfig(config)
+	kube, configErr := kubernetes.NewForConfig(config)
+	if configErr != nil {
+		log.Error(configErr)
+	}
+	if kube == nil {
+		log.Error("could not get kubernetes clientSet")
+	}
+	return kube
 }
