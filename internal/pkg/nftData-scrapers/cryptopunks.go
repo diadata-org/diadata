@@ -19,7 +19,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	structs "github.com/fatih/structs"
 )
 
@@ -252,8 +251,7 @@ type CryptopunkOutput struct {
 }
 
 func NewCryptoPunksScraper(rdb *models.RelDB) *CryptoPunksScraper {
-	connection, err := ethclient.Dial("https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6")
-	// connection, err := ethhelper.NewETHClient()
+	connection, err := ethhelper.NewETHClient()
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
