@@ -71,7 +71,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
 
-### Avax Network
+### Avax Fuji Testnet Network
 
 | Contract Name | Contract Address |
 | :--- | :--- |
