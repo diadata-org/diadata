@@ -349,6 +349,13 @@
       "Decimals": 18,
       "Blockchain": "Ethereum",
       "Address": "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
+    },
+    {
+      "Symbol": "JOOS",
+      "Name": "Joos Token",
+      "Decimals": 18,
+      "Blockchain": "Ethereum",
+      "Address": "0x05F9Abf4B0C5661E83B92c056A8791d5CCd7Ca52"
     }
   ]
 }

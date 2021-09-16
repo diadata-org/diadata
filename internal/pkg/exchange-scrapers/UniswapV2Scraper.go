@@ -27,12 +27,12 @@ var (
 )
 
 const (
-	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
+	wsDial   = "wss://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
+	restDial = "https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
 
-	wsDial   = "ws://159.69.120.42:8546/"
-	restDial = "http://159.69.120.42:8545/"
-	
+	// wsDial   = "ws://159.69.120.42:8546/"
+	// restDial = "http://159.69.120.42:8545/"
+
 	// restDial = "https://mainnet.infura.io/v3/9020e59e34ca4cf59cb243ecefb4e39e"
 	// wsDial   = "wss://mainnet.infura.io/ws/v3/9020e59e34ca4cf59cb243ecefb4e39e"
 
