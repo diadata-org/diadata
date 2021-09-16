@@ -75,7 +75,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 | Contract Name | Contract Address |
 | :--- | :--- |
-| DIA Oracle | [0x4B86D871371cD7F6b7a117E26CAD40371a74a7c1](https://cchain.explorer.avax-test.network/address/0x4B86D871371cD7F6b7a117E26CAD40371a74a7c1) |
+| DIA Oracle | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) |
 
 ### Moonriver
 
