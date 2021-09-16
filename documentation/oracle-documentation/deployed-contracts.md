@@ -83,6 +83,12 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) |
 
+### Fantom Mainnet
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | [0xC5cA9C52d3D8d7f9Bb17BeeB85c2C3D119ab504f](https://ftmscan.com/address/0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f) |
+
 ### Moonriver
 
 | Contract Name | Contract Address |
