@@ -7,6 +7,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ARGO",
+            "ForeignName": "ARGO-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "ETH",
             "ForeignName": "ETH-DAFI",
             "Exchange": "UniswapV2",
