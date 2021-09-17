@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -533,15 +534,22 @@ func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error
 		// Get ID of underlying asset
 		asset, err := relDB.GetAsset(submission.Address, submission.Blockchain)
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "no rows") {
+				log.Warnf("asset with address %s on %s not in asset table", submission.Address, submission.Blockchain)
+				continue
+			} else {
+				return err
+			}
 		}
 		assetID, err := relDB.GetAssetID(asset)
 		if err != nil {
+			log.Error("get asset ID")
 			return err
 		}
 		// Write into exchangesymbol table
 		success, err := relDB.VerifyExchangeSymbol(submission.Exchange, submission.Symbol, assetID)
 		if err != nil || !success {
+			log.Error("verify symbol")
 			return err
 		}
 	}
