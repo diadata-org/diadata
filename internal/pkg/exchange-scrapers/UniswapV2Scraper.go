@@ -27,8 +27,8 @@ var (
 )
 
 const (
-	wsDial   = "wss://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
-	restDial = "https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
+	restDial = "https://nd-986-369-125.p2pify.com/c669411d9bcc43aa0519602a30346446"
+	wsDial   = "wss://ws-nd-986-369-125.p2pify.com/c669411d9bcc43aa0519602a30346446"
 
 	// wsDial   = "ws://159.69.120.42:8546/"
 	// restDial = "http://159.69.120.42:8545/"
@@ -171,106 +171,108 @@ func (s *UniswapScraper) mainLoop() {
 		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := -1; i < numPairs; i++ {
-		var pair UniswapPair
-		var err error
-		if i == -1 && s.exchangeName == "PanCakeSwap" {
-			token0 := UniswapToken{
-				Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
-				Symbol:   "WOW",
-				Decimals: uint8(18),
-			}
-			token1 := UniswapToken{
-				Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
-				Symbol:   "BUSD",
-				Decimals: uint8(18),
-			}
-			pair = UniswapPair{
-				Token0:      token0,
-				Token1:      token1,
-				ForeignName: "WOW-BUSD",
-				Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
-			}
-		} else {
-			pair, err = s.GetPairByID(int64(i))
-			if err != nil {
-				log.Error("error fetching pair: ", err)
-			}
-		}
-		if !pair.pairHealthCheck() {
-			continue
-		}
-		pair.normalizeUniPair()
+	var wg sync.WaitGroup
+	for i := 0; i < numPairs; i++ {
+		time.Sleep(25 * time.Millisecond)
+		wg.Add(1)
+		go func(index int) {
+			defer wg.Done()
+			s.ListenToPairByIndex(index)
+		}(i)
+	}
+}
 
-		ps, ok := s.pairScrapers[pair.ForeignName]
-		if ok {
-			log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
-			sink, err := s.GetSwapsChannel(pair.Address)
-			if err != nil {
-				log.Error("error fetching swaps channel: ", err)
-			}
-
-			go func() {
-				for {
-					rawSwap, ok := <-sink
-					if ok {
-						swap, err := s.normalizeUniswapSwap(*rawSwap)
-						if err != nil {
-							log.Error("error normalizing swap: ", err)
-						}
-						price, volume := getSwapData(swap)
-						token0 := dia.Asset{
-							Address:    pair.Token0.Address.Hex(),
-							Symbol:     pair.Token0.Symbol,
-							Name:       pair.Token0.Name,
-							Decimals:   pair.Token0.Decimals,
-							Blockchain: dia.ETHEREUM,
-						}
-						token1 := dia.Asset{
-							Address:    pair.Token1.Address.Hex(),
-							Symbol:     pair.Token1.Symbol,
-							Name:       pair.Token1.Name,
-							Decimals:   pair.Token1.Decimals,
-							Blockchain: dia.ETHEREUM,
-						}
-						log.Info("pair: ", ps.pair.ForeignName)
-						log.Info("token0: ", token0.Symbol)
-						log.Info("token1: ", token1.Symbol)
-						t := &dia.Trade{
-							Symbol:         ps.pair.Symbol,
-							Pair:           ps.pair.ForeignName,
-							Price:          price,
-							Volume:         volume,
-							BaseToken:      token1,
-							QuoteToken:     token0,
-							Time:           time.Unix(swap.Timestamp, 0),
-							ForeignTradeID: swap.ID,
-							Source:         s.exchangeName,
-							VerifiedPair:   true,
-						}
-						// If we need quotation of a base token, reverse pair
-						if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
-							tSwapped, err := dia.SwapTrade(*t)
-							if err == nil {
-								t = &tSwapped
-							}
-						}
-						if price > 0 {
-							log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
-							ps.parent.chanTrades <- t
-						}
-						if price == 0 {
-							log.Info("Got zero trade: ", t)
-						}
-					}
-				}
-			}()
-		} else {
-			log.Infof("Skipping pair %s due to no pairScraper being available", pair.ForeignName)
+func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
+	var pair UniswapPair
+	var err error
+	if i == -1 && s.exchangeName == "PanCakeSwap" {
+		token0 := UniswapToken{
+			Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
+			Symbol:   "WOW",
+			Decimals: uint8(18),
+		}
+		token1 := UniswapToken{
+			Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
+			Symbol:   "BUSD",
+			Decimals: uint8(18),
+		}
+		pair = UniswapPair{
+			Token0:      token0,
+			Token1:      token1,
+			ForeignName: "WOW-BUSD",
+			Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
+		}
+	} else {
+		pair, err = s.GetPairByID(int64(i))
+		if err != nil {
+			log.Error("error fetching pair: ", err)
 		}
 	}
+	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
+		log.Info("skip pair: ", pair.ForeignName)
+		return false
+	}
+	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
+		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
+			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
+		} else {
+			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
+		}
+		return false
+	}
+	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
+		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+		return false
+	}
+	pair.normalizeUniPair()
+	ps, ok := s.pairScrapers[pair.ForeignName]
+	if ok {
+		log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
+		sink, err := s.GetSwapsChannel(pair.Address)
+		if err != nil {
+			log.Error("error fetching swaps channel: ", err)
+		}
 
-	// s.cleanup(err)
+		go func() {
+			for {
+				rawSwap, ok := <-sink
+				if ok {
+					swap, err := s.normalizeUniswapSwap(*rawSwap)
+					if err != nil {
+						log.Error("error normalizing swap: ", err)
+					}
+					price, volume := getSwapData(swap)
+
+					t := &dia.Trade{
+						Symbol:         ps.pair.Symbol,
+						Pair:           ps.pair.ForeignName,
+						Price:          price,
+						Volume:         volume,
+						Time:           time.Unix(swap.Timestamp, 0),
+						ForeignTradeID: swap.ID,
+						Source:         s.exchangeName,
+					}
+					// If we need quotation of a base token, reverse pair
+					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
+						}
+					}
+					if price > 0 {
+						log.Info("Got trade: ", t)
+						ps.parent.chanTrades <- t
+					}
+					if price == 0 {
+						log.Info("Got zero trade: ", t)
+					}
+				}
+			}
+		}()
+	} else {
+		log.Info("Skipping pair due to no pairScraper being available")
+	}
+	return true
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
