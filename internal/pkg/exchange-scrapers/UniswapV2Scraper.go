@@ -242,15 +242,34 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 						log.Error("error normalizing swap: ", err)
 					}
 					price, volume := getSwapData(swap)
-
+					token0 := dia.Asset{
+						Address:    pair.Token0.Address.Hex(),
+						Symbol:     pair.Token0.Symbol,
+						Name:       pair.Token0.Name,
+						Decimals:   pair.Token0.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
+					token1 := dia.Asset{
+						Address:    pair.Token1.Address.Hex(),
+						Symbol:     pair.Token1.Symbol,
+						Name:       pair.Token1.Name,
+						Decimals:   pair.Token1.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
+					log.Info("pair: ", ps.pair.ForeignName)
+					log.Info("token0: ", token0.Symbol)
+					log.Info("token1: ", token1.Symbol)
 					t := &dia.Trade{
 						Symbol:         ps.pair.Symbol,
 						Pair:           ps.pair.ForeignName,
 						Price:          price,
 						Volume:         volume,
+						BaseToken:      token1,
+						QuoteToken:     token0,
 						Time:           time.Unix(swap.Timestamp, 0),
 						ForeignTradeID: swap.ID,
 						Source:         s.exchangeName,
+						VerifiedPair:   true,
 					}
 					// If we need quotation of a base token, reverse pair
 					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
@@ -260,7 +279,7 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 						}
 					}
 					if price > 0 {
-						log.Info("Got trade: ", t)
+						log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
 						ps.parent.chanTrades <- t
 					}
 					if price == 0 {
