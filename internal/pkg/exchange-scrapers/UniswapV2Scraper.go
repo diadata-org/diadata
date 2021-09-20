@@ -27,11 +27,8 @@ var (
 )
 
 const (
-	restDial = "https://nd-986-369-125.p2pify.com/c669411d9bcc43aa0519602a30346446"
-	wsDial   = "wss://ws-nd-986-369-125.p2pify.com/c669411d9bcc43aa0519602a30346446"
-
-	// wsDial   = "ws://159.69.120.42:8546/"
-	// restDial = "http://159.69.120.42:8545/"
+	wsDial   = "ws://159.69.120.42:8546/"
+	restDial = "http://159.69.120.42:8545/"
 
 	// wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
@@ -90,24 +87,20 @@ type UniswapScraper struct {
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
-	log.Info("NewUniswapScraper v1.9", exchange.Name)
+	log.Info("NewUniswapScraper", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var waitTime int
 	var err error
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		log.Info(utils.Getenv("ETH_URI_REST", restDial))
-		log.Info(utils.Getenv("ETH_URI_WS", wsDial))
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(restDial)
-		// restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		wsClient, err = ethclient.Dial(wsDial)
-		// wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
