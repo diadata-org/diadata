@@ -64,6 +64,10 @@ func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	if pair.Symbol == "ETHOS" {
 		pair.ForeignName = "ETHOS" + pair.ForeignName[3:]
 	}
+	if pair.Symbol == "WNXM" {
+		pair.Symbol = "wNXM"
+		pair.ForeignName = "wNXM" + pair.ForeignName[4:]
+	}
 	return pair, nil
 }
 
