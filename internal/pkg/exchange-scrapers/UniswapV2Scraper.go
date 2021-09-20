@@ -90,7 +90,7 @@ type UniswapScraper struct {
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
-	log.Info("NewUniswapScraper ", exchange.Name)
+	log.Info("NewUniswapScraper v1.9", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var waitTime int
 	var err error
