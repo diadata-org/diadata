@@ -3,7 +3,6 @@ package indexCalculationService
 import (
 	"math"
 	"sort"
-	"strings"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +20,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 	var constituents []models.CryptoIndexConstituent
 
 	for _, symbol := range symbolsList {
-		currQuotation, err := db.GetQuotation(strings.ToUpper(symbol))
+		currQuotation, err := db.GetQuotation(symbol)
 		if err != nil {
 			log.Error("Error when retrieveing quotation for ", symbol)
 			return nil, err
@@ -31,7 +30,7 @@ func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, erro
 			log.Error("Error when retrieveing supply for ", symbol)
 			return nil, err
 		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(symbol), 1)
+		currLastTrade, err := db.GetLastTradesAllExchanges(symbol, 1)
 		if err != nil {
 			log.Error("Error when retrieveing lst trades for ", symbol)
 			return nil, err
@@ -176,7 +175,7 @@ func UpdateConstituentsMarketData(indexSymbol string, currentConstituents *[]mod
 			log.Error("Error when retrieveing supply for ", c.Symbol)
 			return err
 		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(strings.ToUpper(c.Symbol), 1)
+		currLastTrade, err := db.GetLastTradesAllExchanges(c.Symbol, 1)
 		if err != nil {
 			log.Error("Error when retrieveing last trades for ", c.Symbol)
 			return err
