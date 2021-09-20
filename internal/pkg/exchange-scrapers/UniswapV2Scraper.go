@@ -33,11 +33,15 @@ const (
 	// wsDial   = "ws://159.69.120.42:8546/"
 	// restDial = "http://159.69.120.42:8545/"
 
-	// restDial = "https://mainnet.infura.io/v3/9020e59e34ca4cf59cb243ecefb4e39e"
-	// wsDial   = "wss://mainnet.infura.io/ws/v3/9020e59e34ca4cf59cb243ecefb4e39e"
+	// wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
+	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
-	restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	wsDialBSC   = "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
+	restDialBSC = "https://nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
+
+	uniswapWaitMilliseconds     = 25
+	sushiswapWaitMilliseconds   = 25
+	pancakeswapWaitMilliseconds = 100
 )
 
 type UniswapToken struct {
@@ -81,12 +85,14 @@ type UniswapScraper struct {
 	pairScrapers map[string]*UniswapPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	waitTime     int
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
+	var waitTime int
 	var err error
 
 	switch exchange.Name {
@@ -105,6 +111,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
+		waitTime = uniswapWaitMilliseconds
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
@@ -116,6 +123,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
+		waitTime = sushiswapWaitMilliseconds
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
@@ -126,6 +134,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
+		waitTime = pancakeswapWaitMilliseconds
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
 
@@ -136,6 +145,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		waitTime:     waitTime,
 	}
 
 	s.WsClient = wsClient
@@ -173,16 +183,17 @@ func (s *UniswapScraper) mainLoop() {
 	}
 	var wg sync.WaitGroup
 	for i := 0; i < numPairs; i++ {
-		time.Sleep(25 * time.Millisecond)
+		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
 		wg.Add(1)
-		go func(index int) {
-			defer wg.Done()
+		go func(index int, w *sync.WaitGroup) {
+			defer w.Done()
 			s.ListenToPairByIndex(index)
-		}(i)
+		}(i, &wg)
 	}
+	wg.Wait()
 }
 
-func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
+func (s *UniswapScraper) ListenToPairByIndex(i int) {
 	var pair UniswapPair
 	var err error
 	if i == -1 && s.exchangeName == "PanCakeSwap" {
@@ -210,7 +221,7 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 	}
 	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
 		log.Info("skip pair: ", pair.ForeignName)
-		return false
+		return
 	}
 	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
 		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
@@ -218,11 +229,11 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 		} else {
 			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
 		}
-		return false
+		return
 	}
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
-		return false
+		return
 	}
 	pair.normalizeUniPair()
 	ps, ok := s.pairScrapers[pair.ForeignName]
@@ -256,9 +267,6 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 						Decimals:   pair.Token1.Decimals,
 						Blockchain: dia.ETHEREUM,
 					}
-					log.Info("pair: ", ps.pair.ForeignName)
-					log.Info("token0: ", token0.Symbol)
-					log.Info("token1: ", token1.Symbol)
 					t := &dia.Trade{
 						Symbol:         ps.pair.Symbol,
 						Pair:           ps.pair.ForeignName,
@@ -279,7 +287,7 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 						}
 					}
 					if price > 0 {
-						log.Infof("Got trade - symbol: %s, pair: %s, price: %v, volume:%v", t.Symbol, t.Pair, t.Price, t.Volume)
+						log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
 						ps.parent.chanTrades <- t
 					}
 					if price == 0 {
@@ -291,7 +299,6 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) (healthy bool) {
 	} else {
 		log.Info("Skipping pair due to no pairScraper being available")
 	}
-	return true
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
