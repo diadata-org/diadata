@@ -23,32 +23,6 @@ services:
         delay: 2s
         window: 20s
 
-  geth-bsc:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-geth-bsc
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_geth-bsc
-    volumes:
-      - /home/srv/geth-bsc:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true
-    ports: 
-      - mode: host
-        target: 8545
-        published: 18545
-      - mode: host
-        target: 8546
-        published: 18546
-    logging:
-      options:
-        max-size: "50m"
-    networks:
-      - scrapers-network
-    deploy:
-      mode: global
-      restart_policy:
-        delay: 2s
-        window: 20s
-
   oracleservice-eth:
     build:
       context: $GOPATH
@@ -188,6 +162,62 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys_moonbeam
+
+  diaoracleservice-moonriver:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-moonriver
+    networks:
+      - scrapers-network
+    command: --deployedContract=0xa5fb311f87c5b869c1a724fc6bd93d7adce1c870 --secretsFile=/run/secrets/oracle_keys_moonriver --blockchainNode="https://moonriver.api.onfinality.io/public" --chainId=1285 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_moonriver
+
+  diaoracleservice-avalanche:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x226585bff09d87bb4d985520ae6681d2fe775e63 --secretsFile=/run/secrets/oracle_keys_avalanche --blockchainNode="https://api.avax.network/ext/bc/C/rpc" --chainId=43114 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_avalanche
+
+  diaoracleservice-avalanche-fuji:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche-fuji
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x1cdfefc93d97e1b09e040a1f2d04b170eb60f4f4 --secretsFile=/run/secrets/oracle_keys_avalanche_fuji --blockchainNode="https://api.avax-test.network/ext/bc/C/rpc" --chainId=43113 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_avalanche_fuji
+
+  diaoracleservice-fantom:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-fantom
+    networks:
+      - scrapers-network
+    command: --deployedContract=0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f --secretsFile=/run/secrets/oracle_keys_fantom --blockchainNode="https://rpc.ftm.tools/" --chainId=250 --deviationPermille=10 --sleepSeconds=120 --frequencySeconds=3600
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_fantom
 
   oracleservice-plasm-dusty:
     build:
@@ -479,6 +509,12 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt
   oracle_keys_xdai_generic_sokol:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt.sokol
+  oracle_keys_avalanche:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche.txt
+  oracle_keys_avalanche_fuji:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche_fuji.txt
+  oracle_keys_fantom:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_fantom.txt
   oracle_keys_wow_bsc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_wow_bsc.txt
   oracle_keys_pcws_bsc:
@@ -519,6 +555,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt
   oracle_keys_matic:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt
+  oracle_keys_moonriver:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonriver.txt
   oracle_keys_matic_mumbai:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt.mumbai
   oracle_keys_moonbeam:
