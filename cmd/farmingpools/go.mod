@@ -1,4 +1,4 @@
-module farmingpools
+module github.com/diadata-org/diadata/farmingpools
 
 go 1.14
 

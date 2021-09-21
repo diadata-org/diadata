@@ -6,7 +6,6 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 // SetStockQuotationInflux stores a stock quotation to an influx batch.

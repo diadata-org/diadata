@@ -2,13 +2,14 @@ package optionscrapers
 
 import (
 	"encoding/json"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	"golang.org/x/time/rate"
-	"sync"
-	"time"
 )
 
 const clientID = "2fSbOqqC"
@@ -288,7 +289,7 @@ type DeribitOptionsResponse struct {
 func (scraper *DeribitETHOptionScraper) FetchInstruments() {
 
 	var response DeribitOptionsResponse
-	rawResponse, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=ETH&expired=false&kind=option")
+	rawResponse, _, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=ETH&expired=false&kind=option")
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 
@@ -322,7 +323,7 @@ func (scraper *DeribitETHOptionScraper) MetaOnOptionIsAvailable(option DeribitIn
 }
 
 func (scraper *DeribitETHOptionScraper) GetAndStoreOptionsMeta() (err error) {
-	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=ETH&expired=false&kind=option")
+	body, _, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=ETH&expired=false&kind=option")
 	if err != nil {
 		return
 	}

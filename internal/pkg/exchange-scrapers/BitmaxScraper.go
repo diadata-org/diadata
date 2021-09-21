@@ -14,6 +14,7 @@ import (
 	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -63,13 +64,16 @@ type BitMaxScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers map[string]*BitMaxPairScraper // dia.Pair -> BitMaxPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	wsClient     *ws.Conn
+	pairScrapers           map[string]*BitMaxPairScraper // dia.Pair -> BitMaxPairScraper
+	exchangeName           string
+	chanTrades             chan *dia.Trade
+	wsClient               *ws.Conn
+	currencySymbolName     map[string]string
+	isTickerMapInitialised bool
+	db                     *models.RelDB
 }
 
-func NewBitMaxScraper(exchange dia.Exchange) *BitMaxScraper {
+func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitMaxScraper {
 	var bitmaxSocketURL = "wss://ascendex.com/0/api/pro/v1/stream"
 	s := &BitMaxScraper{
 		initDone:               make(chan nothing),

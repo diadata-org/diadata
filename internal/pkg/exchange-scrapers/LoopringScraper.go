@@ -274,7 +274,7 @@ func (s *LoopringScraper) reconnectToWS() {
 }
 
 func getAPIKey() (string, error) {
-	resp, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	resp, _, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
 	if err != nil {
 		return "", err
 	}
@@ -286,8 +286,8 @@ func getAPIKey() (string, error) {
 	return lkResponse.Key, nil
 }
 
-func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *LoopringScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return pair, nil
 }
 
 // Close closes any existing API connections, as well as channels of
@@ -330,8 +330,8 @@ func (s *LoopringScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	data, err := utils.GetRequest("https://api3.loopring.io/api/v3/exchange/markets")
+func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	data, _, err := utils.GetRequest("https://api3.loopring.io/api/v3/exchange/markets")
 
 	if err != nil {
 		return
@@ -350,6 +350,10 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		}
 	}
 	return
+}
+
+func (s *LoopringScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 // LoopringPairScraper implements PairScraper for Loopring exchange

@@ -36,6 +36,9 @@ const (
 	wsDialBSC   = "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
 	restDialBSC = "https://nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
 
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+
 	uniswapWaitMilliseconds     = 25
 	sushiswapWaitMilliseconds   = 25
 	pancakeswapWaitMilliseconds = 100

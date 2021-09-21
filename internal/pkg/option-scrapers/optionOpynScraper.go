@@ -2,10 +2,11 @@ package optionscrapers
 
 import (
 	"encoding/json"
-	Otoken "github.com/diadata-org/diadata/internal/pkg/option-scrapers/opyncontracts/OpynToken"
 	"strconv"
 	"sync"
 	"time"
+
+	Otoken "github.com/diadata-org/diadata/internal/pkg/option-scrapers/opyncontracts/OpynToken"
 
 	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/opyncontracts/OtokenFactory"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -144,8 +145,6 @@ func NewOpynETHOptionScraper() *OpynOptionScraper {
 
 }
 
-
-
 func (scraper *OpynOptionScraper) Scrape() {
 
 	go func() {
@@ -154,11 +153,14 @@ func (scraper *OpynOptionScraper) Scrape() {
 
 			var response OpynInstrumentsResponse
 
-			b, err := utils.GetRequest("https://api.0x.org/sra/v4/orderbook?baseToken=" + market.id + "&quoteToken=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&perPage=100")
+			b, _, err := utils.GetRequest("https://api.0x.org/sra/v4/orderbook?baseToken=" + market.id + "&quoteToken=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&perPage=100")
 			if err != nil {
 				log.Errorln("Error", err)
 			}
-			json.Unmarshal(b, &response)
+			err = json.Unmarshal(b, &response)
+			if err != nil {
+				log.Errorln("Unmarshal response: ", err)
+			}
 
 			var (
 				resolvedAskPX, resolvedAskSize, resolvedBidSize, resolvedBidPX float64
@@ -227,15 +229,15 @@ func (scraper *OpynOptionScraper) getOPYNInstruments() (options []OptionAttrs) {
 		// 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 get only ETH options
 		if common.HexToAddress("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2") == tokesn.Event.Underlying {
 			optionAttrs := scraper.getOtokenDetail(tokesn.Event.TokenAddress)
- 			op := OptionAttrs{
+			op := OptionAttrs{
 				underLyingToken: tokesn.Event.Underlying.String(),
 				id:              tokesn.Event.TokenAddress.String(),
 				strikePrice:     optionAttrs.strikePrice,
 				optionType:      optionAttrs.optionType,
 				expiryDate:      optionAttrs.expiryDate,
- 			}
+			}
 			options = append(options, op)
- 		}
+		}
 
 	}
 	return
@@ -271,7 +273,7 @@ func (scraper *OpynOptionScraper) getOtokenDetail(otokenAddress common.Address) 
 		optionType = dia.PutOption
 	}
 
-	sp := float64(strikePrice.Int64())/ 1e8
+	sp := float64(strikePrice.Int64()) / 1e8
 
 	optionAttrs.strikePrice = sp
 	optionAttrs.optionType = optionType
@@ -319,9 +321,8 @@ func (scraper *OpynOptionScraper) GetAndStoreOptionsMeta() (err error) {
 				InstrumentName: instrument.id,
 				BaseCurrency:   "ETH",
 				ExpirationTime: instrument.expiryDate,
-				StrikePrice:     instrument.strikePrice,
+				StrikePrice:    instrument.strikePrice,
 				OptionType:     instrument.optionType,
-
 			}
 
 			scraper.DataStore.SetOptionMeta(&optionMeta)

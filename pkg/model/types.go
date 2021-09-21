@@ -41,13 +41,6 @@ type StockQuotation struct {
 	ISIN     string
 }
 
-type Price struct {
-	Symbol string
-	Name   string
-	Price  float64
-	Time   time.Time
-}
-
 // MarshalBinary for quotations
 func (e *Quotation) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
