@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -20,15 +19,20 @@ import (
 )
 
 const (
-	zeroxContract       = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxWsDial         = "ws://159.69.120.42:8546/"
-	zeroxRestDial       = "http://159.69.120.42:8545/"
+	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
+	zeroxWsDial   = "ws://159.69.120.42:8546/"
+	zeroxRestDial = "http://159.69.120.42:8545/"
+	// zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	// zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 	zeroxLookBackBlocks = 6 * 60 * 24
 )
 
 type ZeroxToken struct {
-	Symbol   string
-	Decimals uint8
+	Symbol     string
+	Name       string
+	Address    string
+	Blockchain dia.BlockChain
+	Decimals   uint8
 }
 
 type ZeroxScraper struct {
@@ -51,10 +55,10 @@ type ZeroxScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*ZeroxToken
+	tokens      map[string]dia.Asset
 }
 
-func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
+func NewZeroxScraper(exchange dia.Exchange, scrape bool) *ZeroxScraper {
 	scraper := &ZeroxScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -64,7 +68,7 @@ func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
 		pairScrapers:   make(map[string]*ZeroxPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*ZeroxToken),
+		tokens:         make(map[string]dia.Asset),
 	}
 	wsClient, err := ethclient.Dial(zeroxWsDial)
 	if err != nil {
@@ -79,16 +83,21 @@ func NewZeroxScraper(exchange dia.Exchange) *ZeroxScraper {
 
 	scraper.loadTokens()
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
 func (scraper *ZeroxScraper) loadTokens() {
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &ZeroxToken{
-		Symbol:   "MKR",
-		Decimals: 18,
+	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = dia.Asset{
+		Symbol:     "MKR",
+		Name:       "Maker",
+		Decimals:   18,
+		Address:    "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
+		Blockchain: dia.ETHEREUM,
 	}
 
 	filterer, err := zerox.NewZeroxFilterer(common.HexToAddress(zeroxContract), scraper.WsClient)
@@ -110,6 +119,10 @@ func (scraper *ZeroxScraper) loadTokens() {
 
 	for it.Next() {
 		i, err := scraper.loadTokenData(common.BytesToAddress(it.Event.TakerAssetData))
+		if err != nil {
+			// skip non-existing token data
+			continue
+		}
 		o, err := scraper.loadTokenData(common.BytesToAddress(it.Event.MakerAssetData))
 		if err != nil {
 			// skip non-existing token data
@@ -125,29 +138,42 @@ func (scraper *ZeroxScraper) loadTokens() {
 
 }
 
-func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (*ZeroxToken, error) {
+// FillSymbolData is not used by DEX scrapers.
+func (scraper *ZeroxScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+func (scraper *ZeroxScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
+
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
 	}
+
 	tokenCaller, err := token.NewTokenCaller(tokenAddress, scraper.RestClient)
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
 	}
 	symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
+	}
+	name, err := tokenCaller.Name(&bind.CallOpts{})
+	if err != nil {
+		log.Error("get token name: ", err)
 	}
 	decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 	if err != nil {
-		return &ZeroxToken{}, err
+		return dia.Asset{}, err
 	}
-	dfToken := &ZeroxToken{
-		Symbol:   symbol,
-		Decimals: uint8(decimals.Int64()),
+	dfToken := dia.Asset{
+		Symbol:     symbol,
+		Name:       name,
+		Address:    tokenAddress.Hex(),
+		Blockchain: dia.ETHEREUM,
+		Decimals:   uint8(decimals.Int64()),
 	}
-	dfToken.normalizeETH()
-	scraper.tokens[tokenStr] = dfToken
+	scraper.tokens[tokenStr] = normalizeETH(dfToken)
 	return dfToken, err
 
 }
@@ -181,7 +207,7 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -199,7 +225,7 @@ func (scraper *ZeroxScraper) subscribeToTrades() error {
 }
 
 func (scraper *ZeroxScraper) processTrade(trade *zerox.ZeroxFill) {
-	symbol, foreignName, volume, price, err := scraper.getFillDataZerox(trade)
+	token0, token1, symbol, foreignName, volume, price, err := scraper.getFillDataZerox(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -214,6 +240,9 @@ func (scraper *ZeroxScraper) processTrade(trade *zerox.ZeroxFill) {
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
+				BaseToken:      token1,
+				QuoteToken:     token0,
+				VerifiedPair:   true,
 			}
 			pairScraper.parent.chanTrades <- trade
 			fmt.Println("got trade: ", trade)
@@ -226,21 +255,27 @@ func (scraper *ZeroxScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
 
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err = scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Zerox: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -253,13 +288,13 @@ func (scraper *ZeroxScraper) mainLoop() {
 }
 
 // getfillData returns the foreign name, volume and price of a order fill
-func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (symbol string, foreignName string, volume float64, price float64, err error) {
+func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (buyToken, sellToken dia.Asset, symbol string, foreignName string, volume float64, price float64, err error) {
 
-	buyToken, err := scraper.loadTokenData(common.BytesToAddress(s.MakerAssetData))
+	buyToken, err = scraper.loadTokenData(common.BytesToAddress(s.MakerAssetData))
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(common.BytesToAddress(s.TakerAssetData))
+	sellToken, err = scraper.loadTokenData(common.BytesToAddress(s.TakerAssetData))
 	if err != nil {
 		log.Error(err)
 	}
@@ -277,7 +312,7 @@ func (scraper *ZeroxScraper) getFillDataZerox(s *zerox.ZeroxFill) (symbol string
 	return
 }
 
-func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -294,22 +329,20 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -320,13 +353,18 @@ func (scraper *ZeroxScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 	return
 }
 
-func (t *ZeroxToken) normalizeETH() {
+func (scraper *ZeroxScraper) FetchTickerData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+func normalizeETH(t dia.Asset) dia.Asset {
 	if t.Symbol == "WETH" {
 		t.Symbol = "ETH"
 	}
+	return t
 }
 
-func (scraper *ZeroxScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *ZeroxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -370,17 +408,17 @@ func (scraper *ZeroxScraper) Close() error {
 	<-scraper.shutdownDone
 	return nil
 }
-func (s *ZeroxScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *ZeroxScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 type ZeroxPairScraper struct {
 	parent *ZeroxScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *ZeroxPairScraper) Pair() dia.Pair {
+func (pairScraper *ZeroxPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -51,10 +50,10 @@ type KyberScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
-	tokens      map[string]*KyberToken
+	tokens      map[string]dia.Asset
 }
 
-func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
+func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
 	scraper := &KyberScraper{
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
@@ -64,7 +63,7 @@ func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 		pairScrapers:   make(map[string]*KyberPairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
-		tokens:         make(map[string]*KyberToken),
+		tokens:         make(map[string]dia.Asset),
 	}
 	wsClient, err := ethclient.Dial(kyberWsDial)
 	if err != nil {
@@ -78,23 +77,25 @@ func NewKyberScraper(exchange dia.Exchange) *KyberScraper {
 	scraper.RestClient = restClient
 
 	scraper.loadTokens()
-
 	time.Sleep(5 * time.Second)
-	go scraper.mainLoop()
+
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
 func (scraper *KyberScraper) loadTokens() {
 
-	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = &KyberToken{
+	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = dia.Asset{
 		Symbol:   "ETH",
-		Decimals: big.NewInt(18),
+		Decimals: uint8(18),
 	}
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = &KyberToken{
+	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = dia.Asset{
 		Symbol:   "MKR",
-		Decimals: big.NewInt(18),
+		Decimals: uint8(18),
 	}
 
 	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
@@ -126,7 +127,7 @@ func (scraper *KyberScraper) loadTokens() {
 
 }
 
-func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (*KyberToken, error) {
+func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
@@ -139,16 +140,22 @@ func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (*KyberT
 		if err != nil {
 			log.Error(err)
 		}
+		name, err := tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
-		dfToken := &KyberToken{
-			Symbol:   symbol,
-			Decimals: decimals,
+		dfToken := dia.Asset{
+			Symbol:     symbol,
+			Name:       name,
+			Decimals:   uint8(decimals.Int64()),
+			Address:    tokenAddress.Hex(),
+			Blockchain: dia.ETHEREUM,
 		}
-		dfToken.normalizeETH()
-		scraper.tokens[tokenStr] = dfToken
+		scraper.tokens[tokenStr] = normalizeETH(dfToken)
 		return dfToken, err
 	}
 }
@@ -182,7 +189,7 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -200,7 +207,7 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 }
 
 func (scraper *KyberScraper) processTrade(trade *kyber.KyberExecuteTrade) {
-	symbol, foreignName, volume, price, err := scraper.getTradeDataKyber(trade)
+	symbol, foreignName, volume, price, token0, token1, err := scraper.getTradeDataKyber(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -215,6 +222,9 @@ func (scraper *KyberScraper) processTrade(trade *kyber.KyberExecuteTrade) {
 				Time:           time.Unix(timestamp, 0),
 				ForeignTradeID: "",
 				Source:         scraper.exchangeName,
+				BaseToken:      token1,
+				QuoteToken:     token0,
+				VerifiedPair:   true,
 			}
 			pairScraper.parent.chanTrades <- trade
 			fmt.Println("got trade: ", trade)
@@ -227,20 +237,27 @@ func (scraper *KyberScraper) mainLoop() {
 
 	scraper.run = true
 
-	scraper.subscribeToTrades()
+	err := scraper.subscribeToTrades()
+	if err != nil {
+		log.Error(err)
+	}
+
 	go func() {
 		for scraper.run {
-			_ = <-scraper.resubscribe
+			<-scraper.resubscribe
 			if scraper.run {
 				fmt.Println("resubscribe...")
-				scraper.subscribeToTrades()
+				err := scraper.subscribeToTrades()
+				if err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	}()
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Kyber: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -254,21 +271,21 @@ func (scraper *KyberScraper) mainLoop() {
 }
 
 // getTradeData returns the foreign name, volume and price of a swap
-func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symbol string, foreignName string, volume float64, price float64, err error) {
-	buyToken, err := scraper.loadTokenData(s.Dest)
+func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symbol string, foreignName string, volume float64, price float64, buyToken, sellToken dia.Asset, err error) {
+	buyToken, err = scraper.loadTokenData(s.Dest)
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err := scraper.loadTokenData(s.Src)
+	sellToken, err = scraper.loadTokenData(s.Src)
 	if err != nil {
 		log.Error(err)
 	}
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals.Int64())))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals.Int64())))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -277,11 +294,11 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	return
 }
 
-func (scraper *KyberScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (scraper *KyberScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -292,22 +309,20 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 
 				foreignName := token1.Symbol + "-" + token2.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token1.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
 
 				foreignName = token2.Symbol + "-" + token1.Symbol
 				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
+					pairs = append(pairs, dia.ExchangePair{
 						Symbol:      token2.Symbol,
 						ForeignName: foreignName,
 						Exchange:    scraper.exchangeName,
-						Ignore:      false,
 					})
 					pairSet[foreignName] = struct{}{}
 				}
@@ -318,13 +333,11 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.Pair, err error)
 	return
 }
 
-func (t *KyberToken) normalizeETH() {
-	if t.Symbol == "WETH" {
-		t.Symbol = "ETH"
-	}
+func (scraper *KyberScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
 }
 
-func (scraper *KyberScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -371,11 +384,11 @@ func (scraper *KyberScraper) Close() error {
 
 type KyberPairScraper struct {
 	parent *KyberScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *KyberPairScraper) Pair() dia.Pair {
+func (pairScraper *KyberPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

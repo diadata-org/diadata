@@ -1,0 +1,172 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ABT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986"
+        },
+        {
+            "Symbol": "CHAT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x442Bc47357919446eAbC18C7211E57a13d983469"
+        },
+        {
+            "Symbol": "CVC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x41e5560054824eA6B0732E656E3Ad64E20e94E45"
+        },
+        {
+            "Symbol": "CVT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xBe428c3867F05deA2A89Fc76a102b544eaC7f772"
+        },
+        {
+            "Symbol": "EGT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x8e1b448EC7aDFc7Fa35FC2e885678bD323176E34"
+        },
+        {
+            "Symbol": "ELF",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+        },
+        {
+            "Symbol": "GTO",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xC5bBaE50781Be1669306b9e001EFF57a2957b09d"
+        },
+        {
+            "Symbol": "GUSD",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd"
+        },
+        {
+            "Symbol": "KAN",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x1410434b0346f5bE678d0FB554E5c7ab620f8f4a"
+        },
+        {
+            "Symbol": "LET",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xFA3118B34522580c35Ae27F6cf52da1dBb756288"
+        },
+        {
+            "Symbol": "LRC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
+        },
+        {
+            "Symbol": "MOF",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x653430560bE843C4a3D143d0110e896c2Ab8ac0D"
+        },
+        {
+            "Symbol": "NAS",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x5d65D971895Edc438f465c17DB6992698a52318D"
+        },
+        {
+            "Symbol": "PAY",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+        },
+        {
+            "Symbol": "PPT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xd4fa1460F537bb9085d22C7bcCB5DD450Ef28e3a"
+        },
+        {
+            "Symbol": "PST",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xE3feDAeCD47aa8EAb6b23227b0eE56F092C967a9"
+        },
+        {
+            "Symbol": "REN",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x408e41876cCCDC0F92210600ef50372656052a38"
+        },
+        {
+            "Symbol": "SC",
+            "Exchange": "OKEx",
+            "Blockchain": "Sia",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SNC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xF4134146AF2d511Dd5EA8cDB1C4AC88C57D60404"
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Symbol": "TCT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x4824A7b64E3966B0133f4f4FFB1b9D6bEb75FFF7"
+        },
+        {
+            "Symbol": "TRIO",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x8B40761142B9aa6dc8964e61D0585995425C3D94"
+        },
+        {
+            "Symbol": "VIB",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
+        },
+        {
+            "Symbol": "WTC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xb7cB1C96dB6B22b0D3d9536E0108d062BD488F74"
+        },
+        {
+            "Symbol": "XUC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xc324a2f6b05880503444451B8b27e6f9e63287Cb"
+        },
+        {
+            "Symbol": "YEE",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x922105fAd8153F516bCfB829f56DC097a0E1D705"
+        },
+        {
+            "Symbol": "YOU",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x34364BEe11607b1963d66BCA665FDE93fCA666a8"
+        },
+        {
+            "Symbol": "YOYOW",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xcbeAEc699431857FDB4d37aDDBBdc20E132D4903"
+        }
+    ]
+}

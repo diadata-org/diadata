@@ -1,15 +1,15 @@
 package models
 
 import (
-  log "github.com/sirupsen/logrus"
-	"github.com/diadata-org/diadata/pkg/dia"
 	"errors"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 func (db *DB) SetOptionMeta(optionMeta *dia.OptionMeta) error {
 	if db.redisClient == nil {
-		return errors.New("Datastore has no redis client.")
+		return errors.New("datastore has no redis client")
 	}
 	key := "dia_optionMeta_" + optionMeta.BaseCurrency
 	log.Debug("setting ", key, optionMeta)
@@ -22,7 +22,7 @@ func (db *DB) SetOptionMeta(optionMeta *dia.OptionMeta) error {
 
 func (db *DB) RemoveExpiredOptionMeta(baseCurrency string) error {
 	if db.redisClient == nil {
-		return errors.New("Datastore has no redis client.")
+		return errors.New("datastore has no redis client")
 	}
 	optionsMeta, err := db.GetOptionMeta(baseCurrency)
 	if err != nil {
@@ -43,7 +43,7 @@ func (db *DB) RemoveExpiredOptionMeta(baseCurrency string) error {
 func (db *DB) GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error) {
 	var result []dia.OptionMeta
 	if db.redisClient == nil {
-		return result, errors.New("Datastore has no redis client.")
+		return result, errors.New("datastore has no redis client")
 	}
 	key := "dia_optionMeta_" + baseCurrency
 	resultStrings, err := db.redisClient.SMembers(key).Result()

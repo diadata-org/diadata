@@ -6,14 +6,14 @@ import (
 	"math/big"
 	"time"
 
+	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
+	LRCtoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
-	stakingpool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
-	lrctoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
 )
 
 type LRCPool struct {
@@ -48,17 +48,14 @@ func (cv *LRCPool) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-cv.scraper.tickerRate.C:
-				err := cv.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scraping", err)
-				}
+		for range cv.scraper.tickerRate.C {
+			err := cv.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scraping", err)
 			}
-
 		}
 	}()
+	select {}
 
 }
 
@@ -86,7 +83,7 @@ func (cv *LRCPool) scrapePools() (err error) {
 	if err != nil {
 		return err
 	}
-	token, err := lrctoken.NewLRCV2Caller(tokenaddress, cv.RestClient)
+	token, err := LRCtoken.NewLRCV2Caller(tokenaddress, cv.RestClient)
 	if err != nil {
 		return err
 	}

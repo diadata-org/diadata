@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"flag"
+	"github.com/diadata-org/diadata/internal/pkg/githubService"
 	"os"
 	"time"
 
-	githubservice "github.com/diadata-org/diadata/internal/pkg/githubService"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +21,7 @@ func main() {
 	var nameUser = flag.String("username", "diadata-org", "github username")
 	var nameRepository = flag.String("repository", "diadata", "name of the repository")
 	flag.Parse()
-	apiKey := getAPIKeyFromSecrets()
+	apiSecret := getAPIKeyFromSecrets()
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)
@@ -36,12 +36,12 @@ func main() {
 	// If no commit is in the DB, fetch all commits until now
 	if (latestCommit) == (models.GithubCommit{}) {
 		log.Info("populate database...")
-		commits, err := githubservice.FetchAllCommits(*nameUser, *nameRepository, 100, apiKey)
+		commits, err := githubservice.FetchAllCommits(*nameUser, *nameRepository, 100, apiSecret)
 		if err != nil {
 			log.Fatal("error fetching all commits: ", err)
 		}
 		for _, commit := range commits {
-			err = ds.SetCommit(&commit)
+			err = ds.SetCommit(commit)
 			if err != nil {
 				log.Fatal("error setting commit: ", err)
 			}
@@ -55,28 +55,24 @@ func main() {
 	ticker := time.NewTicker(20 * time.Second)
 
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				log.Info("update github commits")
-				latestCommit, err := ds.GetLatestCommit(*nameUser, *nameRepository)
-				if err != nil {
-					log.Fatal("error getting latest commit: ", err)
-				}
-				// Remark: if between two ticker signals no new commits are added, the latest commit is fetched again nevertheless,
-				// because FetchCommitsByDate includes the borders. This does not hurt as the set of tags is the same and hence, data
-				// is only stored once in influx.
-				commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, latestCommit.Timestamp, time.Now())
+		for range ticker.C {
+			log.Info("update github commits")
+			latestCommit, err := ds.GetLatestCommit(*nameUser, *nameRepository)
+			if err != nil {
+				log.Fatal("error getting latest commit: ", err)
+			}
+			// Remark: if between two ticker signals no new commits are added, the latest commit is fetched again nevertheless,
+			// because FetchCommitsByDate includes the borders. This does not hurt as the set of tags is the same and hence, data
+			// is only stored once in influx.
+			commits, err := githubservice.FetchCommitsByDate("diadata-org", "diadata", apiKey, latestCommit.Timestamp, time.Now())
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, commit := range commits {
+				err = ds.SetCommit(commit)
 				if err != nil {
 					log.Fatal(err)
 				}
-				for _, commit := range commits {
-					err = ds.SetCommit(&commit)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-
 			}
 		}
 	}()
@@ -101,7 +97,13 @@ func getAPIKeyFromSecrets() string {
 			log.Fatal(err)
 		}
 	}
-	defer file.Close()
+	defer func() {
+		cerr := file.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())

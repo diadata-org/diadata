@@ -10,7 +10,8 @@ import (
 	"sync"
 	"time"
 
-	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
+	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
@@ -29,20 +30,22 @@ const (
 	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
 
-	wsDialBSC = "wss://bsc-ws-node.nariox.org:443"
+	// wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
 	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
-	restDialBSC = "https://bsc-dataseed.binance.org/"
-	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
-	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
 
-	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
-	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	wsDialBSC   = "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
+	restDialBSC = "https://nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
+
+	uniswapWaitMilliseconds     = 25
+	sushiswapWaitMilliseconds   = 25
+	pancakeswapWaitMilliseconds = 100
 )
 
 type UniswapToken struct {
 	Address  common.Address
 	Symbol   string
 	Decimals uint8
+	Name     string
 }
 
 type UniswapPair struct {
@@ -79,51 +82,53 @@ type UniswapScraper struct {
 	pairScrapers map[string]*UniswapPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	waitTime     int
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
-func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
-	log.Info("NewUniswapScraper ", exchange.Name)
+func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
+	log.Info("NewUniswapScraper", exchange.Name)
 	var wsClient, restClient *ethclient.Client
+	var waitTime int
 	var err error
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
-		wsClient, err = ethclient.Dial(wsDial)
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		break
+		waitTime = uniswapWaitMilliseconds
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.String()
-		wsClient, err = ethclient.Dial(wsDial)
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		waitTime = sushiswapWaitMilliseconds
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(wsDialBSC)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}
-		restClient, err = ethclient.Dial(restDialBSC)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
 		if err != nil {
 			log.Fatal(err)
 		}
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		waitTime = pancakeswapWaitMilliseconds
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	case dia.DfynNetwork:
 		log.Infoln("Init ws and rest client for Polygon chain")
@@ -135,7 +140,9 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		exchangeFactoryContractAddress = exchange.Contract.String()
+		waitTime = uniswapWaitMilliseconds
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
 	}
 
 	s := &UniswapScraper{
@@ -145,12 +152,14 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		waitTime:     waitTime,
 	}
 
 	s.WsClient = wsClient
 	s.RestClient = restClient
-
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -176,113 +185,135 @@ func (s *UniswapScraper) mainLoop() {
 	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
 
 	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("Uniswap: No pairs to scrap provided")
+		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := -1; i < numPairs; i++ {
-		var pair UniswapPair
-		var err error
-		if i == -1 && s.exchangeName == "PanCakeSwap" {
-			token0 := UniswapToken{
-				Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
-				Symbol:   "WOW",
-				Decimals: uint8(18),
-			}
-			token1 := UniswapToken{
-				Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
-				Symbol:   "BUSD",
-				Decimals: uint8(18),
-			}
-			pair = UniswapPair{
-				Token0:      token0,
-				Token1:      token1,
-				ForeignName: "WOW-BUSD",
-				Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
-			}
-		} else {
-			pair, err = s.GetPairByID(int64(i))
-			if err != nil {
-				log.Error("error fetching pair: ", err)
-			}
-		}
-		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-			log.Info("skip pair: ", pair.ForeignName)
-			continue
-		}
-		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-			} else {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-			}
-			continue
-		}
-		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
-			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
-			continue
-		}
-		pair.normalizeUniPair()
-		ps, ok := s.pairScrapers[pair.ForeignName]
-		if ok {
-			log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
-			sink, err := s.GetSwapsChannel(pair.Address)
-			if err != nil {
-				log.Error("error fetching swaps channel: ", err)
-			}
+	var wg sync.WaitGroup
+	for i := 0; i < numPairs; i++ {
+		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
+		wg.Add(1)
+		go func(index int, w *sync.WaitGroup) {
+			defer w.Done()
+			s.ListenToPairByIndex(index)
+		}(i, &wg)
+	}
+	wg.Wait()
+}
 
-			go func() {
-				for {
-					rawSwap, ok := <-sink
-					if ok {
-						swap, err := s.normalizeUniswapSwap(*rawSwap)
-						if err != nil {
-							log.Error("error normalizing swap: ", err)
-						}
-						price, volume, err := getSwapData(swap)
-						if err != nil {
-							log.Error("error getting swap data: ", err)
-						}
-
-						t := &dia.Trade{
-							Symbol:         ps.pair.Symbol,
-							Pair:           ps.pair.ForeignName,
-							Price:          price,
-							Volume:         volume,
-							Time:           time.Unix(swap.Timestamp, 0),
-							ForeignTradeID: swap.ID,
-							Source:         s.exchangeName,
-						}
-						// If we need quotation of a base token, reverse pair
-						if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
-							tSwapped, err := dia.SwapTrade(*t)
-							if err == nil {
-								t = &tSwapped
-							}
-						}
-						if price > 0 {
-							log.Info("Got trade: ", t)
-							ps.parent.chanTrades <- t
-						}
-						if price == 0 {
-							log.Info("Got zero trade: ", t)
-						}
-					}
-				}
-			}()
-		} else {
-			log.Info("Skipping pair due to no pairScraper being available")
+func (s *UniswapScraper) ListenToPairByIndex(i int) {
+	var pair UniswapPair
+	var err error
+	if i == -1 && s.exchangeName == "PanCakeSwap" {
+		token0 := UniswapToken{
+			Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
+			Symbol:   "WOW",
+			Decimals: uint8(18),
+		}
+		token1 := UniswapToken{
+			Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
+			Symbol:   "BUSD",
+			Decimals: uint8(18),
+		}
+		pair = UniswapPair{
+			Token0:      token0,
+			Token1:      token1,
+			ForeignName: "WOW-BUSD",
+			Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
+		}
+	} else {
+		pair, err = s.GetPairByID(int64(i))
+		if err != nil {
+			log.Error("error fetching pair: ", err)
 		}
 	}
+	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
+		log.Info("skip pair: ", pair.ForeignName)
+		return
+	}
+	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
+		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
+			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
+		} else {
+			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
+		}
+		return
+	}
+	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
+		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+		return
+	}
+	pair.normalizeUniPair()
+	ps, ok := s.pairScrapers[pair.ForeignName]
+	if ok {
+		log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
+		sink, err := s.GetSwapsChannel(pair.Address)
+		if err != nil {
+			log.Error("error fetching swaps channel: ", err)
+		}
 
-	// s.cleanup(err)
+		go func() {
+			for {
+				rawSwap, ok := <-sink
+				if ok {
+					swap, err := s.normalizeUniswapSwap(*rawSwap)
+					if err != nil {
+						log.Error("error normalizing swap: ", err)
+					}
+					price, volume := getSwapData(swap)
+					token0 := dia.Asset{
+						Address:    pair.Token0.Address.Hex(),
+						Symbol:     pair.Token0.Symbol,
+						Name:       pair.Token0.Name,
+						Decimals:   pair.Token0.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
+					token1 := dia.Asset{
+						Address:    pair.Token1.Address.Hex(),
+						Symbol:     pair.Token1.Symbol,
+						Name:       pair.Token1.Name,
+						Decimals:   pair.Token1.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
+					t := &dia.Trade{
+						Symbol:         ps.pair.Symbol,
+						Pair:           ps.pair.ForeignName,
+						Price:          price,
+						Volume:         volume,
+						BaseToken:      token1,
+						QuoteToken:     token0,
+						Time:           time.Unix(swap.Timestamp, 0),
+						ForeignTradeID: swap.ID,
+						Source:         s.exchangeName,
+						VerifiedPair:   true,
+					}
+					// If we need quotation of a base token, reverse pair
+					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
+						}
+					}
+					if price > 0 {
+						log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
+						ps.parent.chanTrades <- t
+					}
+					if price == 0 {
+						log.Info("Got zero trade: ", t)
+					}
+				}
+			}
+		}()
+	} else {
+		log.Info("Skipping pair due to no pairScraper being available")
+	}
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
-func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *uniswapcontract.UniswapV2PairSwap, error) {
+func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *uniswap.UniswapV2PairSwap, error) {
 
-	sink := make(chan *uniswapcontract.UniswapV2PairSwap)
-	var pairFiltererContract *uniswapcontract.UniswapV2PairFilterer
-	pairFiltererContract, err := uniswapcontract.NewUniswapV2PairFilterer(pairAddress, s.WsClient)
+	sink := make(chan *uniswap.UniswapV2PairSwap)
+	var pairFiltererContract *uniswap.UniswapV2PairFilterer
+	pairFiltererContract, err := uniswap.NewUniswapV2PairFilterer(pairAddress, s.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -307,7 +338,13 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	if err != nil {
 		return &[]string{}, err
 	}
-	defer jsonFile.Close()
+	defer func() {
+		err = jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return &[]string{}, err
@@ -336,7 +373,7 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapScraper) normalizeUniswapSwap(swap uniswapcontract.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
+func (s *UniswapScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
 
 	pair, err := s.GetPairByAddress(swap.Raw.Address)
 	if err != nil {
@@ -362,21 +399,57 @@ func (s *UniswapScraper) normalizeUniswapSwap(swap uniswapcontract.UniswapV2Pair
 	return
 }
 
-// FetchAvailablePairs returns a list with all available trade pairs as dia.Pair for the pairDiscorvery service
-func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+// pairHealthCheck returns true if the involved tokens are not blacklisted and do not have zero entries
+func (up *UniswapPair) pairHealthCheck() bool {
+	if up.Token0.Symbol == "" || up.Token1.Symbol == "" || up.Token0.Address.Hex() == "" || up.Token1.Address.Hex() == "" {
+		return false
+	}
+	if helpers.SymbolIsBlackListed(up.Token0.Symbol) || helpers.SymbolIsBlackListed(up.Token1.Symbol) {
+		if helpers.SymbolIsBlackListed(up.Token0.Symbol) {
+			log.Infof("skip pair %s. symbol %s is blacklisted", up.ForeignName, up.Token0.Symbol)
+		} else {
+			log.Infof("skip pair %s. symbol %s is blacklisted", up.ForeignName, up.Token1.Symbol)
+		}
+		return false
+	}
+	if helpers.AddressIsBlacklisted(up.Token0.Address) || helpers.AddressIsBlacklisted(up.Token1.Address) {
+		log.Info("skip pair ", up.ForeignName, ", address is blacklisted")
+		return false
+	}
+	return true
+}
+
+// FetchAvailablePairs returns a list with all available trade pairs as dia.ExchangePair for the pairDiscorvery service
+func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	time.Sleep(100 * time.Millisecond)
 	uniPairs, err := s.GetAllPairs()
 	if err != nil {
 		return
 	}
 	for _, pair := range uniPairs {
-		if pair.Token0.Symbol == "" || pair.Token1.Symbol == "" {
+		if !pair.pairHealthCheck() {
 			continue
 		}
-		pairToNormalise := dia.Pair{
-			Symbol:      pair.Token0.Symbol,
-			ForeignName: pair.ForeignName,
-			Exchange:    "UniswapV2",
-			Ignore:      false,
+		quotetoken := dia.Asset{
+			Symbol:     pair.Token0.Symbol,
+			Name:       pair.Token0.Name,
+			Address:    pair.Token0.Address.Hex(),
+			Decimals:   pair.Token0.Decimals,
+			Blockchain: dia.ETHEREUM,
+		}
+		basetoken := dia.Asset{
+			Symbol:     pair.Token1.Symbol,
+			Name:       pair.Token1.Name,
+			Address:    pair.Token1.Address.Hex(),
+			Decimals:   pair.Token1.Decimals,
+			Blockchain: dia.ETHEREUM,
+		}
+		pairToNormalise := dia.ExchangePair{
+			Symbol:         pair.Token0.Symbol,
+			ForeignName:    pair.ForeignName,
+			Exchange:       "UniswapV2",
+			Verified:       true,
+			UnderlyingPair: dia.Pair{BaseToken: basetoken, QuoteToken: quotetoken},
 		}
 		normalizedPair, _ := s.NormalizePair(pairToNormalise)
 		pairs = append(pairs, normalizedPair)
@@ -385,12 +458,18 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return
 }
 
-// GetAllPairs is similar to FetchAvailablePairs. But instead of dia.Pairs it returns all pairs as UniswapPairs,
+// FillSymbolData is not used by DEX scrapers.
+func (s *UniswapScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+// GetAllPairs is similar to FetchAvailablePairs. But instead of dia.ExchangePairs it returns all pairs as UniswapPairs,
 // i.e. including the pair's address
 func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
+	time.Sleep(20 * time.Millisecond)
 	connection := s.RestClient
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -418,10 +497,7 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	return pairs, nil
 }
 
-func (up *UniswapScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	if pair.ForeignName == "WETH" {
-		pair.Symbol = "ETH"
-	}
+func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
 }
 
@@ -429,10 +505,12 @@ func (up *UniswapScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 func (up *UniswapPair) normalizeUniPair() {
 	if up.Token0.Symbol == "WETH" {
 		up.Token0.Symbol = "ETH"
+		up.Token0.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
 	if up.Token1.Symbol == "WETH" {
 		up.Token1.Symbol = "ETH"
+		up.Token1.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
 }
@@ -440,8 +518,8 @@ func (up *UniswapPair) normalizeUniPair() {
 // GetPairByID returns the UniswapPair with the integer id @num
 func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
 	log.Info("Get pair ID: ", num)
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -464,8 +542,8 @@ func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
 // GetPairByAddress returns the UniswapPair with pair address @pairAddress
 func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair UniswapPair, err error) {
 	connection := s.RestClient
-	var pairContract *uniswapcontract.IUniswapV2PairCaller
-	pairContract, err = uniswapcontract.NewIUniswapV2PairCaller(pairAddress, connection)
+	var pairContract *uniswap.IUniswapV2PairCaller
+	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
 		log.Error(err)
 		return UniswapPair{}, err
@@ -474,13 +552,13 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 	// Getting tokens from pair ---------------------
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
-	var token0Contract *uniswapcontract.IERC20Caller
-	var token1Contract *uniswapcontract.IERC20Caller
-	token0Contract, err = uniswapcontract.NewIERC20Caller(address0, connection)
+	var token0Contract *uniswap.IERC20Caller
+	var token1Contract *uniswap.IERC20Caller
+	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
 	if err != nil {
 		log.Error(err)
 	}
-	token1Contract, err = uniswapcontract.NewIERC20Caller(address1, connection)
+	token1Contract, err = uniswap.NewIERC20Caller(address1, connection)
 	if err != nil {
 		log.Error(err)
 	}
@@ -502,15 +580,28 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 		log.Error(err)
 		return UniswapPair{}, err
 	}
+
+	name0, err := s.GetName(address0)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
+	name1, err := s.GetName(address1)
+	if err != nil {
+		log.Error(err)
+		return UniswapPair{}, err
+	}
 	token0 := UniswapToken{
 		Address:  address0,
 		Symbol:   symbol0,
 		Decimals: decimals0,
+		Name:     name0,
 	}
 	token1 := UniswapToken{
 		Address:  address1,
 		Symbol:   symbol1,
 		Decimals: decimals1,
+		Name:     name1,
 	}
 	foreignName := symbol0 + "-" + symbol1
 	pair = UniswapPair{
@@ -525,8 +616,8 @@ func (s *UniswapScraper) GetPairByAddress(pairAddress common.Address) (pair Unis
 // GetDecimals returns the decimals of the token with address @tokenAddress
 func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint8, err error) {
 
-	var contract *uniswapcontract.IERC20Caller
-	contract, err = uniswapcontract.NewIERC20Caller(tokenAddress, s.RestClient)
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, s.RestClient)
 	if err != nil {
 		log.Error(err)
 		return
@@ -536,11 +627,24 @@ func (s *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uint
 	return
 }
 
+func (s *UniswapScraper) GetName(tokenAddress common.Address) (name string, err error) {
+
+	var contract *uniswap.IERC20Caller
+	contract, err = uniswap.NewIERC20Caller(tokenAddress, s.RestClient)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	name, err = contract.Name(&bind.CallOpts{})
+
+	return
+}
+
 // getNumPairs returns the number of available pairs on Uniswap
 func (s *UniswapScraper) getNumPairs() (int, error) {
 
-	var contract *uniswapcontract.IUniswapV2FactoryCaller
-	contract, err := uniswapcontract.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
+	var contract *uniswap.IUniswapV2FactoryCaller
+	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -551,34 +655,32 @@ func (s *UniswapScraper) getNumPairs() (int, error) {
 }
 
 // getSwapData returns price, volume and sell/buy information of @swap
-func getSwapData(swap UniswapSwap) (price float64, volume float64, err error) {
+func getSwapData(swap UniswapSwap) (price float64, volume float64) {
 	if swap.Amount0In == float64(0) {
 		volume = swap.Amount0Out
 		price = swap.Amount1In / swap.Amount0Out
 		return
 	}
-
 	volume = -swap.Amount0In
 	price = swap.Amount1Out / swap.Amount0In
 	return
 }
 
+/*
 func (s *UniswapScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
-
 	if err != nil {
 		s.error = err
 	}
 	s.closed = true
-
 	close(s.shutdownDone)
 }
+*/
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *UniswapScraper) Close() error {
-
 	if s.closed {
 		return errors.New("UniswapScraper: Already closed")
 	}
@@ -593,8 +695,7 @@ func (s *UniswapScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *UniswapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
-
+func (s *UniswapScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
@@ -614,12 +715,13 @@ func (s *UniswapScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 // UniswapPairScraper implements PairScraper for Uniswap
 type UniswapPairScraper struct {
 	parent *UniswapScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *UniswapPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -638,6 +740,6 @@ func (ps *UniswapPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *UniswapPairScraper) Pair() dia.Pair {
+func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

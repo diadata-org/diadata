@@ -11,6 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -23,6 +24,22 @@ type Event struct {
 	Method string      `json:"method"`
 	Params interface{} `json:"params"`
 	Id     int         `json:"id"`
+}
+
+type HitBTCAsset struct {
+	ID                 string `json:"id"`
+	FullName           string `json:"fullName"`
+	Crypto             bool   `json:"crypto"`
+	PayinEnabled       bool   `json:"payinEnabled"`
+	PayinPaymentID     bool   `json:"payinPaymentId"`
+	PayinConfirmations int    `json:"payinConfirmations"`
+	PayoutEnabled      bool   `json:"payoutEnabled"`
+	PayoutIsPaymentID  bool   `json:"payoutIsPaymentId"`
+	TransferEnabled    bool   `json:"transferEnabled"`
+	Delisted           bool   `json:"delisted"`
+	PayoutFee          string `json:"payoutFee"`
+	PrecisionPayout    int    `json:"precisionPayout"`
+	PrecisionTransfer  int    `json:"precisionTransfer"`
 }
 
 type HitBTCScraper struct {
@@ -39,10 +56,11 @@ type HitBTCScraper struct {
 	pairScrapers map[string]*HitBTCPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewHitBTCScraper returns a new HitBTCScraper for the given pair
-func NewHitBTCScraper(exchange dia.Exchange) *HitBTCScraper {
+func NewHitBTCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HitBTCScraper {
 
 	s := &HitBTCScraper{
 		shutdown:     make(chan nothing),
@@ -51,24 +69,25 @@ func NewHitBTCScraper(exchange dia.Exchange) *HitBTCScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(_socketurl, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
 	var err error
-	for true {
+	for {
 		message := &Event{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error(err.Error())
@@ -80,17 +99,25 @@ func (s *HitBTCScraper) mainLoop() {
 			if ok {
 				mdData := md["data"].([]interface{})
 				for _, v := range mdData {
+					var f64Price float64
+					var f64Volume float64
+					var exchangepair dia.ExchangePair
 					mdElement := v.(map[string]interface{})
 					f64PriceString := mdElement["price"].(string)
-					f64Price, err := strconv.ParseFloat(f64PriceString, 64)
+					f64Price, err = strconv.ParseFloat(f64PriceString, 64)
 					if err == nil {
 						f64VolumeString := mdElement["quantity"].(string)
-						f64Volume, err := strconv.ParseFloat(f64VolumeString, 64)
+						f64Volume, err = strconv.ParseFloat(f64VolumeString, 64)
 						if err == nil {
 							timeStamp, _ := time.Parse(time.RFC3339, mdElement["timestamp"].(string))
 							if mdElement["id"] != 0 {
 								if mdElement["side"] == "sell" {
 									f64Volume = -f64Volume
+								}
+
+								exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, md["symbol"].(string))
+								if err != nil {
+									log.Error(err)
 								}
 								t := &dia.Trade{
 									Symbol:         ps.pair.Symbol,
@@ -100,6 +127,12 @@ func (s *HitBTCScraper) mainLoop() {
 									Time:           timeStamp,
 									ForeignTradeID: strconv.FormatInt(int64(mdElement["id"].(float64)), 16),
 									Source:         s.exchangeName,
+									VerifiedPair:   exchangepair.Verified,
+									BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+									QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+								}
+								if exchangepair.Verified {
+									log.Infoln("Got verified trade: ", t)
 								}
 								log.Info("got trade: ", t)
 								ps.parent.chanTrades <- t
@@ -138,7 +171,11 @@ func (s *HitBTCScraper) Close() error {
 		return errors.New("HitBTCScraper: Already closed")
 	}
 	close(s.shutdown)
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
+
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -147,7 +184,7 @@ func (s *HitBTCScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *HitBTCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -181,19 +218,21 @@ func (s *HitBTCScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return ps, nil
 }
-func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
-	symbol = strings.ToUpper(baseCurrency)
-	if helpers.NameForSymbol(symbol) == symbol {
-		if !helpers.SymbolIsName(symbol) {
-			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-		}
-	}
-	if helpers.SymbolIsBlackListed(symbol) {
-		return symbol, errors.New("Symbol is black listed:" + symbol)
-	}
-	return symbol, nil
-}
-func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+
+// func (s *HitBTCScraper) normalizeSymbol(foreignName string, baseCurrency string) (symbol string, err error) {
+// 	symbol = strings.ToUpper(baseCurrency)
+// 	if helpers.NameForSymbol(symbol) == symbol {
+// 		if !helpers.SymbolIsName(symbol) {
+// 			return symbol, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
+// 		}
+// 	}
+// 	if helpers.SymbolIsBlackListed(symbol) {
+// 		return symbol, errors.New("Symbol is black listed:" + symbol)
+// 	}
+// 	return symbol, nil
+// }
+
+func (s *HitBTCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	symbol := strings.ToUpper(pair.Symbol)
 	pair.Symbol = symbol
 	if helpers.NameForSymbol(symbol) == symbol {
@@ -209,7 +248,7 @@ func (s *HitBTCScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	type APIResponse struct {
 		Id                   string  `json:"id"`
 		BaseCurrency         string  `json:"baseCurrency"`
@@ -220,16 +259,15 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 		ProvideLiquidityRate float64 `json:"provideLiquidityRate,string"`
 		FeeCurrency          string  `json:"feeCurrency"`
 	}
-	data, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/symbol")
+	data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/symbol")
 	if err != nil {
 		return
 	}
 	var ar []APIResponse
 	err = json.Unmarshal(data, &ar)
-	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar {
-			pairToNormalize := dia.Pair{
+			pairToNormalize := dia.ExchangePair{
 				Symbol:      p.BaseCurrency,
 				ForeignName: p.Id,
 				Exchange:    s.exchangeName,
@@ -248,18 +286,36 @@ func (s *HitBTCScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // HitBTCPairScraper implements PairScraper for HitBTC
 type HitBTCPairScraper struct {
 	parent *HitBTCScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *HitBTCPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
 // Channel returns a channel that can be used to receive trades
 func (ps *HitBTCScraper) Channel() chan *dia.Trade {
 	return ps.chanTrades
+}
+
+// FillSymbolData collects all available information on an asset traded on HitBTC
+func (ps *HitBTCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	// var response HitBTCAsset
+	// data, _, err := utils.GetRequest("https://api.hitbtc.com/api/2/public/currency/" + symbol)
+	// if err != nil {
+	// 	return
+	// }
+	// err = json.Unmarshal(data, &response)
+	// if err != nil {
+	// 	return
+	// }
+	// asset.Symbol = response.ID
+	// asset.Name = response.FullName
+	asset.Symbol = symbol
+	return
 }
 
 // Error returns an error when the channel Channel() is closed
@@ -272,6 +328,6 @@ func (ps *HitBTCPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *HitBTCPairScraper) Pair() dia.Pair {
+func (ps *HitBTCPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

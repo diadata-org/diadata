@@ -2,6 +2,9 @@ package pool
 
 import (
 	"context"
+	balancerfactory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
+	balancerpool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
+	balancertoken "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
@@ -16,18 +19,14 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	balfactorycontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	balancerpoolcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	baltokencontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
-
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 var (
 	// Balancer: BFactory
 	// https://etherscan.io/address/0x9424b1412450d0f8fc2255faf6046b98213b76bd
-	balFactoryAddress      = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
-	firstFactoryBlock      = uint64(9562480)
+	balFactoryAddress = common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd")
+	//firstFactoryBlock      = uint64(9562480)
 	balancerLookBackBlocks = 6 * 60 * 24
 )
 
@@ -68,8 +67,8 @@ func NewBalancerPoolScraper(scraper *PoolScraper) *BalancerPoolScraper {
 }
 
 // watchFactory watches the BPFactory contract for New Pool creation events.
-func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balancerfactory.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balancerfactory.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	_, err := fr.WatchLOGNEWPOOL(&bind.WatchOpts{}, newPoolChan, nil, nil)
 	if err != nil {
@@ -80,8 +79,8 @@ func (bp *BalancerPoolScraper) watchFactory(newPoolChan chan *balfactorycontract
 }
 
 // fetchPreviousPools fetches all the past pool creation event on the BPFactory contract.
-func (bp *BalancerPoolScraper) fetchPreviousPools(newPoolEventChan chan *balfactorycontract.BalancerfactoryLOGNEWPOOL) {
-	fr, _ := balfactorycontract.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
+func (bp *BalancerPoolScraper) fetchPreviousPools(newPoolEventChan chan *balancerfactory.BalancerfactoryLOGNEWPOOL) {
+	fr, _ := balancerfactory.NewBalancerfactoryFilterer(balFactoryAddress, bp.wsClient)
 
 	header, err := bp.restClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -216,7 +215,7 @@ func (bp *BalancerPoolScraper) mainLoop() {
 	// watched for transactions by bp.poolWatcher
 	newPoolChan := make(chan common.Address, 16)
 	// pool creation events sent to newPoolEventChan will get their pool sent to newPoolChan
-	newPoolEventChan := make(chan *balfactorycontract.BalancerfactoryLOGNEWPOOL, 16)
+	newPoolEventChan := make(chan *balancerfactory.BalancerfactoryLOGNEWPOOL, 16)
 	// pools sent to poolHandlerChan are forwarded to a bp.poolHandler routine
 	poolToFetchChan := make(chan common.Address, 16)
 	// pools sent to poolWatcherPerceiver will be watched by bp.poolWatcher.
@@ -250,7 +249,7 @@ func (bp *BalancerPoolScraper) mainLoop() {
 // getPool gets informations of the pool at the given pool address. These informations are emited as scrapped data.
 // To avoid rate limitation errors, do not call this function directly. It is preferred to use a fixed amount of draining goroutines.
 func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
-	pool, err := balancerpoolcontract.NewBalancerpoolCaller(poolAddress, bp.restClient)
+	pool, err := balancerpool.NewBalancerpoolCaller(poolAddress, bp.restClient)
 	if err != nil {
 		return errors.Wrap(err, "loading pool contract")
 	}
@@ -261,7 +260,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	// 				so that every public pool gets logged.
 	finalized, err := pool.IsFinalized(&bind.CallOpts{})
 	if err != nil {
-		errors.Wrap(err, "checking if pool is finalized")
+		log.Errorf("checking if pool is finalized: %v", err)
 	} else if !finalized {
 		return errors.New("pool is not finalized")
 	}
@@ -288,14 +287,18 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 	for _, token := range tokens {
 		// tokCaller, err := erctoken.NewERC20Token(token, bp.restClient)
 		// tokCaller, err := erctoken.NewERC20TokenCaller(token, bp.restClient)
-		tokCaller, err := baltokencontract.NewBalancertokenCaller(token, bp.restClient)
+		var tokCaller *balancertoken.BalancertokenCaller
+		var symbol string
+		var weight *big.Int
+		var balance *big.Int
+		tokCaller, err = balancertoken.NewBalancertokenCaller(token, bp.restClient)
 		if err != nil {
 			return errors.Wrapf(err, "creating bal token contract caller for %s", token.Hex())
 		}
 
 		// ERC-20 specification does not includes symbol informations, so fetching the symbol won't work on some contracts
 		// in case it fails, we'll use a map to associate token addresses with symbol
-		symbol, err := tokCaller.Symbol(&bind.CallOpts{})
+		symbol, err = tokCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
 			// add tokens with buggy symbols here
 			symbolMap := map[string]string{
@@ -316,7 +319,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 		}
 
 		// get token weight in pool
-		weight, err := pool.GetNormalizedWeight(&bind.CallOpts{}, token)
+		weight, err = pool.GetNormalizedWeight(&bind.CallOpts{}, token)
 		if err != nil {
 			return errors.Wrapf(err, "getting normalized weight for token %s in pool", symbol)
 		}
@@ -324,7 +327,7 @@ func (bp *BalancerPoolScraper) getPool(poolAddress common.Address) (err error) {
 		weightFloat = weightFloat.Quo(weightFloat, big.NewFloat(10e17))
 
 		// get token balance in pool
-		balance, err := pool.GetBalance(&bind.CallOpts{}, token)
+		balance, err = pool.GetBalance(&bind.CallOpts{}, token)
 		if err != nil {
 			return errors.Wrapf(err, "getting balance for token %s in pool", symbol)
 		}

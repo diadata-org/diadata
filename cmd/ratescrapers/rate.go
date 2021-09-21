@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/internal/pkg/ratescrapers"
+	"github.com/diadata-org/diadata/internal/pkg/static-scrapers"
 	"sync"
 
-	ratescrapers "github.com/diadata-org/diadata/internal/pkg/ratescrapers"
-	staticscrapers "github.com/diadata-org/diadata/internal/pkg/static-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +20,10 @@ func handleInterestRate(c chan *models.InterestRate, wg *sync.WaitGroup, ds mode
 			log.Error("error")
 			return
 		}
-		ds.SetInterestRate(t)
+		err := ds.SetInterestRate(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 
@@ -53,7 +56,12 @@ func main() {
 
 		// Spawn the corresponding rate scraper
 		sRate := ratescrapers.SpawnRateScraper(ds, *rateType)
-		defer sRate.Close()
+		defer func() {
+			cerr := sRate.Close()
+			if err == nil {
+				err = cerr
+			}
+		}()
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(1)

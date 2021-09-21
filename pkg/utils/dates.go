@@ -50,10 +50,7 @@ func SameDays(date1, date2 time.Time) bool {
 func AfterDay(date1, date2 time.Time) bool {
 	date1Str := date1.Format("2006-01-02")
 	date2Str := date2.Format("2006-01-02")
-	if date1Str > date2Str {
-		return true
-	}
-	return false
+	return date1Str > date2Str
 }
 
 // CountDays returns the number of days between

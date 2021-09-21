@@ -59,6 +59,9 @@ func fetchRAYPortfolios() (rayPortfolio RAYPortfolio, err error) {
 	}
 	jsonValue, _ := json.Marshal(jsonData)
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/protofire/ray", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(jsondata, &rayPortfolio)
 	log.Println(rayPortfolio)
 	return

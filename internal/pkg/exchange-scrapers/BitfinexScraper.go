@@ -12,6 +12,7 @@ import (
 	"github.com/bitfinexcom/bitfinex-api-go/v2/rest"
 	"github.com/bitfinexcom/bitfinex-api-go/v2/websocket"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 )
 
@@ -33,15 +34,16 @@ type BitfinexScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers      sync.Map          // dia.Pair -> pairScraperSet
-	pairSubscriptions sync.Map          // dia.Pair -> string (subscription ID)
+	pairScrapers      sync.Map          // dia.ExchangePair -> pairScraperSet
+	pairSubscriptions sync.Map          // dia.ExchangePair -> string (subscription ID)
 	symbols           map[string]string // pair to symbol mapping
 	exchangeName      string
 	chanTrades        chan *dia.Trade
+	db                *models.RelDB
 }
 
 // NewBitfinexScraper returns a new BitfinexScraper for the given pair
-func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *BitfinexScraper {
+func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitfinexScraper {
 	// we want to ensure there are no gaps in our stream
 	// -> close the returned channel on disconnect, forcing the caller to handle
 	// possible gaps
@@ -60,10 +62,13 @@ func NewBitfinexScraper(key string, secret string, exchange dia.Exchange) *Bitfi
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
 
 	// establish connection in the background
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -80,6 +85,7 @@ func (s *BitfinexScraper) mainLoop() {
 		select {
 		case msg, ok := <-listener:
 			if ok {
+				var exchangepair dia.ExchangePair
 				//	log.Printf("MSG RECV: %#v\n", msg)
 				// find out message type
 				switch m := msg.(type) {
@@ -89,6 +95,10 @@ func (s *BitfinexScraper) mainLoop() {
 						volume = -volume
 					}
 
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, m.Pair)
+					if err != nil {
+						log.Error(err)
+					}
 					// parse trade data structure
 					t := &dia.Trade{
 						Symbol:         s.symbols[m.Pair],
@@ -98,6 +108,12 @@ func (s *BitfinexScraper) mainLoop() {
 						Time:           time.Unix(m.MTS/1000, (m.MTS%1000)*int64(time.Millisecond)),
 						ForeignTradeID: strconv.FormatInt(m.ID, 16),
 						Source:         s.exchangeName,
+						VerifiedPair:   exchangepair.Verified,
+						BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					}
+					if exchangepair.Verified {
+						log.Infoln("Got verified trade", t)
 					}
 					log.Info("got trade: ", t)
 					s.chanTrades <- t
@@ -155,7 +171,7 @@ func (s *BitfinexScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *BitfinexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	<-s.initDone // wait until wsClient is connected
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -190,7 +206,7 @@ func (s *BitfinexScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 	return ps, nil
 }
-func (s *BitfinexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (s *BitfinexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 
 	switch pair.Symbol {
 	case "IOT":
@@ -222,16 +238,21 @@ func (s *BitfinexScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 // 	return pair, nil
 // }
 
-// FetchAvailablePairs returns a list with all available trade pairs
-func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
+func (s *BitfinexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	// TO DO
+	return dia.Asset{Symbol: symbol}, nil
+}
 
-	data, err := utils.GetRequest("https://api.bitfinex.com/v1/symbols")
+// FetchAvailablePairs returns a list with all available trade pairs
+func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+
+	data, _, err := utils.GetRequest("https://api.bitfinex.com/v1/symbols")
 	if err != nil {
 		return
 	}
 	ls := strings.Split(strings.Replace(string(data)[1:len(data)-1], "\"", "", -1), ",")
 	for _, p := range ls {
-		var pairToNormalize dia.Pair
+		var pairToNormalize dia.ExchangePair
 		if len(p) == 6 {
 			pairToNormalize.Symbol = strings.ToUpper(p[0:3])
 		} else {
@@ -252,7 +273,7 @@ func (s *BitfinexScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // BitfinexPairScraper implements PairScraper for Bitfinex
 type BitfinexPairScraper struct {
 	parent *BitfinexScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
@@ -304,6 +325,6 @@ func (ps *BitfinexPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *BitfinexPairScraper) Pair() dia.Pair {
+func (ps *BitfinexPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

@@ -2,12 +2,10 @@ package pool
 
 import (
 	"context"
-
-	cvaultcontract "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
-	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
-
-	erc "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
-	lptoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
+	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
+	"github.com/diadata-org/diadata/internal/pkg/supplyService"
 
 	"math/big"
 	"time"
@@ -23,21 +21,21 @@ var log = logrus.New()
 
 const (
 	cvaultAddress  = "0xc5cacb708425961594b63ec171f4df27a9c0d8c9"
-	lpTokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b"
+	lptokenAddress = "0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b" //nolint:gosec
 )
 
 type Cvault struct {
 	scraper       *PoolScraper
 	RestClient    *ethclient.Client
 	WsClient      *ethclient.Client
-	DepositEvent  chan *cvaultcontract.CvaultpoolcontractDeposit
-	WithDrawEvent chan *cvaultcontract.CvaultpoolcontractWithdraw
+	DepositEvent  chan *cvaultpoolcontract.CvaultpoolcontractDeposit
+	WithDrawEvent chan *cvaultpoolcontract.CvaultpoolcontractWithdraw
 }
 
 func NewCvaultScraper(scraper *PoolScraper) *Cvault {
 
-	deposit := make(chan *cvaultcontract.CvaultpoolcontractDeposit)
-	withdrwa := make(chan *cvaultcontract.CvaultpoolcontractWithdraw)
+	deposit := make(chan *cvaultpoolcontract.CvaultpoolcontractDeposit)
+	withdrwa := make(chan *cvaultpoolcontract.CvaultpoolcontractWithdraw)
 	restClient, err := ethclient.Dial(restDial)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +54,7 @@ func NewCvaultScraper(scraper *PoolScraper) *Cvault {
 // runs in a goroutine until s is closed
 func (cv *Cvault) mainLoop() {
 
-	fr, _ := cvaultcontract.NewCvaultpoolcontractFilterer(common.HexToAddress(cvaultAddress), cv.WsClient)
+	fr, _ := cvaultpoolcontract.NewCvaultpoolcontractFilterer(common.HexToAddress(cvaultAddress), cv.WsClient)
 	_, err := fr.WatchDeposit(&bind.WatchOpts{}, cv.DepositEvent, nil, nil)
 	if err != nil {
 		log.Errorln("Error Subscribing deposit events", err)
@@ -75,11 +73,17 @@ func (cv *Cvault) mainLoop() {
 			select {
 			case deposit := <-cv.DepositEvent:
 				{
-					cv.getPool(deposit.Pid)
+					err := cv.getPool(deposit.Pid)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			case withdraw := <-cv.WithDrawEvent:
 				{
-					cv.getPool(withdraw.Pid)
+					err := cv.getPool(withdraw.Pid)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 
@@ -93,7 +97,7 @@ func (cv *Cvault) mainLoop() {
 func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	//TODO call all pool details at once and save in cache
 	log.Infoln("Getting Pool Info")
-	cvg, err := cvaultcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
+	cvg, err := cvaultpoolcontract.NewCvaultpoolcontractCaller(common.HexToAddress(cvaultAddress), cv.RestClient)
 	if err != nil {
 		return
 	}
@@ -137,7 +141,7 @@ func (cv *Cvault) getPool(poolID *big.Int) (err error) {
 	if err != nil {
 		return
 	}
-	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lpTokenAddress, cv.RestClient)
+	balLPToken, err := supplyservice.GetWalletBalance(cvaultAddress, lptokenAddress, cv.RestClient)
 
 	AccCorePerShareFloat := new(big.Float).SetInt(pi.AccCorePerShare)
 	var pr models.FarmingPool

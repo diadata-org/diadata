@@ -311,7 +311,7 @@ func (scraper *SorareScraper) FetchData() error {
 	var creatorAddress common.Address
 	var creationTime time.Time
 	// NFT class from DB
-	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.Ethereum)
+	nftClassID, err := scraper.nftscraper.relDB.GetNFTClassID(scraper.address.Hex(), dia.ETHEREUM)
 	if err != nil {
 		log.Error("getting nftclass ID: ", err)
 	}

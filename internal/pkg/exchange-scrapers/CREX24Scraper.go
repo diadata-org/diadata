@@ -3,11 +3,13 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/carterjones/signalr"
 	"github.com/carterjones/signalr/hubs"
@@ -24,6 +26,21 @@ type CREX24ApiTrade struct {
 	Volume    string `json:"V"`
 	Side      string `json:"S"`
 	Timestamp int64  `json:"T"`
+}
+
+type CREX4Asset []struct {
+	Symbol                   string      `json:"symbol"`
+	Name                     string      `json:"name"`
+	IsFiat                   bool        `json:"isFiat"`
+	DepositsAllowed          bool        `json:"depositsAllowed"`
+	DepositConfirmationCount int         `json:"depositConfirmationCount"`
+	MinDeposit               float64     `json:"minDeposit"`
+	WithdrawalsAllowed       bool        `json:"withdrawalsAllowed"`
+	WithdrawalPrecision      int         `json:"withdrawalPrecision"`
+	MinWithdrawal            float64     `json:"minWithdrawal"`
+	MaxWithdrawal            float64     `json:"maxWithdrawal"`
+	IsDelisted               bool        `json:"isDelisted"`
+	Transports               interface{} `json:"transports"`
 }
 
 type CREX24ApiTradeUpdate struct {
@@ -44,9 +61,10 @@ type CREX24Scraper struct {
 	pairScrapers map[string]*CREX24PairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
-func NewCREX24Scraper(exchange dia.Exchange) *CREX24Scraper {
+func NewCREX24Scraper(exchange dia.Exchange, relDB *models.RelDB) *CREX24Scraper {
 	s := &CREX24Scraper{
 		pairScrapers: make(map[string]*CREX24PairScraper),
 		exchangeName: exchange.Name,
@@ -54,6 +72,7 @@ func NewCREX24Scraper(exchange dia.Exchange) *CREX24Scraper {
 		connected:    false,
 		closed:       false,
 		msgId:        1,
+		db:           relDB,
 	}
 	return s
 }
@@ -99,8 +118,8 @@ func (s *CREX24Scraper) Close() error {
 	return nil
 }
 
-func (s *CREX24Scraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *CREX24Scraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
@@ -113,7 +132,10 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 			payload, ok := arguments[1].(string)
 			var parsedUpdate CREX24ApiTradeUpdate
 			if ok {
-				json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				err := json.NewDecoder(strings.NewReader(payload)).Decode(&parsedUpdate)
+				if err != nil {
+					log.Error(err)
+				}
 				s.sendTradesToChannel(&parsedUpdate)
 			}
 		}
@@ -121,6 +143,7 @@ func (s *CREX24Scraper) handleMessage(msg signalr.Message) {
 }
 
 func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
+
 	ps := s.pairScrapers[update.I]
 	pair := ps.Pair()
 	for _, trade := range update.NT {
@@ -130,6 +153,10 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 			volume *= -1
 		}
 		if pok == nil && vok == nil {
+			exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			if err != nil {
+				log.Error(err)
+			}
 			t := &dia.Trade{
 				Pair:           pair.ForeignName,
 				Price:          price,
@@ -138,32 +165,35 @@ func (s *CREX24Scraper) sendTradesToChannel(update *CREX24ApiTradeUpdate) {
 				Time:           time.Unix(trade.Timestamp, 0),
 				ForeignTradeID: "",
 				Source:         dia.CREX24Exchange,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+			}
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade", t)
 			}
 			s.chanTrades <- t
-			log.Info("got trade: ", t)
 		}
 	}
 }
 
-func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	resp, err := http.Get("https://api.crex24.com/v2/public/instruments")
+func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	data, _, err := utils.GetRequest("https://api.crex24.com/v2/public/instruments")
 	if err != nil {
-		return nil, err
+		return
 	}
-	defer resp.Body.Close()
 
 	var parsedPairs []CREX24ApiInstrument
-	err = json.NewDecoder(resp.Body).Decode(&parsedPairs)
+	err = json.Unmarshal(data, &parsedPairs)
 	if err != nil {
 		return nil, err
 	}
 
-	var results = make([]dia.Pair, len(parsedPairs))
+	var results = make([]dia.ExchangePair, len(parsedPairs))
 	for i := 0; i < len(parsedPairs); i++ {
-		results[i] = dia.Pair{
+		results[i] = dia.ExchangePair{
 			Symbol:      parsedPairs[i].BaseCurrency,
 			ForeignName: parsedPairs[i].Symbol,
-			Ignore:      false,
 			Exchange:    s.exchangeName,
 		}
 	}
@@ -171,7 +201,23 @@ func (s *CREX24Scraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	return results, nil
 }
 
-func (s *CREX24Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+// FillSymbolData collects all available information on an asset traded on CREX24
+func (s *CREX24Scraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	var response CREX4Asset
+	data, _, err := utils.GetRequest("https://api.crex24.com/v2/public/currencies?filter=" + symbol)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return
+	}
+	asset.Symbol = response[0].Symbol
+	asset.Name = response[0].Name
+	return asset, nil
+}
+
+func (s *CREX24Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	if s.closed {
 		return nil, errors.New("CREX24Scraper: Call ScrapePair on closed scraper")
 	}
@@ -211,7 +257,7 @@ func (s *CREX24Scraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 type CREX24PairScraper struct {
 	parent *CREX24Scraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 }
 
 func (ps *CREX24PairScraper) Close() error {
@@ -235,12 +281,12 @@ func (ps *CREX24PairScraper) Close() error {
 
 func (ps *CREX24PairScraper) Error() error {
 	if ps.parent.closed {
-		return errors.New("Scraper has been closed")
+		return errors.New("scraper has been closed")
 	} else {
 		return nil
 	}
 }
 
-func (ps *CREX24PairScraper) Pair() dia.Pair {
+func (ps *CREX24PairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

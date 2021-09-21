@@ -1,10 +1,11 @@
 package dia
 
 import (
+	"errors"
 	"os/user"
 	"strings"
-	"time"
 
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/tkanos/gonfig"
 )
 
@@ -50,44 +51,44 @@ const (
 	DfynNetwork       = "DFYN"
 )
 
-const (
-	Bitcoin  = "Bitcoin"
-	Ethereum = "Ethereum"
-)
-
 func Exchanges() []string {
 	return []string{
-		BalancerExchange,
-		BancorExchange,
-		BinanceExchange,
-		BitBayExchange,
+		HuobiExchange,
 		BitfinexExchange,
-		BitMaxExchange,
+		ZBExchange,
+		BitBayExchange,
 		BittrexExchange,
 		CoinBaseExchange,
-		CurveFIExchange,
-		CREX24Exchange,
-		DforceExchange,
+		KrakenExchange,
+		KuCoinExchange,
+
 		GateIOExchange,
 		GnosisExchange,
 		HitBTCExchange,
-		HuobiExchange,
-		KrakenExchange,
-		KuCoinExchange,
-		KyberExchange,
+		OKExExchange,
+		SimexExchange,
+
+		BinanceExchange,
+		CREX24Exchange,
+
 		LBankExchange,
+		QuoineExchange,
+		STEXExchange,
+
+		BancorExchange,
+		CurveFIExchange,
+		DforceExchange,
+		GnosisExchange,
+		KyberExchange,
 		LoopringExchange,
 		MakerExchange,
-		OKExExchange,
 		PanCakeSwap,
-		QuoineExchange,
-		SimexExchange,
-		STEXExchange,
 		SushiSwapExchange,
 		UniswapExchange,
-		UniswapExchangeV3,
-		ZBExchange,
+
 		ZeroxExchange,
+		BalancerExchange,
+		BitMaxExchange,
 		UnknownExchange,
 		DfynNetwork,
 	}
@@ -99,21 +100,29 @@ type ConfigApi struct {
 }
 
 type ConfigConnector struct {
-	Coins []Pair
-}
-
-type BlockChain struct {
-	Name                  string
-	GenesisDate           time.Time
-	NativeToken           string
-	VerificationMechanism VerificationMechanism
+	Coins []ExchangePair
 }
 
 func GetConfig(exchange string) (*ConfigApi, error) {
+	if utils.Getenv("USE_ENV", "false") == "true" {
+		return GetConfigFromEnv(exchange)
+	}
 	var configApi ConfigApi
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	configFileApi := dir + "/config/secrets/api_" + strings.ToLower(exchange)
 	err := gonfig.GetConf(configFileApi, &configApi)
 	return &configApi, err
+}
+
+func GetConfigFromEnv(exchange string) (*ConfigApi, error) {
+	if utils.Getenv("USE_ENV", "false") != "true" {
+		return nil, errors.New("use of config by env without env activation ")
+	}
+
+	configApi := ConfigApi{
+		ApiKey:    utils.Getenv("API_"+strings.ToUpper(exchange)+"_APIKEY", ""),
+		SecretKey: utils.Getenv("API_"+strings.ToUpper(exchange)+"_SECRETKEY", ""),
+	}
+	return &configApi, nil
 }

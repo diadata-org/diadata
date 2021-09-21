@@ -1,9 +1,5 @@
 package models
 
-import (
-	log "github.com/sirupsen/logrus"
-)
-
 func (db *DB) SetCurrencyChange(cc *Change) error {
 	key := "dia_currencyChange"
 	log.Debug("setting ", key, cc)

@@ -3,12 +3,14 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia"
-	ws "github.com/gorilla/websocket"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	ws "github.com/gorilla/websocket"
 )
 
 var ZBSocketURL string = "wss://api.zb.today/websocket"
@@ -46,10 +48,11 @@ type ZBScraper struct {
 	pairScrapers map[string]*ZBPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewZBScraper returns a new ZBScraper for the given pair
-func NewZBScraper(exchange dia.Exchange) *ZBScraper {
+func NewZBScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ZBScraper {
 
 	s := &ZBScraper{
 		shutdown:     make(chan nothing),
@@ -58,26 +61,25 @@ func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
-
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(ZBSocketURL, nil)
-
 	if err != nil {
 		println(err.Error())
 	}
-
 	s.wsClient = SwConn
-	go s.mainLoop()
+
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
-
-
 
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 
-	for true {
+	for {
 
 		message := &ZBTradeResponse{}
 
@@ -86,8 +88,8 @@ func (s *ZBScraper) mainLoop() {
 			break
 		}
 
-
 		for _, trade := range message.Data {
+			var exchangepair dia.ExchangePair
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
 			if !ok {
 				log.Error("unknown pair: " + message.Channel)
@@ -110,6 +112,11 @@ func (s *ZBScraper) mainLoop() {
 				f64Volume = -f64Volume
 			}
 
+			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, strings.TrimSuffix(message.Channel, "_trades"))
+			if err != nil {
+				log.Error(err)
+			}
+
 			t := &dia.Trade{
 				Symbol:         ps.Pair().Symbol,
 				Pair:           strings.TrimSuffix(message.Channel, "_trades"),
@@ -118,17 +125,22 @@ func (s *ZBScraper) mainLoop() {
 				Time:           time.Unix(int64(trade.Date), 0),
 				ForeignTradeID: fmt.Sprint(trade.Tid),
 				Source:         s.exchangeName,
+				VerifiedPair:   exchangepair.Verified,
+				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
 			ps.parent.chanTrades <- t
-			log.Infoln("Trade recieved", t)
+			if exchangepair.Verified {
+				log.Infoln("Got verified trade: ", t)
+			}
 
 		}
 	}
 	s.cleanup(s.error)
 }
 
-func (s *ZBScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *ZBScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (s *ZBScraper) cleanup(err error) {
@@ -143,6 +155,11 @@ func (s *ZBScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
+// FillSymbolData is not used by DEX scrapers.
+func (s *ZBScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
 func (s *ZBScraper) Close() error {
@@ -152,7 +169,10 @@ func (s *ZBScraper) Close() error {
 	}
 
 	close(s.shutdown)
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	<-s.shutdownDone
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -161,7 +181,7 @@ func (s *ZBScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *ZBScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 
@@ -193,19 +213,20 @@ func (s *ZBScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
+func (s *ZBScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // ZBPairScraper implements PairScraper for ZB
 type ZBPairScraper struct {
 	parent *ZBScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *ZBPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -224,6 +245,6 @@ func (ps *ZBPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *ZBPairScraper) Pair() dia.Pair {
+func (ps *ZBPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

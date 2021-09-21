@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"net/url"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
 	zap "go.uber.org/zap"
@@ -25,10 +25,6 @@ type CoinflexFuturesScraper struct {
 	WaitGroup *sync.WaitGroup
 	Writer    writers.Writer
 	Logger    *zap.SugaredLogger
-}
-
-type tradeMessageCoinflex struct {
-	Type string `json:"type"`
 }
 
 // the response of https://webapi.coinflex.com/markets/ is a list of marketCoinglex JSON objects
@@ -87,7 +83,12 @@ func NewCoinflexFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &CoinflexFuturesScraper{
 		WaitGroup: &wg,
@@ -109,7 +110,9 @@ func (s *CoinflexFuturesScraper) send(message *map[string]interface{}, market st
 }
 
 // Authenticate - placeholder here, since we do not need to authneticate the connection.
-func (s *CoinflexFuturesScraper) Authenticate(market string, connection interface{}) error { return nil }
+func (s *CoinflexFuturesScraper) Authenticate(market string, connection interface{}) error {
+	return nil
+}
 
 // ScraperClose - safely closes the scraper; We pass the interface connection as the second argument
 // primarily for the reason that Huobi scraper does not use the gorilla websocket; It uses golang's x websocket;
@@ -140,7 +143,7 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 	if !validated || err != nil {
 		s.Logger.Errorf("could not validate %s market", market)
 		if err != nil {
-			s.Logger.Errorf("issue with validating, err: %s", err)
+			s.Logger.Errorf("issue with validating: %s", err)
 		}
 		return
 	}
@@ -167,13 +170,30 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 		func() {
 			u := url.URL{Scheme: "wss", Host: "api.coinflex.com", Path: "/v1"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
-			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			ws, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
 				s.Logger.Errorf("dial: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			defer func() {
+				err = ws.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			defer func() {
+				err = s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
 			// to let you know that the websocket connection is alive. Coinflex do not have the heartbeat channel
 			// and they send you frame pong messages. Thus, this handler.
 			ws.SetPongHandler(func(appData string) error {
@@ -195,23 +215,23 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 			// and we may fail sending ping before we get any message on a market, thus
 			// forcing Coinflex to close our websocket out.
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						err := s.write(websocket.PingMessage, []byte{}, ws)
-						if err != nil {
-							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
-							return
-						}
-						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
+				for range tick.C {
+					err := s.write(websocket.PingMessage, []byte{}, ws)
+					if err != nil {
+						s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
+						return
 					}
+					s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
 				}
 			}()
 			for {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					_, message, err := ws.ReadMessage()
@@ -242,7 +262,10 @@ func (s *CoinflexFuturesScraper) Scrape(market string) {
 
 // write's primary purpose is to write a ping frame op code to keep the websocket connection alive
 func (s *CoinflexFuturesScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
-	ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	err := ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	if err != nil {
+		return err
+	}
 	return ws.WriteMessage(mt, payload)
 }
 
@@ -257,8 +280,8 @@ func (s *CoinflexFuturesScraper) ScrapeMarkets() {
 
 func (s *CoinflexFuturesScraper) getBaseAndCounterID(market string) (int64, int64, error) {
 	assets := strings.Split(market, "/")
-	var baseID int64 = 0
-	var quoteID int64 = 0
+	baseID := int64(0)
+	quoteID := int64(0)
 	base := assets[0]
 	quote := assets[1] // coinflex call this "counter"
 	baseID, err := s.assetID(base)
@@ -290,7 +313,7 @@ func (s *CoinflexFuturesScraper) validateMarket(market string) (bool, error) {
 }
 
 func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, error) {
-	body, err := utils.GetRequest("https://webapi.coinflex.com/markets/")
+	body, _, err := utils.GetRequest("https://webapi.coinflex.com/markets/")
 	if err != nil {
 		return []marketCoinflex{}, err
 	}
@@ -305,7 +328,7 @@ func (s *CoinflexFuturesScraper) availableMarketsCoinflex() ([]marketCoinflex, e
 
 // uses /assets/ GET endpoint to obtain all the Coinflex's assets
 func (s *CoinflexFuturesScraper) getAllAssets() ([]assetCoinflex, error) {
-	body, err := utils.GetRequest("https://webapi.coinflex.com/assets/")
+	body, _, err := utils.GetRequest("https://webapi.coinflex.com/assets/")
 	if err != nil {
 		return nil, err
 	}
@@ -323,7 +346,7 @@ func (s *CoinflexFuturesScraper) assetID(asset string) (int64, error) {
 	var assetsID int64 = 0
 	assets, err := s.getAllAssets()
 	if err != nil {
-		return assetsID, fmt.Errorf("could not retrieve all Coinflex's assets, err: %s", err)
+		return assetsID, fmt.Errorf("could not retrieve all Coinflex's assets: %w", err)
 	}
 	for _, assetObj := range assets {
 		if assetObj.Name == asset {

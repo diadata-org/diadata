@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"sync"
 	"time"
 
@@ -79,7 +78,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			return
 		}
 		if 1 < 0 {
-			fmt.Printf("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.CurrencySymbol, trade.PriceUSD)
+			log.Info("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.CurrencySymbol, trade.PriceUSD)
 		}
 		err := rdb.SetNFTTrade(trade)
 		if err != nil {

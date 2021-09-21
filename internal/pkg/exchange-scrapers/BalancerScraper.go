@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	balancerfactory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
+	balancerpool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
 
-	factory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	pool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,10 +26,13 @@ import (
 const (
 	BalancerApiDelay       = 20
 	BalancerBatchDelay     = 60 * 1
-	BalancerLookBackBlocks = 6 * 60 * 24 * 20
+	lookBackBlocksSwaps    = 6 * 60 * 24 * 10
+	startBlockPoolCreation = uint64(9600000)
 	factoryContract        = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 	balancerRestDial       = "http://159.69.120.42:8545/"
 	balancerWsDial         = "ws://159.69.120.42:8546/"
+	// balancerRestDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
+	// balancerWsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 )
 
 type BalancerSwap struct {
@@ -58,7 +62,7 @@ type BalancerScraper struct {
 	error     error
 	closed    bool
 
-	balancerTokensMap map[string]*BalancerToken
+	balancerTokensMap map[string]dia.Asset
 	pairScrapers      map[string]*BalancerPairScraper
 	productPairIds    map[string]int
 	chanTrades        chan *dia.Trade
@@ -69,7 +73,7 @@ type BalancerScraper struct {
 	pools       map[string]struct{}
 }
 
-func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
+func NewBalancerScraper(exchange dia.Exchange, scrape bool) *BalancerScraper {
 	scraper := &BalancerScraper{
 		exchangeName:      exchange.Name,
 		initDone:          make(chan nothing),
@@ -78,7 +82,7 @@ func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
 		productPairIds:    make(map[string]int),
 		pairScrapers:      make(map[string]*BalancerPairScraper),
 		chanTrades:        make(chan *dia.Trade),
-		balancerTokensMap: make(map[string]*BalancerToken),
+		balancerTokensMap: make(map[string]dia.Asset),
 		resubscribe:       make(chan string),
 		pools:             make(map[string]struct{}),
 	}
@@ -94,7 +98,9 @@ func NewBalancerScraper(exchange dia.Exchange) *BalancerScraper {
 	}
 	scraper.RestClient = restClient
 
-	go scraper.mainLoop()
+	if scrape {
+		go scraper.mainLoop()
+	}
 	return scraper
 }
 
@@ -122,10 +128,16 @@ func (scraper *BalancerScraper) mainLoop() {
 			if scraper.run {
 				if pool == "NEW_POOLS" {
 					log.Info("resubscribe to new pools")
-					scraper.subscribeToNewPools()
+					err = scraper.subscribeToNewPools()
+					if err != nil {
+						log.Error(err)
+					}
 				} else {
 					log.Info("resubscribe to pool: " + pool)
-					scraper.subscribeToNewSwaps(pool)
+					err = scraper.subscribeToNewSwaps(pool)
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -133,7 +145,7 @@ func (scraper *BalancerScraper) mainLoop() {
 
 	if scraper.run {
 		if len(scraper.pairScrapers) == 0 {
-			scraper.error = errors.New("Balancer: No pairs to scrape provided")
+			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
 	}
@@ -149,10 +161,16 @@ func (scraper *BalancerScraper) mainLoop() {
 
 func (scraper *BalancerScraper) performSubscriptions() {
 	for pool := range scraper.pools {
-		scraper.subscribeToNewSwaps(pool)
+		err := scraper.subscribeToNewSwaps(pool)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
-	scraper.subscribeToNewPools()
+	err := scraper.subscribeToNewPools()
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (scraper *BalancerScraper) subscribeToNewPools() error {
@@ -169,7 +187,7 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-subPool.Err():
+			case err = <-subPool.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -180,7 +198,10 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 			case vLog := <-sinkPool:
 				if _, ok := scraper.pools[vLog.Pool.Hex()]; !ok {
 					scraper.pools[vLog.Pool.Hex()] = struct{}{}
-					scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+					err = scraper.subscribeToNewSwaps(vLog.Pool.Hex())
+					if err != nil {
+						log.Error(err)
+					}
 				}
 			}
 		}
@@ -189,12 +210,8 @@ func (scraper *BalancerScraper) subscribeToNewPools() error {
 	return err
 }
 
-func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
-	sink, sub, err := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
-	if err != nil {
-		log.Error(err)
-		return err
-	}
+func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) (err error) {
+	sink, sub := scraper.getLogSwapsChannel(common.HexToAddress(poolToSub))
 
 	go func() {
 		fmt.Println("subscribed to pool: " + poolToSub)
@@ -204,7 +221,7 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 		for scraper.run && subscribed {
 
 			select {
-			case err := <-sub.Err():
+			case err = <-sub.Err():
 				if err != nil {
 					log.Error(err)
 				}
@@ -230,15 +247,12 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 				pair := swap.BuyToken + "-" + swap.SellToken
 				pairScraper, ok := scraper.pairScrapers[pair]
 				if !ok {
+					err = errors.New("pair does not have a corresponding pair scraper")
 					return
 				}
 
 				// Get trading data from swap in "classic" format
-				_, volume, price, err := getSwapDataBalancer(swap)
-
-				if err != nil {
-					log.Error("error parsing time: ", err)
-				}
+				_, volume, price := getSwapDataBalancer(swap)
 
 				trade := &dia.Trade{
 					Symbol:         pairScraper.pair.Symbol,
@@ -248,6 +262,9 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 					Time:           time.Unix(swap.Timestamp, 0),
 					ForeignTradeID: swap.ID,
 					Source:         scraper.exchangeName,
+					BaseToken:      scraper.balancerTokensMap[vLog.TokenIn.Hex()],
+					QuoteToken:     scraper.balancerTokensMap[vLog.TokenOut.Hex()],
+					VerifiedPair:   true,
 				}
 				pairScraper.parent.chanTrades <- trade
 				fmt.Println("got trade: ", trade)
@@ -255,37 +272,35 @@ func (scraper *BalancerScraper) subscribeToNewSwaps(poolToSub string) error {
 			}
 		}
 	}()
-
-	return err
-
+	return
 }
 
 // getSwapData returns the foreign name, volume and price of a swap
-func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, price float64, err error) {
+func getSwapDataBalancer(s BalancerSwap) (foreignName string, volume float64, price float64) {
 	volume = s.BuyVolume
 	price = s.SellVolume / s.BuyVolume
 	foreignName = s.BuyToken + "-" + s.SellToken
 	return
 }
 
-func (s *BalancerScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
+func (s *BalancerScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *BalancerScraper) getAllLogNewPool() (*factory.BalancerfactoryLOGNEWPOOLIterator, error) {
+func (scraper *BalancerScraper) getAllLogNewPool() (*balancerfactory.BalancerfactoryLOGNEWPOOLIterator, error) {
 
-	var pairFiltererContract *factory.BalancerfactoryFilterer
-	pairFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.RestClient)
+	var pairFiltererContract *balancerfactory.BalancerfactoryFilterer
+	pairFiltererContract, err := balancerfactory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.RestClient)
 	if err != nil {
 		log.Fatal(err)
 	}
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+	// header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
 
-	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{})
+	itr, _ := pairFiltererContract.FilterLOGNEWPOOL(&bind.FilterOpts{Start: startBlockPoolCreation}, []common.Address{}, []common.Address{})
 	if err != nil {
 		log.Error("error in getAllLogNewPool ", err)
 	}
@@ -300,12 +315,14 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 
 	tokenSet := make(map[string]struct{})
 	for it.Next() {
-
-		poolCaller, err := pool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		var poolCaller *balancerpool.BalancerpoolCaller
+		var tokens []common.Address
+		poolCaller, err = balancerpool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
-		tokens, err := poolCaller.GetCurrentTokens(&bind.CallOpts{})
+
+		tokens, err = poolCaller.GetCurrentTokens(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
@@ -321,115 +338,124 @@ func (scraper *BalancerScraper) getAllTokenAddress() (map[string]struct{}, error
 	return tokenSet, err
 }
 
-func (scraper *BalancerScraper) getAllTokensMap() (map[string]*BalancerToken, error) {
+func (scraper *BalancerScraper) getAllTokensMap() (map[string]dia.Asset, error) {
 	tokenAddressSet, err := scraper.getAllTokenAddress()
 	if err != nil {
 		log.Error(err)
 	}
 
-	tokenMap := make(map[string]*BalancerToken)
+	tokenMap := make(map[string]dia.Asset)
 
-	for token, _ := range tokenAddressSet {
-
-		tokenCaller, err := balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
+	for token := range tokenAddressSet {
+		var tokenCaller *balancertoken.BalancertokenCaller
+		var symbol string
+		var name string
+		var decimals *big.Int
+		tokenCaller, err = balancertoken.NewBalancertokenCaller(common.HexToAddress(token), scraper.RestClient)
 		if err != nil {
 			log.Error(err)
 		}
-		symbol, err := tokenCaller.Symbol(&bind.CallOpts{})
+		symbol, err = tokenCaller.Symbol(&bind.CallOpts{})
 		if err != nil {
-			log.Error("Error: %v", err)
+			log.Error(err)
+		}
+		name, err = tokenCaller.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
 		}
 		if helpers.SymbolIsBlackListed(symbol) {
 			continue
 		}
-		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		decimals, err = tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
-			log.Error("Error: %v", token, err)
+			log.Error(err)
 		}
 		if symbol != "" {
-			tokenMap[token] = &BalancerToken{
-				Symbol:   symbol,
-				Decimals: uint8(decimals.Uint64()),
+			tokenMap[token] = dia.Asset{
+				Symbol:     symbol,
+				Name:       name,
+				Decimals:   uint8(decimals.Uint64()),
+				Address:    common.HexToAddress(token).Hex(),
+				Blockchain: dia.ETHEREUM,
 			}
 		}
 	}
 	return tokenMap, err
 }
 
-// FetchAvailablePairs get pairs by geting all the LOGNEWPOOL contract events, and
+// FetchAvailablePairs get pairs by getting all the LOGNEWPOOL contract events, and
 // calling the method getCurrentTokens from each pool contract
-func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-
-	tokenMap, err := scraper.getAllTokensMap()
+func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	it, err := scraper.getAllLogNewPool()
 	if err != nil {
 		log.Error(err)
 	}
-
-	pairSet := make(map[string]struct{})
-	for _, token1 := range tokenMap {
-		for _, token2 := range tokenMap {
-
-			if token1 != token2 {
-				if token1.Symbol == "WETH" {
-					token1.Symbol = "ETH"
+	poolCount := 0
+	for it.Next() {
+		var pair dia.ExchangePair
+		poolCaller, err := balancerpool.NewBalancerpoolCaller(it.Event.Pool, scraper.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+		tokens, err := poolCaller.GetCurrentTokens(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
+		if len(tokens) < 2 {
+			continue
+		}
+		for i := 0; i < len(tokens); i++ {
+			j := i + 1
+			for j < len(tokens) {
+				asset0, err := ethhelper.ETHAddressToAsset(tokens[i])
+				if err != nil {
+					continue
 				}
-				if token2.Symbol == "WETH" {
-					token2.Symbol = "ETH"
+				asset1, err := ethhelper.ETHAddressToAsset(tokens[j])
+				if err != nil {
+					continue
 				}
-
-				foreignName := token1.Symbol + "-" + token2.Symbol
-				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
-						Symbol:      token1.Symbol,
-						ForeignName: foreignName,
-						Exchange:    scraper.exchangeName,
-						Ignore:      false,
-					})
-					pairSet[foreignName] = struct{}{}
-				}
-
-				foreignName = token2.Symbol + "-" + token1.Symbol
-				if _, ok := pairSet[foreignName]; !ok {
-					pairs = append(pairs, dia.Pair{
-						Symbol:      token2.Symbol,
-						ForeignName: foreignName,
-						Exchange:    scraper.exchangeName,
-						Ignore:      false,
-					})
-					pairSet[foreignName] = struct{}{}
-				}
-
+				pair.UnderlyingPair.QuoteToken = asset0
+				pair.UnderlyingPair.BaseToken = asset1
+				pair.ForeignName = asset0.Symbol + "-" + asset1.Symbol
+				pair.Verified = true
+				pair.Exchange = "Balancer"
+				pair.Symbol = asset0.Symbol
+				pairs = append(pairs, pair)
+				j++
 			}
 		}
+		log.Info("got pool number: ", poolCount)
+		poolCount++
 	}
 
 	return
 
 }
 
-func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *pool.BalancerpoolLOGSWAP, error) {
-	sink := make(chan *pool.BalancerpoolLOGSWAP)
-	var pairFiltererContract *pool.BalancerpoolFilterer
-	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
+// func (scraper *BalancerScraper) getLogSwapsChannelFilter(address string) (chan *pool.BalancerpoolLOGSWAP, error) {
+// 	sink := make(chan *pool.BalancerpoolLOGSWAP)
+// 	var pairFiltererContract *pool.BalancerpoolFilterer
+// 	pairFiltererContract, _ = pool.NewBalancerpoolFilterer(common.HexToAddress(address), scraper.RestClient)
 
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startblock := header.Number.Uint64() - uint64(5250)
+// 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	startblock := header.Number.Uint64() - uint64(5250)
 
-	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{}, []common.Address{})
-	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
-	for itr.Next() {
-		// vLog := itr.Event
-	}
-	return sink, nil
-}
+// 	itr, _ := pairFiltererContract.FilterLOGSWAP(&bind.FilterOpts{Start: startblock}, []common.Address{}, []common.Address{}, []common.Address{})
+// 	scraper.balancerTokensMap, _ = scraper.getAllTokensMap()
+// 	for itr.Next() {
+// 		// vLog := itr.Event
+// 	}
+// 	return sink, nil
+// }
 
-func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *pool.BalancerpoolLOGSWAP, event.Subscription, error) {
-	sink := make(chan *pool.BalancerpoolLOGSWAP)
-	var pairFiltererContract *pool.BalancerpoolFilterer
-	pairFiltererContract, err := pool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
+func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (chan *balancerpool.BalancerpoolLOGSWAP, event.Subscription) {
+	sink := make(chan *balancerpool.BalancerpoolLOGSWAP)
+	var pairFiltererContract *balancerpool.BalancerpoolFilterer
+	pairFiltererContract, err := balancerpool.NewBalancerpoolFilterer(poolAddress, scraper.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -445,13 +471,13 @@ func (scraper *BalancerScraper) getLogSwapsChannel(poolAddress common.Address) (
 		log.Error("error in get swaps channel: ", err)
 	}
 
-	return sink, sub, nil
+	return sink, sub
 }
 
-func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
-	sink := make(chan *factory.BalancerfactoryLOGNEWPOOL)
-	var factoryFiltererContract *factory.BalancerfactoryFilterer
-	factoryFiltererContract, err := factory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.WsClient)
+func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *balancerfactory.BalancerfactoryLOGNEWPOOL, event.Subscription, error) {
+	sink := make(chan *balancerfactory.BalancerfactoryLOGNEWPOOL)
+	var factoryFiltererContract *balancerfactory.BalancerfactoryFilterer
+	factoryFiltererContract, err := balancerfactory.NewBalancerfactoryFilterer(common.HexToAddress(factoryContract), scraper.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -460,11 +486,12 @@ func (scraper *BalancerScraper) getNewPoolLogChannel() (chan *factory.Balancerfa
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(BalancerLookBackBlocks)
+	startblock := header.Number.Uint64() - uint64(lookBackBlocksSwaps)
 
 	sub, _ := factoryFiltererContract.WatchLOGNEWPOOL(&bind.WatchOpts{Start: &startblock}, sink, nil, nil)
 	if err != nil {
 		log.Error("error in get pools channel: ", err)
+		return sink, sub, err
 	}
 
 	return sink, sub, nil
@@ -480,7 +507,7 @@ func (bs *BalancerSwap) normalizeETH() {
 
 }
 
-func (scraper *BalancerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (scraper *BalancerScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -501,6 +528,11 @@ func (scraper *BalancerScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	return pairScraper, nil
 }
+
+func (scraper *BalancerScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
 func (scraper *BalancerScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
@@ -527,11 +559,11 @@ func (scraper *BalancerScraper) Close() error {
 
 type BalancerPairScraper struct {
 	parent *BalancerScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *BalancerPairScraper) Pair() dia.Pair {
+func (pairScraper *BalancerPairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 

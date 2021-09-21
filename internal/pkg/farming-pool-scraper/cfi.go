@@ -2,12 +2,12 @@ package pool
 
 import (
 	"context"
+	gauge "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/gauge"
+	platform "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/platform"
+	special "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/special"
 	"math/big"
 	"time"
 
-	gauge "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/gauge"
-	platform "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/platform"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/special"
 	ethhelper "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -50,17 +50,14 @@ func (cv *CFIScraper) mainLoop() {
 
 	go func() {
 		// Pool rates change per deposit and withdraw
-		for {
-			select {
-			case <-cv.scraper.tickerRate.C:
-				err := cv.scrapePools()
-				if err != nil {
-					log.Errorln("Error while Scraping", err)
-				}
+		for range cv.scraper.tickerRate.C {
+			err := cv.scrapePools()
+			if err != nil {
+				log.Errorln("Error while Scraping", err)
 			}
-
 		}
 	}()
+	select {}
 
 }
 
@@ -107,7 +104,10 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		}
 		tokenCaller, _ := ethhelper.NewTokenCaller(lpToken, cv.RestClient)
 		lpTokenSymbol := new([]interface{})
-		tokenCaller.Contract.Call(&bind.CallOpts{}, lpTokenSymbol, "symbol")
+		err = tokenCaller.Contract.Call(&bind.CallOpts{}, lpTokenSymbol, "symbol")
+		if err != nil {
+			log.Error(err)
+		}
 
 		var pr models.FarmingPool
 		pr.TimeStamp = time.Now()
@@ -153,6 +153,9 @@ func (cv *CFIScraper) getCoins(poolAddress common.Address) ([]string, error) {
 		tokenCaller, _ := ethhelper.NewTokenCaller(coin, cv.RestClient)
 		symbol := new([]interface{})
 		err = tokenCaller.Contract.Call(&bind.CallOpts{}, symbol, "symbol")
+		if err != nil {
+			log.Error(err)
+		}
 		symbols = append(symbols, (*symbol)[0].(string))
 	}
 

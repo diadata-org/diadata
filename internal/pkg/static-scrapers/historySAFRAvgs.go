@@ -65,7 +65,7 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 	log.Printf("Writing historic SAFR average values")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
 
 	if err != nil {
 		return err
@@ -87,31 +87,36 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
+		var rate1 float64
+		var rate2 float64
+		var rate3 float64
+		var dateTime time.Time
+		var effDate time.Time
 
 		// Convert rates from string to float64
-		rate1, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor1Avg.CValue1Avg, 64)
+		rate1, err = strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor1Avg.CValue1Avg, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
-		rate2, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor2Avg.CValue2Avg, 64)
+		rate2, err = strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor2Avg.CValue2Avg, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		rate3, err := strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor3Avg.CValue3Avg, 64)
+		rate3, err = strconv.ParseFloat(histDataSlice[i].CrateOperationAvg.CTenor3Avg.CValue3Avg, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperationAvg.CinsertTimestampAvg.CTimestampAvg)
 		if err != nil {
 			log.Error("Error parsing publishing time for SOFRXXX: ", err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperationAvg.CeffectiveDateAvg.CEffDateAvg)
 		if err != nil {
 			log.Error("Error parsing effective date for SOFRXXX: ", err)
 		}
@@ -140,9 +145,18 @@ func WriteHistoricSAFRAvgs(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t1)
-		ds.SetInterestRate(&t2)
-		ds.SetInterestRate(&t3)
+		err = ds.SetInterestRate(&t1)
+		if err != nil {
+			log.Error(err)
+		}
+		err = ds.SetInterestRate(&t2)
+		if err != nil {
+			log.Error(err)
+		}
+		err = ds.SetInterestRate(&t3)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

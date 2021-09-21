@@ -8,7 +8,6 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 const influxDbForeignQuotationTable = "foreignquotation"
@@ -126,7 +125,7 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 			return price / float64(numPrices-errs), nil
 		}
 	}
-	return 0, errors.New("No data available from yesterday")
+	return 0, errors.New("no data available from yesterday")
 }
 
 // GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source,
@@ -148,6 +147,7 @@ func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err
 		for _, val := range vals {
 			if _, ok := set[val[1].(string)]; !ok {
 				symsUnique = append(symsUnique, val[1].(string))
+				set[val[1].(string)] = struct{}{}
 			}
 		}
 

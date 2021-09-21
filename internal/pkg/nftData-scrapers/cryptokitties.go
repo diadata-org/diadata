@@ -338,7 +338,7 @@ func (scraper *CryptoKittiesScraper) FetchData() error {
 
 	fmt.Println("total supply: ", int(totalSupply.Int64()))
 
-	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.Ethereum)
+	cryptokittiesNFTClass, err := scraper.nftscraper.relDB.GetNFTClass(scraper.address.Hex(), dia.ETHEREUM)
 	if err != nil {
 		log.Error("getting nftclass: ", err)
 	}

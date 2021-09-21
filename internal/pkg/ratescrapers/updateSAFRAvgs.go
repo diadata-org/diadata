@@ -64,7 +64,7 @@ type (
 func (s *RateScraper) UpdateSAFRAvgs() error {
 	log.Printf("SAFRScraper update")
 
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/safrate/r1")
 
 	if err != nil {
 		return err

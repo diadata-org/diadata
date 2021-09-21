@@ -6,9 +6,10 @@ import (
 	"math"
 	"time"
 
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+
 	"github.com/sirupsen/logrus"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
@@ -73,6 +74,9 @@ func processMinutesUntilMidnight(now time.Time, timezone string) (float64, error
 func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone string) (float64, error) {
 	const nilTime float64 = 0
 	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, err
+	}
 	now := time.Now().In(loc)
 	mid, err := Eod(now, timezone)
 	if err != nil {
@@ -204,7 +208,8 @@ func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error)
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
 	//log.Errorln("optionsMeta",optionsMeta)
 
@@ -244,7 +249,8 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
 	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
 	if err != nil {
@@ -342,6 +348,9 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 
 	// Get options from DB
 	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	if err != nil {
+		return []dia.OptionMetaIndex{}, err
+	}
 	for _, optionMeta := range optionsMeta {
 		//if !strings.Contains(optionMeta.InstrumentName, maturityDate) {
 		//	log.Errorln("Skipping",optionMeta,maturityDate)
@@ -349,20 +358,14 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 		//}
 		orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
 		if err != nil || orderbookData.BidSize == 0 {
-			log.Error("Error retrieving OptionOrderbookData:  maturityDate orderbookData.BidSize", maturityDate, optionMeta, orderbookData.BidSize)
+			log.Error("Error retrieving OptionOrderbookData: ", err)
 			continue
 		}
-
 		result = append(result, dia.OptionMetaIndex{
-			optionMeta,
-			orderbookData,
+			OptionMeta:           optionMeta,
+			OptionOrderbookDatum: orderbookData,
 		})
 	}
-	//sort.Slice(result, func(i, j int) bool {
-	//	return result[i].StrikePrice > result[j].StrikePrice
-	//})
-
-	log.Println("result", result)
 
 	return result, nil
 }
@@ -375,10 +378,8 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		return 0, fmt.Errorf("not enough options to compute the CVI")
 	}
 
-	var (
-		lh     float64 = 0
-		deltaK float64 = 0
-	)
+	lh := float64(0)
+	deltaK := float64(0)
 
 	// left & right hand side terms
 	// as explained in the issue on GitHub: https://github.com/diadata-org/diadata/issues/193
@@ -482,10 +483,10 @@ func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoi
 func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrapers.ComputedCVI) {
 	// it is the responsibility of the function that filters the CVIs to close the channel through which it communicates these values
 	defer close(filteredCVIs)
-	var baseline float64 = 0
-	var lastCVItime time.Time = time.Time{}
-	var absDiff float64 = 0
-	var noChangeCVItime time.Duration = 0 // tracks for how long there has been no change to CVI
+	var baseline float64
+	var lastCVItime time.Time
+	var absDiff float64
+	var noChangeCVItime time.Duration // tracks for how long there has been no change to CVI
 
 	// it is the responsibility of thr computedCVIs creator to send the computed CVI values as often as it needs to
 	for v := range computedCVIs {
@@ -497,7 +498,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 			continue
 		}
 		// if no changes for 2 minutes or more
-		noChangeCVItime = time.Now().Sub(lastCVItime)
+		noChangeCVItime = time.Since(lastCVItime)
 		if noChangeCVItime.Minutes() >= 2 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime

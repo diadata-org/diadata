@@ -20,7 +20,7 @@ type DeribitOptionsScraper struct {
 	deribitScraper     *DeribitScraper
 	optionsWaitGroup   *sync.WaitGroup
 	ScraperIsRunning   bool
-	ScraperIsRunningMu sync.Mutex
+	ScraperIsRunningMu *sync.Mutex
 }
 
 type AllDeribitOptionsScrapers struct {
@@ -90,7 +90,12 @@ func NewDeribitOptionsScraper(ds *models.DB, owg *sync.WaitGroup, market string,
 	wg := sync.WaitGroup{}
 	logger := zap.NewExample().Sugar()
 	optionsScraper := DeribitOptionsScraper{}
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper = DeribitScraper{
 		WaitGroup: &wg,
@@ -144,14 +149,23 @@ func (s *DeribitOptionsScraper) Scrape(market string) {
 func (s *AllDeribitOptionsScrapers) GetMetas() {
 	tick := time.NewTicker(time.Duration(s.collectMetaEvery) * time.Hour)
 	defer tick.Stop()
-	s.GetAndStoreOptionsMeta("BTC")
-	s.GetAndStoreOptionsMeta("ETH")
+	err := s.GetAndStoreOptionsMeta("BTC")
+	if err != nil {
+		log.Error(err)
+	}
+	err = s.GetAndStoreOptionsMeta("ETH")
+	if err != nil {
+		log.Error(err)
+	}
 	go func() {
-		for {
-			select {
-			case <-tick.C:
-				s.GetAndStoreOptionsMeta("BTC")
-				s.GetAndStoreOptionsMeta("ETH")
+		for range tick.C {
+			err = s.GetAndStoreOptionsMeta("BTC")
+			if err != nil {
+				log.Error(err)
+			}
+			err = s.GetAndStoreOptionsMeta("ETH")
+			if err != nil {
+				log.Error(err)
 			}
 		}
 	}()
@@ -170,7 +184,6 @@ func (s *AllDeribitOptionsScrapers) ScrapeMarkets() {
 		for {
 			s.handleWsMessage()
 		}
-		time.Sleep(30 * time.Second)
 	}()
 	for {
 		for _, scraper := range s.Scrapers {
@@ -293,29 +306,27 @@ func (s *AllDeribitOptionsScrapers) refreshWsToken() {
 	tick := time.NewTicker(time.Duration(s.RefreshTokenEvery) * time.Second) // every RefreshTokenEvery seconds we have to refresh token
 	defer tick.Stop()
 	// we require a separate goroutine for ticker, so that we can refresh our access token everyRefreshToken seconds
-	for {
-		select {
-		case <-tick.C:
-			isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
-			if err != nil {
-				close(failedToRefreshToken)
-				time.Sleep(time.Duration(60) * time.Minute) // something very long
-			}
-			maxRetryAttempts := 5
-			if !isRefreshed {
-				for i := 1; i < maxRetryAttempts; i++ {
-					isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
-					if isRefreshed {
-						break
-					}
-					if err != nil {
-						close(failedToRefreshToken)
-						time.Sleep(time.Duration(60) * time.Minute) // something very long
-					}
+	for range tick.C {
+		isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+		if err != nil {
+			close(failedToRefreshToken)
+			time.Sleep(time.Duration(60) * time.Minute) // something very long
+		}
+		maxRetryAttempts := 5
+		if !isRefreshed {
+			for i := 1; i < maxRetryAttempts; i++ {
+				isRefreshed, err := s.handleRefreshToken(s.refreshToken, s.WsConnection)
+				if isRefreshed {
+					break
+				}
+				if err != nil {
+					close(failedToRefreshToken)
+					time.Sleep(time.Duration(60) * time.Minute) // something very long
 				}
 			}
 		}
 	}
+	select {}
 }
 
 func (s *AllDeribitOptionsScrapers) AddMarket(market string) {
@@ -326,7 +337,6 @@ func (s *AllDeribitOptionsScrapers) AddMarket(market string) {
 	}
 	newScraper := NewDeribitOptionsScraper(s.ds, s.owg, market, s.accessKey, s.accessSecret, s.WsConnection)
 	s.Scrapers = append(s.Scrapers, &newScraper)
-	return
 }
 
 // note, this function requires meta to be stored in a file
@@ -348,7 +358,7 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 	if market != "BTC" && market != "ETH" {
 		panic("unsupported deribit market. only btc and eth are supported")
 	}
-	body, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
+	body, _, err := utils.GetRequest("https://www.deribit.com/api/v2/public/get_instruments?currency=" + market)
 	if err != nil {
 		return err
 	}
@@ -377,7 +387,10 @@ func (s *AllDeribitOptionsScrapers) GetAndStoreOptionsMeta(market string) error 
 				StrikePrice:    instrument.Strike,
 				OptionType:     optionType,
 			}
-			s.ds.SetOptionMeta(&optionMeta)
+			err := s.ds.SetOptionMeta(&optionMeta)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 	return nil
@@ -395,9 +408,7 @@ func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
 			for _, meta := range metas {
 				s.AddMarket(meta.InstrumentName)
 			}
-			select {
-			case <-tick.C:
-			}
+			<-tick.C
 		}
 	}()
 	return nil
@@ -405,7 +416,10 @@ func (s *AllDeribitOptionsScrapers) RefreshMetas(currency string) error {
 
 func (s *AllDeribitOptionsScrapers) Close() {
 	for _, scraper := range s.Scrapers {
-		scraper.ScraperClose(scraper.deribitScraper.Markets[0], s.WsConnection)
+		err := scraper.ScraperClose(scraper.deribitScraper.Markets[0], s.WsConnection)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 	err := s.WsConnection.Close()
 	if err != nil {

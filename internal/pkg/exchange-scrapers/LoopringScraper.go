@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
@@ -76,6 +77,7 @@ type LoopringScraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	wsURL        string
+	db           *models.RelDB
 }
 
 type LoopringKey struct {
@@ -83,7 +85,7 @@ type LoopringKey struct {
 }
 
 // NewLoopringScraper returns a new LoopringScraper for the given pair
-func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
+func NewLoopringScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *LoopringScraper {
 
 	decimalAsset := make(map[string]float64)
 	decimalAsset["ETH"] = 18
@@ -127,6 +129,7 @@ func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 		error:         nil,
 		chanTrades:    make(chan *dia.Trade),
 		decimalsAsset: decimalAsset,
+		db:            relDB,
 	}
 
 	key, err := getAPIKey()
@@ -191,13 +194,24 @@ func (s *LoopringScraper) mainLoop() {
 				if makemap.Data[0][2] == "SELL" {
 					volume = -volume
 				}
+
+				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, makemap.Topic.Market)
+				if err != nil {
+					log.Error(err)
+				}
 				t := &dia.Trade{
-					Symbol: asset[0],
-					Pair:   makemap.Topic.Market,
-					Price:  f64Price,
-					Time:   time.Unix(timestamp/1000, 0),
-					Volume: volume,
-					Source: s.exchangeName,
+					Symbol:       asset[0],
+					Pair:         makemap.Topic.Market,
+					Price:        f64Price,
+					Time:         time.Unix(timestamp/1000, 0),
+					Volume:       volume,
+					Source:       s.exchangeName,
+					VerifiedPair: exchangepair.Verified,
+					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+				}
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade: ", t)
 				}
 				s.chanTrades <- t
 				log.Info("Got trade: ", t)
@@ -283,7 +297,10 @@ func (s *LoopringScraper) Close() error {
 	if s.closed {
 		return errors.New("LoopringScraper: Already closed")
 	}
-	s.wsClient.Close()
+	err := s.wsClient.Close()
+	if err != nil {
+		return err
+	}
 	close(s.shutdown)
 	<-s.shutdownDone
 	s.errorLock.RLock()
@@ -293,7 +310,7 @@ func (s *LoopringScraper) Close() error {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *LoopringScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -325,7 +342,7 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 	if err == nil {
 		for _, p := range ar.Data {
 			symbols := strings.Split(p.Market, "-")
-			pairs = append(pairs, dia.Pair{
+			pairs = append(pairs, dia.ExchangePair{
 				Symbol:      symbols[0],
 				ForeignName: p.Market,
 				Exchange:    s.exchangeName,
@@ -338,12 +355,13 @@ func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
 // LoopringPairScraper implements PairScraper for Loopring exchange
 type LoopringPairScraper struct {
 	parent *LoopringScraper
-	pair   dia.Pair
+	pair   dia.ExchangePair
 	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
 func (ps *LoopringPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -362,6 +380,6 @@ func (ps *LoopringPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *LoopringPairScraper) Pair() dia.Pair {
+func (ps *LoopringPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

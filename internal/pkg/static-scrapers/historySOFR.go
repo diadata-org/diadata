@@ -76,7 +76,7 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	log.Printf("Writing historic SOFR data")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/api/mktrates/r3")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/api/mktrates/r3")
 
 	if err != nil {
 		return err
@@ -98,26 +98,31 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 	numData := len(histDataSlice)
 
 	for i := 0; i < numData; i++ {
-
+		var rate float64
+		var dateTime time.Time
+		var effDate time.Time
 		// Collect entries of InterestRate struct -----------------------------------
 		symbol := histDataSlice[i].CrateOperation.CrateType.CType
 
 		// Convert interest rate from string to float64
-		rate, err := strconv.ParseFloat(histDataSlice[i].CrateOperation.Crate.CValue, 64)
+		rate, err = strconv.ParseFloat(histDataSlice[i].CrateOperation.Crate.CValue, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Convert time string to Time type in UTC and pass date (without daytime)
-		dateTime, err := time.Parse(time.RFC3339, histDataSlice[i].CrateOperation.CbusinessEventLog.CeventDate.CEvDate)
+		dateTime, err = time.Parse(time.RFC3339, histDataSlice[i].CrateOperation.CbusinessEventLog.CeventDate.CEvDate)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 		} else {
 			dateTime = dateTime.Round(time.Second).UTC()
 		}
 
-		effDate, err := time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
+		effDate, err = time.Parse("2006-01-02", histDataSlice[i].CrateOperation.CeffectiveDate.CEffDate)
+		if err != nil {
+			log.Error(err)
+		}
 
 		t := models.InterestRate{
 			Symbol:          symbol,
@@ -127,7 +132,10 @@ func WriteHistoricSOFR(ds models.Datastore) error {
 			Source:          "FED",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 

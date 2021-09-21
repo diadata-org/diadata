@@ -2,7 +2,6 @@ package scrapers
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"strconv"
 	"sync"
@@ -10,6 +9,7 @@ import (
 
 	krakenapi "github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
@@ -25,16 +25,17 @@ type KrakenScraper struct {
 	errorLock    sync.RWMutex
 	error        error
 	closed       bool
-	pairScrapers map[string]*KrakenPairScraper // pc.Pair -> pairScraperSet
+	pairScrapers map[string]*KrakenPairScraper // pc.ExchangePair -> pairScraperSet
 	api          *krakenapi.KrakenApi
 	ticker       *time.Ticker
 	exchangeName string
 	chanTrades   chan *dia.Trade
+	db           *models.RelDB
 }
 
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewKrakenScraper(key string, secret string, exchange dia.Exchange) *KrakenScraper {
+func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KrakenScraper {
 	s := &KrakenScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -44,8 +45,11 @@ func NewKrakenScraper(key string, secret string, exchange dia.Exchange) *KrakenS
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
 	}
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -53,12 +57,12 @@ func Round(x, unit float64) float64 {
 	return math.Round(x/unit) * unit
 }
 
-func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
-	obj := desired - current
-	roundedObj := Round(obj, minChange)
-	message := fmt.Sprintf("current position: %v, min change: %v, desired position: %v, delta current/desired: %v, rounded delta: %v", current, minChange, desired, obj, roundedObj)
-	return roundedObj, message
-}
+// func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
+// 	obj := desired - current
+// 	roundedObj := Round(obj, minChange)
+// 	message := fmt.Sprintf("current position: %v, min change: %v, desired position: %v, delta current/desired: %v, rounded delta: %v", current, minChange, desired, obj, roundedObj)
+// 	return roundedObj, message
+// }
 
 func FloatToString(input_num float64) string {
 	// to convert a float number to a string
@@ -110,14 +114,14 @@ func (s *KrakenScraper) Close() error {
 // KrakenPairScraper implements PairScraper for Kraken
 type KrakenPairScraper struct {
 	parent     *KrakenScraper
-	pair       dia.Pair
+	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
+func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -138,13 +142,17 @@ func (s *KrakenScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	return ps, nil
 }
 
+func (s *KrakenScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
 // FetchAvailablePairs returns a list with all available trade pairs
-func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	return []dia.Pair{}, errors.New("FetchAvailablePairs() not implemented")
+func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
 // NormalizePair accounts for the par
-func (ps *KrakenScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+func (ps *KrakenScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	if len(pair.ForeignName) == 7 {
 		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
 			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
@@ -177,6 +185,7 @@ func (ps *KrakenScraper) Channel() chan *dia.Trade {
 }
 
 func (ps *KrakenPairScraper) Close() error {
+	ps.closed = true
 	return nil
 }
 
@@ -190,14 +199,18 @@ func (ps *KrakenPairScraper) Error() error {
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *KrakenPairScraper) Pair() dia.Pair {
+func (ps *KrakenPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func NewTrade(pair dia.Pair, info krakenapi.TradeInfo, foreignTradeID string) *dia.Trade {
+func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID string, relDB *models.RelDB) *dia.Trade {
 	volume := info.VolumeFloat
 	if info.Sell {
 		volume = -volume
+	}
+	exchangepair, err := relDB.GetExchangePairCache(dia.KrakenExchange, pair.ForeignName)
+	if err != nil {
+		log.Error(err)
 	}
 	t := &dia.Trade{
 		Pair:           pair.ForeignName,
@@ -207,6 +220,12 @@ func NewTrade(pair dia.Pair, info krakenapi.TradeInfo, foreignTradeID string) *d
 		Time:           time.Unix(info.Time, 0),
 		ForeignTradeID: foreignTradeID,
 		Source:         dia.KrakenExchange,
+		VerifiedPair:   exchangepair.Verified,
+		BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+		QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+	}
+	if exchangepair.Verified {
+		log.Infoln("Got verified trade", t)
 	}
 	return t
 }
@@ -224,10 +243,9 @@ func (s *KrakenScraper) Update() {
 			if r != nil {
 				ps.lastRecord = r.Last
 				for _, ti := range r.Trades {
-					p, _ := s.NormalizePair(ps.pair)
-					t := NewTrade(p, ti, strconv.FormatInt(r.Last, 16))
+					// p, _ := s.NormalizePair(ps.pair)
+					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16), s.db)
 					ps.parent.chanTrades <- t
-					log.Info("got trade: ", t)
 				}
 			} else {
 				log.Printf("r nil")

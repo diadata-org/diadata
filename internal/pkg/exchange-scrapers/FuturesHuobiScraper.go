@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/binary"
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -13,7 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	zap "go.uber.org/zap"
 	"golang.org/x/net/websocket"
@@ -26,7 +26,7 @@ const (
 	// files will be created automatically
 
 	// API Endpoints
-	marketURLHuobi     string = "https://api.hbdm.com"
+	// marketURLHuobi     string = "https://api.hbdm.com"
 	wsURLHuobi         string = "wss://www.hbdm.com/ws"
 	pingMsgLengthHuobi int    = 22
 )
@@ -34,7 +34,7 @@ const (
 var (
 	allowedMarketsHuobi     = []string{"BTC", "ETC", "ETH", "EOS", "LTC", "BCH", "XRP", "TRX", "BSV"}
 	allowedFrequenciesHuobi = []string{"CW", "NW", "CQ"}
-	bufferHuobi             bytes.Buffer
+	// bufferHuobi             bytes.Buffer
 )
 
 // ---------------
@@ -54,7 +54,12 @@ func NewHuobiFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &HuobiFuturesScraper{
 		WaitGroup: &wg,
@@ -122,7 +127,13 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 		func() {
 			ws, err := websocket.Dial(wsURLHuobi, "", "http://www.google.com")
 			// defer inside of the function will cleanup before the next run
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err = s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			if err != nil {
 				// an error opening is fatal. let this kill the programme
 				s.Logger.Errorf("[%s] %s", market, err)
@@ -142,7 +153,10 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					m, err := ws.Read(msg)
@@ -160,7 +174,7 @@ func (s *HuobiFuturesScraper) Scrape(market string) {
 					}
 					s.Logger.Debugf("[%s] byteLen:%d, unzipLen:%d %s", market, m, len(unzipmsg), unzipmsg)
 					if len(unzipmsg) == pingMsgLengthHuobi {
-						if "ping" == string(unzipmsg[2:6]) {
+						if string(unzipmsg[2:6]) == "ping" {
 							_, err := s.pong(string(unzipmsg[8:21]), market, ws)
 							if err != nil {
 								s.Logger.Errorf("[%s] problem ponging the websocket server, err: %s", market, err)
@@ -228,17 +242,27 @@ func (s *HuobiFuturesScraper) validateMarket(market string) {
 }
 
 // Huobi websocket API sends back gzips, this will parse it.
-func parseGzip(data []byte) ([]byte, error) {
+func parseGzip(data []byte) (unzipped []byte, err error) {
 	b := new(bytes.Buffer)
-	binary.Write(b, binary.LittleEndian, data)
+	err = binary.Write(b, binary.LittleEndian, data)
+	if err != nil {
+		return
+	}
+
 	r, err := gzip.NewReader(b)
-	defer r.Close()
 	if err != nil {
-		return nil, err
+		return
 	}
-	unzipped, err := ioutil.ReadAll(r)
+	defer func() {
+		cerr := r.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
+	unzipped, err = ioutil.ReadAll(r)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return unzipped, nil
+	return
 }

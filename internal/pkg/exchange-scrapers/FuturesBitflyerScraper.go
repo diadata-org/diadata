@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"net/url"
 	"os"
 	"os/signal"
@@ -11,7 +12,6 @@ import (
 
 	zap "go.uber.org/zap"
 
-	writers "github.com/diadata-org/diadata/internal/pkg/scraper-writers"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,7 +30,12 @@ func NewBitflyerFuturesScraper(markets []string) FuturesScraper {
 	wg := sync.WaitGroup{}
 	writer := writers.FileWriter{}
 	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer logger.Sync()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	var scraper FuturesScraper = &BitflyerScraper{
 		WaitGroup: &wg,
@@ -103,13 +108,31 @@ func (s *BitflyerScraper) Scrape(market string) {
 		func() {
 			u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
 			s.Logger.Debugf("connecting to [%s], market: [%s]", u.String(), market)
-			ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+			ws, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
 				s.Logger.Errorf("could not dial Bitflyer websocket: %s", err)
 				time.Sleep(time.Duration(retryIn) * time.Second)
 				return
 			}
-			defer s.ScraperClose(market, ws)
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			defer func() {
+				err = ws.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			defer func() {
+				err = s.ScraperClose(market, ws)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+
 			ws.SetPongHandler(func(appData string) error {
 				s.Logger.Debugf("received a pong frame")
 				return nil
@@ -122,23 +145,23 @@ func (s *BitflyerScraper) Scrape(market string) {
 			tick := time.NewTicker(15 * time.Second)
 			defer tick.Stop()
 			go func() {
-				for {
-					select {
-					case <-tick.C:
-						err := s.write(websocket.PingMessage, []byte{}, ws)
-						if err != nil {
-							s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
-							return
-						}
-						s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
+				for range tick.C {
+					err := s.write(websocket.PingMessage, []byte{}, ws)
+					if err != nil {
+						s.Logger.Errorf("error experienced pinging coinflex, err: %s", err)
+						return
 					}
+					s.Logger.Debugf("pinged the coinflex server. market: [%s]", market)
 				}
 			}()
 			for {
 				select {
 				case <-userCancelled:
 					s.Logger.Infof("received interrupt, gracefully shutting down")
-					s.ScraperClose(market, ws)
+					err := s.ScraperClose(market, ws)
+					if err != nil {
+						log.Error(err)
+					}
 					os.Exit(0)
 				default:
 					_, message, err := ws.ReadMessage()
@@ -160,7 +183,10 @@ func (s *BitflyerScraper) Scrape(market string) {
 
 // write's primary purpose is to write a ping frame op code to keep the websocket connection alive
 func (s *BitflyerScraper) write(mt int, payload []byte, ws *websocket.Conn) error {
-	ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	err := ws.SetWriteDeadline(time.Now().Add(15 * time.Second))
+	if err != nil {
+		return err
+	}
 	return ws.WriteMessage(mt, payload)
 }
 

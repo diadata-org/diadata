@@ -1,24 +1,42 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"math"
 	"testing"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 func TestFilterMAIRInternalMean(t *testing.T) {
 	cases := []struct {
 		samples []float64
+		weights []float64
 		mean    float64
 	}{
-		{[]float64{59.4896, 26.2212, 60.2843, 71.1216, 22.1747, 11.7418, 29.6676, 31.8778, 42.4167, 50.7858}, 40.5781},
-		{[]float64{6, 3, 2, 4, 5, 1}, 3.5},
-		{[]float64{1}, 1.0},
-		{[]float64{}, 0.0},
+		{
+			[]float64{59.4896, 26.2212, 60.2843, 71.1216, 22.1747, 11.7418, 29.6676, 31.8778, 42.4167, 50.7858},
+			[]float64{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+			40.5781,
+		},
+		{
+			[]float64{6, 3, 2, 4, 5, 1},
+			[]float64{1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+			3.5,
+		},
+		{
+			[]float64{1},
+			[]float64{1},
+			1.0,
+		},
+		{
+			[]float64{},
+			[]float64{},
+			0.0,
+		},
 	}
 	for i, c := range cases {
-		mean := computeMean(c.samples)
+		mean, _ := computeMean(c.samples, c.weights)
 		if math.Abs(float64(mean-c.mean)) > 1e-4 {
 			t.Errorf("Mean was incorrect, got: %f, expected: %f for set:%d", mean, c.mean, i)
 		}
@@ -74,7 +92,7 @@ func TestFilterMAIRInternalRemoveOutliers(t *testing.T) {
 		{[]float64{50, 50, 50, 200, 50, 50, 50}, []float64{50, 50, 50, 50, 50, 50}},
 	}
 	for i, c := range cases {
-		cd := removeOutliers(c.samples)
+		cd, _ := removeOutliers(c.samples)
 		if len(cd) != len(c.filteredSamples) {
 			t.Errorf("Filter sample data %d failed expected:%d samples got %d", i, len(c.filteredSamples), len(cd))
 		} else {
@@ -91,7 +109,11 @@ func TestFilterMAIRIgnore(t *testing.T) {
 	firstPrice := 50.0
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
 	steps := filterParam
-	f := NewFilterMAIR("XRP", "", d, filterParam)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	for i := 0; i <= steps; i++ {
@@ -109,7 +131,11 @@ func TestFilterMAIRAverage(t *testing.T) {
 	firstPrice := 50.0
 	avg := 0.
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMAIR("XRP", "", d, filterParam)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -132,7 +158,11 @@ func TestFilterMAIRAverageOutsideRange(t *testing.T) {
 	firstPrice := 50.0
 	avg := 0.
 	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	f := NewFilterMAIR("XRP", "", d, memory)
+	assetXRP := dia.Asset{
+		Symbol: "XRP",
+		Name:   "XRP",
+	}
+	f := NewFilterMAIR(assetXRP, "", d, memory)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -169,7 +199,11 @@ func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 	for i, c := range cases {
 		memory := 20
 		d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-		f := NewFilterMAIR("XRP", "", d, memory)
+		assetXRP := dia.Asset{
+			Symbol: "XRP",
+			Name:   "XRP",
+		}
+		f := NewFilterMAIR(assetXRP, "", d, memory)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)
