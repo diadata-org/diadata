@@ -38,11 +38,13 @@ type Datastore interface {
 	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
 	SaveTradeInflux(t *dia.Trade) error
+	SaveTradeInfluxToTable(t *dia.Trade, table string) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
+	GetOldTradesFromInflux(table string, exchange string, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -157,6 +159,7 @@ type DB struct {
 
 const (
 	influxDbName                         = "dia"
+	influxDbOldTradesTable               = "oldTrades"
 	influxDbTradesTable                  = "trades"
 	influxDbFiltersTable                 = "filters"
 	influxDbFiatQuotationsTable          = "fiat"
@@ -434,7 +437,14 @@ func (db *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time
 }
 
 // SaveTradeInflux stores a trade in influx. Flushed when more than maxPoints in batch.
+// Wrapper around SaveTradeInfluxToTable.
 func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+	return db.SaveTradeInfluxToTable(t, influxDbTradesTable)
+}
+
+// SaveTradeInfluxToTable stores a trade in influx into @table.
+// Flushed when more than maxPoints in batch.
+func (db *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	// Create a point and add to batch
 	tags := map[string]string{
 		"symbol":               t.Symbol,
@@ -453,7 +463,7 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		"foreignTradeID":    t.ForeignTradeID,
 	}
 
-	pt, err := clientInfluxdb.NewPoint(influxDbTradesTable, tags, fields, t.Time)
+	pt, err := clientInfluxdb.NewPoint(table, tags, fields, t.Time)
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {
@@ -506,6 +516,49 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 		return &retval, errors.New("parsing trade from database")
 	}
 	return &retval, nil
+}
+
+// GetOldTradesFromInflux returns all recorded trades from @table done on @exchange between @timeInit and @timeFinal
+// where the time interval is closed on the left and open on the right side.
+func (db *DB) GetOldTradesFromInflux(table string, exchange string, timeInit, timeFinal time.Time) ([]dia.Trade, error) {
+	allTrades := []dia.Trade{}
+	var query string
+	queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE exchange='%s' and time>=%d and time<%d order by desc limit 1"
+	query = fmt.Sprintf(queryString, table, exchange, timeInit.UnixNano(), timeFinal.UnixNano())
+
+	res, err := queryInfluxDB(db.influxClient, query)
+	if err != nil {
+		return allTrades, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			var trade dia.Trade
+			trade.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return allTrades, err
+			}
+			trade.EstimatedUSDPrice, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			trade.Source = res[0].Series[0].Values[i][2].(string)
+			trade.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			trade.Pair = res[0].Series[0].Values[i][4].(string)
+			trade.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			trade.Symbol = res[0].Series[0].Values[i][6].(string)
+			trade.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			allTrades = append(allTrades, trade)
+		}
+	} else {
+		return allTrades, errors.New("parsing trade from database")
+	}
+	return allTrades, nil
 }
 
 func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
