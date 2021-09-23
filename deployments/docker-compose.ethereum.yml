@@ -219,6 +219,20 @@ services:
     secrets:
       - oracle_keys_fantom
 
+  diaoracleservice-shiden-shibuya:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-shiden-shibuya
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x1232acd632dd75f874e357c77295da3f5cd7733e --secretsFile=/run/secrets/oracle_keys_shiden_shibuya --blockchainNode="https://rpc.shibuya.astar.network:8545" --chainId=81 --sleepSeconds=20
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_shiden_shibuya
+
   oracleservice-plasm-dusty:
     build:
       context: $GOPATH
@@ -515,6 +529,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche_fuji.txt
   oracle_keys_fantom:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_fantom.txt
+  oracle_keys_shiden_shibuya:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden_shibuya.txt
   oracle_keys_wow_bsc:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_wow_bsc.txt
   oracle_keys_pcws_bsc:
