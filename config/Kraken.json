@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Kraken",
+      "ForeignName": "SDNEUR",
+      "Ignore": false,
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "ADAETH",
       "Ignore": false,
       "Symbol": "ADA"
