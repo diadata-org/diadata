@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -18,22 +19,32 @@ func main() {
 
 	ds, err := models.NewDataStore()
 	if err != nil {
-		log.Fatal("datastore error: ", err)
+		log.Fatal("datastore: ", err)
 	}
 
 	rdb, err := models.NewRelDataStore()
 	if err != nil {
-		log.Fatal("relational datastore error: ", err)
+		log.Fatal("relational datastore: ", err)
 	}
 
 	// The oldest record we have in influx is younger than 3000 days old.
 	timeInit := time.Now().AddDate(0, 0, -3000)
 	timeFinal := time.Now()
-	store := false
+	testmodestring := utils.Getenv("INFLUX_MIGRATION_TESTMODE", "true")
+	var testmode bool
+	if testmodestring == "true" {
+		testmode = true
+	}
+	if testmodestring == "false" {
+		testmode = false
+	}
 	fromTable := utils.Getenv("INFLUX_MIGRATION_ORIGIN", influxDbOldTradesTable)
 	toTable := utils.Getenv("INFLUX_MIGRATION_DESTINATION", influxDbTestTable)
 
 	for _, exchange := range dia.Exchanges() {
+		if !scrapers.Exchanges[exchange].Centralized {
+			continue
+		}
 
 		startTime := timeInit
 		var endTime time.Time
@@ -45,7 +56,7 @@ func main() {
 				// ...else, query until last time of time range.
 				endTime = timeFinal
 			}
-			err = migrateExchangeTrades(exchange, startTime, endTime, fromTable, toTable, store, ds, rdb)
+			err = migrateCEXTrades(exchange, startTime, endTime, fromTable, toTable, testmode, ds, rdb)
 			if err != nil {
 				log.Fatalf("migrate trades for exchange %s: %v", exchange, err)
 			}
@@ -58,7 +69,7 @@ func main() {
 // migrateExchangeTrades fetches all trades done on @exchange from the old table with name @fromTable,
 // adds underlying asset information if available and stores the extended trade in the table @toTable
 // in case store==true. Otherwise, the results are just logged onto the screen.
-func migrateExchangeTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, store bool, ds *models.DB, rdb *models.RelDB) error {
+func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, ds *models.DB, rdb *models.RelDB) error {
 	trades, err := ds.GetOldTradesFromInflux(fromTable, exchange, timeInit, timeFinal)
 	if err != nil {
 		log.Error("fetching trades: ", err)
@@ -67,7 +78,7 @@ func migrateExchangeTrades(exchange string, timeInit time.Time, timeFinal time.T
 	log.Info("number of trades: ", len(trades))
 
 	for i := range trades {
-		quoteAsset, baseAsset, pairVerified, err := getTradeAssets(trades[i], rdb)
+		quoteAsset, baseAsset, pairVerified, err := getCEXTradeAssets(trades[i], rdb)
 		if err != nil {
 			log.Error("get trade assets: ", err)
 		}
@@ -75,20 +86,20 @@ func migrateExchangeTrades(exchange string, timeInit time.Time, timeFinal time.T
 		trades[i].QuoteToken = quoteAsset
 		trades[i].BaseToken = baseAsset
 		trades[i].VerifiedPair = pairVerified
-		if store {
+		if testmode {
+			log.Info("extended trade: ", trades[i])
+		} else {
 			err = ds.SaveTradeInfluxToTable(&trades[i], toTable)
 			if err != nil {
 				log.Fatal("save trade: ", err)
 			}
-		} else {
-			log.Info("extended trade: ", trades[i])
 		}
 	}
 	return nil
 }
 
 // getTradeAssets returns the underlying assets of a trade and a boolean that tells whether both assets were verified.
-func getTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset, baseAsset dia.Asset, pairVerified bool, err error) {
+func getCEXTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset, baseAsset dia.Asset, pairVerified bool, err error) {
 	// Get symbols constituting the trading pair.
 	symbols, err := dia.GetPairSymbols(dia.ExchangePair{
 		Symbol:      trade.Symbol,
