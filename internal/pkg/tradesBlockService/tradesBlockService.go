@@ -45,9 +45,10 @@ type TradesBlockService struct {
 	BlockDuration   int64
 	currentBlock    *dia.TradesBlock
 	datastore       models.Datastore
+	historical      bool
 }
 
-func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *TradesBlockService {
+func NewTradesBlockService(datastore models.Datastore, blockDuration int64, historical bool) *TradesBlockService {
 	s := &TradesBlockService{
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
@@ -58,6 +59,7 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64) *Tra
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
 		datastore:       datastore,
+		historical:      historical,
 	}
 	go s.mainLoop()
 	return s
@@ -92,14 +94,23 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		} else {
 			// Get price of base token.
 			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
-			val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
+			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
+			var price float64
+			var err error
+			if s.historical {
+				// Look for historic price of base token at trade time...
+				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
+			} else {
+				// ...or latest price. This method is quicker as it first queries the cache.
+				price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
+			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
-				if val > 0.0 {
+				if price > 0.0 {
 					log.Infof("price of trade %s: %v", t.Pair, t.Price)
-					log.Info("price of base token: ", val)
-					t.EstimatedUSDPrice = t.Price * val
+					log.Info("price of base token: ", price)
+					t.EstimatedUSDPrice = t.Price * price
 					verifiedTrade = true
 				}
 			}

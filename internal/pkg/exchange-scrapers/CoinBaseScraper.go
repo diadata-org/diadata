@@ -88,7 +88,7 @@ func (s *CoinBaseScraper) mainLoop() {
 
 							exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.ProductID)
 							if err != nil {
-								log.Error(err)
+								log.Error("get exchangepair from cache: ", err)
 							}
 							t := &dia.Trade{
 								Symbol:         ps.pair.Symbol,

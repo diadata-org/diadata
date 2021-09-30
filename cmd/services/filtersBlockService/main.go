@@ -15,12 +15,22 @@ import (
 )
 
 var (
-	replayInflux = flag.Bool("replayInflux", false, "replayInflux ?")
+	replayInflux      = flag.Bool("replayInflux", false, "replayInflux ?")
+	historical        = flag.Bool("historical", false, "digest historical or current trades")
+	filtersBlockTopic int
+	tradesBlockTopic  int
 )
 
 func init() {
 	flag.Parse()
 	log.Println("replayInflux=", *replayInflux)
+	if !*historical {
+		filtersBlockTopic = kafkaHelper.TopicFiltersBlock
+		tradesBlockTopic = kafkaHelper.TopicTradesBlock
+	} else {
+		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
+	}
 }
 
 func main() {
@@ -41,7 +51,7 @@ func main() {
 
 		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
-		w := kafkaHelper.NewSyncWriter(kafkaHelper.TopicFiltersBlock)
+		w := kafkaHelper.NewSyncWriter(filtersBlockTopic)
 
 		defer func() {
 			err := w.Close()
@@ -54,7 +64,7 @@ func main() {
 
 		go handler(channel, &wg, w)
 
-		r := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTradesBlock)
+		r := kafkaHelper.NewReaderNextMessage(tradesBlockTopic)
 		defer func() {
 			err := r.Close()
 			if err != nil {
@@ -103,7 +113,7 @@ func loadFilterPointsFromPreviousBlock() []dia.FilterPoint {
 	// load the previous block points so that we have a value even if
 	// there is no trades
 	lastFilterPoints := []dia.FilterPoint{}
-	lastFilterBlock, err := kafkaHelper.GetLastElement(kafkaHelper.TopicFiltersBlock)
+	lastFilterBlock, err := kafkaHelper.GetLastElement(filtersBlockTopic)
 	if err == nil {
 		lastFilterPoints = lastFilterBlock.(dia.FiltersBlock).FiltersBlockData.FilterPoints
 	}
