@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: build-lint-deploy-master
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: build-lint-create-deploy
+  resources:
+    - name: git-source
+      resourceRef:
+        name: git-diadata-master
+  params:
+    - name: pathToContext
+      value: "/workspace/src/"
+    - name: pathToYamlFile
+      value: "deployments/k8s-yaml/filtersblockservice.yaml"
+    - name: "imageUrl"
+      value: "us.icr.io/dia-registry/scraper/filtersblockservice"
+    - name: "imageTag"
+      value: "latest"
+    - name: pathToDockerfile
+      value: "build/Dockerfile-filtersBlockService"
+  serviceAccountName: ibm-cr

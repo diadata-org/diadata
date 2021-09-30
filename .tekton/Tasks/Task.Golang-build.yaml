@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: golang-build
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+    tekton.dev/displayName: "golang build"
+spec:
+  description: >-
+    This Task is Golang task to build Go projects.
+  params:
+    - name: package
+      description: base package to build in
+      default: ""
+    - name: packages
+      description: "packages to build (default: ./cmd/...)"
+      default: "./cmd/..."
+    - name: version
+      description: golang version to use for builds
+      default: "1.14.15"
+    - name: flags
+      description: flags to use for the test command
+      default: -v
+    - name: GOOS
+      description: "running program's operating system target"
+      default: linux
+    - name: GOARCH
+      description: "running program's architecture target"
+      default: amd64
+    - name: GO111MODULE
+      description: "value of module support"
+      default: auto
+  resources:
+    inputs:
+        - name: git-source
+          type: git
+          targetPath: src/
+  steps:
+    - name: build
+      image: docker.io/library/golang:$(params.version)
+      script: |
+        SRC_PATH="$(resources.inputs.git-source.path)/$(params.package)"
+        cd $SRC_PATH
+        rm -rf vendor
+        go build $(params.flags) $(params.packages)
+        go mod vendor
+        go mod tidy
+      env:
+        - name: GOPATH
+          value: /workspace
+        - name: GOOS
+          value: "$(params.GOOS)"
+        - name: GOARCH
+          value: "$(params.GOARCH)"
+        - name: GO111MODULE
+          value: "$(params.GO111MODULE)"

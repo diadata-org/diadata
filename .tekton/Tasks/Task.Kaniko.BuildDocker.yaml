@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kaniko-build-docker
+  namespace: tekton-pipelines
+spec:
+  inputs:
+    resources:
+      - name: git-source
+        type: git
+    params:
+      - name: pathToContext
+        description: The path to the build context, used by Kaniko - within the workspace
+        default: .
+      - name: pathToDockerfile
+        description: The path to the dockerfile to build
+        default: Dockerfile
+      - name: imageUrl
+        description: value should be like - us.icr.io/test_namespace/builtImageApp
+      - name: imageTag
+        description: Tag to apply to the built image
+  steps:
+    - name: pwd
+      image: alpine
+      script: |
+        pwd
+    - name: ls
+      image: alpine
+      script: |
+        ls -la
+    - name: ls-src
+      image: alpine
+      script: |
+        ls -la /workspace/git-source/build
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor
+      env:
+          - name: DOCKER_CONFIG
+            value: /tekton/home/.docker
+      securityContext:
+        runAsUser: 0
+      command:
+        - /kaniko/executor
+      args:
+        - "--dockerfile=$(params.pathToContext)/$(params.pathToDockerfile)"
+        - "--destination=$(params.imageUrl):$(params.imageTag)"
+        - "--context=$(params.pathToContext)/"
+        - "--no-push"

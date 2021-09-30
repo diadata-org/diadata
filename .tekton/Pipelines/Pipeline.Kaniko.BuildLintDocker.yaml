@@ -1,0 +1,77 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-lint-create-deploy
+  namespace: tekton-pipelines
+spec:
+  resources:
+    - name: git-source
+      type: git
+  params:
+    - name: pathToContext
+      description: The path to the build context, used by Kaniko - within the workspace
+      default: .
+    - name: pathToDockerfile
+      description: The path to the dockerfile
+    - name: pathToYamlFile
+      description: The path to the yaml file to deploy within the git source
+      default: config.yaml
+    - name: imageUrl
+      description: Url of image repository
+      default: deploy_target
+    - name: imageTag
+      description: Tag to apply to the built image
+      default: latest
+  tasks:
+    - name: build
+      taskRef:
+        name: golang-build
+      resources:
+        inputs:
+          - name: git-source
+            resource: git-source
+    - name: lint
+      taskRef:
+        name: golangci-lint
+      resources:
+        inputs:
+            - name: git-source
+              resource: git-source
+      runAfter:
+        - build
+    - name: kaniko-build-docker
+      taskRef:
+        name: kaniko-build-docker
+      params:
+        - name: pathToContext
+          value: "$(params.pathToContext)"
+        - name: pathToDockerfile
+          value: "$(params.pathToDockerfile)"
+        - name: imageUrl
+          value: "$(params.imageUrl)"
+        - name: imageTag
+          value: "$(params.imageTag)"
+      resources:
+        inputs:
+          - name: git-source
+            resource: git-source
+      runAfter:
+        - lint
+    - name: deploy-application
+      taskRef:
+        name: deploy-application
+      runAfter:
+        - kaniko-build-docker
+      params:
+        - name: pathToContext
+          value: "$(params.pathToContext)"
+        - name: pathToYamlFile
+          value: "$(params.pathToYamlFile)"
+        - name: imageUrl
+          value: "$(params.imageUrl)"
+        - name: imageTag
+          value: "$(params.imageTag)"
+      resources:
+        inputs:
+          - name: git-source
+            resource: git-source
