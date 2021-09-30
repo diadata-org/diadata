@@ -2,6 +2,36 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SDN_USDT",
+      "Ignore": false,
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DFYN_USDT",
+      "Ignore": false,
+      "Symbol": "DFYN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "HEGIC_USDT",
+      "Ignore": false,
+      "Symbol": "HEGIC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "INJ_USDT",
+      "Ignore": false,
+      "Symbol": "INJ"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DAFI_USDT",
+      "Ignore": false,
+      "Symbol": "DAFI"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "AKRO_USDT",
       "Ignore": false,
       "Symbol": "AKRO"
@@ -791,24 +821,6 @@
       "ForeignName": "GSE_USDT",
       "Ignore": true,
       "Symbol": "GSE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GTC_BTC",
-      "Ignore": true,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GTC_ETH",
-      "Ignore": true,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GTC_USDT",
-      "Ignore": true,
-      "Symbol": "GTC"
     },
     {
       "Exchange": "GateIO",

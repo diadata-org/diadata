@@ -14,6 +14,19 @@ services:
     environment:
       - EXEC_MODE=production
 
+  dfyncollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=DFYN
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
   bitmaxcollector:
     depends_on: [genericcollector]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
@@ -80,18 +93,18 @@ services:
       - EXEC_MODE=production
 
 
-  # loopringcollector:
-  #   depends_on: [genericcollector]
-  #   image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
-  #   command: /bin/collector -exchange=Loopring
-  #   networks:
-  #     - kafka-network
-  #     - redis-network
-  #   logging:
-  #     options:
-  #       max-size: "50m"
-  #   environment:
-  #     - EXEC_MODE=production
+  loopringcollector:
+    depends_on: [genericcollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericcollector:latest
+    command: /bin/collector -exchange=Loopring
+    networks:
+      - kafka-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
 
   uniswapcollector:
     depends_on: [genericcollector]

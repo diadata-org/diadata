@@ -49,7 +49,7 @@ func TestCompoundedRate(t *testing.T) {
 		dateFinal   time.Time
 		holidays    []time.Time
 		daysPerYear int
-		rounding    float64
+		rounding    int
 		cumRate     float64
 		err         error
 	}{

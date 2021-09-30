@@ -2,6 +2,90 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "WNXMUSDT",
+            "Ignore": false,
+            "Symbol": "WNXM"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NMRUSDT",
+            "Ignore": false,
+            "Symbol": "NMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NMRBTC",
+            "Ignore": false,
+            "Symbol": "NMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BONDUSDT",
+            "Ignore": false,
+            "Symbol": "BOND"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "MLNUSDT",
+            "Ignore": false,
+            "Symbol": "MLN"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "HEGICETH",
+            "Ignore": false,
+            "Symbol": "HEGIC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CHRUSDT",
+            "Ignore": false,
+            "Symbol": "CHR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BALUSDT",
+            "Ignore": false,
+            "Symbol": "BAL"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "INJUSDT",
+            "Ignore": false,
+            "Symbol": "INJ"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CRVUSDT",
+            "Ignore": false,
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ATAUSDT",
+            "Ignore": false,
+            "Symbol": "ATA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ATABUSD",
+            "Ignore": false,
+            "Symbol": "ATA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GTCUSDT",
+            "Ignore": false,
+            "Symbol": "GTC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GTCBUSD",
+            "Ignore": false,
+            "Symbol": "GTC"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GRTUSDT",
             "Ignore": false,
             "Symbol": "GRT"
@@ -164,45 +248,15 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "AMBBNB",
-            "Ignore": true,
-            "Symbol": "AMB"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "AMBBTC",
             "Ignore": true,
             "Symbol": "AMB"
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "AMBETH",
-            "Ignore": true,
-            "Symbol": "AMB"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "APPCBNB",
-            "Ignore": true,
-            "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "APPCBTC",
             "Ignore": true,
             "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "APPCETH",
-            "Ignore": true,
-            "Symbol": "APPC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARDRBNB",
-            "Ignore": true,
-            "Symbol": "ARDR"
         },
         {
             "Exchange": "Binance",
@@ -227,18 +281,6 @@
             "ForeignName": "ARKETH",
             "Ignore": true,
             "Symbol": "ARK"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARNBTC",
-            "Ignore": true,
-            "Symbol": "ARN"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ARNETH",
-            "Ignore": true,
-            "Symbol": "ARN"
         },
         {
             "Exchange": "Binance",

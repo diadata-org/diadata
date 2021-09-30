@@ -98,7 +98,6 @@ func (s *KuCoinScraper) mainLoop() {
 	tk := &kucoin.WebSocketTokenModel{}
 	if err := rsp.ReadData(tk); err != nil {
 		log.Error("Error Reading data", err)
-
 	}
 
 	client1 := s.apiService.NewWebSocketClient(tk)
@@ -108,40 +107,46 @@ func (s *KuCoinScraper) mainLoop() {
 	if err != nil {
 		// Handle error
 		log.Error("Error Reading data", err)
-
 	}
 	client2DownStream, _, err := client2.Connect()
 	if err != nil {
 		// Handle error
 		log.Error("Error Reading data", err)
-
 	}
-	pairs, _ := s.FetchAvailablePairs()
 
-	for count, pair := range pairs {
-		ch1 := kucoin.NewSubscribeMessage("/market/match:"+pair.ForeignName, false)
+	count := 0
+	for pair := range s.pairScrapers {
+		ch := kucoin.NewSubscribeMessage("/market/match:"+pair, false)
 		if count >= 299 {
-			channelsForClient2 = append(channelsForClient2, ch1)
+			channelsForClient2 = append(channelsForClient2, ch)
+			count++
+			continue
 		} else {
-			channelsForClient1 = append(channelsForClient1, ch1)
+			channelsForClient1 = append(channelsForClient1, ch)
+			count++
 		}
 	}
 
+	log.Info("number of pairs: ", count)
+
 	if err := client1.Subscribe(channelsForClient1...); err != nil {
 		// Handle error
-		log.Error("Error while subscribing client1 ", err)
+		log.Fatal("Error while subscribing client1 ", err)
 	}
 	if err := client2.Subscribe(channelsForClient2...); err != nil {
 		// Handle error
-		log.Error("Error while subscribing client2 ", err)
+		log.Fatal("Error while subscribing client2 ", err)
 	}
 
 	go func() {
 		var msg *kucoin.WebSocketDownstreamMessage
 		for {
 			select {
-			case msg = <-client2DownStream:
+
 			case msg = <-client1DownStream:
+				if msg == nil {
+					continue
+				}
 				t := &KucoinMarketMatch{}
 				if err := msg.ReadData(t); err != nil {
 					log.Printf("Failure to read: %s", err.Error())
@@ -164,7 +169,35 @@ func (s *KuCoinScraper) mainLoop() {
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- trade
-				log.Println("Got trade: ", trade)
+				log.Println("Got trade stream1: ", trade)
+
+			case msg = <-client2DownStream:
+				if msg == nil {
+					continue
+				}
+				t := &KucoinMarketMatch{}
+				if err := msg.ReadData(t); err != nil {
+					log.Printf("Failure to read: %s", err.Error())
+					return
+				}
+				asset := strings.Split(t.Symbol, "-")
+				f64Price, _ := strconv.ParseFloat(t.Price, 64)
+				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
+				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
+
+				if t.Side == "sell" {
+					f64Volume = -f64Volume
+				}
+				trade := &dia.Trade{
+					Symbol: asset[0],
+					Pair:   t.Symbol,
+					Price:  f64Price,
+					Time:   time.Unix(0, timeOrder),
+					Volume: f64Volume,
+					Source: s.exchangeName,
+				}
+				s.chanTrades <- trade
+				log.Println("Got trade stream2: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
 				log.Println("KuCoin shutting down")
@@ -219,7 +252,7 @@ func (s *KuCoinScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 	}
 
 	if s.closed {
-		return nil, errors.New("LoopringScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("KucoinScraper: Call ScrapePair on closed scraper")
 	}
 
 	ps := &KuCoinPairScraper{

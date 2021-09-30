@@ -1,6 +1,24 @@
 {
     "Coins": [
         {
+            "Symbol": "DFYN",
+            "ForeignName": "DFYN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARGO",
+            "ForeignName": "ARGO-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "USDC",
             "ForeignName": "USDC-ETH",
             "Exchange": "UniswapV2",
@@ -805,12 +823,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "ETH",
             "ForeignName": "ETH-ERC223",
             "Exchange": "UniswapV2",
@@ -1473,12 +1485,6 @@
         {
             "Symbol": "ETH",
             "ForeignName": "ETH-BBSC",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-FOX",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -10891,12 +10897,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-TT",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
             "Symbol": "USDT",
             "ForeignName": "USDT-LKSC",
             "Exchange": "UniswapV2",
@@ -12351,12 +12351,6 @@
         {
             "Symbol": "CPTT",
             "ForeignName": "CPTT-ETH",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-ETH",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -13940,7 +13934,7 @@
         },
         {
             "Symbol": "BOND",
-            "ForeignName": "BOND-ETH",
+            "ForeignName": "BOND-USDC",
             "Exchange": "UniswapV2",
             "Ignore": false
         },
@@ -15759,12 +15753,6 @@
         {
             "Symbol": "aLEND",
             "ForeignName": "aLEND-LEND",
-            "Exchange": "UniswapV2",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SLP",
-            "ForeignName": "SLP-CANDY",
             "Exchange": "UniswapV2",
             "Ignore": false
         },

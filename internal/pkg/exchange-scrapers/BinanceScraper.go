@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -55,16 +54,6 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange) *
 	return s
 }
 
-func eventHandler(event *binance.WsAggTradeEvent) {
-	fmt.Println(event)
-
-}
-
-func errorHandler(err error) {
-	fmt.Println(err)
-
-}
-
 func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	if pair.Symbol == "MIOTA" {
 		pair.ForeignName = "M" + pair.ForeignName
@@ -74,6 +63,10 @@ func (up *BinanceScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
 	}
 	if pair.Symbol == "ETHOS" {
 		pair.ForeignName = "ETHOS" + pair.ForeignName[3:]
+	}
+	if pair.Symbol == "WNXM" {
+		pair.Symbol = "wNXM"
+		pair.ForeignName = "wNXM" + pair.ForeignName[4:]
 	}
 	return pair, nil
 }
@@ -142,7 +135,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		price, err2 := strconv.ParseFloat(event.Price, 64)
 
 		if err == nil && err2 == nil && event.Event == "aggTrade" {
-			if event.IsBuyerMaker == false {
+			if !event.IsBuyerMaker {
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)
@@ -156,19 +149,23 @@ func (s *BinanceScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 				Source:         s.exchangeName,
 			}
 			ps.parent.chanTrades <- t
-			log.Info("got trade: ", t)
+			// log.Info("got trade: ", t)
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}
 	}
 	errHandler := func(err error) {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 	_, _, err := binance.WsAggTradeServe(pair.ForeignName, wsAggTradeHandler, errHandler)
+	if err != nil {
+		log.Errorf("serving pair %s", pair.ForeignName)
+	}
 
 	return ps, err
 }
+
 func (s *BinanceScraper) normalizeSymbol(p dia.Pair, foreignName string, params ...string) (pair dia.Pair, err error) {
 	symbol := p.Symbol
 	status := params[0]

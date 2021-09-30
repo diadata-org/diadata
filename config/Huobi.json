@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "CHRUSDT",
+      "Ignore": false,
+      "Symbol": "CHR"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "CRVUSDT",
+      "Ignore": false,
+      "Symbol": "CRV"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "GRTUSDT",
       "Ignore": false,
       "Symbol": "GRT"

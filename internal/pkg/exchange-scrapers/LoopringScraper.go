@@ -20,6 +20,9 @@ type WebSocketRequest struct {
 	Op       string          `json:"op"`
 	Sequence int             `json:"sequence"`
 	Topics   []LoopringTopic `json:"topics"`
+	Result   struct {
+		Status string `json:"status"`
+	} `json:"result"`
 }
 
 type WebSocketResponse struct {
@@ -30,6 +33,7 @@ type WebSocketResponse struct {
 	Ts   int64      `json:"ts"`
 	Data [][]string `json:"data"`
 }
+
 type LoopringTopic struct {
 	Topic    string `json:"topic"`
 	Market   string `json:"market"`
@@ -45,10 +49,6 @@ type Topic struct {
 }
 
 type LoopringMarket struct {
-	ResultInfo struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	} `json:"resultInfo"`
 	Data []struct {
 		Market             string `json:"market"`
 		BaseTokenID        int    `json:"baseTokenId"`
@@ -56,7 +56,7 @@ type LoopringMarket struct {
 		PrecisionForPrice  int    `json:"precisionForPrice"`
 		OrderbookAggLevels int    `json:"orderbookAggLevels"`
 		Enabled            bool   `json:"enabled"`
-	} `json:"data"`
+	} `json:"markets"`
 }
 
 type LoopringScraper struct {
@@ -75,12 +75,13 @@ type LoopringScraper struct {
 	pairScrapers map[string]*LoopringPairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
-	wsURL string
+	wsURL        string
 }
 
 type LoopringKey struct {
 	Key string `json:"key"`
 }
+
 // NewLoopringScraper returns a new LoopringScraper for the given pair
 func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 
@@ -128,82 +129,54 @@ func NewLoopringScraper(exchange dia.Exchange) *LoopringScraper {
 		decimalsAsset: decimalAsset,
 	}
 
-	// Get Loopring Key
-	resp,err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	key, err := getAPIKey()
 	if err != nil {
-		log.Error("Error getting loopring key : ",err.Error())
+		log.Fatal("get api key: ", err)
 	}
-	var lkResponse LoopringKey
-	json.Unmarshal(resp, &lkResponse)
-
-	s.wsURL = _LoopringSocketurl+"?wsApiKey="+lkResponse.Key
-
+	s.wsURL = _LoopringSocketurl + "?wsApiKey=" + key
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(s.wsURL , nil)
-
+	SwConn, _, err := wsDialer.Dial(s.wsURL, nil)
 	if err != nil {
-		log.Error("Error connecting to ws: ",err.Error())
+		log.Error("Error connecting to ws: ", err.Error())
 	}
+
 	s.wsClient = SwConn
+
 	go s.mainLoop()
 	return s
 }
 
-func (s *LoopringScraper) reconnectToWS() {
-
-	log.Info("Reconnecting ws")
-
-
-	// Get Loopring Key
-	resp,err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
-	if err != nil {
-		log.Error("Error getting loopring key : ",err.Error())
-	}
-	var lkResponse LoopringKey
-	json.Unmarshal(resp, &lkResponse)
-
-	s.wsURL = _LoopringSocketurl+"?wsApiKey="+lkResponse.Key
-
-	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(s.wsURL, nil)
-
-	if err != nil {
-		println(err.Error())
-	}
-	s.wsClient = SwConn
-}
-
-func (s *LoopringScraper) subscribeToALL() {
-	log.Info("Subscribing To all pairs again")
-
-	for key := range s.pairScrapers {
-		lptopic := LoopringTopic{Market: key, Topic: "trade", Count: 20, Snapshot: true}
-
-		var topics []LoopringTopic
-		topics = append(topics, lptopic)
-		wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
-
-		if err := s.wsClient.WriteJSON(wr); err != nil {
-			log.Error(err)
-		}
-	}
-}
-func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
-	return dia.Pair{}, nil
-}
 // runs in a goroutine until s is closed
 func (s *LoopringScraper) mainLoop() {
-	for true {
+
+	// wait for all pairs have added into s.PairScrapers
+	time.Sleep(4 * time.Second)
+	s.subscribeToALL()
+
+	for {
+
 		var makemap WebSocketResponse
-		_, messgae, e := s.wsClient.ReadMessage()
-		e = json.Unmarshal(messgae, &makemap)
-		if e != nil {
-			//Data will not parse if message is ping
+		messageType, message, err := s.wsClient.ReadMessage()
+		if err != nil {
+			log.Error("reading websocket message: ", err)
 			s.reconnectToWS()
 			s.subscribeToALL()
-		} else {
-			if len(makemap.Data) > 0 {
+		}
 
+		err = json.Unmarshal(message, &makemap)
+
+		if err != nil {
+			message := string(message)
+			if message == "ping" {
+				e := s.Pong(messageType)
+				if e != nil {
+					log.Error("send pong: ", err)
+				} else {
+					log.Info("sent pong")
+				}
+			}
+		} else {
+			if makemap.Topic.Topic == "trade" {
 				asset := strings.Split(makemap.Topic.Market, "-")
 				f64Price, _ := strconv.ParseFloat(makemap.Data[0][4], 64)
 				timestamp, err := strconv.ParseInt(makemap.Data[0][0], 10, 64)
@@ -227,26 +200,80 @@ func (s *LoopringScraper) mainLoop() {
 					Source: s.exchangeName,
 				}
 				s.chanTrades <- t
-				log.Error("-Got trade--", t)
-
-			} else {
-				// log.Info("No data is received")
+				log.Info("Got trade: ", t)
 			}
 		}
 	}
-	s.cleanup(nil)
 }
 
-func (s *LoopringScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
+func (s *LoopringScraper) subscribeToALL() {
+	log.Info("Subscribing To all pairs")
+
+	count := 0
+	var topics []LoopringTopic
+	for key := range s.pairScrapers {
+		lptopic := LoopringTopic{Market: key, Topic: "trade", Count: 20, Snapshot: true}
+		topics = append(topics, lptopic)
+		count++
+		if count > 19 {
+			break
+		}
+	}
+	log.Info("topics for sub: ", topics)
+	wr := &WebSocketRequest{
+		Op:       "sub",
+		Sequence: 1000,
+		Topics:   topics,
+	}
+	if err := s.wsClient.WriteJSON(wr); err != nil {
+		log.Error(err)
+	}
+
+}
+
+// Pong sends the string "pong" to the server.
+func (s *LoopringScraper) Pong(messageType int) error {
+	err := s.wsClient.WriteMessage(messageType, []byte("pong"))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *LoopringScraper) reconnectToWS() {
+
+	log.Info("Reconnecting ws")
+	key, err := getAPIKey()
+	if err != nil {
+		log.Fatal("fetching api key: ", err)
+	}
+
+	s.wsURL = _LoopringSocketurl + "?wsApiKey=" + key
+
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial(s.wsURL, nil)
 
 	if err != nil {
-		s.error = err
+		println(err.Error())
 	}
-	s.closed = true
+	s.wsClient = SwConn
+}
 
-	close(s.shutdownDone)
+func getAPIKey() (string, error) {
+	resp, err := utils.GetRequest("https://api3.loopring.io/v3/ws/key")
+	if err != nil {
+		return "", err
+	}
+	var lkResponse LoopringKey
+	err = json.Unmarshal(resp, &lkResponse)
+	if err != nil {
+		return "", err
+	}
+	return lkResponse.Key, nil
+}
+
+func (s *LoopringScraper) NormalizePair(pair dia.Pair) (dia.Pair, error) {
+	return dia.Pair{}, nil
 }
 
 // Close closes any existing API connections, as well as channels of
@@ -270,11 +297,9 @@ func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
-
 	if s.error != nil {
 		return nil, s.error
 	}
-
 	if s.closed {
 		return nil, errors.New("LoopringScraper: Call ScrapePair on closed scraper")
 	}
@@ -283,25 +308,13 @@ func (s *LoopringScraper) ScrapePair(pair dia.Pair) (PairScraper, error) {
 		parent: s,
 		pair:   pair,
 	}
-
 	s.pairScrapers[pair.ForeignName] = ps
-
-	lptopic := LoopringTopic{Market: pair.ForeignName, Topic: "ticker", Count: 20, Snapshot: true}
-
-	var topics []LoopringTopic
-	topics = append(topics, lptopic)
-	wr := &WebSocketRequest{Op: "sub", Sequence: 1000, Topics: topics}
-
-	if err := s.wsClient.WriteJSON(wr); err != nil {
-		log.Error(err)
-	}
-
 	return ps, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *LoopringScraper) FetchAvailablePairs() (pairs []dia.Pair, err error) {
-	data, err := utils.GetRequest("https://api.loopring.io/api/v2/exchange/markets")
+	data, err := utils.GetRequest("https://api3.loopring.io/api/v3/exchange/markets")
 
 	if err != nil {
 		return

@@ -205,14 +205,14 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTMX",
-            "ForeignName": "BTMX/BTC",
+            "Symbol": "ASD",
+            "ForeignName": "ASD/BTC",
             "Exchange": "Bitmax",
             "Ignore": false
         },
         {
-            "Symbol": "BTMX",
-            "ForeignName": "BTMX/USDT",
+            "Symbol": "ASD",
+            "ForeignName": "ASD/USDT",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -231,12 +231,6 @@
         {
             "Symbol": "BSV",
             "ForeignName": "BSV/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BTMX",
-            "ForeignName": "BTMX/ETH",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -619,12 +613,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTMX",
-            "ForeignName": "BTMX/PAX",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "CHX",
             "ForeignName": "CHX/USDT",
             "Exchange": "Bitmax",
@@ -757,14 +745,14 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTMXP",
-            "ForeignName": "BTMXP/USDT",
+            "Symbol": "ASDP",
+            "ForeignName": "ASDP/USDT",
             "Exchange": "Bitmax",
             "Ignore": false
         },
         {
-            "Symbol": "BTMXP",
-            "ForeignName": "BTMXP/BTC",
+            "Symbol": "ASDP",
+            "ForeignName": "ASDP/BTC",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -1339,12 +1327,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTC-PERP",
-            "ForeignName": "BTC-PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "XNS",
             "ForeignName": "XNS/USDT",
             "Exchange": "Bitmax",
@@ -1687,12 +1669,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "EASY",
-            "ForeignName": "EASY/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "CNTR",
             "ForeignName": "CNTR/USDT",
             "Exchange": "Bitmax",
@@ -1761,6 +1737,372 @@
         {
             "Symbol": "USDX",
             "ForeignName": "USDX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PLOT",
+            "ForeignName": "PLOT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WOO",
+            "ForeignName": "WOO/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ORO",
+            "ForeignName": "ORO/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCHA",
+            "ForeignName": "BCHA/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TVK",
+            "ForeignName": "TVK/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YLD",
+            "ForeignName": "YLD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FWT",
+            "ForeignName": "FWT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KEX",
+            "ForeignName": "KEX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FIDA",
+            "ForeignName": "FIDA/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FRONT",
+            "ForeignName": "FRONT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNN",
+            "ForeignName": "UNN/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CUDOS",
+            "ForeignName": "CUDOS/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ROUTE",
+            "ForeignName": "ROUTE/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NGM",
+            "ForeignName": "NGM/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEE",
+            "ForeignName": "ZEE/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MAPS",
+            "ForeignName": "MAPS/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NORD",
+            "ForeignName": "NORD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XDAI",
+            "ForeignName": "XDAI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CWS",
+            "ForeignName": "CWS/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARTH",
+            "ForeignName": "ARTH/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MAHA",
+            "ForeignName": "MAHA/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUSD",
+            "ForeignName": "LUSD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OMI",
+            "ForeignName": "OMI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CNFI",
+            "ForeignName": "CNFI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMB",
+            "ForeignName": "UMB/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OXY",
+            "ForeignName": "OXY/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GTH",
+            "ForeignName": "GTH/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAFI",
+            "ForeignName": "DAFI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FIRE",
+            "ForeignName": "FIRE/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TARA",
+            "ForeignName": "TARA/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEZ",
+            "ForeignName": "HEZ/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XPRT",
+            "ForeignName": "XPRT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XEND",
+            "ForeignName": "XEND/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ROOM",
+            "ForeignName": "ROOM/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZIG",
+            "ForeignName": "ZIG/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JULD",
+            "ForeignName": "JULD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ODDZ",
+            "ForeignName": "ODDZ/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BYN",
+            "ForeignName": "BYN/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRWNY",
+            "ForeignName": "CRWNY/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MARSH",
+            "ForeignName": "MARSH/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SMTY",
+            "ForeignName": "SMTY/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SHO",
+            "ForeignName": "SHO/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DFD",
+            "ForeignName": "DFD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EZ",
+            "ForeignName": "EZ/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EZ",
+            "ForeignName": "EZ/BTC",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NIOX",
+            "ForeignName": "NIOX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CSPR",
+            "ForeignName": "CSPR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SHOPX",
+            "ForeignName": "SHOPX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LKR",
+            "ForeignName": "LKR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GDT",
+            "ForeignName": "GDT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HTR",
+            "ForeignName": "HTR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FREL",
+            "ForeignName": "FREL/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PHX",
+            "ForeignName": "PHX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EXRD",
+            "ForeignName": "EXRD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HOPR",
+            "ForeignName": "HOPR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XCAD",
+            "ForeignName": "XCAD/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DVPN",
+            "ForeignName": "DVPN/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CLOUT",
+            "ForeignName": "CLOUT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HAPI",
+            "ForeignName": "HAPI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CAPS",
+            "ForeignName": "CAPS/USDT",
             "Exchange": "Bitmax",
             "Ignore": false
         }

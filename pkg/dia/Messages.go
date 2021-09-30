@@ -1,7 +1,9 @@
 package dia
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"math/big"
 	"strings"
 	"time"
@@ -17,6 +19,7 @@ const (
 	PROOF_OF_WORK     VerificationMechanism = "pow"
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
+	FLOW                                    = "Flow"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 )
 
@@ -25,7 +28,7 @@ type VerificationMechanism string
 // NFTClass is the container for an nft class defined by
 // a contract (address) on a blockchain.
 type NFTClass struct {
-	Address      common.Address
+	Address      string
 	Symbol       string
 	Name         string
 	Blockchain   string
@@ -50,11 +53,30 @@ func (nc *NFTClass) UnmarshalBinary(data []byte) error {
 // the pair (address,tokenID).
 type NFT struct {
 	NFTClass       NFTClass
-	TokenID        uint64
+	TokenID        string
 	CreationTime   time.Time
-	CreatorAddress common.Address
+	CreatorAddress string
 	URI            string
-	Attributes     []byte
+	// @Attributes is a collection of attributes from on- and off-chain
+	// TO DO: Should we split up into two fields?
+	Attributes NFTAttributes
+}
+
+// NFTAttributes can be stored as jasonb in postgres:
+// https://www.alexedwards.net/blog/using-postgresql-jsonb
+type NFTAttributes map[string]interface{}
+
+func (a NFTAttributes) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+func (a *NFTAttributes) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &a)
 }
 
 // MarshalBinary for DefiProtocolState
@@ -71,12 +93,18 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT         NFT
-	BlockNumber *big.Int
-	PriceUSD    float64
-	FromAddress common.Address
-	ToAddress   common.Address
-	Exchange    string
+	NFT              NFT
+	Price            *big.Int
+	PriceUSD         float64
+	FromAddress      string
+	ToAddress        string
+	CurrencySymbol   string
+	CurrencyAddress  string
+	CurrencyDecimals int32
+	BlockNumber      uint64
+	Timestamp        time.Time
+	TxHash           string
+	Exchange         string
 }
 
 // MarshalBinary for DefiProtocolState
@@ -90,6 +118,98 @@ func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+type NFTBid struct {
+	NFT         NFT
+	Value       *big.Int
+	FromAddress string
+
+	CurrencySymbol   string
+	CurrencyAddress  string
+	CurrencyDecimals int32
+
+	BlockNumber   uint64
+	BlockPosition uint64
+	Timestamp     time.Time
+	TxHash        string
+	Exchange      string
+}
+
+// MarshalBinary for DefiProtocolState
+func (nb *NFTBid) MarshalBinary() ([]byte, error) {
+	return json.Marshal(nb)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (nb *NFTBid) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &nb); err != nil {
+		return err
+	}
+	return nil
+}
+
+type NFTOffer struct {
+	NFT NFT
+	// Start and EndValue are for auction types. Otherwise, use StartValue
+	// and leave EndValue blank.
+	StartValue *big.Int
+	EndValue   *big.Int
+	// Duration of the offer/auction measured in seconds
+	Duration    time.Duration
+	FromAddress string
+	// Type of offer can be auction, simple offer,...
+	AuctionType string
+
+	CurrencySymbol   string
+	CurrencyAddress  string
+	CurrencyDecimals int32
+
+	BlockNumber   uint64
+	BlockPosition uint64
+	Timestamp     time.Time
+	TxHash        string
+	Exchange      string
+}
+
+// MarshalBinary for DefiProtocolState
+func (no *NFTOffer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(no)
+}
+
+// UnmarshalBinary for DefiProtocolState
+func (no *NFTOffer) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &no); err != nil {
+		return err
+	}
+	return nil
+}
+
+// BlockData stores information on a specific block in a given blockchain.
+type BlockData struct {
+	// Name of the blockchain, as found for instance in dia.ETHEREUM
+	BlockchainName string
+	// In order to keep it general, BlockNumber is a string
+	BlockNumber int64
+	Data        map[string]interface{}
+}
+
+type EthereumBlockData struct {
+	GasLimit    uint64             `json:"gas_limit"`
+	GasUsed     uint64             `json:"gas_used"`
+	Difficulty  *big.Int           `json:"difficulty"`
+	Time        uint64             `json:"time"`
+	Size        common.StorageSize `json:"size"`
+	Number      uint64             `json:"number"`
+	MixDigest   common.Hash        `json:"mix_digest"`
+	Nonce       uint64             `json:"nonce"`
+	Coinbase    common.Address     `json:"coinbase"`
+	Root        common.Hash        `json:"root"`
+	ParentHash  common.Hash        `json:"parent_hash"`
+	TxHash      common.Hash        `json:"tx_hash"`
+	ReceiptHash common.Hash        `json:"receipt_hash"`
+	UncleHash   common.Hash        `json:"uncle_hash"`
+	Extra       []byte             `json:"extra"`
 }
 
 type Exchange struct {

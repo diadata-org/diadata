@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -14,6 +13,7 @@ import (
 	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -29,8 +29,14 @@ const (
 	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
-	restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	wsDialBSC = "wss://bsc-ws-node.nariox.org:443"
+	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	restDialBSC = "https://bsc-dataseed.binance.org/"
+	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
+	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
+
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
 )
 
 type UniswapToken struct {
@@ -107,7 +113,6 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 			log.Fatal(err)
 		}
 
-		break
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(wsDialBSC)
@@ -115,6 +120,18 @@ func NewUniswapScraper(exchange dia.Exchange) *UniswapScraper {
 			log.Fatal(err)
 		}
 		restClient, err = ethclient.Dial(restDialBSC)
+		if err != nil {
+			log.Fatal(err)
+		}
+		exchangeFactoryContractAddress = exchange.Contract.String()
+
+	case dia.DfynNetwork:
+		log.Infoln("Init ws and rest client for Polygon chain")
+		wsClient, err = ethclient.Dial(wsDialPolygon)
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(restDialPolygon)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -142,7 +159,7 @@ func (s *UniswapScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
@@ -162,14 +179,31 @@ func (s *UniswapScraper) mainLoop() {
 		s.error = errors.New("Uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
-	for i := 0; i < numPairs; i++ {
-		if s.exchangeName == "PanCakeSwap" {
-			time.Sleep(200 * time.Millisecond)
-		}
-
-		pair, err := s.GetPairByID(int64(i))
-		if err != nil {
-			log.Error("error fetching pair: ", err)
+	for i := -1; i < numPairs; i++ {
+		var pair UniswapPair
+		var err error
+		if i == -1 && s.exchangeName == "PanCakeSwap" {
+			token0 := UniswapToken{
+				Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
+				Symbol:   "WOW",
+				Decimals: uint8(18),
+			}
+			token1 := UniswapToken{
+				Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
+				Symbol:   "BUSD",
+				Decimals: uint8(18),
+			}
+			pair = UniswapPair{
+				Token0:      token0,
+				Token1:      token1,
+				ForeignName: "WOW-BUSD",
+				Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
+			}
+		} else {
+			pair, err = s.GetPairByID(int64(i))
+			if err != nil {
+				log.Error("error fetching pair: ", err)
+			}
 		}
 		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
 			log.Info("skip pair: ", pair.ForeignName)
@@ -229,6 +263,9 @@ func (s *UniswapScraper) mainLoop() {
 							log.Info("Got trade: ", t)
 							ps.parent.chanTrades <- t
 						}
+						if price == 0 {
+							log.Info("Got zero trade: ", t)
+						}
 					}
 				}
 			}()
@@ -265,8 +302,8 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	var reverseTokens []string
 
 	// Load file and read data
-	fileName := fmt.Sprintf("../config/uniswap/%s.json", filename)
-	jsonFile, err := os.Open(fileName)
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
 	if err != nil {
 		return &[]string{}, err
 	}
@@ -285,7 +322,10 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 		AllAssets []lockedAsset `json:"Tokens"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return &[]string{}, err
+	}
 
 	// Extract addresses
 	for _, token := range allAssets.AllAssets {

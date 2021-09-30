@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	openseaAPIurl = "https://api.opensea.io/api/v1/"
+	openseaAPIurl  = "https://api.opensea.io/api/v1/"
+	openseaAPIWait = 250
 )
 
 type openseaAPIResponse struct {
@@ -32,7 +33,6 @@ type AssetContract struct {
 type OpenseaNFTSource struct {
 	APIurl          string
 	nftClassChannel chan dia.NFTClass
-	nftChannel      chan dia.NFT
 	closed          chan bool
 	blockchain      string
 }
@@ -66,10 +66,25 @@ func (ons *OpenseaNFTSource) Close() chan bool {
 
 // retrieve nft classes from opensea api. Ordered by number of sales in descending order.
 func fetchClasses(offset, limit int, order_direction string) (acs []AssetContract, err error) {
-	resp, err := utils.GetRequest(openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count")
+	openseaURL := openseaAPIurl + "assets?order_direction=" + order_direction + "&offset=" + strconv.Itoa(offset) + "&limit=" + strconv.Itoa(limit) + "&order_by=sale_count"
+	resp, statusCode, err := utils.OpenseaGetRequest(openseaURL)
 	if err != nil {
 		return
 	}
+
+	count := 0
+	for statusCode == 429 && count < 40 {
+		// Retry get request
+		log.Info("sleep")
+		time.Sleep(time.Millisecond * time.Duration(openseaAPIWait*count))
+		resp, statusCode, err = utils.OpenseaGetRequest(openseaURL)
+		log.Info("statusCode, err in retry: ", statusCode, err)
+		if err != nil {
+			return
+		}
+		count++
+	}
+
 	var openseaResponse openseaAPIResponse
 	err = json.Unmarshal(resp, &openseaResponse)
 	if err != nil {
@@ -88,20 +103,15 @@ func fetchClasses(offset, limit int, order_direction string) (acs []AssetContrac
 
 func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 	// totalPages := 50 * 200 - this is the limit on offset parameter in the api endpoint
-	checkmap := make(map[common.Address]struct{})
+	checkmap := make(map[string]struct{})
 	for k := 0; k < 200; k++ {
 		assetContracts, err := fetchClasses(k*50, 50, "desc")
 		if err != nil {
 			log.Error(err)
 		}
-		assetContractsAsc, err := fetchClasses(k*50, 50, "asc")
-		assetContracts = append(assetContracts, assetContractsAsc...)
-		if err != nil {
-			log.Error(err)
-		}
 		for _, contract := range assetContracts {
 			nftClass := dia.NFTClass{
-				Address:      common.HexToAddress(contract.Address),
+				Address:      common.HexToAddress(contract.Address).Hex(),
 				Symbol:       contract.Symbol,
 				Name:         contract.Name,
 				Blockchain:   dia.ETHEREUM,
@@ -112,7 +122,6 @@ func (ons *OpenseaNFTSource) fetchAllNFTClasses() {
 				checkmap[nftClass.Address] = struct{}{}
 			}
 		}
-		time.Sleep(2 * time.Second)
 	}
 
 	// Gracefully close channel after iterating through all classes

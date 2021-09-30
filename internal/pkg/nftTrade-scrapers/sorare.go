@@ -39,7 +39,7 @@ func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
 		error:         nil,
 		ethConnection: connection,
 		datastore:     rdb,
-		chanTrade:     make(chan *dia.NFTTrade),
+		chanTrade:     make(chan dia.NFTTrade),
 	}
 	s := &SorareScraper{
 		contractAddress: common.HexToAddress("0x629A673A8242c2AC4B7B8C5D8735fbeac21A6205"),
@@ -72,7 +72,7 @@ func (scraper *SorareScraper) UpdateTrades() error {
 		return err
 	}
 	for _, trade := range trades {
-		scraper.GetTradeChannel() <- &trade
+		scraper.GetTradeChannel() <- trade
 	}
 	return nil
 }
@@ -97,7 +97,7 @@ func (scraper *SorareScraper) GetTotalSupply() (*big.Int, error) {
 }
 
 // GetDataChannel returns the scrapers data channel.
-func (scraper *SorareScraper) GetTradeChannel() chan *dia.NFTTrade {
+func (scraper *SorareScraper) GetTradeChannel() chan dia.NFTTrade {
 	return scraper.tradescraper.chanTrade
 }
 

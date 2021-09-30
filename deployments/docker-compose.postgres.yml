@@ -16,6 +16,9 @@ services:
     volumes:
       - /home/srv/config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
       - /home/srv/postgres:/var/lib/postgresql/data
+    logging:
+      options:
+        max-size: "50m"
 
 networks:
   postgres-network:

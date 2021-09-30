@@ -101,6 +101,7 @@ func (s *HitBTCScraper) mainLoop() {
 									ForeignTradeID: strconv.FormatInt(int64(mdElement["id"].(float64)), 16),
 									Source:         s.exchangeName,
 								}
+								log.Info("got trade: ", t)
 								ps.parent.chanTrades <- t
 							}
 						} else {

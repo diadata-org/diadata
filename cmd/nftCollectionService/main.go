@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgconn"
 
 	nftsource "github.com/diadata-org/diadata/internal/pkg/nftService"
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
@@ -56,21 +57,22 @@ func main() {
 	}
 
 	// Initial run.
-	runNFTSource(relDB, *nftSource, *secret)
+	err = runNFTSource(relDB, *nftSource, *secret)
+	if err != nil {
+		log.Errorln("initial run: ", err)
+	}
 
 	// load gitcoin files for categorization of NFT classes.
 	gitcoinfiles := iterateDirectory("nftClassesGitcoin")
 	for _, file := range gitcoinfiles {
+		log.Info("write file: ", file)
 		path := "nftClassesGitcoin/" + file
 		gitcoinCategories, err := readFile(path)
 		if err != nil {
 			log.Errorln("Error while reading  file", path, err)
 			continue
 		}
-		err = setGitcoinCategories(gitcoinCategories, relDB)
-		if err != nil {
-			log.Errorf("error writing gitcoin submissions for file %s: %v", file, err)
-		}
+		setGitcoinCategories(gitcoinCategories, relDB)
 	}
 
 	// Afterwards, run every @fetchPeriodMinutes.
@@ -156,22 +158,32 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 }
 
 // setGitcoinCategories writes all mappings from submissions into exchangesymbol table.
-func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) error {
+func setGitcoinCategories(submissions GitcoinSubmission, relDB *models.RelDB) {
 	for _, nftClass := range submissions.AllItems {
 		// Get ID of underlying NFTClass.
-		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address), nftClass.Blockchain)
+		nftClassID, err := relDB.GetNFTClassID(common.HexToAddress(nftClass.Address).Hex(), nftClass.Blockchain)
 		if err != nil {
-			log.Error("error fetching nftclass: ", nftClass)
+			log.Error("class not in db yet. set: ", nftClass)
+			err = relDB.SetNFTClass(dia.NFTClass{
+				Address:      common.HexToAddress(nftClass.Address).Hex(),
+				Symbol:       nftClass.Symbol,
+				Name:         nftClass.Name,
+				Blockchain:   nftClass.Blockchain,
+				ContractType: nftClass.ContractType,
+				Category:     nftClass.Category,
+			})
+			if err != nil {
+				log.Error("setting nft class: ", err)
+			}
 			continue
 		}
 
 		// Write into nftclass table and update Category.
 		success, err := relDB.UpdateNFTClassCategory(nftClassID, nftClass.Category)
 		if err != nil || !success {
-			return err
+			log.Error(err)
 		}
 	}
-	return nil
 }
 
 func iterateDirectory(foldername string) (files []string) {

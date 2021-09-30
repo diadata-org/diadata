@@ -264,6 +264,9 @@ func main() {
 		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
 		dia.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
 		dia.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
+		dia.GET("/NFT/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFT))
+		dia.GET("/NFTTrades/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTTrades))
+		dia.GET("/NFTPrice30Days/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTPrice30Days))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))

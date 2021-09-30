@@ -1,5 +1,21 @@
 {
-  "lockedWallets": [
+  "lockedWallets": [  
+    {
+      "asset": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+      "wallets": [
+        "0xde3e5a990bce7fc60a6f017e7c4a95fc4939299e",
+        "0xe00abc6686ee8fa5c45161a5fa75fb99a1026b96",
+        "0x34bc437c037c6a266c761ae117fd99dd9619e03c",
+        "0x44aa9c5a034c1499ec27906e2d427b704b567ffe",
+        "0x62ecea11fe0e1a1b93670265c07003e76080a60e",
+        "0xb9ea5a22fd7de4aebc97d05ef9276a3f635d12c3",
+        "0x5c13370a43fe7150104195c86a4bc8d6148f67dd",
+        "0xc577ef224f94f6e2c2491bb4930e5e67b93ff10c",
+        "0x69eb8b0353a5dfa8414966b0207769aefbf0627d",
+        "0x6d298c837998be7180fce5b93199b382eaf81db1",
+        "0x88f9961ab0573a3830ea2c53d9120b71057252f4"        
+      ]
+    },
     {
       "asset": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
       "wallets": [
