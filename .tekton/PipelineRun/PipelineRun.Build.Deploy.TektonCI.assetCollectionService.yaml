@@ -11,14 +11,14 @@ spec:
       resourceRef:
         name: git-diadata-tekton-ci
   params:
-    - name: pathToContext
+    - name: path-to-context
       value: "/workspace/git-source/"
-    - name: pathToYamlFile
+    - name: path-to-yaml-file
       value: "deployments/k8s-yaml/filtersblockservice.yaml"
-    - name: "imageUrl"
+    - name: "image-url"
       value: "us.icr.io/dia-registry/scraper/filtersblockservice"
-    - name: "imageTag"
+    - name: "image-tag"
       value: "latest"
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       value: "build/Dockerfile-filtersBlockService"
   serviceAccountName: ibm-cr

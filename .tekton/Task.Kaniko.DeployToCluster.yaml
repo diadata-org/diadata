@@ -9,16 +9,16 @@ spec:
       - name: git-source
         type: git
     params:
-      - name: pathToContext
+      - name: path-to-context
         description: The path to the build context, used by Kaniko - within the workspace
         default: .
-      - name: pathToYamlFile
+      - name: path-to-yaml-file
         description: The path to the yaml file to deploy within the git source
         default: deploy.yaml
-      - name: imageUrl
+      - name: image-url
         description: Url of image repository
         default: url
-      - name: imageTag
+      - name: image-tag
         description: Tag of the images to be used.
         default: "latest"
   steps:
@@ -28,12 +28,12 @@ spec:
       args:
         - "-i"
         - "-e"
-        - "s;IMAGE;$(inputs.params.imageUrl):$(inputs.params.imageTag);g"
-        - "$(inputs.resources.git-source.path)/$(inputs.params.pathToContext)/$(inputs.params.pathToYamlFile)"
+        - "s;IMAGE;$(inputs.params.image-url):$(inputs.params.image-tag);g"
+        - "$(inputs.resources.git-source.path)/$(inputs.params.path-to-context)/$(inputs.params.path-to-yaml-file)"
     - name: deploy-app
       image: lachlanevenson/k8s-kubectl
       command: ["kubectl"]
       args:
         - "apply"
         - "-f"
-        - "$(inputs.resources.git-source.path)/$(inputs.params.pathToContext)/$(inputs.params.pathToYamlFile)"
+        - "$(inputs.resources.git-source.path)/$(inputs.params.path-to-context)/$(inputs.params.path-to-yaml-file)"

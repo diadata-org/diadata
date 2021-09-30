@@ -8,18 +8,18 @@ spec:
     - name: git-source
       type: git
   params:
-    - name: pathToContext
+    - name: path-to-context
       description: The path to the build context, used by Kaniko - within the workspace
       default: .
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       description: The path to the dockerfile
-    - name: pathToYamlFile
+    - name: path-to-yaml-file
       description: The path to the yaml file to deploy within the git source
       default: config.yaml
-    - name: imageUrl
+    - name: image-url
       description: Url of image repository
       default: deploy_target
-    - name: imageTag
+    - name: image-tag
       description: Tag to apply to the built image
       default: latest
   tasks:
@@ -43,14 +43,14 @@ spec:
       taskRef:
         name: kaniko-build-docker
       params:
-        - name: pathToContext
-          value: "$(params.pathToContext)"
-        - name: pathToDockerfile
-          value: "$(params.pathToDockerfile)"
-        - name: imageUrl
-          value: "$(params.imageUrl)"
-        - name: imageTag
-          value: "$(params.imageTag)"
+        - name: path-to-context
+          value: "$(params.path-to-context)"
+        - name: path-to-dockerfile
+          value: "$(params.path-to-dockerfile)"
+        - name: image-url
+          value: "$(params.image-url)"
+        - name: image-tag
+          value: "$(params.image-tag)"
       resources:
         inputs:
           - name: git-source
@@ -63,14 +63,14 @@ spec:
       runAfter:
         - kaniko-build-docker
       params:
-        - name: pathToContext
-          value: "$(params.pathToContext)"
-        - name: pathToYamlFile
-          value: "$(params.pathToYamlFile)"
-        - name: imageUrl
-          value: "$(params.imageUrl)"
-        - name: imageTag
-          value: "$(params.imageTag)"
+        - name: path-to-context
+          value: "$(params.path-to-context)"
+        - name: path-to-yaml-file
+          value: "$(params.path-to-yaml-file)"
+        - name: image-url
+          value: "$(params.image-url)"
+        - name: image-tag
+          value: "$(params.image-tag)"
       resources:
         inputs:
           - name: git-source
