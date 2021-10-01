@@ -14,7 +14,7 @@ func TestReserveReader(t *testing.T) {
 	ctx, close := context.WithCancel(context.Background())
 	defer close()
 
-	ethC, err := ethclient.DialContext(ctx, "wss://mainnet.infura.io/ws/v3/abc8f586485441c9b18cd4989f3951f8")
+	ethC, err := ethclient.DialContext(ctx, "ETH_MAINNET_WEB3_ADDR")
 	assert.Nil(t, err)
 
 	logger := logrus.StandardLogger()
