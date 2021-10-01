@@ -4,8 +4,8 @@ import (
 	"context"
 	"math"
 	"math/big"
+	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/aave/bind/aave"
 	contract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/aave/bind/aave"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -17,7 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type reserveReader struct {
+type ReserveReader struct {
 	ethC *ethclient.Client
 
 	erc20MD ERC20MetadataProvider
@@ -32,10 +32,10 @@ type reserveReader struct {
 	chMsg chan *dia.DefiProtocolState
 }
 
-func newReserveReader(messageCh chan *dia.DefiProtocolState, deps *scraperDeps) (*reserveReader, error) {
+func NewReserveReader(messageCh chan *dia.DefiProtocolState, deps *ScraperDeps) (*ReserveReader, error) {
 	var err error
 
-	s := &reserveReader{
+	s := &ReserveReader{
 		ethC:             deps.EthClient,
 		aaveContractAddr: common.HexToAddress(deps.Protocol.Address),
 		log:              deps.Logger.WithField("comp", "aave-reserve-reader"),
@@ -51,8 +51,13 @@ func newReserveReader(messageCh chan *dia.DefiProtocolState, deps *scraperDeps) 
 	return s, nil
 }
 
-func (s *reserveReader) read(ctx context.Context) error {
-	callOpts := &bind.CallOpts{Context: ctx}
+func (s *ReserveReader) Read(ctx context.Context) error {
+	hdrs, err := s.ethC.HeaderByNumber(ctx, nil)
+	if err != nil {
+		return errors.Wrapf(err, "unable to read block headers: %s", err.Error())
+	}
+
+	callOpts := &bind.CallOpts{Context: ctx, BlockNumber: hdrs.Number}
 
 	reserveList, err := s.aaveContract.GetReservesList(callOpts)
 	if err != nil {
@@ -77,7 +82,7 @@ func (s *reserveReader) read(ctx context.Context) error {
 			return errors.Wrapf(err, "unable to get ERC20 metadata of the address %s: %s", reserve.String(), err.Error())
 		}
 
-		reserveToken, err := aave.NewIERC20Caller(reserveData.ATokenAddress, s.ethC)
+		reserveToken, err := contract.NewIERC20Caller(reserveData.ATokenAddress, s.ethC)
 		if err != nil {
 			return errors.Wrapf(err, "unable to create contract binding for the aToken %s: %s", erc20md.Symbol(), err.Error())
 		}
@@ -96,7 +101,10 @@ func (s *reserveReader) read(ctx context.Context) error {
 		totalReserveAmountInUSD = new(big.Float).Add(
 			totalReserveAmountInUSD,
 			new(big.Float).Mul(
-				new(big.Float).Quo(new(big.Float).SetInt(reserveTotalSupply), big.NewFloat(math.Pow10(erc20md.Decimals()))),
+				new(big.Float).Quo(
+					new(big.Float).SetInt(reserveTotalSupply),
+					big.NewFloat(math.Pow10(erc20md.Decimals())),
+				),
 				new(big.Float).SetFloat64(reserveTokenPriceInUSD),
 			),
 		)
@@ -110,10 +118,21 @@ func (s *reserveReader) read(ctx context.Context) error {
 	totalLockedInUSD, _ := totalReserveAmountInUSD.Float64()
 	totalLockedInETH, _ := totalReserveAmountInETH.Float64()
 
-	s.log.WithFields(logrus.Fields{
-		"total_locked_usd": decimal.NewFromFloat(totalLockedInUSD).StringFixed(2),
-		"total_locked_eth": decimal.NewFromFloat(totalLockedInETH).StringFixed(2),
-	}).Info("total locked reserves are updated")
+	select {
+	case <-ctx.Done():
+		return errors.WithStack(ctx.Err())
+
+	case s.chMsg <- &dia.DefiProtocolState{
+		TotalUSD:  totalLockedInUSD,
+		TotalETH:  totalLockedInETH,
+		Timestamp: time.Unix(int64(hdrs.Time), 0),
+		Protocol:  s.protocol,
+	}:
+		s.log.WithFields(logrus.Fields{
+			"total_locked_usd": decimal.NewFromFloat(totalLockedInUSD).StringFixed(2),
+			"total_locked_eth": decimal.NewFromFloat(totalLockedInETH).StringFixed(2),
+		}).Info("total locked reserves are updated")
+	}
 
 	return nil
 }

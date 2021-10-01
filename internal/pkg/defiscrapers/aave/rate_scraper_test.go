@@ -47,7 +47,7 @@ func TestRateScraper(t *testing.T) {
 
 	cursorStore := &mockCursorStore{v: ethlogscanner.MakeCursor(11420207, 0, 0)} // scan from block 11420207
 
-	s, err := newRateScraper(chMsg, cursorStore, &scraperDeps{
+	s, err := NewRateScraper(chMsg, cursorStore, &ScraperDeps{
 		EthClient: ethC,
 		Protocol:  protocol,
 		ERC20MD:   NewERC20MetadataCache(ethC),
@@ -68,6 +68,6 @@ func TestRateScraper(t *testing.T) {
 		}
 	}()
 
-	err = s.scrapRates(ctx, 15*time.Second)
+	err = s.ScrapRates(ctx, 15*time.Second)
 	assert.Nil(t, err)
 }

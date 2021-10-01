@@ -14,7 +14,7 @@ func TestReserveReader(t *testing.T) {
 	ctx, close := context.WithCancel(context.Background())
 	defer close()
 
-	ethC, err := ethclient.DialContext(ctx, "ETH_MAINNET_WEB3_ADDR")
+	ethC, err := ethclient.DialContext(ctx, "wss://mainnet.infura.io/ws/v3/abc8f586485441c9b18cd4989f3951f8")
 	assert.Nil(t, err)
 
 	logger := logrus.StandardLogger()
@@ -22,7 +22,7 @@ func TestReserveReader(t *testing.T) {
 
 	chMsg := make(chan *dia.DefiProtocolState)
 
-	r, err := newReserveReader(chMsg, &scraperDeps{
+	r, err := NewReserveReader(chMsg, &ScraperDeps{
 		EthClient: ethC,
 		Protocol:  protocol,
 		ERC20MD:   NewERC20MetadataCache(ethC),
@@ -31,7 +31,7 @@ func TestReserveReader(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	err = r.read(ctx)
+	err = r.Read(ctx)
 
 	assert.Nil(t, err)
 }

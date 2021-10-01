@@ -1,11 +1,13 @@
 package defiscrapers
 
 import (
+	"context"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 type DeFIHelper interface {
@@ -14,6 +16,9 @@ type DeFIHelper interface {
 }
 
 type DefiScraper struct {
+	ctx context.Context
+	log *logrus.Entry
+
 	// signaling channels
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -25,6 +30,7 @@ type DefiScraper struct {
 	closed        bool
 	tickerRate    *time.Ticker
 	tickerState   *time.Ticker
+	relDB         *models.RelDB
 	datastore     models.Datastore
 	chanDefiRate  chan *dia.DefiRate
 	chanDefiState chan *dia.DefiProtocolState

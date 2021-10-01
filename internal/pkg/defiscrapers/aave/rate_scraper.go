@@ -20,7 +20,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type rateScraper struct {
+type RateScraper struct {
 	ethC *ethclient.Client
 
 	cursorStore CursorStore
@@ -38,11 +38,11 @@ type rateScraper struct {
 	chMsg chan *dia.DefiRate
 }
 
-func newRateScraper(messageCh chan *dia.DefiRate, cursorStore CursorStore, deps *scraperDeps) (*rateScraper, error) {
+func NewRateScraper(messageCh chan *dia.DefiRate, cursorStore CursorStore, deps *ScraperDeps) (*RateScraper, error) {
 	var err error
 	var ok bool
 
-	s := &rateScraper{
+	s := &RateScraper{
 		ethC:             deps.EthClient,
 		aaveContractAddr: common.HexToAddress(deps.Protocol.Address),
 		log:              deps.Logger.WithField("comp", "aave-rate-scraper"),
@@ -66,7 +66,7 @@ func newRateScraper(messageCh chan *dia.DefiRate, cursorStore CursorStore, deps 
 	return s, nil
 }
 
-func (s *rateScraper) scrapRates(ctx context.Context, duration time.Duration) (err error) {
+func (s *RateScraper) ScrapRates(ctx context.Context, duration time.Duration) (err error) {
 	var scanner ethlogscanner.Scanner
 
 	cursor, err := s.cursorStore.Load(ctx)
@@ -212,7 +212,7 @@ func (s *rateScraper) scrapRates(ctx context.Context, duration time.Duration) (e
 	}
 }
 
-func (s *rateScraper) handleLog(ctx context.Context, log *contract.ILendingPoolReserveDataUpdated) error {
+func (s *RateScraper) handleLog(ctx context.Context, log *contract.ILendingPoolReserveDataUpdated) error {
 	liqRate, _ := new(big.Float).Quo(new(big.Float).SetInt(log.LiquidityRate), big.NewFloat(math.Pow10(25))).Float64()
 	stableBorrowRate, _ := new(big.Float).Quo(new(big.Float).SetInt(log.StableBorrowRate), big.NewFloat(math.Pow10(25))).Float64()
 

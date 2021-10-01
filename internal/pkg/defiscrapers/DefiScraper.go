@@ -1,12 +1,13 @@
 package defiscrapers
 
 import (
-	"errors"
+	"context"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -19,35 +20,63 @@ type nothing struct{}
 
 // SpawnDefiScraper returns a new DefiScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func SpawnDefiScraper(datastore models.Datastore, rateType string) *DefiScraper {
+func SpawnDefiScraper(ctx context.Context, log *logrus.Entry, relDB *models.RelDB, datastore models.Datastore, rateType string) *DefiScraper {
 	s := &DefiScraper{
+		ctx:           ctx,
+		log:           log,
 		shutdown:      make(chan nothing),
 		shutdownDone:  make(chan nothing),
 		error:         nil,
 		tickerRate:    time.NewTicker(refreshRateDelay),
 		tickerState:   time.NewTicker(refreshStateDelay),
 		datastore:     datastore,
+		relDB:         relDB,
 		chanDefiRate:  make(chan *dia.DefiRate),
 		chanDefiState: make(chan *dia.DefiProtocolState),
 	}
 
-	log.Info("Defi scraper is built and triggered")
-	go s.mainLoop(rateType)
+	s.log.Info("Defi scraper is built and triggered")
+
+	go s.mainLoop(ctx, rateType)
+
 	return s
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (s *DefiScraper) mainLoop(rateType string) {
+func (s *DefiScraper) mainLoop(ctx context.Context, rateType string) {
+	defer s.cleanup(nil)
+
+	if err := s.UpdateRates(rateType); err != nil {
+		s.log.Errorf("an error occurred while updating rates: %s", err)
+		return
+	}
+
+	if err := s.UpdateState(rateType); err != nil {
+		s.log.Errorf("an error occurred while updating state: %s", err)
+		return
+	}
+
 	for {
 		select {
+
 		case <-s.tickerRate.C:
-			s.UpdateRates(rateType)
+			if err := s.UpdateRates(rateType); err != nil {
+				s.log.Errorf("an error occurred while updating rates: %s", err)
+				return
+			}
+
 		case <-s.tickerState.C:
-			s.UpdateState(rateType)
+			if err := s.UpdateState(rateType); err != nil {
+				s.log.Errorf("an error occurred while updating state: %s", err)
+				return
+			}
+
+		case <-ctx.Done(): // context was closed
+			s.log.Println("DefiScraper closing")
+			return
 
 		case <-s.shutdown: // user requested shutdown
-			log.Println("DefiScraper shutting down")
-			s.cleanup(nil)
+			s.log.Println("DefiScraper shutting down")
 			return
 		}
 	}
@@ -113,6 +142,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 		}
 	case "AAVE":
 		{
+			var err error
 
 			protocol = dia.DefiProtocol{
 				Name:                 "AAVE",
@@ -120,7 +150,11 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				UnderlyingBlockchain: "Ethereum",
 				Token:                "",
 			}
-			helper = NewAAVE(s, protocol)
+
+			helper, err = NewAAVE(s, protocol)
+			if err != nil {
+				return errors.WithStack(err)
+			}
 		}
 	case "DDEX":
 		{
@@ -255,7 +289,12 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 		}
 	case "AAVE":
 		{
-			helper = NewAAVE(s, protocol)
+			var err error
+
+			helper, err = NewAAVE(s, protocol)
+			if err != nil {
+				return errors.WithStack(err)
+			}
 		}
 	case "RAY":
 		{

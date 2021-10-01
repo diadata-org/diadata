@@ -25,7 +25,7 @@ type ERC20MetadataProvider interface {
 	ERC20(ctx context.Context, assetAddr common.Address) (ERC20Metadata, error)
 }
 
-type scraperDeps struct {
+type ScraperDeps struct {
 	EthClient *ethclient.Client
 	Protocol  dia.DefiProtocol
 	ERC20MD   ERC20MetadataProvider
