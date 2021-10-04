@@ -15,11 +15,11 @@ Symbols
 
 {% api-method-description %}
 Get a list of all available symbols for cryptocurrencies.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/symbols  
   
 Get symbols restricted to an exchange using the query parameter. \(For the moment only for centralized exchanges\).  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/symbols?exchange=Kraken  
 {% endapi-method-description %}
 
@@ -53,7 +53,8 @@ Quotation
 
 {% api-method-description %}
 Get most recent information on the currency corresponding to symbol.  
-Example: https://api.diadata.org/v1/quotation/BTC
+_Example_:  
+https://api.diadata.org/v1/quotation/BTC
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -141,11 +142,11 @@ Farming Pool Data
 Get the most recent information on a specific farming pool, such as pool rate and pool balance. Available pools can be found in the FarmingPools endpoint  
 https://docs.diadata.org/documentation/api-1/api-endpoints\#farming-pools  
   
-Example:  
+_Example_:  
 https://api.diadata.org/v1/FarmingPoolData/YFI/USDT  
   
 Get information for a time range using the query parameters.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121  
   
 _Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. The value in the field \`Rate\` has the following meaning:  
@@ -258,7 +259,8 @@ Chart Points for all Exchanges
 
 {% api-method-description %}
 Get symbol details for all exchanges.  
-Example: https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS  
+_Example_:  
+https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS  
   
 _Remark:_ Careful! Successful responses can be rather large.
 {% endapi-method-description %}
@@ -311,7 +313,8 @@ Supply
 
 {% api-method-description %}
 Get the current circulating supply for the token corresponding to symbol.  
-Example: https://api.diadata.org/v1/supply/BTC
+_Example_:  
+https://api.diadata.org/v1/supply/BTC
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -344,11 +347,11 @@ Supplies
 
 {% api-method-description %}
 Get all recorded supply values for the token corresponding to symbol.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/supplies/BTC  
   
 Get supply values for a time range using the query parameters.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/supplies/BTC?starttime=1602232273&endtime=1602318673  
 {% endapi-method-description %}
 
@@ -431,8 +434,7 @@ Coins
 {% endapi-method-summary %}
 
 {% api-method-description %}
-Get a list of all available coins.  
-https://api.diadata.org/v1/coins
+Get a list of all available coins.
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -537,9 +539,10 @@ CVI Index
 
 {% api-method-description %}
 Get all values of the Crypto Volatility Index.  
-Example: https://api.diadata.org/v1/cviIndex  
+_Example_:  
+https://api.diadata.org/v1/cviIndex  
   
-Example with query parameters:  
+_Example_ with query parameters:  
 https://api.diadata.org/v1/cviIndex?starttime=1589829000&endtime=1589830000
 {% endapi-method-description %}
 
@@ -610,38 +613,6 @@ Successful retrieval of the index value for the GBI index
 {% endapi-method-spec %}
 {% endapi-method %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/index/:symbol" %}
-{% api-method-summary %}
-
-{% endapi-method-summary %}
-
-{% api-method-description %}
-
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Symbol of the index
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
 {% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset" %}
 {% api-method-summary %}
 Defi Interest Rate
@@ -651,7 +622,8 @@ Defi Interest Rate
 Get information about a Defi protocol's lending and borrowing rates.  
 Time parameter is optional. If omitted, the most recent rate is returned.  
   
-Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
+_Example_:  
+https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
   
 Get rates for a range of timestamps using optional query parameters.  
 https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
@@ -739,7 +711,7 @@ Guest Symbols
 
 {% api-method-description %}
 Get the list of available symbols along with their ITIN for guest quotations.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/foreignSymbols/Coingecko
 {% endapi-method-description %}
 
@@ -773,11 +745,11 @@ Guest Quotation
 
 {% api-method-description %}
 Get the latest quotation for a token from a guest source.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC  
   
 Use the query parameter time in order to get the latest quotation before the specified timestamp.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1601351679  
   
 {% endapi-method-description %}
@@ -817,6 +789,92 @@ Unix timestamp.
 
 ## Traditional Assets
 
+{% api-method method="get" host="https://api.diadata.org/v1/stockQuotation/:" path="source/:symbol/:time" %}
+{% api-method-summary %}
+Stock Quotation
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a stock quotation.  
+_Example_:  
+https://api.diadata.org/v1/stockQuotation/Finage/AAPL  
+  
+Get stock quotations for a time range using the query parameters.  
+_Example_:  
+https://api.diadata.org/v1/stockQuotation/Finage/AAPL?dateInit=1633343956&dateFinal=1633345556
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="source" type="string" required=true %}
+Data source of the quotation.
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="symbol" type="string" required=true %}
+Symbol of the stock, see stockSymbols endpoint below.  
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+
+{% api-method-query-parameters %}
+{% api-method-parameter name="dateInit" type="integer" required=false %}
+Initial timestamp for range queries.  
+Format: Unix timestamp.
+{% endapi-method-parameter %}
+
+{% api-method-parameter name="dateFinal" type="integer" required=false %}
+Final timestamp for range queries.  
+Format: Unix timestamp.
+{% endapi-method-parameter %}
+{% endapi-method-query-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of the latest stock quotation for Apple stock on Finage.
+{% endapi-method-response-example-description %}
+
+```
+{"Symbol":"AAPL","Name":"APPLE","PriceAsk":141.55,"PriceBid":141.52,"SizeAskLot":2,"SizeBidLot":10,"Source":"Finage","Time":"2021-10-04T11:47:42Z","ISIN":"US0378331005"}
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
+{% api-method method="get" host="https://api.diadata.org/v1/stockSymbols" path="" %}
+{% api-method-summary %}
+Stocks
+{% endapi-method-summary %}
+
+{% api-method-description %}
+Get a list of stocks available for quotation. The field source shows for which source the stock's quotations are available.
+{% endapi-method-description %}
+
+{% api-method-spec %}
+{% api-method-request %}
+{% api-method-path-parameters %}
+{% api-method-parameter name="" type="string" required=false %}
+
+{% endapi-method-parameter %}
+{% endapi-method-path-parameters %}
+{% endapi-method-request %}
+
+{% api-method-response %}
+{% api-method-response-example httpCode=200 %}
+{% api-method-response-example-description %}
+Successful retrieval of stocks available for quotation.
+{% endapi-method-response-example-description %}
+
+```
+[{"Stock":{"Symbol":"MSFT","Name":"MICROSOFT CORP","ISIN":"US5949181045"},"Source":"Finage"},{"Stock":{"Symbol":"AAPL","Name":"APPLE","ISIN":"US0378331005"},"Source":"Finage"}]
+```
+{% endapi-method-response-example %}
+{% endapi-method-response %}
+{% endapi-method-spec %}
+{% endapi-method %}
+
 {% api-method method="get" host="https://api.diadata.org" path="/v1/interestrates" %}
 {% api-method-summary %}
 Interest Rates
@@ -851,10 +909,12 @@ Interest Rate
 
 {% api-method-description %}
 Get value for a certain rate type.  
-Example: https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​  
+_Example_:  
+https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​  
   
 Get rate values for a range of timestamps using optional query parameters.  
-Example: https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
+_Example_:  
+https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
 {% endapi-method-description %}
 
 {% api-method-spec %}
@@ -902,11 +962,11 @@ Compounded Index
 {% api-method-description %}
 Get the value of an index compounded since its first publication date.  
   
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedRate/SOFR/360/2020-05-14  
   
 Get the compounded index for a range of dates using the query parameters.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedRate/SOFR/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
 For the methodology of compounded rates see:  
@@ -961,17 +1021,17 @@ Compounded Average
 
 {% api-method-description %}
 Get the average value of a given interest rate compounded over a period of time.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
   
 Get the compounded averages for a range of dates using the query parameters.  
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
 For the methodology see:  
 https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology  
   
-Remark: This Get method requires an API key. Please contact us for more information:  
+_Remark_: This Get method requires an API key. Please contact us for more information:  
 https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw\_6F2xAR607FKACsn7ew/viewform  
 {% endapi-method-description %}
 
@@ -1029,11 +1089,11 @@ Compounded Average using DIA Method
 Get the average value of an interest rate compounded over a period of time. Here, we use the DIA methodology for compounding the rate, i.e. interest is compounded for non-business days as well. For details see:  
 https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#dia-methodology  
   
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360/2020-05-14  
   
 Get the compounded average for a range of dates using the query parameters.   
-Example:  
+_Example_:  
 https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
   
 _Remark_: This Get method requires an API key. Please contact us for more information:  
