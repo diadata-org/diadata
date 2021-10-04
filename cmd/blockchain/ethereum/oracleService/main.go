@@ -5,13 +5,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	oracleService "github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"log"
 	"math/big"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	oracleService "github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"

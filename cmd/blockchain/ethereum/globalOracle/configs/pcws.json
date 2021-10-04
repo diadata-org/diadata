@@ -1,0 +1,9 @@
+{
+    "deployedContract":"0xcbd9e09e049b79e90533b8ace5b86fe5ee946116",
+    "secretsFile":"/Users/nicky/Documents/workspace/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/globalOracle/keyfile.txt",
+    "blockchainNode":"HTTP://127.0.0.1:7545",
+    "chainId":5777,
+    "oracleType":"unsigned",
+    "diaServer":"https://rest.diadata.org",
+    "symbols":["PCWS/BNB"]
+}

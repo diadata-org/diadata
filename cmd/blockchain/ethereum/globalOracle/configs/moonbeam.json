@@ -1,0 +1,14 @@
+{
+    "deployedContract":"0xa11feb30dcf455b19792e2b0eb5ac63863a79b36",
+    "secretsFile":"/Users/nicky/Documents/workspace/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/globalOracle/keyfile.txt",
+    "blockchainNode":"HTTP://127.0.0.1:7545",
+    "chainId":5777,
+    "oracleType":"legacy",
+    "diaServer":"https://rest.diadata.org",
+    "symbols":["BTC","DOT","ETH","USDT","XRP"],
+    "defiRate":{"MAKERDAO":"ETH-A","CREAM":"UNI","FORTUBE":"DIA","NUO":"DAI","BZX":"DAI","COMPOUND":"DAI","DYDX":"DAI","AAVE":"DAI","BITFINEX":"DAI"},
+    "defiState":["MAKERDAO","CREAM","DYDX","COMPOUND"],
+    "dexChartPoints":{"Bitmax":"ETH","Gnosis":"ETH","Uniswap":"ETH","Bancor":"ETH","0x":"ETH","Kyber":"ETH","SushiSwap":"ETH","STEX":"PLEX"},
+    "farmingPools":{"yfi":"WETH","Synthetix":"0xD0DC005d31C2979CC0d38718e23c82D1A50004C0","Loopring":"LRC","Curvefi":"3","BARNBRIDGE":"STABLECOIN"},
+
+}

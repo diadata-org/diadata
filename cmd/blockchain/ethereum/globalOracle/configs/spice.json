@@ -1,0 +1,10 @@
+{
+    "deployedContract":"",
+    "secretsFile":"/Users/nicky/Documents/workspace/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/globalOracle/keyfile.txt",
+    "blockchainNode":"HTTP://127.0.0.1:7545",
+    "chainId":5777,
+    "oracleType":"unsigned",
+    "diaServer":"https://rest.diadata.org",
+    "symbols":["SPICE/WETH","USDC","WBTC","SPICE"]
+
+}
