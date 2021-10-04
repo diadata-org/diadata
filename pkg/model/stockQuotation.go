@@ -14,8 +14,8 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 	fields := map[string]interface{}{
 		"priceAsk": sq.PriceAsk,
 		"priceBid": sq.PriceBid,
-		"sizeAsk":  sq.SizeAsk,
-		"sizeBid":  sq.SizeBid,
+		"sizeAsk":  sq.SizeAskLot,
+		"sizeBid":  sq.SizeBidLot,
 		"source":   sq.Source,
 	}
 	tags := map[string]string{
@@ -38,48 +38,125 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 }
 
 // GetStockQuotationInflux returns the last quotation of @symbol before @timestamp.
-func (db *DB) GetStockQuotation(symbol string, timestamp time.Time) (StockQuotation, error) {
-	retval := StockQuotation{}
+func (db *DB) GetStockQuotation(source string, symbol string, timeInit time.Time, timeFinal time.Time) ([]StockQuotation, error) {
+	stockQuotations := []StockQuotation{}
 
-	unixtime := timestamp.UnixNano()
-	q := fmt.Sprintf("SELECT priceAsk,priceBid,sizeAsk,sizeBid,source,\"isin\",\"name\" FROM %s WHERE \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbStockQuotationsTable, symbol, unixtime)
+	unixtimeInit := timeInit.UnixNano()
+	unixtimeFinal := timeFinal.UnixNano()
+
+	query := "SELECT priceAsk,priceBid,sizeAsk,sizeBid,source,\"isin\",\"name\" FROM %s WHERE source='%s' and \"symbol\"='%s' and time>%d and time<=%d order by time desc"
+	q := fmt.Sprintf(query, influxDbStockQuotationsTable, source, symbol, unixtimeInit, unixtimeFinal)
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
-		return retval, err
+		return stockQuotations, err
 	}
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		layout := "2006-01-02T15:04:05Z"
-		vals := res[0].Series[0].Values[0]
+		vals := res[0].Series[0].Values
 
-		retval.Time, err = time.Parse(layout, vals[0].(string))
-		if err != nil {
-			log.Error(err)
+		for i := 0; i < len(vals); i++ {
+			var stockQuotation StockQuotation
+			stockQuotation.Time, err = time.Parse(layout, vals[i][0].(string))
+			if err != nil {
+				log.Error(err)
+			}
+			stockQuotation.PriceAsk, err = vals[i][1].(json.Number).Float64()
+			if err != nil {
+				log.Error(err)
+			}
+			stockQuotation.PriceBid, err = vals[i][2].(json.Number).Float64()
+			if err != nil {
+				log.Error(err)
+			}
+			stockQuotation.SizeAskLot, err = vals[i][3].(json.Number).Float64()
+			if err != nil {
+				log.Error(err)
+			}
+			stockQuotation.SizeBidLot, err = vals[i][4].(json.Number).Float64()
+			if err != nil {
+				log.Error(err)
+			}
+			stockQuotation.Source = vals[i][5].(string)
+			stockQuotation.ISIN = vals[i][6].(string)
+			stockQuotation.Name = vals[i][7].(string)
+			stockQuotation.Symbol = symbol
+
+			stockQuotations = append(stockQuotations, stockQuotation)
 		}
-		retval.PriceAsk, err = vals[1].(json.Number).Float64()
-		if err != nil {
-			log.Error(err)
-		}
-		retval.PriceBid, err = vals[2].(json.Number).Float64()
-		if err != nil {
-			log.Error(err)
-		}
-		retval.SizeAsk, err = vals[3].(json.Number).Float64()
-		if err != nil {
-			log.Error(err)
-		}
-		retval.SizeBid, err = vals[4].(json.Number).Float64()
-		if err != nil {
-			log.Error(err)
-		}
-		retval.Source = vals[5].(string)
-		if vals[4] != nil {
-			retval.ISIN = vals[6].(string)
-		}
-		retval.Symbol = symbol
-		return retval, nil
+		return stockQuotations, nil
 
 	}
-	return retval, err
+	return stockQuotations, err
 }
+
+// GetStockSymbols returns all symbols available from @source.
+func (db *DB) GetStockSymbols() (map[Stock]string, error) {
+	allStocks := make(map[Stock]string)
+
+	q := fmt.Sprintf("SELECT \"symbol\",\"name\",\"isin\",source FROM %s WHERE time>now()-7d", influxDbStockQuotationsTable)
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		log.Error("query stock symbols from influx: ", err)
+		return allStocks, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		// make unique list of stocks - i.e. pairs (isin,source) should be unique.
+		vals := res[0].Series[0].Values
+		set := make(map[string]struct{})
+
+		for _, val := range vals {
+			if _, ok := set[val[3].(string)+val[4].(string)]; !ok {
+				allStocks[Stock{
+					Symbol: val[1].(string),
+					Name:   val[2].(string),
+					ISIN:   val[3].(string),
+				}] = val[4].(string)
+				set[val[3].(string)+val[4].(string)] = struct{}{}
+			}
+		}
+
+	}
+
+	return allStocks, nil
+}
+
+// func (db *DB) GetStockQuotfation(starttime time.Time, endtime time.Time, asset string, protocol string) ([]StockQuotation, error) {
+// 	retval := []dia.DefiRate{}
+// 	influxQuery := "SELECT \"asset\",borrowRate,lendingRate,\"protocol\" FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'"
+// 	q := fmt.Sprintf(influxQuery, influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
+// 	fmt.Println("influx query: ", q)
+// 	res, err := queryInfluxDB(db.influxClient, q)
+// 	fmt.Println("res, err: ", res, err)
+// 	if err != nil {
+// 		return retval, err
+// 	}
+// 	if len(res) > 0 && len(res[0].Series) > 0 {
+// 		for i := 0; i < len(res[0].Series[0].Values); i++ {
+// 			currentRate := dia.DefiRate{}
+// 			currentRate.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+// 			if err != nil {
+// 				return retval, err
+// 			}
+// 			currentRate.Asset = res[0].Series[0].Values[i][1].(string)
+// 			if err != nil {
+// 				return retval, err
+// 			}
+// 			currentRate.BorrowingRate, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+// 			if err != nil {
+// 				return retval, err
+// 			}
+// 			currentRate.LendingRate, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+// 			if err != nil {
+// 				return retval, err
+// 			}
+// 			currentRate.Protocol = protocol
+// 			retval = append(retval, currentRate)
+// 		}
+// 	} else {
+// 		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+// 	}
+// 	return retval, nil
+// }

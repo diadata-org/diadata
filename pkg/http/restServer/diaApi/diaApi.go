@@ -1078,6 +1078,95 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 }
 
 // -----------------------------------------------------------------------------
+// STOCKS
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetStockSymbols(c *gin.Context) {
+	type sourcedStock struct {
+		Stock  models.Stock
+		Source string
+	}
+	var srcStocks []sourcedStock
+	stocks, err := env.DataStore.GetStockSymbols()
+	log.Info("stocks: ", stocks)
+
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		for stock, source := range stocks {
+			srcStocks = append(srcStocks, sourcedStock{
+				Stock:  stock,
+				Source: source,
+			})
+		}
+		c.JSON(http.StatusOK, srcStocks)
+	}
+}
+
+// GetStockQuotation is the delegate method to fetch the value(s) of
+// quotations of asset with @symbol from @source.
+// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
+func (env *Env) GetStockQuotation(c *gin.Context) {
+	source := c.Param("source")
+	symbol := c.Param("symbol")
+	date := c.Param("time")
+	// Add optional query parameters for requesting a range of values
+	dateInit := c.DefaultQuery("dateInit", "noRange")
+	dateFinal := c.Query("dateFinal")
+
+	if dateInit == "noRange" {
+		// Return most recent data point
+		endtime := time.Time{}
+		var err error
+		if date == "" {
+			endtime = time.Now()
+		} else {
+			// Convert unix time int/string to time
+			endtime, err = utils.StrToUnixtime(date)
+			if err != nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			}
+		}
+		starttime := endtime.AddDate(0, 0, -1)
+
+		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q[0])
+		}
+	} else {
+		starttime, err := utils.StrToUnixtime(dateInit)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+		endtime, err := utils.StrToUnixtime(dateFinal)
+		if err != nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		}
+
+		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
+		if err != nil {
+			if err == redis.Nil {
+				restApi.SendError(c, http.StatusNotFound, err)
+			} else {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+			}
+		} else {
+			c.JSON(http.StatusOK, q)
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
 // FOREIGN QUOTATIONS
 // -----------------------------------------------------------------------------
 

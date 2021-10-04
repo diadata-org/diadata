@@ -145,15 +145,15 @@ func (scraper *FinageScraper) unmarshalQuotationJSON(data []byte) (models.StockQ
 	}
 	name, isin := getCompanyDetails(receivedQuotation.Symbol)
 	return models.StockQuotation{
-		Symbol:   receivedQuotation.Symbol,
-		Name:     name,
-		PriceAsk: receivedQuotation.PriceAsk,
-		PriceBid: receivedQuotation.PriceBid,
-		SizeAsk:  receivedQuotation.SizeAsk,
-		SizeBid:  receivedQuotation.SizeBid,
-		Source:   scraper.stockScraper.source,
-		Time:     time.Unix(0, receivedQuotation.Time*int64(time.Millisecond)),
-		ISIN:     isin,
+		Symbol:     receivedQuotation.Symbol,
+		Name:       name,
+		PriceAsk:   receivedQuotation.PriceAsk,
+		PriceBid:   receivedQuotation.PriceBid,
+		SizeAskLot: receivedQuotation.SizeAsk,
+		SizeBidLot: receivedQuotation.SizeBid,
+		Source:     scraper.stockScraper.source,
+		Time:       time.Unix(0, receivedQuotation.Time*int64(time.Millisecond)),
+		ISIN:       isin,
 	}, nil
 }
 

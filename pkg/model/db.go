@@ -126,7 +126,8 @@ type Datastore interface {
 
 	// Stock methods
 	SetStockQuotation(sq StockQuotation) error
-	GetStockQuotation(symbol string, timestamp time.Time) (StockQuotation, error)
+	GetStockQuotation(source string, symbol string, timeInit time.Time, timeFinal time.Time) ([]StockQuotation, error)
+	GetStockSymbols() (map[Stock]string, error)
 }
 
 const (

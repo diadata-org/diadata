@@ -247,6 +247,11 @@ func main() {
 		// Endpoints for fiat currencies
 		dia.GET("/fiatQuotations", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFiatQuotations))
 
+		// Endpoints for stocks
+		dia.GET("/stockSymbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockSymbols))
+		dia.GET("/stockQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
+		dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
+
 		// Endpoints for foreign sources
 		dia.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		dia.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
