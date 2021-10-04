@@ -122,6 +122,17 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 			}
 			helper = NewAAVE(s, protocol)
 		}
+	case "AAVEv2":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "AAVEv2",
+				Address:              "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewAAVEv2(s, protocol)
+		}
 	case "DDEX":
 		{
 
@@ -256,6 +267,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "AAVE":
 		{
 			helper = NewAAVE(s, protocol)
+		}
+	case "AAVEv2":
+		{
+			helper = NewAAVEv2(s, protocol)
 		}
 	case "RAY":
 		{
