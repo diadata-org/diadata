@@ -71,6 +71,18 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 | :--- | :--- |
 | DIA Oracle | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
 
+### Shiden
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | 0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d |
+
+### Shiden Shibuya
+
+| Contract Name | Contract Address |
+| :--- | :--- |
+| DIA Oracle | 0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E |
+
 ### Avax Mainnet
 
 | Contract Name | Contract Address |
