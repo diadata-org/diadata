@@ -175,6 +175,7 @@ const (
 	influxDbGithubCommitTable            = "githubcommits"
 	influxDbStockQuotationsTable         = "stockquotations"
 	influxDBAssetQuotationsTable         = "assetQuotations"
+	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -1048,7 +1049,21 @@ func (db *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, 
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
+		db.influxBatchPoints.AddPoint(pt)
+	}
+	return err
+}
+
+func (db *DB) SaveIndexEngineTimeInflux(tags map[string]string, fields map[string]interface{}, timestamp time.Time) error {
+	pt, err := clientInfluxdb.NewPoint(influxDbBenchmarkedIndexTableName, tags, fields, timestamp)
+	if err != nil {
+		log.Errorln("newPoint:", err)
+	} else {
 		db.addPoint(pt)
+		err := db.WriteBatchInflux()
+		if err != nil {
+			log.Errorln("newPoint:", err)
+		}
 	}
 	return err
 }
