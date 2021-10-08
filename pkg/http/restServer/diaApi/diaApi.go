@@ -127,6 +127,19 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetDiaTotalSupply(c *gin.Context) {
+	q, err := env.DataStore.GetDiaTotalSupply()
+	if err != nil {
+		if err == redis.Nil {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
 func (env *Env) GetLastPriceBeforeAllExchanges(c *gin.Context) {
 	symbol := c.Param("symbol")
 	filter := c.Param("filter")

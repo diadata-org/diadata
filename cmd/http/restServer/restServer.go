@@ -261,6 +261,10 @@ func main() {
 		dia.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
 		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
+		// External supply reports
+		dia.GET("/diaTotalSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaTotalSupply))
+		//dia.GET("/diaCirculatingSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
+
 		// Index
 		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
 		dia.GET("/cryptoIndexMintAmounts/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetCryptoIndexMintAmounts))

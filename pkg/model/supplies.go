@@ -3,14 +3,20 @@ package models
 import (
 	"strings"
 	"time"
+	"strconv"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
+	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 )
 
 func getKeySupply(value string) string {
 	return "dia_supply_" + value
+}
+
+func getKeyDiaTotalSupply() string {
+	return "dia_diaTotalSupply"
 }
 
 func (db *DB) SymbolsWithASupply() ([]string, error) {
@@ -79,4 +85,32 @@ func (db *DB) SetSupply(supply *dia.Supply) error {
 		log.Errorf("Error: %v on SetSupply (influx) %v\n", err, supply.Symbol)
 	}
 	return err
+}
+
+func (db *DB) SetDiaTotalSupply(totalSupply float64) error {
+	key := getKeyDiaTotalSupply()
+	log.Debug("setting ", key, totalSupply)
+
+	err := db.redisClient.Set(key, totalSupply, 0).Err()
+	if err != nil {
+		log.Errorf("Error: %v on SetDiaTotalSupply (redis) %v\n", err, totalSupply)
+	}
+	return err
+}
+
+func (db *DB) GetDiaTotalSupply() (float64, error) {
+	key := getKeyDiaTotalSupply()
+	value, err := db.redisClient.Get(key).Result()
+	if err != nil {
+		if err != redis.Nil {
+			log.Errorf("Error: %v on GetDiaTotalSupply\n", err)
+		}
+		return 0.0, err
+	}
+	retval, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		log.Error("Cannot convert to float in GetDiaTotalSupply")
+		return 0.0, err
+	}
+	return retval, nil
 }
