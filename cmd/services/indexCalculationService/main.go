@@ -49,8 +49,7 @@ func getCurrentIndexCompositionForIndex(indexSymbol string, ds *models.DB) []mod
 		return constituents
 	}
 	for _, constituent := range cryptoIndex[0].Constituents {
-		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol, indexSymbol)
-		//curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-5 * time.Hour), time.Now(), constituent.Symbol)
+		curr, err := ds.GetCryptoIndexConstituents(time.Now().Add(-24 * time.Hour), time.Now(), constituent.Symbol, indexSymbol)
 		if err != nil {
 			log.Error(err)
 			return constituents
@@ -80,7 +79,7 @@ func periodicIndexValueCalculation(currentConstituents []models.CryptoIndexConst
 		supply = supplyObject.CirculatingSupply
 	}
 	indexValue := indexCalculationService.GetIndexValue(indexSymbol, currentConstituents)
-	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-5 * time.Hour), time.Now(), indexSymbol)
+	currCryptoIndex, err := ds.GetCryptoIndex(time.Now().Add(-24 * time.Hour), time.Now(), indexSymbol)
 	if err != nil {
 		log.Error(err)
 	}

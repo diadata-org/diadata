@@ -16,6 +16,7 @@ services:
       - influxdb-network
     environment:
       INFLUXDB_HTTP_MAX_BODY_SIZE: 0
+      INFLUXDB_MONITOR_STORE_ENABLED: "FALSE"
     logging:
       options:
         max-size: "50m" 

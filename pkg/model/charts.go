@@ -83,7 +83,7 @@ func (db *DB) GetLastPriceBefore(symbol string, filter string, exchange string, 
 	// q := fmt.Sprintf("SELECT LAST(value) FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time < %d",
 	// 	table, filter, symbol, exchangeQuery, timestamp.UnixNano())
 
-	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time > %d ORDER BY ASC LIMIT 1",
+	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time > %d AND time < now() ORDER BY ASC LIMIT 1",
 		table, filter, symbol, exchangeQuery, timestamp.UnixNano())
 
 	res, err := queryInfluxDB(db.influxClient, q)

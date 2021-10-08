@@ -14,4 +14,4 @@ FROM gcr.io/distroless/base
 COPY --from=build /go/bin/nftDatascraper /bin/nftDatascraper
 COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
 
-CMD ["nftdatascraper"]
+CMD ["nftDatascraper"]

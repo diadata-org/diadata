@@ -357,7 +357,7 @@ select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time 
 
 // Sum24HoursInflux returns the 24h  volume of @symbol on @exchange using the filter @filter.
 func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
-	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)
+	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d and time < now()", influxDbFiltersTable, symbol, exchange, filter)
 	var errorString string
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
@@ -410,9 +410,9 @@ func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.T
 	var q string
 	filter := "VOL120"
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, filter)
+		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > now() - 1d and time < now()", influxDbFiltersTable, symbol, filter)
 	} else {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > %d and time < %d", influxDbFiltersTable, symbol, filter, starttime.UnixNano(), endtime.UnixNano())
+		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > %d and time < %d and time < now()", influxDbFiltersTable, symbol, filter, starttime.UnixNano(), endtime.UnixNano())
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
