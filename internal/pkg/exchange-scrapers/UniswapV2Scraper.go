@@ -35,8 +35,8 @@ const (
 	// restDialBSC = "https://bsc-dataseed1.defibit.io/"
 	// restDialBSC = "https://bsc-dataseed1.ninicoin.io/"
 
-	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
-	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
 )
 
 type UniswapToken struct {
@@ -547,7 +547,10 @@ func (s *UniswapScraper) getNumPairs() (int, error) {
 
 	// Getting pairs ---------------
 	numPairs, err := contract.AllPairsLength(&bind.CallOpts{})
-	return int(numPairs.Int64()), err
+	if err != nil {
+		return 0, err
+	}
+	return int(numPairs.Int64()), nil
 }
 
 // getSwapData returns price, volume and sell/buy information of @swap
