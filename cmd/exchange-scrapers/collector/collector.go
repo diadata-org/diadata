@@ -39,7 +39,9 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, exchan
 				return
 			}
 			lastTradeTime = time.Now()
-			kafkaHelper.WriteMessage(w, t)
+			if t.Time.Before(lastTradeTime) && t.Price >= 0 {
+				kafkaHelper.WriteMessage(w, t)
+			}
 		}
 	}
 }
