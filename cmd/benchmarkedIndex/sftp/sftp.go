@@ -40,8 +40,8 @@ func GetConnection() *sftp.Client {
 
 	// Initialize client configuration
 	config := ssh.ClientConfig{
-		User: user,
-		Auth: auths,
+		User:            user,
+		Auth:            auths,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		// HostKeyCallback: ssh.FixedHostKey(hostKey),
 	}
@@ -54,13 +54,13 @@ func GetConnection() *sftp.Client {
 		log.Error("Failed to connect to ", addr, err)
 		os.Exit(1)
 	}
-/*
-	defer func(conn *ssh.Client) {
-		err := conn.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}(conn)*/
+	/*
+		defer func(conn *ssh.Client) {
+			err := conn.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}(conn)*/
 
 	// Create new SFTP client
 	sftpClient, err := sftp.NewClient(conn)
@@ -71,6 +71,7 @@ func GetConnection() *sftp.Client {
 
 	return sftpClient
 }
+
 /*
 // GetHostKey Get host key from local known hosts
 func GetHostKey(host string) ssh.PublicKey {
