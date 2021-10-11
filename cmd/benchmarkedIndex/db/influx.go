@@ -7,7 +7,7 @@ import (
 )
 
 type IndexTimeStamp struct {
-	Date time.Time
+	Date  time.Time
 	Value string
 }
 
@@ -50,7 +50,7 @@ func SaveIndexEngineIntoInflux(indexTimeStamp IndexTimeStamp, name string) {
 	influxDb := getInfluxConnection()
 	// Create a point and add to batch
 	tags := map[string]string{
-		"symbol" : name,
+		"symbol": name,
 		//"basetokenblockchain":  t.BaseToken.Blockchain,
 	}
 	fields := map[string]interface{}{

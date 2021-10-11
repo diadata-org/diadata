@@ -13,7 +13,7 @@ import (
 func main() {
 	sftpClient := sftp.GetConnection()
 
-	files := strings.Split(utils.Getenv("SFTP_FILELIST", ""),";")
+	files := strings.Split(utils.Getenv("SFTP_FILELIST", ""), ";")
 	for _, file := range files {
 		pathParts := strings.Split(file, "/")
 		filename := pathParts[len(pathParts)-1]
@@ -24,7 +24,7 @@ func main() {
 			}
 
 		}
-		errDownload := sftp.DownloadFile(*sftpClient, file, "./" + filename)
+		errDownload := sftp.DownloadFile(*sftpClient, file, "./"+filename)
 		if errDownload != nil {
 			log.Error(errDownload)
 			return
