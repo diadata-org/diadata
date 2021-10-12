@@ -79,7 +79,6 @@ func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, 
 			}
 		}
 		// Hardcoded hotfix for some supplies:
-		// Set total supply for DIA
 		if supp.Symbol == "YAM" {
 			supp.CirculatingSupply = float64(13907678)
 		}
@@ -89,11 +88,24 @@ func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, 
 		if supp.Symbol == "DTA" {
 			supp.CirculatingSupply = float64(21000000)
 		}
+		// Set total and circulating supply for DIA
 		if supp.Symbol == "DIA" {
 			// Save old "circulating" supply as total supply (i.e. #DIA without the burnt tokens)
 			diaTotalSupply := supp.CirculatingSupply
 			err = ds.SetDiaTotalSupply(diaTotalSupply)
+			if err != nil {
+				log.Errorf("error setting total supply for %s: %v\n", supp.Symbol, err)
+			} else {
+				log.Info("set total supply: " + supp.Name + " - " + supp.Symbol)
+			}
 			supp.CirculatingSupply = float64(25549170)
+			// Set circulating supply
+			err = ds.SetDiaCirculatingSupply(float64(55481823))
+			if err != nil {
+				log.Errorf("error setting circulating supply for %s: %v\n", supp.Symbol, err)
+			} else {
+				log.Info("set circulating supply: " + supp.Name + " - " + supp.Symbol)
+			}
 		}
 		if supp.Symbol == "SPICE" {
 			supp.CirculatingSupply = float64(1945426.80)

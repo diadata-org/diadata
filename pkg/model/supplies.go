@@ -19,6 +19,10 @@ func getKeyDiaTotalSupply() string {
 	return "dia_diaTotalSupply"
 }
 
+func getKeyDiaCirculatingSupply() string {
+	return "dia_diaCirculatingSupply"
+}
+
 func (db *DB) SymbolsWithASupply() ([]string, error) {
 	result := []string{}
 	var cursor uint64
@@ -110,6 +114,34 @@ func (db *DB) GetDiaTotalSupply() (float64, error) {
 	retval, err := strconv.ParseFloat(value, 64)
 	if err != nil {
 		log.Error("Cannot convert to float in GetDiaTotalSupply")
+		return 0.0, err
+	}
+	return retval, nil
+}
+
+func (db *DB) SetDiaCirculatingSupply(circulatingSupply float64) error {
+	key := getKeyDiaCirculatingSupply()
+	log.Debug("setting ", key, circulatingSupply)
+
+	err := db.redisClient.Set(key, circulatingSupply, 0).Err()
+	if err != nil {
+		log.Errorf("Error: %v on SetDiaCirculatingSupply (redis) %v\n", err, circulatingSupply)
+	}
+	return err
+}
+
+func (db *DB) GetDiaCirculatingSupply() (float64, error) {
+	key := getKeyDiaCirculatingSupply()
+	value, err := db.redisClient.Get(key).Result()
+	if err != nil {
+		if err != redis.Nil {
+			log.Errorf("Error: %v on GetDiaCirculatingSupply\n", err)
+		}
+		return 0.0, err
+	}
+	retval, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		log.Error("Cannot convert to float in GetDiaCirculatingSupply")
 		return 0.0, err
 	}
 	return retval, nil

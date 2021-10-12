@@ -263,7 +263,7 @@ func main() {
 
 		// External supply reports
 		dia.GET("/diaTotalSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaTotalSupply))
-		//dia.GET("/diaCirculatingSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
+		dia.GET("/diaCirculatingSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
 
 		// Index
 		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
