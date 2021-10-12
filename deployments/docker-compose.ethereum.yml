@@ -177,6 +177,20 @@ services:
     secrets:
       - oracle_keys_moonriver
 
+  diaoracleservice-arbitrum:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-arbitrum
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x6Ba42C45174204a89AD2b7fE7B6416AD3C020D71 --secretsFile=/run/secrets/oracle_keys_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_arbitrum
+
   diaoracleservice-avalanche:
     build:
       context: $GOPATH
@@ -589,6 +603,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt
   oracle_keys_moonriver:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonriver.txt
+  oracle_keys_arbitrum:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_arbitrum.txt
   oracle_keys_matic_mumbai:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt.mumbai
   oracle_keys_moonbeam:

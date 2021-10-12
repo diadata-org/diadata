@@ -57,7 +57,7 @@ func main() {
 	key := lines[0]
 	key_password := lines[1]
 
-	symbols := []string{"BTC", "ETH", "DIA", "USDC", "SDN", "FTM"}
+	symbols := []string{"BTC", "ETH", "DIA", "USDC", "SDN", "FTM", "MOVR", "KSM"}
 	oldPrices := make(map[string]float64)
 
 	/*
@@ -188,7 +188,7 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 800725,
+		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
