@@ -110,7 +110,7 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = uniswapWaitMilliseconds
+		waitTime = uniswapHistoryWaitMilliseconds
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	}

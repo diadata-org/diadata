@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -39,7 +40,8 @@ const (
 	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
 	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
 
-	uniswapWaitMilliseconds     = 25
+	uniswapWaitMilliseconds     = "100"
+	dfynWaitMilliseconds        = "25"
 	sushiswapWaitMilliseconds   = 25
 	pancakeswapWaitMilliseconds = 100
 )
@@ -90,7 +92,7 @@ type UniswapScraper struct {
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
-	log.Info("NewUniswapScraper", exchange.Name)
+	log.Info("NewUniswapScraper: ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var waitTime int
 	var err error
@@ -107,7 +109,12 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = uniswapWaitMilliseconds
+		waitTimeString := utils.Getenv("UNISWAP_WAIT_TIME", uniswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
@@ -143,7 +150,12 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = uniswapWaitMilliseconds
+		waitTimeString := utils.Getenv("DFYN_WAIT_TIME", dfynWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 25
+		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	}
