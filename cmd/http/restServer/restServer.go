@@ -261,6 +261,7 @@ func main() {
 
 		// Index
 		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
+		dia.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
 		// Endpoints for NFTs
 		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))

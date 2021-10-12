@@ -132,6 +132,8 @@ type Datastore interface {
 	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
 	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
+	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
+	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
@@ -178,6 +180,7 @@ const (
 	influxDbGithubCommitTable            = "githubcommits"
 	influxDbStockQuotationsTable         = "stockquotations"
 	influxDBAssetQuotationsTable         = "assetQuotations"
+	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -1076,7 +1079,7 @@ func (db *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, 
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
-		db.addPoint(pt)
+		db.influxBatchPoints.AddPoint(pt)
 	}
 	return err
 }

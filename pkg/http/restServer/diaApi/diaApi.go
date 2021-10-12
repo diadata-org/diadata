@@ -1065,6 +1065,59 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
+// Get benchmarked Index values
+func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	q, err := env.DataStore.GetBenchmarkedIndexValuesInflux(symbol, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, q)
+}
+
 // Get last 1000 trades of an asset
 func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
