@@ -26,13 +26,18 @@ type KafkaMessageWithAHash interface {
 }
 
 const (
-	TopicIndexBlock      = 0
-	TopicFiltersBlock    = 1
-	TopicTrades          = 2
-	TopicTradesBlock     = 3
-	TopicSuppliesBlock   = 7
-	TopicIndexBlock2     = 8
-	TopicIndexBlockDaily = 11
+	TopicIndexBlock = 0
+
+	TopicFiltersBlock = 1
+	TopicTrades       = 2
+	TopicTradesBlock  = 3
+
+	TopicFiltersBlockHistorical = 4
+	TopicTradesHistorical       = 5
+	TopicTradesBlockHistorical  = 6
+
+	TopicSuppliesBlock = 7
+
 	retryDelay           = 2 * time.Second
 	TopicOptionOrderBook = 13
 )
@@ -52,6 +57,9 @@ func getTopic(topic int) string {
 		1: "filtersBlock",
 		2: "trades",
 		3: "tradesBlock",
+		4: "filtersBlockHistorical",
+		5: "tradesHistorical",
+		6: "tradesBlockHistorical",
 	}
 	result, ok := topicMap[topic]
 	if !ok {

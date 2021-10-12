@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 )
 
-// GetBlockData returns
+// GetBlockData returns relevant block data from block with @blockNumber.
 func GetBlockData(blockNumber int64, relDB *models.RelDB, client *ethclient.Client) (blockdata dia.BlockData, err error) {
 	blockdata, err = relDB.GetBlockData(dia.ETHEREUM, blockNumber)
 	if err != nil {

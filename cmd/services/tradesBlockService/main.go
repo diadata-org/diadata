@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"sync"
 
 	"github.com/diadata-org/diadata/internal/pkg/tradesBlockService"
@@ -27,9 +28,26 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 	}
 }
 
+func init() {
+	flag.Parse()
+	if !*historical {
+		tradesBlockTopic = kafkaHelper.TopicTradesBlock
+		tradesTopic = kafkaHelper.TopicTrades
+	} else {
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
+		tradesTopic = kafkaHelper.TopicTradesHistorical
+	}
+}
+
+var (
+	historical       = flag.Bool("historical", false, "digest current or historical trades")
+	tradesBlockTopic int
+	tradesTopic      int
+)
+
 func main() {
 
-	kafkaWriter := kafkaHelper.NewSyncWriter(kafkaHelper.TopicTradesBlock)
+	kafkaWriter := kafkaHelper.NewSyncWriter(tradesBlockTopic)
 	defer func() {
 		err := kafkaWriter.Close()
 		if err != nil {
@@ -37,7 +55,7 @@ func main() {
 		}
 	}()
 
-	kafkaReader := kafkaHelper.NewReaderNextMessage(kafkaHelper.TopicTrades)
+	kafkaReader := kafkaHelper.NewReaderNextMessage(tradesTopic)
 	defer func() {
 		err := kafkaReader.Close()
 		if err != nil {
@@ -50,7 +68,7 @@ func main() {
 		log.Errorln("NewDataStore", err)
 	}
 
-	service := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds)
+	service := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds, *historical)
 
 	wg := sync.WaitGroup{}
 	go handleBlocks(service, &wg, kafkaWriter)

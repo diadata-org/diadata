@@ -210,7 +210,7 @@ func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID st
 	}
 	exchangepair, err := relDB.GetExchangePairCache(dia.KrakenExchange, pair.ForeignName)
 	if err != nil {
-		log.Error(err)
+		log.Error("get exchangepair from cache: ", err)
 	}
 	t := &dia.Trade{
 		Pair:           pair.ForeignName,

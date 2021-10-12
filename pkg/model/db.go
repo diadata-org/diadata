@@ -37,6 +37,7 @@ type Datastore interface {
 	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
+	GetFirstTradeDate(table string) (time.Time, error)
 	SaveTradeInflux(t *dia.Trade) error
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
@@ -68,9 +69,11 @@ type Datastore interface {
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
-	GetAssetPriceUSD(asset dia.Asset) (float64, error)
+	GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (float64, error)
+	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 	SetAssetQuotation(quotation *AssetQuotation) error
-	GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error)
+	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
+	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
@@ -475,7 +478,7 @@ func (db *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	return err
 }
 
-// GetTradeInflux returns
+// GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp.
 func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Time) (*dia.Trade, error) {
 	retval := dia.Trade{}
 	var q string
@@ -523,11 +526,20 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 
 // GetOldTradesFromInflux returns all recorded trades from @table done on @exchange between @timeInit and @timeFinal
 // where the time interval is closed on the left and open on the right side.
+// If @exchange is empty, trades across all exchanges are returned.
 func (db *DB) GetOldTradesFromInflux(table string, exchange string, timeInit, timeFinal time.Time) ([]dia.Trade, error) {
 	allTrades := []dia.Trade{}
-	var query string
-	queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE exchange='%s' and time>=%d and time<%d order by desc limit 1"
-	query = fmt.Sprintf(queryString, table, exchange, timeInit.UnixNano(), timeFinal.UnixNano())
+	var queryString, query string
+	if exchange == "" {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE time>=%d and time<%d order by asc"
+		query = fmt.Sprintf(queryString, table, timeInit.UnixNano(), timeFinal.UnixNano())
+	} else {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE exchange='%s' and time>=%d and time<%d order by asc"
+		query = fmt.Sprintf(queryString, table, exchange, timeInit.UnixNano(), timeFinal.UnixNano())
+	}
+
+	fmt.Println("query: ", query)
+	time.Sleep(10 * time.Second)
 
 	res, err := queryInfluxDB(db.influxClient, query)
 	if err != nil {
@@ -559,9 +571,25 @@ func (db *DB) GetOldTradesFromInflux(table string, exchange string, timeInit, ti
 			allTrades = append(allTrades, trade)
 		}
 	} else {
-		return allTrades, errors.New("parsing trade from database")
+		return allTrades, errors.New("no trades in time range")
 	}
 	return allTrades, nil
+}
+
+func (db *DB) GetFirstTradeDate(table string) (time.Time, error) {
+	var query string
+	queryString := "SELECT \"exchange\",price FROM %s order by asc limit 1"
+	query = fmt.Sprintf(queryString, table)
+
+	res, err := queryInfluxDB(db.influxClient, query)
+	if err != nil {
+		return time.Time{}, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		return time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+	}
+	return time.Time{}, errors.New("no trade found")
+
 }
 
 func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {

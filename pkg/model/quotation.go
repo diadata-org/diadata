@@ -54,9 +54,19 @@ func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Ti
 	})
 }
 
-// GetAssetPriceUSD returns the last price of @asset.
-func (db *DB) GetAssetPriceUSD(asset dia.Asset) (price float64, err error) {
-	assetQuotation, err := db.GetAssetQuotation(asset)
+// GetAssetPriceUSDLatest returns the latest price of @asset.
+func (db *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error) {
+	assetQuotation, err := db.GetAssetQuotationLatest(asset)
+	if err != nil {
+		return
+	}
+	price = assetQuotation.Price
+	return
+}
+
+// GetAssetPriceUSD returns the latest USD price of @asset before @timestamp.
+func (db *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (price float64, err error) {
+	assetQuotation, err := db.GetAssetQuotation(asset, timestamp)
 	if err != nil {
 		return
 	}
@@ -115,7 +125,7 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 }
 
 // GetAssetQuotation returns the latest full quotation for @asset.
-func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
+func (db *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) {
 
 	// First attempt to get latest quotation from redis cache
 	quotation, err := db.GetAssetQuotationCache(asset)
@@ -126,12 +136,21 @@ func (db *DB) GetAssetQuotation(asset dia.Asset) (*AssetQuotation, error) {
 
 	// if not in cache, get quotation from influx
 	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
-	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain)
+	return db.GetAssetQuotation(asset, time.Now())
+
+}
+
+// GetAssetQuotation returns the latest full quotation for @asset before @timestamp.
+func (db *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error) {
+
+	var quotation *AssetQuotation
+	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time<='%d' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return quotation, err
 	}
+
 	if len(res) > 0 && len(res[0].Series) > 0 {
 
 		quotation.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
@@ -184,7 +203,7 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 	return quotation, nil
 }
 
-// GetAssetPriceUSDCache returns the last price of @asset from the cache.
+// GetAssetPriceUSDCache returns the latest price of @asset from the cache.
 func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
 	quotation, err := db.GetAssetQuotationCache(asset)
 	if err != nil {
@@ -204,7 +223,7 @@ func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, er
 		var quotation *AssetQuotation
 		var volume *float64
 		var err error
-		quotation, err = db.GetAssetQuotation(asset)
+		quotation, err = db.GetAssetQuotationLatest(asset)
 		if err != nil {
 			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
@@ -236,7 +255,7 @@ func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, er
 
 // GetAssetsMarketCap returns the actual market cap of @asset.
 func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
-	price, err := db.GetAssetPriceUSD(asset)
+	price, err := db.GetAssetPriceUSDLatest(asset)
 	if err != nil {
 		return 0, err
 	}
