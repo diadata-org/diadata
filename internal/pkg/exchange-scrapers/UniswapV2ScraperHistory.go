@@ -12,10 +12,10 @@ import (
 	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -35,18 +35,21 @@ type UniswapHistoryScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*UniswapHistoryPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	waitTime     int
-	genesisBlock uint64
-	db           *models.RelDB
+	pairScrapers  map[string]*UniswapHistoryPairScraper
+	exchangeName  string
+	chanTrades    chan *dia.Trade
+	waitTime      int
+	genesisBlock  uint64
+	pairmap       map[common.Address]UniswapPair
+	pairAddresses []common.Address
+	db            *models.RelDB
 }
 
 const (
-	// genesisBlockUniswap            = uint64(6625197)
-	genesisBlockUniswap            = uint64(10000000)
-	filterQueryBlockNums           = 1000
+	// genesisBlockUniswap            = uint64(10019990)
+	// genesisBlockUniswap            = uint64(10520000)
+	genesisBlockUniswap            = uint64(12120000)
+	filterQueryBlockNums           = 60
 	uniswapHistoryWaitMilliseconds = 500
 )
 
@@ -121,15 +124,74 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 		chanTrades:   make(chan *dia.Trade),
 		waitTime:     waitTime,
 		genesisBlock: genesisBlock,
+		pairmap:      make(map[common.Address]UniswapPair),
 		db:           relDB,
 	}
 
 	s.WsClient = wsClient
 	s.RestClient = restClient
+
 	if scrape {
 		go s.mainLoop()
 	}
 	return s
+}
+
+func (s *UniswapHistoryScraper) loadPairMap() {
+	numPairs, err := s.getNumPairs()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// numPairs := 1
+	batchSize := 1000
+
+	log.Infof("load all %d pairs: ", numPairs)
+
+	var maps []map[common.Address]UniswapPair
+	var wg sync.WaitGroup
+	for k := 0; k < numPairs/batchSize; k++ {
+		time.Sleep(8 * time.Second)
+		for i := batchSize * k; i < batchSize*(k+1); i++ {
+			wg.Add(1)
+			auxmap := make(map[common.Address]UniswapPair)
+			go func(index int, w *sync.WaitGroup) {
+				defer w.Done()
+				pair, err := s.GetPairByID(int64(index))
+				if err != nil {
+					log.Error(err)
+				}
+				auxmap[pair.Address] = pair
+			}(i, &wg)
+			maps = append(maps, auxmap)
+		}
+		wg.Wait()
+	}
+	for i := numPairs - numPairs%batchSize; i < numPairs; i++ {
+		wg.Add(1)
+		auxmap := make(map[common.Address]UniswapPair)
+		go func(index int, w *sync.WaitGroup) {
+			defer w.Done()
+			pair, err := s.GetPairByID(int64(index))
+			if err != nil {
+				log.Error(err)
+			}
+			auxmap[pair.Address] = pair
+		}(i, &wg)
+		maps = append(maps, auxmap)
+	}
+	wg.Wait()
+
+	log.Info("len: ", len(maps))
+	pairmap := make(map[common.Address]UniswapPair)
+	for _, m := range maps {
+		for i, j := range m {
+			j.normalizeUniPair()
+			pairmap[i] = j
+		}
+	}
+
+	log.Info("len: ", len(pairmap))
+	s.pairmap = pairmap
 }
 
 // runs in a goroutine until s is closed
@@ -146,16 +208,19 @@ func (s *UniswapHistoryScraper) mainLoop() {
 	time.Sleep(4 * time.Second)
 	s.run = true
 
-	numPairs, err := s.getNumPairs()
-	if err != nil {
-		log.Fatal(err)
+	// load all pairs into and from pair map.
+	s.loadPairMap()
+	var addresses []common.Address
+	for k := range s.pairmap {
+		addresses = append(addresses, k)
 	}
-	log.Info("Found ", numPairs, " pairs")
-	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
+	s.pairAddresses = addresses
 
-	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("uniswap: No pairs to scrap provided")
+	if len(addresses) == 0 {
+		s.error = errors.New("uniswap: No pairs to scrape provided")
 		log.Error(s.error.Error())
+	} else {
+		log.Infof("%d pairs loaded.", len(addresses))
 	}
 
 	latestBlock, err := s.RestClient.BlockByNumber(context.Background(), nil)
@@ -163,172 +228,169 @@ func (s *UniswapHistoryScraper) mainLoop() {
 		log.Error("get current block number: ", err)
 	}
 
-	var wg sync.WaitGroup
-	for i := 0; i < 5; i++ {
-		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
-		log.Infof("sleep for %v milliseconds: ", s.waitTime)
-		wg.Add(1)
-		go func(index int, w *sync.WaitGroup) {
-			defer w.Done()
-			s.fetchTrades(index, s.genesisBlock, latestBlock.NumberU64())
-		}(i, &wg)
-	}
-	wg.Wait()
-}
+	startblock := s.genesisBlock
+	endblock := startblock + uint64(filterQueryBlockNums)
 
-func (s *UniswapHistoryScraper) fetchTrades(i int, blockInit uint64, blockFinal uint64) {
-	var pair UniswapPair
-	var err error
-	if i == -1 && s.exchangeName == "PanCakeSwap" {
-		token0 := UniswapToken{
-			Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
-			Symbol:   "WOW",
-			Decimals: uint8(18),
-		}
-		token1 := UniswapToken{
-			Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
-			Symbol:   "BUSD",
-			Decimals: uint8(18),
-		}
-		pair = UniswapPair{
-			Token0:      token0,
-			Token1:      token1,
-			ForeignName: "WOW-BUSD",
-			Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
-		}
-	} else {
-		pair, err = s.GetPairByID(int64(i))
+	for startblock < latestBlock.NumberU64() {
+		err := s.fetchSwaps(startblock, endblock)
 		if err != nil {
-			log.Error("error fetching pair: ", err)
-		}
-	}
-	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-		log.Info("skip pair: ", pair.ForeignName)
-		return
-	}
-	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-		} else {
-			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-		}
-		return
-	}
-	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
-		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
-		return
-	}
-	pair.normalizeUniPair()
-	ps, ok := s.pairScrapers[pair.ForeignName]
-	if ok {
-		log.Info(i, ": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
-		startblock := blockInit
-		endblock := startblock + uint64(filterQueryBlockNums)
-		for startblock <= blockFinal {
-			log.Info("final Block: ", blockFinal)
-			swapsIter, err := s.GetSwapsIterator(pair.Address, startblock, endblock)
-			if err != nil {
-				if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
-					log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
-					endblock = startblock + (endblock-startblock)/2
-					continue
-				}
-				log.Error("get swaps Iterator: ", err.Error())
-				time.Sleep(5 * time.Second)
+			if strings.Contains(err.Error(), "EOF") {
+				endblock = startblock + (endblock-startblock)/2
+				time.Sleep(2 * time.Second)
 				continue
 			}
-
-			for swapsIter.Next() {
-				rawSwap := swapsIter.Event
-				if ok {
-					swap, err := s.normalizeUniswapSwap(*rawSwap)
-					if err != nil {
-						log.Error("error normalizing swap: ", err)
-					}
-					price, volume := getSwapData(swap)
-					token0 := dia.Asset{
-						Address:    pair.Token0.Address.Hex(),
-						Symbol:     pair.Token0.Symbol,
-						Name:       pair.Token0.Name,
-						Decimals:   pair.Token0.Decimals,
-						Blockchain: dia.ETHEREUM,
-					}
-					token1 := dia.Asset{
-						Address:    pair.Token1.Address.Hex(),
-						Symbol:     pair.Token1.Symbol,
-						Name:       pair.Token1.Name,
-						Decimals:   pair.Token1.Decimals,
-						Blockchain: dia.ETHEREUM,
-					}
-					t := &dia.Trade{
-						Symbol:         ps.pair.Symbol,
-						Pair:           ps.pair.ForeignName,
-						Price:          price,
-						Volume:         volume,
-						BaseToken:      token1,
-						QuoteToken:     token0,
-						Time:           time.Unix(swap.Timestamp, 0),
-						ForeignTradeID: swap.ID,
-						Source:         s.exchangeName,
-						VerifiedPair:   true,
-					}
-					// If we need quotation of a base token, reverse pair
-					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					}
-					if price > 0 {
-						log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
-						ps.parent.chanTrades <- t
-					}
-					if price == 0 {
-						log.Info("Got zero trade: ", t)
-					}
-				}
-			}
-			startblock = endblock
-			endblock = startblock + filterQueryBlockNums
+			log.Error("get filter logs: ", err)
 		}
-	} else {
-		log.Info("Skipping pair due to no pairScraper being available")
+		startblock = endblock
+		endblock = startblock + filterQueryBlockNums
 	}
+
+	// ---------------------------------------------------------------------------
+	// Concurrent block scraping
+	// ---------------------------------------------------------------------------
+
+	// a := s.genesisBlock
+	// b := latestBlock.NumberU64()
+	// numSubblocks := 1
+	// startblocks := []uint64{}
+	// finalBlocks := []uint64{}
+	// for k := 0; k < numSubblocks; k++ {
+	// 	startblocks = append(startblocks, a+uint64(k)*(b-a)/uint64(numSubblocks))
+	// 	finalBlocks = append(finalBlocks, a+uint64(k+1)*(b-a)/uint64(numSubblocks))
+	// }
+
+	// var wg sync.WaitGroup
+	// for i := 0; i < len(startblocks); i++ {
+	// 	startblock := startblocks[i]
+	// 	endblock := startblocks[i] + uint64(filterQueryBlockNums)
+
+	// 	wg.Add(1)
+	// 	go func(startblock, endblock uint64, index int, w *sync.WaitGroup) {
+	// 		defer w.Done()
+	// 		for startblock < finalBlocks[index] {
+	// 			err := s.fetchSwaps(startblock, endblock)
+	// 			if err != nil {
+	// 				if strings.Contains(err.Error(), "EOF") {
+	// 					endblock = startblock + (endblock-startblock)/2
+	// 					time.Sleep(2 * time.Second)
+	// 					continue
+	// 				}
+	// 				log.Error("get filter logs: ", err)
+	// 			}
+	// 			startblock = endblock
+	// 			endblock = startblock + filterQueryBlockNums
+	// 		}
+	// 	}(startblock, endblock, i, &wg)
+	// }
+	// wg.Wait()
 }
 
-// GetSwapsIterator returns a channel for swaps of the pair with address @pairAddress
-func (s *UniswapHistoryScraper) GetSwapsIterator(pairAddress common.Address, startblock uint64, endblock uint64) (*uniswap.UniswapV2PairSwapIterator, error) {
-	log.Infof("get swaps iterator from %v to %v: ", startblock, endblock)
-	var pairFiltererContract *uniswap.UniswapV2PairFilterer
-	pairFiltererContract, err := uniswap.NewUniswapV2PairFilterer(pairAddress, s.RestClient)
-	if err != nil {
-		log.Fatal(err)
+func (s *UniswapHistoryScraper) fetchSwaps(startblock uint64, endblock uint64) error {
+	log.Infof("get swaps from block %d to block %d.", startblock, endblock)
+	hashSwap := common.HexToHash("0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822")
+	topics := make([][]common.Hash, 1)
+	topics[0] = append(topics[0], hashSwap)
+
+	config := ethereum.FilterQuery{
+		Addresses: s.pairAddresses,
+		Topics:    topics,
+		FromBlock: new(big.Int).SetUint64(startblock),
+		ToBlock:   new(big.Int).SetUint64(endblock),
 	}
 
-	swapIterator, err := pairFiltererContract.FilterSwap(
-		&bind.FilterOpts{
-			Start: startblock,
-			End:   &endblock,
-		},
-		nil,
-		nil,
-	)
+	t := time.Now()
+	logs, err := s.RestClient.FilterLogs(context.Background(), config)
 	if err != nil {
-		return swapIterator, err
+		return err
+	}
+	log.Info("time passed for filter logs: ", time.Since(t))
+
+	for _, logg := range logs {
+
+		pairFilterer, err := uniswap.NewUniswapV2PairFilterer(common.Address{}, s.RestClient)
+		if err != nil {
+			log.Error(err)
+		}
+
+		// blockdata, err := s.RestClient.BlockByNumber(context.Background(), big.NewInt(int64(logg.BlockNumber)))
+		// if err != nil {
+		// 	log.Info("get block by number: ", err)
+		// }
+
+		blockdata, err := ethhelper.GetBlockData(int64(logg.BlockNumber), s.db, s.RestClient)
+		if err != nil {
+			return err
+		}
+
+		swap, err := pairFilterer.ParseSwap(logg)
+		if err != nil {
+			log.Error(err)
+		}
+		swp := s.normalizeUniswapSwapHistory(*swap, logg.Address)
+
+		price, volume := getSwapData(swp)
+		token0 := dia.Asset{
+			Address:    swp.Pair.Token0.Address.Hex(),
+			Symbol:     swp.Pair.Token0.Symbol,
+			Name:       swp.Pair.Token0.Name,
+			Decimals:   swp.Pair.Token0.Decimals,
+			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+		}
+		token1 := dia.Asset{
+			Address:    swp.Pair.Token1.Address.Hex(),
+			Symbol:     swp.Pair.Token1.Symbol,
+			Name:       swp.Pair.Token1.Name,
+			Decimals:   swp.Pair.Token1.Decimals,
+			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+		}
+		var timestamp time.Time
+		switch blockdata.Data["Time"].(type) {
+		case float64:
+			timestamp = time.Unix(int64(blockdata.Data["Time"].(float64)), 0)
+		case uint64:
+			timestamp = time.Unix(int64(blockdata.Data["Time"].(uint64)), 0)
+		}
+		t := &dia.Trade{
+			Symbol:     swp.Pair.Token0.Symbol,
+			Pair:       swp.Pair.ForeignName,
+			Price:      price,
+			Volume:     volume,
+			BaseToken:  token1,
+			QuoteToken: token0,
+			Time:       timestamp,
+			// Time: time.Now(),
+			// Time:           time.Unix(int64(blockdata.Time()), 0),
+			ForeignTradeID: logg.TxHash.Hex(),
+			Source:         s.exchangeName,
+			VerifiedPair:   true,
+		}
+		// If we need quotation of a base token, reverse pair
+		if utils.Contains(reversePairs, swp.Pair.Token1.Address.Hex()) {
+			tSwapped, err := dia.SwapTrade(*t)
+			if err == nil {
+				t = &tSwapped
+			}
+		}
+		if price > 0 {
+			log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
+			s.chanTrades <- t
+		}
+		if price == 0 {
+			log.Info("Got zero trade: ", t)
+		}
+
 	}
 
-	return swapIterator, nil
+	log.Info("number of swaps: ", len(logs))
+	return nil
 
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapHistoryScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
+func (s *UniswapHistoryScraper) normalizeUniswapSwapHistory(swap uniswap.UniswapV2PairSwap, pairAddress common.Address) (normalizedSwap UniswapSwap) {
 
-	pair, err := s.GetPairByAddress(swap.Raw.Address)
-	if err != nil {
-		log.Error("error getting pair by address: ", err)
-		return
-	}
+	pair := s.pairmap[pairAddress]
+
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
 	amount0In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0In), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
@@ -336,14 +398,8 @@ func (s *UniswapHistoryScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairS
 	amount1In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1In), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 	amount1Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1Out), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	blockdata, err := ethhelper.GetBlockData(int64(swap.Raw.BlockNumber), s.db, s.RestClient)
-	if err != nil {
-		return
-	}
-
 	normalizedSwap = UniswapSwap{
 		ID:         swap.Raw.TxHash.Hex(),
-		Timestamp:  int64(blockdata.Data["Time"].(uint64)),
 		Pair:       pair,
 		Amount0In:  amount0In,
 		Amount0Out: amount0Out,
