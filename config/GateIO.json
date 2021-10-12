@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "MOVR_USDT",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SDN_USDT",
       "Ignore": false,
       "Symbol": "SDN"

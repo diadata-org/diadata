@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Kraken",
+      "ForeignName": "MOVRUSD",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "SDNEUR",
       "Ignore": false,
       "Symbol": "SDN"

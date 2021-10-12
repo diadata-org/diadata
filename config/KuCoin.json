@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "MOVR",
+            "ForeignName": "MOVR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "DFYN",
             "ForeignName": "DFYN-USDT",
             "Exchange": "KuCoin",
