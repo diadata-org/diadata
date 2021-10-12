@@ -2,12 +2,11 @@ FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY ./cmd/services/benchmarkedIndex ./
+COPY ./cmd/benchmarkedIndex ./
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/benchmarkedIndex /bin/benchmarkedIndex
-COPY --from=build /config/ /config/
 
 CMD ["benchmarkedIndex"]
