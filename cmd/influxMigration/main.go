@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
@@ -72,8 +73,12 @@ func main() {
 func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, ds *models.DB, rdb *models.RelDB) error {
 	trades, err := ds.GetOldTradesFromInflux(fromTable, exchange, timeInit, timeFinal)
 	if err != nil {
-		log.Error("fetching trades: ", err)
-		return err
+		if strings.Contains(err.Error(), "no trades") {
+			log.Warn(err)
+		} else {
+			log.Error("fetching trades: ", err)
+			return err
+		}
 	}
 	log.Info("number of trades: ", len(trades))
 
