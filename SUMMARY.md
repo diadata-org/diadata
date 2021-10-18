@@ -24,6 +24,7 @@
     * [API Endpoints](documentation/api-1/api-endpoints.md)
   * [Oracle Documentation](documentation/oracle-documentation/README.md)
     * [Deployed Contracts](documentation/oracle-documentation/deployed-contracts.md)
+    * [Access the Oracle](documentation/oracle-documentation/access-the-oracle.md)
     * [Crypto Index Value](documentation/oracle-documentation/crypto-index-value.md)
     * [DeFi Protocol Lending and Borrowing Rates](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
     * [Farming Pools](documentation/oracle-documentation/farming-pools.md)
@@ -42,4 +43,3 @@
 * [Security Bounty Program](security-bounty-program.md)
 * [Licence Agreement](licence-agreement.md)
 * [Disclaimer](disclaimer.md)
-

@@ -8,10 +8,13 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 ### Ethereum Mainnet
 
-| Contract Name    | Contract Address                                                                                                      |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle       | [0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef) |
-| DIA Index Oracle | [0x814712cC9Fa606A4b372B87cd27775959E052d9a](https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a) |
+| Network         | Oracle Type      | Contract Address                                                                                                            | Published Assets           |
+| --------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Mainnet         | CoinInfo Oracle  | [0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef](https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef)       | Bitcoin, Ethereum, DIAData |
+| Mainnet         | Key/Value Oracle | [0x814712cC9Fa606A4b372B87cd27775959E052d9a](https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a)       | SCIFI                      |
+| Ropsten Testnet | CoinInfo Oracle  | [0x814712cC9Fa606A4b372B87cd27775959E052d9a](https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a)       | Bitcoin, Ethereum, DIAData |
+| Kovan Testnet   | CoinInfo Oracle  | [0xb73db1A6a85219742fbd0fC7cc275c62209aA660](https://kovan.etherscan.io/address/0xb73db1A6a85219742fbd0fC7cc275c62209aA660) | Bitcoin, Ethereum, DIAData |
+| Kovan Testnet   | Key/Value Oracle | [0x50e087d98A33cEB1CED159ad9255D6F228f2eF1C](https://kovan.etherscan.io/address/0x50e087d98a33ceb1ced159ad9255d6f228f2ef1c) | Coinge                     |
 
 ### Ropsten Testnet
 
