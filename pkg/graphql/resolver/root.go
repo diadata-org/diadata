@@ -89,15 +89,26 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	StartTime            graphql.NullTime
 	EndTime              graphql.NullTime
 	Exchanges            *[]graphql.NullString
+	Address              graphql.NullString
+	BlockChain           graphql.NullString
 }) (*[]*FilterPointResolver, error) {
 	var (
 		blockShiftSeconds int64
 		tradeBlocks       []queryhelper.Block
+		blockchain        string
+		address           string
+		sr                []*FilterPointResolver
 	)
 	filter := args.Filter.Value
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
 	if args.BlockShiftSeconds.Value != nil {
 		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
+	}
+	if args.Address.Value != nil {
+		address = string(*args.Address.Value)
+	}
+	if args.BlockChain.Value != nil {
+		blockchain = string(*args.BlockChain.Value)
 	}
 	symbol := string(*args.Symbol.Value)
 	starttime := args.StartTime.Value.Time
@@ -110,14 +121,28 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		}
 	}
 
-	assets, err := r.RelDB.GetTopAssetByVolume(symbol)
-	if err != nil {
-		log.Errorln("Asset not found with symbol %s ", symbol)
+	var (
+		asset dia.Asset
+		err   error
+	)
+
+	if address != "" && blockchain != "" {
+		asset, err = r.RelDB.GetAsset(address, blockchain)
+		if err != nil {
+			log.Errorln("Asset not found with address %s and blockchain %s ", address, blockchain)
+			return &sr, err
+		}
+
+	} else {
+		assets, err := r.RelDB.GetTopAssetByVolume(symbol)
+		if err != nil {
+			log.Errorln("Asset not found with symbol %s ", symbol)
+			return &sr, err
+		}
+
+		log.Println("All assets", assets)
+
 	}
-
-	log.Println("All assets", assets)
-
-	asset := assets[0]
 
 	log.Println("asset", asset)
 
@@ -155,8 +180,6 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	}
-
-	var sr []*FilterPointResolver
 
 	for _, fp := range filterPoints {
 		sr = append(sr, &FilterPointResolver{q: fp})
