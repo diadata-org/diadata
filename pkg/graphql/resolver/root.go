@@ -141,6 +141,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		}
 
 		log.Println("All assets", assets)
+		asset = assets[0]
 
 	}
 
