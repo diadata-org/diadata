@@ -115,15 +115,14 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		log.Errorln("Asset not found with symbol %s ", symbol)
 	}
 
-	log.Println("asset", assets)
+	log.Println("All assets", assets)
 
 	asset := assets[0]
 
 	log.Println("asset", asset)
 
-	trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 0)
+	trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 1000)
 	if err != nil {
-
 		return nil, nil
 	}
 

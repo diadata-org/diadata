@@ -50,6 +50,16 @@ CREATE TABLE blockchain (
 	verificationmechanism text
 );
 
+CREATE TABLE assetvolume (
+     asset_id UUID primary key,
+   volume decimal
+
+);
+
+
+
+ 
+
 -- Comments:
 
 -- We use text instead of char:

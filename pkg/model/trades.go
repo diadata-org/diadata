@@ -87,7 +87,7 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
 			}
 		}
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and (%s) and  time >= %d AND time <= %d LIMIT 100", influxDbTradesTable, asset.Address, subquery, startTime.UnixNano(), endTime.UnixNano())
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and (%s) and  time >= %d AND time <= %d LIMIT %d", influxDbTradesTable, asset.Address, subquery, startTime.UnixNano(), endTime.UnixNano(), maxTrades)
 
 	}
 	// query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE symbol='%s'  and  time >= %d AND time <= %d ", influxDbTradesTable, symbol, startTime.UnixNano(), endTime.UnixNano())

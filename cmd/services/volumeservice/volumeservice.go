@@ -52,7 +52,7 @@ func main() {
 			volume, err := datastore.GetVolume(asset)
 			if err != nil {
 				log.Errorln("Error getting volume of asset", asset.Symbol)
-				assetVolume[assetIds[index]] = float64(index)
+				assetVolume[assetIds[index]] = 0.0
 			} else {
 				assetVolume[assetIds[index]] = *volume
 
