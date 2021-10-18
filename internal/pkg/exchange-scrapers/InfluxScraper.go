@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -76,10 +77,16 @@ func (s *InfluxScraper) mainLoop() {
 	go func() {
 		for timeInit.Before(timeFinal) {
 			t0 := time.Now()
-			trades, err := s.db.GetOldTradesFromInflux(tradesTable, "", starttime, endtime)
+			trades, err := s.db.GetOldTradesFromInflux(tradesTable, "", true, starttime, endtime)
 			if err != nil {
-				log.Error("get trades from influx: ", err)
+				if strings.Contains(err.Error(), "no trades in time range") {
+					log.Warnf("%v: %v -- %v", err, starttime, endtime)
+				} else {
+					log.Error("get trades from influx: ", err)
+					return
+				}
 			}
+
 			log.Info("time passed for get old trades: ", time.Since(t0))
 			for i := range trades {
 				s.chanTrades <- &trades[i]

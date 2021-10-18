@@ -45,7 +45,7 @@ type Datastore interface {
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error)
-	GetOldTradesFromInflux(table string, exchange string, timeInit, timeFinal time.Time) ([]dia.Trade, error)
+	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -527,24 +527,32 @@ func (db *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Ti
 // GetOldTradesFromInflux returns all recorded trades from @table done on @exchange between @timeInit and @timeFinal
 // where the time interval is closed on the left and open on the right side.
 // If @exchange is empty, trades across all exchanges are returned.
-func (db *DB) GetOldTradesFromInflux(table string, exchange string, timeInit, timeFinal time.Time) ([]dia.Trade, error) {
+// If @verified is true, address and blockchain are also parsed for both assets.
+func (db *DB) GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error) {
 	allTrades := []dia.Trade{}
-	var queryString, query string
+	var queryString, query, addQueryString string
+	if verified {
+		addQueryString = ",\"quotetokenaddress\",\"basetokenaddress\",\"quotetokenblockchain\",\"basetokenblockchain\",\"verified\""
+	}
 	if exchange == "" {
-		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE time>=%d and time<%d order by asc"
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
+			addQueryString +
+			" FROM %s WHERE time>=%d and time<%d order by asc"
 		query = fmt.Sprintf(queryString, table, timeInit.UnixNano(), timeFinal.UnixNano())
 	} else {
-		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE exchange='%s' and time>=%d and time<%d order by asc"
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
+			addQueryString +
+			" FROM %s WHERE exchange='%s' and time>=%d and time<%d order by asc"
 		query = fmt.Sprintf(queryString, table, exchange, timeInit.UnixNano(), timeFinal.UnixNano())
 	}
-
-	fmt.Println("query: ", query)
-	time.Sleep(10 * time.Second)
-
 	res, err := queryInfluxDB(db.influxClient, query)
 	if err != nil {
+		log.Error("influx query: ", err)
 		return allTrades, err
 	}
+
+	log.Info("query: ", query)
+
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			var trade dia.Trade
@@ -563,10 +571,34 @@ func (db *DB) GetOldTradesFromInflux(table string, exchange string, timeInit, ti
 			if err != nil {
 				return allTrades, err
 			}
+			if res[0].Series[0].Values[i][6] == nil {
+				continue
+			}
 			trade.Symbol = res[0].Series[0].Values[i][6].(string)
 			trade.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
 			if err != nil {
 				return allTrades, err
+			}
+			if verified {
+				if res[0].Series[0].Values[i][8] != nil {
+					trade.QuoteToken.Address = res[0].Series[0].Values[i][8].(string)
+				}
+				if res[0].Series[0].Values[i][9] != nil {
+					trade.BaseToken.Address = res[0].Series[0].Values[i][9].(string)
+				}
+				if res[0].Series[0].Values[i][10] != nil {
+					trade.QuoteToken.Blockchain = res[0].Series[0].Values[i][10].(string)
+				}
+				if res[0].Series[0].Values[i][11] != nil {
+					trade.BaseToken.Blockchain = res[0].Series[0].Values[i][11].(string)
+				}
+				verifiedPair, ok := res[0].Series[0].Values[i][12].(string)
+				if ok {
+					trade.VerifiedPair, err = strconv.ParseBool(verifiedPair)
+					if err != nil {
+						log.Error("parse verified pair boolean: ", err)
+					}
+				}
 			}
 			allTrades = append(allTrades, trade)
 		}

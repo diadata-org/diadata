@@ -87,7 +87,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
 	if t.VerifiedPair {
-		if t.BaseToken.Symbol == "USD" && t.BaseToken.Blockchain == dia.FIAT {
+		if t.BaseToken.Address == "840" && t.BaseToken.Blockchain == dia.FIAT {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
 			verifiedTrade = true

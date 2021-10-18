@@ -71,7 +71,7 @@ func main() {
 // adds underlying asset information if available and stores the extended trade in the table @toTable
 // in case store==true. Otherwise, the results are just logged onto the screen.
 func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, ds *models.DB, rdb *models.RelDB) error {
-	trades, err := ds.GetOldTradesFromInflux(fromTable, exchange, timeInit, timeFinal)
+	trades, err := ds.GetOldTradesFromInflux(fromTable, exchange, false, timeInit, timeFinal)
 	if err != nil {
 		if strings.Contains(err.Error(), "no trades") {
 			log.Warn(err)
