@@ -34,26 +34,36 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                                                      |                                                Smart Contract Address                                                | Oracle Type      |
-| --------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------: | ---------------- |
-| [DIA Asset Prices](crypto-assets.md)                                  | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) | CoinInfo Oracle  |
-| [Coinmarketcap Symbols](guest-quotations/coinmarketcap-quotations.md) | [0xbAFEe71d40baBC12a3D0B2b8937ee62D3A070835](https://bscscan.com/address/0xbafee71d40babc12a3d0b2b8937ee62d3a070835) | Key/Value Oracle |
-| [Coingecko Symbols](guest-quotations/coingecko-quotations.md)         | [0x48140d0116964f05c97F08e0B3271D78B12506d8](https://bscscan.com/address/0x48140d0116964f05c97f08e0b3271d78b12506d8) | Key/Value Oracle |
+| Published Assets                                                      |                                                Smart Contract Address                                                | Oracle Type                                                                                                                     |
+| --------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md)                                  | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract)   |
+| [Coinmarketcap Symbols](guest-quotations/coinmarketcap-quotations.md) | [0xbAFEe71d40baBC12a3D0B2b8937ee62D3A070835](https://bscscan.com/address/0xbafee71d40babc12a3d0b2b8937ee62d3a070835) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| [Coingecko Symbols](guest-quotations/coingecko-quotations.md)         | [0x48140d0116964f05c97F08e0B3271D78B12506d8](https://bscscan.com/address/0x48140d0116964f05c97f08e0b3271d78b12506d8) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Testnet" %}
-| Published Assets                                                     |                                                    Smart Contract Address                                                    | Oracle Type      |
-| -------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------: | ---------------- |
-| [DIA Asset Prices](crypto-assets.md)                                 | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://testnet.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) | CoinInfo Oracle  |
-| [Coinmarketcap Oracle](guest-quotations/coinmarketcap-quotations.md) | [0x42D44F1c45349d47D34976ce3a2fF0c3dd3210a8](https://testnet.bscscan.com/address/0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8) | Key/Value Oracle |
+| Published Assets                                                     |                                                    Smart Contract Address                                                    | Oracle Type                                                                                                                     |
+| -------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md)                                 | [0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c](https://testnet.bscscan.com/address/0xf35bee4b6727d2d1c9167c5fb4d51855d6bb693c) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract)   |
+| [Coinmarketcap Oracle](guest-quotations/coinmarketcap-quotations.md) | [0x42D44F1c45349d47D34976ce3a2fF0c3dd3210a8](https://testnet.bscscan.com/address/0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
-### Matic Mumbai Testnet
+### Polygon
 
-| Contract Name | Contract Address                                                                                                                        |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) |
+{% tabs %}
+{% tab title="Mainnet" %}
+_Coming soon_
+{% endtab %}
+
+{% tab title="Mumbai Testnet" %}
+__
+
+| Published Assets                           |                                                             Smart Contract Address                                                            | Oracle Type                                                                                                                         |
+| ------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------- |
+| __[_DIA Asset Prices_](crypto-assets.md)__ | __[_0xA3d2127F85041729fec05Ca483b302ddb806d50a_](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a)__ | __[_CoinInfo Oracle_](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract)__ |
+{% endtab %}
+{% endtabs %}
 
 ### Moonbeam Testnet
 
