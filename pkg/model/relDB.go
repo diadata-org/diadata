@@ -100,6 +100,7 @@ const (
 	exchangepairTable   = "exchangepair"
 	exchangesymbolTable = "exchangesymbol"
 	blockchainTable     = "blockchain"
+	assetVolumeTable    = "assetvolume"
 
 	// cache keys
 	keyAssetCache        = "dia_asset_"

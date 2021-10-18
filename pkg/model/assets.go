@@ -607,3 +607,85 @@ func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia
 	}
 	return exchangePair, nil
 }
+
+func (rdb *RelDB) SetAssetVolume(assetVolume map[string]float64) error {
+
+	initalStr := fmt.Sprintf("insert into %s (asset_id,volume) values", assetVolumeTable)
+	substring := ""
+
+	for asset, volume := range assetVolume {
+		substring += fmt.Sprintf("('%s',%f),", asset, volume)
+
+	}
+
+	substring = substring[0 : len(substring)-1]
+
+	log.Println(initalStr + substring)
+
+	conflict := " ON CONFLICT (asset_id) do   UPDATE SET volume = EXCLUDED.volume "
+
+	query := initalStr + substring + conflict
+	_, err := rdb.postgresClient.Exec(context.Background(), query)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err error) {
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id where symbol=$1 order by volume DESC ", assetTable, assetVolumeTable)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var decimals string
+		var decimalsInt int
+		asset := dia.Asset{}
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		assets = append(assets, asset)
+	}
+	return
+}
+
+func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds []string, err error) {
+
+	rows, err := rdb.postgresClient.Query(context.Background(), "select asset_id,symbol,name,address,decimals,blockchain from asset LIMIT $1 OFFSET $2 ", limit, skip)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var decimals string
+		var decimalsInt int
+		var assetID string
+		var asset dia.Asset
+		err = rows.Scan(&assetID, &asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+
+		assets = append(assets, asset)
+		assetIds = append(assetIds, assetID)
+	}
+
+	return
+}

@@ -110,10 +110,14 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		}
 	}
 
-	asset, err := r.DS.GetTopAssetByVolume(symbol, &r.RelDB)
+	assets, err := r.RelDB.GetTopAssetByVolume(symbol)
 	if err != nil {
 		log.Errorln("Asset not found with symbol %s ", symbol)
 	}
+
+	log.Println("asset", assets)
+
+	asset := assets[0]
 
 	log.Println("asset", asset)
 
