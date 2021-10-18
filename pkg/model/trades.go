@@ -97,7 +97,6 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 	log.Infoln("GetTradesByExchanges Query", query)
 	res, err := queryInfluxDB(db.influxClient, query)
 	if err != nil {
-		log.Errorln("GetTradesByExchanges query: ", err)
 		return r, err
 	}
 
@@ -110,6 +109,7 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 		}
 	} else {
 		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		return nil, fmt.Errorf("no trades found")
 	}
 	return r, nil
 }
