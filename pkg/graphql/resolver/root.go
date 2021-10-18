@@ -148,7 +148,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 1000)
 	if err != nil {
-		return nil, nil
+		return &sr, err
 	}
 
 	if blockShiftSeconds == 0 {
