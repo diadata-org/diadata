@@ -3,11 +3,11 @@ package db
 import (
 	"bufio"
 	"context"
-	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/jackc/pgx/v4"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/jackc/pgx/v4"
 )
 
 const (
