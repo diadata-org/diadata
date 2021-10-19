@@ -1,6 +1,13 @@
 {
   "lockedWallets": [  
     {
+      "asset": "0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05",
+      "wallets": [
+        "0x5898d2ae0745c8d09762bac50fd9f34a2a95a563",
+        "0x163407fda1a93941358c1bfda39a868599553b6d"
+      ]
+    },
+    {
       "asset": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
       "wallets": [
         "0xde3e5a990bce7fc60a6f017e7c4a95fc4939299e",

@@ -1,8 +1,12 @@
 {
   "Tokens": [
     {
+      "Address": "0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05",
+      "Name": "Gelato Network Token"
+    },
+    {
       "Address": "0x8a2279d4a90b6fe1c4b30fa660cc9f926797baa2",
-      "Name": "Chroma"
+      "Name": "Chromia"
     },
     {
       "Address": "0x6c28aef8977c9b773996d0e8376d2ee379446F2f",
