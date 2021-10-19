@@ -615,7 +615,6 @@ func (rdb *RelDB) SetAssetVolume(assetVolume map[string]float64) error {
 
 	for asset, volume := range assetVolume {
 		substring += fmt.Sprintf("('%s',%f),", asset, volume)
-
 	}
 
 	substring = substring[0 : len(substring)-1]
@@ -687,5 +686,45 @@ func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds [
 		assetIds = append(assetIds, assetID)
 	}
 
+	return
+}
+
+func (rdb *RelDB) GetActiveAssetCount() (count int, err error) {
+	query := fmt.Sprintf("select count(*) FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id  ", assetTable, exchangesymbolTable)
+	var rows pgx.Row
+	rows = rdb.postgresClient.QueryRow(context.Background(), query)
+	err = rows.Scan(&count)
+	return
+}
+
+func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds []string, err error) {
+	query := fmt.Sprintf("select asset.asset_id,asset.symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id order by exchangesymbol.asset_id desc Limit $1 offset $2  ", assetTable, exchangesymbolTable)
+	var rows pgx.Rows
+	log.Errorln("query", query)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, limit, skip)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var decimals string
+		var decimalsInt int
+		var assetID string
+
+		asset := dia.Asset{}
+		err = rows.Scan(&assetID, &asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		assets = append(assets, asset)
+		assetIds = append(assetIds, assetID)
+
+	}
 	return
 }

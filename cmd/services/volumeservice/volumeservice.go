@@ -18,7 +18,7 @@ func main() {
 		log.Errorln("NewRelDataStore:", err)
 	}
 
-	totalAssets, err := relDB.Count()
+	totalAssets, err := relDB.GetActiveAssetCount()
 	if err != nil {
 		log.Errorln("Error getting Asset count", err)
 	}
@@ -28,14 +28,14 @@ func main() {
 	assetScanned := 0
 	limit := 50
 	skip := 0
-	totalPage := totalAssets / uint32(limit)
+	totalPage := totalAssets / limit
 	for int(totalPage) >= pagecount {
 		var assets []dia.Asset
 		var assetIds []string
 
 		log.Infoln("Asset Scanned ", assetScanned)
 		log.Infoln("totalPage ", totalPage)
-		assets, assetIds, err = relDB.GetByLimit(uint32(limit), uint32(skip))
+		assets, assetIds, err = relDB.GetActiveAsset(limit, skip)
 		skip = skip + limit
 		log.Infoln("page ", pagecount)
 		if err != nil {
@@ -52,6 +52,7 @@ func main() {
 			volume, err := datastore.GetVolume(asset)
 			if err != nil {
 				log.Errorln("Error getting volume of asset", asset.Symbol)
+
 			} else {
 				assetVolume[assetIds[index]] = *volume
 
@@ -59,9 +60,12 @@ func main() {
 
 		}
 
-		err = relDB.SetAssetVolume(assetVolume)
-		if err != nil {
-			log.Errorln("Errorsaving asset volume", err)
+		if len(assetVolume) > 0 {
+			err = relDB.SetAssetVolume(assetVolume)
+			if err != nil {
+				log.Errorln("Errorsaving asset volume", err)
+			}
+
 		}
 
 	}
