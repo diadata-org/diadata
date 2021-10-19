@@ -149,11 +149,11 @@ func getCEXTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset
 	// Get underlying assets.
 	quoteAsset, quoteAssetVerified, err := getExchangeAsset(trade.Source, symbols[0], rdb)
 	if err != nil {
-		log.Warn("get quote Asset: ", err)
+		log.Warnf("get quote Asset %s on %s: %v", symbols[0], trade.Source, err)
 	}
 	baseAsset, baseAssetVerified, err := getExchangeAsset(trade.Source, symbols[1], rdb)
 	if err != nil {
-		log.Warn("get base Asset: ", err)
+		log.Warnf("get base Asset %s on %s: %v", symbols[1], trade.Source, err)
 	}
 	// Verify pair if both assets were verified.
 	if quoteAssetVerified && baseAssetVerified {
