@@ -55,7 +55,6 @@ func Exchanges() []string {
 	return []string{
 		HuobiExchange,
 		BitfinexExchange,
-		ZBExchange,
 		BitBayExchange,
 		BittrexExchange,
 		CoinBaseExchange,
@@ -74,6 +73,7 @@ func Exchanges() []string {
 		LBankExchange,
 		QuoineExchange,
 		STEXExchange,
+		ZBExchange,
 
 		BancorExchange,
 		CurveFIExchange,

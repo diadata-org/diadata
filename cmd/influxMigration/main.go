@@ -15,12 +15,18 @@ import (
 const (
 	influxDbOldTradesTable = "trades"
 	influxDbTestTable      = "tradestest"
+	querySizeHours         = 12
 )
 
 var log *logrus.Logger
 
 func init() {
 	log = logrus.New()
+}
+
+type VerifiableAsset struct {
+	Asset    dia.Asset
+	Verified bool
 }
 
 func main() {
@@ -73,32 +79,64 @@ func main() {
 		if !scrapers.Exchanges[exchange].Centralized {
 			continue
 		}
+		log.Infof("migrate trades for %s ...", exchange)
+		log.Info("write into: ", toTable)
+		log.Info("load and assign exchangesymbols... ")
+		exchangesymbolMap, err := loadExchangeSymbols(exchange, rdb)
+		if err != nil {
+			log.Fatal("load exchange symbols' assets: ", err)
+		}
+		time.Sleep(10 * time.Second)
+		log.Info("...exchangesymbols loaded and assigned.")
 
 		startTime := timeInit
 		var endTime time.Time
 		for startTime.Before(timeFinal) {
-			// If not beyond time range, query one day at a time...
-			if timeInit.AddDate(0, 0, 1).Before(timeFinal) {
-				endTime = startTime.AddDate(0, 0, 1)
+			// If not beyond time range, query one hour at a time...
+			if timeInit.Add(querySizeHours * time.Hour).Before(timeFinal) {
+				endTime = startTime.Add(querySizeHours * time.Hour)
 			} else {
 				// ...else, query until last time of time range.
 				endTime = timeFinal
 			}
-			err = migrateCEXTrades(exchange, startTime, endTime, fromTable, toTable, testmode, dsRead, dsWrite, rdb)
+			err = migrateCEXTrades(exchange, exchangesymbolMap, startTime, endTime, fromTable, toTable, testmode, dsRead, dsWrite)
 			if err != nil {
 				log.Fatalf("migrate trades for exchange %s: %v", exchange, err)
 			}
-			log.Infof("migrated trades from %v to %v", startTime, endTime)
-			startTime = startTime.AddDate(0, 0, 1)
+			log.Infof("migrated trades between %v and %v", startTime, endTime)
+			startTime = startTime.Add(querySizeHours * time.Hour)
 		}
 
 	}
 }
 
+// loadExchangeSymbols loads all symbols traded on @exchange and assigns the underlying asset
+// together with a boolean that is true if the asset is verified on @exchange.
+func loadExchangeSymbols(exchange string, rdb *models.RelDB) (map[string]VerifiableAsset, error) {
+	exchangesymbolMap := make(map[string]VerifiableAsset)
+	exchangesymbols, err := rdb.GetExchangeSymbols(exchange)
+	if err != nil {
+		return make(map[string]VerifiableAsset), err
+	}
+	for _, symbol := range exchangesymbols {
+		asset, assetVerified, err := getExchangeAsset(exchange, symbol, rdb)
+		if err != nil {
+			log.Warn("get quote Asset: ", err)
+		}
+		exchangesymbolMap[symbol] = VerifiableAsset{
+			Asset:    asset,
+			Verified: assetVerified,
+		}
+
+	}
+	return exchangesymbolMap, nil
+}
+
 // migrateExchangeTrades fetches all trades done on @exchange from the old table with name @fromTable,
 // adds underlying asset information if available and stores the extended trade in the table @toTable
 // in case store==true. Otherwise, the results are just logged onto the screen.
-func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, dsRead *models.DB, dsWrite *models.DB, rdb *models.RelDB) error {
+// It takes individual datastores @dsRead and @dsWrite for reading and writing.
+func migrateCEXTrades(exchange string, exchangesymbolMap map[string]VerifiableAsset, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, dsRead *models.DB, dsWrite *models.DB) error {
 	trades, err := dsRead.GetOldTradesFromInflux(fromTable, exchange, false, timeInit, timeFinal)
 	if err != nil {
 		if strings.Contains(err.Error(), "no trades") {
@@ -109,12 +147,9 @@ func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, 
 		}
 	}
 	log.Info("number of trades: ", len(trades))
-	if len(trades) > 0 {
-		time.Sleep(5 * time.Second)
-	}
 
 	for i := range trades {
-		quoteAsset, baseAsset, pairVerified, err := getCEXTradeAssets(trades[i], rdb)
+		quoteAsset, baseAsset, pairVerified, err := getCEXTradeAssets(trades[i], exchangesymbolMap)
 		if err != nil {
 			log.Error("get trade assets: ", err)
 		}
@@ -135,7 +170,7 @@ func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, 
 }
 
 // getTradeAssets returns the underlying assets of a trade and a boolean that tells whether both assets were verified.
-func getCEXTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset, baseAsset dia.Asset, pairVerified bool, err error) {
+func getCEXTradeAssets(trade dia.Trade, exchangesymbolMap map[string]VerifiableAsset) (quoteAsset dia.Asset, baseAsset dia.Asset, pairVerified bool, err error) {
 	// Get symbols constituting the trading pair.
 	symbols, err := dia.GetPairSymbols(dia.ExchangePair{
 		Symbol:      trade.Symbol,
@@ -147,14 +182,11 @@ func getCEXTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset
 	}
 
 	// Get underlying assets.
-	quoteAsset, quoteAssetVerified, err := getExchangeAsset(trade.Source, symbols[0], rdb)
-	if err != nil {
-		log.Warnf("get quote Asset %s on %s: %v", symbols[0], trade.Source, err)
-	}
-	baseAsset, baseAssetVerified, err := getExchangeAsset(trade.Source, symbols[1], rdb)
-	if err != nil {
-		log.Warnf("get base Asset %s on %s: %v", symbols[1], trade.Source, err)
-	}
+	quoteAsset = exchangesymbolMap[symbols[0]].Asset
+	quoteAssetVerified := exchangesymbolMap[symbols[0]].Verified
+	baseAsset = exchangesymbolMap[symbols[1]].Asset
+	baseAssetVerified := exchangesymbolMap[symbols[1]].Verified
+
 	// Verify pair if both assets were verified.
 	if quoteAssetVerified && baseAssetVerified {
 		pairVerified = true
