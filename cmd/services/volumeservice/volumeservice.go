@@ -3,20 +3,35 @@ package main
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/jasonlvhit/gocron"
 	"github.com/prometheus/common/log"
+)
+
+var (
+	datastore *models.DB
+	relDB     *models.RelDB
+	err       error
 )
 
 func main() {
 
-	datastore, err := models.NewDataStore()
+	datastore, err = models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
 
-	relDB, err := models.NewRelDataStore()
+	relDB, err = models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewRelDataStore:", err)
 	}
+
+	s := gocron.NewScheduler()
+	s.Every(6).Hour().Do(fetchAndUpdateVolume)
+	<-s.Start()
+
+}
+
+func fetchAndUpdateVolume() {
 
 	totalAssets, err := relDB.GetActiveAssetCount()
 	if err != nil {
@@ -69,5 +84,4 @@ func main() {
 		}
 
 	}
-
 }
