@@ -1,17 +1,13 @@
 ARG protocol
-
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/nftDatascraper
+COPY ./cmd/nftDatascraper ./
 RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/nftDatascraper /bin/nftDatascraper
-COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
+COPY --from=build /go/bin/nftdatascraper /bin/nftdatascraper
 
 CMD ["nftdatascraper"]

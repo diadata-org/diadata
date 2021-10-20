@@ -15,3 +15,17 @@ COPY --from=build /go/bin/nftBid-scrapers /bin/nftBid-scrapers
 COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
 
 CMD ["nftbidsscraper"]
+
+ARG protocol
+FROM us.icr.io/dia-registry/devops/build:latest as build
+
+WORKDIR $GOPATH/src/
+
+COPY ./cmd/nftBid-scrapers ./
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/nftdatascraper /bin/nftbidsscraper
+
+CMD ["nftbidsscraper"]
