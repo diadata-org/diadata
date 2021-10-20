@@ -73,6 +73,7 @@ func Exchanges() []string {
 		LBankExchange,
 		QuoineExchange,
 		STEXExchange,
+		BitMaxExchange,
 		ZBExchange,
 
 		BancorExchange,
@@ -88,7 +89,6 @@ func Exchanges() []string {
 
 		ZeroxExchange,
 		BalancerExchange,
-		BitMaxExchange,
 		UnknownExchange,
 		DfynNetwork,
 	}
