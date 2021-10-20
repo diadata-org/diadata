@@ -15,6 +15,8 @@ import (
 )
 
 type Datastore interface {
+	SetInfluxClient(url string)
+
 	GetVolume(asset dia.Asset) (*float64, error)
 
 	// Deprecating
@@ -181,6 +183,8 @@ const (
 	influxDbStockQuotationsTable         = "stockquotations"
 	influxDBAssetQuotationsTable         = "assetQuotations"
 	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
+
+	influxDBDefaultURL = "http://localhost:8086"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -229,7 +233,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	}
 	if withInflux {
 		var err error
-		influxClient = db.GetInfluxClient()
+		influxClient = db.GetInfluxClient(influxDBDefaultURL)
 		influxBatchPoints = createBatchInflux()
 		_, err = queryInfluxDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 		if err != nil {
@@ -237,6 +241,11 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		}
 	}
 	return &DB{redisClient, influxClient, influxBatchPoints, 0}, nil
+}
+
+// SetInfluxClient resets influx's client url to @url.
+func (datastore *DB) SetInfluxClient(url string) {
+	datastore.influxClient = db.GetInfluxClient(url)
 }
 
 func createBatchInflux() clientInfluxdb.BatchPoints {

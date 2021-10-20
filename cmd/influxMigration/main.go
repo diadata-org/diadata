@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -16,21 +17,24 @@ const (
 	influxDbTestTable      = "tradestest"
 )
 
+var log *logrus.Logger
+
+func init() {
+	log = logrus.New()
+}
+
 func main() {
 
-	ds, err := models.NewDataStore()
-	if err != nil {
-		log.Fatal("datastore: ", err)
-	}
-
-	rdb, err := models.NewRelDataStore()
-	if err != nil {
-		log.Fatal("relational datastore: ", err)
-	}
-
-	// The oldest record we have in influx is younger than 3000 days old.
-	timeInit := time.Now().AddDate(0, 0, -3000)
-	timeFinal := time.Now()
+	ReadURL := utils.Getenv("INFLUX_READ_URL", "")
+	WriteURL := utils.Getenv("INFLUX_WRITE_URL", "")
+	log.Info("readURL: ", ReadURL)
+	log.Info("writeURL: ", WriteURL)
+	fromTable := utils.Getenv("INFLUX_TABLE_ORIGIN", influxDbOldTradesTable)
+	toTable := utils.Getenv("INFLUX_TABLE_DESTINATION", influxDbTestTable)
+	log.Info("fromTable: ", fromTable)
+	log.Info("toTable: ", toTable)
+	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
+	timeFinalString := utils.Getenv("TIME_FINAL", "1634564891")
 	testmodestring := utils.Getenv("INFLUX_MIGRATION_TESTMODE", "true")
 	var testmode bool
 	if testmodestring == "true" {
@@ -39,8 +43,31 @@ func main() {
 	if testmodestring == "false" {
 		testmode = false
 	}
-	fromTable := utils.Getenv("INFLUX_MIGRATION_ORIGIN", influxDbOldTradesTable)
-	toTable := utils.Getenv("INFLUX_MIGRATION_DESTINATION", influxDbTestTable)
+	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
+	if err != nil {
+		log.Error("parse timeFinal: ", err)
+	}
+	timeFinal := time.Unix(timeFinalInt, 0)
+	log.Info("timeFinal: ", timeFinal)
+	// The oldest record we have in influx is younger than 3000 days old.
+	timeInit := time.Now().AddDate(0, 0, -3000)
+
+	dsRead, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("datastore: ", err)
+	}
+	dsRead.SetInfluxClient(ReadURL)
+
+	dsWrite, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("datastore: ", err)
+	}
+	dsWrite.SetInfluxClient(WriteURL)
+
+	rdb, err := models.NewRelDataStore()
+	if err != nil {
+		log.Fatal("relational datastore: ", err)
+	}
 
 	for _, exchange := range dia.Exchanges() {
 		if !scrapers.Exchanges[exchange].Centralized {
@@ -57,10 +84,11 @@ func main() {
 				// ...else, query until last time of time range.
 				endTime = timeFinal
 			}
-			err = migrateCEXTrades(exchange, startTime, endTime, fromTable, toTable, testmode, ds, rdb)
+			err = migrateCEXTrades(exchange, startTime, endTime, fromTable, toTable, testmode, dsRead, dsWrite, rdb)
 			if err != nil {
 				log.Fatalf("migrate trades for exchange %s: %v", exchange, err)
 			}
+			log.Infof("migrated trades from %v to %v", startTime, endTime)
 			startTime = startTime.AddDate(0, 0, 1)
 		}
 
@@ -70,8 +98,8 @@ func main() {
 // migrateExchangeTrades fetches all trades done on @exchange from the old table with name @fromTable,
 // adds underlying asset information if available and stores the extended trade in the table @toTable
 // in case store==true. Otherwise, the results are just logged onto the screen.
-func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, ds *models.DB, rdb *models.RelDB) error {
-	trades, err := ds.GetOldTradesFromInflux(fromTable, exchange, false, timeInit, timeFinal)
+func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, fromTable string, toTable string, testmode bool, dsRead *models.DB, dsWrite *models.DB, rdb *models.RelDB) error {
+	trades, err := dsRead.GetOldTradesFromInflux(fromTable, exchange, false, timeInit, timeFinal)
 	if err != nil {
 		if strings.Contains(err.Error(), "no trades") {
 			log.Warn(err)
@@ -81,6 +109,9 @@ func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, 
 		}
 	}
 	log.Info("number of trades: ", len(trades))
+	if len(trades) > 0 {
+		time.Sleep(5 * time.Second)
+	}
 
 	for i := range trades {
 		quoteAsset, baseAsset, pairVerified, err := getCEXTradeAssets(trades[i], rdb)
@@ -94,7 +125,7 @@ func migrateCEXTrades(exchange string, timeInit time.Time, timeFinal time.Time, 
 		if testmode {
 			log.Info("extended trade: ", trades[i])
 		} else {
-			err = ds.SaveTradeInfluxToTable(&trades[i], toTable)
+			err = dsWrite.SaveTradeInfluxToTable(&trades[i], toTable)
 			if err != nil {
 				log.Fatal("save trade: ", err)
 			}
@@ -118,11 +149,11 @@ func getCEXTradeAssets(trade dia.Trade, rdb *models.RelDB) (quoteAsset dia.Asset
 	// Get underlying assets.
 	quoteAsset, quoteAssetVerified, err := getExchangeAsset(trade.Source, symbols[0], rdb)
 	if err != nil {
-		log.Warn("get quote Asset: ", err)
+		log.Warnf("get quote Asset %s on %s: %v", symbols[0], trade.Source, err)
 	}
 	baseAsset, baseAssetVerified, err := getExchangeAsset(trade.Source, symbols[1], rdb)
 	if err != nil {
-		log.Warn("get base Asset: ", err)
+		log.Warnf("get base Asset %s on %s: %v", symbols[1], trade.Source, err)
 	}
 	// Verify pair if both assets were verified.
 	if quoteAssetVerified && baseAssetVerified {
