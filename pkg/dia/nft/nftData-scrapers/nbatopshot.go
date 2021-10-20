@@ -18,7 +18,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	flowhelper "github.com/diadata-org/diadata/pkg/dia/helpers/flowhelper"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/flowhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 

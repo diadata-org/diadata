@@ -16,7 +16,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	structs "github.com/fatih/structs"
+	"github.com/fatih/structs"
 )
 
 type SorareCard struct {
@@ -249,8 +249,8 @@ type OpenSeaResponse struct {
 }
 
 type SorareScraper struct {
-	nftscraper    NFTScraper
-	address       common.Address
+	nftscraper NFTScraper
+	address    common.Address
 	apiURLOpensea string
 	ticker        *time.Ticker
 }

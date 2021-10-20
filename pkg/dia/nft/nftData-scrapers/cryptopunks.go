@@ -12,14 +12,14 @@ import (
 	"strings"
 	"time"
 
-	cryptopunk "github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
+	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common "github.com/ethereum/go-ethereum/common"
-	structs "github.com/fatih/structs"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/fatih/structs"
 )
 
 const (
@@ -239,8 +239,8 @@ type CryptopunkTraits struct {
 }
 
 type CryptoPunksScraper struct {
-	nftscraper    NFTScraper
-	address       common.Address
+	nftscraper NFTScraper
+	address    common.Address
 	apiURLOpensea string
 	cryptopunkURL string
 	ticker        *time.Ticker
