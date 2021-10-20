@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	nfttradescrapers "github.com/diadata-org/diadata/internal/pkg/nftTrade-scrapers"
+	nfttradescrapers "github.com/diadata-org/diadata/pkg/dia/nft/nftTrade-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
