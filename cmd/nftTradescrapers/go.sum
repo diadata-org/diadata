@@ -166,8 +166,8 @@ github.com/deckarep/golang-set v1.7.1/go.mod h1:93vsz/8Wt4joVM7c2AVqh+YRMiUSc14y
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/diadata-org/diadata v1.1.1-rc-43 h1:Y0CGI2CefoLnOoU03XZJJwfyGFfjXRNL+dITNPBqY70=
-github.com/diadata-org/diadata v1.1.1-rc-43/go.mod h1:jaX/PVXOddF+ctMGaeClSYL/v2f0zZ8FFnz5Rn0w7+w=
+github.com/diadata-org/diadata v1.1.1-rc-54 h1:h+Qxw8vg0PFiRp6lb+wSvV5LLG9cIKs2kQdBvh5BTas=
+github.com/diadata-org/diadata v1.1.1-rc-54/go.mod h1:jaX/PVXOddF+ctMGaeClSYL/v2f0zZ8FFnz5Rn0w7+w=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/dop251/goja v0.0.0-20200721192441-a695b0cdd498/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=

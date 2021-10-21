@@ -8,6 +8,6 @@ RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/nftdatascraper /bin/nftdatascraper
+COPY --from=build /go/bin/nftDatascraper /bin/nftDatascraper
 
-CMD ["nftdatascraper"]
+CMD ["nftDatascraper"]

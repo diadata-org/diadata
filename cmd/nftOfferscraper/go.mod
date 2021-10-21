@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/cmd/nftTrade-scrapers
+module github.com/diadata-org/diadata/cmd/nftOfferscraper
 
 go 1.14
 
