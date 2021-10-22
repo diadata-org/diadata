@@ -242,7 +242,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 		if err != nil {
 			log.Error("NewDataStore influxdb", err)
 		}
-		bp, _ = createBatchInflux()
+		bp = createBatchInflux()
 		_, err = queryInfluxDB(ci, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 		if err != nil {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
@@ -251,7 +251,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	return &DB{r, ci, bp, 0}, nil
 }
 
-func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
+func createBatchInflux() clientInfluxdb.BatchPoints {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
 		Precision: "s",
@@ -259,7 +259,7 @@ func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return bp, err
+	return bp
 }
 
 func (db *DB) Flush() error {
@@ -293,11 +293,11 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange st
 func (db *DB) WriteBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
-		log.Errorln("WriteBatchInflux", err)
-		db.influxBatchPoints, _ = createBatchInflux()
+		log.Errorln("WriteBatchInflux: ", err)
 	} else {
 		db.influxPointsInBatch = 0
 	}
+	db.influxBatchPoints = createBatchInflux()
 	return err
 }
 
