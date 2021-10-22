@@ -184,7 +184,7 @@ const (
 	influxDBAssetQuotationsTable         = "assetQuotations"
 	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
 
-	influxDBDefaultURL = "http://localhost:8086"
+	influxDBDefaultURL = "http://influxdb:8086"
 )
 
 // queryInfluxDB convenience function to query the database
