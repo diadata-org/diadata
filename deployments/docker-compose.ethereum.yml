@@ -184,7 +184,7 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-arbitrum
     networks:
       - scrapers-network
-    command: --deployedContract=0x6Ba42C45174204a89AD2b7fE7B6416AD3C020D71 --secretsFile=/run/secrets/oracle_keys_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20
+    command: --deployedContract=0x6Ba42C45174204a89AD2b7fE7B6416AD3C020D71 --secretsFile=/run/secrets/oracle_keys_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=86400
     logging:
       options:
         max-size: "50m"
