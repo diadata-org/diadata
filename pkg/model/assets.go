@@ -631,6 +631,12 @@ func (rdb *RelDB) SetAssetVolume(assetVolume map[string]float64) error {
 	return nil
 }
 
+func (rdb *RelDB) GetAssetVolume24H(asset dia.Asset) (volume float64, err error) {
+	query := fmt.Sprintf("SELECT volume FROM %s INNER JOIN %s ON assetvolume.asset_id = asset.asset_id WHERE address=$1 AND blockchain=$2", assetVolumeTable, assetTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain).Scan(&volume)
+	return
+}
+
 func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err error) {
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id where symbol=$1 order by volume DESC ", assetTable, assetVolumeTable)
 	var rows pgx.Rows
