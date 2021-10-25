@@ -83,6 +83,7 @@ type Datastore interface {
 	GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error)
 	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)
 	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
+	GetAssetsWithVOL(timeInit time.Time) ([]dia.Asset, error)
 
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)

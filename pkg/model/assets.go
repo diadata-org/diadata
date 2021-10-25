@@ -608,22 +608,13 @@ func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia
 	return exchangePair, nil
 }
 
-func (rdb *RelDB) SetAssetVolume(assetVolume map[string]float64) error {
+func (rdb *RelDB) SetAssetVolume24H(asset dia.Asset, volume float64) error {
 
-	initalStr := fmt.Sprintf("insert into %s (asset_id,volume) values", assetVolumeTable)
-	substring := ""
+	initialStr := fmt.Sprintf("insert into %s (asset_id,volume) values ", assetVolumeTable)
+	substring := fmt.Sprintf("((select asset_id from asset where address='%s' and blockchain='%s'),%f)", asset.Address, asset.Blockchain, volume)
+	conflict := " ON CONFLICT (asset_id) do UPDATE SET volume = EXCLUDED.volume "
 
-	for asset, volume := range assetVolume {
-		substring += fmt.Sprintf("('%s',%f),", asset, volume)
-	}
-
-	substring = substring[0 : len(substring)-1]
-
-	log.Println(initalStr + substring)
-
-	conflict := " ON CONFLICT (asset_id) do   UPDATE SET volume = EXCLUDED.volume "
-
-	query := initalStr + substring + conflict
+	query := initialStr + substring + conflict
 	_, err := rdb.postgresClient.Exec(context.Background(), query)
 	if err != nil {
 		return err
@@ -697,8 +688,7 @@ func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds [
 
 func (rdb *RelDB) GetActiveAssetCount() (count int, err error) {
 	query := fmt.Sprintf("select count(*) FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id  ", assetTable, exchangesymbolTable)
-	var rows pgx.Row
-	rows = rdb.postgresClient.QueryRow(context.Background(), query)
+	rows := rdb.postgresClient.QueryRow(context.Background(), query)
 	err = rows.Scan(&count)
 	return
 }
@@ -733,4 +723,35 @@ func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds 
 
 	}
 	return
+}
+
+// GetAssetsWithVOL returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
+func (db *DB) GetAssetsWithVOL(timeInit time.Time) ([]dia.Asset, error) {
+	var quotedAssets []dia.Asset
+	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND value>0 AND time>%d", influxDbFiltersTable, timeInit.UnixNano())
+	res, err := queryInfluxDB(db.influxClient, q)
+	if err != nil {
+		return quotedAssets, err
+	}
+
+	// Filter and store all unique assets from the filters table.
+	uniqueMap := make(map[dia.Asset]struct{})
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		if len(res[0].Series[0].Values) > 0 {
+			var asset dia.Asset
+			for _, val := range res[0].Series[0].Values {
+				asset.Address = val[1].(string)
+				asset.Blockchain = val[2].(string)
+				if _, ok := uniqueMap[asset]; !ok {
+					quotedAssets = append(quotedAssets, asset)
+					uniqueMap[asset] = struct{}{}
+				}
+			}
+		} else {
+			return quotedAssets, errors.New("no assetQuotation in influx")
+		}
+	} else {
+		return quotedAssets, errors.New("no assetQuotation in influx")
+	}
+	return quotedAssets, nil
 }

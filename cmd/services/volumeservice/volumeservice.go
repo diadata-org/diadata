@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
+	"time"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jasonlvhit/gocron"
 	"github.com/prometheus/common/log"
@@ -11,6 +12,10 @@ var (
 	datastore *models.DB
 	relDB     *models.RelDB
 	err       error
+)
+
+const (
+	lookbackDays = 2
 )
 
 func main() {
@@ -26,62 +31,32 @@ func main() {
 	}
 
 	s := gocron.NewScheduler()
-	s.Every(6).Hour().Do(fetchAndUpdateVolume)
+	err := s.Every(6).Hour().Do(fetchAndUpdateVolume)
+	if err != nil {
+		log.Error("schedule cron job: ", err)
+	}
 	<-s.Start()
 
 }
 
 func fetchAndUpdateVolume() {
 
-	totalAssets, err := relDB.GetActiveAssetCount()
+	totalAssets, err := datastore.GetAssetsWithVOL(time.Now().AddDate(0, 0, -lookbackDays))
 	if err != nil {
-		log.Errorln("Error getting Asset count", err)
+		log.Errorln("Get assets with volume: ", err)
 	}
 	log.Infoln("Total Assets :", totalAssets)
 
-	pagecount := 0
-	assetScanned := 0
-	limit := 50
-	skip := 0
-	totalPage := totalAssets / limit
-	for int(totalPage) >= pagecount {
-		var assets []dia.Asset
-		var assetIds []string
-
-		log.Infoln("Asset Scanned ", assetScanned)
-		log.Infoln("totalPage ", totalPage)
-		assets, assetIds, err = relDB.GetActiveAsset(limit, skip)
-		skip = skip + limit
-		log.Infoln("page ", pagecount)
+	for _, asset := range totalAssets {
+		volume, err := datastore.GetVolume(asset)
 		if err != nil {
-			log.Errorln("Error getting asssets", err)
-		}
-		pagecount++
-
-		assetVolume := make(map[string]float64)
-
-		for index, asset := range assets {
-			assetScanned++
-			log.Errorln(asset)
-			log.Errorln(assetIds[index])
-			volume, err := datastore.GetVolume(asset)
+			log.Errorln("Error getting volume of asset", asset.Symbol)
+		} else {
+			err = relDB.SetAssetVolume24H(asset, *volume)
 			if err != nil {
-				log.Errorln("Error getting volume of asset", asset.Symbol)
-
-			} else {
-				assetVolume[assetIds[index]] = *volume
-
+				log.Error("set asset volume: ", err)
 			}
-
 		}
-
-		if len(assetVolume) > 0 {
-			err = relDB.SetAssetVolume(assetVolume)
-			if err != nil {
-				log.Errorln("Errorsaving asset volume", err)
-			}
-
-		}
-
 	}
+
 }
