@@ -29,7 +29,6 @@ type RelDatastore interface {
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64) error
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
-	GetAssetsWithVOL(timeInit time.Time) ([]dia.Asset, error)
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
