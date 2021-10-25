@@ -159,7 +159,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
-			dataTowrite := make(map[string][]dia.Asset)
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)
@@ -251,10 +250,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							continue
 						}
 						if len(assetCandidates) != 1 {
-							if dataTowrite[symbol] == nil {
-								dataTowrite[symbol] = []dia.Asset{}
-							}
-							dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
 							log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
 							continue
 						}
@@ -282,7 +277,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							}
 
 						} else {
-							dataTowrite[symbol] = append(dataTowrite[symbol], assetCandidates...)
 							log.Errorf("could not verify identify token ticker %s on verified List %s. Please identify manually.", symbol, exchange)
 						}
 					}
@@ -350,15 +344,6 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 						}
 					}
 
-					dataforfile := &ExchangeTicker{
-						Assets:              dataTowrite,
-						VerifiedAssetsCount: verificationCount,
-					}
-					file, _ := json.MarshalIndent(dataforfile, "", " ")
-					err = ioutil.WriteFile(exchange+".json", file, 0600)
-					if err != nil {
-						log.Error(err)
-					}
 					log.Infof("updated exchange %s", exchange)
 					time.Sleep(60 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
@@ -371,7 +356,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}(scraper, exchange)
 				} else {
 					// For DEXes, FetchAvailablePairs can retrieve unique information.
-					// Pairs must contain base- and quotetoken addresses and blockchains.
+					// Pairs must contain base- and quotetoken addresses, blockchains and symbols of underlying assets.
 					pairs, err := scraper.FetchAvailablePairs()
 					if err != nil {
 						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
@@ -383,11 +368,34 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
 						}
 					}
-					// For the sake of completeness/statistics we could also write the symbols into exchangesymbol table.
-					// symbols, err := dia.GetAllSymbolsFromPairs(pairs)
-					// if err != nil {
-					// 	log.Error(err)
-					// }
+
+					// For the sake of completeness/statistics we write the symbols into exchangesymbol table.
+					assets := dia.GetAllAssetsFromPairs(pairs)
+					if err != nil {
+						log.Error(err)
+					}
+					log.Info("number of assets from pairs: ", len(assets))
+
+					for _, asset := range assets {
+						var assetID string
+						var ok bool
+						log.Info("asset: ", asset.Symbol)
+						err = relDB.SetExchangeSymbol(exchange, asset.Symbol)
+						if err != nil {
+							log.Errorf("error setting exchange symbol %s: %v", asset.Symbol, err)
+						}
+						assetID, err = relDB.GetAssetID(asset)
+						if err != nil {
+							log.Error(err)
+						}
+						ok, err = relDB.VerifyExchangeSymbol(exchange, asset.Symbol, assetID)
+						if err != nil {
+							log.Error(err)
+						}
+						if ok {
+							log.Infof("verified token ticker %s ", asset.Symbol)
+						}
+					}
 
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)

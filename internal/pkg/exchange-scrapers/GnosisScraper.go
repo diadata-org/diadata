@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -129,7 +130,9 @@ func (scraper *GnosisScraper) loadTokens() {
 			Address:  tokenAddress.String(),
 			Name:     name,
 		}
-		scraper.tokens[count].normalizeETH()
+		if scraper.tokens[count] != nil {
+			scraper.tokens[count].normalizeETH()
+		}
 		fmt.Println(count, tokenAddress.Hex(), symbol, decimals)
 		count++
 	}

@@ -8,3 +8,5 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 )
+
+replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata

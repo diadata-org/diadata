@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	balancerfactory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	balancerpool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	balancerfactory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
+	balancerpool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
@@ -31,8 +32,6 @@ const (
 	factoryContract        = "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"
 	balancerRestDial       = "http://159.69.120.42:8545/"
 	balancerWsDial         = "ws://159.69.120.42:8546/"
-	// balancerRestDial = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	// balancerWsDial   = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
 )
 
 type BalancerSwap struct {

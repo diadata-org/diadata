@@ -53,6 +53,7 @@ const (
 
 func Exchanges() []string {
 	return []string{
+
 		HuobiExchange,
 		BitfinexExchange,
 		BitBayExchange,
@@ -77,7 +78,6 @@ func Exchanges() []string {
 		CurveFIExchange,
 		GnosisExchange,
 		DforceExchange,
-		GnosisExchange,
 		KyberExchange,
 		MakerExchange,
 		PanCakeSwap,
@@ -86,8 +86,8 @@ func Exchanges() []string {
 
 		ZeroxExchange,
 		BalancerExchange,
-		UnknownExchange,
 		DfynNetwork,
+		UnknownExchange,
 	}
 }
 

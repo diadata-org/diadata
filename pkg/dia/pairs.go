@@ -86,6 +86,23 @@ func GetAllSymbolsFromPairs(pairs []ExchangePair) ([]string, error) {
 	return uniqueSymbols, nil
 }
 
+// GetAllAssetsFromPairs returns the unique slice of assets underlying the exchange pairs @pairs.
+func GetAllAssetsFromPairs(pairs []ExchangePair) (assets []Asset) {
+	uniqueMap := make(map[Asset]struct{})
+
+	for _, pair := range pairs {
+		if _, ok := uniqueMap[pair.UnderlyingPair.BaseToken]; !ok {
+			assets = append(assets, pair.UnderlyingPair.BaseToken)
+			uniqueMap[pair.UnderlyingPair.BaseToken] = struct{}{}
+		}
+		if _, ok := uniqueMap[pair.UnderlyingPair.QuoteToken]; !ok {
+			assets = append(assets, pair.UnderlyingPair.QuoteToken)
+			uniqueMap[pair.UnderlyingPair.QuoteToken] = struct{}{}
+		}
+	}
+	return
+}
+
 // ContainsExchangePair returns true iff @pair is contained in pairs.
 // Here, equality refers to the unique identifier (exchange,foreignName).
 func ContainsExchangePair(pairs []ExchangePair, pair ExchangePair) bool {
