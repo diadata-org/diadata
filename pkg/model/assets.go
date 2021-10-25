@@ -268,6 +268,29 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	return
 }
 
+// GetAssetExchnage returns all assets which share the symbol ticker @symbol.
+func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error) {
+
+	query := fmt.Sprintf("select exchange  FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id where exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var exchange string
+
+		err = rows.Scan(&exchange)
+		if err != nil {
+			return
+		}
+		exchnages = append(exchnages, exchange)
+	}
+	return
+}
+
 // GetUnverifiedExchangeSymbols returns all symbols from @exchange which haven't been verified yet.
 func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
 	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false order by symbol asc", exchangesymbolTable)
