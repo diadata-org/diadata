@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/diadata-org/diadata/pkg/utils"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	//jwt "github.com/blockstatecom/gin-jwt"
@@ -228,6 +229,8 @@ func main() {
 
 		dia.GET("/missingToken/:exchange", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
 		dia.GET("/token/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
+		dia.GET("/tokenexchanges/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
+
 		dia.GET("/blockchains", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 
 		dia.GET("/FarmingPools", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))

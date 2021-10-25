@@ -1260,6 +1260,17 @@ func (env *Env) GetAsset(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetAssetExchanges(c *gin.Context) {
+	symbol := c.Param("symbol")
+
+	symbols, err := env.RelDB.GetAssetExchange(symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, symbols)
+	}
+}
+
 func (env *Env) GetAllBlockchains(c *gin.Context) {
 	blockchains, err := env.RelDB.GetAllBlockchains()
 	if err != nil {
