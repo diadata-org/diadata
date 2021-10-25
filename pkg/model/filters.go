@@ -56,7 +56,7 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 
 	q := fmt.Sprintf("SELECT time,exchange,filter,symbol,value FROM %s"+
 		" WHERE filter='%s' %sand address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
-		table, filter, exchangeQuery, topAsset[0].Address, topAsset[0].Blockchain, starttime.UnixNano(), endtime.UnixNano())
+		table, filter, exchangeQuery, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
