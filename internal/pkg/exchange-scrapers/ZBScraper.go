@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var ZBSocketURL string = "wss://api.zb.today/websocket"
+var ZBSocketURL string = "wss://api.zb.work/websocket"
 
 type ZBSubscribe struct {
 	Event   string `json:"event"`
@@ -72,8 +72,6 @@ func NewZBScraper(exchange dia.Exchange) *ZBScraper {
 	return s
 }
 
-
-
 // runs in a goroutine until s is closed
 func (s *ZBScraper) mainLoop() {
 
@@ -85,7 +83,6 @@ func (s *ZBScraper) mainLoop() {
 			log.Error(s.error.Error())
 			break
 		}
-
 
 		for _, trade := range message.Data {
 			ps, ok := s.pairScrapers[strings.TrimSuffix(message.Channel, "_trades")]
