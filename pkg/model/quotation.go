@@ -143,31 +143,33 @@ func (db *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) 
 // GetAssetQuotation returns the latest full quotation for @asset before @timestamp.
 func (db *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error) {
 
-	var quotation *AssetQuotation
-	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time<='%d' ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
-
+	quotation := AssetQuotation{}
+	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time<=%d ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
-		return quotation, err
+		return &quotation, err
 	}
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
-
-		quotation.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
-		if err != nil {
-			return quotation, err
+		if len(res[0].Series[0].Values) > 0 {
+			quotation.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+			if err != nil {
+				return &quotation, err
+			}
+			quotation.Price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
+			if err != nil {
+				return &quotation, err
+			}
+			log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
+		} else {
+			return &quotation, errors.New("no assetQuotation in influx")
 		}
-		quotation.Price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
-		if err != nil {
-			return quotation, err
-		}
-		log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
 	} else {
-		return quotation, errors.New("no assetQuotation in influx")
+		return &quotation, errors.New("no assetQuotation in influx")
 	}
 	quotation.Asset = asset
 	quotation.Source = dia.Diadata
-	return quotation, nil
+	return &quotation, nil
 }
 
 // SetAssetQuotationCache stores @quotation in redis cache

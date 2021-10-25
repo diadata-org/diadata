@@ -64,7 +64,9 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 var (
 	exchange         = flag.String("exchange", "", "which exchange")
 	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
-	mode             = flag.String("mode", "current", "either storeTrades, current or historical")
+	// mode==storeTrades: trades are not forwarded to TBS and FBS and stored as raw trades in influx.
+	// mode==historical: trades are sent through kafka to TBS in tradesHistorical topic.
+	mode = flag.String("mode", "current", "either storeTrades, current or historical")
 )
 
 func init() {

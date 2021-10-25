@@ -12,15 +12,15 @@ import (
 	"strings"
 	"time"
 
-	cryptokitties "github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
+	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	structs "github.com/fatih/structs"
+	"github.com/fatih/structs"
 )
 
 const (
@@ -274,8 +274,8 @@ type OpenSeaCryptokittiesResponse struct {
 }
 
 type CryptoKittiesScraper struct {
-	nftscraper       NFTScraper
-	address          common.Address
+	nftscraper NFTScraper
+	address    common.Address
 	apiURLOpensea    string
 	cryptokittiesURL string
 	ticker           *time.Ticker

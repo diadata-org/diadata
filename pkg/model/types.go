@@ -96,6 +96,31 @@ func (aq *AssetQuotation) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+type AssetQuotationFull struct {
+	Symbol             string
+	Name               string
+	Address            string
+	Blockchain         string
+	Price              float64
+	PriceYesterday     float64
+	VolumeYesterdayUSD float64
+	Time               time.Time
+	Source             string
+}
+
+// MarshalBinary for quotations
+func (aq *AssetQuotationFull) MarshalBinary() ([]byte, error) {
+	return json.Marshal(aq)
+}
+
+// UnmarshalBinary for quotations
+func (aq *AssetQuotationFull) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &aq); err != nil {
+		return err
+	}
+	return nil
+}
+
 type Price struct {
 	Symbol string
 	Name   string

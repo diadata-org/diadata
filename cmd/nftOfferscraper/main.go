@@ -10,7 +10,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
 
-	nftofferscrapers "github.com/diadata-org/diadata/internal/pkg/nftOffer-scrapers"
+	nftofferscrapers "github.com/diadata-org/diadata/pkg/dia/nft/nftOffer-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 

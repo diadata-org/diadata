@@ -9,6 +9,7 @@ services:
     command: /bin/influxMigration
     networks:
       - influxdb-network
+      - influxdb2-network
       - postgres-network
     logging:
       options:
@@ -19,9 +20,8 @@ services:
       - /home/srv/config:/config
     environment:
       - EXEC_MODE=production
-      - INFLUXURL=http://influxdb:8086
       - INFLUX_READ_URL=http://influxdb:8086
-      - INFLUX_WRITE_URL=http://influxdb:8086
+      - INFLUX_WRITE_URL=http://influxdb2:8086
       - INFLUX_TABLE_ORIGIN=trades
       - INFLUX_TABLE_DESTINATION=tradesTmp
       - TIME_FINAL=1634564891
@@ -38,3 +38,6 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  influxdb2-network:
+    external:
+        name: influxdb-2_influxdb2-network

@@ -184,7 +184,7 @@ const (
 	influxDBAssetQuotationsTable         = "assetQuotations"
 	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
 
-	influxDBDefaultURL = "http://localhost:8086"
+	influxDBDefaultURL = "http://influxdb:8086"
 )
 
 // queryInfluxDB convenience function to query the database
@@ -291,10 +291,10 @@ func (db *DB) WriteBatchInflux() error {
 	err := db.influxClient.Write(db.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
-		db.influxBatchPoints = createBatchInflux()
 	} else {
 		db.influxPointsInBatch = 0
 	}
+	db.influxBatchPoints = createBatchInflux()
 	return err
 }
 
@@ -302,7 +302,6 @@ func (db *DB) addPoint(pt *clientInfluxdb.Point) {
 	db.influxBatchPoints.AddPoint(pt)
 	db.influxPointsInBatch++
 	if db.influxPointsInBatch >= influxMaxPointsInBatch {
-		log.Debug("AddPoint forcing write Bash")
 		err := db.WriteBatchInflux()
 		if err != nil {
 			log.Error("add point to influx batch: ", err)

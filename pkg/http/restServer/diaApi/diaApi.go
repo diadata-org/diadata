@@ -70,18 +70,41 @@ func (env *Env) PostSupply(c *gin.Context) {
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
 	symbol := c.Param("symbol")
+	timestamp := time.Now()
+	var quotationExtended models.AssetQuotationFull
 	// Fetch underlying assets for symbol
-	assets, err := env.RelDB.GetAssets(symbol)
+	assets, err := env.RelDB.GetTopAssetByVolume(symbol)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	quotationsSorted, err := env.DataStore.GetSortedAssetQuotations(assets)
-	if len(quotationsSorted) == 0 {
+	topAsset := assets[0]
+	quotation, err := env.DataStore.GetAssetQuotation(topAsset, timestamp)
+	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	c.JSON(http.StatusOK, quotationsSorted)
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, timestamp.AddDate(0, 0, -1))
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
+	} else {
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	c.JSON(http.StatusOK, quotationExtended)
 }
 
 func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {

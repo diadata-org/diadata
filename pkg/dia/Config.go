@@ -55,32 +55,30 @@ func Exchanges() []string {
 	return []string{
 		HuobiExchange,
 		BitfinexExchange,
-		ZBExchange,
 		BitBayExchange,
 		BittrexExchange,
 		CoinBaseExchange,
 		KrakenExchange,
 		KuCoinExchange,
-
 		GateIOExchange,
-		GnosisExchange,
 		HitBTCExchange,
 		OKExExchange,
-		SimexExchange,
-
 		BinanceExchange,
-		CREX24Exchange,
-
 		LBankExchange,
 		QuoineExchange,
+		BitMaxExchange,
+		LoopringExchange,
+		SimexExchange,
+		CREX24Exchange,
 		STEXExchange,
+		ZBExchange,
 
 		BancorExchange,
 		CurveFIExchange,
+		GnosisExchange,
 		DforceExchange,
 		GnosisExchange,
 		KyberExchange,
-		LoopringExchange,
 		MakerExchange,
 		PanCakeSwap,
 		SushiSwapExchange,
@@ -88,7 +86,6 @@ func Exchanges() []string {
 
 		ZeroxExchange,
 		BalancerExchange,
-		BitMaxExchange,
 		UnknownExchange,
 		DfynNetwork,
 	}

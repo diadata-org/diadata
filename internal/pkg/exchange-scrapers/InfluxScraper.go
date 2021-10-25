@@ -1,17 +1,19 @@
 package scrapers
 
 import (
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 const (
-	batchDuration = 1e9 * 60 * 60
-	tradesTable   = "trades"
+	batchDuration = "3600000000000"
+	tradesTable   = "tradesRaw"
 )
 
 type InfluxScraper struct {
@@ -26,10 +28,12 @@ type InfluxScraper struct {
 	run       bool
 	ticker    *time.Ticker
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*InfluxPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	db           *models.DB
+	pairScrapers  map[string]*InfluxPairScraper
+	exchangeName  string
+	chanTrades    chan *dia.Trade
+	table         string
+	batchDuration int64
+	db            *models.DB
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
@@ -40,16 +44,24 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 	if err != nil {
 		log.Fatal("datastore: ", err)
 	}
+	table := utils.Getenv("INFLUX_TRADES_TABLE", tradesTable)
+	batchDurationEnv := utils.Getenv("BATCH_DURATION", batchDuration)
+	batchDurationInt, err := strconv.ParseInt(batchDurationEnv, 10, 64)
+	if err != nil {
+		log.Fatal("parse batch duration ", err)
+	}
 
 	s := &InfluxScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*InfluxPairScraper),
-		exchangeName: "Influx",
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		db:           db,
-		ticker:       time.NewTicker(time.Duration(3000000000)),
+		shutdown:      make(chan nothing),
+		shutdownDone:  make(chan nothing),
+		pairScrapers:  make(map[string]*InfluxPairScraper),
+		exchangeName:  "Influx",
+		error:         nil,
+		chanTrades:    make(chan *dia.Trade),
+		table:         table,
+		db:            db,
+		batchDuration: batchDurationInt,
+		ticker:        time.NewTicker(time.Duration(3000000000)),
 	}
 	if scrape {
 		go s.mainLoop()
@@ -62,7 +74,7 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 func (s *InfluxScraper) mainLoop() {
 	log.Info("enter main loop")
 
-	timeInit, err := s.db.GetFirstTradeDate("trades")
+	timeInit, err := s.db.GetFirstTradeDate(s.table)
 	if err != nil {
 		log.Error("get first trade date: ", err)
 	}
@@ -72,12 +84,12 @@ func (s *InfluxScraper) mainLoop() {
 	// final time can be chosen as now, because current scrapers are running in parallel
 	timeFinal := time.Now()
 	starttime := timeInit
-	endtime := starttime.Add(time.Duration(batchDuration))
+	endtime := starttime.Add(time.Duration(s.batchDuration))
 
 	go func() {
 		for timeInit.Before(timeFinal) {
 			t0 := time.Now()
-			trades, err := s.db.GetOldTradesFromInflux(tradesTable, "", true, starttime, endtime)
+			trades, err := s.db.GetOldTradesFromInflux(s.table, "", true, starttime, endtime)
 			if err != nil {
 				if strings.Contains(err.Error(), "no trades in time range") {
 					log.Warnf("%v: %v -- %v", err, starttime, endtime)
@@ -92,7 +104,7 @@ func (s *InfluxScraper) mainLoop() {
 				s.chanTrades <- &trades[i]
 				log.Info("got trade", trades[i])
 			}
-			starttime, endtime = endtime, endtime.Add(time.Duration(batchDuration))
+			starttime, endtime = endtime, endtime.Add(time.Duration(s.batchDuration))
 		}
 	}()
 

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -29,11 +30,15 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 	}
 	// First get asset with @symbol with largest volume.
 	// topAsset, err := db.GetTopAssetByVolume(symbol, relDB)
-	topAsset, err := relDB.GetTopAssetByVolume(symbol)
+	sortedAssets, err := relDB.GetTopAssetByVolume(symbol)
 	if err != nil {
 		log.Error(err)
 		return &Points{}, err
 	}
+	if len(sortedAssets) == 0 {
+		return nil, errors.New("no traded assets found")
+	}
+	topAsset := sortedAssets[0]
 
 	exchangeQuery := "and exchange='" + exchange + "' "
 	table := ""

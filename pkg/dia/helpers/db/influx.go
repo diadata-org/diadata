@@ -12,8 +12,9 @@ func init() {
 	log = logrus.New()
 }
 
-// GetInfluxClient returns an influx client connecting through @url per default.
-// Otherwise through the environment variable INFLUXURL if set.
+// GetInfluxClient returns an influx client connecting through the
+// URL given in the environment variable INFLUXURL.
+// If INFLUXURL is not set, it connects to @url per default.
 func GetInfluxClient(url string) clientInfluxdb.Client {
 	var influxClient clientInfluxdb.Client
 	var err error

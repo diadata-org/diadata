@@ -51,6 +51,10 @@ CREATE TABLE blockchain (
     UNIQUE(name)
 );
 
+CREATE TABLE assetvolume (
+    asset_id UUID primary key,
+    volume decimal
+);
 
 ---------------------------------------
 ------- tables for NFT storage --------
