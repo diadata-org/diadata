@@ -95,7 +95,7 @@ func main() {
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "party zone",
-		Key:         []byte("uu"), // TOFIX: this secret key should be different from the accepted apikey and secret key downstairs
+		Key:         []byte(config.SecretKey), // TOFIX: this secret key should be different from the accepted apikey and secret key downstairs
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
