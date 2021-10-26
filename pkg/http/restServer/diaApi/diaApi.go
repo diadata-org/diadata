@@ -78,6 +78,10 @@ func (env *Env) GetQuotation(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
+	if len(assets) == 0 {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
 	topAsset := assets[0]
 	quotation, err := env.DataStore.GetAssetQuotation(topAsset, timestamp)
 	if err != nil {
