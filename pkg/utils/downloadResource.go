@@ -15,6 +15,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var openseaKey string
+
 // DownloadResource is a simple utility that downloads a resource
 // from @url and stores it into @filepath.
 func DownloadResource(filepath, url string) (err error) {
@@ -199,39 +201,57 @@ func GraphQLGet(url string, query []byte, bearer string) ([]byte, int, error) {
 	return HTTPRequest(req)
 }
 
+func getOpenseaApiKey() string {
+	if openseaKey != "" {
+		return openseaKey
+	}
+	if Getenv("USE_ENV", "false") == "true" {
+		openseaKey = Getenv("API_KEY_OPENSEA", "")
+	} else {
+		var lines []string
+		var filename string
+		if Getenv("EXEC_MODE", "debug") == "production" {
+			 filename = "/run/secrets/Opensea-API.key"
+		} else {
+			filename = "../../secrets/Opensea-API.key"
+		}
+
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func(file *os.File) {
+			err := file.Close()
+			if err != nil {
+				log.Error("failure closing opensea-api.key file ", err)
+			}
+		}(file)
+
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
+		if err = scanner.Err(); err != nil {
+			log.Fatal(err)
+		}
+		if len(lines) != 1 {
+			log.Fatal("Secrets file for opensea API key should have exactly one line")
+		}
+		openseaKey = lines[0]
+	}
+	return openseaKey
+}
+
 // OpenseaGetRequest returns the data for a get request on @url with an Opensea API key.
 func OpenseaGetRequest(OpenseaURL string) ([]byte, int, error) {
-	var lines []string
-	executionMode := os.Getenv("EXEC_MODE")
-	var file *os.File
-	var err error
-	if executionMode == "production" {
-		file, err = os.Open("/run/secrets/Opensea-API.key")
-	} else {
-		file, err = os.Open("../../secrets/Opensea-API.key")
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err = scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	if len(lines) != 1 {
-		log.Fatal("Secrets file for opensea API key should have exactly one line")
-	}
-	apiKey := lines[0]
+
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", OpenseaURL, nil)
 	if err != nil {
 		log.Print(err)
 		return []byte{}, 0, err
 	}
-
+	apiKey := getOpenseaApiKey()
 	q := url.Values{}
 	req.Header.Set("Accepts", "application/json")
 	req.Header.Add("X-API-KEY", apiKey)
