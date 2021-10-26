@@ -31,19 +31,16 @@ const (
 	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
 
-	// wsDialBSC   = "wss://bsc-ws-node.nariox.org:443"
-	// restDialBSC = "https://bsc-dataseed2.defibit.io/"
+	wsDialBSC   = ""
+	restDialBSC = ""
 
-	wsDialBSC   = "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
-	restDialBSC = "https://nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb"
+	wsDialPolygon   = ""
+	restDialPolygon = ""
 
-	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
-	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/l-dCmyoOsZzUBSFhyU1RcoftpFbyqcPr"
-
-	uniswapWaitMilliseconds     = "100"
-	dfynWaitMilliseconds        = "25"
-	sushiswapWaitMilliseconds   = 25
-	pancakeswapWaitMilliseconds = 100
+	uniswapWaitMilliseconds     = "25"
+	sushiswapWaitMilliseconds   = "100"
+	pancakeswapWaitMilliseconds = "100"
+	dfynWaitMilliseconds        = "100"
 )
 
 type UniswapToken struct {
@@ -126,7 +123,12 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = sushiswapWaitMilliseconds
+		waitTimeString := utils.Getenv("SUSHISWAP_WAIT_TIME", sushiswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
@@ -137,16 +139,21 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = pancakeswapWaitMilliseconds
+		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	case dia.DfynNetwork:
 		log.Infoln("Init ws and rest client for Polygon chain")
-		wsClient, err = ethclient.Dial(wsDialPolygon)
+		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
 		if err != nil {
 			log.Fatal(err)
 		}
-		restClient, err = ethclient.Dial(restDialPolygon)
+		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -154,7 +161,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {
 			log.Error("could not parse wait time: ", err)
-			waitTime = 25
+			waitTime = 100
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 

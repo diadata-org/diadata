@@ -97,7 +97,7 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, sc
 
 // runs in a goroutine until s is closed
 func (s *KuCoinScraper) mainLoop() {
-	var channelsForClient1, channelsForClient2 []*kucoin.WebSocketSubscribeMessage
+	var channelsForClient1, channelsForClient2, channelsForClient3 []*kucoin.WebSocketSubscribeMessage
 
 	close(s.initDone)
 
@@ -114,21 +114,29 @@ func (s *KuCoinScraper) mainLoop() {
 
 	client1 := s.apiService.NewWebSocketClient(tk)
 	client2 := s.apiService.NewWebSocketClient(tk)
+	client3 := s.apiService.NewWebSocketClient(tk)
 
 	client1DownStream, _, err := client1.Connect()
 	if err != nil {
-		// Handle error
 		log.Error("Error Reading data", err)
 	}
 	client2DownStream, _, err := client2.Connect()
 	if err != nil {
-		// Handle error
+		log.Error("Error Reading data", err)
+	}
+	client3DownStream, _, err := client3.Connect()
+	if err != nil {
 		log.Error("Error Reading data", err)
 	}
 
 	count := 0
 	for pair := range s.pairScrapers {
 		ch := kucoin.NewSubscribeMessage("/market/match:"+pair, false)
+		if count >= 598 {
+			channelsForClient3 = append(channelsForClient3, ch)
+			count++
+			continue
+		}
 		if count >= 299 {
 			channelsForClient2 = append(channelsForClient2, ch)
 			count++
@@ -142,12 +150,13 @@ func (s *KuCoinScraper) mainLoop() {
 	log.Info("number of pairs: ", count)
 
 	if err := client1.Subscribe(channelsForClient1...); err != nil {
-		// Handle error
 		log.Fatal("Error while subscribing client1 ", err)
 	}
 	if err := client2.Subscribe(channelsForClient2...); err != nil {
-		// Handle error
 		log.Fatal("Error while subscribing client2 ", err)
+	}
+	if err := client3.Subscribe(channelsForClient3...); err != nil {
+		log.Fatal("Error while subscribing client3 ", err)
 	}
 
 	go func() {
@@ -232,6 +241,45 @@ func (s *KuCoinScraper) mainLoop() {
 				}
 				s.chanTrades <- trade
 				log.Println("Got trade stream2: ", trade)
+
+			case msg = <-client3DownStream:
+				if msg == nil {
+					continue
+				}
+				t := &KucoinMarketMatch{}
+				if err := msg.ReadData(t); err != nil {
+					log.Errorf("Failure to read: %v", err)
+					return
+				}
+				asset := strings.Split(t.Symbol, "-")
+				f64Price, _ := strconv.ParseFloat(t.Price, 64)
+				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
+				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
+
+				if t.Side == "sell" {
+					f64Volume = -f64Volume
+				}
+
+				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, t.Symbol)
+				if err != nil {
+					log.Error(err)
+				}
+				trade := &dia.Trade{
+					Symbol:       asset[0],
+					Pair:         t.Symbol,
+					Price:        f64Price,
+					Time:         time.Unix(0, timeOrder),
+					Volume:       f64Volume,
+					Source:       s.exchangeName,
+					VerifiedPair: exchangepair.Verified,
+					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+				}
+				if exchangepair.Verified {
+					log.Infoln("Got verified trade", trade)
+				}
+				s.chanTrades <- trade
+				log.Println("Got trade stream3: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
 				log.Println("KuCoin shutting down")

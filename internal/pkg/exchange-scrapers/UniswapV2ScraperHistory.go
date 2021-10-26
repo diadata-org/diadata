@@ -86,7 +86,7 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = sushiswapWaitMilliseconds
+		waitTime = 100
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
@@ -97,7 +97,7 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 		if err != nil {
 			log.Fatal(err)
 		}
-		waitTime = pancakeswapWaitMilliseconds
+		waitTime = 50
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	case dia.DfynNetwork:
