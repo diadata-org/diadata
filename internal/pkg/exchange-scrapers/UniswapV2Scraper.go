@@ -673,6 +673,9 @@ func (s *UniswapScraper) getNumPairs() (int, error) {
 
 	// Getting pairs ---------------
 	numPairs, err := contract.AllPairsLength(&bind.CallOpts{})
+	if err != nil {
+		return 0, err
+	}
 	return int(numPairs.Int64()), err
 }
 

@@ -83,6 +83,7 @@ func Exchanges() []string {
 		PanCakeSwap,
 		SushiSwapExchange,
 		UniswapExchange,
+		UniswapExchangeV3,
 
 		ZeroxExchange,
 		BalancerExchange,
