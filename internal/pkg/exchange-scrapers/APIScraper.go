@@ -62,7 +62,7 @@ func init() {
 	Exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
-	Exchanges[dia.DfynNetwork] = dia.Exchange{Name: dia.DfynNetwork, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0xe7fb3e833efe5f9c441105eb65ef8b261266423b"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.DfynNetwork] = dia.Exchange{Name: dia.DfynNetwork, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0xe7fb3e833efe5f9c441105eb65ef8b261266423b"), WatchdogDelay: watchdogDelay}
 
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: watchdogDelay}
 	Exchanges["UniswapHistory"] = dia.Exchange{Name: "UniswapHistory", Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: 3600}
