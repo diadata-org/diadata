@@ -62,12 +62,12 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
 		exchangeFactoryContractAddress = exchange.Contract.String()
-		wsClient, err = ethclient.Dial(wsDial)
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(restDial)
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -114,7 +114,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 	}()
 
 	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("uniswap: No pairs to scrap provided")
+		s.error = errors.New("uniswap: No pairs to scrape provided")
 		log.Error(s.error.Error())
 	}
 	for {
@@ -138,68 +138,65 @@ func (s *UniswapV3Scraper) mainLoop() {
 			continue
 		}
 		pair.normalizeUniPair()
-		ps, ok := s.pairScrapers[pair.ForeignName]
+		// ps, ok := s.pairScrapers[pair.ForeignName]
 
-		if ok {
-			log.Info(": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
-			sink, err := s.GetSwapsChannel(pair.Address)
-			if err != nil {
-				log.Error("error fetching swaps channel: ", err)
-			}
+		log.Info(": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
+		sink, err := s.GetSwapsChannel(pair.Address)
+		if err != nil {
+			log.Error("error fetching swaps channel: ", err)
+		}
 
-			go func() {
-				for {
-					rawSwap, ok := <-sink
-					if ok {
-						swap, err := s.normalizeUniswapSwap(*rawSwap)
-						if err != nil {
-							log.Error("error normalizing swap: ", err)
-						}
-						price, volume := s.getSwapData(swap)
-						token0 := dia.Asset{
-							Address:    pair.Token0.Address.Hex(),
-							Symbol:     pair.Token0.Symbol,
-							Name:       pair.Token0.Name,
-							Decimals:   pair.Token0.Decimals,
-							Blockchain: dia.ETHEREUM,
-						}
-						token1 := dia.Asset{
-							Address:    pair.Token1.Address.Hex(),
-							Symbol:     pair.Token1.Symbol,
-							Name:       pair.Token1.Name,
-							Decimals:   pair.Token1.Decimals,
-							Blockchain: dia.ETHEREUM,
-						}
+		go func() {
+			for {
+				rawSwap, ok := <-sink
+				if ok {
+					swap, err := s.normalizeUniswapSwap(*rawSwap)
+					if err != nil {
+						log.Error("error normalizing swap: ", err)
+					}
+					price, volume := s.getSwapData(swap)
+					token0 := dia.Asset{
+						Address:    pair.Token0.Address.Hex(),
+						Symbol:     pair.Token0.Symbol,
+						Name:       pair.Token0.Name,
+						Decimals:   pair.Token0.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
+					token1 := dia.Asset{
+						Address:    pair.Token1.Address.Hex(),
+						Symbol:     pair.Token1.Symbol,
+						Name:       pair.Token1.Name,
+						Decimals:   pair.Token1.Decimals,
+						Blockchain: dia.ETHEREUM,
+					}
 
-						t := &dia.Trade{
-							Symbol:         ps.pair.Symbol,
-							Pair:           ps.pair.ForeignName,
-							Price:          price,
-							Volume:         volume,
-							BaseToken:      token1,
-							QuoteToken:     token0,
-							Time:           time.Unix(swap.Timestamp, 0),
-							ForeignTradeID: swap.ID,
-							Source:         s.exchangeName,
-							VerifiedPair:   true,
-						}
-						// If we need quotation of a base token, reverse pair
-						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
-							tSwapped, err := dia.SwapTrade(*t)
-							if err == nil {
-								t = &tSwapped
-							}
-						}
-						if price > 0 {
-							log.Info("Got trade: ", t)
-							s.chanTrades <- t
+					t := &dia.Trade{
+						Symbol:         pair.Token0.Symbol,
+						Pair:           pair.ForeignName,
+						Price:          price,
+						Volume:         volume,
+						BaseToken:      token1,
+						QuoteToken:     token0,
+						Time:           time.Unix(swap.Timestamp, 0),
+						ForeignTradeID: swap.ID,
+						Source:         s.exchangeName,
+						VerifiedPair:   true,
+					}
+					// If we need quotation of a base token, reverse pair
+					if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
 						}
 					}
+					if price > 0 {
+						log.Info("Got trade: ", t)
+						s.chanTrades <- t
+					}
 				}
-			}()
-		} else {
-			log.Infof("Skipping pair %s due to no pairScraper being available", pair.ForeignName)
-		}
+			}
+		}()
+
 	}
 }
 
@@ -421,8 +418,7 @@ func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 		log.Error(err)
 	}
 
-	var startBlock uint64
-	startBlock = 12369621
+	startBlock := uint64(12369621)
 
 	poolCreated, err := contract.FilterPoolCreated(&bind.FilterOpts{Start: startBlock}, []common.Address{}, []common.Address{}, []*big.Int{})
 	if err != nil {

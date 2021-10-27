@@ -54,6 +54,7 @@ const (
 func Exchanges() []string {
 	return []string{
 
+		ZBExchange,
 		HuobiExchange,
 		BitfinexExchange,
 		BitBayExchange,
@@ -72,7 +73,6 @@ func Exchanges() []string {
 		SimexExchange,
 		CREX24Exchange,
 		STEXExchange,
-		ZBExchange,
 
 		BancorExchange,
 		CurveFIExchange,
@@ -83,6 +83,7 @@ func Exchanges() []string {
 		PanCakeSwap,
 		SushiSwapExchange,
 		UniswapExchange,
+		UniswapExchangeV3,
 
 		ZeroxExchange,
 		BalancerExchange,
