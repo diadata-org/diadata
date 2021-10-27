@@ -652,7 +652,7 @@ func (rdb *RelDB) GetAssetVolume24H(asset dia.Asset) (volume float64, err error)
 }
 
 func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err error) {
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id where symbol=$1 order by volume DESC ", assetTable, assetVolumeTable)
+	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id where symbol=$1 order by volume DESC", assetTable, assetVolumeTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
