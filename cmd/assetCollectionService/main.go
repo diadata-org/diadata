@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/datasource"
+	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 
 	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -38,11 +38,11 @@ func init() {
 	caching = flag.Bool("caching", true, "caching assets in redis")
 	flag.Parse()
 
-	source, err := datasource.InitSource()
-	if err != nil {
-		panic(err)
-	}
-	exchanges = source.GetExchanges()
+	// source, err := datasource.InitSource()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	exchanges = scrapers.Exchanges
 }
 
 // NewAssetScraper returns a scraper for assets on @exchange.
@@ -55,6 +55,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
 	case dia.SushiSwapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
+	case dia.DfynNetwork:
+		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
@@ -71,9 +73,7 @@ func main() {
 	}
 	// Initial run:
 	runAssetSource(relDB, *assetSource, *caching, *secret)
-	// if err != nil {
-	// 	log.Error(err)
-	// }
+
 	// Afterwards, run every @fetchPeriodMinutes
 	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
 	go func() {
@@ -91,6 +91,7 @@ func runAssetSource(relDB *models.RelDB, source string, caching bool, secret str
 	// TO DO: check for duplicate key error and return if error is different
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
+	log.Info("asset: ", asset)
 	for receivedAsset := range asset.Asset() {
 		// Set to persistent DB
 		err := relDB.SetAsset(receivedAsset)

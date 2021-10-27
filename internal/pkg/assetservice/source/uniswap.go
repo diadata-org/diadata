@@ -1,13 +1,14 @@
 package source
 
 import (
+	"math/big"
+
 	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 )
 
 type UniswapPair struct {
@@ -18,13 +19,14 @@ type UniswapPair struct {
 }
 
 const (
-	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	wsDial   =  "ws://159.69.120.42:8546/" // ETH_URI_WS
+	wsDial   = "ws://159.69.120.42:8546/"   // ETH_URI_WS
 	restDial = "http://159.69.120.42:8545/" // ETH_URI_REST
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443" // ETH_URI_WS_BSC
-	restDialBSC = "https://bsc-dataseed2.defibit.io/" // ETH_URI_REST_BSC
+	wsDialBSC   = "" // ETH_URI_WS_BSC
+	restDialBSC = "" // ETH_URI_REST_BSC
+
+	wsDialPolygon   = ""
+	restDialPolygon = ""
 )
 
 type UniswapAssetSource struct {
@@ -96,6 +98,23 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.BINANCESMARTCHAIN,
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+	case dia.DfynNetwork:
+		log.Infoln("Init ws and rest client for Polygon chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.POLYGON,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}

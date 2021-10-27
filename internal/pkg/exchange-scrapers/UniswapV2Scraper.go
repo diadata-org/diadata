@@ -34,8 +34,8 @@ const (
 	wsDialBSC   = ""
 	restDialBSC = ""
 
-	wsDialPolygon   = ""
-	restDialPolygon = ""
+	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
+	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
