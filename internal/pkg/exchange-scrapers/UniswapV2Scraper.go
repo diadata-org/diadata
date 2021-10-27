@@ -34,8 +34,8 @@ const (
 	wsDialBSC   = ""
 	restDialBSC = ""
 
-	wsDialPolygon   = "wss://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
-	restDialPolygon = "https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid"
+	wsDialPolygon   = ""
+	restDialPolygon = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -133,11 +133,11 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("dial websocket: ", err)
 		}
 		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("dial rest client: ", err)
 		}
 		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
 		waitTime, err = strconv.Atoi(waitTimeString)

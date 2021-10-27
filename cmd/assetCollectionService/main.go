@@ -91,7 +91,6 @@ func runAssetSource(relDB *models.RelDB, source string, caching bool, secret str
 	// TO DO: check for duplicate key error and return if error is different
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
-	log.Info("asset: ", asset)
 	for receivedAsset := range asset.Asset() {
 		// Set to persistent DB
 		err := relDB.SetAsset(receivedAsset)
