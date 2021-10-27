@@ -12,9 +12,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgconn"
 
-	nftsource "github.com/diadata-org/diadata/internal/pkg/nftService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	nftsource "github.com/diadata-org/diadata/pkg/dia/nft/nftService"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -35,8 +35,6 @@ func init() {
 	flag.Parse()
 }
 
-// NewAssetScraper returns a scraper for assets on @exchange.
-// For NewJSONReader @exchange is the folder in the config folder and @secret the filename.
 func NewNFTClassCollector(nftSource string, secret string) nftsource.NFTClassSource {
 	switch nftSource {
 	case "Opensea":
