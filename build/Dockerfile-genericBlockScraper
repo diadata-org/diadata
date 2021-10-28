@@ -1,17 +1,14 @@
 ARG blockchain
 
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/blockscraper
+COPY ./cmd/blockscraper ./
 RUN go install
 
 FROM gcr.io/distroless/base
-
 COPY --from=build /go/bin/blockscraper /bin/blockscraper
-COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
+COPY --from=build /config/ /config/
 
 CMD ["blockscraper"]

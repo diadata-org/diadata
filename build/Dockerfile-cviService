@@ -5,8 +5,6 @@ WORKDIR $GOPATH/src/
 COPY ./cmd/services/cviService ./
 RUN go install
 
-RUN ls -la /go/bin
-
 FROM gcr.io/distroless/base
 COPY --from=build /go/bin/cviService /bin/cviService
 COPY --from=build /config/ /config/
