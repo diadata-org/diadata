@@ -41,7 +41,7 @@ func main() {
 
 func fetchAndUpdateVolume() {
 
-	totalAssets, err := datastore.GetAssetsWithVOL(time.Now().AddDate(0, 0, -lookbackDays))
+	totalAssets, err := datastore.GetAssetsWithVOLInflux(time.Now().AddDate(0, 0, -lookbackDays))
 	if err != nil {
 		log.Errorln("Get assets with volume: ", err)
 	}

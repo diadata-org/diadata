@@ -748,8 +748,36 @@ func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds 
 	return
 }
 
-// GetAssetsWithVOL returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
-func (db *DB) GetAssetsWithVOL(timeInit time.Time) ([]dia.Asset, error) {
+// GetAssetsWithVol returns all assets with entry in the assetvolume table, sorted by volume in descending order.
+func (rdb *RelDB) GetAssetsWithVOL() (volumeSortedAssets []dia.Asset, err error) {
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC", assetTable, assetVolumeTable)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var decimals string
+		var decimalsInt int
+		asset := dia.Asset{}
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		volumeSortedAssets = append(volumeSortedAssets, asset)
+	}
+	return
+}
+
+// GetAssetsWithVOLInflux returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
+func (db *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 	var quotedAssets []dia.Asset
 	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND value>0 AND time>%d", influxDbFiltersTable, timeInit.UnixNano())
 	res, err := queryInfluxDB(db.influxClient, q)

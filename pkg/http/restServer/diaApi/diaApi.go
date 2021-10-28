@@ -428,7 +428,19 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
 	} else {
 		sort.Strings(s)
-		c.JSON(http.StatusOK, s)
+		// Sort all symbols by volume, append if they have no volume.
+		sortedAssets, err := env.RelDB.GetAssetsWithVOL()
+		if err != nil {
+			log.Error("get assets with volume: ", err)
+		}
+		var sortedSymbols []string
+		for _, asset := range sortedAssets {
+			sortedSymbols = append(sortedSymbols, asset.Symbol)
+		}
+		sortedSymbols = utils.UniqueStrings(sortedSymbols)
+		allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
+
+		c.JSON(http.StatusOK, allSymbols)
 	}
 }
 
