@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/block-scrapers"
 	"sync"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
 
-	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,12 +25,12 @@ func main() {
 
 	scraperType := flag.String("blockchain", "Ethereum", "which blockchain")
 	flag.Parse()
-	var blockscraper scrapers.BlockScraperInterface
+	var blockscraper blockscrapers.BlockScraperInterface
 
 	switch *scraperType {
 	case "Ethereum":
 		log.Println("Block-scraper: Start scraping block data from Ethereum")
-		blockscraper = scrapers.NewEthereumScraper(rdb)
+		blockscraper = blockscrapers.NewEthereumScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
