@@ -94,12 +94,6 @@ func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 	if err != nil {
 		println(err.Error())
 	}
-	defer func() {
-		err := SwConn.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}()
 
 	s.wsClient = SwConn
 	if scrape {

@@ -8,13 +8,6 @@
         "Address": "0x0000000000000000000000000000000000000000"
       },
       {
-        "Symbol": "ETH",
-        "Name": "Ether",
-        "Decimals": 18,
-        "Blockchain": "Ethereum",
-        "Address": "0x0000000000000000000000000000000000000000"        
-      },
-      {
         "Symbol": "ADA",
         "Name": "Cardano",
         "Decimals": 6,
@@ -222,7 +215,7 @@
         "Symbol": "MATIC",
         "Name": "Matic Token",
         "Decimals": 18,
-        "Blockchain": "Matic",
+        "Blockchain": "Polygon",
         "Address": "0x0000000000000000000000000000000000001010" 
       },
       {
