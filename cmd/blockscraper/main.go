@@ -10,7 +10,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/block-scrapers"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/block-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
