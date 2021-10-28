@@ -17,8 +17,8 @@ const (
 )
 
 type EthereumScraper struct {
-	blockscraper    BlockScraper
-	client          *ethclient.Client
+	blockscraper BlockScraper
+	client       *ethclient.Client
 	ticker          *time.Ticker
 	lastBlockNumber int64
 }
