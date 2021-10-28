@@ -133,11 +133,11 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("dial websocket: ", err)
 		}
 		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("dial rest client: ", err)
 		}
 		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
 		waitTime, err = strconv.Atoi(waitTimeString)
@@ -264,7 +264,11 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		return
 	}
-	pair.normalizeUniPair()
+
+	// Normalize WETH on Ethereum
+	if Exchanges[s.exchangeName].BlockChain.Name == dia.ETHEREUM {
+		pair.normalizeUniPair()
+	}
 	// ps := s.pairScrapers[pair.ForeignName]
 	// if ok {
 	log.Info(i, ": add pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
@@ -325,9 +329,6 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) {
 			}
 		}
 	}()
-	// } else {
-	// 	log.Info("Skipping pair due to no pairScraper being available")
-	// }
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
@@ -525,12 +526,12 @@ func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair
 
 // Account for WETH is identified with ETH
 func (up *UniswapPair) normalizeUniPair() {
-	if up.Token0.Symbol == "WETH" {
+	if up.Token0.Address == common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
 		up.Token0.Symbol = "ETH"
 		up.Token0.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 	}
-	if up.Token1.Symbol == "WETH" {
+	if up.Token1.Address == common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
 		up.Token1.Symbol = "ETH"
 		up.Token1.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol

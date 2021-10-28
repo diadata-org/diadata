@@ -20,6 +20,7 @@ const (
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
 	FLOW                                    = "Flow"
+	POLYGON                                 = "Polygon"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 	FIAT                                    = "Fiat"
 )

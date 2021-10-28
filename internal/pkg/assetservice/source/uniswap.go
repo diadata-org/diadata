@@ -1,13 +1,16 @@
 package source
 
 import (
+	"math/big"
+	"strconv"
+	"time"
+
 	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 )
 
 type UniswapPair struct {
@@ -18,13 +21,19 @@ type UniswapPair struct {
 }
 
 const (
-	// wsDial   = "wss://eth-mainnet.ws.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	// restDial = "https://eth-mainnet.alchemyapi.io/v2/CP4k5FRH3BZdqr_ANmGJFr0iI076CxR8"
-	wsDial   =  "ws://159.69.120.42:8546/" // ETH_URI_WS
-	restDial = "http://159.69.120.42:8545/" // ETH_URI_REST
+	wsDial   = "ws://159.69.120.42:8546/"
+	restDial = "http://159.69.120.42:8545/"
 
-	wsDialBSC   = "wss://bsc-ws-node.nariox.org:443" // ETH_URI_WS_BSC
-	restDialBSC = "https://bsc-dataseed2.defibit.io/" // ETH_URI_REST_BSC
+	wsDialBSC   = ""
+	restDialBSC = ""
+
+	wsDialPolygon   = ""
+	restDialPolygon = ""
+
+	uniswapWaitMilliseconds     = "25"
+	sushiswapWaitMilliseconds   = "100"
+	pancakeswapWaitMilliseconds = "520"
+	dfynWaitMilliseconds        = "100"
 )
 
 type UniswapAssetSource struct {
@@ -32,6 +41,7 @@ type UniswapAssetSource struct {
 	RestClient   *ethclient.Client
 	assetChannel chan dia.Asset
 	blockchain   string
+	waitTime     int
 }
 
 var exchangeFactoryContractAddress string
@@ -58,12 +68,22 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			log.Fatal(err)
 		}
 
+		var waitTime int
+		waitTimeString := utils.Getenv("UNISWAP_WAIT_TIME", uniswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+
 		uas = &UniswapAssetSource{
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.ETHEREUM,
+			waitTime:     waitTime,
 		}
+
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
@@ -75,11 +95,19 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
+		var waitTime int
+		waitTimeString := utils.Getenv("SUSHISWAP_WAIT_TIME", sushiswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
 		uas = &UniswapAssetSource{
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.ETHEREUM,
+			waitTime:     waitTime,
 		}
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
@@ -91,11 +119,44 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		if err != nil {
 			log.Fatal(err)
 		}
+		var waitTime int
+		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 520
+		}
 		uas = &UniswapAssetSource{
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.BINANCESMARTCHAIN,
+			waitTime:     waitTime,
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+	case dia.DfynNetwork:
+		log.Infoln("Init ws and rest client for Polygon chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		var waitTime int
+		waitTimeString := utils.Getenv("DFYN_WAIT_TIME", dfynWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.POLYGON,
+			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
@@ -131,6 +192,7 @@ func (uas *UniswapAssetSource) fetchAssets() {
 	log.Info("Found ", numPairs, " pairs")
 	checkMap := make(map[string]struct{})
 	for i := 0; i < numPairs; i++ {
+		time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
 		pair, err := uas.GetPairByID(int64(i))
 		if err != nil {
 			log.Errorln("Error getting pair with ID ", i)
