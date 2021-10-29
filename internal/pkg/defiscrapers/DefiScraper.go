@@ -41,15 +41,10 @@ func (s *DefiScraper) mainLoop(rateType string) {
 	for {
 		select {
 		case <-s.tickerRate.C:
-			err := s.UpdateRates(rateType)
-			if err != nil {
-				log.Error(err)
-			}
+			s.UpdateRates(rateType)
 		case <-s.tickerState.C:
-			err := s.UpdateState(rateType)
-			if err != nil {
-				log.Error(err)
-			}
+			s.UpdateState(rateType)
+
 		case <-s.shutdown: // user requested shutdown
 			log.Println("DefiScraper shutting down")
 			s.cleanup(nil)
@@ -126,6 +121,17 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 				Token:                "",
 			}
 			helper = NewAAVE(s, protocol)
+		}
+	case "AAVEv2":
+		{
+
+			protocol = dia.DefiProtocol{
+				Name:                 "AAVEv2",
+				Address:              "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413",
+				UnderlyingBlockchain: "Ethereum",
+				Token:                "",
+			}
+			helper = NewAAVEv2(s, protocol)
 		}
 	case "DDEX":
 		{
@@ -242,10 +248,7 @@ func (s *DefiScraper) UpdateRates(defiType string) error {
 
 	}
 
-	err := s.datastore.SetDefiProtocol(protocol)
-	if err != nil {
-		log.Error(err)
-	}
+	s.datastore.SetDefiProtocol(protocol)
 	return helper.UpdateRate()
 }
 
@@ -264,6 +267,10 @@ func (s *DefiScraper) UpdateState(defiType string) error {
 	case "AAVE":
 		{
 			helper = NewAAVE(s, protocol)
+		}
+	case "AAVEv2":
+		{
+			helper = NewAAVEv2(s, protocol)
 		}
 	case "RAY":
 		{
