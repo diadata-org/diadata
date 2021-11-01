@@ -150,11 +150,13 @@ func GetSymbolsList(url string) ([]string, error) {
 	return b.Symbols, nil
 }
 
-func GetConfigApi() (c *ConfigApi) {
+func GetConfigApi() *ConfigApi {
+	var c ConfigApi
 	if utils.Getenv("USE_ENV","false") == "true" {
-		c := ConfigApi{}
-		c.ApiKey = utils.Getenv("DIADATA_API_KEY", "")
-		c.SecretKey = utils.Getenv("DIADATA_SECRET_KEY", "")
+		c = ConfigApi{
+			ApiKey:    utils.Getenv("DIADATA_API_KEY", ""),
+			SecretKey: utils.Getenv("DIADATA_SECRET_KEY", ""),
+		}
 	} else {
 		configFile := "/run/secrets/api_diadata"
 		err := gonfig.GetConf(configFile, &c)
@@ -172,7 +174,7 @@ func GetConfigApi() (c *ConfigApi) {
 			log.Println("Loaded secret in", configFile)
 		}
 	}
-	return
+	return &c
 }
 
 func NewClientWithUrl(config *ConfigApi, url string) *Client {
