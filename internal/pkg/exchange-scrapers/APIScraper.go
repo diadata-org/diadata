@@ -27,6 +27,8 @@ func init() {
 	blockchains = make(map[string]dia.BlockChain)
 	blockchains[dia.BITCOIN] = dia.BlockChain{Name: dia.BITCOIN, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
 	blockchains[dia.ETHEREUM] = dia.BlockChain{Name: dia.ETHEREUM, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.BINANCESMARTCHAIN] = dia.BlockChain{Name: dia.BINANCESMARTCHAIN, NativeToken: "", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.POLYGON] = dia.BlockChain{Name: dia.POLYGON, NativeToken: "MATIC", VerificationMechanism: dia.PROOF_OF_STAKE}
 
 	Exchanges = make(map[string]dia.Exchange)
 	Exchanges[dia.BalancerExchange] = dia.Exchange{Name: dia.BalancerExchange, Centralized: false, Contract: common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"), WatchdogDelay: watchdogDelay}
