@@ -150,9 +150,10 @@ func NewCachingLayer() (*RelDB, error) {
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
 	var postgresClient *pgx.Conn
 	var redisClient *redis.Client
+	var url string
 
-	url := db.GetPostgresURL()
 	if withPostgres {
+		url = db.GetPostgresURL()
 		postgresClient = db.PostgresDatabase()
 	}
 	if withRedis {

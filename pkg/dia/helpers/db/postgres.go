@@ -32,7 +32,7 @@ func GetPostgresClient() (*pgx.Conn, error) {
 }
 
 func PostgresDatabase() *pgx.Conn {
-	var connected bool
+	connected := false
 	var err error
 	if postgresClient == nil {
 		// during startup - if it does not exist, create it
@@ -43,7 +43,7 @@ func PostgresDatabase() *pgx.Conn {
 	}
 
 	count := 0
-	for !connected && count < maxRetry {
+	for (!connected || postgresClient.IsClosed()) && count < maxRetry {
 		log.Info("Connection to Postgres was lost. Waiting for 5s...")
 		time.Sleep(reconnectWaitSeconds * time.Second)
 		log.Info("Reconnecting to Postgres...")
