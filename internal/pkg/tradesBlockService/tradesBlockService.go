@@ -110,8 +110,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				if price > 0.0 {
 					log.Infof("price of trade %s: %v", t.Pair, t.Price)
 					log.Info("price of base token: ", price)
+					// TO DO: Some estimatedUSDPrices are zero. This might be rounding error. Switch to big.Int?
 					t.EstimatedUSDPrice = t.Price * price
-					verifiedTrade = true
 				}
 			}
 		}
@@ -138,8 +138,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		verifiedTrade = false
 	}
 
-	// Only verified trades of verified pairs are added to the tradesBlock
-	if verifiedTrade {
+	// Only verified trades of verified pairs with nonzero price are added to the tradesBlock
+	if verifiedTrade && t.EstimatedUSDPrice > 0 {
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
 				s.finaliseCurrentBlock()
