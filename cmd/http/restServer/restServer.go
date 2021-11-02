@@ -278,6 +278,8 @@ func main() {
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	routerGroup := r.Group("/")
+	AddEndpoints(routerGroup)
 	// This environment variable is either set in docker-compose or empty
 	executionMode := utils.Getenv("EXEC_MODE", "")
 	if executionMode == "production" {

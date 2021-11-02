@@ -10,21 +10,23 @@ import (
 )
 
 type StaticEndpoint struct {
-	URI string
+	URI     string
 	content string
 }
 
 // AddEndpoints returns the static endpoints for the rest interface
-func AddEndpoints(routeGroup *gin.RouterGroup)  {
+func AddEndpoints(routeGroup *gin.RouterGroup) {
 	pgConn := db.PostgresDatabase()
 	query := fmt.Sprintf("select endpoint, value from rest_static_endpoints where active = true")
 
+	log.Info("reading static endpoints")
 	rows, err := pgConn.Query(context.Background(), query)
 	if err != nil {
+		log.Error("error reading endpoint from postgres", err)
 		return
 	}
-	defer rows.Close()
 
+	log.Info("finishedreading static endpoints")
 	endpoints := routeGroup.Group("/")
 
 	for rows.Next() {
@@ -39,8 +41,9 @@ func AddEndpoints(routeGroup *gin.RouterGroup)  {
 		}
 
 		log.Info("added endpoint ", endpoint.URI)
-		endpoints.GET("/" + endpoint.URI, func(context *gin.Context) {
+		endpoints.GET("/"+endpoint.URI, func(context *gin.Context) {
 			context.String(http.StatusOK, endpoint.content)
 		})
 	}
+	defer rows.Close()
 }

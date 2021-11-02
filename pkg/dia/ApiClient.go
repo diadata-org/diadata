@@ -152,20 +152,27 @@ func GetSymbolsList(url string) ([]string, error) {
 
 func GetConfigApi() *ConfigApi {
 	var c ConfigApi
-	configFile := "/run/secrets/api_diadata"
-	err := gonfig.GetConf(configFile, &c)
-	if err != nil {
-		log.Errorln("GetConfigApi", err)
-		usr, _ := user.Current()
-		dir := usr.HomeDir
-		configFile = dir + "/secrets/api_diadata.json"
-		err = gonfig.GetConf(configFile, &c)
-	}
-	if err != nil {
-		log.Println(err)
-		return nil
+	if utils.Getenv("USE_ENV","false") == "true" {
+		c = ConfigApi{
+			ApiKey:    utils.Getenv("DIADATA_API_KEY", ""),
+			SecretKey: utils.Getenv("DIADATA_SECRET_KEY", ""),
+		}
 	} else {
-		log.Println("Loaded secret in", configFile)
+		configFile := "/run/secrets/api_diadata"
+		err := gonfig.GetConf(configFile, &c)
+		if err != nil {
+			log.Errorln("GetConfigApi", err)
+			usr, _ := user.Current()
+			dir := usr.HomeDir
+			configFile = dir + "/secrets/api_diadata.json"
+			err = gonfig.GetConf(configFile, &c)
+		}
+		if err != nil {
+			log.Println(err)
+			return nil
+		} else {
+			log.Println("Loaded secret in", configFile)
+		}
 	}
 	return &c
 }

@@ -39,7 +39,7 @@ const (
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
-	pancakeswapWaitMilliseconds = "100"
+	pancakeswapWaitMilliseconds = "600"
 	dfynWaitMilliseconds        = "100"
 )
 
@@ -143,7 +143,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {
 			log.Error("could not parse wait time: ", err)
-			waitTime = 100
+			waitTime = 600
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
@@ -210,6 +210,7 @@ func (s *UniswapScraper) mainLoop() {
 		s.error = errors.New("uniswap: No pairs to scrap provided")
 		log.Error(s.error.Error())
 	}
+
 	var wg sync.WaitGroup
 	for i := 0; i < numPairs; i++ {
 		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
@@ -458,14 +459,14 @@ func (s *UniswapScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 			Name:       pair.Token0.Name,
 			Address:    pair.Token0.Address.Hex(),
 			Decimals:   pair.Token0.Decimals,
-			Blockchain: dia.ETHEREUM,
+			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 		}
 		basetoken := dia.Asset{
 			Symbol:     pair.Token1.Symbol,
 			Name:       pair.Token1.Name,
 			Address:    pair.Token1.Address.Hex(),
 			Decimals:   pair.Token1.Decimals,
-			Blockchain: dia.ETHEREUM,
+			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 		}
 		pairToNormalise := dia.ExchangePair{
 			Symbol:         pair.Token0.Symbol,
