@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "DOWS",
+            "ForeignName": "DOWS-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "DFYN",
             "ForeignName": "DFYN-ETH",
             "Exchange": "UniswapV2",

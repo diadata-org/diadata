@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Exchange": "UniswapV2",
+      "ForeignName": "DOWS_USDT",
+      "Ignore": false,
+      "Symbol": "DOWS"
+    },
+    {
       "Exchange": "GateIO",
       "ForeignName": "MOVR_USDT",
       "Ignore": false,
