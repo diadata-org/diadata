@@ -53,15 +53,35 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-_Coming soon_
+| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type                                                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://polygonscan.com/address/0x8e687a93a969f0bf125f1154738ca6dcc36af57f) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 
 {% tab title="Mumbai Testnet" %}
 __
 
-| Published Assets                           |                                                             Smart Contract Address                                                            | Oracle Type                                                                                                                         |
-| ------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------- |
-| __[_DIA Asset Prices_](crypto-assets.md)__ | __[_0xA3d2127F85041729fec05Ca483b302ddb806d50a_](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a)__ | __[_CoinInfo Oracle_](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract)__ |
+| Published Assets                     |                                                           Smart Contract Address                                                          | Oracle Type                                                                                                                   |
+| ------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | __[0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### xDaiChain
+
+{% tabs %}
+{% tab title="Mainnet" %}
+
+
+| Published Assets                     | Smart Contract Address                                                                                                           |                                                                                                                               |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+
+{% tab title="Sokol Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                            | Oracle Type                                                                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -70,18 +90,6 @@ __
 | Contract Name | Contract Address                                                                                                                                      |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41](https://moonbase-blockscout.testnet.moonbeam.network/address/0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41) |
-
-### xDaiChain
-
-| Contract Name | Contract Address                                                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) |
-
-### xDaiChain Sokol Testnet
-
-| Contract Name | Contract Address                                                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) |
 
 ### Arbitrum
 
