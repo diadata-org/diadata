@@ -83,12 +83,6 @@ func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 		s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
 	}
 
-	if len(s.previousPrices) > s.param {
-		s.previousPrices = s.previousPrices[0:s.param]
-	}
-	if len(s.previousVolumes) > s.param {
-		s.previousVolumes = s.previousVolumes[0:s.param]
-	}
 	s.currentTime = t
 }
 
@@ -119,8 +113,16 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 		log.Info("prices in filtersblock: ", s.previousPrices)
 		log.Info("volumes in filtersblock: ", s.previousVolumes)
 		log.Info("-------------------------------------------------------------------------")
+	} else {
+
+		log.Info("prices in filtersblock: ", s.previousPrices)
+		log.Info("volumes in filtersblock: ", s.previousVolumes)
+
 	}
 	s.value = totalPrice / totalVolume
+	s.previousPrices = s.previousPrices[:0]
+	s.previousVolumes = s.previousVolumes[:0]
+
 	return s.value
 }
 
