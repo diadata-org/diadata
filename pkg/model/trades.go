@@ -87,10 +87,10 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
 			}
 		}
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and (%s) and  time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subquery, startTime.UnixNano(), endTime.UnixNano())
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and (%s) and    estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subquery, startTime.UnixNano(), endTime.UnixNano())
 
 	} else {
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s'  and  time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, startTime.UnixNano(), endTime.UnixNano())
+		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s'  and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, startTime.UnixNano(), endTime.UnixNano())
 
 	}
 
