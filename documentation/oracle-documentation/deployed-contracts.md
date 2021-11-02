@@ -73,7 +73,7 @@ __
 {% tab title="Mainnet" %}
 
 
-| Published Assets                     | Smart Contract Address                                                                                                           |                                                                                                                               |
+| Published Assets                     | Smart Contract Address                                                                                                           | Oracle Type                                                                                                                   |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | [DIA Asset Prices](crypto-assets.md) | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
@@ -82,6 +82,38 @@ __
 | Published Assets                     | Smart Contract Address                                                                                                            | Oracle Type                                                                                                                   |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | [DIA Asset Prices](crypto-assets.md) | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### Shiden
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                     | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d](https://shiden.subscan.io/account/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+
+{% tab title="Shibuya Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                      | Oracle Type                                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E](https://shibuya.subscan.io/account/0x1232acd632dd75f874e357c77295da3f5cd7733e) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### Avax
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                                | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x226585bff09d87Bb4D985520aE6681D2Fe775e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+
+{% tab title="Fuji Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                                     | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -102,30 +134,6 @@ __
 | Contract Name | Contract Address                                                                                                           |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
-
-### Shiden
-
-| Contract Name | Contract Address                           |
-| ------------- | ------------------------------------------ |
-| DIA Oracle    | 0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d |
-
-### Shiden Shibuya
-
-| Contract Name | Contract Address                           |
-| ------------- | ------------------------------------------ |
-| DIA Oracle    | 0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E |
-
-### Avax Mainnet
-
-| Contract Name | Contract Address                                                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0x226585bff09d87Bb4D985520aE6681D2Fe775e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) |
-
-### Avax Fuji Testnet
-
-| Contract Name | Contract Address                                                                                                                           |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| DIA Oracle    | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) |
 
 ### Fantom Mainnet
 
