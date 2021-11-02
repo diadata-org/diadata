@@ -53,15 +53,67 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-_Coming soon_
+| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type                                                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://polygonscan.com/address/0x8e687a93a969f0bf125f1154738ca6dcc36af57f) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 
 {% tab title="Mumbai Testnet" %}
 __
 
-| Published Assets                           |                                                             Smart Contract Address                                                            | Oracle Type                                                                                                                         |
-| ------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------- |
-| __[_DIA Asset Prices_](crypto-assets.md)__ | __[_0xA3d2127F85041729fec05Ca483b302ddb806d50a_](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a)__ | __[_CoinInfo Oracle_](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract)__ |
+| Published Assets                     |                                                           Smart Contract Address                                                          | Oracle Type                                                                                                                   |
+| ------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | __[0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### xDaiChain
+
+{% tabs %}
+{% tab title="Mainnet" %}
+
+
+| Published Assets                     | Smart Contract Address                                                                                                           | Oracle Type                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+
+{% tab title="Sokol Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                            | Oracle Type                                                                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### Shiden
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                     | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d](https://shiden.subscan.io/account/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+
+{% tab title="Shibuya Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                      | Oracle Type                                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E](https://shibuya.subscan.io/account/0x1232acd632dd75f874e357c77295da3f5cd7733e) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
+### Avax
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                                | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x226585bff09d87Bb4D985520aE6681D2Fe775e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+
+{% tab title="Fuji Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                                     | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -70,18 +122,6 @@ __
 | Contract Name | Contract Address                                                                                                                                      |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41](https://moonbase-blockscout.testnet.moonbeam.network/address/0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41) |
-
-### xDaiChain
-
-| Contract Name | Contract Address                                                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) |
-
-### xDaiChain Sokol Testnet
-
-| Contract Name | Contract Address                                                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) |
 
 ### Arbitrum
 
@@ -94,30 +134,6 @@ __
 | Contract Name | Contract Address                                                                                                           |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
-
-### Shiden
-
-| Contract Name | Contract Address                           |
-| ------------- | ------------------------------------------ |
-| DIA Oracle    | 0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d |
-
-### Shiden Shibuya
-
-| Contract Name | Contract Address                           |
-| ------------- | ------------------------------------------ |
-| DIA Oracle    | 0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E |
-
-### Avax Mainnet
-
-| Contract Name | Contract Address                                                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0x226585bff09d87Bb4D985520aE6681D2Fe775e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) |
-
-### Avax Fuji Testnet
-
-| Contract Name | Contract Address                                                                                                                           |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| DIA Oracle    | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) |
 
 ### Fantom Mainnet
 
