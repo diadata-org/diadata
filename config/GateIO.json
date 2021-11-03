@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "DOWS_USDT",
+      "Ignore": false,
+      "Symbol": "DOWS"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "DFYN_USDT",
       "Ignore": false,
       "Symbol": "DFYN"
