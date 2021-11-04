@@ -108,10 +108,14 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
 				if price > 0.0 {
-					log.Infof("price of trade %s: %v", t.Pair, t.Price)
+					log.Infof("price of trade %s on exchange %s: %v", t.Pair, t.Source, t.Price)
 					log.Info("price of base token: ", price)
-					// TO DO: Some estimatedUSDPrices are zero. This might be rounding error. Switch to big.Int?
+					log.Info("resulting estimatedUSDPrice: ", t.Price*price)
+					// TO DO: Some estimatedUSDPrices are zero. This might be rounding error. Switch to big.Float?
 					t.EstimatedUSDPrice = t.Price * price
+					if t.EstimatedUSDPrice > 0 {
+						verifiedTrade = true
+					}
 				}
 			}
 		}

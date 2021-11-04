@@ -779,7 +779,7 @@ func (rdb *RelDB) GetAssetsWithVOL() (volumeSortedAssets []dia.Asset, err error)
 // GetAssetsWithVOLInflux returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
 func (db *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 	var quotedAssets []dia.Asset
-	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND value>0 AND time>%d", influxDbFiltersTable, timeInit.UnixNano())
+	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND time>%d", influxDbFiltersTable, timeInit.UnixNano())
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return quotedAssets, err
@@ -791,6 +791,9 @@ func (db *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 		if len(res[0].Series[0].Values) > 0 {
 			var asset dia.Asset
 			for _, val := range res[0].Series[0].Values {
+				if val[1] == nil || val[2] == nil {
+					continue
+				}
 				asset.Address = val[1].(string)
 				asset.Blockchain = val[2].(string)
 				if _, ok := uniqueMap[asset]; !ok {
@@ -799,10 +802,10 @@ func (db *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 				}
 			}
 		} else {
-			return quotedAssets, errors.New("no assetQuotation in influx")
+			return quotedAssets, errors.New("no recent assets with volume in influx")
 		}
 	} else {
-		return quotedAssets, errors.New("no assetQuotation in influx")
+		return quotedAssets, errors.New("no recent asset with volume in influx")
 	}
 	return quotedAssets, nil
 }

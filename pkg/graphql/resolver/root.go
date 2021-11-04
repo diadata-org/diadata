@@ -147,7 +147,11 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	log.Println("asset", asset)
 
-	starttime = endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
+	maxStartTime := endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
+
+	if starttime.Before(maxStartTime) {
+		starttime = maxStartTime
+	}
 
 	trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 1000)
 	if err != nil {

@@ -79,6 +79,18 @@
             "Address": "0xFb2f26F266Fb2805a387230f2aa0a331b4d96Fba"
         },
         {
+            "Symbol": "DAFI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xFc979087305A826c2B2a0056cFAbA50aad3E6439"
+        },
+        {
+            "Symbol": "DFYN",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x9695e0114e12C0d3A3636fAb5A18e6b737529023"
+        },
+        {
             "Symbol": "DATA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -101,6 +113,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0AbdAce70D3790235af448C88547603b945604ea"
+        },
+        {
+            "Symbol": "DOWS",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559"
         },
         {
             "Symbol": "DPY",

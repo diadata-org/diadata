@@ -30,6 +30,9 @@ func main() {
 		log.Errorln("NewRelDataStore:", err)
 	}
 
+	// initial run.
+	fetchAndUpdateVolume()
+
 	s := gocron.NewScheduler()
 	err := s.Every(6).Hour().Do(fetchAndUpdateVolume)
 	if err != nil {
@@ -45,12 +48,12 @@ func fetchAndUpdateVolume() {
 	if err != nil {
 		log.Errorln("Get assets with volume: ", err)
 	}
-	log.Infoln("Total Assets :", totalAssets)
+	log.Infoln("Total Assets: ", totalAssets)
 
 	for _, asset := range totalAssets {
 		volume, err := datastore.GetVolume(asset)
 		if err != nil {
-			log.Errorln("Error getting volume of asset", asset.Symbol)
+			log.Errorf("get volume of asset %s, %s", asset.Symbol, err.Error())
 		} else {
 			err = relDB.SetAssetVolume24H(asset, *volume)
 			if err != nil {
