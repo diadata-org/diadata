@@ -66,6 +66,45 @@ func (env *Env) PostSupply(c *gin.Context) {
 	}
 }
 
+// SetQuotation sets a quotation to redis cache. Input must be of the format:
+// '["blockchain","address","value"]'
+func (env *Env) SetQuotation(c *gin.Context) {
+
+	var quotation models.AssetQuotation
+	var input []string
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
+		return
+	}
+	err = json.Unmarshal(body, &input)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("unmarshal body"))
+		return
+	}
+	if len(input) != 3 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("wrong number of inputs"))
+		return
+	}
+
+	quotation.Asset.Blockchain = input[0]
+	quotation.Asset.Address = input[1]
+	price, err := strconv.ParseFloat(input[2], 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	quotation.Price = price
+	quotation.Source = "diadata.org"
+	quotation.Time = time.Now()
+
+	_, err = env.DataStore.SetAssetQuotationCache(&quotation)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+}
+
 // GetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {

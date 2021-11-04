@@ -49,6 +49,7 @@ const (
 	STEXExchange      = "STEX"
 	Deribit           = "Deribit"
 	DfynNetwork       = "DFYN"
+	UbeswapExchange   = "Ubeswap"
 )
 
 func Exchanges() []string {
@@ -84,6 +85,7 @@ func Exchanges() []string {
 		SushiSwapExchange,
 		UniswapExchange,
 		UniswapExchangeV3,
+		UbeswapExchange,
 
 		ZeroxExchange,
 		BalancerExchange,

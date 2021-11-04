@@ -201,6 +201,7 @@ func main() {
 	{
 		diaAuth.POST("/supply", diaApiEnv.PostSupply)
 		diaAuth.POST("/indexRebalance/:symbol", diaApiEnv.PostIndexRebalance)
+		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
 	}
 
 	diaGroup := r.Group("/v1")

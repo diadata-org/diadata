@@ -22,6 +22,7 @@ const (
 	FLOW                                    = "Flow"
 	POLYGON                                 = "Polygon"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
+	CELO                                    = "Celo"
 	FIAT                                    = "Fiat"
 )
 

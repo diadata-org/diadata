@@ -37,10 +37,14 @@ const (
 	wsDialPolygon   = ""
 	restDialPolygon = ""
 
+	restDialCelo = "https://forno.celo.org"
+	wsDialCelo   = "wss://forno.celo.org/ws"
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "600"
 	dfynWaitMilliseconds        = "100"
+	ubeswapWaitMilliseconds     = "200"
 )
 
 type UniswapToken struct {
@@ -165,6 +169,24 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
+	case dia.UbeswapExchange:
+		log.Infoln("Init ws and rest client for CELO chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("CELO_URI_REST", restDialCelo))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("CELO_WAIT_TIME", ubeswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
 	}
 
 	s := &UniswapScraper{
@@ -253,14 +275,14 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) {
 		log.Info("skip pair: ", pair.ForeignName)
 		return
 	}
-	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-		} else {
-			log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-		}
-		return
-	}
+	// if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
+	// 	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
+	// 		log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
+	// 	} else {
+	// 		log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
+	// 	}
+	// 	return
+	// }
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		return
@@ -322,6 +344,9 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) {
 				}
 				if price > 0 {
 					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
+					log.Info("----------------")
+					log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
+					log.Info("----------------")
 					s.chanTrades <- t
 				}
 				if price == 0 {
