@@ -30,10 +30,14 @@ const (
 	wsDialPolygon   = ""
 	restDialPolygon = ""
 
+	restDialCelo = ""
+	wsDialCelo   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "520"
 	dfynWaitMilliseconds        = "100"
+	ubeswapWaitMilliseconds     = "200"
 )
 
 type UniswapAssetSource struct {
@@ -156,6 +160,31 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.POLYGON,
+			waitTime:     waitTime,
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+	case dia.UbeswapExchange:
+		log.Infoln("Init ws and rest client for Celo chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("CELO_URI_REST", restDialCelo))
+		if err != nil {
+			log.Fatal(err)
+		}
+		var waitTime int
+		waitTimeString := utils.Getenv("UBESWAP_WAIT_TIME", ubeswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 200
+		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.CELO,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()

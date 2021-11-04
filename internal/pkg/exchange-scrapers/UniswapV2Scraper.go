@@ -37,8 +37,8 @@ const (
 	wsDialPolygon   = ""
 	restDialPolygon = ""
 
-	restDialCelo = "https://forno.celo.org"
-	wsDialCelo   = "wss://forno.celo.org/ws"
+	restDialCelo = ""
+	wsDialCelo   = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
