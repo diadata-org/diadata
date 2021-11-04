@@ -203,83 +203,83 @@ func main() {
 		diaAuth.POST("/indexRebalance/:symbol", diaApiEnv.PostIndexRebalance)
 	}
 
-	dia := r.Group("/v1")
+	diaGroup := r.Group("/v1")
 	{
 		// Endpoints for cryptocurrencies/exchanges
-		dia.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
-		dia.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
-		dia.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
-		dia.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
+		diaGroup.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
+		diaGroup.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
+		diaGroup.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
+		diaGroup.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
 		//  Deprectated - > split up in specific endpoints
-		// dia.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
-		dia.GET("/symbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
-		dia.GET("/volume/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
-		dia.GET("/volume24/:exchange", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
-		// Deprectated: dia.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
-		dia.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
-		dia.GET("/exchanges", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
-		dia.GET("/defiLendingProtocols", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
-		dia.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
-		dia.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
-		dia.GET("/cviIndex", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
-		dia.GET("/defiLendingRate/:protocol/:asset", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
-		dia.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
-		dia.GET("/defiLendingState/:protocol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
-		dia.GET("/defiLendingState/:protocol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
+		// diaGroup.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
+		diaGroup.GET("/symbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/volume/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
+		diaGroup.GET("/volume24/:exchange", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
+		// Deprectated: diaGroup.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
+		diaGroup.GET("/pairs", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
+		diaGroup.GET("/exchanges", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
+		diaGroup.GET("/defiLendingProtocols", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
+		diaGroup.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
+		diaGroup.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
+		diaGroup.GET("/cviIndex", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
+		diaGroup.GET("/defiLendingRate/:protocol/:asset", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
+		diaGroup.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
+		diaGroup.GET("/defiLendingState/:protocol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
+		diaGroup.GET("/defiLendingState/:protocol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
 
-		dia.GET("/missingToken/:exchange", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
-		dia.GET("/token/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
-		dia.GET("/tokenexchanges/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
+		diaGroup.GET("/missingToken/:exchange", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
+		diaGroup.GET("/token/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
+		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
 
-		dia.GET("/blockchains", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
+		diaGroup.GET("/blockchains", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 
-		dia.GET("/FarmingPools", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
-		dia.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
-		dia.GET("/FarmingPoolData/:protocol/:poolID/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
+		diaGroup.GET("/FarmingPools", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
+		diaGroup.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
+		diaGroup.GET("/FarmingPoolData/:protocol/:poolID/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
 
-		dia.GET("CryptoDerivatives/:type/:name", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
+		diaGroup.GET("CryptoDerivatives/:type/:name", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
 
 		// Endpoints for interestrates
-		dia.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
-		dia.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
-		dia.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
-		dia.GET("/compoundedRate/:symbol/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
-		dia.GET("/compoundedRate/:symbol/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
-		dia.GET("/compoundedAvg/:symbol/:days/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		dia.GET("/compoundedAvg/:symbol/:days/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		dia.GET("/compoundedAvgDIA/:symbol/:days/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
-		dia.GET("/compoundedAvgDIA/:symbol/:days/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
+		diaGroup.GET("/interestrates", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
+		diaGroup.GET("/interestrate/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
+		diaGroup.GET("/interestrate/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetInterestRate))
+		diaGroup.GET("/compoundedRate/:symbol/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
+		diaGroup.GET("/compoundedRate/:symbol/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedRate))
+		diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvg))
+		diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvg))
+		diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
+		diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
 
 		// Endpoints for fiat currencies
-		dia.GET("/fiatQuotations", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFiatQuotations))
+		diaGroup.GET("/fiatQuotations", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFiatQuotations))
 
 		// Endpoints for foreign sources
-		dia.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
-		dia.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
-		dia.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
+		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
 
 		// Gold asset
-		dia.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
-		dia.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
+		diaGroup.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
+		diaGroup.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		dia.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
-		dia.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
+		diaGroup.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
+		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
 		// Endpoints for NFTs
-		dia.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
-		dia.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
-		dia.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
-		dia.GET("/NFT/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFT))
-		dia.GET("/NFTTrades/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTTrades))
-		dia.GET("/NFTPrice30Days/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTPrice30Days))
+		diaGroup.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
+		diaGroup.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
+		diaGroup.GET("/NFTCategories", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
+		diaGroup.GET("/NFT/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFT))
+		diaGroup.GET("/NFTTrades/:blockchain/:address/:id", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTTrades))
+		diaGroup.GET("/NFTPrice30Days/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTPrice30Days))
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	routerGroup := r.Group("/")
-	AddEndpoints(routerGroup)
+	AddEndpoints(r)
+
 	// This environment variable is either set in docker-compose or empty
 	executionMode := utils.Getenv("EXEC_MODE", "")
 	if executionMode == "production" {

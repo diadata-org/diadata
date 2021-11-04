@@ -15,7 +15,7 @@ type StaticEndpoint struct {
 }
 
 // AddEndpoints returns the static endpoints for the rest interface
-func AddEndpoints(routeGroup *gin.RouterGroup) {
+func AddEndpoints(engine *gin.Engine) {
 	pgConn := db.PostgresDatabase()
 	query := fmt.Sprintf("select endpoint, value from rest_static_endpoints where active = true")
 
@@ -25,9 +25,6 @@ func AddEndpoints(routeGroup *gin.RouterGroup) {
 		log.Error("error reading endpoint from postgres", err)
 		return
 	}
-
-	log.Info("finishedreading static endpoints")
-	endpoints := routeGroup.Group("/")
 
 	for rows.Next() {
 		var endpoint StaticEndpoint
@@ -39,11 +36,10 @@ func AddEndpoints(routeGroup *gin.RouterGroup) {
 			log.Error("error reading endpoint ", err)
 			continue
 		}
-
-		log.Info("added endpoint ", endpoint.URI)
-		endpoints.GET("/"+endpoint.URI, func(context *gin.Context) {
+		engine.GET("/"+endpoint.URI, func(context *gin.Context) {
 			context.String(http.StatusOK, endpoint.content)
 		})
 	}
 	defer rows.Close()
+	log.Info("finished reading static endpoints")
 }
