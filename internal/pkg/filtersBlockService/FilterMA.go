@@ -72,7 +72,7 @@ func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
 			diff--
 		}
 	} else {
-
+		// If timestamp @t is the same as @trade.Time, shift slices and append @trade.
 		if diff == 0.0 {
 			if len(s.previousPrices) >= 1 {
 				s.previousPrices = s.previousPrices[1:]

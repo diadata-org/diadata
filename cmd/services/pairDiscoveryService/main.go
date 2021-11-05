@@ -78,10 +78,7 @@ func main() {
 			log.Errorln("Error while reading  file", path, err)
 			continue
 		}
-		err = setGitcoinSymbols(gitcoinSymbols, relDB)
-		if err != nil {
-			log.Error("error writing gitcoin submissions: ", err)
-		}
+		setGitcoinSymbols(gitcoinSymbols, relDB)
 	}
 
 	updateExchangePairs(relDB, verifiedToken)
@@ -537,31 +534,38 @@ func readFile(filename string) (items GitcoinSubmission, err error) {
 }
 
 // setGitcoinSymbols writes all mappings from submissions into exchangesymbol table.
-func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) error {
+func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) {
+
+	errorCount := 0
 	for _, submission := range submissions.AllItems {
 		// Get ID of underlying asset
 		asset, err := relDB.GetAsset(submission.Address, submission.Blockchain)
 		if err != nil {
 			if strings.Contains(err.Error(), "no rows") {
+				errorCount++
 				log.Warnf("asset with address %s on %s not in asset table", submission.Address, submission.Blockchain)
 				continue
 			} else {
-				return err
+				errorCount++
+				log.Error("get asset: ", err)
+				continue
 			}
 		}
 		assetID, err := relDB.GetAssetID(asset)
 		if err != nil {
-			log.Error("get asset ID")
-			return err
+			errorCount++
+			log.Error("get asset ID: ", err)
+			continue
 		}
 		// Write into exchangesymbol table
 		success, err := relDB.VerifyExchangeSymbol(submission.Exchange, submission.Symbol, assetID)
 		if err != nil || !success {
-			log.Error("verify symbol")
-			return err
+			errorCount++
+			log.Errorf("verify symbol %s on %s: %v", submission.Symbol, submission.Exchange, err)
+			continue
 		}
 	}
-	return nil
+	log.Warnf("could not integrate %v out of %v gitcoin verified symbols.", errorCount, len(submissions.AllItems))
 }
 
 func iterateDirectory(foldername string) (files []string) {
