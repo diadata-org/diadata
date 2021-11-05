@@ -108,17 +108,17 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 		totalVolume += math.Abs(s.previousVolumes[priceIndex])
 	}
 	if s.asset.Symbol == "USDT" || s.asset.Symbol == "USDC" {
-		log.Infof("total price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice)
-		log.Infof("total Volume for %s on %s: %v", s.asset.Symbol, s.exchange, totalVolume)
-		log.Infof("resulting price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice/totalVolume)
+		// log.Infof("total price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice)
+		// log.Infof("total Volume for %s on %s: %v", s.asset.Symbol, s.exchange, totalVolume)
+		// log.Infof("resulting price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice/totalVolume)
 		var nonweightedPrice float64
 		for _, price := range s.previousPrices {
 			nonweightedPrice += price
 		}
-		log.Infof("average on non-volume-weighted prices for %s on %s: %v", s.asset.Symbol, s.exchange, nonweightedPrice/float64(len(s.previousPrices)))
-		log.Info("prices in filtersblock: ", s.previousPrices)
-		log.Info("volumes in filtersblock: ", s.previousVolumes)
-		log.Info("-------------------------------------------------------------------------")
+		// log.Infof("average on non-volume-weighted prices for %s on %s: %v", s.asset.Symbol, s.exchange, nonweightedPrice/float64(len(s.previousPrices)))
+		// log.Info("prices in filtersblock: ", s.previousPrices)
+		// log.Info("volumes in filtersblock: ", s.previousVolumes)
+		// log.Info("-------------------------------------------------------------------------")
 	}
 	s.value = totalPrice / totalVolume
 	return s.value
@@ -145,17 +145,8 @@ func (s *FilterMA) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
 		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
-		log.Infof("set price for %s: %v", s.asset.Symbol, s.value)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
-		}
-		// Additionally, the price across exchanges is saved in influx as a quotation.
-		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
-		if s.exchange == "" {
-			err = ds.SetAssetPriceUSD(s.asset, s.value, s.currentTime)
-			if err != nil {
-				log.Errorln("FilterMA: Error:", err)
-			}
 		}
 		return err
 	}

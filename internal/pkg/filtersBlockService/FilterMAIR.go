@@ -133,6 +133,15 @@ func (s *FilterMAIR) save(ds models.Datastore) error {
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
+		log.Infof("set price for %s: %v", s.asset.Symbol, s.value)
+		// Additionally, the price across exchanges is saved in influx as a quotation.
+		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
+		if s.exchange == "" {
+			err = ds.SetAssetPriceUSD(s.asset, s.value, s.currentTime)
+			if err != nil {
+				log.Errorln("FilterMA: Error:", err)
+			}
+		}
 		return err
 	}
 	return nil
