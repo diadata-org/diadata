@@ -25,6 +25,9 @@ import (
 var (
 	exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 	reversePairs                   *[]string
+	mainBaseAssets                 = []string{
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7",
+	}
 )
 
 const (
@@ -342,14 +345,24 @@ func (s *UniswapScraper) ListenToPairByIndex(i int) {
 						t = &tSwapped
 					}
 				}
+				// Reverse almost all pairs ETH-XXX on Uniswap and Sushiswap
+				if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
+					if token0.Address == "0x0000000000000000000000000000000000000000" && !utils.Contains(&mainBaseAssets, token1.Address) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
+						}
+					}
+				}
 				if price > 0 {
+					log.Info("tx hash: ", swap.ID)
 					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
-					log.Info("----------------")
-					log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
-					log.Info("----------------")
+					// log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
+					// log.Info("----------------")
 					s.chanTrades <- t
 				}
 				if price == 0 {
+					log.Info("tx hash: ", swap.ID)
 					log.Info("Got zero trade: ", t)
 				}
 			}
