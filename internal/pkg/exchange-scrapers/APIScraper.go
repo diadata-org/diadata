@@ -67,7 +67,7 @@ func init() {
 	Exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.DfynNetwork] = dia.Exchange{Name: dia.DfynNetwork, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0xe7fb3e833efe5f9c441105eb65ef8b261266423b"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.UbeswapExchange] = dia.Exchange{Name: dia.UbeswapExchange, Centralized: false, BlockChain: blockchains[dia.CELO], Contract: common.HexToAddress("0x62d5b84bE28a183aBB507E125B384122D2C25fAE"), WatchdogDelay: watchdogDelay}
-
+	Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: watchdogDelay}
 	Exchanges["UniswapHistory"] = dia.Exchange{Name: "UniswapHistory", Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: 3600}
 }
@@ -176,6 +176,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape)
 	case dia.UbeswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape)
+	case dia.FinageForex:
+		return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
 	case "Influx":
 		return NewInfluxScraper(scrape)
