@@ -55,18 +55,16 @@ func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int6
 
 	firstBlockStartTime := bg.trades[0].Time.UnixNano()
 	currentBlockStartTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
-	nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
+	//nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
 
 	for _, trade := range bg.trades {
 		if trade.Time.UnixNano() >= firstBlockStartTime {
 			if trade.Time.UnixNano() > currentBlockStartTime {
 				currentBlockStartTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
 				tradeBlocks = append(tradeBlocks, tradeBlock)
-				tradeBlock = Block{}
+				lastTrades := removeTradesBlock(tradeBlock, int(blockShiftSeconds))
+				tradeBlock = Block{Trades: lastTrades}
 			} else {
-				if trade.Time.UnixNano() >= nextBlockStartTime {
-
-				}
 				tradeBlock.Trades = append(tradeBlock.Trades, trade)
 			}
 
@@ -76,4 +74,15 @@ func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int6
 
 	}
 	return
+}
+
+func removeTradesBlock(tradeBlock Block, blockshift int) (trades []dia.Trade) {
+	var startTime = tradeBlock.Trades[0].Time
+	for _, trade := range tradeBlock.Trades {
+		if trade.Time.UnixNano()-startTime.UnixNano() >= int64(blockshift*1e9) {
+			trades = append(trades, trade)
+		}
+	}
+	return
+
 }
