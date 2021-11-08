@@ -148,6 +148,9 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	log.Println("asset", asset)
 
 	if blockShiftSeconds == 0 {
+		if endtime.After(time.Now()) {
+			endtime = time.Now()
+		}
 		maxStartTime := endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
 
 		if starttime.Before(maxStartTime) {
@@ -160,6 +163,9 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		}
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
 	} else {
+		if endtime.After(time.Now()) {
+			endtime = time.Now()
+		}
 		maxStartTime := endtime.Add(time.Duration(-(6 * 1000)) * time.Second)
 
 		if starttime.Before(maxStartTime) {
