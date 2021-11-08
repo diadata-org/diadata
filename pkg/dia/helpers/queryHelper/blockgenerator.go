@@ -77,12 +77,16 @@ func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int6
 }
 
 func removeTradesBlock(tradeBlock Block, blockshift int) (trades []dia.Trade) {
-	var startTime = tradeBlock.Trades[0].Time
-	for _, trade := range tradeBlock.Trades {
-		if trade.Time.UnixNano()-startTime.UnixNano() >= int64(blockshift*1e9) {
-			trades = append(trades, trade)
+	if len(trades) > 0 {
+		var startTime = tradeBlock.Trades[0].Time
+		for _, trade := range tradeBlock.Trades {
+			if trade.Time.UnixNano()-startTime.UnixNano() >= int64(blockshift*1e9) {
+				trades = append(trades, trade)
+			}
 		}
+
 	}
+
 	return
 
 }
