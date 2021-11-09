@@ -5,8 +5,10 @@ import (
 
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/prometheus/common/log"
+	"github.com/sirupsen/logrus"
 )
+
+var log = logrus.New()
 
 func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	var lastfp *dia.FilterPoint

@@ -2,7 +2,6 @@ package queryhelper
 
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/prometheus/common/log"
 )
 
 type Block struct {
