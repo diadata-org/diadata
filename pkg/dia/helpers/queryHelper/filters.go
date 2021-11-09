@@ -5,6 +5,7 @@ import (
 
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/prometheus/common/log"
 )
 
 func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
@@ -26,6 +27,7 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else {
+				log.Infoln("Empty point adding last data")
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 
