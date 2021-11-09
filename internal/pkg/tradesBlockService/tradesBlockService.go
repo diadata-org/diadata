@@ -108,8 +108,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// Comment Philipp 09/11/2021: This might still be too slow, as it queries influx
 				// as soon as there is no quotation in the cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
+				tInitCaching := time.Now()
 				quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
 				price = quotation.Price
+				log.Info("time spent for getting from cache: ", time.Since(tInitCaching))
 			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
