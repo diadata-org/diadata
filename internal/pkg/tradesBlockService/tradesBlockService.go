@@ -95,6 +95,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			// Get price of base token.
 			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
 			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
+			var quotation *models.AssetQuotation
 			var price float64
 			var err error
 			if s.historical {
@@ -102,7 +103,11 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
 			} else {
 				// ...or latest price. This method is quicker as it first queries the cache.
-				price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
+				// Comment Philipp 09/11/2021: This might still be too slow, as it queries influx
+				// as soon as there is no quotation in the cache.
+				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
+				quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
+				price = quotation.Price
 			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
