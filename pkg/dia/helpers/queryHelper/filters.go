@@ -8,9 +8,10 @@ import (
 )
 
 func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+	var lastfp *dia.FilterPoint
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterMA(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
+			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
 
@@ -18,11 +19,16 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 
 			}
 
-			maFilter.FinalCompute(block.Trades[0].Time)
+			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := maFilter.FilterPointForBlock()
 
 			if fp != nil {
 				filterPoints = append(filterPoints, *fp)
+				lastfp = fp
+			} else {
+				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				filterPoints = append(filterPoints, *lastfp)
+
 			}
 		}
 	}
@@ -33,7 +39,7 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 	var fp *dia.FilterPoint
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterMAIR(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
+			maFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
 				maFilter.Compute(trade)
