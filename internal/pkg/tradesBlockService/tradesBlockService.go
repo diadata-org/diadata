@@ -44,6 +44,7 @@ type TradesBlockService struct {
 	started         bool
 	BlockDuration   int64
 	currentBlock    *dia.TradesBlock
+	priceCache      map[dia.Asset]float64
 	datastore       models.Datastore
 	historical      bool
 }
@@ -58,6 +59,7 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 		started:         false,
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
+		priceCache:      make(map[dia.Asset]float64),
 		datastore:       datastore,
 		historical:      historical,
 	}
@@ -99,6 +101,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
 			var quotation *models.AssetQuotation
 			var price float64
+			var ok bool
 			var err error
 			if s.historical {
 				// Look for historic price of base token at trade time...
@@ -109,9 +112,17 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// as soon as there is no quotation in the cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
 				tInitCaching := time.Now()
-				quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
-				price = quotation.Price
-				log.Info("time spent for getting from cache: ", time.Since(tInitCaching))
+				if _, ok = s.priceCache[t.BaseToken]; ok {
+					price = s.priceCache[t.BaseToken]
+					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
+				} else {
+					quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
+					price = quotation.Price
+					s.priceCache[t.BaseToken] = price
+					log.Infof("quotation for %s from redis cache: %v", t.BaseToken.Symbol, price)
+				}
+
+				log.Info("time spent for getting price of base token: ", time.Since(tInitCaching))
 			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
@@ -142,12 +153,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
-	tInitSave := time.Now()
 	err := s.datastore.SaveTradeInflux(&t)
 	if err != nil {
 		log.Error(err)
 	}
-	log.Info("time spent for SaveTradeInflux: ", time.Since(tInitSave))
 
 	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debugf("ignore trade should be in previous block %v", t)
@@ -174,12 +183,11 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Info("created new block beginTime:", b.TradesBlockData.BeginTime, "previous block nb trades:", len(s.currentBlock.TradesBlockData.Trades))
 			}
 			s.currentBlock = b
-			t0 := time.Now()
+			s.priceCache = make(map[dia.Asset]float64)
 			err = s.datastore.Flush()
 			if err != nil {
 				log.Error(err)
 			}
-			log.Info("time spent for flushing current block: ", time.Since(t0))
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {
