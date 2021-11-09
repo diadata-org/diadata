@@ -87,7 +87,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	var verifiedTrade bool
 	// baseTokenSymbol := t.GetBaseToken()
 
-	tInitMain := time.Now()
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
 	if t.VerifiedPair {
@@ -111,7 +110,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// Comment Philipp 09/11/2021: This might still be too slow, as it queries influx
 				// as soon as there is no quotation in the cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
-				tInitCaching := time.Now()
+
 				if _, ok = s.priceCache[t.BaseToken]; ok {
 					price = s.priceCache[t.BaseToken]
 					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
@@ -122,7 +121,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					log.Infof("quotation for %s from redis cache: %v", t.BaseToken.Symbol, price)
 				}
 
-				log.Info("time spent for getting price of base token: ", time.Since(tInitCaching))
 			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
@@ -140,7 +138,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			}
 		}
 	}
-	log.Info("time spent for tInitMain: ", time.Since(tInitMain))
 
 	// // If estimated price for stablecoin diverges too much ignore trade
 	if _, ok := stablecoins[t.Symbol]; ok {
@@ -169,6 +166,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			if s.currentBlock != nil {
 				t0 := time.Now()
 				s.finaliseCurrentBlock()
+				s.priceCache = make(map[dia.Asset]float64)
+				log.Info("made new priceCache. Number of keys: ", len(s.priceCache))
 				log.Info("time spent for finalizing current block: ", time.Since(t0))
 			}
 
@@ -183,7 +182,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Info("created new block beginTime:", b.TradesBlockData.BeginTime, "previous block nb trades:", len(s.currentBlock.TradesBlockData.Trades))
 			}
 			s.currentBlock = b
-			s.priceCache = make(map[dia.Asset]float64)
 			err = s.datastore.Flush()
 			if err != nil {
 				log.Error(err)
