@@ -85,6 +85,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	var verifiedTrade bool
 	// baseTokenSymbol := t.GetBaseToken()
 
+	tInitMain := time.Now()
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
 	if t.VerifiedPair {
@@ -126,6 +127,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			}
 		}
 	}
+	log.Info("time spent for tInitMain: ", time.Since(tInitMain))
 
 	// // If estimated price for stablecoin diverges too much ignore trade
 	if _, ok := stablecoins[t.Symbol]; ok {
@@ -138,10 +140,12 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
 
+	tInitSave := time.Now()
 	err := s.datastore.SaveTradeInflux(&t)
 	if err != nil {
 		log.Error(err)
 	}
+	log.Info("time spent for SaveTradeInflux: ", time.Since(tInitSave))
 
 	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {
 		log.Debugf("ignore trade should be in previous block %v", t)
