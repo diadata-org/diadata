@@ -62,7 +62,7 @@ func (bg *Blockgenerator) GenerateShift(firstBlockStartTime, blockSizeSeconds, b
 			if trade.Time.UnixNano() > nextBlockStarttime {
 				tradeBlocks = append(tradeBlocks, tradeBlock)
 				lastTrades := removeTradesBlock(tradeBlock, int(blockShiftSeconds))
-				nextBlockStarttime = nextBlockStarttime + (blockSizeSeconds * 1e9)
+				nextBlockStarttime = nextBlockStarttime + (blockShiftSeconds * 1e9)
 				tradeBlock = Block{Trades: lastTrades, TimeStamp: nextBlockStarttime}
 			} else {
 				tradeBlock.Trades = append(tradeBlock.Trades, trade)
