@@ -50,11 +50,13 @@ const (
 	Deribit           = "Deribit"
 	DfynNetwork       = "DFYN"
 	UbeswapExchange   = "Ubeswap"
+	FinageForex       = "FinageForex"
 )
 
 func Exchanges() []string {
 	return []string{
 
+		FinageForex,
 		BitMaxExchange,
 		ZBExchange,
 		HuobiExchange,
