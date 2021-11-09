@@ -44,6 +44,7 @@ type TradesBlockService struct {
 	started         bool
 	BlockDuration   int64
 	currentBlock    *dia.TradesBlock
+	priceCache      map[dia.Asset]float64
 	datastore       models.Datastore
 	historical      bool
 }
@@ -58,6 +59,7 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 		started:         false,
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
+		priceCache:      make(map[dia.Asset]float64),
 		datastore:       datastore,
 		historical:      historical,
 	}
@@ -80,6 +82,7 @@ func (s *TradesBlockService) mainLoop() {
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
+	tInit := time.Now()
 
 	var verifiedTrade bool
 	// baseTokenSymbol := t.GetBaseToken()
@@ -97,6 +100,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
 			var quotation *models.AssetQuotation
 			var price float64
+			var ok bool
 			var err error
 			if s.historical {
 				// Look for historic price of base token at trade time...
@@ -106,17 +110,26 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// Comment Philipp 09/11/2021: This might still be too slow, as it queries influx
 				// as soon as there is no quotation in the cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
-				quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
-				price = quotation.Price
+
+				if _, ok = s.priceCache[t.BaseToken]; ok {
+					price = s.priceCache[t.BaseToken]
+					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
+				} else {
+					quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
+					price = quotation.Price
+					s.priceCache[t.BaseToken] = price
+					log.Infof("quotation for %s from redis cache: %v", t.BaseToken.Symbol, price)
+				}
+
 			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
 				if price > 0.0 {
-					log.Infof("price of trade %s on exchange %s: %v", t.Pair, t.Source, t.Price)
-					log.Info("price of base token: ", price)
-					log.Info("resulting estimatedUSDPrice: ", t.Price*price)
-					// TO DO: Some estimatedUSDPrices are zero. This might be rounding error. Switch to big.Float?
+					// log.Infof("price of trade %s on exchange %s: %v", t.Pair, t.Source, t.Price)
+					// log.Info("price of base token: ", price)
+					// log.Info("resulting estimatedUSDPrice: ", t.Price*price)
+					// TO DO: Switch to big.Float?
 					t.EstimatedUSDPrice = t.Price * price
 					if t.EstimatedUSDPrice > 0 {
 						verifiedTrade = true
@@ -152,6 +165,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
 				s.finaliseCurrentBlock()
+				s.priceCache = make(map[dia.Asset]float64)
 			}
 
 			b := &dia.TradesBlock{
@@ -174,6 +188,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
+	log.Info("time spent for process: ", time.Since(tInit))
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
