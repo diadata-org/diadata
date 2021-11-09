@@ -164,11 +164,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	if verifiedTrade && t.EstimatedUSDPrice > 0 {
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
-				t0 := time.Now()
 				s.finaliseCurrentBlock()
 				s.priceCache = make(map[dia.Asset]float64)
-				log.Info("made new priceCache. Number of keys: ", len(s.priceCache))
-				log.Info("time spent for finalizing current block: ", time.Since(t0))
 			}
 
 			b := &dia.TradesBlock{

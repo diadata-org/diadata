@@ -361,7 +361,7 @@ select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time 
 
 // Sum24HoursInflux returns the 24h  volume of @asset on @exchange using the filter @filter.
 func (db *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error) {
-	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and exchange='%s' and filter='%s' and time > now() - 1d"
+	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' and blockchain='%s' and exchange='%s' and filter='%s' and time > now() - 1d and time<now()"
 	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, exchange, filter)
 	log.Infoln("Running influx query ", q)
 
