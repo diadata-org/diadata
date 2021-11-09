@@ -6,7 +6,8 @@ import (
 )
 
 type Block struct {
-	Trades []dia.Trade
+	Trades    []dia.Trade
+	TimeStamp int64
 }
 
 type Blockgenerator struct {
@@ -50,20 +51,20 @@ func (bg *Blockgenerator) GenerateSize(blockSizeSeconds int64) (tradeBlocks []Bl
 	return
 }
 
-func (bg *Blockgenerator) GenerateShift(blockSizeSeconds, blockShiftSeconds int64) (tradeBlocks []Block) {
+func (bg *Blockgenerator) GenerateShift(firstBlockStartTime, blockSizeSeconds, blockShiftSeconds int64) (tradeBlocks []Block) {
 	var tradeBlock Block
 
-	firstBlockStartTime := bg.trades[0].Time.UnixNano()
-	currentBlockStartTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
+	nextBlockStarttime := firstBlockStartTime
+	tradeBlock.TimeStamp = firstBlockStartTime
 	//nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
 
 	for _, trade := range bg.trades {
 		if trade.Time.UnixNano() >= firstBlockStartTime {
-			if trade.Time.UnixNano() > currentBlockStartTime {
-				currentBlockStartTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
+			if trade.Time.UnixNano() > nextBlockStarttime {
 				tradeBlocks = append(tradeBlocks, tradeBlock)
 				lastTrades := removeTradesBlock(tradeBlock, int(blockShiftSeconds))
-				tradeBlock = Block{Trades: lastTrades}
+				nextBlockStarttime = nextBlockStarttime + (blockSizeSeconds * 1e9)
+				tradeBlock = Block{Trades: lastTrades, TimeStamp: nextBlockStarttime}
 			} else {
 				tradeBlock.Trades = append(tradeBlock.Trades, trade)
 			}
