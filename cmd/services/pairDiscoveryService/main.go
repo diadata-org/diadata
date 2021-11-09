@@ -154,6 +154,11 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	} else {
 
 		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
+		// Comma separated list of (centralized) exchanges for which all available pairs should
+		// be fetched from the respective API.
+		fetchAvlPairsExchangesString := utils.Getenv("FETCH_AVL_PAIRS", "")
+		fetchAvlPairsExchanges := strings.Split(fetchAvlPairsExchangesString, ",")
+
 		exchangeMap := scrapers.Exchanges
 		for _, exchange := range dia.Exchanges() {
 
@@ -174,16 +179,18 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 				if exchangeMap[exchange].Centralized {
 
 					// --------- 1. Step: collect pairs from Exchange API, DB and config file ---------
-					// TO DO: uncomment below block once all exchange scrapers are deployed.
-					// // Fetch pairs using the API scraper.
-					// pairs, err := scraper.FetchAvailablePairs()
-					// if err != nil {
-					// 	log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
-					// }
-					// log.Infof("fetched %v pairs for exchange %s.", len(pairs), exchange)
-					// time.Sleep(60 * time.Second)
-
+					// Fetch pairs using the API scraper. This is only true for exchanges in the
+					// comma-separated list given in the env variable $FETCH_AVL_PAIRS.
 					var pairs []dia.ExchangePair
+					if utils.Contains(&fetchAvlPairsExchanges, exchange) {
+						pairs, err = scraper.FetchAvailablePairs()
+						if err != nil {
+							log.Errorf("fetching pairs from API for exchange %s: %v", exchange, err)
+						}
+						log.Infof("fetched %v pairs from API of exchange %s.", len(pairs), exchange)
+						time.Sleep(5 * time.Second)
+					}
+
 					// If not in postgres yet, add fetched pairs to postgres pairs
 					pairs, err = addNewPairs(exchange, pairs, relDB)
 					if err != nil {
@@ -342,7 +349,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					}
 
 					log.Infof("updated exchange %s", exchange)
-					time.Sleep(60 * time.Second)
+					time.Sleep(20 * time.Second)
 					go func(s scrapers.APIScraper, exchange string) {
 						time.Sleep(5 * time.Second)
 						log.Error("Closing scraper: ", exchange)
