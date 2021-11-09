@@ -166,7 +166,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		if endtime.After(time.Now()) {
 			endtime = time.Now()
 		}
-		maxStartTime := endtime.Add(time.Duration(-(6 * 1000)) * time.Second)
+		maxStartTime := endtime.Add(time.Duration(-(60 * 1000) * time.Second))
 
 		if starttime.Before(maxStartTime) {
 			starttime = maxStartTime
