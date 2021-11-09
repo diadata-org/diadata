@@ -1,921 +1,1110 @@
 {
-	"Assets": [{
-		"Symbol": "DOE",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "MXN",
-		"Name": "Mexican Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "484"
-	}, {
-		"Symbol": "TND",
-		"Name": "Tunisian Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "788"
-	}, {
-		"Symbol": "XPF",
-		"Name": "CFP Franc",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "953"
-	}, {
-		"Symbol": "GBP",
-		"Name": "Pound sterling",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "826"
-	}, {
-		"Symbol": "HUF",
-		"Name": "Hungarian forint",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "348"
-	}, {
-		"Symbol": "BRI",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "HKD",
-		"Name": "Hong Kong Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "344"
-	}, {
-		"Symbol": "KZT",
-		"Name": "Tenge",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "398"
-	}, {
-		"Symbol": "VEF",
-		"Name": "Bolívar",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "937"
-	}, {
-		"Symbol": "PLN",
-		"Name": "Polish zloty",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "985"
-	}, {
-		"Symbol": "NSO",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "SOS",
-		"Name": "Somali Shilling",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "706"
-	}, {
-		"Symbol": "TRY",
-		"Name": "Turkish Lira",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "949"
-	}, {
-		"Symbol": "XDR",
-		"Name": "SDR (Special Drawing Right)",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "960"
-	}, {
-		"Symbol": "CZK",
-		"Name": "Czech coruna",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "203"
-	}, {
-		"Symbol": "AFN",
-		"Name": "Afghani",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "971"
-	}, {
-		"Symbol": "AWG",
-		"Name": "Aruban Florin",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "533"
-	}, {
-		"Symbol": "BMD",
-		"Name": "Bermudian Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "060"
-	}, {
-		"Symbol": "FJD",
-		"Name": "Fiji Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "242"
-	}, {
-		"Symbol": "MYR",
-		"Name": "Malaysian Ringgit",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "458"
-	}, {
-		"Symbol": "NAD",
-		"Name": "Namibia Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "516"
-	}, {
-		"Symbol": "AMD",
-		"Name": "Armenian Dram",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "051"
-	}, {
-		"Symbol": "BTN",
-		"Name": "Ngultrum",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "064"
-	}, {
-		"Symbol": "IQD",
-		"Name": "Iraqi Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "368"
-	}, {
-		"Symbol": "NPR",
-		"Name": "Nepalese Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "524"
-	}, {
-		"Symbol": "OMR",
-		"Name": "Rial Omani",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "512"
-	}, {
-		"Symbol": "TTD",
-		"Name": "Trinidad and Tobago Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "780"
-	}, {
-		"Symbol": "TJS",
-		"Name": "Somoni",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "972"
-	}, {
-		"Symbol": "JPY",
-		"Name": "Japanese yen",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "392"
-	}, {
-		"Symbol": "DKK",
-		"Name": "Danish krone",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "208"
-	}, {
-		"Symbol": "CUP",
-		"Name": "Cuban Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "192"
-	}, {
-		"Symbol": "KMF",
-		"Name": "Comorian Franc ",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "174"
-	}, {
-		"Symbol": "MKD",
-		"Name": "Denar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "807"
-	}, {
-		"Symbol": "NZD",
-		"Name": "New Zealand Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "554"
-	}, {
-		"Symbol": "PAB",
-		"Name": "Balboa",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "590"
-	}, {
-		"Symbol": "CHF",
-		"Name": "Swiss franc",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "756"
-	}, {
-		"Symbol": "LYD",
-		"Name": "Libyan Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "434"
-	}, {
-		"Symbol": "M5P",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "BWP",
-		"Name": "Pula",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "072"
-	}, {
-		"Symbol": "CAD",
-		"Name": "Canadian Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "124"
-	}, {
-		"Symbol": "NBL",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "PHP",
-		"Name": "Philippine Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "608"
-	}, {
-		"Symbol": "UAH",
-		"Name": "Hryvnia",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "980"
-	}, {
-		"Symbol": "VRL",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "XPD",
-		"Name": "Palladium",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "964"
-	}, {
-		"Symbol": "CNH",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "EGP",
-		"Name": "Egyptian Pound",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "818"
-	}, {
-		"Symbol": "GYD",
-		"Name": "Guyana Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "328"
-	}, {
-		"Symbol": "KWD",
-		"Name": "Kuwaiti Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "414"
-	}, {
-		"Symbol": "LSL",
-		"Name": "Loti",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "426"
-	}, {
-		"Symbol": "SVC",
-		"Name": "El Salvador Colon",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "222"
-	}, {
-		"Symbol": "TMT",
-		"Name": "Turkmenistan New Manat",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "934"
-	}, {
-		"Symbol": "RON",
-		"Name": "Romanian leu",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "946"
-	}, {
-		"Symbol": "IDR",
-		"Name": "Rupiah",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "360"
-	}, {
-		"Symbol": "MZN",
-		"Name": "Mozambique Metical",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "943"
-	}, {
-		"Symbol": "PGK",
-		"Name": "Kina",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "598"
-	}, {
-		"Symbol": "BRL",
-		"Name": "Brazilian Real",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "986"
-	}, {
-		"Symbol": "CRC",
-		"Name": "Costa Rican Colon",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "188"
-	}, {
-		"Symbol": "LKR",
-		"Name": "Sri Lanka Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "144"
-	}, {
-		"Symbol": "ZMW",
-		"Name": "Zambian Kwacha",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "967"
-	}, {
-		"Symbol": "JMD",
-		"Name": "Jamaican Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "388"
-	}, {
-		"Symbol": "MGA",
-		"Name": "Malagasy Ariary",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "969"
-	}, {
-		"Symbol": "SDG",
-		"Name": "Sudanese Pound",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "938"
-	}, {
-		"Symbol": "UYU",
-		"Name": "Peso Uruguayo",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "858"
-	}, {
-		"Symbol": "XCD",
-		"Name": "East Caribbean Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "951"
-	}, {
-		"Symbol": "NOK",
-		"Name": "Norwegian krone",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "578"
-	}, {
-		"Symbol": "ARE",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "TZS",
-		"Name": "Tanzanian Shilling",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "834"
-	}, {
-		"Symbol": "COP",
-		"Name": "Colombian Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "170"
-	}, {
-		"Symbol": "FRN",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "GHS",
-		"Name": "Ghana Cedi",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "936"
-	}, {
-		"Symbol": "JOD",
-		"Name": "Jordanian Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "400"
-	}, {
-		"Symbol": "MUR",
-		"Name": "Mauritius Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "480"
-	}, {
-		"Symbol": "MWK",
-		"Name": "Malawi Kwacha",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "454"
-	}, {
-		"Symbol": "EUR",
-		"Name": "Euro",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "978"
-	}, {
-		"Symbol": "SEK",
-		"Name": "Swedish krona",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "752"
-	}, {
-		"Symbol": "AUN",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "CYP",
-		"Name": "Cyprus Pound",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "196"
-	}, {
-		"Symbol": "GTQ",
-		"Name": "Quetzal",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "320"
-	}, {
-		"Symbol": "VND",
-		"Name": "Dong",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "704"
-	}, {
-		"Symbol": "BND",
-		"Name": "Brunei Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "096"
-	}, {
-		"Symbol": "KES",
-		"Name": "Kenyan Shilling",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "404"
-	}, {
-		"Symbol": "LRD",
-		"Name": "Liberian Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "430"
-	}, {
-		"Symbol": "TWD",
-		"Name": "New Taiwan Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "901"
-	}, {
-		"Symbol": "YER",
-		"Name": "Yemeni Rial",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "886"
-	}, {
-		"Symbol": "CLP",
-		"Name": "Chilean Peso",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "152"
-	}, {
-		"Symbol": "ISK",
-		"Name": "Iceland Krona",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "352"
-	}, {
-		"Symbol": "SLL",
-		"Name": "Leone",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "694"
-	}, {
-		"Symbol": "VRN",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "BHD",
-		"Name": "Bahraini Dinar",
-		"Decimals": 3,
-		"Blockchain": "Fiat",
-		"Address": "048"
-	}, {
-		"Symbol": "PKR",
-		"Name": "Pakistan Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "586"
-	}, {
-		"Symbol": "PYG",
-		"Name": "Guarani",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "600"
-	}, {
-		"Symbol": "RWF",
-		"Name": "Rwanda Franc",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "646"
-	}, {
-		"Symbol": "ZAR",
-		"Name": "Rand",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "710"
-	}, {
-		"Symbol": "BGN",
-		"Name": "Bulgarian lev",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "975"
-	}, {
-		"Symbol": "GNF",
-		"Name": "Guinean Franc",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "324"
-	}, {
-		"Symbol": "QAR",
-		"Name": "Qatari Rial",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "634"
-	}, {
-		"Symbol": "ARS",
-		"Name": "Argentine Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "032"
-	}, {
-		"Symbol": "HRK",
-		"Name": "Kuna",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "191"
-	}, {
-		"Symbol": "HTG",
-		"Name": "Gourde",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "332"
-	}, {
-		"Symbol": "RSD",
-		"Name": "Serbian Dinar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "941"
-	}, {
-		"Symbol": "UGX",
-		"Name": "Uganda Shilling",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "800"
-	}, {
-		"Symbol": "BDT",
-		"Name": "Taka",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "050"
-	}, {
-		"Symbol": "LTL",
-		"Name": "Lithuanian Litas",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "440"
-	}, {
-		"Symbol": "UZS",
-		"Name": "Uzbekistan Sum",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "860"
-	}, {
-		"Symbol": "SCR",
-		"Name": "Seychelles Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "690"
-	}, {
-		"Symbol": "BOB",
-		"Name": "Boliviano",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "068"
-	}, {
-		"Symbol": "ILS",
-		"Name": "New Israeli Sheqel",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "376"
-	}, {
-		"Symbol": "LBP",
-		"Name": "Lebanese Pound",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "422"
-	}, {
-		"Symbol": "MRO",
-		"Name": "Ouguiya",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "478"
-	}, {
-		"Symbol": "NIO",
-		"Name": "Cordoba Oro",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "558"
-	}, {
-		"Symbol": "PEN",
-		"Name": "Sol",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "604"
-	}, {
-		"Symbol": "SAR",
-		"Name": "Saudi Riyal",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "682"
-	}, {
-		"Symbol": "XAG",
-		"Name": "Silver",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "961"
-	}, {
-		"Symbol": "XAU",
-		"Name": "Gold",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "959"
-	}, {
-		"Symbol": "XPT",
-		"Name": "Platinum",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "962"
-	}, {
-		"Symbol": "USD",
-		"Name": "United States dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "840"
-	}, {
-		"Symbol": "BZD",
-		"Name": "Belize Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "084"
-	}, {
-		"Symbol": "KYD",
-		"Name": "Cayman Islands Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "136"
-	}, {
-		"Symbol": "RUB",
-		"Name": "Russian Ruble",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "643"
-	}, {
-		"Symbol": "DZD",
-		"Name": "Algerian Dinar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "012"
-	}, {
-		"Symbol": "SDD",
-		"Name": "Sudanese Dinar",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "736"
-	}, {
-		"Symbol": "ZMK",
-		"Name": "Zambian Kwacha",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "894"
-	}, {
-		"Symbol": "AED",
-		"Name": "UAE Dirham",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "784"
-	}, {
-		"Symbol": "BAM",
-		"Name": "Convertible Mark",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "977"
-	}, {
-		"Symbol": "DOP",
-		"Name": "Dominican Peso",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "214"
-	}, {
-		"Symbol": "HNL",
-		"Name": "Lempira",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "340"
-	}, {
-		"Symbol": "INR",
-		"Name": "Indian Rupee",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "356"
-	}, {
-		"Symbol": "MDL",
-		"Name": "Moldovan Leu",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "498"
-	}, {
-		"Symbol": "MOP",
-		"Name": "Pataca",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "446"
-	}, {
-		"Symbol": "BSD",
-		"Name": "Bahamian Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "044"
-	}, {
-		"Symbol": "KHR",
-		"Name": "Riel",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "116"
-	}, {
-		"Symbol": "BIF",
-		"Name": "Burundi Franc",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "108"
-	}, {
-		"Symbol": "MAL",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "OSO",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "ALL",
-		"Name": "Lek",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "008"
-	}, {
-		"Symbol": "CDF",
-		"Name": "Congolese Franc",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "976"
-	}, {
-		"Symbol": "DJF",
-		"Name": "Djibouti Franc",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "262"
-	}, {
-		"Symbol": "ETB",
-		"Name": "Ethiopian Birr",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "230"
-	}, {
-		"Symbol": "KRU",
-		"Name": "",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": ""
-	}, {
-		"Symbol": "MVR",
-		"Name": "Rufiyaa",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "462"
-	}, {
-		"Symbol": "NGN",
-		"Name": "Naira",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "566"
-	}, {
-		"Symbol": "THB",
-		"Name": "Baht",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "764"
-	}, {
-		"Symbol": "BBD",
-		"Name": "Barbados Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "052"
-	}, {
-		"Symbol": "CNY",
-		"Name": "Yuan Renminbi",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "156"
-	}, {
-		"Symbol": "KRW",
-		"Name": "Won",
-		"Decimals": 0,
-		"Blockchain": "Fiat",
-		"Address": "410"
-	}, {
-		"Symbol": "MMK",
-		"Name": "Kyat",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "104"
-	}, {
-		"Symbol": "SHP",
-		"Name": "Saint Helena Pound",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "654"
-	}, {
-		"Symbol": "AUD",
-		"Name": "Australian Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "036"
-	}, {
-		"Symbol": "MAD",
-		"Name": "Moroccan Dirham",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "504"
-	}, {
-		"Symbol": "SGD",
-		"Name": "Singapore Dollar",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "702"
-	}, {
-		"Symbol": "SZL",
-		"Name": "Lilangeni",
-		"Decimals": 2,
-		"Blockchain": "Fiat",
-		"Address": "748"
-	}]
+    "Assets": [
+        {
+            "Symbol": "DOE",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "MXN",
+            "Name": "Mexican Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "484"
+        },
+        {
+            "Symbol": "TND",
+            "Name": "Tunisian Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "788"
+        },
+        {
+            "Symbol": "XPF",
+            "Name": "CFP Franc",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "953"
+        },
+        {
+            "Symbol": "GBP",
+            "Name": "Pound sterling",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
+            "Symbol": "HUF",
+            "Name": "Hungarian forint",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "348"
+        },
+        {
+            "Symbol": "BRI",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "HKD",
+            "Name": "Hong Kong Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "344"
+        },
+        {
+            "Symbol": "KZT",
+            "Name": "Tenge",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "398"
+        },
+        {
+            "Symbol": "VEF",
+            "Name": "Bolívar",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "937"
+        },
+        {
+            "Symbol": "PLN",
+            "Name": "Polish zloty",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "985"
+        },
+        {
+            "Symbol": "NSO",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "SOS",
+            "Name": "Somali Shilling",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "706"
+        },
+        {
+            "Symbol": "TRY",
+            "Name": "Turkish Lira",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "949"
+        },
+        {
+            "Symbol": "XDR",
+            "Name": "SDR (Special Drawing Right)",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "960"
+        },
+        {
+            "Symbol": "CZK",
+            "Name": "Czech coruna",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "203"
+        },
+        {
+            "Symbol": "AFN",
+            "Name": "Afghani",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "971"
+        },
+        {
+            "Symbol": "AWG",
+            "Name": "Aruban Florin",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "533"
+        },
+        {
+            "Symbol": "LAK",
+            "Name": "Lao Kip",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "418"
+        },
+        {
+            "Symbol": "CVE",
+            "Name": "Cape Verdean escudo",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "132"
+        },
+        {
+            "Symbol": "BMD",
+            "Name": "Bermudian Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "060"
+        },
+        {
+            "Symbol": "FJD",
+            "Name": "Fiji Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "242"
+        },
+        {
+            "Symbol": "GMB",
+            "Name": "Gambian dalasi",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "270"
+        },
+        {
+            "Symbol": "MYR",
+            "Name": "Malaysian Ringgit",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "458"
+        },
+        {
+            "Symbol": "NAD",
+            "Name": "Namibia Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "516"
+        },
+        {
+            "Symbol": "AMD",
+            "Name": "Armenian Dram",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "051"
+        },
+        {
+            "Symbol": "BTN",
+            "Name": "Ngultrum",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "064"
+        },
+        {
+            "Symbol": "IQD",
+            "Name": "Iraqi Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "368"
+        },
+        {
+            "Symbol": "NPR",
+            "Name": "Nepalese Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "524"
+        },
+        {
+            "Symbol": "OMR",
+            "Name": "Rial Omani",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "512"
+        },
+        {
+            "Symbol": "TTD",
+            "Name": "Trinidad and Tobago Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "780"
+        },
+        {
+            "Symbol": "TJS",
+            "Name": "Somoni",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "972"
+        },
+        {
+            "Symbol": "JPY",
+            "Name": "Japanese yen",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "392"
+        },
+        {
+            "Symbol": "DKK",
+            "Name": "Danish krone",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "208"
+        },
+        {
+            "Symbol": "CUP",
+            "Name": "Cuban Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "192"
+        },
+        {
+            "Symbol": "KMF",
+            "Name": "Comorian Franc ",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "174"
+        },
+        {
+            "Symbol": "MKD",
+            "Name": "Denar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "807"
+        },
+        {
+            "Symbol": "NZD",
+            "Name": "New Zealand Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "554"
+        },
+        {
+            "Symbol": "PAB",
+            "Name": "Balboa",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "590"
+        },
+        {
+            "Symbol": "CHF",
+            "Name": "Swiss franc",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "756"
+        },
+        {
+            "Symbol": "LYD",
+            "Name": "Libyan Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "434"
+        },
+        {
+            "Symbol": "M5P",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "BWP",
+            "Name": "Pula",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "072"
+        },
+        {
+            "Symbol": "CAD",
+            "Name": "Canadian Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "124"
+        },
+        {
+            "Symbol": "NBL",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "PHP",
+            "Name": "Philippine Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "608"
+        },
+        {
+            "Symbol": "UAH",
+            "Name": "Hryvnia",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "980"
+        },
+        {
+            "Symbol": "VRL",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "XPD",
+            "Name": "Palladium",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "964"
+        },
+        {
+            "Symbol": "CNH",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "EGP",
+            "Name": "Egyptian Pound",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "818"
+        },
+        {
+            "Symbol": "GYD",
+            "Name": "Guyana Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "328"
+        },
+        {
+            "Symbol": "KWD",
+            "Name": "Kuwaiti Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "414"
+        },
+        {
+            "Symbol": "LSL",
+            "Name": "Loti",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "426"
+        },
+        {
+            "Symbol": "SVC",
+            "Name": "El Salvador Colon",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "222"
+        },
+        {
+            "Symbol": "TMT",
+            "Name": "Turkmenistan New Manat",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "934"
+        },
+        {
+            "Symbol": "RON",
+            "Name": "Romanian leu",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "946"
+        },
+        {
+            "Symbol": "IDR",
+            "Name": "Rupiah",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "360"
+        },
+        {
+            "Symbol": "MZN",
+            "Name": "Mozambique Metical",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "943"
+        },
+        {
+            "Symbol": "PGK",
+            "Name": "Kina",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "598"
+        },
+        {
+            "Symbol": "BRL",
+            "Name": "Brazilian Real",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "986"
+        },
+        {
+            "Symbol": "CRC",
+            "Name": "Costa Rican Colon",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "188"
+        },
+        {
+            "Symbol": "LKR",
+            "Name": "Sri Lanka Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "144"
+        },
+        {
+            "Symbol": "ZMW",
+            "Name": "Zambian Kwacha",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "967"
+        },
+        {
+            "Symbol": "JMD",
+            "Name": "Jamaican Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "388"
+        },
+        {
+            "Symbol": "MGA",
+            "Name": "Malagasy Ariary",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "969"
+        },
+        {
+            "Symbol": "SDG",
+            "Name": "Sudanese Pound",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "938"
+        },
+        {
+            "Symbol": "UYU",
+            "Name": "Peso Uruguayo",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "858"
+        },
+        {
+            "Symbol": "XCD",
+            "Name": "East Caribbean Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "951"
+        },
+        {
+            "Symbol": "NOK",
+            "Name": "Norwegian krone",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "578"
+        },
+        {
+            "Symbol": "ARE",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "TZS",
+            "Name": "Tanzanian Shilling",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "834"
+        },
+        {
+            "Symbol": "COP",
+            "Name": "Colombian Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "170"
+        },
+        {
+            "Symbol": "FRN",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "GHS",
+            "Name": "Ghana Cedi",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "936"
+        },
+        {
+            "Symbol": "JOD",
+            "Name": "Jordanian Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "400"
+        },
+        {
+            "Symbol": "MUR",
+            "Name": "Mauritius Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "480"
+        },
+        {
+            "Symbol": "MWK",
+            "Name": "Malawi Kwacha",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "454"
+        },
+        {
+            "Symbol": "EUR",
+            "Name": "Euro",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "SEK",
+            "Name": "Swedish krona",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "752"
+        },
+        {
+            "Symbol": "AUN",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "CYP",
+            "Name": "Cyprus Pound",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "196"
+        },
+        {
+            "Symbol": "GTQ",
+            "Name": "Quetzal",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "320"
+        },
+        {
+            "Symbol": "VND",
+            "Name": "Dong",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "704"
+        },
+        {
+            "Symbol": "BND",
+            "Name": "Brunei Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "096"
+        },
+        {
+            "Symbol": "KES",
+            "Name": "Kenyan Shilling",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "404"
+        },
+        {
+            "Symbol": "LRD",
+            "Name": "Liberian Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "430"
+        },
+        {
+            "Symbol": "TWD",
+            "Name": "New Taiwan Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "901"
+        },
+        {
+            "Symbol": "YER",
+            "Name": "Yemeni Rial",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "886"
+        },
+        {
+            "Symbol": "CLP",
+            "Name": "Chilean Peso",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "152"
+        },
+        {
+            "Symbol": "ISK",
+            "Name": "Iceland Krona",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "352"
+        },
+        {
+            "Symbol": "SLL",
+            "Name": "Leone",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "694"
+        },
+        {
+            "Symbol": "SKK",
+            "Name": "Slowak koruna",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "703"
+        },
+        {
+            "Symbol": "STD",
+            "Name": "São Tomé and Príncipe dobra",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "678"
+        },
+        {
+            "Symbol": "VRN",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "BHD",
+            "Name": "Bahraini Dinar",
+            "Decimals": 3,
+            "Blockchain": "Fiat",
+            "Address": "048"
+        },
+        {
+            "Symbol": "PKR",
+            "Name": "Pakistan Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "586"
+        },
+        {
+            "Symbol": "PYG",
+            "Name": "Guarani",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "600"
+        },
+        {
+            "Symbol": "RWF",
+            "Name": "Rwanda Franc",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "646"
+        },
+        {
+            "Symbol": "ZAR",
+            "Name": "Rand",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "710"
+        },
+        {
+            "Symbol": "BGN",
+            "Name": "Bulgarian lev",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "975"
+        },
+        {
+            "Symbol": "GNF",
+            "Name": "Guinean Franc",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "324"
+        },
+        {
+            "Symbol": "QAR",
+            "Name": "Qatari Rial",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "634"
+        },
+        {
+            "Symbol": "ARS",
+            "Name": "Argentine Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "032"
+        },
+        {
+            "Symbol": "HRK",
+            "Name": "Kuna",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "191"
+        },
+        {
+            "Symbol": "HTG",
+            "Name": "Gourde",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "332"
+        },
+        {
+            "Symbol": "RSD",
+            "Name": "Serbian Dinar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "941"
+        },
+        {
+            "Symbol": "UGX",
+            "Name": "Uganda Shilling",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "800"
+        },
+        {
+            "Symbol": "BDT",
+            "Name": "Taka",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "050"
+        },
+        {
+            "Symbol": "LTL",
+            "Name": "Lithuanian Litas",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "440"
+        },
+        {
+            "Symbol": "UZS",
+            "Name": "Uzbekistan Sum",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "860"
+        },
+        {
+            "Symbol": "SCR",
+            "Name": "Seychelles Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "690"
+        },
+        {
+            "Symbol": "BOB",
+            "Name": "Boliviano",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "068"
+        },
+        {
+            "Symbol": "ILS",
+            "Name": "New Israeli Sheqel",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "376"
+        },
+        {
+            "Symbol": "LBP",
+            "Name": "Lebanese Pound",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "422"
+        },
+        {
+            "Symbol": "MRO",
+            "Name": "Ouguiya",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "478"
+        },
+        {
+            "Symbol": "NIO",
+            "Name": "Cordoba Oro",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "558"
+        },
+        {
+            "Symbol": "PEN",
+            "Name": "Sol",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "604"
+        },
+        {
+            "Symbol": "SAR",
+            "Name": "Saudi Riyal",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "682"
+        },
+        {
+            "Symbol": "XAG",
+            "Name": "Silver",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "961"
+        },
+        {
+            "Symbol": "XAU",
+            "Name": "Gold",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "959"
+        },
+        {
+            "Symbol": "XPT",
+            "Name": "Platinum",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "962"
+        },
+        {
+            "Symbol": "USD",
+            "Name": "United States dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "BZD",
+            "Name": "Belize Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "084"
+        },
+        {
+            "Symbol": "KYD",
+            "Name": "Cayman Islands Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "136"
+        },
+        {
+            "Symbol": "RUB",
+            "Name": "Russian Ruble",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "643"
+        },
+        {
+            "Symbol": "DZD",
+            "Name": "Algerian Dinar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "012"
+        },
+        {
+            "Symbol": "SDD",
+            "Name": "Sudanese Dinar",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "736"
+        },
+        {
+            "Symbol": "ZMK",
+            "Name": "Zambian Kwacha",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "894"
+        },
+        {
+            "Symbol": "AED",
+            "Name": "UAE Dirham",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "784"
+        },
+        {
+            "Symbol": "BAM",
+            "Name": "Convertible Mark",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "977"
+        },
+        {
+            "Symbol": "DOP",
+            "Name": "Dominican Peso",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "214"
+        },
+        {
+            "Symbol": "HNL",
+            "Name": "Lempira",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "340"
+        },
+        {
+            "Symbol": "INR",
+            "Name": "Indian Rupee",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "356"
+        },
+        {
+            "Symbol": "MDL",
+            "Name": "Moldovan Leu",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "498"
+        },
+        {
+            "Symbol": "MOP",
+            "Name": "Pataca",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "446"
+        },
+        {
+            "Symbol": "BSD",
+            "Name": "Bahamian Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "044"
+        },
+        {
+            "Symbol": "KHR",
+            "Name": "Riel",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "116"
+        },
+        {
+            "Symbol": "BIF",
+            "Name": "Burundi Franc",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "108"
+        },
+        {
+            "Symbol": "MAL",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "OSO",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "ALL",
+            "Name": "Lek",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "008"
+        },
+        {
+            "Symbol": "CDF",
+            "Name": "Congolese Franc",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "976"
+        },
+        {
+            "Symbol": "DJF",
+            "Name": "Djibouti Franc",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "262"
+        },
+        {
+            "Symbol": "ETB",
+            "Name": "Ethiopian Birr",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "230"
+        },
+        {
+            "Symbol": "KRU",
+            "Name": "",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": ""
+        },
+        {
+            "Symbol": "MVR",
+            "Name": "Rufiyaa",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "462"
+        },
+        {
+            "Symbol": "NGN",
+            "Name": "Naira",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "566"
+        },
+        {
+            "Symbol": "THB",
+            "Name": "Baht",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "764"
+        },
+        {
+            "Symbol": "BBD",
+            "Name": "Barbados Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "052"
+        },
+        {
+            "Symbol": "CNY",
+            "Name": "Yuan Renminbi",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "156"
+        },
+        {
+            "Symbol": "KRW",
+            "Name": "Won",
+            "Decimals": 0,
+            "Blockchain": "Fiat",
+            "Address": "410"
+        },
+        {
+            "Symbol": "MMK",
+            "Name": "Kyat",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "104"
+        },
+        {
+            "Symbol": "SHP",
+            "Name": "Saint Helena Pound",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "654"
+        },
+        {
+            "Symbol": "AUD",
+            "Name": "Australian Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "036"
+        },
+        {
+            "Symbol": "MAD",
+            "Name": "Moroccan Dirham",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "504"
+        },
+        {
+            "Symbol": "SGD",
+            "Name": "Singapore Dollar",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "702"
+        },
+        {
+            "Symbol": "SZL",
+            "Name": "Lilangeni",
+            "Decimals": 2,
+            "Blockchain": "Fiat",
+            "Address": "748"
+        }
+    ]
 }

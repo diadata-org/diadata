@@ -20,12 +20,12 @@ type FinageWSMessage struct {
 }
 
 type FinageTrade struct {
-	S  string  `json:"s"`
-	A  float64 `json:"a"`
-	B  float64 `json:"b"`
-	Dc string  `json:"dc"`
-	Dd string  `json:"dd"`
-	T  int64   `json:"t"`
+	Symbol    string  `json:"s"`
+	PriceAsk  float64 `json:"a"`
+	PriceBid  float64 `json:"b"`
+	VolumeAsk string  `json:"dc"`
+	VolumeBid string  `json:"dd"`
+	Timestamp int64   `json:"t"`
 }
 
 // var pairs = "INR/USD,USD/INR,AED/INR, INR/AED,INR/CAD,CAD/INR"
@@ -72,7 +72,9 @@ func NewFinageForexScraper(exchange dia.Exchange, scrape bool, relDB *models.Rel
 	}
 
 	log.Info("Scraper is built and initiated")
-	go s.mainLoop()
+	if scrape {
+		go s.mainLoop()
+	}
 	return s
 }
 
@@ -127,24 +129,32 @@ func (s *FinageForexScraper) Update() error {
 
 			var ftrade FinageTrade
 			err = json.Unmarshal(message, &ftrade)
+			log.Info("Symbol: ", ftrade.Symbol)
+			log.Info("PriceAsk: ", ftrade.PriceAsk)
+			log.Info("PriceBid: ", ftrade.PriceBid)
+			log.Info("VolumeAsk: ", ftrade.VolumeAsk)
+			log.Info("VolumeBid: ", ftrade.VolumeBid)
+			log.Info("Timestamp: ", ftrade.Timestamp)
 
 			if err != nil {
 				log.Errorln("Not a Trade", err)
 				break
 			} else {
-
-				tradePair, _ := s.datastore.GetExchangePairCache(s.exchangeName, strings.Replace(ftrade.S, "/", "-", 1))
-				if ftrade.S != "" {
+				tradePair, _ := s.datastore.GetExchangePairCache(s.exchangeName, strings.Replace(ftrade.Symbol, "/", "-", 1))
+				if ftrade.Symbol != "" {
 					t := &dia.Trade{
-						Pair:         strings.Replace(ftrade.S, "/", "-", 1),
-						Symbol:       ftrade.S,
-						Price:        float64(ftrade.A),
+						Symbol:       strings.Split(ftrade.Symbol, "/")[0],
+						Pair:         strings.Replace(ftrade.Symbol, "/", "-", 1),
+						Price:        float64(ftrade.PriceAsk),
 						Volume:       1,
 						BaseToken:    tradePair.UnderlyingPair.BaseToken,
 						QuoteToken:   tradePair.UnderlyingPair.QuoteToken,
-						VerifiedPair: true,
-						Time:         time.Unix(ftrade.T/1e3, 0),
+						VerifiedPair: tradePair.Verified,
+						Time:         time.Unix(ftrade.Timestamp/1e3, 0),
 						Source:       s.exchangeName,
+					}
+					if t.VerifiedPair {
+						log.Info("got verified trade: ", t)
 					}
 					s.chanTrades <- t
 				}
@@ -256,7 +266,10 @@ func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 	if err != nil {
 		return
 	}
-	json.Unmarshal(data, &finageSymbolResponse)
+	err = json.Unmarshal(data, &finageSymbolResponse)
+	if err != nil {
+		return
+	}
 
 	for i := 1; i <= finageSymbolResponse.TotalPage; i++ {
 
@@ -265,7 +278,11 @@ func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 			continue
 		}
 
-		json.Unmarshal(data, &finageSymbolResponse)
+		err = json.Unmarshal(data, &finageSymbolResponse)
+		if err != nil {
+			log.Error("unmarshal pair: ", err)
+			continue
+		}
 
 		for _, symbol := range finageSymbolResponse.Symbols {
 
@@ -289,13 +306,12 @@ func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 }
 
 func (s *FinageForexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-
 	asset.Symbol = symbol
+	asset.Blockchain = dia.FIAT
 	return asset, nil
 }
 
 func (s *FinageForexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-
 	runes := []rune(pair.ForeignName)
 	asset0 := runes[0:3]
 	asset1 := runes[3:6]
