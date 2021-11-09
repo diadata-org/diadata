@@ -80,6 +80,7 @@ func (s *TradesBlockService) mainLoop() {
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
+	tInit := time.Now()
 
 	var verifiedTrade bool
 	// baseTokenSymbol := t.GetBaseToken()
@@ -113,10 +114,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
 				if price > 0.0 {
-					log.Infof("price of trade %s on exchange %s: %v", t.Pair, t.Source, t.Price)
-					log.Info("price of base token: ", price)
-					log.Info("resulting estimatedUSDPrice: ", t.Price*price)
-					// TO DO: Some estimatedUSDPrices are zero. This might be rounding error. Switch to big.Float?
+					// log.Infof("price of trade %s on exchange %s: %v", t.Pair, t.Source, t.Price)
+					// log.Info("price of base token: ", price)
+					// log.Info("resulting estimatedUSDPrice: ", t.Price*price)
+					// TO DO: Switch to big.Float?
 					t.EstimatedUSDPrice = t.Price * price
 					if t.EstimatedUSDPrice > 0 {
 						verifiedTrade = true
@@ -151,7 +152,9 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	if verifiedTrade && t.EstimatedUSDPrice > 0 {
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
+				t0 := time.Now()
 				s.finaliseCurrentBlock()
+				log.Info("time spent for finalizing current block: ", time.Since(t0))
 			}
 
 			b := &dia.TradesBlock{
@@ -165,15 +168,18 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Info("created new block beginTime:", b.TradesBlockData.BeginTime, "previous block nb trades:", len(s.currentBlock.TradesBlockData.Trades))
 			}
 			s.currentBlock = b
+			t0 := time.Now()
 			err = s.datastore.Flush()
 			if err != nil {
 				log.Error(err)
 			}
+			log.Info("time spent for flushing current block: ", time.Since(t0))
 		}
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
+	log.Info("time spent for process: ", time.Since(tInit))
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
