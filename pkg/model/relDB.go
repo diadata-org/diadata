@@ -3,13 +3,13 @@ package models
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 
 	"github.com/go-redis/redis"
-	"github.com/jackc/pgx/v4"
 )
 
 // RelDatastore is a (persistent) relational database with an additional redis caching layer
@@ -125,7 +125,7 @@ const (
 // RelDB is a relative database with redis caching layer.
 type RelDB struct {
 	URI            string
-	postgresClient *pgx.Conn
+	postgresClient *pgxpool.Pool
 	redisClient    *redis.Client
 	pagesize       uint32
 }
@@ -148,7 +148,7 @@ func NewCachingLayer() (*RelDB, error) {
 
 // NewRelDataStoreWithOptions returns a postgres datastore and/or redis caching layer.
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
-	var postgresClient *pgx.Conn
+	var postgresClient *pgxpool.Pool
 	var redisClient *redis.Client
 	var url string
 
