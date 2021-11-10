@@ -105,12 +105,12 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
 	}
 	if args.Address.Value != nil {
-		address = string(*args.Address.Value)
+		address = *args.Address.Value
 	}
 	if args.BlockChain.Value != nil {
-		blockchain = string(*args.BlockChain.Value)
+		blockchain = *args.BlockChain.Value
 	}
-	symbol := string(*args.Symbol.Value)
+	symbol := *args.Symbol.Value
 	starttime := args.StartTime.Value.Time
 	endtime := args.EndTime.Value.Time
 	exchanges := args.Exchanges

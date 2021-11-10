@@ -3,32 +3,40 @@ package db
 import (
 	"bufio"
 	"context"
-	"os"
-	"time"
-
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"os"
 )
 
 const (
-	postgresKey          = "postgres_credentials.txt"
-	reconnectWaitSeconds = 5
-	maxRetry             = 120
+	postgresKey = "postgres_credentials.txt"
+
+//	reconnectWaitSeconds = 5
+//	maxRetry             = 120
 )
 
-var postgresClient *pgx.Conn
+func PostgresDatabase() *pgxpool.Pool {
+	pool, err := pgxpool.Connect(context.Background(), GetPostgresURL())
+	if err != nil {
+		log.Error(err)
+	}
+	return pool
 
+}
+
+/*
+var postgresClient *pgxpool.Pool
 func GetPostgresClient() (*pgx.Conn, error) {
 	var err error
 	log.Info("connect to postgres server...")
-	postgresClient, err = pgx.Connect(context.Background(), GetPostgresURL())
+	postgresClient, err = pgxpool.Connect(context.Background(), GetPostgresURL())
 	if err != nil {
 		log.Error(err)
 		return &pgx.Conn{}, err
 	}
 	log.Info("...connection to postgres server established.")
 
-	return postgresClient, err
+	return postgresClient.Conn(), err
 }
 
 func PostgresDatabase() *pgx.Conn {
@@ -55,12 +63,13 @@ func PostgresDatabase() *pgx.Conn {
 	}
 	return postgresClient
 }
+*/
 
 func GetPostgresURL() (url string) {
-	if os.Getenv("USE_ENV") == "true" {
+	if utils.Getenv("USE_ENV", "false") == "true" {
 		return "postgresql://" + os.Getenv("POSTGRES_USER") + ":" + os.Getenv("POSTGRES_PASSWORD") + "@" + os.Getenv("POSTGRES_HOST") + "/" + os.Getenv("POSTGRES_DB")
 	}
-	if utils.Getenv("EXEC_MODE", "") == "production" {
+	if utils.Getenv("EXEC_MODE", "local") == "production" {
 		return "postgresql://postgres/postgres?user=postgres&password=" + getPostgresKeyFromSecrets()
 	}
 	return "postgresql://localhost/postgres?user=postgres&password=" + getPostgresKeyFromSecrets()

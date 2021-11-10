@@ -53,8 +53,16 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	return
 }
 
+var assetCache map[string]dia.Asset
+
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
+	assetKey := "GetAsset_" + address + "_" + blockchain
+	cachedAsset, found := assetCache[assetKey]
+	if found {
+		asset = cachedAsset
+		return
+	}
 	var decimals string
 	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where address=$1 and blockchain=$2", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
@@ -66,6 +74,7 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		return
 	}
 	asset.Decimals = uint8(decimalsInt)
+	assetCache[assetKey] = asset
 	return
 }
 
