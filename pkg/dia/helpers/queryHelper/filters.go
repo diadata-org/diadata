@@ -115,12 +115,16 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else {
+				if lastfp != nil {
+					lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+					filterPoints = append(filterPoints, *lastfp)
+				}
+			}
+		} else {
+			if lastfp != nil {
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 			}
-		} else {
-			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *lastfp)
 		}
 	}
 	return filterPoints
