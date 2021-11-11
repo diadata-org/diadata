@@ -1,11 +1,10 @@
-FROM golang:1.14 as build
+ARG migration
+
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/influxMigration
-
+COPY ./cmd/influxMigration ./
 RUN go install
 
 FROM gcr.io/distroless/base

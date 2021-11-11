@@ -21,10 +21,10 @@ services:
     environment:
       - EXEC_MODE=production
       - INFLUX_READ_URL=http://influxdb:8086
-      - INFLUX_WRITE_URL=http://influxdb2:8086
+      - INFLUX_WRITE_URL=http://influxdb-2:8086
       - INFLUX_TABLE_ORIGIN=trades
       - INFLUX_TABLE_DESTINATION=tradesTmp
-      - TIME_FINAL=1634564891
+      - TIME_FINAL=1636618800
       - INFLUX_MIGRATION_TESTMODE=false
   
 secrets:

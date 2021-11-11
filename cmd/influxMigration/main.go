@@ -123,7 +123,7 @@ func main() {
 	log.Info("toTable: ", toTable)
 
 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
-	timeFinalString := utils.Getenv("TIME_FINAL", "1634564891")
+	timeFinalString := utils.Getenv("TIME_FINAL", "1636618800")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -166,7 +166,7 @@ func main() {
 
 	var wg sync.WaitGroup
 	allExchanges := dia.Exchanges()
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(allExchanges); i++ {
 		exchange := allExchanges[i]
 		if !scrapers.Exchanges[exchange].Centralized {
 			continue
