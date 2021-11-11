@@ -81,10 +81,8 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 	subQuery := ""
 	if len(exchanges) > 0 {
 		for _, exchange := range exchanges {
-			//subQuery = subQuery + fmt.Sprintf("exchange = '%s' or ", exchange)
-			subQuery = subQuery + fmt.Sprintf("'%s'|", exchange)
+			subQuery = subQuery + fmt.Sprintf("%s|", exchange)
 		}
-		//subQuery = "and (" + strings.TrimRight(subQuery, " or ")+ ")"
 		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 	}
 	query := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
