@@ -12,14 +12,14 @@ A demo application has been deployed to the Solana blockchain. A simple frontend
 
 The application currently supports this set of asset prices.
 
-| Asset Name | Query Command | Asset Type  |
-| ---------- | ------------- | ----------- |
-| Solana     | SOL           | Coin Price  |
-| Bitcoin    | BTC           | Coin Price  |
-| Ethereum   | ETH           | Coin Price  |
-| Diadata    | DIA           | Token Price |
-| Circle USD | USDC          | Token Price |
-| Cardano    | ADA           | Coin Price  |
+| Asset Name | Query Command | Address (Devnet)                                                                                                                                |
+| ---------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Solana     | SOL           | [PD8AXFHHqVFqrywQYTrJfrDNY4oAENBKSHq6ctQXPfa](https://explorer.solana.com/address/PD8AXFHHqVFqrywQYTrJfrDNY4oAENBKSHq6ctQXPfa?cluster=devnet)   |
+| Bitcoin    | BTC           | [FJpv98TrcWURFaGXVRnzwQ7gfdF2ZWzKYeRo6Y3Jim9Z](https://explorer.solana.com/address/FJpv98TrcWURFaGXVRnzwQ7gfdF2ZWzKYeRo6Y3Jim9Z?cluster=devnet) |
+| Ethereum   | ETH           | [GzBueExjjLxHbUK5QYBUKVHxUh4vU4wztKdtQ1UyejT3](https://explorer.solana.com/address/GzBueExjjLxHbUK5QYBUKVHxUh4vU4wztKdtQ1UyejT3?cluster=devnet) |
+| Diadata    | DIA           | [4xfZ1FhvuDqMLSUUMyLBKdJpEjfC6VQYsnZqAFV182BR](https://explorer.solana.com/address/4xfZ1FhvuDqMLSUUMyLBKdJpEjfC6VQYsnZqAFV182BR?cluster=devnet) |
+| Circle USD | USDC          | [E6nLSeutmECcp1USAWUnuYJ3NRKNAtKyv1SBMNLPRv5V](https://explorer.solana.com/address/E6nLSeutmECcp1USAWUnuYJ3NRKNAtKyv1SBMNLPRv5V?cluster=devnet) |
+| Cardano    | ADA           | [EieYNn9t56ma52Jt3UYbeMCVyzf3jt4bGXE55gQJFRJK](https://explorer.solana.com/address/EieYNn9t56ma52Jt3UYbeMCVyzf3jt4bGXE55gQJFRJK?cluster=devnet) |
 
 ### Solana Oracle Operations
 
