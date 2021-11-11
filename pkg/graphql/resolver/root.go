@@ -157,7 +157,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			starttime = maxStartTime
 		}
 
-		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 1000)
+		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
 		if err != nil {
 			return &sr, err
 		}
@@ -173,7 +173,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			starttime = maxStartTime
 		}
 
-		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime, 1000)
+		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
 		if err != nil {
 			return &sr, err
 		}

@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -54,7 +55,7 @@ func parseTrade(row []interface{}) *dia.Trade {
 			if o {
 				volume, _ = v.Float64()
 			} else {
-				log.Errorln("error on parsing row 6", row)
+				log.Errorln("error on parsing row 7", row)
 			}
 
 			trade := dia.Trade{
@@ -75,27 +76,23 @@ func parseTrade(row []interface{}) *dia.Trade {
 	return nil
 }
 
-func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
-	subquery := ""
-	query := ""
+func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
+	var r []dia.Trade
+	subQuery := ""
 	if len(exchanges) > 0 {
-		for count, exchange := range exchanges {
-			if len(exchanges)-1 == count {
-				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange)
-			} else {
-				subquery = subquery + fmt.Sprintf("exchange='%s'", exchange) + " or "
-			}
+		for _, exchange := range exchanges {
+			//subQuery = subQuery + fmt.Sprintf("exchange = '%s' or ", exchange)
+			subQuery = subQuery + fmt.Sprintf("'%s'|", exchange)
 		}
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and (%s) and    estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subquery, startTime.UnixNano(), endTime.UnixNano())
-
-	} else {
-		query = fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s'  and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, startTime.UnixNano(), endTime.UnixNano())
-
+		//subQuery = "and (" + strings.TrimRight(subQuery, " or ")+ ")"
+		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 	}
+	query := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 
 	log.Infoln("GetTradesByExchanges Query", query)
+	timeStart := time.Now()
 	res, err := queryInfluxDB(db.influxClient, query)
+	timeEnd := time.Now()
 	if err != nil {
 		return r, err
 	}
@@ -111,6 +108,7 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
 	return r, nil
 }
 
