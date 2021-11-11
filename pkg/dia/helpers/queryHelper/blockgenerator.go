@@ -18,22 +18,22 @@ func NewBlockGenerator(trades []dia.Trade) *Blockgenerator {
 }
 
 func (bg *Blockgenerator) GenerateSize(blockSizeSeconds int64) (tradeBlocks []Block) {
-	var tradeBlock Block
-
 	firstBlockStartTime := bg.trades[0].Time.UnixNano()
 	currentBlockEndTime := firstBlockStartTime + (blockSizeSeconds * 1e9)
+	tradeBlock := Block{
+		TimeStamp: firstBlockStartTime,
+	}
 
 	for count, trade := range bg.trades {
 		if trade.Time.UnixNano() >= firstBlockStartTime {
 			if trade.Time.UnixNano() > currentBlockEndTime {
 				currentBlockEndTime = trade.Time.UnixNano() + (blockSizeSeconds * 1e9)
 				tradeBlocks = append(tradeBlocks, tradeBlock)
-				tradeBlock = Block{}
-				tradeBlock.Trades = append(tradeBlock.Trades, trade)
-
-			} else {
-				tradeBlock.Trades = append(tradeBlock.Trades, trade)
+				tradeBlock = Block{
+					TimeStamp: currentBlockEndTime - (blockSizeSeconds * 1e9),
+				}
 			}
+			tradeBlock.Trades = append(tradeBlock.Trades, trade)
 
 			// IF last block is not complete but trades are finished then add rest trades in block
 
