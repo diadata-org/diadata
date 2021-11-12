@@ -3,7 +3,6 @@ package main
 import (
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
@@ -29,87 +28,6 @@ type VerifiableAsset struct {
 	Asset    dia.Asset
 	Verified bool
 }
-
-// func main() {
-
-// 	ReadURL := utils.Getenv("INFLUX_READ_URL", "")
-// 	WriteURL := utils.Getenv("INFLUX_WRITE_URL", "")
-// 	log.Info("readURL: ", ReadURL)
-// 	log.Info("writeURL: ", WriteURL)
-// 	fromTable := utils.Getenv("INFLUX_TABLE_ORIGIN", influxDbOldTradesTable)
-// 	toTable := utils.Getenv("INFLUX_TABLE_DESTINATION", influxDbTestTable)
-// 	log.Info("fromTable: ", fromTable)
-// 	log.Info("toTable: ", toTable)
-// 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
-// 	timeFinalString := utils.Getenv("TIME_FINAL", "1634564891")
-// 	testmodestring := utils.Getenv("INFLUX_MIGRATION_TESTMODE", "true")
-// 	var testmode bool
-// 	if testmodestring == "true" {
-// 		testmode = true
-// 	}
-// 	if testmodestring == "false" {
-// 		testmode = false
-// 	}
-// 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
-// 	if err != nil {
-// 		log.Error("parse timeFinal: ", err)
-// 	}
-// 	timeFinal := time.Unix(timeFinalInt, 0)
-// 	log.Info("timeFinal: ", timeFinal)
-// 	// The oldest record we have in influx is younger than 3000 days old.
-// 	timeInit := time.Now().AddDate(0, 0, -3000)
-
-// 	dsRead, err := models.NewDataStore()
-// 	if err != nil {
-// 		log.Fatal("datastore: ", err)
-// 	}
-// 	dsRead.SetInfluxClient(ReadURL)
-
-// 	dsWrite, err := models.NewDataStore()
-// 	if err != nil {
-// 		log.Fatal("datastore: ", err)
-// 	}
-// 	dsWrite.SetInfluxClient(WriteURL)
-
-// 	rdb, err := models.NewRelDataStore()
-// 	if err != nil {
-// 		log.Fatal("relational datastore: ", err)
-// 	}
-
-// 	for _, exchange := range dia.Exchanges() {
-// 		if !scrapers.Exchanges[exchange].Centralized {
-// 			continue
-// 		}
-// 		log.Infof("migrate trades for %s ...", exchange)
-// 		log.Info("write into: ", toTable)
-// 		log.Info("load and assign exchangesymbols... ")
-// 		exchangesymbolMap, err := loadExchangeSymbols(exchange, rdb)
-// 		if err != nil {
-// 			log.Fatal("load exchange symbols' assets: ", err)
-// 		}
-// 		time.Sleep(10 * time.Second)
-// 		log.Info("...exchangesymbols loaded and assigned.")
-
-// 		startTime := timeInit
-// 		var endTime time.Time
-// 		for startTime.Before(timeFinal) {
-// 			// If not beyond time range, query @querySizeHours hours at a time...
-// 			if timeInit.Add(querySizeHours * time.Hour).Before(timeFinal) {
-// 				endTime = startTime.Add(querySizeHours * time.Hour)
-// 			} else {
-// 				// ...else, query until last time of time range.
-// 				endTime = timeFinal
-// 			}
-// 			err = migrateCEXTrades(exchange, exchangesymbolMap, startTime, endTime, fromTable, toTable, testmode, dsRead, dsWrite)
-// 			if err != nil {
-// 				log.Fatalf("migrate trades for exchange %s: %v", exchange, err)
-// 			}
-// 			log.Infof("migrated trades between %v and %v", startTime, endTime)
-// 			startTime = startTime.Add(querySizeHours * time.Hour)
-// 		}
-
-// 	}
-// }
 
 func main() {
 
@@ -164,19 +82,17 @@ func main() {
 	log.Info("...exchangesymbols loaded and assigned.")
 	time.Sleep(2 * time.Second)
 
-	var wg sync.WaitGroup
 	allExchanges := dia.Exchanges()
 	for i := 0; i < len(allExchanges); i++ {
 		exchange := allExchanges[i]
 		if !scrapers.Exchanges[exchange].Centralized {
 			continue
 		}
-		if exchange == "Unknown" {
+		if exchange == "Unknown" || exchange == "FinageForex" {
 			continue
 		}
 
-		wg.Add(1)
-		go func(
+		func(
 			exch string,
 			startTime time.Time,
 			timeFinal time.Time,
@@ -186,9 +102,8 @@ func main() {
 			toTable string,
 			dsRead *models.DB,
 			dsWrite *models.DB,
-			w *sync.WaitGroup,
 		) {
-			defer w.Done()
+
 			log.Infof("migrate trades for %s ...", exch)
 			log.Info("write into: ", toTable)
 
@@ -208,11 +123,113 @@ func main() {
 				log.Infof("migrated trades between %v and %v", startTime, endTime)
 				startTime = startTime.Add(querySizeHours)
 			}
-		}(exchange, timeInit, timeFinal, querySizeHours*time.Hour, allSymbolsMap, fromTable, toTable, dsRead, dsWrite, &wg)
+		}(exchange, timeInit, timeFinal, querySizeHours*time.Hour, allSymbolsMap, fromTable, toTable, dsRead, dsWrite)
 	}
-	wg.Wait()
 
 }
+
+// func main() {
+
+// 	ReadURL := utils.Getenv("INFLUX_READ_URL", "")
+// 	WriteURL := utils.Getenv("INFLUX_WRITE_URL", "")
+// 	log.Info("readURL: ", ReadURL)
+// 	log.Info("writeURL: ", WriteURL)
+// 	fromTable := utils.Getenv("INFLUX_TABLE_ORIGIN", influxDbOldTradesTable)
+// 	toTable := utils.Getenv("INFLUX_TABLE_DESTINATION", influxDbTestTable)
+// 	log.Info("fromTable: ", fromTable)
+// 	log.Info("toTable: ", toTable)
+
+// 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
+// 	timeFinalString := utils.Getenv("TIME_FINAL", "1636618800")
+// 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
+// 	if err != nil {
+// 		log.Error("parse timeFinal: ", err)
+// 	}
+// 	timeFinal := time.Unix(timeFinalInt, 0)
+// 	log.Info("timeFinal: ", timeFinal)
+// 	// The oldest record we have in influx is younger than 3000 days old.
+// 	timeInit := time.Now().AddDate(0, 0, -3000)
+
+// 	testmodestring := utils.Getenv("INFLUX_MIGRATION_TESTMODE", "true")
+// 	testmode, err := strconv.ParseBool(testmodestring)
+// 	if err != nil {
+// 		log.Error("parse testmode: ", err)
+// 	}
+
+// 	dsRead, err := models.NewDataStore()
+// 	if err != nil {
+// 		log.Fatal("datastore: ", err)
+// 	}
+// 	dsRead.SetInfluxClient(ReadURL)
+
+// 	dsWrite, err := models.NewDataStore()
+// 	if err != nil {
+// 		log.Fatal("datastore: ", err)
+// 	}
+// 	dsWrite.SetInfluxClient(WriteURL)
+
+// 	rdb, err := models.NewRelDataStore()
+// 	if err != nil {
+// 		log.Fatal("relational datastore: ", err)
+// 	}
+
+// 	log.Info("load and assign exchangesymbols... ")
+// 	allSymbolsMap, err := loadAllExchangeSymbols(rdb)
+// 	if err != nil {
+// 		log.Fatal("load exchange symbols' assets: ", err)
+// 	}
+// 	log.Info("...exchangesymbols loaded and assigned.")
+// 	time.Sleep(2 * time.Second)
+
+// 	var wg sync.WaitGroup
+// 	allExchanges := dia.Exchanges()
+// 	for i := 0; i < len(allExchanges); i++ {
+// 		exchange := allExchanges[i]
+// 		if !scrapers.Exchanges[exchange].Centralized {
+// 			continue
+// 		}
+// 		if exchange == "Unknown" {
+// 			continue
+// 		}
+
+// 		wg.Add(1)
+// 		go func(
+// 			exch string,
+// 			startTime time.Time,
+// 			timeFinal time.Time,
+// 			querySizeHours time.Duration,
+// 			allSymbolsMap map[string]VerifiableAsset,
+// 			fromTable string,
+// 			toTable string,
+// 			dsRead *models.DB,
+// 			dsWrite *models.DB,
+// 			w *sync.WaitGroup,
+// 		) {
+// 			defer w.Done()
+// 			log.Infof("migrate trades for %s ...", exch)
+// 			log.Info("write into: ", toTable)
+
+// 			var endTime time.Time
+// 			for startTime.Before(timeFinal) {
+// 				// If not beyond time range, query @querySizeHours hours at a time...
+// 				if (timeInit.Add(querySizeHours)).Before(timeFinal) {
+// 					endTime = startTime.Add(querySizeHours)
+// 				} else {
+// 					// ...else, query until last time of time range.
+// 					endTime = timeFinal
+// 				}
+// 				err = migrateCEXTrades(exch, allSymbolsMap, startTime, endTime, fromTable, toTable, testmode, dsRead, dsWrite)
+// 				if err != nil {
+// 					log.Errorf("migrate trades for exchange %s: %v", exch, err)
+// 				}
+// 				log.Infof("migrated trades between %v and %v", startTime, endTime)
+// 				startTime = startTime.Add(querySizeHours)
+// 			}
+// 		}(exchange, timeInit, timeFinal, querySizeHours*time.Hour, allSymbolsMap, fromTable, toTable, dsRead, dsWrite, &wg)
+// 	}
+// 	wg.Wait()
+
+// }
 
 // loadAllExchangeSymbols returns a map that maps the string exchange-symbol to the
 // underlying verifiable asset.
