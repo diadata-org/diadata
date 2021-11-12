@@ -573,9 +573,15 @@ func (db *DB) GetOldTradesFromInflux(table string, exchange string, verified boo
 			if err != nil {
 				return allTrades, err
 			}
-			trade.Source = res[0].Series[0].Values[i][2].(string)
-			trade.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
-			trade.Pair = res[0].Series[0].Values[i][4].(string)
+			if res[0].Series[0].Values[i][2] != nil {
+				trade.Source = res[0].Series[0].Values[i][2].(string)
+			}
+			if res[0].Series[0].Values[i][3] != nil {
+				trade.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			}
+			if res[0].Series[0].Values[i][4] != nil {
+				trade.Pair = res[0].Series[0].Values[i][4].(string)
+			}
 			trade.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
 			if err != nil {
 				return allTrades, err
@@ -583,7 +589,9 @@ func (db *DB) GetOldTradesFromInflux(table string, exchange string, verified boo
 			if res[0].Series[0].Values[i][6] == nil {
 				continue
 			}
-			trade.Symbol = res[0].Series[0].Values[i][6].(string)
+			if res[0].Series[0].Values[i][6] != nil {
+				trade.Symbol = res[0].Series[0].Values[i][6].(string)
+			}
 			trade.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
 			if err != nil {
 				return allTrades, err
