@@ -56,6 +56,14 @@ const (
 func Exchanges() []string {
 	return []string{
 
+		BinanceExchange,
+		LBankExchange,
+		QuoineExchange,
+		SimexExchange,
+		CREX24Exchange,
+		STEXExchange,
+		LoopringExchange,
+
 		FinageForex,
 		BitMaxExchange,
 		ZBExchange,
@@ -69,13 +77,6 @@ func Exchanges() []string {
 		GateIOExchange,
 		HitBTCExchange,
 		OKExExchange,
-		BinanceExchange,
-		LBankExchange,
-		QuoineExchange,
-		LoopringExchange,
-		SimexExchange,
-		CREX24Exchange,
-		STEXExchange,
 
 		BancorExchange,
 		CurveFIExchange,
