@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/cmd/influxMigration/influxCopy
+module github.com/diadata-org/diadata/influxMigration/influxCopy
 
 go 1.14
 
