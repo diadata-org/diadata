@@ -13,7 +13,6 @@ import (
 const (
 	influxDbOldTradesTable = "trades"
 	influxDbTestTable      = "tradestest"
-	querySizeHours         = 12
 )
 
 var log *logrus.Logger

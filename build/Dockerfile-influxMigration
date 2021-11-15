@@ -1,5 +1,3 @@
-ARG migration
-
 FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
