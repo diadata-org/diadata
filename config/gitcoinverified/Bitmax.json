@@ -1,5 +1,11 @@
 {
-    "Tokens": [
+    "Tokens": [  
+        {
+            "Symbol": "1INCH",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x111111111117dC0aa78b770fA6A738034120C302"
+        },
         {
             "Symbol": "ADA",
             "Exchange": "Bitmax",
@@ -199,12 +205,6 @@
             "Address": "0xf34960d9d60be18cC1D5Afc1A6F012A723a28811"
         },
         {
-            "Symbol": "KCS",
-            "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0x3E9BC21C9b189C09dF3eF1B824798658d5011937"
-        },
-        {
             "Symbol": "LINK",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -245,6 +245,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+        },
+        {
+            "Symbol": "PAX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
         },
         {
             "Symbol": "PERP",

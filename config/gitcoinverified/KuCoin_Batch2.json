@@ -307,6 +307,12 @@
             "Address": "0x8806926Ab68EB5a7b909DcAf6FdBe5d93271D6e2"
         },
         {
+            "Symbol": "UST",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
             "Symbol": "VIDT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

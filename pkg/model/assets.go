@@ -53,7 +53,7 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	return
 }
 
-var assetCache map[string]dia.Asset
+var assetCache = make(map[string]dia.Asset)
 
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {

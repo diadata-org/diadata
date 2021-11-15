@@ -31,6 +31,12 @@
             "Address": "0x27054b13b1B798B345b591a4d22e6562d47eA75a"
         },
         {
+            "Symbol": "BAL",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
+        },
+        {
             "Symbol": "BCPT",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -47,6 +53,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x177d39AC676ED1C67A2b268AD7F1E58826E5B0af"
+        },
+        {
+            "Symbol": "CRV",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
         },
         {
             "Symbol": "CVC",

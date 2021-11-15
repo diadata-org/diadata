@@ -197,6 +197,12 @@
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",
             "Address": "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
+        },
+        {
+            "Symbol": "ZRX",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498"
         }
     ]
 }

@@ -115,6 +115,12 @@
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
         },
         {
+            "Symbol": "PAX",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
+        },
+        {
             "Symbol": "PKT",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",
