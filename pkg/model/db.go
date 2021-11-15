@@ -48,6 +48,7 @@ type Datastore interface {
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
+	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 
 	Flush() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
@@ -623,6 +624,24 @@ func (db *DB) GetOldTradesFromInflux(table string, exchange string, verified boo
 		return allTrades, errors.New("no trades in time range")
 	}
 	return allTrades, nil
+}
+
+// CopyInfluxMeasurements copies entries from measurement @tableOrigin in database @dbOrigin into @tableDestination in database @dbDestination.
+// It takes into account all data ranging from @timeInit until @timeFinal.
+func (db *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (numCopiedRows int64, err error) {
+	queryString := "select * into %s..%s from %s..%s where time>%d and time<=%d group by *"
+	query := fmt.Sprintf(queryString, dbDestination, tableDestination, dbOrigin, tableOrigin, timeInit.UnixNano(), timeFinal.UnixNano())
+	res, err := queryInfluxDB(db.influxClient, query)
+	if err != nil {
+		return
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		numCopiedRows, err = res[0].Series[0].Values[0][1].(json.Number).Int64()
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 func (db *DB) GetFirstTradeDate(table string) (time.Time, error) {

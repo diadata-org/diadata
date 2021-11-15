@@ -10,6 +10,7 @@ import (
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,19 +35,20 @@ var (
 )
 
 type TradesBlockService struct {
-	shutdown        chan nothing
-	shutdownDone    chan nothing
-	chanTrades      chan *dia.Trade
-	chanTradesBlock chan *dia.TradesBlock
-	errorLock       sync.RWMutex
-	error           error
-	closed          bool
-	started         bool
-	BlockDuration   int64
-	currentBlock    *dia.TradesBlock
-	priceCache      map[dia.Asset]float64
-	datastore       models.Datastore
-	historical      bool
+	shutdown         chan nothing
+	shutdownDone     chan nothing
+	chanTrades       chan *dia.Trade
+	chanTradesBlock  chan *dia.TradesBlock
+	errorLock        sync.RWMutex
+	error            error
+	closed           bool
+	started          bool
+	BlockDuration    int64
+	currentBlock     *dia.TradesBlock
+	priceCache       map[dia.Asset]float64
+	datastore        models.Datastore
+	historical       bool
+	writeMeasurement string
 }
 
 func NewTradesBlockService(datastore models.Datastore, blockDuration int64, historical bool) *TradesBlockService {
@@ -62,6 +64,9 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 		priceCache:      make(map[dia.Asset]float64),
 		datastore:       datastore,
 		historical:      historical,
+	}
+	if historical {
+		s.writeMeasurement = utils.Getenv("INFLUX_MEASUREMENT_WRITE", "tradesTmp")
 	}
 	go s.mainLoop()
 	return s
@@ -104,7 +109,14 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			var err error
 			if s.historical {
 				// Look for historic price of base token at trade time...
-				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
+				if _, ok = s.priceCache[t.BaseToken]; ok {
+					price = s.priceCache[t.BaseToken]
+					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
+				} else {
+					price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
+					s.priceCache[t.BaseToken] = price
+					log.Infof("quotation for %s from influx: %v", t.BaseToken.Symbol, price)
+				}
 			} else {
 				// ...or latest price. This method is quicker as it first queries the cache.
 				// Comment Philipp 09/11/2021: This might still be too slow, as it queries influx
@@ -149,10 +161,17 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	// Comment Philipp: We could make another check here. Store CG and/or CMC quotation in redis cache
 	// and compare with estimatedUSDPrice. If deviation is too large ignore trade. If we do so,
 	// we should already think about how to do it best with regards to historic values, as these are coming up.
-
-	err := s.datastore.SaveTradeInflux(&t)
-	if err != nil {
-		log.Error(err)
+	var err error
+	if s.historical {
+		err = s.datastore.SaveTradeInfluxToTable(&t, s.writeMeasurement)
+		if err != nil {
+			log.Error(err)
+		}
+	} else {
+		err = s.datastore.SaveTradeInflux(&t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 	if s.currentBlock != nil && s.currentBlock.TradesBlockData.BeginTime.After(t.Time) {

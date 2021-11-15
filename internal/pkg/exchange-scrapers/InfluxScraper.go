@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	batchDuration = "3600000000000"
-	tradesTable   = "tradesRaw"
+	batchDuration         = "3600000000000"
+	tradesReadMeasurement = "tradesOld"
 )
 
 type InfluxScraper struct {
@@ -31,7 +31,7 @@ type InfluxScraper struct {
 	pairScrapers  map[string]*InfluxPairScraper
 	exchangeName  string
 	chanTrades    chan *dia.Trade
-	table         string
+	measurement   string
 	batchDuration int64
 	db            *models.DB
 }
@@ -44,12 +44,14 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 	if err != nil {
 		log.Fatal("datastore: ", err)
 	}
-	table := utils.Getenv("INFLUX_TRADES_TABLE", tradesTable)
+	influxURL := utils.Getenv("INFLUXURL", "")
+	measurement := utils.Getenv("INFLUX_TRADES_MEASUREMENT", tradesReadMeasurement)
 	batchDurationEnv := utils.Getenv("BATCH_DURATION", batchDuration)
 	batchDurationInt, err := strconv.ParseInt(batchDurationEnv, 10, 64)
 	if err != nil {
 		log.Fatal("parse batch duration ", err)
 	}
+	db.SetInfluxClient(influxURL)
 
 	s := &InfluxScraper{
 		shutdown:      make(chan nothing),
@@ -58,7 +60,7 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 		exchangeName:  "Influx",
 		error:         nil,
 		chanTrades:    make(chan *dia.Trade),
-		table:         table,
+		measurement:   measurement,
 		db:            db,
 		batchDuration: batchDurationInt,
 		ticker:        time.NewTicker(time.Duration(3000000000)),
@@ -74,22 +76,27 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 func (s *InfluxScraper) mainLoop() {
 	log.Info("enter main loop")
 
-	timeInit, err := s.db.GetFirstTradeDate(s.table)
+	timeInit, err := s.db.GetFirstTradeDate(s.measurement)
 	if err != nil {
 		log.Error("get first trade date: ", err)
 	}
 	// determine first trade time from influx.
 	log.Info("timeInit: ", timeInit)
 	time.Sleep(10 * time.Second)
-	// final time can be chosen as now, because current scrapers are running in parallel
-	timeFinal := time.Now()
+	// final time is the last timestamp of trades exported from d2.
+	timeFinalString := utils.Getenv("TIME_FINAL", "")
+	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
+	if err != nil {
+		log.Fatal("parse final time: ", err)
+	}
+	timeFinal := time.Unix(timeFinalInt, 0)
 	starttime := timeInit
 	endtime := starttime.Add(time.Duration(s.batchDuration))
 
 	go func() {
 		for timeInit.Before(timeFinal) {
 			t0 := time.Now()
-			trades, err := s.db.GetOldTradesFromInflux(s.table, "", true, starttime, endtime)
+			trades, err := s.db.GetOldTradesFromInflux(s.measurement, "", true, starttime, endtime)
 			if err != nil {
 				if strings.Contains(err.Error(), "no trades in time range") {
 					log.Warnf("%v: %v -- %v", err, starttime, endtime)
