@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/influxMigration
+module github.com/diadata-org/diadata/influxMigration/migration
 
 go 1.14
 

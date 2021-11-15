@@ -80,6 +80,4 @@ func main() {
 		timeInit = endTime
 	}
 
-	time.Sleep(2 * time.Second)
-
 }
