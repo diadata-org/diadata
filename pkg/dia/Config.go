@@ -85,7 +85,6 @@ func Exchanges() []string {
 		DforceExchange,
 		KyberExchange,
 		MakerExchange,
-		PanCakeSwap,
 		SushiSwapExchange,
 		UniswapExchange,
 		UniswapExchangeV3,
@@ -94,6 +93,7 @@ func Exchanges() []string {
 		ZeroxExchange,
 		BalancerExchange,
 		DfynNetwork,
+		PanCakeSwap,
 		UnknownExchange,
 	}
 }
