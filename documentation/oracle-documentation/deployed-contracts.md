@@ -117,6 +117,20 @@ __
 {% endtab %}
 {% endtabs %}
 
+### Aurora
+
+{% tabs %}
+{% tab title="Mainnet" %}
+Coming soon
+{% endtab %}
+
+{% tab title="Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                                                               |                                                                                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f](https://explorer.testnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+{% endtab %}
+{% endtabs %}
+
 ### Moonbeam Testnet
 
 | Contract Name | Contract Address                                                                                                                                      |
