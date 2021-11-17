@@ -75,14 +75,26 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 // runs in a goroutine until s is closed
 func (s *InfluxScraper) mainLoop() {
 	log.Info("enter main loop")
-
-	timeInit, err := s.db.GetFirstTradeDate(s.measurement)
-	if err != nil {
-		log.Error("get first trade date: ", err)
+	var timeInit time.Time
+	var timeInitInt int64
+	var err error
+	// Either take first timestamp from env var or take first trade time from DB.
+	timeInitString := utils.Getenv("TIME_INIT", "")
+	if timeInitString == "" {
+		timeInit, err = s.db.GetFirstTradeDate(s.measurement)
+		if err != nil {
+			log.Error("get first trade date: ", err)
+		}
+	} else {
+		timeInitInt, err = strconv.ParseInt(timeInitString, 10, 64)
+		if err != nil {
+			log.Fatal("parse final time: ", err)
+		}
+		timeInit = time.Unix(timeInitInt, 0)
 	}
-	// determine first trade time from influx.
 	log.Info("timeInit: ", timeInit)
 	time.Sleep(10 * time.Second)
+
 	// final time is the last timestamp of trades exported from d2.
 	timeFinalString := utils.Getenv("TIME_FINAL", "")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
@@ -105,11 +117,11 @@ func (s *InfluxScraper) mainLoop() {
 					return
 				}
 			}
-
+			log.Infof("got %d trades in time range %v -- %v", len(trades), starttime, endtime)
 			log.Info("time passed for get old trades: ", time.Since(t0))
 			for i := range trades {
 				s.chanTrades <- &trades[i]
-				log.Info("got trade", trades[i])
+				log.Info("got trade: ", trades[i])
 			}
 			starttime, endtime = endtime, endtime.Add(time.Duration(s.batchDuration))
 		}
