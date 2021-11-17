@@ -646,7 +646,7 @@ func (datastore *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination strin
 
 func (datastore *DB) GetFirstTradeDate(table string) (time.Time, error) {
 	var query string
-	queryString := "SELECT \"exchange\",price FROM %s order by asc limit 1"
+	queryString := "SELECT \"exchange\",price FROM %s  where time<now() order by asc limit 1"
 	query = fmt.Sprintf(queryString, table)
 
 	res, err := queryInfluxDB(datastore.influxClient, query)

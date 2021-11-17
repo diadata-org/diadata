@@ -81,10 +81,12 @@ func (s *InfluxScraper) mainLoop() {
 	// Either take first timestamp from env var or take first trade time from DB.
 	timeInitString := utils.Getenv("TIME_INIT", "")
 	if timeInitString == "" {
+		log.Info("get first trade date...")
 		timeInit, err = s.db.GetFirstTradeDate(s.measurement)
 		if err != nil {
 			log.Error("get first trade date: ", err)
 		}
+		log.Info("got first trade date: ", timeInit)
 	} else {
 		timeInitInt, err = strconv.ParseInt(timeInitString, 10, 64)
 		if err != nil {
@@ -92,7 +94,7 @@ func (s *InfluxScraper) mainLoop() {
 		}
 		timeInit = time.Unix(timeInitInt, 0)
 	}
-	log.Info("timeInit: ", timeInit)
+
 	time.Sleep(10 * time.Second)
 
 	// final time is the last timestamp of trades exported from d2.
