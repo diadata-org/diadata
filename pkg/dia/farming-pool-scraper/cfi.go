@@ -2,9 +2,9 @@ package pool
 
 import (
 	"context"
-	gauge "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/gauge"
-	platform "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/platform"
-	special "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/curveficontracts/special"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/gauge"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/platform"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/special"
 	"math/big"
 	"time"
 

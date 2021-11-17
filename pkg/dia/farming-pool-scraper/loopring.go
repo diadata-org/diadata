@@ -2,13 +2,12 @@ package pool
 
 import (
 	"context"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/feeVault"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/stakingpool"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/token"
 	"math"
 	"math/big"
 	"time"
-
-	protocolfeevault "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/feeVault"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/stakingpool"
-	LRCtoken "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/loopring/token"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"

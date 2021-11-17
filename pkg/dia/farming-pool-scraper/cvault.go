@@ -2,10 +2,10 @@ package pool
 
 import (
 	"context"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/erc"
-	"github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper/cvault/lptoken"
 	"github.com/diadata-org/diadata/internal/pkg/supplyService"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/cvault"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/cvault/erc"
+	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/cvault/lptoken"
 
 	"math/big"
 	"time"
@@ -28,7 +28,7 @@ type Cvault struct {
 	scraper       *PoolScraper
 	RestClient    *ethclient.Client
 	WsClient      *ethclient.Client
-	DepositEvent  chan *cvaultpoolcontract.CvaultpoolcontractDeposit
+	DepositEvent  chan *cvaultpoolcontract.cvaultpoolcontract
 	WithDrawEvent chan *cvaultpoolcontract.CvaultpoolcontractWithdraw
 }
 
