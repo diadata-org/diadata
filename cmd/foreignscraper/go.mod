@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/services/nftCollectionService
+module github.com/diadata-org/diadata/foreignscraper
 
 go 1.14
 

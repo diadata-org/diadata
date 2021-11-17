@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/diadata-org/diadata/http/monitoringServer/config"
 	"github.com/diadata-org/diadata/http/monitoringServer/databases"
-	"github.com/diadata-org/diadata/http/monitoringServer/enums"
+	"github.com/diadata-org/diadata/http/monitoringServer/helpers"
 	"github.com/diadata-org/diadata/http/monitoringServer/nodes"
 	"github.com/diadata-org/diadata/http/monitoringServer/platform"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
@@ -18,8 +18,10 @@ func main() {
 	engine := gin.Default()
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
+
 	routerGroup := engine.Group("/monitoring")
 	routerGroup.GET("/", GetAllStates)
+
 	databases.AddRoutes(routerGroup)
 	nodes.AddRoutes(routerGroup)
 	platform.AddRoutes(routerGroup)
@@ -31,36 +33,14 @@ func main() {
 	}
 }
 
-func mergeStateSlicesAsSubsection(name string, states []config.State) config.State {
-	state := config.GetOperationalHealthState(name)
-
-	for _, oneSlice := range states {
-		state.Subsection = append(state.Subsection, oneSlice)
-		switch oneSlice.State {
-		case enums.HealthStateMajor:
-			state.State = enums.HealthStateMajor
-		case enums.HealthStateMinor:
-			if state.State == enums.HealthStateOperational || state.State == enums.HealthStateMaintenance {
-				state.State = enums.HealthStateMinor
-			}
-		case enums.HealthStateMaintenance:
-			if state.State == enums.HealthStateOperational {
-				state.State = enums.HealthStateOperational
-			}
-		}
-	}
-
-	return state
-}
-
 func GetAllStates(context *gin.Context) {
 	var states []config.State
 	dbStates := databases.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("databases", dbStates))
+	states = append(states, helpers.MergeStateSlicesAsSubsection("databases", dbStates))
 	nodeStates := nodes.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("nodes", nodeStates))
+	states = append(states, helpers.MergeStateSlicesAsSubsection("nodes", nodeStates))
 	platformStates := platform.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("platform", platformStates))
+	states = append(states, helpers.MergeStateSlicesAsSubsection("platform", platformStates))
 
 	if len(states) == 0 {
 		restApi.SendError(context, http.StatusNotFound, nil)

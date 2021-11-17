@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/diadata-org/diadata/http/monitoringServer/config"
 	"github.com/diadata-org/diadata/http/monitoringServer/enums"
+	"github.com/diadata-org/diadata/http/monitoringServer/helper"
 	log "github.com/sirupsen/logrus"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strings"
@@ -12,9 +13,12 @@ import (
 var states []config.State
 
 func GetAllStates() []config.State {
+	state := config.GetMajorHealthState("databases")
+	influxStates := InfluxState()
+	states = append(states.Su, influxStates)
+
 	states = []config.State{}
 
-	states = append(states, InfluxState())
 	states = append(states, RedisState())
 	states = append(states, PostgresState())
 	states = append(states, KafkaState())

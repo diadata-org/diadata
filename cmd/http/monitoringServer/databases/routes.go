@@ -10,7 +10,7 @@ func AddRoutes(rg *gin.RouterGroup) {
 	databaseUri.GET("/", GetAllDatabaseStates)
 	databaseUri.GET("/influx", GetInfluxState)
 	databaseUri.GET("/postgres", GetPostgresState)
-	databaseUri.GET("/kafka", GetPostgresState)
+	databaseUri.GET("/kafka", GetKafkaState)
 	databaseUri.GET("/redis", GetRedisState)
 
 }
