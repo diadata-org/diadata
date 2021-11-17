@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaArgoOracleService"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -13,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaArgoOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -109,7 +109,7 @@ func periodicOracleUpdateHelper(sleepSeconds int, oldPrice float64, deviationPer
 	// Check for deviation
 	newPrice := rawArgoQ.Price
 
-	if (newPrice > (oldPrice * (1 + float64(deviationPermille) / 1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille) / 1000))) {
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawArgoQ, auth, contract, conn)
 		if err != nil {
