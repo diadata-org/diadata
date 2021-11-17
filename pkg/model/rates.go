@@ -60,22 +60,22 @@ func getKeyInterestRate(symbol string, date time.Time) string {
 
 // SetInterestRate writes the interest rate struct ir into the Redis database
 // and writes rate type into a set of all available rates (if not done yet).
-func (db *DB) SetInterestRate(ir *InterestRate) error {
+func (datastore *DB) SetInterestRate(ir *InterestRate) error {
 
-	if db.redisClient == nil {
+	if datastore.redisClient == nil {
 		return nil
 	}
 	// Prepare interest rate quantities for database
 	key := getKeyInterestRate(ir.Symbol, ir.EffectiveDate)
 	// Write interest rate quantities into database
 	log.Debug("setting", key, ir)
-	err := db.redisClient.Set(key, ir, TimeOutRedis).Err()
+	err := datastore.redisClient.Set(key, ir, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
 	}
 
 	// Write rate type into set of available rates
-	err = db.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
+	err = datastore.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
 	if err != nil {
 		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
 	}
@@ -87,16 +87,16 @@ func (db *DB) SetInterestRate(ir *InterestRate) error {
 // If @date is an empty string it returns the rate at the latest time stamp.
 // @symbol is the shorthand symbol for the requested interest rate.
 // @date is a string in the format yyyy-mm-dd.
-func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
+func (datastore *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 
 	if date == "" {
 		date = time.Now().Format("2006-01-02")
 	}
-	key, _ := db.matchKeyInterestRate(symbol, date)
+	key, _ := datastore.matchKeyInterestRate(symbol, date)
 
 	// Run database querie with found key
 	ir := &InterestRate{}
-	err := db.redisClient.Get(key).Scan(ir)
+	err := datastore.redisClient.Get(key).Scan(ir)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
@@ -109,7 +109,7 @@ func (db *DB) GetInterestRate(symbol, date string) (*InterestRate, error) {
 // GetInterestRateRange returns the interest rate values for a range of timestamps.
 // @symbol is the shorthand symbol for the requested interest rate.
 // @dateInit and @dateFinal are strings in the format yyyy-mm-dd.
-func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error) {
+func (datastore *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*InterestRate, error) {
 
 	// Collect all possible keys in time range
 	keys := []string{}
@@ -119,7 +119,7 @@ func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*Inter
 		auxDate = utils.GetTomorrow(auxDate, "2006-01-02")
 	}
 	// Retrieve corresponding values from database
-	result := db.redisClient.MGet(keys...).Val()
+	result := datastore.redisClient.MGet(keys...).Val()
 	allValues := []*InterestRate{}
 	for _, val := range result {
 		if val != nil {
@@ -145,24 +145,24 @@ func (db *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([]*Inter
 // ---------------------------------------------------------------------------------------
 
 // GetRates returns a (unique) slice of all rates that have been written into the database
-func (db *DB) GetRates() []string {
+func (datastore *DB) GetRates() []string {
 	// log.Info("Fetching set of available rates")
-	allRates := db.redisClient.SMembers(keyAllRates).Val()
+	allRates := datastore.redisClient.SMembers(keyAllRates).Val()
 	return allRates
 }
 
 // GetRatesMeta returns a list of all available rate symbols along with their first
 // timestamp in the database.
-func (db *DB) GetRatesMeta() (RatesMeta []InterestRateMeta, err error) {
-	allRates := db.GetRates()
+func (datastore *DB) GetRatesMeta() (RatesMeta []InterestRateMeta, err error) {
+	allRates := datastore.GetRates()
 	for _, symbol := range allRates {
 		// Get first publication date
-		newdate, err := db.GetFirstDate(symbol)
+		newdate, err := datastore.GetFirstDate(symbol)
 		if err != nil {
 			return []InterestRateMeta{}, err
 		}
 		// Get issuing entity
-		issuer, err := db.GetIssuer(symbol)
+		issuer, err := datastore.GetIssuer(symbol)
 		if err != nil {
 			return []InterestRateMeta{}, err
 		}
@@ -194,14 +194,14 @@ func (db *DB) GetRatesMeta() (RatesMeta []InterestRateMeta, err error) {
 }
 
 // GetIssuer returns the issuing entity of the rate given by @symbol
-func (db *DB) GetIssuer(symbol string) (string, error) {
-	newdate, err := db.GetFirstDate(symbol)
+func (datastore *DB) GetIssuer(symbol string) (string, error) {
+	newdate, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return "", err
 	}
 	key := getKeyInterestRate(symbol, newdate)
 	ir := &InterestRate{}
-	err = db.redisClient.Get(key).Scan(ir)
+	err = datastore.redisClient.Get(key).Scan(ir)
 	if err != nil {
 		return "", err
 	}
@@ -209,8 +209,8 @@ func (db *DB) GetIssuer(symbol string) (string, error) {
 }
 
 // GetFirstDate returns the oldest date written in the database for the rate with symbol @symbol
-func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
-	allSyms := db.GetRates()
+func (datastore *DB) GetFirstDate(symbol string) (time.Time, error) {
+	allSyms := datastore.GetRates()
 	if !(utils.Contains(&allSyms, symbol)) {
 		log.Errorf("The symbol %v does not exist in the database.", symbol)
 		return time.Time{}, errors.New("database error")
@@ -218,12 +218,12 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 	// Fetch all available keys for @symbol
 	patt := "dia_quotation_" + symbol + "_*"
 	// Comment: This could be improved. Should be when the database gets larger.
-	allKeys := db.redisClient.Keys(patt).Val()
+	allKeys := datastore.redisClient.Keys(patt).Val()
 	oldestKey, _ := utils.MinString(allKeys)
 
 	// Scan the struct corresponding to the oldest timestamp and fetch effective date.
 	ir := &InterestRate{}
-	err := db.redisClient.Get(oldestKey).Scan(ir)
+	err := datastore.redisClient.Get(oldestKey).Scan(ir)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -236,10 +236,10 @@ func (db *DB) GetFirstDate(symbol string) (time.Time, error) {
 
 // GetCompoundedRate returns the compounded rate for the period @dateInit to @date. It computes the rate for all
 // days for which an entry is present in the database. All other days are assumed to be holidays (or weekends).
-func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPerYear int, rounding int) (*InterestRate, error) {
+func (datastore *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPerYear int, rounding int) (*InterestRate, error) {
 
 	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
-	firstPublication, err := db.GetFirstDate(symbol)
+	firstPublication, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -249,7 +249,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 		return &InterestRate{}, err
 	}
 
-	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
+	ratesAPI, err := datastore.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), date.Format("2006-01-02"))
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -282,7 +282,7 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 	// preceding business day (outside the considered time range!).
 	if utils.ContainsDay(holidays, dateInit) || !utils.CheckWeekDay(dateInit) {
 		var firstRate *InterestRate
-		firstRate, err = db.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
+		firstRate, err = datastore.GetInterestRate(symbol, dateInit.Format("2006-01-02"))
 		if err != nil {
 			return &InterestRate{}, err
 		}
@@ -306,20 +306,20 @@ func (db *DB) GetCompoundedRate(symbol string, dateInit, date time.Time, daysPer
 }
 
 // GetCompoundedIndex returns the compounded index over the maximal period of existence of @symbol
-func (db *DB) GetCompoundedIndex(symbol string, date time.Time, daysPerYear int, rounding int) (*InterestRate, error) {
+func (datastore *DB) GetCompoundedIndex(symbol string, date time.Time, daysPerYear int, rounding int) (*InterestRate, error) {
 	// Get initial date for the rate with @symbol
-	dateInit, err := db.GetFirstDate(symbol)
+	dateInit, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return &InterestRate{}, err
 	}
-	return db.GetCompoundedRate(symbol, dateInit, date, daysPerYear, rounding)
+	return datastore.GetCompoundedRate(symbol, dateInit, date, daysPerYear, rounding)
 }
 
 // GetCompoundedIndexRange returns the compounded average of the index @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int, rounding int) (values []*InterestRate, err error) {
+func (datastore *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Time, daysPerYear int, rounding int) (values []*InterestRate, err error) {
 
 	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
-	firstPublication, err := db.GetFirstDate(symbol)
+	firstPublication, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -330,7 +330,7 @@ func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Ti
 	}
 
 	// Get rate data from database for the computation of the compounded values
-	ratesAPI, err := db.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
+	ratesAPI, err := datastore.GetInterestRateRange(symbol, dateInit.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -360,7 +360,7 @@ func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Ti
 	}
 
 	// Initialize return values
-	compRate, err := db.GetCompoundedRate(symbol, firstPublication, dateInit, daysPerYear, 0)
+	compRate, err := datastore.GetCompoundedRate(symbol, firstPublication, dateInit, daysPerYear, 0)
 	if err != nil {
 		return
 	}
@@ -395,11 +395,11 @@ func (db *DB) GetCompoundedIndexRange(symbol string, dateInit, dateFinal time.Ti
 }
 
 // GetCompoundedAvg returns the compounded average of the index @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding int) (*InterestRate, error) {
+func (datastore *DB) GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding int) (*InterestRate, error) {
 
 	dateInit := date.AddDate(0, 0, -calDays)
 
-	index, err := db.GetCompoundedRate(symbol, dateInit, date, daysPerYear, rounding)
+	index, err := datastore.GetCompoundedRate(symbol, dateInit, date, daysPerYear, rounding)
 	if err != nil {
 		return &InterestRate{}, err
 	}
@@ -459,12 +459,12 @@ func WeightedRates(intRates []*InterestRate, dateInit, dateFinal time.Time, holi
 }
 
 // GetCompoundedAvgRange returns the compounded average of the index @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) (values []*InterestRate, err error) {
+func (datastore *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) (values []*InterestRate, err error) {
 
 	dateStart := dateInit.AddDate(0, 0, -calDays)
 
 	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
-	firstPublication, err := db.GetFirstDate(symbol)
+	firstPublication, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -475,7 +475,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 	}
 
 	// Get rate data from database
-	ratesAPI, err := db.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
+	ratesAPI, err := datastore.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -493,7 +493,7 @@ func (db *DB) GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time
 	}
 	holidays := utils.GetHolidays(existDates, dateStart, dateFinal)
 	if utils.ContainsDay(holidays, dateStart) || !utils.CheckWeekDay(dateStart) {
-		firstRate, err := db.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
+		firstRate, err := datastore.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
 		if err != nil {
 			return []*InterestRate{}, err
 		}
@@ -601,12 +601,12 @@ func StraightRates(intRates []*InterestRate) map[time.Time]float64 {
 }
 
 // GetCompoundedAvgDIARange returns the compounded average DIA index of @symbol over rolling @calDays calendar days.
-func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) (values []*InterestRate, err error) {
+func (datastore *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) (values []*InterestRate, err error) {
 
 	dateStart := dateInit.AddDate(0, 0, -calDays)
 
 	// Get first publication date for the rate with @symbol in order to check feasibility of dateInit
-	firstPublication, err := db.GetFirstDate(symbol)
+	firstPublication, err := datastore.GetFirstDate(symbol)
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -617,7 +617,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 	}
 
 	// Get rate data from database
-	ratesAPI, err := db.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
+	ratesAPI, err := datastore.GetInterestRateRange(symbol, dateStart.Format("2006-01-02"), dateFinal.Format("2006-01-02"))
 	if err != nil {
 		return []*InterestRate{}, err
 	}
@@ -635,7 +635,7 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 	}
 	holidays := utils.GetHolidays(existDates, dateStart, dateFinal)
 	if utils.ContainsDay(holidays, dateStart) || !utils.CheckWeekDay(dateStart) {
-		firstRate, err := db.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
+		firstRate, err := datastore.GetInterestRate(symbol, dateStart.Format("2006-01-02"))
 		if err != nil {
 			return []*InterestRate{}, err
 		}
@@ -704,22 +704,22 @@ func (db *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.T
 // ExistInterestRate returns true if a database entry with given date stamp exists,
 // and false otherwise.
 // @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
-func (db *DB) ExistInterestRate(symbol, date string) bool {
+func (datastore *DB) ExistInterestRate(symbol, date string) bool {
 	pattern := "*" + symbol + "_" + date + "*"
-	strSlice := db.redisClient.Keys(pattern).Val()
+	strSlice := datastore.redisClient.Keys(pattern).Val()
 	return len(strSlice) != 0
 }
 
 // matchKeyInterestRate returns the key in the database db with the youngest timestamp
 // younger than the date @date, given as substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
-func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
-	exDate, err := db.findLastDay(symbol, date)
+func (datastore *DB) matchKeyInterestRate(symbol, date string) (string, error) {
+	exDate, err := datastore.findLastDay(symbol, date)
 	if err != nil {
 		return "", err
 	}
 	// Determine all database entries with given date
 	pattern := "*" + symbol + "_" + exDate + "*"
-	strSlice := db.redisClient.Keys(pattern).Val()
+	strSlice := datastore.redisClient.Keys(pattern).Val()
 
 	var strSliceFormatted []string
 	layout := "2006-01-02 15:04:05"
@@ -733,10 +733,10 @@ func (db *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 
 // findLastDay returns the youngest date before @date that has an entry in the database.
 // @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss"
-func (db *DB) findLastDay(symbol, date string) (string, error) {
+func (datastore *DB) findLastDay(symbol, date string) (string, error) {
 	maxDays := 30 // Remark: This could be a function parameter as well...
 	for count := 0; count < maxDays; count++ {
-		if db.ExistInterestRate(symbol, date) {
+		if datastore.ExistInterestRate(symbol, date) {
 			return date, nil
 		}
 		// If date has no entry, look for one the day before

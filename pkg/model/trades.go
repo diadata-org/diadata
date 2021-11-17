@@ -76,7 +76,7 @@ func parseTrade(row []interface{}) *dia.Trade {
 	return nil
 }
 
-func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
+func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
 	var r []dia.Trade
 	subQuery := ""
 	if len(exchanges) > 0 {
@@ -89,7 +89,7 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 
 	log.Infoln("GetTradesByExchanges Query", query)
 	timeStart := time.Now()
-	res, err := queryInfluxDB(db.influxClient, query)
+	res, err := queryInfluxDB(datastore.influxClient, query)
 	timeEnd := time.Now()
 	if err != nil {
 		return r, err
@@ -111,12 +111,12 @@ func (db *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTim
 }
 
 // GetAllTrades returns at most @maxTrades trades from influx with timestamp > @t. Only used by replayInflux option.
-func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
+func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
+	var r []dia.Trade
 	// TO DO: Substitute select * with precise statment select estimatedUSDPrice, source,...
 	q := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
 	log.Debug(q)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
 		return r, err
@@ -137,8 +137,8 @@ func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 
 // GetLastTrades returns the last @maxTrades of @asset on @exchange.
 // If exchange is empty string it returns trades from all exchanges.
-func (db *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
+func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error) {
+	var r []dia.Trade
 	var queryString string
 	var q string
 	if exchange == "" {
@@ -150,7 +150,7 @@ func (db *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]
 			" FROM %s WHERE exchange='%s' and quotetokenaddress='%s' and quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	log.Errorln("res", res)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)

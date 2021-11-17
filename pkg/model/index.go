@@ -67,11 +67,11 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
+func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
 	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor,\"blockchain\" from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
@@ -106,7 +106,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			} else {
 				currentIndex.Price = currentPrice
 			}
-			price1h, err := db.GetTradePrice1h(currentIndex.Asset, "")
+			price1h, err := datastore.GetTradePrice1h(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 1h: ", err)
 				currentIndex.Price1h = 0.0
@@ -114,7 +114,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				currentIndex.Price1h = price1h.EstimatedUSDPrice
 			}
 
-			price24h, err := db.GetTradePrice24h(currentIndex.Asset, "")
+			price24h, err := datastore.GetTradePrice24h(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 24h: ", err)
 				currentIndex.Price24h = 0.0
@@ -122,7 +122,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				currentIndex.Price24h = price24h.EstimatedUSDPrice
 			}
 
-			price7d, err := db.GetTradePrice7d(currentIndex.Asset, "")
+			price7d, err := datastore.GetTradePrice7d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 7d: ", err)
 				currentIndex.Price7d = 0.0
@@ -130,7 +130,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				currentIndex.Price7d = price7d.EstimatedUSDPrice
 			}
 
-			price14d, err := db.GetTradePrice14d(currentIndex.Asset, "")
+			price14d, err := datastore.GetTradePrice14d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 14d: ", err)
 				currentIndex.Price14d = 0.0
@@ -138,7 +138,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 				currentIndex.Price14d = price14d.EstimatedUSDPrice
 			}
 
-			price30d, err := db.GetTradePrice30d(currentIndex.Asset, "")
+			price30d, err := datastore.GetTradePrice30d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 30d: ", err)
 				currentIndex.Price30d = 0.0
@@ -147,7 +147,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 			}
 			// TODO: Volume
 			// Circulating supply
-			diaSupply, err := db.GetLatestSupply(currentIndex.Asset.Name)
+			diaSupply, err := datastore.GetLatestSupply(currentIndex.Asset.Name)
 			if err != nil {
 				log.Error(err)
 				currentIndex.CirculatingSupply = 0
@@ -174,7 +174,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 					Address:    constituentAddress,
 					Blockchain: blockchain,
 				}
-				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
+				curr, err := datastore.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
 				if err != nil {
 					return retval, err
 				}
@@ -189,7 +189,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 	return retval, nil
 }
 
-func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
+func (datastore *DB) SetCryptoIndex(index *CryptoIndex) error {
 	constituentsSerial := ""
 	for _, c := range index.Constituents {
 		if constituentsSerial != "" {
@@ -215,16 +215,16 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 		log.Error("Writing Crypto Index to Influx: ", err)
 		return err
 	}
-	db.addPoint(pt)
+	datastore.addPoint(pt)
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Error("Writing Crypto Index to Influx: ", err)
 		return err
 	}
 
 	for i := range index.Constituents {
-		err = db.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset)
+		err = datastore.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset)
 		if err != nil {
 			return err
 		}
@@ -232,10 +232,10 @@ func (db *DB) SetCryptoIndex(index *CryptoIndex) error {
 	return err
 }
 
-func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
+func (datastore *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
 	startdate := date.Add(-24 * time.Hour)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return float64(0), err
 	}
@@ -252,14 +252,14 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 
 // GetCryptoIndexConstituents returns the constituent corresponding to @asset along with underlying information.
 // Necessary and sufficient information is asset's address and blockchain.
-func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, asset dia.Asset, indexSymbol string) ([]CryptoIndexConstituent, error) {
+func (datastore *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, asset dia.Asset, indexSymbol string) ([]CryptoIndexConstituent, error) {
 	//func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
 	queryString := "SELECT \"address\",cappingfactor,circulatingsupply,\"name\",percentage,price,\"symbol\",weight,numbasetokens,\"decimals\",\"blockchain\"" +
 		" from %s WHERE time > %d and time < %d and address = '%s' and blockchain = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1"
 	q := fmt.Sprintf(queryString, influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain, indexSymbol)
 	//q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 
 	if err != nil {
 		return retval, err
@@ -307,14 +307,14 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 		currentConstituent.Asset.Blockchain = res[0].Series[0].Values[0][11].(string)
 
 		// Get price yesterday
-		priceYesterday, err := db.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -1))
+		priceYesterday, err := datastore.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -1))
 		if err != nil {
 			currentConstituent.PriceYesterday = float64(0)
 		} else {
 			currentConstituent.PriceYesterday = priceYesterday.Price
 		}
 		// Get price yesterweek
-		priceYesterweek, err := db.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -7))
+		priceYesterweek, err := datastore.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -7))
 		if err != nil {
 			currentConstituent.PriceYesterweek = float64(0)
 		} else {
@@ -327,7 +327,7 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 	return retval, nil
 }
 
-func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset) error {
+func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset) error {
 	log.Error("Const ", constituent)
 	fields := map[string]interface{}{
 		"percentage":        constituent.Percentage,
@@ -350,9 +350,9 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 		log.Error("Adding Crypto Index Constituent point to Influx batch: ", err)
 		return err
 	}
-	db.addPoint(pt)
+	datastore.addPoint(pt)
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Error("Writing Crypto Index Constituent to Influx: ", err)
 	}
@@ -361,9 +361,9 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 
 // GetIndexPrice returns the price of index represented by @asset.
 // If @asset only consists of a symbol, a different method for price retrieval has to be implemented.
-func (db *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
+func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
 	if asset.Address != "" && asset.Blockchain != "" {
-		trade, err = db.GetTradeInflux(asset, "", time)
+		trade, err = datastore.GetTradeInflux(asset, "", time)
 		if err != nil {
 			return
 		}

@@ -13,7 +13,7 @@ import (
 const influxDbForeignQuotationTable = "foreignquotation"
 
 // SaveForeignQuotationInflux stores a quotation which is not from DIA to an influx batch
-func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
+func (datastore *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 	fields := map[string]interface{}{
 		"price":              fq.Price,
 		"priceYesterday":     fq.PriceYesterday,
@@ -29,9 +29,9 @@ func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("Write influx batch: ", err)
 	}
@@ -40,13 +40,13 @@ func (db *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 }
 
 // GetForeignQuotationInflux returns the last quotation of @symbol before @timestamp
-func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error) {
+func (datastore *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error) {
 	retval := ForeignQuotation{}
 
 	unixtime := timestamp.UnixNano()
 	q := fmt.Sprintf("SELECT price,priceYesterday,volumeYesterdayUSD,\"itin\",\"name\" FROM %s WHERE source='%s' and \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
 	fmt.Println("query: ", q)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
 		return retval, err
@@ -88,7 +88,7 @@ func (db *DB) GetForeignQuotationInflux(symbol, source string, timestamp time.Ti
 }
 
 // GetForeignPriceYesterday returns the average price of @symbol on @source from yesterday
-func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
+func (datastore *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 
 	// Get time range for yesterday in order to average the price
 	now := time.Now()
@@ -100,7 +100,7 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 
 	// Make corresponding influx query
 	q := fmt.Sprintf("SELECT price FROM %s WHERE source='%s' and symbol='%s' and time>%s and time<%s", influxDbForeignQuotationTable, source, symbol, unixtimeInit, unixtimeFinal)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
 		return 0, err
@@ -130,10 +130,10 @@ func (db *DB) GetForeignPriceYesterday(symbol, source string) (float64, error) {
 
 // GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source,
 // along with their ITIN.
-func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error) {
+func (datastore *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error) {
 
 	q := fmt.Sprintf("SELECT symbol,source FROM %s WHERE time>now()-7d and source='%s'", influxDbForeignQuotationTable, source)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
 		return
@@ -153,7 +153,7 @@ func (db *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err
 
 		// fill return slice
 		for _, sym := range symsUnique {
-			itin, err := db.GetItinBySymbol(sym)
+			itin, err := datastore.GetItinBySymbol(sym)
 			symbol := SymbolShort{
 				Symbol: sym,
 			}

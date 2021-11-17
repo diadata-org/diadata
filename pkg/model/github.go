@@ -26,7 +26,7 @@ type Author struct {
 }
 
 // SetCommit stores a github commit in influx
-func (db *DB) SetCommit(commit GithubCommit) error {
+func (datastore *DB) SetCommit(commit GithubCommit) error {
 	log.Info("set commit: ", commit)
 	fields := map[string]interface{}{
 		"numAdditions":    commit.NumAdditions,
@@ -45,10 +45,10 @@ func (db *DB) SetCommit(commit GithubCommit) error {
 	if err != nil {
 		log.Errorln("SetCommit:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SetCommit: ", err)
 	}
@@ -57,10 +57,10 @@ func (db *DB) SetCommit(commit GithubCommit) error {
 }
 
 // GetCommitByDate returns the latest commit from @repository of github user @user before @date.
-func (db *DB) GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error) {
+func (datastore *DB) GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error) {
 	var commit GithubCommit
 	q := fmt.Sprintf("select authorname,authormail,hash,message,numAdditions,numDeletions,numChangedFiles from %s where \"user\"='%s' and \"repository\"='%s' and time<%d order by desc limit 1", influxDbGithubCommitTable, user, repository, date.UnixNano())
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return commit, err
 	}
@@ -101,10 +101,10 @@ func (db *DB) GetCommitByDate(user, repository string, date time.Time) (GithubCo
 }
 
 // GetCommitByHash returns the commit from @repository of github user @user with hash @hash.
-func (db *DB) GetCommitByHash(user, repository, hash string) (GithubCommit, error) {
+func (datastore *DB) GetCommitByHash(user, repository, hash string) (GithubCommit, error) {
 	var commit GithubCommit
 	q := fmt.Sprintf("select authorname,authormail,hash,message,numAdditions,numDeletions,numChangedFiles from %s where \"user\"='%s' and \"repository\"='%s' and \"hash\"='%s'", influxDbGithubCommitTable, user, repository, hash)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return commit, err
 	}
@@ -146,8 +146,8 @@ func (db *DB) GetCommitByHash(user, repository, hash string) (GithubCommit, erro
 
 // GetLatestCommit returns the latest commit from influx.
 // Returns empty struct and nil if no commits are in the database.
-func (db *DB) GetLatestCommit(user, repository string) (GithubCommit, error) {
-	commit, err := db.GetCommitByDate(user, repository, time.Now())
+func (datastore *DB) GetLatestCommit(user, repository string) (GithubCommit, error) {
+	commit, err := datastore.GetCommitByDate(user, repository, time.Now())
 	if err != nil {
 		return GithubCommit{}, err
 	}

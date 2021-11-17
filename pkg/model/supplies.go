@@ -11,8 +11,8 @@ func getKeySupply(asset dia.Asset) string {
 	return "dia_supply_" + asset.Blockchain + "_" + asset.Address
 }
 
-func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
-	val, err := db.GetSupply(symbol, time.Time{}, time.Time{})
+func (datastore *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
+	val, err := datastore.GetSupply(symbol, time.Time{}, time.Time{})
 	if err != nil {
 		log.Error(err)
 		return &dia.Supply{}, err
@@ -20,13 +20,13 @@ func (db *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
 	return &val[0], err
 }
 
-func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supply, error) {
+func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supply, error) {
 	relDB, err := NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
 	}
 	// First get asset with @symbol with largest market cap.
-	topAsset, err := db.GetTopAssetByVolume(symbol, relDB)
+	topAsset, err := datastore.GetTopAssetByVolume(symbol, relDB)
 	if err != nil {
 		log.Error(err)
 		return []dia.Supply{}, err
@@ -44,7 +44,7 @@ func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supp
 		retArray = append(retArray, s)
 		return retArray, nil
 	default:
-		value, err := db.GetSupplyInflux(topAsset, starttime, endtime)
+		value, err := datastore.GetSupplyInflux(topAsset, starttime, endtime)
 		if err != nil {
 			log.Errorf("Error: %v on GetSupply %v\n", err, symbol)
 			return []dia.Supply{}, err
@@ -53,14 +53,14 @@ func (db *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supp
 	}
 }
 
-func (db *DB) SetSupply(supply *dia.Supply) error {
+func (datastore *DB) SetSupply(supply *dia.Supply) error {
 	key := getKeySupply(supply.Asset)
 	log.Debug("setting ", key, supply)
-	err := db.redisClient.Set(key, supply, 0).Err()
+	err := datastore.redisClient.Set(key, supply, 0).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetSupply (redis) %v\n", err, supply.Asset.Symbol)
 	}
-	err = db.SaveSupplyInflux(supply)
+	err = datastore.SaveSupplyInflux(supply)
 	if err != nil {
 		log.Errorf("Error: %v on SetSupply (influx) %v\n", err, supply.Asset.Symbol)
 	}

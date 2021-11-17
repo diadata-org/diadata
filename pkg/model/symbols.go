@@ -6,14 +6,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func (db *DB) GetSymbols(exchange string) ([]string, error) {
+func (datastore *DB) GetSymbols(exchange string) ([]string, error) {
 	var result []string
 	var cursor uint64
 	key := "dia_" + dia.FilterKing + "_"
 	for {
 		var keys []string
 		var err error
-		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 10).Result()
+		keys, cursor, err = datastore.redisClient.Scan(cursor, key+"*", 10).Result()
 		if err != nil {
 			log.Error("GetPairs err", err)
 			return result, err

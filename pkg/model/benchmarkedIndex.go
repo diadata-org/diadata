@@ -8,22 +8,22 @@ import (
 )
 
 type BenchmarkedIndex struct {
-	Name string
+	Name   string
 	Values []BenchmarkedIndexValue
 }
 
 type BenchmarkedIndexValue struct {
-	CalculationTime   time.Time
-	Value             string
+	CalculationTime time.Time
+	Value           string
 }
 
-func (db *DB) SaveIndexEngineTimeInflux(tags map[string]string, fields map[string]interface{}, timestamp time.Time) error {
+func (datastore *DB) SaveIndexEngineTimeInflux(tags map[string]string, fields map[string]interface{}, timestamp time.Time) error {
 	pt, err := clientInfluxdb.NewPoint(influxDbBenchmarkedIndexTableName, tags, fields, timestamp)
 	if err != nil {
 		log.Errorln("newPoint:", err)
 	} else {
-		db.addPoint(pt)
-		err := db.WriteBatchInflux()
+		datastore.addPoint(pt)
+		err := datastore.WriteBatchInflux()
 		if err != nil {
 			log.Errorln("newPoint:", err)
 		}
@@ -31,10 +31,10 @@ func (db *DB) SaveIndexEngineTimeInflux(tags map[string]string, fields map[strin
 	return err
 }
 
-func (db *DB) GetBenchmarkedIndexValuesInflux(symbol string, starttime time.Time, endtime time.Time) (BenchmarkedIndex, error) {
+func (datastore *DB) GetBenchmarkedIndexValuesInflux(symbol string, starttime time.Time, endtime time.Time) (BenchmarkedIndex, error) {
 	var retval BenchmarkedIndex
 	q := fmt.Sprintf("SELECT time,\"name\",value from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC", influxDbBenchmarkedIndexTableName, starttime.UnixNano(), endtime.UnixNano(), symbol)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
@@ -53,7 +53,7 @@ func (db *DB) GetBenchmarkedIndexValuesInflux(symbol string, starttime time.Time
 				return currentIndex, err
 			}
 			indexValue := BenchmarkedIndexValue{
-				Value: curValue,
+				Value:           curValue,
 				CalculationTime: curCalculationTime,
 			}
 			indexValues = append(indexValues, indexValue)

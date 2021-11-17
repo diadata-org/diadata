@@ -786,10 +786,10 @@ func (rdb *RelDB) GetAssetsWithVOL() (volumeSortedAssets []dia.Asset, err error)
 }
 
 // GetAssetsWithVOLInflux returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
-func (db *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
+func (datastore *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 	var quotedAssets []dia.Asset
 	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND time>%d and time<now()", influxDbFiltersTable, timeInit.UnixNano())
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return quotedAssets, err
 	}

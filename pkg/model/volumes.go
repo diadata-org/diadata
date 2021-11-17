@@ -15,6 +15,6 @@ var (
 )
 
 // GetVolume returns the 24h trading volume of @asset across exchanges.
-func (db *DB) GetVolume(asset dia.Asset) (*float64, error) {
-	return db.Sum24HoursInflux(asset, "", volumeKey)
+func (datastore *DB) GetVolume(asset dia.Asset) (*float64, error) {
+	return datastore.Sum24HoursInflux(asset, "", volumeKey)
 }

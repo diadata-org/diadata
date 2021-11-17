@@ -45,8 +45,8 @@ func getKeyAssetQuotation(blockchain, address string) string {
 
 // SetAssetPriceUSD stores the price of @asset in influx and the caching layer.
 // The latter only holds the most recent price point.
-func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error {
-	return db.SetAssetQuotation(&AssetQuotation{
+func (datastore *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error {
+	return datastore.SetAssetQuotation(&AssetQuotation{
 		Asset:  asset,
 		Price:  price,
 		Source: dia.Diadata,
@@ -55,8 +55,8 @@ func (db *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Ti
 }
 
 // GetAssetPriceUSDLatest returns the latest price of @asset.
-func (db *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error) {
-	assetQuotation, err := db.GetAssetQuotationLatest(asset)
+func (datastore *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error) {
+	assetQuotation, err := datastore.GetAssetQuotationLatest(asset)
 	if err != nil {
 		return
 	}
@@ -65,8 +65,8 @@ func (db *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 }
 
 // GetAssetPriceUSD returns the latest USD price of @asset before @timestamp.
-func (db *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (price float64, err error) {
-	assetQuotation, err := db.GetAssetQuotation(asset, timestamp)
+func (datastore *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (price float64, err error) {
+	assetQuotation, err := datastore.GetAssetQuotation(asset, timestamp)
 	if err != nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (db *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (price floa
 
 // AddAssetQuotationsToBatch is a helper function that adds a slice of
 // quotations to an influx batch.
-func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
+func (datastore *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 	for _, quotation := range quotations {
 		tags := map[string]string{
 			"symbol":     quotation.Asset.Symbol,
@@ -92,13 +92,13 @@ func (db *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 			log.Errorln("addAssetQuotationsToBatch:", err)
 			return err
 		}
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 	return nil
 }
 
 // SetAssetQuotation stores the full quotation of @asset into influx and cache.
-func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
+func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	// Write to influx
 	tags := map[string]string{
 		"symbol":     quotation.Asset.Symbol,
@@ -114,21 +114,21 @@ func (db *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	if err != nil {
 		log.Errorln("SetAssetQuotation:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
 	// Write latest point to redis cache
 	log.Printf("write to cache: %s", quotation.Asset.Symbol)
-	_, err = db.SetAssetQuotationCache(quotation)
+	_, err = datastore.SetAssetQuotationCache(quotation)
 	return err
 
 }
 
 // GetAssetQuotation returns the latest full quotation for @asset.
-func (db *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) {
+func (datastore *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) {
 
 	// First attempt to get latest quotation from redis cache
-	quotation, err := db.GetAssetQuotationCache(asset)
+	quotation, err := datastore.GetAssetQuotationCache(asset)
 	if err == nil {
 		log.Infof("got asset quotation for %s from cache: %v", asset.Symbol, quotation)
 		return quotation, nil
@@ -136,16 +136,16 @@ func (db *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) 
 
 	// if not in cache, get quotation from influx
 	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
-	return db.GetAssetQuotation(asset, time.Now())
+	return datastore.GetAssetQuotation(asset, time.Now())
 
 }
 
 // GetAssetQuotation returns the latest full quotation for @asset before @timestamp.
-func (db *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error) {
+func (datastore *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error) {
 
 	quotation := AssetQuotation{}
 	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time<=%d ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return &quotation, err
 	}
@@ -173,9 +173,9 @@ func (db *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuo
 }
 
 // SetAssetQuotationCache stores @quotation in redis cache
-func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
+func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 	// fetch current state of cache
-	cachestate, err := db.GetAssetQuotationCache(quotation.Asset)
+	cachestate, err := datastore.GetAssetQuotationCache(quotation.Asset)
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return false, err
 	}
@@ -185,17 +185,17 @@ func (db *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
 	}
 	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain, quotation.Asset.Address)
-	return true, db.redisClient.Set(key, quotation, TimeOutAssetQuotation).Err()
+	return true, datastore.redisClient.Set(key, quotation, TimeOutAssetQuotation).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
-func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
+func (datastore *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 	key := getKeyAssetQuotation(asset.Blockchain, asset.Address)
 	log.Infof("get asset quotation from cache for asset %s with address %s using key as %s ", asset.Symbol, asset.Address, key)
 
 	quotation := &AssetQuotation{}
 
-	err := db.redisClient.Get(key).Scan(quotation)
+	err := datastore.redisClient.Get(key).Scan(quotation)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetAssetQuotationCache on %s: %v\n", asset.Name, err)
@@ -206,8 +206,8 @@ func (db *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 }
 
 // GetAssetPriceUSDCache returns the latest price of @asset from the cache.
-func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
-	quotation, err := db.GetAssetQuotationCache(asset)
+func (datastore *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
+	quotation, err := datastore.GetAssetQuotationCache(asset)
 	if err != nil {
 		log.Errorf("get asset quotation for %s from cache: %v", asset.Symbol, err)
 		return
@@ -218,19 +218,19 @@ func (db *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) 
 
 // GetSortedQuotations returns quotations for all assets in @assets, sorted by 24h volume
 // in descending order.
-func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error) {
+func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error) {
 	var quotations []AssetQuotation
 	var volumes []float64
 	for _, asset := range assets {
 		var quotation *AssetQuotation
 		var volume *float64
 		var err error
-		quotation, err = db.GetAssetQuotationLatest(asset)
+		quotation, err = datastore.GetAssetQuotationLatest(asset)
 		if err != nil {
 			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
 		}
-		volume, err = db.GetVolume(asset)
+		volume, err = datastore.GetVolume(asset)
 		if err != nil {
 			log.Errorf("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
@@ -256,12 +256,12 @@ func (db *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, er
 // ------------------------------------------------------------------------------
 
 // GetAssetsMarketCap returns the actual market cap of @asset.
-func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
-	price, err := db.GetAssetPriceUSDLatest(asset)
+func (datastore *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
+	price, err := datastore.GetAssetPriceUSDLatest(asset)
 	if err != nil {
 		return 0, err
 	}
-	supply, err := db.GetSupplyInflux(asset, time.Time{}, time.Time{})
+	supply, err := datastore.GetSupplyInflux(asset, time.Time{}, time.Time{})
 	if err != nil {
 		return 0, err
 	}
@@ -273,7 +273,7 @@ func (db *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 
 // GetTopAssetByVolume returns the asset with highest volume among all assets with symbol @symbol.
 // This method allows us to use all API endpoints called on a symbol.
-func (db *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
+func (datastore *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
 	assets, err := relDB.GetAssets(symbol)
 	if err != nil {
 		return
@@ -285,7 +285,7 @@ func (db *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Ass
 	var volume float64
 	for _, asset := range assets {
 		var value *float64
-		value, err = db.GetVolume(asset)
+		value, err = datastore.GetVolume(asset)
 		if err != nil {
 			log.Error(err)
 			continue
@@ -307,7 +307,7 @@ func (db *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Ass
 }
 
 // GetTopAssetByMcap returns the asset with highest market cap among all assets with symbol @symbol.
-func (db *DB) GetTopAssetByMcap(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
+func (datastore *DB) GetTopAssetByMcap(symbol string, relDB *RelDB) (topAsset dia.Asset, err error) {
 	assets, err := relDB.GetAssets(symbol)
 	if err != nil {
 		return
@@ -319,7 +319,7 @@ func (db *DB) GetTopAssetByMcap(symbol string, relDB *RelDB) (topAsset dia.Asset
 	var mcap float64
 	for _, asset := range assets {
 		var value float64
-		value, err = db.GetAssetsMarketCap(asset)
+		value, err = datastore.GetAssetsMarketCap(asset)
 		if err != nil {
 			log.Error(err)
 			continue
@@ -344,12 +344,12 @@ func (db *DB) GetTopAssetByMcap(symbol string, relDB *RelDB) (topAsset dia.Asset
 // GOLD Derivatives
 // ------------------------------------------------------------------------------
 
-func (db *DB) GetPaxgQuotationOunces() (*Quotation, error) {
-	return db.GetQuotation("PAXG")
+func (datastore *DB) GetPaxgQuotationOunces() (*Quotation, error) {
+	return datastore.GetQuotation("PAXG")
 }
 
-func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
-	q, err := db.GetQuotation("PAXG")
+func (datastore *DB) GetPaxgQuotationGrams() (*Quotation, error) {
+	q, err := datastore.GetQuotation("PAXG")
 	if err != nil {
 		return nil, err
 	}
@@ -364,9 +364,9 @@ func (db *DB) GetPaxgQuotationGrams() (*Quotation, error) {
 // EXCHANGE RATES (Deprecating)
 // ------------------------------------------------------------------------------
 
-func (db *DB) SetPriceUSD(symbol string, price float64) error {
+func (datastore *DB) SetPriceUSD(symbol string, price float64) error {
 
-	return db.SetQuotation(&Quotation{
+	return datastore.SetQuotation(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
@@ -375,8 +375,8 @@ func (db *DB) SetPriceUSD(symbol string, price float64) error {
 	})
 }
 
-func (a *DB) SetPriceEUR(symbol string, price float64) error {
-	return a.SetQuotationEUR(&Quotation{
+func (datastore *DB) SetPriceEUR(symbol string, price float64) error {
+	return datastore.SetQuotationEUR(&Quotation{
 		Symbol: symbol,
 		Name:   helpers.NameForSymbol(symbol),
 		Price:  price,
@@ -385,10 +385,10 @@ func (a *DB) SetPriceEUR(symbol string, price float64) error {
 	})
 }
 
-func (db *DB) GetPriceUSD(symbol string) (float64, error) {
+func (datastore *DB) GetPriceUSD(symbol string) (float64, error) {
 	key := getKeyQuotation(symbol)
 	value := &Quotation{}
-	err := db.redisClient.Get(key).Scan(value)
+	err := datastore.redisClient.Get(key).Scan(value)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetPriceUSD %v\n", err, symbol)
@@ -398,10 +398,10 @@ func (db *DB) GetPriceUSD(symbol string) (float64, error) {
 	return value.Price, nil
 }
 
-func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
+func (datastore *DB) GetQuotation(symbol string) (*Quotation, error) {
 	key := getKeyQuotation(symbol)
 	value := &Quotation{}
-	err := db.redisClient.Get(key).Scan(value)
+	err := datastore.redisClient.Get(key).Scan(value)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetQuotation %v\n", err, key)
@@ -412,13 +412,13 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	preliminaryAsset := dia.Asset{
 		Symbol: symbol,
 	}
-	v, err2 := db.GetPriceYesterday(preliminaryAsset, "")
+	v, err2 := datastore.GetPriceYesterday(preliminaryAsset, "")
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}
 	// v2, err2 := db.GetVolume(symbol)
 	// value.VolumeYesterdayUSD = v2
-	itin, err := db.GetItinBySymbol(symbol)
+	itin, err := datastore.GetItinBySymbol(symbol)
 	if err != nil {
 		value.ITIN = "undefined"
 		log.Error(err)
@@ -428,26 +428,26 @@ func (db *DB) GetQuotation(symbol string) (*Quotation, error) {
 	return value, nil
 }
 
-func (db *DB) SetQuotation(quotation *Quotation) error {
-	if db.redisClient == nil {
+func (datastore *DB) SetQuotation(quotation *Quotation) error {
+	if datastore.redisClient == nil {
 		return nil
 	}
 	key := getKeyQuotation(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
-	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
+	err := datastore.redisClient.Set(key, quotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}
 	return err
 }
 
-func (db *DB) SetQuotationEUR(quotation *Quotation) error {
-	if db.redisClient == nil {
+func (datastore *DB) SetQuotationEUR(quotation *Quotation) error {
+	if datastore.redisClient == nil {
 		return nil
 	}
 	key := getKeyQuotationEUR(quotation.Symbol)
 	log.Debug("setting ", key, quotation)
-	err := db.redisClient.Set(key, quotation, TimeOutRedis).Err()
+	err := datastore.redisClient.Set(key, quotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, quotation.Symbol)
 	}

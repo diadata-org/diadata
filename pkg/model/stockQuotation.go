@@ -9,7 +9,7 @@ import (
 )
 
 // SetStockQuotationInflux stores a stock quotation to an influx batch.
-func (db *DB) SetStockQuotation(sq StockQuotation) error {
+func (datastore *DB) SetStockQuotation(sq StockQuotation) error {
 	fields := map[string]interface{}{
 		"priceAsk": sq.PriceAsk,
 		"priceBid": sq.PriceBid,
@@ -26,9 +26,9 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("Write influx batch: ", err)
 	}
@@ -37,12 +37,12 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 }
 
 // GetStockQuotationInflux returns the last quotation of @symbol before @timestamp.
-func (db *DB) GetStockQuotation(symbol string, timestamp time.Time) (StockQuotation, error) {
+func (datastore *DB) GetStockQuotation(symbol string, timestamp time.Time) (StockQuotation, error) {
 	retval := StockQuotation{}
 
 	unixtime := timestamp.UnixNano()
 	q := fmt.Sprintf("SELECT priceAsk,priceBid,sizeAsk,sizeBid,source,\"isin\",\"name\" FROM %s WHERE \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbStockQuotationsTable, symbol, unixtime)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		fmt.Println("Error querying influx")
 		return retval, err

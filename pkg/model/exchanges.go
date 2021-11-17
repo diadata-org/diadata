@@ -13,7 +13,7 @@ import (
 
 // GetExchanges returns all available trading places.
 // Comment: Think about getting the exchanges from redis.
-func (db *DB) GetExchanges() (allExchanges []string) {
+func (datastore *DB) GetExchanges() (allExchanges []string) {
 	listExch := dia.Exchanges()
 	for _, exchange := range listExch {
 		if exchange != "Unknown" {
@@ -33,9 +33,9 @@ func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
 	}
 }
 
-func (db *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
+func (datastore *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
 	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	t, err := db.redisClient.Get(key).Result()
+	t, err := datastore.redisClient.Get(key).Result()
 	if err != nil {
 		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
 		return nil, err
@@ -49,13 +49,13 @@ func (db *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*ti
 	}
 }
 
-func (db *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
-	if db.redisClient == nil {
+func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
+	if datastore.redisClient == nil {
 		return nil
 	}
 	key := getKeyLastTradeTimeForExchange(asset, exchange)
 	log.Debug("setting ", key, t)
-	err := db.redisClient.Set(key, t.Unix(), TimeOutRedis).Err()
+	err := datastore.redisClient.Set(key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
@@ -111,17 +111,17 @@ func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err 
 
 // SetAvailablePairs stores @pairs in redis
 // TO DO: Setter and getter should act on RelDB
-func (db *DB) SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error {
+func (datastore *DB) SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
-	return db.redisClient.Set(key, &p, 0).Err()
+	return datastore.redisClient.Set(key, &p, 0).Err()
 }
 
 // GetAvailablePairs a slice of all pairs available in the exchange in the internal redis db
-func (db *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, error) {
+func (datastore *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, error) {
 	key := "dia_available_pairs_" + exchange
 	p := dia.Pairs{}
-	err := db.redisClient.Get(key).Scan(&p)
+	err := datastore.redisClient.Get(key).Scan(&p)
 	if err != nil {
 		log.Errorf("Error: %v on GetAvailablePairs %v\n", err, exchange)
 		return nil, err

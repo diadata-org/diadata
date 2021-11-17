@@ -6,15 +6,15 @@ import (
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 )
 
-func (db *DB) SetBatchFiatPriceInflux(fiatQuotations []*FiatQuotation) error {
-	err := checkInfluxIsAvailable(db)
+func (datastore *DB) SetBatchFiatPriceInflux(fiatQuotations []*FiatQuotation) error {
+	err := checkInfluxIsAvailable(datastore)
 	if err != nil {
 		return err
 	}
 
-	addMultiplePointsToBatch(db, fiatQuotations)
+	addMultiplePointsToBatch(datastore, fiatQuotations)
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Printf("Error on WriteBatchInflux: %v\n", err)
 	}
@@ -49,8 +49,8 @@ func addMultiplePointsToBatch(db *DB, fiatQuotations []*FiatQuotation) {
 	}
 }
 
-func (db *DB) SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error {
-	err := checkRedisIsAvailable(db)
+func (datastore *DB) SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error {
+	err := checkRedisIsAvailable(datastore)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (db *DB) SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error {
 	key := getKeyQuotation(fiatQuotation.QuoteCurrency)
 	log.Info("setting ", key, fiatQuotation)
 
-	err = db.redisClient.Set(key, fiatQuotation, TimeOutRedis).Err()
+	err = datastore.redisClient.Set(key, fiatQuotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, fiatQuotation.QuoteCurrency)
 	}

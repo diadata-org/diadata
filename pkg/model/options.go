@@ -7,31 +7,31 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func (db *DB) SetOptionMeta(optionMeta *dia.OptionMeta) error {
-	if db.redisClient == nil {
+func (datastore *DB) SetOptionMeta(optionMeta *dia.OptionMeta) error {
+	if datastore.redisClient == nil {
 		return errors.New("datastore has no redis client")
 	}
 	key := "dia_optionMeta_" + optionMeta.BaseCurrency
 	log.Debug("setting ", key, optionMeta)
-	err := db.redisClient.SAdd(key, optionMeta).Err()
+	err := datastore.redisClient.SAdd(key, optionMeta).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetOptionMeta %v\n", err, key)
 	}
 	return err
 }
 
-func (db *DB) RemoveExpiredOptionMeta(baseCurrency string) error {
-	if db.redisClient == nil {
+func (datastore *DB) RemoveExpiredOptionMeta(baseCurrency string) error {
+	if datastore.redisClient == nil {
 		return errors.New("datastore has no redis client")
 	}
-	optionsMeta, err := db.GetOptionMeta(baseCurrency)
+	optionsMeta, err := datastore.GetOptionMeta(baseCurrency)
 	if err != nil {
 		return err
 	}
 	key := "dia_optionMeta_" + baseCurrency
 	for _, optionMeta := range optionsMeta {
 		if optionMeta.ExpirationTime.Before(time.Now()) {
-			err = db.redisClient.SRem(key, optionMeta).Err()
+			err = datastore.redisClient.SRem(key, optionMeta).Err()
 			if err != nil {
 				return err
 			}
@@ -40,13 +40,13 @@ func (db *DB) RemoveExpiredOptionMeta(baseCurrency string) error {
 	return nil
 }
 
-func (db *DB) GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error) {
+func (datastore *DB) GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error) {
 	var result []dia.OptionMeta
-	if db.redisClient == nil {
+	if datastore.redisClient == nil {
 		return result, errors.New("datastore has no redis client")
 	}
 	key := "dia_optionMeta_" + baseCurrency
-	resultStrings, err := db.redisClient.SMembers(key).Result()
+	resultStrings, err := datastore.redisClient.SMembers(key).Result()
 
 	if err != nil {
 		log.Error("GetOptionMeta: ", err)

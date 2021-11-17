@@ -9,12 +9,12 @@ import (
 )
 
 // SetFilter stores a filter point
-func (db *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
-	err := db.SaveFilterInflux(filter, asset, exchange, value, t)
+func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+	err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
 	if err != nil {
 		return err
 	}
-	err = db.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
+	err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func (db *DB) SetFilter(filter string, asset dia.Asset, exchange string, value f
 
 // GetFilterPoints returns filter points from either a specific exchange or all exchanges.
 // symbol is mapped to the underlying asset with biggest market cap.
-func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error) {
+func (datastore *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error) {
 	relDB, err := NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
@@ -58,7 +58,7 @@ func (db *DB) GetFilterPoints(filter string, exchange string, symbol string, sca
 		" WHERE filter='%s' %sand address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
 		table, filter, exchangeQuery, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetFilterPoints", err)
 	}
