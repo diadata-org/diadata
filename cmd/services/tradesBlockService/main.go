@@ -46,6 +46,9 @@ var (
 )
 
 func main() {
+	if *historical {
+		log.Info("run tradesblock service in historical mode")
+	}
 
 	kafkaWriter := kafkaHelper.NewSyncWriter(tradesBlockTopic)
 	defer func() {

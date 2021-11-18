@@ -68,6 +68,8 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 	if historical {
 		s.writeMeasurement = utils.Getenv("INFLUX_MEASUREMENT_WRITE", "tradesTmp")
 	}
+	log.Info("write measurement: ", s.writeMeasurement)
+	log.Info("historical: ", s.historical)
 	go s.mainLoop()
 	return s
 }
@@ -87,7 +89,7 @@ func (s *TradesBlockService) mainLoop() {
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
-	tInit := time.Now()
+	// tInit := time.Now()
 
 	var verifiedTrade bool
 	// baseTokenSymbol := t.GetBaseToken()
@@ -207,7 +209,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
-	log.Info("time spent for process: ", time.Since(tInit))
+	// log.Info("time spent for process: ", time.Since(tInit))
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {

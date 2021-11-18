@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	// One hour batches
 	batchDuration         = "3600000000000"
 	tradesReadMeasurement = "tradesOld"
 )
@@ -26,7 +27,6 @@ type InfluxScraper struct {
 	errorLock sync.RWMutex
 	error     error
 	run       bool
-	ticker    *time.Ticker
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers  map[string]*InfluxPairScraper
 	exchangeName  string
@@ -63,7 +63,6 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 		measurement:   measurement,
 		db:            db,
 		batchDuration: batchDurationInt,
-		ticker:        time.NewTicker(time.Duration(3000000000)),
 	}
 	if scrape {
 		go s.mainLoop()
@@ -93,6 +92,12 @@ func (s *InfluxScraper) mainLoop() {
 			log.Fatal("parse final time: ", err)
 		}
 		timeInit = time.Unix(timeInitInt, 0)
+	}
+
+	batchProcessingTimeString := utils.Getenv("BATCH_PROCESSING_SECONDS", "30")
+	batchProcessingSeconds, err := strconv.ParseInt(batchProcessingTimeString, 10, 64)
+	if err != nil {
+		log.Error("parse batch processing time string: ", err)
 	}
 
 	time.Sleep(10 * time.Second)
@@ -126,6 +131,8 @@ func (s *InfluxScraper) mainLoop() {
 				log.Info("got trade: ", trades[i])
 			}
 			starttime, endtime = endtime, endtime.Add(time.Duration(s.batchDuration))
+			// Wait for filtersblockservice and tradesblockservice to process.
+			time.Sleep(time.Duration(batchProcessingSeconds) * time.Second)
 		}
 	}()
 
