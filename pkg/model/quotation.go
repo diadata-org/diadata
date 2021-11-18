@@ -119,7 +119,7 @@ func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 
 	// Write latest point to redis cache
 	log.Printf("write to cache: %s", quotation.Asset.Symbol)
-	_, err = datastore.SetAssetQuotationCache(quotation)
+	_, err = datastore.SetAssetQuotationCache(quotation, false)
 	return err
 
 }
@@ -172,16 +172,19 @@ func (datastore *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*A
 	return &quotation, nil
 }
 
-// SetAssetQuotationCache stores @quotation in redis cache
-func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation) (bool, error) {
-	// fetch current state of cache
-	cachestate, err := datastore.GetAssetQuotationCache(quotation.Asset)
-	if err != nil && !errors.Is(err, redis.Nil) {
-		return false, err
-	}
-	// Do not write to cache if more recent entry exists
-	if (quotation.Time).Before(cachestate.Time) {
-		return false, nil
+// SetAssetQuotationCache stores @quotation in redis cache.
+// If @check is true, it checks for a more recent quotation first.
+func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation, check bool) (bool, error) {
+	if check {
+		// fetch current state of cache
+		cachestate, err := datastore.GetAssetQuotationCache(quotation.Asset)
+		if err != nil && !errors.Is(err, redis.Nil) {
+			return false, err
+		}
+		// Do not write to cache if more recent entry exists
+		if (quotation.Time).Before(cachestate.Time) {
+			return false, nil
+		}
 	}
 	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain, quotation.Asset.Address)

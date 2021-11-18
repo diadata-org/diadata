@@ -84,7 +84,9 @@ func main() {
 					log.Error("error unmarshalling trades block")
 				}
 				if err == nil {
+					t0 := time.Now()
 					f.ProcessTradesBlock(&tb)
+					log.Info("time spent by filtersblockservice for processing tradesblock: ", time.Since(t0))
 				}
 			}
 		}

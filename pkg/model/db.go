@@ -79,7 +79,7 @@ type Datastore interface {
 	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
-	SetAssetQuotationCache(quotation *AssetQuotation) (bool, error)
+	SetAssetQuotationCache(quotation *AssetQuotation, check bool) (bool, error)
 	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
 	GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error)
 	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)

@@ -98,7 +98,7 @@ func (env *Env) SetQuotation(c *gin.Context) {
 	quotation.Source = "diadata.org"
 	quotation.Time = time.Now()
 
-	_, err = env.DataStore.SetAssetQuotationCache(&quotation)
+	_, err = env.DataStore.SetAssetQuotationCache(&quotation, true)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return

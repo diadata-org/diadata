@@ -105,11 +105,11 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 
 	resultFilters := []dia.FilterPoint{}
-	log.Info("all filter keys: ")
-	for key := range s.filters {
-		log.Info(key)
-	}
-	log.Info("--------------------------")
+	// log.Info("all filter keys: ")
+	// for key := range s.filters {
+	// 	log.Info(key)
+	// }
+	// log.Info("--------------------------")
 
 	for _, filters := range s.filters {
 		for _, f := range filters {
@@ -205,7 +205,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	for _, filter := range previousBlockFilters {
 
 		d := time.Since(filter.Time)
-		log.Info("filter:", filter, " age:", d)
+		// log.Info("filter:", filter, " age:", d)
 		fa := filtersAsset{
 			Identifier: getIdentifier(filter.Asset),
 			Source:     filter.Name,
