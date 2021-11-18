@@ -96,6 +96,7 @@ func (s *FiltersBlockService) mainLoop() {
 func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	log.Infoln("processTradesBlock starting")
+	t0 := time.Now()
 
 	for _, trade := range tb.TradesBlockData.Trades {
 		s.createFilters(trade.QuoteToken, "", tb.TradesBlockData.BeginTime)
@@ -104,12 +105,16 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		s.computeFilters(trade, trade.Source)
 	}
 
+	log.Info("time spent for create and compute filters: ", time.Since(t0))
+
 	resultFilters := []dia.FilterPoint{}
 	// log.Info("all filter keys: ")
 	// for key := range s.filters {
 	// 	log.Info(key)
 	// }
 	// log.Info("--------------------------")
+
+	t0 = time.Now()
 
 	for _, filters := range s.filters {
 		for _, f := range filters {
@@ -120,6 +125,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 			}
 		}
 	}
+	log.Info("time spent for final compute: ", time.Since(t0))
 
 	resultFilters = addMissingPoints(s.previousBlockFilters, resultFilters)
 
@@ -146,6 +152,9 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	if len(resultFilters) != 0 && s.chanFiltersBlock != nil {
 		s.chanFiltersBlock <- fb
 	}
+
+	t0 = time.Now()
+
 	for _, filters := range s.filters {
 		for _, f := range filters {
 			err = f.save(s.datastore)
@@ -158,6 +167,8 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	if err != nil {
 		log.Error(err)
 	}
+
+	log.Info("time spent for save filters: ", time.Since(t0))
 }
 
 func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, BeginTime time.Time) {

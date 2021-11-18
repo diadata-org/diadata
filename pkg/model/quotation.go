@@ -118,7 +118,7 @@ func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	}
 
 	// Write latest point to redis cache
-	log.Printf("write to cache: %s", quotation.Asset.Symbol)
+	// log.Printf("write to cache: %s", quotation.Asset.Symbol)
 	_, err = datastore.SetAssetQuotationCache(quotation, false)
 	return err
 
