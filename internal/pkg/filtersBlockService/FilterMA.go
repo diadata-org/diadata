@@ -18,6 +18,7 @@ type FilterMA struct {
 	param          int
 	value          float64
 	modified       bool
+	filterName     string
 }
 
 func NewFilterMA(symbol string, exchange string, currentTime time.Time, param int) *FilterMA {
@@ -27,6 +28,7 @@ func NewFilterMA(symbol string, exchange string, currentTime time.Time, param in
 		previousPrices: []float64{},
 		currentTime:    currentTime,
 		param:          param,
+		filterName:     "MA" + strconv.Itoa(param),
 	}
 	return s
 }
@@ -50,7 +52,7 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 }
 
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" {
+	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return nil
 	} else {
 		return &dia.FilterPoint{
@@ -102,15 +104,9 @@ func (s *FilterMA) save(ds models.Datastore) error {
 	log.Infof("save called on symbol %s on exchange %s", s.symbol, s.exchange)
 	if s.modified {
 		s.modified = false
-		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
-		}
-		if s.exchange == "" {
-			err = ds.SetPriceUSD(s.symbol, s.value)
-			if err != nil {
-				log.Errorln("FilterMA: Error:", err)
-			}
 		}
 		return err
 	} else {

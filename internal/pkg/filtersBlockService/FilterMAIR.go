@@ -3,11 +3,12 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // FilterMAIR contains the configuration parameters of the filter
@@ -98,9 +99,15 @@ func (s *FilterMAIR) compute(trade dia.Trade) {
 func (s *FilterMAIR) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
+		}
+		if s.exchange == "" {
+			err = ds.SetPriceUSD(s.symbol, s.value)
+			if err != nil {
+				log.Errorln("FilterMA: Error:", err)
+			}
 		}
 		return err
 	} else {
