@@ -188,7 +188,7 @@ func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation, check boo
 	}
 	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain, quotation.Asset.Address)
-	return true, datastore.redisClient.Set(key, quotation, TimeOutAssetQuotation).Err()
+	return true, datastore.redisPipe.Set(key, quotation, TimeOutAssetQuotation).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.

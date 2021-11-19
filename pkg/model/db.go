@@ -51,6 +51,7 @@ type Datastore interface {
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 
 	Flush() error
+	FlushRedisPipe() (err error)
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
@@ -161,6 +162,7 @@ const (
 
 type DB struct {
 	redisClient         *redis.Client
+	redisPipe           redis.Pipeliner
 	influxClient        clientInfluxdb.Client
 	influxBatchPoints   clientInfluxdb.BatchPoints
 	influxPointsInBatch int
@@ -229,9 +231,11 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var influxClient clientInfluxdb.Client
 	var influxBatchPoints clientInfluxdb.BatchPoints
 	var redisClient *redis.Client
+	var redisPipe redis.Pipeliner
 
 	if withRedis {
 		redisClient = db.GetRedisClient()
+		redisPipe = redisClient.TxPipeline()
 	}
 	if withInflux {
 		var err error
@@ -242,7 +246,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
 	}
-	return &DB{redisClient, influxClient, influxBatchPoints, 0}, nil
+	return &DB{redisClient, redisPipe, influxClient, influxBatchPoints, 0}, nil
 }
 
 // SetInfluxClient resets influx's client url to @url.
@@ -1158,7 +1162,7 @@ func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, max
 	}
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
-	err := datastore.redisClient.ZAdd(key, redis.Z{
+	err := datastore.redisPipe.ZAdd(key, redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
 	}).Err()
@@ -1167,11 +1171,11 @@ func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, max
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
 	// purging old values
-	err = datastore.redisClient.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
+	err = datastore.redisPipe.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-	if err = datastore.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
+	if err = datastore.redisPipe.Expire(key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?
 	return err
@@ -1198,6 +1202,12 @@ func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error)
 		}
 	}
 	return result, err
+}
+
+func (datastore *DB) FlushRedisPipe() (err error) {
+	// TO DO: Handle first return value for read requests.
+	_, err = datastore.redisPipe.Exec()
+	return
 }
 
 /*
