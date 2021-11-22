@@ -61,6 +61,12 @@
             "Address": "0x177d39AC676ED1C67A2b268AD7F1E58826E5B0af"
         },
         {
+            "Symbol": "CELO",
+            "Exchange": "GateIO",
+            "Blockchain": "Celo",
+            "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+        },
+        {
             "Symbol": "COFI",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -149,6 +155,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "GateIO",
+            "Blockchain": "Fantom",
+            "Address": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870"
         },
         {
             "Symbol": "FUEL",

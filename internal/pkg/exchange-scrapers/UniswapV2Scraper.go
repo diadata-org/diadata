@@ -43,11 +43,15 @@ const (
 	restDialCelo = ""
 	wsDialCelo   = ""
 
+	restDialFantom = ""
+	wsDialFantom   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "600"
 	dfynWaitMilliseconds        = "100"
 	ubeswapWaitMilliseconds     = "200"
+	spookyswapWaitMilliseconds  = "200"
 )
 
 type UniswapToken struct {
@@ -190,6 +194,23 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
+	case dia.SpookyswapExchange:
+		log.Infoln("Init ws and rest client for Fantom chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
 	}
 
 	s := &UniswapScraper{

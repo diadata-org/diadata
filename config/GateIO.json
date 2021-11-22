@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "FTM_USDT",
+      "Ignore": false,
+      "Symbol": "FTM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "CELO_USDT",
+      "Ignore": false,
+      "Symbol": "CELO"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "DOWS_USDT",
       "Ignore": false,
       "Symbol": "DOWS"

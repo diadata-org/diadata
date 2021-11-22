@@ -37,6 +37,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "FTM",
+            "Exchange": "OKEx",
+            "Blockchain": "Fantom",
+            "Address": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870"
+        },
+        {
             "Symbol": "GTO",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

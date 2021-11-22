@@ -25,6 +25,12 @@
             "Address": "0x01fF50f8b7f74E4f00580d9596cd3D0d6d6E326f"
         },
         {
+            "Symbol": "CUSD",
+            "Exchange": "Bittrex",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
             "Symbol": "DNT",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",

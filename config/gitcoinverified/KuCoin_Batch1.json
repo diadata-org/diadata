@@ -121,6 +121,12 @@
             "Address": "0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
         },
         {
+            "Symbol": "CUSD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
             "Symbol": "CVC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

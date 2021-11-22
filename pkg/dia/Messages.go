@@ -23,6 +23,7 @@ const (
 	POLYGON                                 = "Polygon"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 	CELO                                    = "Celo"
+	FANTOM                                  = "Fantom"
 	FIAT                                    = "Fiat"
 )
 

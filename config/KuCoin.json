@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "CUSD",
+            "ForeignName": "CUSD-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "DFYN",
             "ForeignName": "DFYN-USDT",
             "Exchange": "KuCoin",
