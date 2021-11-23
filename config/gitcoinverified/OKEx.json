@@ -7,6 +7,12 @@
             "Address": "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986"
         },
         {
+            "Symbol": "ARK",
+            "Exchange": "OKEx",
+            "Blockchain": "Ark",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "CHAT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

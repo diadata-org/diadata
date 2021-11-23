@@ -31,6 +31,12 @@
             "Address": "0x1a7a8BD9106F2B8D977E08582DC7d24c723ab0DB"
         },
         {
+            "Symbol": "ARK",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ark",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ART",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

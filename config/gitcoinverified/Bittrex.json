@@ -19,6 +19,12 @@
             "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
         },
         {
+            "Symbol": "ARK",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ark",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BFT",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",
