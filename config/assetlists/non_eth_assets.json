@@ -391,6 +391,20 @@
       "Decimals": 0,
       "Blockchain": "Neo",
       "Address": "132947096727c84c7f9e076c90f08fec3bc17f18"
+    },
+    {
+      "Symbol": "ARK",
+      "Name": "Ark",
+      "Decimals": 0,
+      "Blockchain": "Ark",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "QAC",
+      "Name": "Quasar Coin",
+      "Decimals": 0,
+      "Blockchain": "Quasar",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }
