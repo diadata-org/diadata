@@ -24,6 +24,7 @@ const (
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
 	CELO                                    = "Celo"
 	FANTOM                                  = "Fantom"
+	NEAR                                    = "Near"
 	FIAT                                    = "Fiat"
 )
 

@@ -51,6 +51,8 @@ const (
 	DfynNetwork        = "DFYN"
 	UbeswapExchange    = "Ubeswap"
 	SpookyswapExchange = "Spookyswap"
+	SpiritswapExchange = "Spiritswap"
+	QuickswapExchange  = "Quickswap"
 	FinageForex        = "FinageForex"
 )
 
@@ -91,6 +93,8 @@ func Exchanges() []string {
 		UniswapExchangeV3,
 		UbeswapExchange,
 		SpookyswapExchange,
+		QuickswapExchange,
+		SpiritswapExchange,
 
 		ZeroxExchange,
 		BalancerExchange,

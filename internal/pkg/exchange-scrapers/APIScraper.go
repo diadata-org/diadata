@@ -30,6 +30,8 @@ func init() {
 	blockchains[dia.BINANCESMARTCHAIN] = dia.BlockChain{Name: dia.BINANCESMARTCHAIN, NativeToken: "", VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.POLYGON] = dia.BlockChain{Name: dia.POLYGON, NativeToken: "MATIC", VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.CELO] = dia.BlockChain{Name: dia.CELO, NativeToken: "CELO", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.FANTOM] = dia.BlockChain{Name: dia.FANTOM, NativeToken: "FTM", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.NEAR] = dia.BlockChain{Name: dia.NEAR, NativeToken: "NEAR", VerificationMechanism: dia.PROOF_OF_STAKE}
 
 	Exchanges = make(map[string]dia.Exchange)
 	Exchanges[dia.BalancerExchange] = dia.Exchange{Name: dia.BalancerExchange, Centralized: false, Contract: common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"), WatchdogDelay: watchdogDelay}
@@ -66,8 +68,10 @@ func init() {
 	Exchanges[dia.BitMaxExchange] = dia.Exchange{Name: dia.BitMaxExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.STEXExchange] = dia.Exchange{Name: dia.STEXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.DfynNetwork] = dia.Exchange{Name: dia.DfynNetwork, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0xe7fb3e833efe5f9c441105eb65ef8b261266423b"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.QuickswapExchange] = dia.Exchange{Name: dia.QuickswapExchange, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.UbeswapExchange] = dia.Exchange{Name: dia.UbeswapExchange, Centralized: false, BlockChain: blockchains[dia.CELO], Contract: common.HexToAddress("0x62d5b84bE28a183aBB507E125B384122D2C25fAE"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.SpookyswapExchange] = dia.Exchange{Name: dia.SpookyswapExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.SpiritswapExchange] = dia.Exchange{Name: dia.SpiritswapExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0xef45d134b73241eda7703fa787148d9c9f4950b0"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: watchdogDelay}
 	Exchanges["UniswapHistory"] = dia.Exchange{Name: "UniswapHistory", Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: 3600}
@@ -179,6 +183,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape)
 	case dia.SpookyswapExchange:
 		return NewUniswapScraper(Exchanges[dia.SpookyswapExchange], scrape)
+	case dia.QuickswapExchange:
+		return NewUniswapScraper(Exchanges[dia.QuickswapExchange], scrape)
+	case dia.SpiritswapExchange:
+		return NewUniswapScraper(Exchanges[dia.SpiritswapExchange], scrape)
 	case dia.FinageForex:
 		return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 

@@ -50,6 +50,7 @@ const (
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "600"
 	dfynWaitMilliseconds        = "100"
+	quickswapWaitMilliseconds   = "100"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
 )
@@ -176,6 +177,24 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 
+	case dia.QuickswapExchange:
+		log.Infoln("Init ws and rest client for Polygon chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("QUICKSWAP_WAIT_TIME", quickswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
 	case dia.UbeswapExchange:
 		log.Infoln("Init ws and rest client for CELO chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
@@ -211,6 +230,25 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 			waitTime = 100
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
+	case dia.SpiritswapExchange:
+		log.Infoln("Init ws and rest client for Fantom chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
 	}
 
 	s := &UniswapScraper{
