@@ -320,10 +320,31 @@ func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []strin
 	return
 }
 
-// GetExchangeSymbols returns all symbols traded on @exchange
-func (rdb *RelDB) GetExchangeSymbols(exchange string) (symbols []string, err error) {
-	query := fmt.Sprintf("select symbol from %s where exchange=$1", exchangesymbolTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange)
+// GetExchangeSymbols returns all symbols traded on @exchange.
+// If @exchange is the empty string, all symbols are returned.
+// If @substring is not the empty string, all symbols that begin with @substring (case insensitive) are returned.
+func (rdb *RelDB) GetExchangeSymbols(exchange string, substring string) (symbols []string, err error) {
+	var query string
+	var rows pgx.Rows
+	if exchange != "" {
+		if substring != "" {
+			query = fmt.Sprintf("select symbol from %s where exchange=$1 and symbol ILIKE '%s%%'", exchangesymbolTable, substring)
+			rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
+
+		} else {
+			query = fmt.Sprintf("select symbol from %s where exchange=$1", exchangesymbolTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
+		}
+	} else {
+		if substring != "" {
+			query = fmt.Sprintf("select symbol from %s where symbol ILIKE '%s%%'", exchangesymbolTable, substring)
+			log.Info("query: ", query)
+			rows, err = rdb.postgresClient.Query(context.Background(), query)
+		} else {
+			query = fmt.Sprintf("select symbol from %s", exchangesymbolTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query)
+		}
+	}
 	if err != nil {
 		return
 	}
@@ -757,10 +778,31 @@ func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds 
 	return
 }
 
-// GetAssetsWithVol returns all assets with entry in the assetvolume table, sorted by volume in descending order.
-func (rdb *RelDB) GetAssetsWithVOL() (volumeSortedAssets []dia.Asset, err error) {
-	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC", assetTable, assetVolumeTable)
+// GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
+// If @numAssets==0, all assets are returned.
+// If @substring is not the empty string, results are filtered by the first letters being @substring.
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.Asset, err error) {
+	var queryString string
+	var query string
 	var rows pgx.Rows
+	if numAssets == 0 {
+		if substring == "" {
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable)
+		} else {
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) where symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring)
+		}
+	} else {
+		if substring == "" {
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC limit %d"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets)
+		} else {
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) where symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC limit %d"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets)
+		}
+	}
+
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return

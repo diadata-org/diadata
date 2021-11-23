@@ -3,8 +3,9 @@ package models
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
@@ -29,7 +30,7 @@ type RelDatastore interface {
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64) error
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
-	GetAssetsWithVOL() ([]dia.Asset, error)
+	GetAssetsWithVOL(numAssets int64, substring string) ([]dia.Asset, error)
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
@@ -37,7 +38,7 @@ type RelDatastore interface {
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetPairs(exchange string) ([]dia.ExchangePair, error)
 	SetExchangeSymbol(exchange string, symbol string) error
-	GetExchangeSymbols(exchange string) ([]string, error)
+	GetExchangeSymbols(exchange string, substring string) ([]string, error)
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)

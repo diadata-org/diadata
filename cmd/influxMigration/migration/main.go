@@ -254,7 +254,7 @@ func loadAllExchangeSymbols(rdb *models.RelDB) (map[string]VerifiableAsset, erro
 // together with a boolean that is true if the asset is verified on @exchange.
 func loadExchangeSymbols(exchange string, rdb *models.RelDB) (map[string]VerifiableAsset, error) {
 	exchangesymbolMap := make(map[string]VerifiableAsset)
-	exchangesymbols, err := rdb.GetExchangeSymbols(exchange)
+	exchangesymbols, err := rdb.GetExchangeSymbols(exchange,"")
 	if err != nil {
 		return make(map[string]VerifiableAsset), err
 	}

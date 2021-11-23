@@ -214,6 +214,7 @@ func main() {
 		//  Deprectated - > split up in specific endpoints
 		// diaGroup.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
 		diaGroup.GET("/symbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/symbols/:substring", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/volume/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
 		// Deprectated: diaGroup.GET("/coins", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))

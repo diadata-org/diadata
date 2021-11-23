@@ -444,31 +444,36 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 
 // GetAllSymbols returns all Symbols on @exchange.
 // If @exchange is not set, it returns all symbols across all exchanges.
-// TO DO: store all symbols for DEXes in postgres
+// If @top is set to an integer, only the top @top symbols w.r.t. trading volume are returned. This is
+// only active if @exchange is not set.
 func (env *Env) GetAllSymbols(c *gin.Context) {
 	var s []string
+	var numSymbols int64
+	var sortedAssets []dia.Asset
 	var err error
+
+	substring := c.Param("substring")
 	exchange := c.DefaultQuery("exchange", "noRange")
-	if exchange == "noRange" {
-		exchanges := env.DataStore.GetExchanges()
-		for _, exch := range exchanges {
-			var sExch []string
-			sExch, err = env.RelDB.GetExchangeSymbols(exch)
-			if err != nil {
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
-			}
-			s = append(s, sExch...)
+	numSymbolsString := c.Query("top")
+
+	if numSymbolsString != "" {
+		numSymbols, err = strconv.ParseInt(numSymbolsString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("number of symbols must be an integer"))
+		}
+	}
+
+	// Filter results by substring. @exchange is disabled.
+	if substring != "" {
+		s, err = env.RelDB.GetExchangeSymbols("", substring)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
 		}
 		s = utils.UniqueStrings(s)
-	} else {
-		s, err = env.RelDB.GetExchangeSymbols(exchange)
-	}
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
-	} else {
+
 		sort.Strings(s)
 		// Sort all symbols by volume, append if they have no volume.
-		sortedAssets, err := env.RelDB.GetAssetsWithVOL()
+		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), substring)
 		if err != nil {
 			log.Error("get assets with volume: ", err)
 		}
@@ -480,7 +485,49 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
 
 		c.JSON(http.StatusOK, allSymbols)
+		return
 	}
+
+	if exchange == "noRange" {
+		if numSymbolsString != "" {
+			// -- Get top @numSymbols symbols across all exchanges. --
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			if err != nil {
+				log.Error("get assets with volume: ", err)
+			}
+			c.JSON(http.StatusOK, sortedAssets)
+		} else {
+			// -- Get all symbols across all exchanges. --
+			s, err = env.RelDB.GetExchangeSymbols("", "")
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+			}
+			s = utils.UniqueStrings(s)
+
+			sort.Strings(s)
+			// Sort all symbols by volume, append if they have no volume.
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			if err != nil {
+				log.Error("get assets with volume: ", err)
+			}
+			var sortedSymbols []string
+			for _, asset := range sortedAssets {
+				sortedSymbols = append(sortedSymbols, asset.Symbol)
+			}
+			sortedSymbols = utils.UniqueStrings(sortedSymbols)
+			allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
+
+			c.JSON(http.StatusOK, allSymbols)
+		}
+	} else {
+		// -- Get all symbols on @exchange. --
+		symbols, err := env.RelDB.GetExchangeSymbols(exchange, "")
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find symbols"))
+		}
+		c.JSON(http.StatusOK, symbols)
+	}
+
 }
 
 // -----------------------------------------------------------------------------
