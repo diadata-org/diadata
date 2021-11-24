@@ -495,7 +495,10 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
-			c.JSON(http.StatusOK, sortedAssets)
+			for _, asset := range sortedAssets {
+				s = append(s, asset.Symbol)
+			}
+			c.JSON(http.StatusOK, s)
 		} else {
 			// -- Get all symbols across all exchanges. --
 			s, err = env.RelDB.GetExchangeSymbols("", "")
