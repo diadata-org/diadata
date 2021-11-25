@@ -19,12 +19,13 @@ const (
 	PROOF_OF_WORK     VerificationMechanism = "pow"
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
-	FLOW                                    = "Flow"
-	POLYGON                                 = "Polygon"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
+	POLYGON                                 = "Polygon"
 	CELO                                    = "Celo"
 	FANTOM                                  = "Fantom"
 	NEAR                                    = "Near"
+	SOLANA                                  = "Solana"
+	FLOW                                    = "Flow"
 	FIAT                                    = "Fiat"
 )
 

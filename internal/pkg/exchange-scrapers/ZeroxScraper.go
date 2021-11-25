@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox"
+	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/zerox/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -19,11 +20,9 @@ import (
 )
 
 const (
-	zeroxContract = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
-	zeroxWsDial   = "ws://159.69.120.42:8546/"
-	zeroxRestDial = "http://159.69.120.42:8545/"
-	// zeroxRestDial       = "https://mainnet.infura.io/v3/251a25bd10b8460fa040bb7202e22571"
-	// zeroxWsDial         = "wss://mainnet.infura.io/ws/v3/251a25bd10b8460fa040bb7202e22571"
+	zeroxContract       = "0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef"
+	zeroxWsDial         = "ws://159.69.120.42:8546/"
+	zeroxRestDial       = "http://159.69.120.42:8545/"
 	zeroxLookBackBlocks = 6 * 60 * 24
 )
 
