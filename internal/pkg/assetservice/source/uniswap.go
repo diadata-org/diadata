@@ -42,6 +42,7 @@ const (
 	dfynWaitMilliseconds        = "100"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
+	spiritswapWaitMilliseconds  = "200"
 )
 
 type UniswapAssetSource struct {
@@ -207,6 +208,32 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		}
 		var waitTime int
 		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 200
+		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.FANTOM,
+			waitTime:     waitTime,
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
+	case dia.SpiritswapExchange:
+		log.Infoln("Init ws and rest client for Fantom chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
+		if err != nil {
+			log.Fatal(err)
+		}
+		var waitTime int
+		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spiritswapWaitMilliseconds)
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {
 			log.Error("could not parse wait time: ", err)
