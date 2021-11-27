@@ -64,6 +64,7 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
+	github.com/streamingfast/solana-go v0.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/gin-swagger v1.2.0 // indirect
 	github.com/swaggo/swag v1.6.7
