@@ -46,8 +46,8 @@ const (
 	restDialFantom = ""
 	wsDialFantom   = ""
 
-	restDialMoonriver = "https://rpc.moonriver.moonbeam.network"
-	wsDialMoonriver   = "wss://wss.moonriver.moonbeam.network"
+	restDialMoonriver = ""
+	wsDialMoonriver   = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -56,7 +56,7 @@ const (
 	quickswapWaitMilliseconds   = "100"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
-	solarbeamWaitMilliseconds   = "200"
+	solarbeamWaitMilliseconds   = "400"
 )
 
 type UniswapToken struct {

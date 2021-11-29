@@ -36,8 +36,8 @@ const (
 	restDialFantom = ""
 	wsDialFantom   = ""
 
-	restDialMoonriver = "https://rpc.moonriver.moonbeam.network"
-	wsDialMoonriver   = "wss://wss.moonriver.moonbeam.network"
+	restDialMoonriver = ""
+	wsDialMoonriver   = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
