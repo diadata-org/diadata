@@ -54,6 +54,7 @@ const (
 	SpiritswapExchange = "Spiritswap"
 	QuickswapExchange  = "Quickswap"
 	SerumExchange      = "Serum"
+	SolarbeamExchange  = "Solarbeam"
 	FinageForex        = "FinageForex"
 )
 
@@ -97,6 +98,7 @@ func Exchanges() []string {
 		QuickswapExchange,
 		SpiritswapExchange,
 		SerumExchange,
+		SolarbeamExchange,
 
 		ZeroxExchange,
 		BalancerExchange,

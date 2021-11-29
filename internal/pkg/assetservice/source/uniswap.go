@@ -36,6 +36,9 @@ const (
 	restDialFantom = ""
 	wsDialFantom   = ""
 
+	restDialMoonriver = "https://rpc.moonriver.moonbeam.network"
+	wsDialMoonriver   = "wss://wss.moonriver.moonbeam.network"
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "520"
@@ -43,6 +46,7 @@ const (
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
 	spiritswapWaitMilliseconds  = "200"
+	solarbeamWaitMilliseconds   = "200"
 )
 
 type UniswapAssetSource struct {
@@ -244,6 +248,32 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			RestClient:   restClient,
 			assetChannel: assetChannel,
 			blockchain:   dia.FANTOM,
+			waitTime:     waitTime,
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
+	case dia.SolarbeamExchange:
+		log.Infoln("Init ws and rest client for Moonriver chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_WS", wsDialMoonriver))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_REST", restDialMoonriver))
+		if err != nil {
+			log.Fatal(err)
+		}
+		var waitTime int
+		waitTimeString := utils.Getenv("MOONRIVER_WAIT_TIME", solarbeamWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		uas = &UniswapAssetSource{
+			WsClient:     wsClient,
+			RestClient:   restClient,
+			assetChannel: assetChannel,
+			blockchain:   dia.MOONRIVER,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()

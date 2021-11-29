@@ -46,6 +46,9 @@ const (
 	restDialFantom = ""
 	wsDialFantom   = ""
 
+	restDialMoonriver = "https://rpc.moonriver.moonbeam.network"
+	wsDialMoonriver   = "wss://wss.moonriver.moonbeam.network"
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "600"
@@ -53,6 +56,7 @@ const (
 	quickswapWaitMilliseconds   = "100"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
+	solarbeamWaitMilliseconds   = "200"
 )
 
 type UniswapToken struct {
@@ -242,6 +246,24 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 			log.Fatal(err)
 		}
 		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 100
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
+	case dia.SolarbeamExchange:
+		log.Infoln("Init ws and rest client for Moonbeam chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_WS", wsDialMoonriver))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_REST", restDialMoonriver))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("MOONRIVER_WAIT_TIME", solarbeamWaitMilliseconds)
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {
 			log.Error("could not parse wait time: ", err)

@@ -26,6 +26,7 @@ const (
 	NEAR                                    = "Near"
 	SOLANA                                  = "Solana"
 	FLOW                                    = "Flow"
+	MOONRIVER                               = "Moonriver"
 	FIAT                                    = "Fiat"
 )
 

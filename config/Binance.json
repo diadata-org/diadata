@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "MOVRUSDT",
+            "Ignore": false,
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "FTMUSDT",
             "Ignore": false,
             "Symbol": "FTM"

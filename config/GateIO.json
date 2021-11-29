@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "MOVR_USDT",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "FTM_USDT",
       "Ignore": false,
       "Symbol": "FTM"

@@ -34,6 +34,7 @@ func init() {
 	blockchains[dia.NEAR] = dia.BlockChain{Name: dia.NEAR, NativeToken: "NEAR", VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.SOLANA] = dia.BlockChain{Name: dia.SOLANA, NativeToken: "SOL", VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FLOW] = dia.BlockChain{Name: dia.FLOW, NativeToken: "FLOW", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.MOONRIVER] = dia.BlockChain{Name: dia.MOONRIVER, NativeToken: "MOVR", VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)
@@ -76,6 +77,7 @@ func init() {
 	Exchanges[dia.SpookyswapExchange] = dia.Exchange{Name: dia.SpookyswapExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.SpiritswapExchange] = dia.Exchange{Name: dia.SpiritswapExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0xef45d134b73241eda7703fa787148d9c9f4950b0"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.SerumExchange] = dia.Exchange{Name: dia.SerumExchange, Centralized: false, BlockChain: blockchains[dia.SOLANA], Contract: common.HexToAddress(""), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.SolarbeamExchange] = dia.Exchange{Name: dia.SolarbeamExchange, Centralized: false, BlockChain: blockchains[dia.MOONRIVER], Contract: common.HexToAddress("0x049581aEB6Fe262727f290165C29BDAB065a1B68"), WatchdogDelay: watchdogDelayLong}
 
 	Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: 360000}
@@ -192,6 +194,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.QuickswapExchange], scrape)
 	case dia.SpiritswapExchange:
 		return NewUniswapScraper(Exchanges[dia.SpiritswapExchange], scrape)
+	case dia.SolarbeamExchange:
+		return NewUniswapScraper(Exchanges[dia.SolarbeamExchange], scrape)
 	// case dia.SerumExchange:
 	// 	return NewSerumScraper(Exchanges[dia.SerumExchange], scrape)
 	case dia.FinageForex:

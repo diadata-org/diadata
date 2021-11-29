@@ -223,6 +223,12 @@
             "Address": "0x3893b9422Cd5D70a81eDeFfe3d5A1c6A978310BB"
         },
         {
+            "Symbol": "MOVR",
+            "Exchange": "Binance",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+        },
+        {
             "Symbol": "MTH",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

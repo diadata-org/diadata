@@ -337,6 +337,12 @@
             "Address": "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
         },
         {
+            "Symbol": "MOVR",
+            "Exchange": "GateIO",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+        },
+        {
             "Symbol": "MTN",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
