@@ -85,6 +85,7 @@ func main() {
 				}
 				if err == nil {
 					t0 := time.Now()
+					log.Info("number of trades in received tradesblock: ", len(tb.TradesBlockData.Trades))
 					f.ProcessTradesBlock(&tb)
 					log.Info("time spent by filtersblockservice for processing tradesblock: ", time.Since(t0))
 				}

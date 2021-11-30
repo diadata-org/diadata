@@ -113,11 +113,18 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// Look for historic price of base token at trade time...
 				if _, ok = s.priceCache[t.BaseToken]; ok {
 					price = s.priceCache[t.BaseToken]
-					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
 				} else {
 					price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
 					s.priceCache[t.BaseToken] = price
-					log.Infof("quotation for %s from influx: %v", t.BaseToken.Symbol, price)
+					if t.BaseToken.Address == "0x0000000000000000000000000000000000000000" {
+						if t.BaseToken.Blockchain == "Bitcoin" {
+							log.Infof("quotation for BTC from influx: %v", price)
+						}
+						if t.BaseToken.Blockchain == "Ethereum" {
+							log.Infof("quotation for ETH from influx: %v", price)
+						}
+					}
+
 				}
 			} else {
 				// ...or latest price. This method is quicker as it first queries the cache.
@@ -127,7 +134,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 				if _, ok = s.priceCache[t.BaseToken]; ok {
 					price = s.priceCache[t.BaseToken]
-					log.Infof("quotation for %s from local cache: %v", t.BaseToken.Symbol, price)
 				} else {
 					quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
 					price = quotation.Price

@@ -106,7 +106,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 
 	log.Info("time spent for create and compute filters: ", time.Since(t0))
-
+	log.Info("filter begin time: ", tb.TradesBlockData.BeginTime)
 	resultFilters := []dia.FilterPoint{}
 	// log.Info("all filter keys: ")
 	// for key := range s.filters {
