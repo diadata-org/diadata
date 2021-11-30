@@ -121,7 +121,9 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-Coming soon
+| Published Assets                     | Smart Contract Address                                                                                                                | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f](https://explorer.mainnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f/) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Testnet" %}
