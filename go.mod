@@ -46,6 +46,7 @@ require (
 	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
+	github.com/mr-tron/base58 v1.2.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/onflow/cadence v0.15.0

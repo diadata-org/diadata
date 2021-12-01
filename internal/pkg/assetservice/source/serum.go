@@ -2,12 +2,10 @@ package source
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"strings"
+	"fmt"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/mr-tron/base58"
 	"github.com/streamingfast/solana-go"
 	"github.com/streamingfast/solana-go/programs/serum"
 	"github.com/streamingfast/solana-go/rpc"
@@ -20,33 +18,22 @@ type SerumPair struct {
 	Address     string
 }
 
-type listPairsResponse struct {
-	Success bool   `json:"success"`
-	Pairs   []string `json:"data"`
-}
-
-type orderbookResponse struct {
-	Success   bool   `json:"success"`
-	Orderbook Data `json:"data"`
-}
-
-type Data struct {
-	MarketAddress string `json:"marketAddress"`
-}
-
 const (
 	// Public Solana clients.
-	wsDialSolana   = "http://192.168.1.88:8900"
-	restDialSolana = "http://192.168.1.88:8899"
-	restEndpointSerum = "https://serum-api.bonfida.com"
-	rpcEndpointSolana = "https://solana-api.projectserum.com"
+	wsDialSolana              = "http://192.168.1.88:8900"
+	restDialSolana            = "http://192.168.1.88:8899"
+	rpcEndpointSolana         = "https://solana-api.projectserum.com"
+	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
+	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
+	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
+	marketDataSize            = 388
 )
 
 type SerumAssetSource struct {
-	serumRestClient *http.Client
-	solanaRpcClient *rpc.Client
-	assetChannel chan dia.Asset
-	blockchain   string
+	solanaRpcClient   *rpc.Client
+	tokenNameRegistry map[string]tokenMeta
+	assetChannel      chan dia.Asset
+	blockchain        string
 }
 
 func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
@@ -57,10 +44,9 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 	exchangeFactoryContractAddress = ""
 
 	sas = &SerumAssetSource{
-		serumRestClient: &http.Client{},
 		solanaRpcClient: rpc.NewClient(rpcEndpointSolana),
-		assetChannel: assetChannel,
-		blockchain:   dia.SOLANA,
+		assetChannel:    assetChannel,
+		blockchain:      dia.SOLANA,
 	}
 
 	go func() {
@@ -75,89 +61,130 @@ func (sas *SerumAssetSource) Asset() chan dia.Asset {
 }
 
 func (sas *SerumAssetSource) fetchAssets() {
-	resp, err := sas.serumRestClient.Get(restEndpointSerum + "/pairs")
+	pairs, err := sas.getPairs()
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	listPairsResponse := listPairsResponse{}
-	err = json.Unmarshal(respBody, &listPairsResponse)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	if !listPairsResponse.Success {
-		log.Error(listPairsResponse.Pairs[0])
-		return
-	}
-	log.Info("Found ", len(listPairsResponse.Pairs), " pairs")
+	log.Info("Found ", len(pairs), " pairs")
 	checkMap := make(map[string]struct{})
-	for _, pair := range listPairsResponse.Pairs {
-		assets := strings.Split(pair, "/")
-		if len(assets) < 2 {
-			continue
-		}
-		assetInformationAdded := true
-		if _, ok := checkMap[assets[0]]; !ok {
-			assetInformationAdded = false
-		}
-		if _, ok := checkMap[assets[1]]; !ok {
-			assetInformationAdded = false
-		}
-		if assetInformationAdded {
-			continue
-		}
-		log.Info("Collecting information for the pair: ", pair)
-		resp, err = sas.serumRestClient.Get(restEndpointSerum + "/orderbooks/" + strings.Join(assets, ""))
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		respBody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		orderbookResponse := orderbookResponse{}
-		err = json.Unmarshal(respBody, &orderbookResponse)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		if orderbookResponse.Orderbook.MarketAddress == "" {
-			log.Error("Invalid public key")
-			continue
-		}
-		marketAddr := solana.MustPublicKeyFromBase58(orderbookResponse.Orderbook.MarketAddress)
-		info, err := serum.FetchMarket(context.TODO(), sas.solanaRpcClient, marketAddr)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		if _, ok := checkMap[assets[0]]; !ok {
-			checkMap[assets[0]] = struct{}{}
-			sas.assetChannel <- dia.Asset{
-				Symbol:     assets[0],
-				Name:       assets[0],
-				Address:    info.Market.GetBaseMint().String(),
-				Decimals:   info.BaseMint.Decimals,
-				Blockchain: sas.blockchain,
+	sas.tokenNameRegistry, err = sas.getTokenNames()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	for _, pair := range pairs {
+		if tokenInfo, ok := sas.tokenNameRegistry[pair.BaseMint.String()]; ok {
+			if _, ok := checkMap[tokenInfo.symbol]; !ok {
+				checkMap[tokenInfo.symbol] = struct{}{}
+				sas.assetChannel <- dia.Asset{
+					Symbol:     tokenInfo.symbol,
+					Name:       tokenInfo.name,
+					Address:    tokenInfo.mint,
+					Decimals:   tokenInfo.decimals,
+					Blockchain: sas.blockchain,
+				}
 			}
 		}
-		if _, ok := checkMap[assets[1]]; !ok {
-			checkMap[assets[1]] = struct{}{}
-			sas.assetChannel <- dia.Asset{
-				Symbol:     assets[1],
-				Name:       assets[1],
-				Address:    info.Market.GetQuoteMint().String(),
-				Decimals:   info.QuoteMint.Decimals,
-				Blockchain: sas.blockchain,
+		if tokenInfo, ok := sas.tokenNameRegistry[pair.QuoteMint.String()]; ok {
+			if _, ok := checkMap[tokenInfo.symbol]; !ok {
+				checkMap[tokenInfo.symbol] = struct{}{}
+				sas.assetChannel <- dia.Asset{
+					Symbol:     tokenInfo.symbol,
+					Name:       tokenInfo.name,
+					Address:    tokenInfo.mint,
+					Decimals:   tokenInfo.decimals,
+					Blockchain: sas.blockchain,
+				}
 			}
 		}
 	}
+}
+
+func (sas *SerumAssetSource) getPairs() ([]*serum.MarketV2, error) {
+	resp, err := sas.solanaRpcClient.GetProgramAccounts(
+		context.TODO(),
+		solana.MustPublicKeyFromBase58(dexProgramAddress),
+		&rpc.GetProgramAccountsOpts{
+			Filters: []rpc.RPCFilter{
+				{
+					DataSize: marketDataSize,
+				},
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*serum.MarketV2, 0)
+	for _, keyedAcct := range resp {
+		acct := keyedAcct.Account
+		marketV2 := &serum.MarketV2{}
+		if err := marketV2.Decode(acct.Data); err != nil {
+			return nil, fmt.Errorf("decoding market v2: %w", err)
+		}
+		out = append(out, marketV2)
+	}
+	return out, nil
+}
+
+func (sas *SerumAssetSource) getTokenNames() (map[string]tokenMeta, error) {
+	names := make(map[string]tokenMeta)
+	tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
+	resp, err := sas.solanaRpcClient.GetProgramAccounts(
+		context.TODO(),
+		solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
+		&rpc.GetProgramAccountsOpts{
+			Filters: []rpc.RPCFilter{
+				{
+					Memcmp: &rpc.RPCFilterMemcmp{
+						Bytes: tldPublicKey[:],
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	for _, keyedAcct := range resp {
+		if t, ok := extractTokenMetaFromData(keyedAcct.Account.Data[96:]); ok {
+			names[t.mint] = t
+		}
+	}
+	return names, nil
+}
+
+type tokenMeta struct {
+	name     string
+	symbol   string
+	mint     string
+	decimals uint8
+}
+
+func extractTokenMetaFromData(data []byte) (tokenMeta, bool) {
+	var t tokenMeta
+	if len(data) > 0 {
+		nameSize := int(data[0])
+		nameStart := 4
+		nameEnd := nameStart + nameSize
+		if len(data) > nameEnd {
+			t.name = string(data[nameStart:nameEnd])
+			symbolSize := int(data[nameEnd])
+			symbolStart := 4 + nameEnd
+			symbolEnd := symbolStart + symbolSize
+			if len(data) > symbolEnd {
+				t.symbol = string(data[symbolStart:symbolEnd])
+				mintSize := 32
+				mintStart := symbolEnd
+				mintEnd := mintStart + mintSize
+				if len(data) > mintEnd {
+					t.mint = base58.Encode(data[mintStart:mintEnd])
+					t.decimals = data[mintEnd]
+					return t, true
+				}
+			}
+		}
+	}
+	return tokenMeta{}, false
 }
