@@ -187,6 +187,12 @@
             "Address": "0xc7BbA5b765581eFb2Cdd2679DB5Bea9eE79b201f"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GNX",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

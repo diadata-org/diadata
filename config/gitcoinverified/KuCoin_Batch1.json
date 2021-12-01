@@ -235,6 +235,12 @@
             "Address": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GMB",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

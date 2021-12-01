@@ -145,6 +145,12 @@
             "Address": "0xEA38eAa3C86c8F9B751533Ba2E562deb9acDED40"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GO",
             "Exchange": "Binance",
             "Blockchain": "GoChain",
