@@ -52,7 +52,7 @@ type Datastore interface {
 
 	Flush() error
 	ExecuteRedisPipe() error
-	FlushRedisPipe() string
+	FlushRedisPipe() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
@@ -1211,9 +1211,8 @@ func (datastore *DB) ExecuteRedisPipe() (err error) {
 	return
 }
 
-func (datastore *DB) FlushRedisPipe() string {
-	val := datastore.redisPipe.FlushAll()
-	return val.Val()
+func (datastore *DB) FlushRedisPipe() error {
+	return datastore.redisPipe.Discard()
 }
 
 /*

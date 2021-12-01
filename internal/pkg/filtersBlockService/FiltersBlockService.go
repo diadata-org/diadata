@@ -171,8 +171,8 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	log.Info("time spent for execute redis pipe: ", time.Since(t0))
 
-	response := s.datastore.FlushRedisPipe()
-	log.Info("flush redis pipe response: ", response)
+	err = s.datastore.FlushRedisPipe()
+	log.Error("flush redis pipe response: ", err)
 
 	t0 = time.Now()
 	err = s.datastore.Flush()
