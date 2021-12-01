@@ -129,7 +129,7 @@ func (s *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 }
 
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" {
+	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return nil
 	}
 	return &dia.FilterPoint{

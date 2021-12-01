@@ -98,6 +98,7 @@ func ReadOffset(topic int) (offset int64, err error) {
 }
 
 func ReadOffsetWithRetryOnError(topic int) (offset int64) {
+	// TO DO: check double infinite for loops.
 	for {
 		for {
 			for _, ip := range KafkaConfig.KafkaUrl {

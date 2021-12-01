@@ -51,7 +51,8 @@ type Datastore interface {
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 
 	Flush() error
-	FlushRedisPipe() (err error)
+	ExecuteRedisPipe() error
+	FlushRedisPipe() string
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
@@ -1204,10 +1205,15 @@ func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error)
 	return result, err
 }
 
-func (datastore *DB) FlushRedisPipe() (err error) {
+func (datastore *DB) ExecuteRedisPipe() (err error) {
 	// TO DO: Handle first return value for read requests.
 	_, err = datastore.redisPipe.Exec()
 	return
+}
+
+func (datastore *DB) FlushRedisPipe() string {
+	val := datastore.redisPipe.FlushAll()
+	return val.Val()
 }
 
 /*

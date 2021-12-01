@@ -97,7 +97,7 @@ func main() {
 func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer) {
 	var block int
 	for {
-		t, ok := <-channel
+		filtersblock, ok := <-channel
 		if !ok {
 			log.Printf("handler: finishing channel")
 			wg.Done()
@@ -105,7 +105,7 @@ func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer
 		}
 		block++
 		log.Infoln("kafka: generated ", block, " blocks")
-		err := kafkaHelper.WriteMessage(w, t)
+		err := kafkaHelper.WriteMessage(w, filtersblock)
 		if err != nil {
 			log.Errorln("kafka: handleBlocks", err)
 		}
