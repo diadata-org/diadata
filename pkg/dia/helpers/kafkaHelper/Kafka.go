@@ -35,6 +35,7 @@ const (
 	TopicFiltersBlockHistorical = 4
 	TopicTradesHistorical       = 5
 	TopicTradesBlockHistorical  = 6
+	TopicFiltersBlockDone       = 14
 
 	TopicSuppliesBlock = 7
 

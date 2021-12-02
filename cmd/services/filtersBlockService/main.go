@@ -15,10 +15,12 @@ import (
 )
 
 var (
-	replayInflux      = flag.Bool("replayInflux", false, "replayInflux ?")
-	historical        = flag.Bool("historical", false, "digest historical or current trades")
-	filtersBlockTopic int
-	tradesBlockTopic  int
+	replayInflux          = flag.Bool("replayInflux", false, "replayInflux ?")
+	historical            = flag.Bool("historical", false, "digest historical or current trades")
+	filtersBlockTopic     int
+	tradesBlockTopic      int
+	filtersblockDoneTopic int
+	fbsDoneWriter         *kafka.Writer
 )
 
 func init() {
@@ -27,6 +29,7 @@ func init() {
 	if !*historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlock
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
+		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
 	} else {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
@@ -72,6 +75,16 @@ func main() {
 			}
 		}()
 
+		if *historical {
+			fbsDoneWriter = kafkaHelper.NewSyncWriter(filtersblockDoneTopic)
+			defer func() {
+				err := w.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+		}
+
 		for {
 			m, err := r.ReadMessage(context.Background())
 			if err != nil {
@@ -88,6 +101,14 @@ func main() {
 					log.Info("number of trades in received tradesblock: ", len(tb.TradesBlockData.Trades))
 					f.ProcessTradesBlock(&tb)
 					log.Info("time spent by filtersblockservice for processing tradesblock: ", time.Since(t0))
+					// In historical mode, send timestamp of last trade as soon as fbs is done.
+					if *historical {
+						lastTimestamp := tb.TradesBlockData.EndTime
+						err := kafkaHelper.WriteMessage(fbsDoneWriter, &lastTimestamp)
+						if err != nil {
+							log.Error("kafka: fbs-done feedback: ", err)
+						}
+					}
 				}
 			}
 		}

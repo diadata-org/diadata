@@ -1,18 +1,25 @@
 package scrapers
 
 import (
+	"context"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/segmentio/kafka-go"
+)
+
+var (
+	filtersblockDoneTopic int
 )
 
 const (
-	// One hour batches
+	// One hour batches (notation in nanoseconds)
 	batchDuration         = "3600000000000"
 	tradesReadMeasurement = "tradesOld"
 )
@@ -34,6 +41,7 @@ type InfluxScraper struct {
 	measurement   string
 	batchDuration int64
 	db            *models.DB
+	fbsDoneReader *kafka.Reader
 }
 
 // NewGateIOScraper returns a new GateIOScraper for the given pair
@@ -53,6 +61,10 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 	}
 	db.SetInfluxClient(influxURL)
 
+	// Make a kafka reader that listens to ok from the filtersblockservice
+	filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
+	fbsDoneReader := kafkaHelper.NewReaderNextMessage(filtersblockDoneTopic)
+
 	s := &InfluxScraper{
 		shutdown:      make(chan nothing),
 		shutdownDone:  make(chan nothing),
@@ -63,6 +75,7 @@ func NewInfluxScraper(scrape bool) *InfluxScraper {
 		measurement:   measurement,
 		db:            db,
 		batchDuration: batchDurationInt,
+		fbsDoneReader: fbsDoneReader,
 	}
 	if scrape {
 		go s.mainLoop()
@@ -94,13 +107,13 @@ func (s *InfluxScraper) mainLoop() {
 		timeInit = time.Unix(timeInitInt, 0)
 	}
 
-	batchProcessingTimeString := utils.Getenv("BATCH_PROCESSING_SECONDS", "30")
-	batchProcessingSeconds, err := strconv.ParseInt(batchProcessingTimeString, 10, 64)
-	if err != nil {
-		log.Error("parse batch processing time string: ", err)
-	}
+	// batchProcessingTimeString := utils.Getenv("BATCH_PROCESSING_SECONDS", "30")
+	// batchProcessingSeconds, err := strconv.ParseInt(batchProcessingTimeString, 10, 64)
+	// if err != nil {
+	// 	log.Error("parse batch processing time string: ", err)
+	// }
 
-	time.Sleep(10 * time.Second)
+	// time.Sleep(10 * time.Second)
 
 	// final time is the last timestamp of trades exported from d2.
 	timeFinalString := utils.Getenv("TIME_FINAL", "")
@@ -112,8 +125,11 @@ func (s *InfluxScraper) mainLoop() {
 	starttime := timeInit
 	endtime := starttime.Add(time.Duration(s.batchDuration))
 
-	go func() {
-		for timeInit.Before(timeFinal) {
+	for {
+		_, err := s.fbsDoneReader.ReadMessage(context.Background())
+		if err != nil {
+			log.Error("read ok message from filtersblockservice: ", err.Error())
+		} else if starttime.Before(timeFinal) {
 			t0 := time.Now()
 			trades, err := s.db.GetOldTradesFromInflux(s.measurement, "", true, starttime, endtime)
 			if err != nil {
@@ -132,10 +148,12 @@ func (s *InfluxScraper) mainLoop() {
 			}
 			starttime, endtime = endtime, endtime.Add(time.Duration(s.batchDuration))
 			// Wait for filtersblockservice and tradesblockservice to process.
-			time.Sleep(time.Duration(batchProcessingSeconds) * time.Second)
+			// time.Sleep(time.Duration(batchProcessingSeconds) * time.Second)
+		} else {
+			log.Info("done with iteration though trades. last timestamp: ", endtime)
+			time.Sleep(120 * time.Hour)
 		}
-	}()
-
+	}
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
