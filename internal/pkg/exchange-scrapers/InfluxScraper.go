@@ -125,35 +125,41 @@ func (s *InfluxScraper) mainLoop() {
 	starttime := timeInit
 	endtime := starttime.Add(time.Duration(s.batchDuration))
 
+	// Initial run.
+	starttime, endtime = s.collectTrades(starttime, endtime)
+
+	// Iterate until @timeFinal is reached.
 	for {
 		_, err := s.fbsDoneReader.ReadMessage(context.Background())
 		if err != nil {
 			log.Error("read ok message from filtersblockservice: ", err.Error())
 		} else if starttime.Before(timeFinal) {
-			t0 := time.Now()
-			trades, err := s.db.GetOldTradesFromInflux(s.measurement, "", true, starttime, endtime)
-			if err != nil {
-				if strings.Contains(err.Error(), "no trades in time range") {
-					log.Warnf("%v: %v -- %v", err, starttime, endtime)
-				} else {
-					log.Error("get trades from influx: ", err)
-					return
-				}
-			}
-			log.Infof("got %d trades in time range %v -- %v", len(trades), starttime, endtime)
-			log.Info("time passed for get old trades: ", time.Since(t0))
-			for i := range trades {
-				s.chanTrades <- &trades[i]
-				log.Info("got trade: ", trades[i])
-			}
-			starttime, endtime = endtime, endtime.Add(time.Duration(s.batchDuration))
-			// Wait for filtersblockservice and tradesblockservice to process.
-			// time.Sleep(time.Duration(batchProcessingSeconds) * time.Second)
+			starttime, endtime = s.collectTrades(starttime, endtime)
 		} else {
 			log.Info("done with iteration though trades. last timestamp: ", endtime)
 			time.Sleep(120 * time.Hour)
 		}
 	}
+}
+
+func (s *InfluxScraper) collectTrades(starttime time.Time, endtime time.Time) (newstarttime time.Time, newendtime time.Time) {
+	t0 := time.Now()
+	trades, err := s.db.GetOldTradesFromInflux(s.measurement, "", true, starttime, endtime)
+	if err != nil {
+		if strings.Contains(err.Error(), "no trades in time range") {
+			log.Warnf("%v: %v -- %v", err, starttime, endtime)
+		} else {
+			log.Error("get trades from influx: ", err)
+			return
+		}
+	}
+	log.Infof("got %d trades in time range %v -- %v", len(trades), starttime, endtime)
+	log.Info("time passed for get old trades: ", time.Since(t0))
+	for i := range trades {
+		s.chanTrades <- &trades[i]
+		log.Info("got trade: ", trades[i])
+	}
+	return endtime, endtime.Add(time.Duration(s.batchDuration))
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
