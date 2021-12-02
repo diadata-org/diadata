@@ -55,12 +55,13 @@ func GetTopic(topic int) string {
 
 func getTopic(topic int) string {
 	topicMap := map[int]string{
-		1: "filtersBlock",
-		2: "trades",
-		3: "tradesBlock",
-		4: "filtersBlockHistorical",
-		5: "tradesHistorical",
-		6: "tradesBlockHistorical",
+		1:  "filtersBlock",
+		2:  "trades",
+		3:  "tradesBlock",
+		4:  "filtersBlockHistorical",
+		5:  "tradesHistorical",
+		6:  "tradesBlockHistorical",
+		14: "filtersblockHistoricalDone",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
