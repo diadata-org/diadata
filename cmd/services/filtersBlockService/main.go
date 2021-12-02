@@ -29,10 +29,10 @@ func init() {
 	if !*historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlock
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
-		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
 	} else {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
+		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
 	}
 }
 

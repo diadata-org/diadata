@@ -65,7 +65,7 @@ func getTopic(topic int) string {
 	}
 	result, ok := topicMap[topic]
 	if !ok {
-		log.Error("getTopic cant fine topic", topic)
+		log.Error("getTopic cant find topic", topic)
 	}
 	return result
 }
