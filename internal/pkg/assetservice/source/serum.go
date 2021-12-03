@@ -1,7 +1,14 @@
 package source
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/mr-tron/base58"
+	"github.com/streamingfast/solana-go"
+	"github.com/streamingfast/solana-go/programs/serum"
+	"github.com/streamingfast/solana-go/rpc"
 )
 
 type SerumPair struct {
@@ -13,13 +20,20 @@ type SerumPair struct {
 
 const (
 	// Public Solana clients.
-	wsDialSolana   = "http://192.168.1.88:8900"
-	restDialSolana = "http://192.168.1.88:8899"
+	wsDialSolana              = "http://192.168.1.88:8900"
+	restDialSolana            = "http://192.168.1.88:8899"
+	rpcEndpointSolana         = "https://solana-api.projectserum.com"
+	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
+	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
+	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
+	marketDataSize            = 388
 )
 
 type SerumAssetSource struct {
-	assetChannel chan dia.Asset
-	blockchain   string
+	solanaRpcClient   *rpc.Client
+	tokenNameRegistry map[string]tokenMeta
+	assetChannel      chan dia.Asset
+	blockchain        string
 }
 
 func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
@@ -30,8 +44,9 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 	exchangeFactoryContractAddress = ""
 
 	sas = &SerumAssetSource{
-		assetChannel: assetChannel,
-		blockchain:   dia.SOLANA,
+		solanaRpcClient: rpc.NewClient(rpcEndpointSolana),
+		assetChannel:    assetChannel,
+		blockchain:      dia.SOLANA,
 	}
 
 	go func() {
@@ -46,5 +61,130 @@ func (sas *SerumAssetSource) Asset() chan dia.Asset {
 }
 
 func (sas *SerumAssetSource) fetchAssets() {
-	// TO DO: Implement fetch pairs/assets logic here.
+	pairs, err := sas.getPairs()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	log.Info("Found ", len(pairs), " pairs")
+	checkMap := make(map[string]struct{})
+	sas.tokenNameRegistry, err = sas.getTokenNames()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	for _, pair := range pairs {
+		if tokenInfo, ok := sas.tokenNameRegistry[pair.BaseMint.String()]; ok {
+			if _, ok := checkMap[tokenInfo.symbol]; !ok {
+				checkMap[tokenInfo.symbol] = struct{}{}
+				sas.assetChannel <- dia.Asset{
+					Symbol:     tokenInfo.symbol,
+					Name:       tokenInfo.name,
+					Address:    tokenInfo.mint,
+					Decimals:   tokenInfo.decimals,
+					Blockchain: sas.blockchain,
+				}
+			}
+		}
+		if tokenInfo, ok := sas.tokenNameRegistry[pair.QuoteMint.String()]; ok {
+			if _, ok := checkMap[tokenInfo.symbol]; !ok {
+				checkMap[tokenInfo.symbol] = struct{}{}
+				sas.assetChannel <- dia.Asset{
+					Symbol:     tokenInfo.symbol,
+					Name:       tokenInfo.name,
+					Address:    tokenInfo.mint,
+					Decimals:   tokenInfo.decimals,
+					Blockchain: sas.blockchain,
+				}
+			}
+		}
+	}
+}
+
+func (sas *SerumAssetSource) getPairs() ([]*serum.MarketV2, error) {
+	resp, err := sas.solanaRpcClient.GetProgramAccounts(
+		context.TODO(),
+		solana.MustPublicKeyFromBase58(dexProgramAddress),
+		&rpc.GetProgramAccountsOpts{
+			Filters: []rpc.RPCFilter{
+				{
+					DataSize: marketDataSize,
+				},
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*serum.MarketV2, 0)
+	for _, keyedAcct := range resp {
+		acct := keyedAcct.Account
+		marketV2 := &serum.MarketV2{}
+		if err := marketV2.Decode(acct.Data); err != nil {
+			return nil, fmt.Errorf("decoding market v2: %w", err)
+		}
+		out = append(out, marketV2)
+	}
+	return out, nil
+}
+
+func (sas *SerumAssetSource) getTokenNames() (map[string]tokenMeta, error) {
+	names := make(map[string]tokenMeta)
+	tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
+	resp, err := sas.solanaRpcClient.GetProgramAccounts(
+		context.TODO(),
+		solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
+		&rpc.GetProgramAccountsOpts{
+			Filters: []rpc.RPCFilter{
+				{
+					Memcmp: &rpc.RPCFilterMemcmp{
+						Bytes: tldPublicKey[:],
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	for _, keyedAcct := range resp {
+		if t, ok := extractTokenMetaFromData(keyedAcct.Account.Data[96:]); ok {
+			names[t.mint] = t
+		}
+	}
+	return names, nil
+}
+
+type tokenMeta struct {
+	name     string
+	symbol   string
+	mint     string
+	decimals uint8
+}
+
+func extractTokenMetaFromData(data []byte) (tokenMeta, bool) {
+	var t tokenMeta
+	if len(data) > 0 {
+		nameSize := int(data[0])
+		nameStart := 4
+		nameEnd := nameStart + nameSize
+		if len(data) > nameEnd {
+			t.name = string(data[nameStart:nameEnd])
+			symbolSize := int(data[nameEnd])
+			symbolStart := 4 + nameEnd
+			symbolEnd := symbolStart + symbolSize
+			if len(data) > symbolEnd {
+				t.symbol = string(data[symbolStart:symbolEnd])
+				mintSize := 32
+				mintStart := symbolEnd
+				mintEnd := mintStart + mintSize
+				if len(data) > mintEnd {
+					t.mint = base58.Encode(data[mintStart:mintEnd])
+					t.decimals = data[mintEnd]
+					return t, true
+				}
+			}
+		}
+	}
+	return tokenMeta{}, false
 }
