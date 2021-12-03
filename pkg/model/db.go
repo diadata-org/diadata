@@ -1150,9 +1150,9 @@ func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange s
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {
-		log.Errorln("newPoint:", err)
+		log.Errorln("new filter influx:", err)
 	} else {
-		datastore.influxBatchPoints.AddPoint(pt)
+		datastore.addPoint(pt)
 	}
 	return err
 }

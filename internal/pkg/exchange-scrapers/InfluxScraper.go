@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,7 +21,7 @@ var (
 
 const (
 	// One hour batches (notation in nanoseconds)
-	batchDuration         = "3600000000000"
+	batchDuration         = "121000000000"
 	tradesReadMeasurement = "tradesOld"
 )
 
@@ -102,21 +103,20 @@ func (s *InfluxScraper) mainLoop() {
 	} else {
 		timeInitInt, err = strconv.ParseInt(timeInitString, 10, 64)
 		if err != nil {
-			log.Fatal("parse final time: ", err)
+			log.Fatal("parse init time: ", err)
 		}
 		timeInit = time.Unix(timeInitInt, 0)
 	}
 
-	// batchProcessingTimeString := utils.Getenv("BATCH_PROCESSING_SECONDS", "30")
-	// batchProcessingSeconds, err := strconv.ParseInt(batchProcessingTimeString, 10, 64)
-	// if err != nil {
-	// 	log.Error("parse batch processing time string: ", err)
-	// }
-
-	// time.Sleep(10 * time.Second)
+	// After @waitForFBSSeconds new trades are collected in order to successfully produce a new filtersblock.
+	waitForFBSSecondsString := utils.Getenv("WAIT_FOR_FBS_SECONDS", "30")
+	waitForFBSSeconds, err := strconv.ParseInt(waitForFBSSecondsString, 10, 64)
+	if err != nil {
+		log.Error("parse batch processing time string: ", err)
+	}
 
 	// final time is the last timestamp of trades exported from d2.
-	timeFinalString := utils.Getenv("TIME_FINAL", "")
+	timeFinalString := utils.Getenv("TIME_FINAL", "1636618800")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
 	if err != nil {
 		log.Fatal("parse final time: ", err)
@@ -128,15 +128,26 @@ func (s *InfluxScraper) mainLoop() {
 	// Initial run.
 	starttime, endtime = s.collectTrades(starttime, endtime)
 
+	// Context initiates the collection of new trades if the fbs does not
+	// return a signal after @waitForFBSSeconds seconds.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(waitForFBSSeconds)*time.Second)
+
 	// Iterate until @timeFinal is reached.
 	for {
-		_, err := s.fbsDoneReader.ReadMessage(context.Background())
+		_, err := s.fbsDoneReader.ReadMessage(ctx)
 		if err != nil {
-			log.Error("read ok message from filtersblockservice: ", err.Error())
+			if errors.Is(err, ctx.Err()) {
+				log.Info("system stalled. collect new trades.")
+				starttime, endtime = s.collectTrades(starttime, endtime)
+				cancel()
+				ctx, cancel = context.WithTimeout(context.Background(), time.Duration(waitForFBSSeconds)*time.Second)
+			} else {
+				log.Error("read ok message from filtersblockservice: ", err.Error())
+			}
 		} else if starttime.Before(timeFinal) {
 			starttime, endtime = s.collectTrades(starttime, endtime)
 		} else {
-			log.Info("done with iteration though trades. last timestamp: ", endtime)
+			log.Info("done with iteration through trades. last timestamp: ", endtime)
 			time.Sleep(120 * time.Hour)
 		}
 	}
@@ -157,8 +168,9 @@ func (s *InfluxScraper) collectTrades(starttime time.Time, endtime time.Time) (n
 	log.Info("time passed for get old trades: ", time.Since(t0))
 	for i := range trades {
 		s.chanTrades <- &trades[i]
-		log.Info("got trade: ", trades[i])
+		// log.Info("got trade: ", trades[i])
 	}
+	log.Infof("fetched %d trades from influx.", len(trades))
 	return endtime, endtime.Add(time.Duration(s.batchDuration))
 }
 
