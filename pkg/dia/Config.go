@@ -55,7 +55,8 @@ const (
 	QuickswapExchange  = "Quickswap"
 	SerumExchange      = "Serum"
 	SolarbeamExchange  = "Solarbeam"
-	FinageForex        = "FinageForex"
+	TrisolarisExchange = "Trisolaris"
+	// FinageForex        = "FinageForex"
 )
 
 func Exchanges() []string {
@@ -71,7 +72,7 @@ func Exchanges() []string {
 		CREX24Exchange,
 		STEXExchange,
 
-		FinageForex,
+		// FinageForex,
 		BitMaxExchange,
 		ZBExchange,
 		HuobiExchange,
@@ -99,6 +100,7 @@ func Exchanges() []string {
 		SpiritswapExchange,
 		SerumExchange,
 		SolarbeamExchange,
+		TrisolarisExchange,
 
 		ZeroxExchange,
 		BalancerExchange,

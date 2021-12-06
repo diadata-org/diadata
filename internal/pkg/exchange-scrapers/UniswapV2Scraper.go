@@ -31,14 +31,14 @@ var (
 )
 
 const (
-	wsDial   = "ws://159.69.120.42:8546/"
 	restDial = "http://159.69.120.42:8545/"
+	wsDial   = "ws://159.69.120.42:8546/"
 
-	wsDialBSC   = ""
 	restDialBSC = ""
+	wsDialBSC   = ""
 
-	wsDialPolygon   = ""
 	restDialPolygon = ""
+	wsDialPolygon   = ""
 
 	restDialCelo = ""
 	wsDialCelo   = ""
@@ -49,6 +49,9 @@ const (
 	restDialMoonriver = ""
 	wsDialMoonriver   = ""
 
+	restDialAurora = ""
+	wsDialAurora   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "600"
@@ -57,6 +60,7 @@ const (
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
 	solarbeamWaitMilliseconds   = "400"
+	trisolarisWaitMilliseconds  = "200"
 )
 
 type UniswapToken struct {
@@ -128,6 +132,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 			log.Error("could not parse wait time: ", err)
 			waitTime = 100
 		}
+
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
@@ -145,6 +150,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 			log.Error("could not parse wait time: ", err)
 			waitTime = 100
 		}
+
 	case dia.PanCakeSwap:
 		log.Infoln("Init ws and rest client for BSC chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
@@ -267,7 +273,25 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {
 			log.Error("could not parse wait time: ", err)
-			waitTime = 100
+			waitTime = 400
+		}
+		exchangeFactoryContractAddress = exchange.Contract.Hex()
+
+	case dia.TrisolarisExchange:
+		log.Infoln("Init ws and rest client for Aurora chain")
+		wsClient, err = ethclient.Dial(utils.Getenv("AURORA_URI_WS", wsDialAurora))
+		if err != nil {
+			log.Fatal(err)
+		}
+		restClient, err = ethclient.Dial(utils.Getenv("AURORA_URI_REST", restDialAurora))
+		if err != nil {
+			log.Fatal(err)
+		}
+		waitTimeString := utils.Getenv("AURORA_WAIT_TIME", trisolarisWaitMilliseconds)
+		waitTime, err = strconv.Atoi(waitTimeString)
+		if err != nil {
+			log.Error("could not parse wait time: ", err)
+			waitTime = 200
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 

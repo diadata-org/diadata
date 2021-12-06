@@ -24,6 +24,7 @@ const (
 	CELO                                    = "Celo"
 	FANTOM                                  = "Fantom"
 	NEAR                                    = "Near"
+	AURORA                                  = "Aurora"
 	SOLANA                                  = "Solana"
 	FLOW                                    = "Flow"
 	MOONRIVER                               = "Moonriver"
