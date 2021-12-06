@@ -20,10 +20,10 @@ DIA supports assets from various categories to be included into the oracle. A se
 
 Data Feed Name  |   Data Feed Query           | Data Type                           |
 | :-----------: | :-------------------------: | :---------------------------------: |
-| Bitcoin       |   BTC                       |  Crypto Price                       |
-| Ethereum      |   ETH                       |  Crypto Price                       |
-| USDC          |   USDC                      |  Crypto Price                       |
-| DIA Token     |   DIA                       |  Crypto price                       |
+| Bitcoin       |   BTC/USD                   |  Crypto Price                       |
+| Ethereum      |   ETH/USD                   |  Crypto Price                       |
+| USDC          |   USDC/USD                  |  Crypto Price                       |
+| DIA Token     |   DIA/USD                   |  Crypto price                       |
 
 To retrieve data, query the oracle for an asset as listed in column "Data Field Query".
 The query string is case-sensitive.
