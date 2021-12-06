@@ -146,6 +146,8 @@ func (s *InfluxScraper) mainLoop() {
 			}
 		} else if starttime.Before(timeFinal) {
 			starttime, endtime = s.collectTrades(starttime, endtime)
+			cancel()
+			ctx, cancel = context.WithTimeout(context.Background(), time.Duration(waitForFBSSeconds)*time.Second)
 		} else {
 			log.Info("done with iteration through trades. last timestamp: ", endtime)
 			time.Sleep(120 * time.Hour)
