@@ -294,15 +294,15 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange 
 	}
 }
 
-func (datastore *DB) WriteBatchInflux() error {
-	err := datastore.influxClient.Write(datastore.influxBatchPoints)
+func (datastore *DB) WriteBatchInflux() (err error) {
+	err = datastore.influxClient.Write(datastore.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
-	} else {
-		datastore.influxPointsInBatch = 0
+		return
 	}
+	datastore.influxPointsInBatch = 0
 	datastore.influxBatchPoints = createBatchInflux()
-	return err
+	return
 }
 
 func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {

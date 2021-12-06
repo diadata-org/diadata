@@ -55,7 +55,7 @@ func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange strin
 	}
 	key := getKeyLastTradeTimeForExchange(asset, exchange)
 	log.Debug("setting ", key, t)
-	err := datastore.redisClient.Set(key, t.Unix(), TimeOutRedis).Err()
+	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
