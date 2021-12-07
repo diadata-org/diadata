@@ -8,7 +8,7 @@ replace (
 )
 
 require (
-	github.com/diadata-org/diadata v1.2.0
+	github.com/diadata-org/diadata v1.3.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect

@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/services/indexCalculationService
 go 1.14
 
 require (
-	github.com/diadata-org/diadata v1.2.0
+	github.com/diadata-org/diadata v1.3.0
 	github.com/ethereum/go-ethereum v1.10.4 // indirect
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgproto3/v2 v2.1.0 // indirect

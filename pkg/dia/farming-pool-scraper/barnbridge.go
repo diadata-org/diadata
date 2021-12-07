@@ -80,7 +80,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 	for _, pool := range pools {
 		switch pool.PoolID {
 		case "STABLECOIN":
-			vault, err := stablecoinvault.stablecoinvault.NewVaultCaller(common.HexToAddress(pools[0].VaultAddress), bd.RestClient)
+			vault, err := stablecoinvault.NewVaultCaller(common.HexToAddress(pools[0].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}
@@ -102,7 +102,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "USDC_BOND_UNI_LP":
-			vault, err := lpvault.lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
+			vault, err := lpvault.NewVaultCaller(common.HexToAddress(pools[1].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func (bd *BARNBRIDGEScraper) scrapePools() (err error) {
 			}
 			numEpochs = float64(numEpochsBig.Int64())
 		case "BOND":
-			vault, err := bondvault.bondvault.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
+			vault, err := bondvault.NewVaultCaller(common.HexToAddress(pools[2].VaultAddress), bd.RestClient)
 			if err != nil {
 				return err
 			}

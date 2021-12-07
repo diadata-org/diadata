@@ -7,7 +7,7 @@ RUN go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/options /bin/options
+COPY --from=build /go/bin/optionCollector /bin/optionCollector
 COPY --from=build /config/ /config/
 
-CMD ["options"]
+CMD ["optionCollector"]
