@@ -158,8 +158,10 @@ func (scraper *CoinMarketCapScraper) GetQuoteChannel() chan *models.ForeignQuota
 	return scraper.foreignScrapper.chanQuotation
 }
 
-func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
-	// There must be a pro coinmarketcap api key for this to work properly
+func getApiKey() string {
+	if utils.Getenv("USE_ENV", "false") == "true" {
+		return utils.Getenv("CMC_API_KEY", "")
+	}
 	var lines []string
 	file, err := os.Open("/run/secrets/Coinmarketcap-API.key") // Read in key information
 	if err != nil {
@@ -182,7 +184,12 @@ func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
 	if len(lines) != 1 {
 		log.Fatal("Secrets file for coinmarketcap API key should have exactly one line")
 	}
-	apiKey := lines[0]
+	return lines[0]
+}
+
+func getCoinMarketCapData() (listing CoinMarketCapListing, err error) {
+	// There must be a pro coinmarketcap api key for this to work properly
+	apiKey := getApiKey()
 
 	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
