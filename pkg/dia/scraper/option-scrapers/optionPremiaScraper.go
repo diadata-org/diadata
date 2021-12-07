@@ -1,13 +1,12 @@
 package optionscrapers
 
 import (
+	"github.com/diadata-org/diadata/pkg/dia/scraper/option-scrapers/premiacontracts/PremiaMarket"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/option-scrapers/premiacontracts/PremiaOption"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaMarket"
-	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/premiacontracts/PremiaOption"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"

@@ -2,9 +2,9 @@ package pool
 
 import (
 	"context"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/barnbridge/vaults/bond"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/barnbridge/vaults/lp"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/barnbridge/vaults/stablecoin"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/barnbridge/vaults/bond"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/barnbridge/vaults/lp"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/barnbridge/vaults/stablecoin"
 	"math/big"
 	"time"
 

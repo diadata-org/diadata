@@ -2,13 +2,12 @@ package optionscrapers
 
 import (
 	"encoding/json"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/option-scrapers/opyncontracts/OpynToken"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/option-scrapers/opyncontracts/OtokenFactory"
 	"strconv"
 	"sync"
 	"time"
 
-	Otoken "github.com/diadata-org/diadata/internal/pkg/option-scrapers/opyncontracts/OpynToken"
-
-	"github.com/diadata-org/diadata/internal/pkg/option-scrapers/opyncontracts/OtokenFactory"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"

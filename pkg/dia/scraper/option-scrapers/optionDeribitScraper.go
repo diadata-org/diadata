@@ -81,7 +81,10 @@ func NewDeribitETHOptionScraper() *DeribitETHOptionScraper {
 		chanOrderBook: make(chan *dia.OptionOrderbookDatum),
 		DataStore:     ds,
 	}
-	s.GetAndStoreOptionsMeta()
+	optionErr := s.GetAndStoreOptionsMeta()
+	if optionErr != nil {
+		return nil
+	}
 
 	var wsDialer ws.Dialer
 	SwConn, _, err := wsDialer.Dial(deribitAPI, nil)

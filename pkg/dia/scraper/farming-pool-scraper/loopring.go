@@ -2,9 +2,9 @@ package pool
 
 import (
 	"context"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/feeVault"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/stakingpool"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/loopring/token"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/loopring/feeVault"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/loopring/stakingpool"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/loopring/token"
 	"math"
 	"math/big"
 	"time"

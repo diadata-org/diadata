@@ -2,9 +2,9 @@ package pool
 
 import (
 	"context"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/gauge"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/platform"
-	"github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper/curveficontracts/special"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/curveficontracts/gauge"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/curveficontracts/platform"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper/curveficontracts/special"
 	"math/big"
 	"time"
 
@@ -69,17 +69,17 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		if err != nil {
 			return err
 		}
-		platform, err := platform.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
+		platformCaller, err := platform.NewPlatformCaller(common.HexToAddress(poolDetail.PoolAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
-		gauge, err := gauge.NewGauge(common.HexToAddress(poolDetail.GaugeAddress), cv.RestClient)
+		poolGauge, err := gauge.NewGauge(common.HexToAddress(poolDetail.GaugeAddress), cv.RestClient)
 		if err != nil {
 			return err
 		}
 
 		// Get supply of lp tokens in gauge
-		totalSupplyBig, err := gauge.TotalSupply(&bind.CallOpts{})
+		totalSupplyBig, err := poolGauge.TotalSupply(&bind.CallOpts{})
 		if err != nil {
 			return err
 		}
@@ -87,7 +87,7 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		totalSupplyGauge, _ := tmpSupply.Quo(tmpSupply, new(big.Float).SetFloat64(1e18)).Float64()
 
 		// Get virtual price
-		virtualPriceBig, _ := platform.GetVirtualPrice(&bind.CallOpts{})
+		virtualPriceBig, _ := platformCaller.GetVirtualPrice(&bind.CallOpts{})
 		tmpVirtualPrice := new(big.Float).SetInt(virtualPriceBig)
 		virtualPrice, _ := tmpVirtualPrice.Quo(tmpVirtualPrice, new(big.Float).SetFloat64(1e18)).Float64()
 
@@ -98,7 +98,7 @@ func (cv *CFIScraper) scrapePools() (err error) {
 		}
 
 		// Get pool's lp token symbol
-		lpToken, err := gauge.LpToken(&bind.CallOpts{})
+		lpToken, err := poolGauge.LpToken(&bind.CallOpts{})
 		if err != nil {
 			log.Errorf("error getting lp token for pool %s \n ", poolDetail.PoolAddress)
 		}
