@@ -17,9 +17,8 @@ func hashPassword(password string) (string, error) {
 	// Convert password string to byte slice
 	var passwordBytes = []byte(password)
 
-	// Hash password with Bcrypt's min cost
 	hashedPasswordBytes, err := bcrypt.
-		GenerateFromPassword(passwordBytes, bcrypt.MinCost)
+		GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 
 	return string(hashedPasswordBytes), err
 }
@@ -38,7 +37,7 @@ type RestBasicAuth struct {
 }
 
 func BasicAuth(c *gin.Context) {
-	user, password, hasAuth := c.Request.BasicAuth()
+	username, password, hasAuth := c.Request.BasicAuth()
 	if !hasAuth {
 		c.Abort()
 		c.Writer.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
@@ -51,16 +50,25 @@ func BasicAuth(c *gin.Context) {
 	query := fmt.Sprintf("SELECT username, password from rest_basicauth where username = %s AND is_active = true AND (active_until IS NULL OR active_until <= %s", username, today)
 
 	rows, err := postgres.Query(context.Background(), query)
+	if err != nil {
+		log.Error("Run basicauth user search query:", err)
+		return
+	}
 	for rows.Next() {
 		var basicAuth RestBasicAuth
 		err := rows.Scan(
 			&basicAuth.username,
 			&basicAuth.password,
 		)
+		if err != nil {
+			log.Error(err)
+			return
+		}
 		// Get the Basic Authentication credentials
 		if doPasswordsMatch(basicAuth.password, password) {
 			log.WithFields(log.Fields{
-				"user": user,
+				"user": username,
+				"endpoint": c.Request.URL.Path,
 			}).Info("User authenticated")
 		} else {
 			c.Abort()
