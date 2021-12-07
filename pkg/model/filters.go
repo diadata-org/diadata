@@ -10,16 +10,16 @@ import (
 
 // SetFilter stores a filter point
 func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
-	return datastore.SaveFilterInflux(filter, asset, exchange, value, t)
-	// err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
-	// if err != nil {
-	// 	return err
-	// }
-	// err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
-	// if err != nil {
-	// 	return err
-	// }
-	// return err
+	// return datastore.SaveFilterInflux(filter, asset, exchange, value, t)
+	err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
+	if err != nil {
+		return err
+	}
+	err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 // GetFilterPoints returns filter points from either a specific exchange or all exchanges.
