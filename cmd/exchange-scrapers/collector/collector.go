@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
