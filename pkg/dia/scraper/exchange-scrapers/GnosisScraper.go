@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/gnosis"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/gnosis/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/gnosis/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 

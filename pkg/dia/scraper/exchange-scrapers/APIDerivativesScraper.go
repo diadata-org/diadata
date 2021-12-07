@@ -33,5 +33,5 @@ type DeribitScraper struct {
 	AccessSecret string
 
 	RefreshTokenEvery int16 // how often we refresh the token (in seconds)
-	MarketKind        DeribitScraperKind
+	MarketKind DeribitScraperKind
 }

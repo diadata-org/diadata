@@ -29,8 +29,8 @@ type deribitErrorMessage struct {
 
 type ParsedDeribitResponse struct {
 	Jsonrpc string                      `json:"jsonrpc"`
-	Method  string                      `json:"method"`
-	Params  ParsedDeribitResponseParams `json:"params"`
+	Method string                      `json:"method"`
+	Params ParsedDeribitResponseParams `json:"params"`
 }
 
 type ParsedDeribitResponseParams struct {

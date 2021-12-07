@@ -2,18 +2,18 @@ package scrapers
 
 import (
 	"errors"
+	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3/uniswapV3Pair"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
 
-	uniswapcontractv3 "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3"
-	UniswapV3Pair "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswapv3/uniswapV3Pair"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/utils"
 
-	uniswapcontract "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

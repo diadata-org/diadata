@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -10,8 +11,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -79,9 +78,9 @@ type UniswapPair struct {
 
 type UniswapSwap struct {
 	ID         string
-	Timestamp  int64
-	Pair       UniswapPair
-	Amount0In  float64
+	Timestamp int64
+	Pair      UniswapPair
+	Amount0In float64
 	Amount0Out float64
 	Amount1In  float64
 	Amount1Out float64

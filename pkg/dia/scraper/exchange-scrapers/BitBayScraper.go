@@ -374,9 +374,9 @@ type BitBayMarket struct {
 }
 
 type BitBayWSResponse struct {
-	Action    string  `json:"action"`
-	Message   Message `json:"message"`
-	SeqNo     int     `json:"seqNo"`
+	Action  string  `json:"action"`
+	Message Message `json:"message"`
+	SeqNo   int     `json:"seqNo"`
 	Timestamp string  `json:"timestamp"`
 	Topic     string  `json:"topic"`
 }

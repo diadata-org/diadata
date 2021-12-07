@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/kyber/token"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce/token"
 	"math"
 	"math/big"
 	"sync"
@@ -19,18 +19,19 @@ import (
 )
 
 const (
-	kyberContract       = "0x9AAb3f75489902f3a48495025729a0AF77d4b11e"
-	kyberWsDial         = "ws://159.69.120.42:8546/"
-	kyberRestDial       = "http://159.69.120.42:8545/"
-	kyberLookBackBlocks = 6 * 60 * 24
+	dforceWsDial         = "ws://159.69.120.42:8546/"
+	dforceRestDial       = "http://159.69.120.42:8545/"
+	dforceLookBackBlocks = 6 * 60 * 24 * 20
 )
 
-type KyberToken struct {
+type DforceToken struct {
 	Symbol   string
-	Decimals *big.Int
+	Decimals uint8
+	Address  string
+	Name     string
 }
 
-type KyberScraper struct {
+type DforceScraper struct {
 	exchangeName string
 
 	// channels to signal events
@@ -43,7 +44,7 @@ type KyberScraper struct {
 	error     error
 	closed    bool
 
-	pairScrapers   map[string]*KyberPairScraper
+	pairScrapers   map[string]*DforcePairScraper
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 
@@ -51,33 +52,35 @@ type KyberScraper struct {
 	RestClient  *ethclient.Client
 	resubscribe chan nothing
 	tokens      map[string]dia.Asset
+	contract    common.Address
 }
 
-func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
-	scraper := &KyberScraper{
+func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
+	scraper := &DforceScraper{
+		contract:       exchange.Contract,
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
 		productPairIds: make(map[string]int),
-		pairScrapers:   make(map[string]*KyberPairScraper),
+		pairScrapers:   make(map[string]*DforcePairScraper),
 		chanTrades:     make(chan *dia.Trade),
 		resubscribe:    make(chan nothing),
 		tokens:         make(map[string]dia.Asset),
 	}
-	wsClient, err := ethclient.Dial(kyberWsDial)
+
+	wsClient, err := ethclient.Dial(dforceWsDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(kyberRestDial)
+	restClient, err := ethclient.Dial(dforceRestDial)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scraper.RestClient = restClient
 
 	scraper.loadTokens()
-	time.Sleep(5 * time.Second)
 
 	if scrape {
 		go scraper.mainLoop()
@@ -85,49 +88,46 @@ func NewKyberScraper(exchange dia.Exchange, scrape bool) *KyberScraper {
 	return scraper
 }
 
-func (scraper *KyberScraper) loadTokens() {
-
-	scraper.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] = dia.Asset{
-		Symbol:   "ETH",
-		Decimals: uint8(18),
-	}
+func (scraper *DforceScraper) loadTokens() {
 
 	// added by hand because the symbol method returns a bytes32 instead of string
-	scraper.tokens["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = dia.Asset{
-		Symbol:   "MKR",
-		Decimals: uint8(18),
+	scraper.tokens["0xeb269732ab75A6fD61Ea60b06fE994cD32a83549"] = dia.Asset{
+		Symbol:     "USDx",
+		Decimals:   18,
+		Address:    "0xeb269732ab75A6fD61Ea60b06fE994cD32a83549",
+		Blockchain: dia.ETHEREUM,
 	}
 
-	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 
 	}
+
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(kyberLookBackBlocks)
+	startblock := header.Number.Uint64() - uint64(dforceLookBackBlocks)
 
-	it, err := filterer.FilterExecuteTrade(&bind.FilterOpts{Start: startblock}, nil)
+	it, err := filterer.FilterSwap(&bind.FilterOpts{Start: startblock})
 	if err != nil {
 		log.Error(err)
 	}
 
 	for it.Next() {
-
-		i, _ := scraper.loadTokenData(it.Event.Src)
-		o, _ := scraper.loadTokenData(it.Event.Dest)
+		i, _ := scraper.loadTokenData(it.Event.Input)
+		o, _ := scraper.loadTokenData(it.Event.Output)
 		log.Printf("\n %v  -%v- %v -%v- %v %v",
-			it.Event.Src.Hex(),
+			it.Event.Input.Hex(),
 			i.Symbol, i.Decimals,
 			o.Symbol, o.Decimals,
-			it.Event.Dest.Hex())
+			it.Event.Output.Hex())
 	}
 
 }
 
-func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
+func (scraper *DforceScraper) loadTokenData(tokenAddress common.Address) (dia.Asset, error) {
 	tokenStr := tokenAddress.Hex()
 	if foundToken, ok := (scraper.tokens[tokenStr]); ok {
 		return foundToken, nil
@@ -140,11 +140,11 @@ func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (dia.Ass
 		if err != nil {
 			log.Error(err)
 		}
-		name, err := tokenCaller.Name(&bind.CallOpts{})
+		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
-		decimals, err := tokenCaller.Decimals(&bind.CallOpts{})
+		name, err := tokenCaller.Name(&bind.CallOpts{})
 		if err != nil {
 			log.Error(err)
 		}
@@ -155,14 +155,14 @@ func (scraper *KyberScraper) loadTokenData(tokenAddress common.Address) (dia.Ass
 			Address:    tokenAddress.Hex(),
 			Blockchain: dia.ETHEREUM,
 		}
-		scraper.tokens[tokenStr] = normalizeETH(dfToken)
+		scraper.tokens[tokenStr] = dfToken
 		return dfToken, err
 	}
 }
 
-func (scraper *KyberScraper) subscribeToTrades() error {
+func (scraper *DforceScraper) subscribeToTrades() error {
 
-	filterer, err := kyber.NewKyberFilterer(common.HexToAddress(kyberContract), scraper.WsClient)
+	filterer, err := dforce.NewDforceFilterer(scraper.contract, scraper.WsClient)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -171,10 +171,10 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	startblock := header.Number.Uint64() - uint64(5250)
+	startblock := header.Number.Uint64() - uint64(25250)
 
-	sink := make(chan *kyber.KyberExecuteTrade)
-	sub, err := filterer.WatchExecuteTrade(&bind.WatchOpts{Start: &startblock}, sink, nil)
+	sink := make(chan *dforce.DforceSwap)
+	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &startblock}, sink)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -206,8 +206,8 @@ func (scraper *KyberScraper) subscribeToTrades() error {
 	return err
 }
 
-func (scraper *KyberScraper) processTrade(trade *kyber.KyberExecuteTrade) {
-	symbol, foreignName, volume, price, token0, token1, err := scraper.getTradeDataKyber(trade)
+func (scraper *DforceScraper) processTrade(trade *dforce.DforceSwap) {
+	symbol, foreignName, volume, price, token0, token1, err := scraper.getSwapDataDforce(trade)
 	timestamp := time.Now().Unix()
 	if err != nil {
 		log.Error(err)
@@ -233,7 +233,11 @@ func (scraper *KyberScraper) processTrade(trade *kyber.KyberExecuteTrade) {
 
 }
 
-func (scraper *KyberScraper) mainLoop() {
+func (scraper *DforceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{}, nil
+}
+
+func (scraper *DforceScraper) mainLoop() {
 
 	scraper.run = true
 
@@ -241,7 +245,6 @@ func (scraper *KyberScraper) mainLoop() {
 	if err != nil {
 		log.Error(err)
 	}
-
 	go func() {
 		for scraper.run {
 			<-scraper.resubscribe
@@ -270,22 +273,22 @@ func (scraper *KyberScraper) mainLoop() {
 	scraper.cleanup(nil)
 }
 
-// getTradeData returns the foreign name, volume and price of a swap
-func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symbol string, foreignName string, volume float64, price float64, buyToken, sellToken dia.Asset, err error) {
-	buyToken, err = scraper.loadTokenData(s.Dest)
+// getSwapData returns the foreign name, volume and price of a swap
+func (scraper *DforceScraper) getSwapDataDforce(s *dforce.DforceSwap) (symbol string, foreignName string, volume float64, price float64, buyToken, sellToken dia.Asset, err error) {
+	buyToken, err = scraper.loadTokenData(s.Output)
 	if err != nil {
 		log.Error(err)
 	}
-	sellToken, err = scraper.loadTokenData(s.Src)
+	sellToken, err = scraper.loadTokenData(s.Input)
 	if err != nil {
 		log.Error(err)
 	}
 	buyDecimals := buyToken.Decimals
 	sellDecimals := sellToken.Decimals
 
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualDestAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
+	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.OutputAmount), new(big.Float).SetFloat64(math.Pow10(int(buyDecimals)))).Float64()
 
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.ActualSrcAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
+	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.InputAmount), new(big.Float).SetFloat64(math.Pow10(int(sellDecimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -294,11 +297,7 @@ func (scraper *KyberScraper) getTradeDataKyber(s *kyber.KyberExecuteTrade) (symb
 	return
 }
 
-func (scraper *KyberScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
-}
-
-func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (scraper *DforceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	pairSet := make(map[string]struct{})
 	for _, p1 := range scraper.tokens {
@@ -333,11 +332,11 @@ func (scraper *KyberScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 	return
 }
 
-func (scraper *KyberScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+func (scraper *DforceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
-func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (scraper *DforceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	scraper.errorLock.RLock()
 	defer scraper.errorLock.RUnlock()
 
@@ -346,10 +345,10 @@ func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 	}
 
 	if scraper.closed {
-		return nil, errors.New("KyberScraper is closed")
+		return nil, errors.New("DforceScraper is closed")
 	}
 
-	pairScraper := &KyberPairScraper{
+	pairScraper := &DforcePairScraper{
 		parent: scraper,
 		pair:   pair,
 	}
@@ -358,7 +357,7 @@ func (scraper *KyberScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, err
 
 	return pairScraper, nil
 }
-func (scraper *KyberScraper) cleanup(err error) {
+func (scraper *DforceScraper) cleanup(err error) {
 	scraper.errorLock.Lock()
 	defer scraper.errorLock.Unlock()
 	if err != nil {
@@ -368,7 +367,7 @@ func (scraper *KyberScraper) cleanup(err error) {
 	close(scraper.shutdownDone)
 }
 
-func (scraper *KyberScraper) Close() error {
+func (scraper *DforceScraper) Close() error {
 	// close the pair scraper channels
 	scraper.run = false
 	for _, pairScraper := range scraper.pairScrapers {
@@ -382,28 +381,28 @@ func (scraper *KyberScraper) Close() error {
 	return nil
 }
 
-type KyberPairScraper struct {
-	parent *KyberScraper
+type DforcePairScraper struct {
+	parent *DforceScraper
 	pair   dia.ExchangePair
 	closed bool
 }
 
-func (pairScraper *KyberPairScraper) Pair() dia.ExchangePair {
+func (pairScraper *DforcePairScraper) Pair() dia.ExchangePair {
 	return pairScraper.pair
 }
 
-func (scraper *KyberScraper) Channel() chan *dia.Trade {
+func (scraper *DforceScraper) Channel() chan *dia.Trade {
 	return scraper.chanTrades
 }
 
-func (pairScraper *KyberPairScraper) Error() error {
+func (pairScraper *DforcePairScraper) Error() error {
 	s := pairScraper.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
 }
 
-func (pairScraper *KyberPairScraper) Close() error {
+func (pairScraper *DforcePairScraper) Close() error {
 	pairScraper.parent.errorLock.RLock()
 	defer pairScraper.parent.errorLock.RUnlock()
 	pairScraper.closed = true

@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerfactory"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
-
-	balancerfactory "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerfactory"
-	balancerpool "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancerpool"
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/balancer/balancertoken"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 

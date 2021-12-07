@@ -3,13 +3,12 @@ package scrapers
 import (
 	"context"
 	"errors"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
-
-	uniswap "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"

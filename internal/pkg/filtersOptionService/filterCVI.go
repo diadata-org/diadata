@@ -3,10 +3,9 @@ package filters
 import (
 	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"math"
 	"time"
-
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
 
 	"github.com/sirupsen/logrus"
 

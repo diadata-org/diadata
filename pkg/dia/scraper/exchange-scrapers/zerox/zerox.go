@@ -45,9 +45,9 @@ type LibFillResultsFillResults struct {
 
 // LibFillResultsMatchedFillResults is an auto generated low-level Go binding around an user-defined struct.
 type LibFillResultsMatchedFillResults struct {
-	Left                    LibFillResultsFillResults
-	Right                   LibFillResultsFillResults
-	ProfitInLeftMakerAsset  *big.Int
+	Left                   LibFillResultsFillResults
+	Right                  LibFillResultsFillResults
+	ProfitInLeftMakerAsset *big.Int
 	ProfitInRightMakerAsset *big.Int
 }
 
