@@ -28,9 +28,6 @@ require (
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/graph-gophers/graphql-go v1.1.0
@@ -38,9 +35,7 @@ require (
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
-	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/karalabe/usb v0.0.0-20210518091819-4ea20957c210 // indirect
-	github.com/klauspost/compress v1.11.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/mailru/easyjson v0.7.2 // indirect
@@ -72,15 +67,11 @@ require (
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	go.uber.org/zap v1.15.0
-	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
-	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
-	golang.org/x/text v0.3.4 // indirect
+	go.uber.org/zap v1.19.1
+	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
-	golang.org/x/tools v0.1.0 // indirect
-	google.golang.org/grpc v1.31.1
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
+	google.golang.org/grpc v1.40.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
 )

@@ -173,8 +173,8 @@ github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0
 github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumCAMpl/TFQ4/5kLM=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/diadata-org/diadata v1.1.1-rc-125 h1:tVL6Vz4KaLca4pG939a3rjzvpeNzZrLmOVwq6jHqnJw=
-github.com/diadata-org/diadata v1.1.1-rc-125/go.mod h1:Mnlb7hk4AmVWvBmVD880xpBUX6mJkJYniWvRxFjBgXE=
+github.com/diadata-org/diadata v1.2.1-rc-13 h1:K34UjLs9TBi38sWV+vuiK2soZ2YSo4jyHirec15xomE=
+github.com/diadata-org/diadata v1.2.1-rc-13/go.mod h1:Mnlb7hk4AmVWvBmVD880xpBUX6mJkJYniWvRxFjBgXE=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/dop251/goja v0.0.0-20200721192441-a695b0cdd498/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
