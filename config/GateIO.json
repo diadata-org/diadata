@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SPA_USDT",
+      "Ignore": false,
+      "Symbol": "SPA"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GHST_USDT",
       "Ignore": false,
       "Symbol": "GHST"
