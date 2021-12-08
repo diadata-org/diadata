@@ -105,6 +105,49 @@ func (env *Env) SetQuotation(c *gin.Context) {
 	}
 }
 
+// GetAssetQuotation returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol.
+func (env *Env) GetAssetQuotation(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	var asset dia.Asset
+	var quotationExtended models.AssetQuotationFull
+	// An asset is uniquely defined by blockchain and address.
+	asset.Blockchain = blockchain
+	asset.Address = address
+	timestamp := time.Now()
+
+	// Fetch underlying assets for symbol
+	quotation, err := env.DataStore.GetAssetQuotation(asset, timestamp)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, timestamp.AddDate(0, 0, -1))
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
+	} else {
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	c.JSON(http.StatusOK, quotationExtended)
+
+}
+
 // GetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
