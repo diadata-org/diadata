@@ -18,13 +18,12 @@ We will extend the NEAR oracle with additional data from our API in the future.
 
 ### Usage Example
 
-You can test the oracle by querying a price quotation using code from the [example repository](https://github.com/diadata-org/dia-adapter). For that, checkout the repository and install dependencies using `npm install`  
+You can test the oracle by querying a price quotation using code from the [example repository](https://github.com/diadata-org/dia-adapter). For that, checkout the repository and install dependencies using `npm install`\
 After that, you can build the oracle consumer with `npm run build`and start the oracle consumer with `node dist/test/quote-make-request`
 
-An example request and response for the asset DIA \(can be configured in the source file\) looks like this
+An example request and response for the asset DIA (can be configured in the source file) looks like this
 
-`user@host% node dist/test/quote-make-request`   
-`near.call quote-test-client.dia-test.testnet make_request  
-near.view quote-test-client.dia-test.testnet get_callback_response  
-result: {"request_id":"111","err":"","data":{"Symbol":"DIA","Name":"DIAData","Price":2.433626800388127,"PriceYesterday":2.542690797155571,"VolumeYesterdayUSD":583156.1339811679,"Source":"diadata.org","Time":"2021-03-12T14:10:18.357245071Z","ITIN":"undefined"}}`
-
+`user@host% node dist/test/quote-make-request` \
+`near.call quote-test-client.dia-test.testnet make_request`\
+`near.view quote-test-client.dia-test.testnet get_callback_response`\
+`result: {"request_id":"111","err":"","data":{"Symbol":"DIA","Name":"DIAData","Price":2.433626800388127,"PriceYesterday":2.542690797155571,"VolumeYesterdayUSD":583156.1339811679,"Source":"diadata.org","Time":"2021-03-12T14:10:18.357245071Z","ITIN":"undefined"}}`

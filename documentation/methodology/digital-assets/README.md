@@ -1,12 +1,21 @@
 # Digital Assets
 
-{% page-ref page="cryptocurrency-trading-data.md" %}
+{% content-ref url="cryptocurrency-trading-data.md" %}
+[cryptocurrency-trading-data.md](cryptocurrency-trading-data.md)
+{% endcontent-ref %}
 
-{% page-ref page="exchangeprices.md" %}
+{% content-ref url="exchangeprices/" %}
+[exchangeprices](exchangeprices/)
+{% endcontent-ref %}
 
-{% page-ref page="supplynumbers.md" %}
+{% content-ref url="supplynumbers.md" %}
+[supplynumbers.md](supplynumbers.md)
+{% endcontent-ref %}
 
-{% page-ref page="return-rates-in-crypto-farming.md" %}
+{% content-ref url="return-rates-in-crypto-farming.md" %}
+[return-rates-in-crypto-farming.md](return-rates-in-crypto-farming.md)
+{% endcontent-ref %}
 
-{% page-ref page="cvi.md" %}
-
+{% content-ref url="cvi.md" %}
+[cvi.md](cvi.md)
+{% endcontent-ref %}

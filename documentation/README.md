@@ -4,7 +4,7 @@ description: Dive into DIA or get started right away
 
 # Documentation
 
-Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps. 
+Welcome to the [DIAdata.org](https://diadata.org) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps.&#x20;
 
 ![](../.gitbook/assets/architecture.png)
 
@@ -12,25 +12,35 @@ DIA is divided into three main building blocks. First, our data collection mecha
 
 ## How to Use
 
-{% page-ref page="tutorials/" %}
+{% content-ref url="tutorials/" %}
+[tutorials](tutorials/)
+{% endcontent-ref %}
 
-{% page-ref page="methodology/" %}
+{% content-ref url="methodology/" %}
+[methodology](methodology/)
+{% endcontent-ref %}
 
 ## Access Data
 
 {% tabs %}
 {% tab title="Digital Assets" %}
-{% page-ref page="methodology/digital-assets/exchangeprices.md" %}
+{% content-ref url="methodology/digital-assets/exchangeprices/" %}
+[exchangeprices](methodology/digital-assets/exchangeprices/)
+{% endcontent-ref %}
 
-{% page-ref page="methodology/digital-assets/supplynumbers.md" %}
+{% content-ref url="methodology/digital-assets/supplynumbers.md" %}
+[supplynumbers.md](methodology/digital-assets/supplynumbers.md)
+{% endcontent-ref %}
 
-{% page-ref page="methodology/digital-assets/cvi.md" %}
+{% content-ref url="methodology/digital-assets/cvi.md" %}
+[cvi.md](methodology/digital-assets/cvi.md)
+{% endcontent-ref %}
 {% endtab %}
 
 {% tab title="Traditional Assets" %}
-{% page-ref page="methodology/traditional-assets/overnight-rates.md" %}
+{% content-ref url="methodology/traditional-assets/overnight-rates.md" %}
+[overnight-rates.md](methodology/traditional-assets/overnight-rates.md)
+{% endcontent-ref %}
 {% endtab %}
 {% endtabs %}
-
-
 
