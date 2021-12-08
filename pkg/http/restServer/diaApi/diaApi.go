@@ -110,14 +110,19 @@ func (env *Env) SetQuotation(c *gin.Context) {
 func (env *Env) GetAssetQuotation(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
+	var err error
 	var asset dia.Asset
 	var quotationExtended models.AssetQuotationFull
-	// An asset is uniquely defined by blockchain and address.
-	asset.Blockchain = blockchain
-	asset.Address = address
 	timestamp := time.Now()
 
-	// Fetch underlying assets for symbol
+	// An asset is uniquely defined by blockchain and address.
+	asset, err = env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	// Get quotation for asset.
 	quotation, err := env.DataStore.GetAssetQuotation(asset, timestamp)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
@@ -136,6 +141,8 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.VolumeYesterdayUSD = volumeYesterday
 	}
+
+	// Appropriate formatting.
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
 	quotationExtended.Address = quotation.Asset.Address
