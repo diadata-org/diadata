@@ -17,7 +17,8 @@ require (
 	github.com/carterjones/signalr v0.3.5
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/deckarep/golang-set v1.7.1 // indirect
-	github.com/ethereum/go-ethereum v1.9.25
+	github.com/tidwall/gjson v1.12.1
+	github.com/ethereum/go-ethereum v1.10.10
 	github.com/fatih/structs v1.1.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/gin-gonic/gin v1.7.0
