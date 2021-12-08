@@ -54,9 +54,9 @@ const (
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
-	pancakeswapWaitMilliseconds = "600"
+	pancakeswapWaitMilliseconds = "200"
 	dfynWaitMilliseconds        = "100"
-	quickswapWaitMilliseconds   = "100"
+	quickswapWaitMilliseconds   = "200"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
 	solarbeamWaitMilliseconds   = "400"
@@ -105,6 +105,8 @@ type UniswapScraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	waitTime     int
+	// If true, only pairs given in config file are scraped. Default is false.
+	listenByAddress bool
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
@@ -112,6 +114,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
 	var wsClient, restClient *ethclient.Client
 	var waitTime int
+	var listenByAddress bool
 	var err error
 
 	switch exchange.Name {
@@ -168,6 +171,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 			waitTime = 600
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		listenByAddress = true
 
 	case dia.DfynNetwork:
 		log.Infoln("Init ws and rest client for Polygon chain")
@@ -298,13 +302,14 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	}
 
 	s := &UniswapScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*UniswapPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		waitTime:     waitTime,
+		shutdown:        make(chan nothing),
+		shutdownDone:    make(chan nothing),
+		pairScrapers:    make(map[string]*UniswapPairScraper),
+		exchangeName:    exchange.Name,
+		error:           nil,
+		chanTrades:      make(chan *dia.Trade),
+		waitTime:        waitTime,
+		listenByAddress: listenByAddress,
 	}
 
 	s.WsClient = wsClient
@@ -320,77 +325,88 @@ func (s *UniswapScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
+	log.Info("reverse pairs: ", reversePairs)
 
 	// wait for all pairs have added into s.PairScrapers
 	time.Sleep(4 * time.Second)
 	s.run = true
 
-	numPairs, err := s.getNumPairs()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Info("Found ", numPairs, " pairs")
-	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
+	if s.listenByAddress {
 
-	if len(s.pairScrapers) == 0 {
-		s.error = errors.New("uniswap: No pairs to scrap provided")
-		log.Error(s.error.Error())
-	}
+		// Collect all pair addresses from json file.
+		pairAddresses, err := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
+		if err != nil {
+			log.Error("fetch pool addresses from config file: ", err)
+		}
+		numPairs := len(pairAddresses)
+		log.Infof("listening to %d pools: %v", numPairs, pairAddresses)
 
-	var wg sync.WaitGroup
-	for i := 0; i < numPairs; i++ {
-		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
-		wg.Add(1)
-		go func(index int, w *sync.WaitGroup) {
-			defer w.Done()
-			s.ListenToPairByIndex(index)
-		}(i, &wg)
+		var wg sync.WaitGroup
+		for i := 0; i < numPairs; i++ {
+			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
+			wg.Add(1)
+			go func(index int, address common.Address, w *sync.WaitGroup) {
+				defer w.Done()
+				s.ListenToPair(index, address, s.listenByAddress)
+			}(i, pairAddresses[i], &wg)
+		}
+		wg.Wait()
+
+	} else {
+
+		numPairs, err := s.getNumPairs()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Info("Found ", numPairs, " pairs")
+		log.Info("Found ", len(s.pairScrapers), " pairScrapers")
+
+		if len(s.pairScrapers) == 0 {
+			s.error = errors.New("uniswap: No pairs to scrap provided")
+			log.Error(s.error.Error())
+		}
+
+		var wg sync.WaitGroup
+		for i := 0; i < numPairs; i++ {
+			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
+			wg.Add(1)
+			go func(index int, address common.Address, w *sync.WaitGroup) {
+				defer w.Done()
+				s.ListenToPair(index, address, s.listenByAddress)
+			}(i, common.Address{}, &wg)
+		}
+		wg.Wait()
+
 	}
-	wg.Wait()
 }
 
-func (s *UniswapScraper) ListenToPairByIndex(i int) {
+// ListenToPair subscribes to a uniswap pool.
+// If @byAddress is true, it listens by pool address, otherwise by index.
+func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress bool) {
 	var pair UniswapPair
 	var err error
-	if i == -1 && s.exchangeName == "PanCakeSwap" {
-		token0 := UniswapToken{
-			Address:  common.HexToAddress("0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"),
-			Symbol:   "WOW",
-			Decimals: uint8(18),
-		}
-		token1 := UniswapToken{
-			Address:  common.HexToAddress("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"),
-			Symbol:   "BUSD",
-			Decimals: uint8(18),
-		}
-		pair = UniswapPair{
-			Token0:      token0,
-			Token1:      token1,
-			ForeignName: "WOW-BUSD",
-			Address:     common.HexToAddress("0xA99b9bCC6a196397DA87FA811aEd293B1b488f44"),
-		}
-	} else {
+
+	if !byAddress {
 		pair, err = s.GetPairByID(int64(i))
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
+	} else {
+		pair, err = s.GetPairByAddress(address)
+		if err != nil {
+			log.Error("error fetching pair: ", err)
+		}
 	}
+
 	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
 		log.Info("skip pair: ", pair.ForeignName)
 		return
 	}
-	// if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-	// 	if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-	// 		log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-	// 	} else {
-	// 		log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-	// 	}
-	// 	return
-	// }
+
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		return
@@ -537,6 +553,49 @@ func getReverseTokensFromConfig(filename string) (*[]string, error) {
 	}
 
 	return &reverseTokens, nil
+}
+
+// getAddressesFromConfig returns a list of Uniswap pool addresses taken from a config file.
+func getAddressesFromConfig(filename string) (pairAddresses []common.Address, err error) {
+
+	// Load file and read data
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
+	if err != nil {
+		return
+	}
+	defer func() {
+		err = jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+
+	// Unmarshal read data
+	type scrapedPair struct {
+		Address     string `json:"Address"`
+		ForeignName string `json:"ForeignName"`
+	}
+	type scrapedPairList struct {
+		AllPairs []scrapedPair `json:"Pools"`
+	}
+	var allPairs scrapedPairList
+	err = json.Unmarshal(byteData, &allPairs)
+	if err != nil {
+		return
+	}
+
+	// Extract addresses
+	for _, token := range allPairs.AllPairs {
+		pairAddresses = append(pairAddresses, common.HexToAddress(token.Address))
+	}
+
+	return
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
