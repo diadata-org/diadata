@@ -499,6 +499,12 @@
             "Address": "0x79C75E2e8720B39e258F41c37cC4f309E0b0fF80"
         },
         {
+            "Symbol": "SPA",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+        },
+        {
             "Symbol": "STORJ",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
