@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	options "github.com/diadata-org/diadata/internal/pkg/option-scrapers"
 	"github.com/diadata-org/diadata/pkg/dia"
+	options "github.com/diadata-org/diadata/pkg/dia/scraper/option-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )

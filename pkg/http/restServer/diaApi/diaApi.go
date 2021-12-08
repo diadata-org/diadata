@@ -120,13 +120,13 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	log.Info("num assets: ", len(assets))
 	log.Info("error: ", err)
 	if len(assets) == 0 {
-		restApi.SendError(c, http.StatusNotFound, errors.New("No quotation available."))
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
 	topAsset := assets[0]
 	quotation, err := env.DataStore.GetAssetQuotation(topAsset, timestamp)
 	if err != nil {
-		restApi.SendError(c, http.StatusNotFound, errors.New("No quotation available."))
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
 	quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, timestamp.AddDate(0, 0, -1))
@@ -1195,7 +1195,7 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// Get benchmarked Index values
+// GetBenchmarkedIndexValue Get benchmarked Index values
 func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.Query("starttime")
@@ -1248,7 +1248,7 @@ func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// Get last 1000 trades of an asset
+// GetLastTrades Get last 1000 trades of an asset
 func (env *Env) GetLastTrades(c *gin.Context) {
 	symbol := c.Param("symbol")
 
@@ -1270,7 +1270,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	}
 }
 
-// Post data must now be a slice of (EThereum-)addresses
+// PostIndexRebalance Post data must now be a slice of (EThereum-)addresses
 func (env *Env) PostIndexRebalance(c *gin.Context) {
 	indexSymbol := c.Param("symbol")
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -1400,7 +1400,7 @@ func (env *Env) GetNFTCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetNFTClasses returns all NFT classes.
+// GetAllNFTClasses returns all NFT classes.
 func (env *Env) GetAllNFTClasses(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	q, err := env.RelDB.GetAllNFTClasses(blockchain)

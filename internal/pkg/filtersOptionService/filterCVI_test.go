@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"testing"
 	"time"
 )

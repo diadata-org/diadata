@@ -4,10 +4,10 @@ import (
 	"flag"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/service/assetservice/source"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
