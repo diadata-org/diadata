@@ -3,7 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -11,6 +10,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -78,9 +79,9 @@ type UniswapPair struct {
 
 type UniswapSwap struct {
 	ID         string
-	Timestamp int64
-	Pair      UniswapPair
-	Amount0In float64
+	Timestamp  int64
+	Pair       UniswapPair
+	Amount0In  float64
 	Amount0Out float64
 	Amount1In  float64
 	Amount1Out float64
@@ -427,7 +428,7 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 		for {
 			rawSwap, ok := <-sink
 			if ok {
-				swap, err := s.normalizeUniswapSwap(*rawSwap)
+				swap, err := s.normalizeUniswapSwap(*rawSwap, pair)
 				if err != nil {
 					log.Error("error normalizing swap: ", err)
 				}
@@ -473,6 +474,7 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 							t = &tSwapped
 						}
 					}
+
 				}
 				if price > 0 {
 					log.Info("tx hash: ", swap.ID)
@@ -480,10 +482,6 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 					// log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
 					// log.Info("----------------")
 					s.chanTrades <- t
-				}
-				if price == 0 {
-					log.Info("tx hash: ", swap.ID)
-					log.Info("Got zero trade: ", t)
 				}
 			}
 		}
@@ -598,13 +596,8 @@ func getAddressesFromConfig(filename string) (pairAddresses []common.Address, er
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairSwap) (normalizedSwap UniswapSwap, err error) {
+func (s *UniswapScraper) normalizeUniswapSwap(swap uniswap.UniswapV2PairSwap, pair UniswapPair) (normalizedSwap UniswapSwap, err error) {
 
-	pair, err := s.GetPairByAddress(swap.Raw.Address)
-	if err != nil {
-		log.Error("error getting pair by address: ", err)
-		return
-	}
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
 	amount0In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0In), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
@@ -745,7 +738,6 @@ func (up *UniswapPair) normalizeUniPair() {
 
 // GetPairByID returns the UniswapPair with the integer id @num
 func (s *UniswapScraper) GetPairByID(num int64) (UniswapPair, error) {
-	log.Info("Get pair ID: ", num)
 	var contract *uniswap.IUniswapV2FactoryCaller
 	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), s.RestClient)
 	if err != nil {
