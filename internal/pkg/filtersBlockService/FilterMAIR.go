@@ -106,7 +106,12 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 }
 
 func (s *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
-	return s.filterPointForBlock()
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
+	}
 }
 
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
