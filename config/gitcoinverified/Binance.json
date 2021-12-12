@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "BUSD",
+            "Exchange": "Binance",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+        },
+        {
             "Symbol": "ADX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -145,6 +151,12 @@
             "Address": "0xEA38eAa3C86c8F9B751533Ba2E562deb9acDED40"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GO",
             "Exchange": "Binance",
             "Blockchain": "GoChain",
@@ -221,6 +233,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x3893b9422Cd5D70a81eDeFfe3d5A1c6A978310BB"
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "Binance",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
         },
         {
             "Symbol": "MTH",

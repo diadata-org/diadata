@@ -15,10 +15,12 @@ import (
 )
 
 var (
-	replayInflux      = flag.Bool("replayInflux", false, "replayInflux ?")
-	historical        = flag.Bool("historical", false, "digest historical or current trades")
-	filtersBlockTopic int
-	tradesBlockTopic  int
+	replayInflux          = flag.Bool("replayInflux", false, "replayInflux ?")
+	historical            = flag.Bool("historical", false, "digest historical or current trades")
+	filtersBlockTopic     int
+	tradesBlockTopic      int
+	filtersblockDoneTopic int
+	fbsDoneWriter         *kafka.Writer
 )
 
 func init() {
@@ -30,6 +32,7 @@ func init() {
 	} else {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
+		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
 	}
 }
 
@@ -72,6 +75,16 @@ func main() {
 			}
 		}()
 
+		if *historical {
+			fbsDoneWriter = kafkaHelper.NewSyncWriter(filtersblockDoneTopic)
+			defer func() {
+				err := w.Close()
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+		}
+
 		for {
 			m, err := r.ReadMessage(context.Background())
 			if err != nil {
@@ -85,8 +98,17 @@ func main() {
 				}
 				if err == nil {
 					t0 := time.Now()
+					log.Info("number of trades in received tradesblock: ", len(tb.TradesBlockData.Trades))
 					f.ProcessTradesBlock(&tb)
 					log.Info("time spent by filtersblockservice for processing tradesblock: ", time.Since(t0))
+					// In historical mode, send timestamp of last trade as soon as fbs is done.
+					if *historical {
+						lastTimestamp := tb.TradesBlockData.EndTime
+						err := kafkaHelper.WriteMessage(fbsDoneWriter, &lastTimestamp)
+						if err != nil {
+							log.Error("kafka: fbs-done feedback: ", err)
+						}
+					}
 				}
 			}
 		}
@@ -96,7 +118,7 @@ func main() {
 func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer) {
 	var block int
 	for {
-		t, ok := <-channel
+		filtersblock, ok := <-channel
 		if !ok {
 			log.Printf("handler: finishing channel")
 			wg.Done()
@@ -104,7 +126,7 @@ func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer
 		}
 		block++
 		log.Infoln("kafka: generated ", block, " blocks")
-		err := kafkaHelper.WriteMessage(w, t)
+		err := kafkaHelper.WriteMessage(w, filtersblock)
 		if err != nil {
 			log.Errorln("kafka: handleBlocks", err)
 		}

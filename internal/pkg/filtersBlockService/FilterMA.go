@@ -125,11 +125,16 @@ func (s *FilterMA) finalCompute(t time.Time) float64 {
 }
 
 func (s *FilterMA) FilterPointForBlock() *dia.FilterPoint {
-	return s.filterPointForBlock()
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  "MA" + strconv.Itoa(s.param),
+		Time:  s.currentTime,
+	}
 }
 
 func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" {
+	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return nil
 	}
 	return &dia.FilterPoint{

@@ -31,7 +31,7 @@ const (
 	QuoineExchange     = "Quoine"
 	UnknownExchange    = "Unknown"
 	BlockSizeSeconds   = 120
-	FilterKing         = "MA120"
+	FilterKing         = "MAIR120"
 	BancorExchange     = "Bancor"
 	UniswapExchange    = "Uniswap"
 	UniswapExchangeV3  = "UniswapV3"
@@ -54,7 +54,9 @@ const (
 	SpiritswapExchange = "Spiritswap"
 	QuickswapExchange  = "Quickswap"
 	SerumExchange      = "Serum"
-	FinageForex        = "FinageForex"
+	SolarbeamExchange  = "Solarbeam"
+	TrisolarisExchange = "Trisolaris"
+	// FinageForex        = "FinageForex"
 )
 
 func Exchanges() []string {
@@ -70,7 +72,7 @@ func Exchanges() []string {
 		CREX24Exchange,
 		STEXExchange,
 
-		FinageForex,
+		// FinageForex,
 		BitMaxExchange,
 		ZBExchange,
 		HuobiExchange,
@@ -97,6 +99,8 @@ func Exchanges() []string {
 		QuickswapExchange,
 		SpiritswapExchange,
 		SerumExchange,
+		SolarbeamExchange,
+		TrisolarisExchange,
 
 		ZeroxExchange,
 		BalancerExchange,

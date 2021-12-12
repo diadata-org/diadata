@@ -51,7 +51,8 @@ type Datastore interface {
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 
 	Flush() error
-	FlushRedisPipe() (err error)
+	ExecuteRedisPipe() error
+	FlushRedisPipe() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
@@ -293,15 +294,15 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange 
 	}
 }
 
-func (datastore *DB) WriteBatchInflux() error {
-	err := datastore.influxClient.Write(datastore.influxBatchPoints)
+func (datastore *DB) WriteBatchInflux() (err error) {
+	err = datastore.influxClient.Write(datastore.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
-	} else {
-		datastore.influxPointsInBatch = 0
+		return
 	}
+	datastore.influxPointsInBatch = 0
 	datastore.influxBatchPoints = createBatchInflux()
-	return err
+	return
 }
 
 func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
@@ -1149,9 +1150,9 @@ func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange s
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {
-		log.Errorln("newPoint:", err)
+		log.Errorln("new filter influx:", err)
 	} else {
-		datastore.influxBatchPoints.AddPoint(pt)
+		datastore.addPoint(pt)
 	}
 	return err
 }
@@ -1204,10 +1205,14 @@ func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error)
 	return result, err
 }
 
-func (datastore *DB) FlushRedisPipe() (err error) {
+func (datastore *DB) ExecuteRedisPipe() (err error) {
 	// TO DO: Handle first return value for read requests.
 	_, err = datastore.redisPipe.Exec()
 	return
+}
+
+func (datastore *DB) FlushRedisPipe() error {
+	return datastore.redisPipe.Discard()
 }
 
 /*

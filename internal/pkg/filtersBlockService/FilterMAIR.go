@@ -106,17 +106,17 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 }
 
 func (s *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
-	return s.filterPointForBlock()
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
+	}
 }
 
 func (s *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
-		return &dia.FilterPoint{
-			Asset: s.asset,
-			Value: s.value,
-			Name:  s.filterName,
-			Time:  s.currentTime,
-		}
+		return nil
 	}
 	return &dia.FilterPoint{
 		Asset: s.asset,
@@ -140,7 +140,7 @@ func (s *FilterMAIR) save(ds models.Datastore) error {
 		if s.exchange == "" {
 			err = ds.SetAssetPriceUSD(s.asset, s.value, s.currentTime)
 			if err != nil {
-				log.Errorln("FilterMA: Error:", err)
+				log.Errorln("FilterMAIR: Error:", err)
 			}
 		}
 		return err

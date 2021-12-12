@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/foreign-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"

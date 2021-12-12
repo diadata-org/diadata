@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "GHST-USDT",
+      "Ignore": false,
+      "Symbol": "GHST"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "FTM-USDT",
       "Ignore": false,
       "Symbol": "FTM"

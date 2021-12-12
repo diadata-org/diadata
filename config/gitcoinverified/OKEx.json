@@ -49,6 +49,12 @@
             "Address": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GTO",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

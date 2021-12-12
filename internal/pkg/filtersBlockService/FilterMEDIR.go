@@ -85,7 +85,7 @@ func (s *FilterMEDIR) save(ds models.Datastore) error {
 		s.modified = false
 		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
 		if err != nil {
-			log.Errorln("FilterMAIR: Error:", err)
+			log.Errorln("FilterMEDIR: Error:", err)
 		}
 		return err
 	} else {

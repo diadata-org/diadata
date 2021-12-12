@@ -35,6 +35,7 @@ const (
 	TopicFiltersBlockHistorical = 4
 	TopicTradesHistorical       = 5
 	TopicTradesBlockHistorical  = 6
+	TopicFiltersBlockDone       = 14
 
 	TopicSuppliesBlock = 7
 
@@ -54,16 +55,17 @@ func GetTopic(topic int) string {
 
 func getTopic(topic int) string {
 	topicMap := map[int]string{
-		1: "filtersBlock",
-		2: "trades",
-		3: "tradesBlock",
-		4: "filtersBlockHistorical",
-		5: "tradesHistorical",
-		6: "tradesBlockHistorical",
+		1:  "filtersBlock",
+		2:  "trades",
+		3:  "tradesBlock",
+		4:  "filtersBlockHistorical",
+		5:  "tradesHistorical",
+		6:  "tradesBlockHistorical",
+		14: "filtersblockHistoricalDone",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
-		log.Error("getTopic cant fine topic", topic)
+		log.Error("getTopic cant find topic", topic)
 	}
 	return result
 }
@@ -98,6 +100,7 @@ func ReadOffset(topic int) (offset int64, err error) {
 }
 
 func ReadOffsetWithRetryOnError(topic int) (offset int64) {
+	// TO DO: check double infinite for loops.
 	for {
 		for {
 			for _, ip := range KafkaConfig.KafkaUrl {

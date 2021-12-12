@@ -29,6 +29,7 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else {
+				log.Println("block.TimeStamp", block.TimeStamp)
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 
@@ -58,6 +59,7 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else {
+				log.Println("block.TimeStamp", block.TimeStamp)
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 			}

@@ -106,7 +106,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 
 	log.Info("time spent for create and compute filters: ", time.Since(t0))
-
+	log.Info("filter begin time: ", tb.TradesBlockData.BeginTime)
 	resultFilters := []dia.FilterPoint{}
 	// log.Info("all filter keys: ")
 	// for key := range s.filters {
@@ -164,19 +164,20 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	log.Info("time spent for save filters: ", time.Since(t0))
 
-	t0 = time.Now()
+	err = s.datastore.ExecuteRedisPipe()
+	if err != nil {
+		log.Error("execute redis pipe: ", err)
+	}
+
 	err = s.datastore.FlushRedisPipe()
 	if err != nil {
 		log.Error("flush redis pipe: ", err)
 	}
-	log.Info("time spent for flush redis pipe: ", time.Since(t0))
 
-	t0 = time.Now()
 	err = s.datastore.Flush()
 	if err != nil {
 		log.Error("flush influx batch: ", err)
 	}
-	log.Info("time spent for flush influx batch: ", time.Since(t0))
 
 }
 

@@ -177,7 +177,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		if err != nil {
 			return &sr, err
 		}
+		log.Println("Generating blocks, Total Trades", len(trades))
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)
+		log.Println("Total TradeBlocks", len(tradeBlocks))
+
 	}
 
 	var filterPoints []dia.FilterPoint

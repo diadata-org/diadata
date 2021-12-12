@@ -31,6 +31,12 @@
       "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
     },
     {
+      "Symbol": "SPA",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+  },
+    {
       "Symbol": "STEEM",
       "Exchange": "Huobi",
       "Blockchain": "Steem",

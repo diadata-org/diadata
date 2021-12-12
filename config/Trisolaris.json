@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "TRI",
+            "ForeignName": "TRI-ETH",
+            "Exchange": "Trisolaris",
+            "Ignore": false
+        }
+    ]
+}

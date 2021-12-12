@@ -4,10 +4,10 @@ import (
 	"flag"
 	"time"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 
-	"github.com/diadata-org/diadata/internal/pkg/assetservice/source"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/service/assetservice/source"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -57,10 +57,20 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
 	case dia.DfynNetwork:
 		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork])
+	case dia.QuickswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.QuickswapExchange])
 	case dia.UbeswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.UbeswapExchange])
 	case dia.SpookyswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SpookyswapExchange])
+	case dia.SpiritswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.SpiritswapExchange])
+	case dia.SolarbeamExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.SolarbeamExchange])
+	case dia.SerumExchange:
+		return source.NewSerumAssetSource(exchanges[dia.SerumExchange])
+	case dia.TrisolarisExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.TrisolarisExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:

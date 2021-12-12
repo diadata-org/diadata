@@ -32,15 +32,15 @@ func main() {
 	log.Info("influxURL: ", influxURL)
 	fromDB := utils.Getenv("INFLUX_DB_ORIGIN", "")
 	toDB := utils.Getenv("INFLUX_DB_DESTINATION", "")
-	fromTable := utils.Getenv("INFLUX_TABLE_ORIGIN", influxDbOldTradesTable)
-	toTable := utils.Getenv("INFLUX_TABLE_DESTINATION", influxDbTestTable)
+	fromTable := utils.Getenv("INFLUX_TABLE_ORIGIN", "")
+	toTable := utils.Getenv("INFLUX_TABLE_DESTINATION", "")
 	log.Info("fromDB: ", fromDB)
 	log.Info("toDB: ", toDB)
 	log.Info("fromTable: ", fromTable)
 	log.Info("toTable: ", toTable)
 
 	// The oldest record we have in influx is younger than 3000 days old.
-	timeInitString := utils.Getenv("TIME_INIT", "1510759839")
+	timeInitString := utils.Getenv("TIME_INIT", "1609455600")
 	timeInitInt, err := strconv.ParseInt(timeInitString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)

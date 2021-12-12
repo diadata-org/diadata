@@ -2,6 +2,24 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SPA_USDT",
+      "Ignore": false,
+      "Symbol": "SPA"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GHST_USDT",
+      "Ignore": false,
+      "Symbol": "GHST"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "MOVR_USDT",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "FTM_USDT",
       "Ignore": false,
       "Symbol": "FTM"
