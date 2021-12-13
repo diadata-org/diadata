@@ -17,9 +17,7 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
-
 				maFilter.Compute(trade)
-
 			}
 
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
@@ -78,7 +76,6 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			maFilter := filters.NewFilterVWAP(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
 
 			for _, trade := range block.Trades {
-
 				maFilter.Compute(trade)
 			}
 
