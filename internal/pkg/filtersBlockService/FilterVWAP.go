@@ -45,6 +45,9 @@ func (s *FilterVWAP) finalCompute(t time.Time) float64 {
 	// } else {
 	// 	s.fill(t, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)
 	// }
+	if s.lastTrade == nil {
+		return 0.0
+	}
 
 	var total float64 = 0
 	var totalVolume float64 = 0
