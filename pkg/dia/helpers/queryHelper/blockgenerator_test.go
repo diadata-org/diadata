@@ -2,6 +2,7 @@ package queryhelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -20,11 +21,15 @@ func setupGenerator() []Block {
 }
 
 func setupGeneratorSizeShift() []Block {
-	json.Unmarshal([]byte(jsonTrades), &trades)
+	err := json.Unmarshal([]byte(jsonTrades), &trades)
+
+	fmt.Printf("t: %v\n", err)
 
 	// trades = trades[9:]
 	bg := NewBlockGenerator(trades)
-	blocks := bg.GenerateShift(8, 7)
+	fmt.Printf("t: %v\n", trades)
+
+	blocks := bg.GenerateShift(trades[0].Time.UnixNano(), 120, 240)
 
 	return blocks
 }
@@ -37,6 +42,18 @@ func TestBlockGeneratorFirstAndLastTimeDiff(t *testing.T) {
 		}
 
 	}
+}
+
+func TestVwap(t *testing.T) {
+
+	blocks := setupGeneratorSizeShift()
+	fmt.Printf("t: %v\n", blocks)
+
+	r := FilterVWAPIR(blocks, dia.Asset{Symbol: "DIA"}, 120)
+	for _, v := range r {
+		fmt.Printf("%v\n", v)
+	}
+
 }
 
 func TestIfAnytradeisrepeadted(t *testing.T) {
