@@ -76,7 +76,7 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 	var lastfp *dia.FilterPoint
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterVWAP(asset, "", block.Trades[len(block.Trades)-1].Time, blockSize)
+			maFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
 
@@ -106,7 +106,7 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterVWAPIR(asset, "Binance", block.Trades[len(block.Trades)-1].Time, blockSize)
+			maFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
 
