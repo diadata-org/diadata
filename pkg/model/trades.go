@@ -141,7 +141,7 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 	if len(res) > 0 {
 		for i := range res {
 			if len(res[i].Series) > 0 {
-				for _, row := range res[0].Series[0].Values {
+				for _, row := range res[i].Series[0].Values {
 					t := parseTrade(row)
 					if t != nil {
 						r = append(r, *t)
