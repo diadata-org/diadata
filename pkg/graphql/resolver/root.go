@@ -188,7 +188,6 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 				tradesBatch, err = r.DS.GetTradesByExchanges(asset, exchangesString, timeInit, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
 				if err != nil {
 					log.Error("fetch trades batch from influx: ", err)
-					return &sr, err
 				}
 				timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
 				trades = append(trades, tradesBatch...)
