@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -38,7 +39,7 @@ func main() {
 		log.Fatal("parse batch duration ", err)
 	}
 
-	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: batchSize}, graphql.UseStringDescriptions())
+	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseStringDescriptions())
 
 	mux := http.NewServeMux()
 
