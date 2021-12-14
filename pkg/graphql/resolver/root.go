@@ -173,9 +173,26 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			starttime = maxStartTime
 		}
 
-		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
-		if err != nil {
-			return &sr, err
+		var trades []dia.Trade
+		if blockShiftSeconds <= blockSizeSeconds {
+			trades, err = r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
+			if err != nil {
+				return &sr, err
+			}
+		} else {
+			timeInit := starttime
+			timeFinal := endtime
+			for timeFinal.After(timeInit) {
+				var tradesBatch []dia.Trade
+				var err error
+				tradesBatch, err = r.DS.GetTradesByExchanges(asset, exchangesString, timeInit, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
+				if err != nil {
+					log.Error("fetch trades batch from influx: ", err)
+					return &sr, err
+				}
+				timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
+				trades = append(trades, tradesBatch...)
+			}
 		}
 		log.Println("Generating blocks, Total Trades", len(trades))
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)
