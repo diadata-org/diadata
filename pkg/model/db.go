@@ -47,6 +47,7 @@ type Datastore interface {
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 

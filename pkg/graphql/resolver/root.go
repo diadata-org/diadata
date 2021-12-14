@@ -16,8 +16,9 @@ var log = logrus.New()
 
 // Resolver is the root resolver
 type DiaResolver struct {
-	DS    models.DB
-	RelDB models.RelDB
+	DS              models.DB
+	RelDB           models.RelDB
+	InfluxBatchSize int64
 }
 
 // GetQuotation Get quotation
@@ -180,18 +181,54 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 				return &sr, err
 			}
 		} else {
+			// In this case, fetch trades by time window and batch the Influx API requests.
+
 			timeInit := starttime
 			timeFinal := endtime
+
+			// Make time windows for which trades from influx have to be fetched.
+			var startTimes, endTimes []time.Time
 			for timeFinal.After(timeInit) {
+				startTimes = append(startTimes, timeInit)
+				endTimes = append(endTimes, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
+				timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
+			}
+
+			// Determine number of batches.
+			var numBatches int
+			batchSize := int(r.InfluxBatchSize)
+			if len(startTimes) < int(r.InfluxBatchSize) {
+				numBatches = 1
+				batchSize = len(startTimes)
+			} else {
+				numBatches = len(startTimes) / int(r.InfluxBatchSize)
+			}
+
+			// Iterate over batches.
+			for i := 0; i < numBatches; i++ {
 				var tradesBatch []dia.Trade
 				var err error
-				tradesBatch, err = r.DS.GetTradesByExchanges(asset, exchangesString, timeInit, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
+				lowerIndex := i * batchSize
+				upperIndex := (i + 1) * batchSize
+				tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
 				if err != nil {
 					log.Error("fetch trades batch from influx: ", err)
 				}
-				timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
 				trades = append(trades, tradesBatch...)
 			}
+			// Add remaining trades if existent.
+			if len(startTimes)%int(r.InfluxBatchSize) > 0 {
+				var tradesBatch []dia.Trade
+				var err error
+				lowerIndex := numBatches * (batchSize)
+				upperIndex := len(startTimes)
+				tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
+				if err != nil {
+					log.Error("fetch trades batch from influx: ", err)
+				}
+				trades = append(trades, tradesBatch...)
+			}
+
 		}
 		log.Println("Generating blocks, Total Trades", len(trades))
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)

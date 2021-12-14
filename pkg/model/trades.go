@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -100,6 +101,52 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 			t := parseTrade(row)
 			if t != nil {
 				r = append(r, *t)
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		return nil, fmt.Errorf("no trades found")
+	}
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
+	return r, nil
+}
+
+// GetTradesByExchangesBatched executes multiple select queries on the trades table in one batch.
+// The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
+func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
+	var r []dia.Trade
+	if len(startTimes) != len(endTimes) {
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+	}
+	var query string
+	for i := range startTimes {
+		subQuery := ""
+		if len(exchanges) > 0 {
+			for _, exchange := range exchanges {
+				subQuery = subQuery + fmt.Sprintf("%s|", exchange)
+			}
+			subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
+		}
+		query = query + fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
+	}
+
+	log.Infoln("GetTradesByExchanges Queries:", query)
+	timeStart := time.Now()
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	timeEnd := time.Now()
+	if err != nil {
+		return r, err
+	}
+
+	if len(res) > 0 {
+		for i := range res {
+			if len(res[i].Series) > 0 {
+				for _, row := range res[0].Series[0].Values {
+					t := parseTrade(row)
+					if t != nil {
+						r = append(r, *t)
+					}
+				}
 			}
 		}
 	} else {
