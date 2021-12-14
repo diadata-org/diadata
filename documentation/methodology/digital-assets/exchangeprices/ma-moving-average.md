@@ -19,3 +19,7 @@ For each second in the time range, there exists a "slot" where trades are put in
 As soon as all going through all trades in the block has been finalized, the simple average of these prices is calculated. This is done by accumulating prices and then dividing by the number of involved trades in this calculation.
 
 The result is then returned as the result of the filter operation.
+
+### Implementation
+
+The filter is implemented as part of the FiltersBlockService [in this file in our Guthub repository](../../../../internal/pkg/filtersBlockService/FilterMA.go).

@@ -89,9 +89,9 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                     | Oracle Type                                                                                                                     |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d](https://shiden.subscan.io/account/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                                                      | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d](https://blockscout.com/shiden/address/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d/transactions) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Shibuya Testnet" %}
