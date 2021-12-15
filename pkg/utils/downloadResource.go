@@ -207,38 +207,39 @@ func getOpenseaApiKey() string {
 	}
 	if Getenv("USE_ENV", "false") == "true" {
 		openseaKey = Getenv("API_KEY_OPENSEA", "")
-	} else {
-		var lines []string
-		var filename string
-		if Getenv("EXEC_MODE", "debug") == "production" {
-			 filename = "/run/secrets/Opensea-API.key"
-		} else {
-			filename = "../../secrets/Opensea-API.key"
-		}
-
-		file, err := os.Open(filename)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer func(file *os.File) {
-			err := file.Close()
-			if err != nil {
-				log.Error("failure closing opensea-api.key file ", err)
-			}
-		}(file)
-
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			lines = append(lines, scanner.Text())
-		}
-		if err = scanner.Err(); err != nil {
-			log.Fatal(err)
-		}
-		if len(lines) != 1 {
-			log.Fatal("Secrets file for opensea API key should have exactly one line")
-		}
-		openseaKey = lines[0]
+		return openseaKey
 	}
+
+	var lines []string
+	var filename string
+	if Getenv("EXEC_MODE", "debug") == "production" {
+		filename = "/run/secrets/Opensea-API.key"
+	} else {
+		filename = "../../secrets/Opensea-API.key"
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Error("failure closing opensea-api.key file ", err)
+		}
+	}(file)
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err = scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	if len(lines) != 1 {
+		log.Fatal("Secrets file for opensea API key should have exactly one line")
+	}
+	openseaKey = lines[0]
 	return openseaKey
 }
 

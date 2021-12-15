@@ -1,6 +1,6 @@
 module github.com/diadata-org/diadata/cmd/nftTradescrapers
 
-go 1.14
+go 1.17
 
 require (
 	github.com/diadata-org/diadata v1.3.4
