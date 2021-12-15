@@ -166,3 +166,12 @@ CREATE TABLE blockdata (
     UNIQUE(blockchain, block_number),
     UNIQUE(blockdata_id)
 );
+
+CREATE TABLE assetpriceident (
+    priceident_id UUID DEFAULT gen_random_uuid(),
+    asset_id uuid REFERENCES asset(asset_id),
+    group_id numeric not null,
+    rank_in_group numeric not null,
+    UNIQUE(asset_id),
+    UNIQUE(group_id, rank_in_group)
+)

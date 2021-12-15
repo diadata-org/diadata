@@ -45,15 +45,23 @@ func (s *FilterVWAP) finalCompute(t time.Time) float64 {
 	// } else {
 	// 	s.fill(t, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)
 	// }
+	if s.lastTrade == nil {
+		return 0.0
+	}
 
 	var total float64 = 0
 	var totalVolume float64 = 0
+	var priceVolume []float64
+
+	for index, price := range s.previousPrices {
+		priceVolume = append(priceVolume, price*math.Abs(s.previousVolumes[index]))
+	}
 
 	for _, v := range s.previousVolumes {
 		totalVolume += v
 	}
 
-	for _, v := range s.previousPrices {
+	for _, v := range priceVolume {
 		total += v
 	}
 
@@ -89,9 +97,8 @@ func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
 	diff := int(t.Sub(s.currentTime).Seconds())
 	if diff > 1 {
 		for diff > 1 {
-			s.previousPrices = append([]float64{price * volume}, s.previousPrices...)
+			s.previousPrices = append([]float64{price}, s.previousPrices...)
 			s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
-
 			diff--
 		}
 	} else {
@@ -102,13 +109,15 @@ func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
 				s.previousVolumes = s.previousVolumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{price * volume}, s.previousPrices...)
+		s.previousPrices = append([]float64{price}, s.previousPrices...)
 		s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
 
 	}
 
 	if len(s.previousPrices) > s.param {
 		s.previousPrices = s.previousPrices[0:s.param]
+		s.previousVolumes = s.previousVolumes[0:s.param]
+
 	}
 	s.currentTime = t
 }

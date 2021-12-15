@@ -169,7 +169,19 @@ func (s *InfluxScraper) collectTrades(starttime time.Time, endtime time.Time) (n
 	log.Infof("got %d trades in time range %v -- %v", len(trades), starttime, endtime)
 	log.Info("time passed for get old trades: ", time.Since(t0))
 	for i := range trades {
-		s.chanTrades <- &trades[i]
+		// Reverse Uniswap Trades.
+		var trade dia.Trade
+		if (trades[i].Source == "Uniswap" || trades[i].Source == "SushiSwap") && (trades[i].QuoteToken.Address == "0x0000000000000000000000000000000000000000" && trades[i].QuoteToken.Blockchain == "Ethereum") {
+			tSwapped, err := dia.SwapTrade(trades[i])
+			if err == nil {
+				trade = tSwapped
+			} else {
+				continue
+			}
+		} else {
+			trade = trades[i]
+		}
+		s.chanTrades <- &trade
 		// log.Info("got trade: ", trades[i])
 	}
 	log.Infof("fetched %d trades from influx.", len(trades))

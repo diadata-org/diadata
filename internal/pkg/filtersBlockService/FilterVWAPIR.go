@@ -127,6 +127,8 @@ func (s *FilterVWAPIR) fill(t time.Time, price float64, volume float64) {
 
 	if len(s.previousPrices) > s.param {
 		s.previousPrices = s.previousPrices[0:s.param]
+		s.previousVolumes = s.previousVolumes[0:s.param]
+
 	}
 	s.currentTime = t
 }
