@@ -102,6 +102,7 @@ func NewSerumScraper(exchange dia.Exchange, scrape bool) *SerumScraper {
 
 func (s *SerumScraper) mainLoop() {
 	lastSeqNo := make(map[string]uint32)
+	scraperInitialized := make(map[string]bool)
 	markets := make(map[string]serumMarket)
 	s.run = true
 	for s.run {
@@ -160,6 +161,10 @@ func (s *SerumScraper) mainLoop() {
 					}
 				}
 				lastSeqNo[pair] = header.Seq
+				if !scraperInitialized[pair] {
+					scraperInitialized[pair] = true
+					continue
+				}
 				for i := eventStart; i < len(eventQueue); {
 					eventEnd := i + eventSize
 					if eventEnd >= len(eventQueue) {
