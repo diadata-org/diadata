@@ -100,7 +100,7 @@ func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, 
 			}
 			supp.CirculatingSupply = float64(25549170)
 			// Set circulating supply
-			err = ds.SetDiaCirculatingSupply(float64(56634600))
+			err = ds.SetDiaCirculatingSupply(float64(60074878))
 			if err != nil {
 				log.Errorf("error setting circulating supply for %s: %v\n", supp.Symbol, err)
 			} else {
