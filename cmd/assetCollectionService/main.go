@@ -85,20 +85,8 @@ func main() {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
 	}
-	// Initial run:
 	runAssetSource(relDB, *assetSource, *caching, *secret)
-
-	// Afterwards, run every @fetchPeriodMinutes
-	ticker := time.NewTicker(fetchPeriodMinutes * time.Minute)
-	go func() {
-		for range ticker.C {
-			runAssetSource(relDB, *assetSource, *caching, *secret)
-			// if err != nil {
-			// 	log.Error(err)
-			// }
-		}
-	}()
-	select {}
+	log.Infof("Successfully ran asset collector for %s", *assetSource)
 }
 
 func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) {
