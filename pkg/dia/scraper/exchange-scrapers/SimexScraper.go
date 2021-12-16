@@ -117,7 +117,6 @@ func (s *SimexScraper) mainLoop() {
 			time.Sleep(1 * time.Second)
 
 			if s.pairIdTrade[key] == nil {
-				log.Error(key, "s.pairIdTrade[key] == nil")
 				continue
 			}
 			pairTrade := getAPICall("/trades/?pair_id=" + strconv.Itoa(int(s.pairIdTrade[key].Id)))
@@ -155,7 +154,7 @@ func (s *SimexScraper) mainLoop() {
 						}
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["created_at"].(string))
-						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, tradeReturn["name"].(string))
+						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, key)
 						if err != nil {
 							log.Error("Error Getting ExchangePair from cache", err)
 						}

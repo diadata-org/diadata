@@ -185,7 +185,7 @@ func (s *SerumScraper) mainLoop() {
 						}
 						if event.EventFlags.Is(Fill) && event.EventFlags.Is(Bid) {
 							volume, price := parseEvent(&event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
-							s.chanTrades <- &dia.Trade{
+							trade := dia.Trade{
 								Symbol: marketForPair.baseAsset.symbol,
 								Pair:   pair,
 								QuoteToken: dia.Asset{
@@ -209,6 +209,8 @@ func (s *SerumScraper) mainLoop() {
 								Source:         s.exchangeName,
 								VerifiedPair:   true,
 							}
+							log.Infof("got trade -- timestamp: %v, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
+							s.chanTrades <- &trade
 						}
 					}
 				}
