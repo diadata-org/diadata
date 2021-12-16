@@ -3,12 +3,12 @@ package main
 import (
 	"errors"
 	"flag"
+	"github.com/jackc/pgconn"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/jackc/pgconn"
 
 	nftdatascrapers "github.com/diadata-org/diadata/pkg/dia/nft/nftData-scrapers"
 	log "github.com/sirupsen/logrus"
