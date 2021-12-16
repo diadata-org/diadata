@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"time"
 
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 
