@@ -201,8 +201,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.SolarbeamExchange], scrape)
 	case dia.TrisolarisExchange:
 		return NewUniswapScraper(Exchanges[dia.TrisolarisExchange], scrape)
-	// case dia.SerumExchange:
-	// 	return NewSerumScraper(Exchanges[dia.SerumExchange], scrape)
+	case dia.SerumExchange:
+		return NewSerumScraper(Exchanges[dia.SerumExchange], scrape)
 	// case dia.FinageForex:
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
