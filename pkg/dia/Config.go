@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	AnyswapExchange    = "Anyswap"
 	BalancerExchange   = "Balancer"
 	GnosisExchange     = "Gnosis"
 	KrakenExchange     = "Kraken"
@@ -106,6 +107,7 @@ func Exchanges() []string {
 		BalancerExchange,
 		DfynNetwork,
 		PanCakeSwap,
+		AnyswapExchange,
 		UnknownExchange,
 	}
 }
