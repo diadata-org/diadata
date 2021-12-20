@@ -159,8 +159,8 @@
         {
             "Symbol": "DFYN",
             "Exchange": "KuCoin",
-            "Blockchain": "Ethereum",
-            "Address": "0x9695e0114e12C0d3A3636fAb5A18e6b737529023"
+            "Blockchain": "Polygon",
+            "Address": "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97"
         },
         {
             "Symbol": "DMG",
