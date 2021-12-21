@@ -1,0 +1,15 @@
+FROM golang:1.14 as build
+
+WORKDIR $GOPATH
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/diaStrudelOracleService
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/diaStrudelOracleService /bin/diaStrudelOracleService
+
+ENTRYPOINT ["diaStrudelOracleService"]

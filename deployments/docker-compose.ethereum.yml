@@ -219,33 +219,33 @@ services:
     secrets:
       - oracle_keys_arbitrum
 
-  diasperaxoracleservice-arbitrum:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_sperax_arbitrum
+        #diasperaxoracleservice-arbitrum:
+        #build:
+        #context: $GOPATH
+        #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+        #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
+        #networks:
+        #- scrapers-network
+        #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
+        #logging:
+        #options:
+        #max-size: "50m"
+        #secrets:
+        #- oracle_keys_sperax_arbitrum
 
-  diasperaxoracleservice-arbitrum-rinkeby:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://rinkeby.arbitrum.io/rpc" --chainId=421611 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_sperax_arbitrum
+        #diasperaxoracleservice-arbitrum-rinkeby:
+        #build:
+        #context: $GOPATH
+        #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+        #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
+        #networks:
+        #- scrapers-network
+        #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://rinkeby.arbitrum.io/rpc" --chainId=421611 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
+        #logging:
+        #options:
+        #max-size: "50m"
+        #secrets:
+        #- oracle_keys_sperax_arbitrum
 
   diaoracleservice-avalanche:
     build:
@@ -330,6 +330,34 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys_aurora_testnet
+
+  diastrudeloracleservice-aurora:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://mainnet.aurora.dev" --chainId=1313161554 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_strudel_aurora
+
+  diastrudeloracleservice-aurora-testnet:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://testnet.aurora.dev" --chainId=1313161555 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_strudel_aurora
 
   diaoracleservice-shiden:
     build:
@@ -673,6 +701,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_metis.txt
   oracle_keys_aurora_testnet:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_aurora_testnet.txt
+  oracle_keys_strudel_aurora:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_strudel_aurora.txt
   oracle_keys_shiden:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden.txt
   oracle_keys_shiden_shibuya:
@@ -727,8 +757,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dot_moonriver.txt
   oracle_keys_arbitrum:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_arbitrum.txt
-  oracle_keys_sperax_arbitrum:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_sperax_arbitrum.txt
+  #oracle_keys_sperax_arbitrum:
+    #file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_sperax_arbitrum.txt
   oracle_keys_matic_mumbai:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt.mumbai
   oracle_keys_moonbeam:
