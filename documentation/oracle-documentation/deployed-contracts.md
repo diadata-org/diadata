@@ -137,9 +137,7 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                               | Oracle Type                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x6E6E633320Ca9f2c8a8722c5f4a993D9a093462E](https://andromeda-explorer.metis.io/address/0x6E6E633320Ca9f2c8a8722c5f4a993D9a093462E) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://andromeda-explorer.metis.io/address/0x6E6E633320Ca9f2c8a8722c5f4a993D9a093462E">0x6E6E633320Ca9f2c8a8722c5f4a993D9a093462E</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
 {% endtab %}
 {% endtabs %}
 
