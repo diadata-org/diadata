@@ -17,12 +17,15 @@ type jsonReader struct {
 	path         string
 	filename     string
 	assetChannel chan dia.Asset
+	doneChannel  chan bool
 }
 
 func NewJSONReader(path string, filename string) *jsonReader {
 	var jr jsonReader
 	var assetChannel = make(chan dia.Asset)
+	var doneChannel = make(chan bool)
 	jr.assetChannel = assetChannel
+	jr.doneChannel = doneChannel
 	jr.path = path
 	jr.filename = filename
 
@@ -34,6 +37,10 @@ func NewJSONReader(path string, filename string) *jsonReader {
 
 func (jr *jsonReader) Asset() chan dia.Asset {
 	return jr.assetChannel
+}
+
+func (jr *jsonReader) Done() chan bool {
+	return jr.doneChannel
 }
 
 // fetchAssets fetches all assets from the json file and sends them into the assetChannel.
@@ -51,6 +58,7 @@ func (jr *jsonReader) fetchAssets() {
 		log.Info("got asset: ", asset)
 		jr.assetChannel <- asset
 	}
+	jr.doneChannel <- true
 }
 
 // readJSONFromConfig reads a json file from the config folder and returns the slice of items.

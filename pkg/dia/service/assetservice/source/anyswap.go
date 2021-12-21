@@ -21,15 +21,18 @@ type anyToken struct {
 
 type AnyswapAssetSource struct {
 	assetChannel chan dia.Asset
+	doneChannel  chan bool
 	URL          string
 }
 
 func NewAnyswapAssetSource(exchange dia.Exchange) *AnyswapAssetSource {
 
 	var assetChannel = make(chan dia.Asset)
+	var doneChannel = make(chan bool)
 
 	sas := &AnyswapAssetSource{
 		assetChannel: assetChannel,
+		doneChannel:  doneChannel,
 		URL:          anyswapAPIUrl,
 	}
 
@@ -44,6 +47,10 @@ func NewAnyswapAssetSource(exchange dia.Exchange) *AnyswapAssetSource {
 
 func (sas *AnyswapAssetSource) Asset() chan dia.Asset {
 	return sas.assetChannel
+}
+
+func (sas *AnyswapAssetSource) Done() chan bool {
+	return sas.doneChannel
 }
 
 func (sas *AnyswapAssetSource) fetchAssets() {

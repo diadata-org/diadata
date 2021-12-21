@@ -1,10 +1,11 @@
 package source
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"math/big"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -57,6 +58,7 @@ type UniswapAssetSource struct {
 	WsClient     *ethclient.Client
 	RestClient   *ethclient.Client
 	assetChannel chan dia.Asset
+	doneChannel  chan bool
 	blockchain   string
 	waitTime     int
 }
@@ -68,6 +70,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 	var wsClient, restClient *ethclient.Client
 	var err error
 	var assetChannel = make(chan dia.Asset)
+	var doneChannel = make(chan bool)
 	var uas *UniswapAssetSource
 
 	switch exchange.Name {
@@ -97,10 +100,10 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.ETHEREUM,
 			waitTime:     waitTime,
 		}
-
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
@@ -123,6 +126,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.ETHEREUM,
 			waitTime:     waitTime,
 		}
@@ -147,11 +151,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.BINANCESMARTCHAIN,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.DfynNetwork:
 		log.Infoln("Init rest client for Polygon chain")
 
@@ -169,11 +173,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		uas = &UniswapAssetSource{
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.POLYGON,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.QuickswapExchange:
 		log.Infoln("Init rest client for Polygon chain")
 
@@ -191,11 +195,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 		uas = &UniswapAssetSource{
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.POLYGON,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.UbeswapExchange:
 		log.Infoln("Init ws and rest client for Celo chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
@@ -217,11 +221,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.CELO,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.SpookyswapExchange:
 		log.Infoln("Init ws and rest client for Fantom chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
@@ -243,11 +247,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.FANTOM,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.SpiritswapExchange:
 		log.Infoln("Init ws and rest client for Fantom chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
@@ -269,11 +273,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.FANTOM,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.SolarbeamExchange:
 		log.Infoln("Init ws and rest client for Moonriver chain")
 		wsClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_WS", wsDialMoonriver))
@@ -295,11 +299,11 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.MOONRIVER,
 			waitTime:     waitTime,
 		}
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
 	case dia.TrisolarisExchange:
 		log.Infoln("Init ws and rest client for Near chain")
 		// wsClient, err = ethclient.Dial(utils.Getenv("NEAR_URI_WS", wsDialNear))
@@ -321,6 +325,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 			// WsClient:     wsClient,
 			RestClient:   restClient,
 			assetChannel: assetChannel,
+			doneChannel:  doneChannel,
 			blockchain:   dia.AURORA,
 			waitTime:     waitTime,
 		}
@@ -337,6 +342,10 @@ func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
 
 func (uas *UniswapAssetSource) Asset() chan dia.Asset {
 	return uas.assetChannel
+}
+
+func (uas *UniswapAssetSource) Done() chan bool {
+	return uas.doneChannel
 }
 
 func (uas *UniswapAssetSource) getNumPairs() (int, error) {
@@ -382,6 +391,7 @@ func (uas *UniswapAssetSource) fetchAssets() {
 			}
 		}
 	}
+	uas.doneChannel <- true
 }
 
 // GetPairByID returns the UniswapPair with the integer id @num

@@ -33,12 +33,14 @@ type SerumAssetSource struct {
 	solanaRpcClient   *rpc.Client
 	tokenNameRegistry map[string]tokenMeta
 	assetChannel      chan dia.Asset
+	doneChannel       chan bool
 	blockchain        string
 }
 
 func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 
 	var assetChannel = make(chan dia.Asset)
+	var doneChannel = make(chan bool)
 	var sas *SerumAssetSource
 
 	exchangeFactoryContractAddress = ""
@@ -46,6 +48,7 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 	sas = &SerumAssetSource{
 		solanaRpcClient: rpc.NewClient(rpcEndpointSolana),
 		assetChannel:    assetChannel,
+		doneChannel:     doneChannel,
 		blockchain:      dia.SOLANA,
 	}
 
@@ -58,6 +61,10 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 
 func (sas *SerumAssetSource) Asset() chan dia.Asset {
 	return sas.assetChannel
+}
+
+func (sas *SerumAssetSource) Done() chan bool {
+	return sas.doneChannel
 }
 
 func (sas *SerumAssetSource) fetchAssets() {
@@ -99,6 +106,7 @@ func (sas *SerumAssetSource) fetchAssets() {
 			}
 		}
 	}
+	sas.doneChannel <- true
 }
 
 func (sas *SerumAssetSource) getPairs() ([]*serum.MarketV2, error) {

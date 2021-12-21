@@ -7,6 +7,7 @@ import (
 
 type AssetSource interface {
 	Asset() chan dia.Asset
+	Done() chan bool
 }
 
 var log *logrus.Logger
