@@ -152,21 +152,25 @@ __
 
 ### Arbitrum
 
-| Contract Name | Contract Address                                                                                                     |
-| ------------- | -------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0x6Ba42C45174204a89AD2b7fE7B6416AD3C020D71](https://arbiscan.io/address/0x6ba42c45174204a89ad2b7fe7b6416ad3c020d71) |
+{% tabs %}
+{% tab title="Mainnet" %}
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://arbiscan.io/address/0x6ba42c45174204a89ad2b7fe7b6416ad3c020d71">0x6Ba4...0D71</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
+{% endtab %}
+{% endtabs %}
+
+### Fantom
+
+{% tabs %}
+{% tab title="Mainnet" %}
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://ftmscan.com/address/0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f">0xC5cA...504f</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
+{% endtab %}
+{% endtabs %}
 
 ### Celo
 
 | Contract Name | Contract Address                                                                                                           |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0xCd8E18890E416Aa7ab09aa793b406C187747C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
-
-### Fantom Mainnet
-
-| Contract Name | Contract Address                                                                                                     |
-| ------------- | -------------------------------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0xC5cA9C52d3D8d7f9Bb17BeeB85c2C3D119ab504f](https://ftmscan.com/address/0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f) |
 
 ### NEAR Testnet
 
