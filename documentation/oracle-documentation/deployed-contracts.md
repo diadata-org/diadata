@@ -53,17 +53,17 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type                                                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x8e687a93a969F0bf125f1154738Ca6DCC36Af57f](https://polygonscan.com/address/0x8e687a93a969f0bf125f1154738ca6dcc36af57f) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                      | Oracle Type                                                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x8e68...f57f](https://polygonscan.com/address/0x8e687a93a969f0bf125f1154738ca6dcc36af57f) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 
 {% tab title="Mumbai Testnet" %}
 __
 
-| Published Assets                     |                                                           Smart Contract Address                                                          | Oracle Type                                                                                                                   |
-| ------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | __[0xA3d2127F85041729fec05Ca483b302ddb806d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+| Published Assets                     |                                            Smart Contract Address                                            | Oracle Type                                                                                                                   |
+| ------------------------------------ | :----------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | __[0xA3d2...d50a](https://explorer-mumbai.maticvigil.com/address/0xA3d2127F85041729fec05Ca483b302ddb806d50a) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -73,15 +73,15 @@ __
 {% tab title="Mainnet" %}
 
 
-| Published Assets                     | Smart Contract Address                                                                                                           | Oracle Type                                                                                                                   |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                              | Oracle Type                                                                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xcF23...7569](https://blockscout.com/poa/xdai/address/0xcF2374824C2Ff84F07Ff4adcA074dfeDDa5C7569) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 
 {% tab title="Sokol Testnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                            | Oracle Type                                                                                                                   |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                               | Oracle Type                                                                                                                   |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x45D4...5f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -89,15 +89,15 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                                      | Oracle Type                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d](https://blockscout.com/shiden/address/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d/transactions) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                         | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCe78...815d](https://blockscout.com/shiden/address/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d/transactions) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Shibuya Testnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                      | Oracle Type                                                                                                                     |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E](https://shibuya.subscan.io/account/0x1232acd632dd75f874e357c77295da3f5cd7733e) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                         | Oracle Type                                                                                                                     |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1232...733E](https://shibuya.subscan.io/account/0x1232acd632dd75f874e357c77295da3f5cd7733e) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -105,15 +105,15 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                                | Oracle Type                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x226585bff09d87Bb4D985520aE6681D2Fe775e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                   | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x2265...5e63](https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Fuji Testnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                                     | Oracle Type                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                        | Oracle Type                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1cDF...F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
@@ -121,15 +121,15 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                                | Oracle Type                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f](https://explorer.mainnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f/) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                   | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf4e9...e84f](https://explorer.mainnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f/) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 
 {% tab title="Testnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                               |                                                                                                                                 |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f](https://explorer.testnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                  |                                                                                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf4e9...e84f](https://explorer.testnet.aurora.dev/address/0xf4e9C0697c6B35fbDe5a17DB93196Afd7aDFe84f) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
