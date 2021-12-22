@@ -518,19 +518,39 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 // Blockchain methods
 // -------------------------------------------------------------
 
+func (rdb *RelDB) SetBlockchain(blockchain dia.BlockChain) (err error) {
+	log.Info("address: ", blockchain.NativeToken.Address)
+	fields := fmt.Sprintf("INSERT INTO %s (name,genesisdate,nativetoken_id,verificationmechanism,chain_id) VALUES ", blockchainTable)
+	values := "($1,$2,(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1),$4,NULLIF($5,''))"
+	conflict := " ON CONFLICT (name) DO UPDATE SET genesisdate=$2,verificationmechanism=$4,chain_id=NULLIF($5,''),nativetoken_id=(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1) "
+
+	query := fields + values + conflict
+	_, err = rdb.postgresClient.Exec(context.Background(), query,
+		blockchain.Name,
+		blockchain.GenesisDate,
+		blockchain.NativeToken.Address,
+		blockchain.VerificationMechanism,
+		blockchain.ChainID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err error) {
-	var genesisdateString string
-	query := fmt.Sprintf("select genesisdate,nativetoken,verificationmechanism from %s where name=$1", blockchainTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, name).Scan(&genesisdateString, &blockchain.NativeToken, &blockchain.VerificationMechanism)
+	query := fmt.Sprintf("SELECT genesisdate,verificationmechanism,chain_id,address,symbol FROM %s INNER JOIN %s ON %s.nativetoken_id=%s.asset_id where %s.name=$1", blockchainTable, assetTable, blockchainTable, assetTable, blockchainTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, name).Scan(
+		&blockchain.GenesisDate,
+		&blockchain.VerificationMechanism,
+		&blockchain.ChainID,
+		&blockchain.NativeToken.Address,
+		&blockchain.NativeToken.Symbol,
+	)
 	if err != nil {
 		return
 	}
 	blockchain.Name = name
-	genesisDate, err := time.Parse("2006-01-02", genesisdateString)
-	if err != nil {
-		log.Error(err)
-	}
-	blockchain.GenesisDate = genesisDate
 	return
 }
 

@@ -43,11 +43,12 @@ CREATE TABLE exchangesymbol (
 
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
-    blockchain_id integer primary key generated always as identity,
+    blockchain_id UUID DEFAULT gen_random_uuid(),
     name text not null,
-    genesisdate timestamp,
-    nativetoken text,
+    genesisdate numeric,
+    nativetoken_id UUID REFERENCES asset(asset_id),
 	verificationmechanism text,
+    chain_id text,
     UNIQUE(name)
 );
 
