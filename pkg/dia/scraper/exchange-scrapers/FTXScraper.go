@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	spotTradingPair = "spot"
-	spotTradingBuy  = "buy"
+	spotTradingPair        = "spot"
+	spotTradingBuy         = "buy"
+	maxConsecutiveErrCount = 10
 )
 
 // FTXScrapper is a scraper for FTX
@@ -24,15 +25,18 @@ type FTXScrapper struct {
 	ws  *stream.Conn
 
 	// signaling channels for session initialization and finishing
-	shutdown     chan nothing
-	shutdownDone chan nothing
+	shutdown           chan nothing
+	shutdownDone       chan nothing
+	signalShutdown     sync.Once
+	signalShutdownDone sync.Once
 
-	// error handling; err should be read from error(), closed should be read from isTerminated()
+	// error handling; err should be read from error(), closed should be read from isClosed()
 	// those two methods implement RW lock
-	errMutex    sync.RWMutex
-	err         error
-	closedMutex sync.RWMutex
-	closed      bool
+	errMutex            sync.RWMutex
+	err                 error
+	closedMutex         sync.RWMutex
+	closed              bool
+	consecutiveErrCount int
 
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*FTXPairScraper
@@ -73,15 +77,15 @@ func NewFTXScrapper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *FT
 
 // Close unsubscribes data and closes any existing WebSocket connections, as well as channels of FTXPairScraper
 func (s *FTXScrapper) Close() error {
-	if s.isTerminated() {
+	if s.isClosed() {
 		return errors.New("FTXScrapper: Already closed")
 	}
 
-	// TODO: use sync once
-	close(s.shutdown)
-	<-s.shutdownDone
+	s.signalShutdown.Do(func() {
+		close(s.shutdown)
+	})
 
-	s.terminate()
+	<-s.shutdownDone
 
 	return s.error()
 }
@@ -127,7 +131,7 @@ func (s *FTXScrapper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	if err := s.error(); err != nil {
 		return nil, err
 	}
-	if s.isTerminated() {
+	if s.isClosed() {
 		return nil, errors.New("FTXScrapper: Call ScrapePair on closed scraper")
 	}
 
@@ -145,23 +149,38 @@ func (s *FTXScrapper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 }
 
 func (s *FTXScrapper) mainLoop() {
+	defer s.cleanup()
+
 	go s.ping()
 
 	for {
-		resp, err := s.ws.Recv()
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
 		select {
 		case <-s.shutdown:
 			log.Println("FTXScrapper: Shutting down main loop")
-			s.cleanup()
-
 			return
 		default:
 		}
+
+		resp, err := s.ws.Recv()
+		if err != nil {
+			s.consecutiveErrCount += 1
+			log.Errorf("FTXScrapper: Main loop error %s", err.Error())
+			if s.consecutiveErrCount > maxConsecutiveErrCount {
+				s.setError(err)
+				log.Error("FTXScrapper: Shutting down main loop due to facing non-retryable errors")
+
+				// Signal to other subscribers that the scrapper is internally shut down.
+				go s.signalShutdown.Do(func() {
+					close(s.shutdown)
+				})
+
+				return
+			}
+
+			continue
+		}
+
+		s.consecutiveErrCount = 0
 
 		switch v := resp.(type) {
 		case stream.Trade:
@@ -192,7 +211,10 @@ func (s *FTXScrapper) mainLoop() {
 					log.Infoln("Got verified trade", trade)
 				}
 
-				s.chanTrades <- trade
+				select {
+				case <-s.shutdown:
+				case s.chanTrades <- trade:
+				}
 			}
 		}
 	}
@@ -219,8 +241,10 @@ func (s *FTXScrapper) cleanup() {
 		s.setError(err)
 	}
 
-	// TODO: use sync once
-	close(s.shutdownDone)
+	s.close()
+	s.signalShutdownDone.Do(func() {
+		close(s.shutdownDone)
+	})
 }
 
 func (s *FTXScrapper) error() error {
@@ -237,14 +261,14 @@ func (s *FTXScrapper) setError(err error) {
 	s.err = err
 }
 
-func (s *FTXScrapper) isTerminated() bool {
+func (s *FTXScrapper) isClosed() bool {
 	s.closedMutex.RLock()
 	defer s.closedMutex.RUnlock()
 
 	return s.closed
 }
 
-func (s *FTXScrapper) terminate() {
+func (s *FTXScrapper) close() {
 	s.closedMutex.Lock()
 	defer s.closedMutex.Unlock()
 
@@ -252,10 +276,24 @@ func (s *FTXScrapper) terminate() {
 }
 
 func (s *FTXScrapper) subscribe(pair dia.ExchangePair) error {
+	if err := s.error(); err != nil {
+		return err
+	}
+	if s.isClosed() {
+		return errors.New("FTXScraper: Subscribe on closed scraper")
+	}
+
 	return s.ws.Subscribe(stream.ChannelTrades, pair.ForeignName)
 }
 
 func (s *FTXScrapper) unsubscribe(pair dia.ExchangePair) error {
+	if err := s.error(); err != nil {
+		return err
+	}
+	if s.isClosed() {
+		return errors.New("FTXScraper: Unsubscribe on closed scraper")
+	}
+
 	return s.ws.Unsubscribe(stream.ChannelTrades, pair.ForeignName)
 }
 
