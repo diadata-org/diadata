@@ -27758,6 +27758,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SCIFI",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
             "Symbol": "SCIFI",
             "ForeignName": "SCIFI-USDC",
             "Exchange": "UniswapV2",
