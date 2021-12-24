@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -197,15 +198,16 @@ func (s *FTXScrapper) mainLoop() {
 				}
 
 				trade := &dia.Trade{
-					Symbol:       baseCurrency,
-					Pair:         v.Market,
-					Price:        trade.Price,
-					Time:         trade.Time,
-					Volume:       volume,
-					Source:       s.exchangeName,
-					VerifiedPair: pair.Verified,
-					BaseToken:    pair.UnderlyingPair.BaseToken,
-					QuoteToken:   pair.UnderlyingPair.QuoteToken,
+					Symbol:         baseCurrency,
+					Pair:           v.Market,
+					Price:          trade.Price,
+					Time:           trade.Time,
+					Volume:         volume,
+					Source:         s.exchangeName,
+					ForeignTradeID: strconv.Itoa(trade.ID),
+					VerifiedPair:   pair.Verified,
+					BaseToken:      pair.UnderlyingPair.BaseToken,
+					QuoteToken:     pair.UnderlyingPair.QuoteToken,
 				}
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
