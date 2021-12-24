@@ -15,7 +15,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pow",
-            "ChainID": "1"
+            "ChainID": "Ethereum1"
         },
         {
             "Name": "BinanceSmartChain",
@@ -24,7 +24,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "posa",
-            "ChainID": "56"
+            "ChainID": "Ethereum56"
         },
         {
             "Name": "Polygon",
@@ -33,7 +33,7 @@
                 "Address": "0x0000000000000000000000000000000000001010"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "137"
+            "ChainID": "Ethereum137"
         },
         {
             "Name": "Fantom",
@@ -42,7 +42,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "250"
+            "ChainID": "Ethereum250"
         },
         {
             "Name": "Moonriver",
@@ -51,7 +51,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "1285"
+            "ChainID": "Ethereum1285"
         },
         {
             "Name": "ArbitrumOne",
@@ -60,7 +60,7 @@
                 "Address": ""
             },
             "VerificationMechanism": "pos",
-            "ChainID": "42161"
+            "ChainID": "Ethereum42161"
         },
         {
             "Name": "Avalanche",
@@ -69,7 +69,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "43114"
+            "ChainID": "Ethereum43114"
         },
         {
             "Name": "Celo",
@@ -78,7 +78,7 @@
                 "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "42220"
+            "ChainID": "Ethereum42220"
         },
         {
             "Name": "Aurora",
@@ -87,7 +87,7 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos",
-            "ChainID": "1313161554"
+            "ChainID": "Ethereum1313161554"
         },
         {
             "Name": "Near",

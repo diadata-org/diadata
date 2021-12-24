@@ -64,13 +64,9 @@ func bindToken(address common.Address, caller bind.ContractCaller, transactor bi
 
 // ETHAddressToAsset takes an Ethereum address and returns the underlying
 // token as a dia.Asset.
-func ETHAddressToAsset(address common.Address) (dia.Asset, error) {
+func ETHAddressToAsset(address common.Address, client *ethclient.Client, blockchainName string) (dia.Asset, error) {
 	var asset dia.Asset
-	ethConn, err := NewETHClient()
-	if err != nil {
-		return dia.Asset{}, err
-	}
-	tc, err := NewTokenCaller(address, ethConn)
+	tc, err := NewTokenCaller(address, client)
 	if err != nil {
 		log.Error("error: ", err)
 	}
@@ -98,7 +94,7 @@ func ETHAddressToAsset(address common.Address) (dia.Asset, error) {
 	}
 	aux := decimals[0].(*big.Int)
 	asset.Decimals = uint8(aux.Int64())
-	asset.Blockchain = dia.ETHEREUM
+	asset.Blockchain = blockchainName
 	return asset, err
 }
 

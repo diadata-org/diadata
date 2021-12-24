@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerfactory"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerpool"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancertoken"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerfactory"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancerpool"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancer/balancertoken"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 
@@ -405,11 +406,11 @@ func (scraper *BalancerScraper) FetchAvailablePairs() (pairs []dia.ExchangePair,
 		for i := 0; i < len(tokens); i++ {
 			j := i + 1
 			for j < len(tokens) {
-				asset0, err := ethhelper.ETHAddressToAsset(tokens[i])
+				asset0, err := ethhelper.ETHAddressToAsset(tokens[i], scraper.RestClient, dia.ETHEREUM)
 				if err != nil {
 					continue
 				}
-				asset1, err := ethhelper.ETHAddressToAsset(tokens[j])
+				asset1, err := ethhelper.ETHAddressToAsset(tokens[j], scraper.RestClient, dia.ETHEREUM)
 				if err != nil {
 					continue
 				}
