@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -187,7 +188,7 @@ func (s *FTXScrapper) mainLoop() {
 			baseCurrency := strings.Split(v.Market, `/`)[0]
 			pair, err := s.db.GetExchangePairCache(s.exchangeName, v.Market)
 			if err != nil {
-				log.Error(err)
+				log.Warn(err)
 			}
 
 			for _, trade := range v.Data {
@@ -197,18 +198,21 @@ func (s *FTXScrapper) mainLoop() {
 				}
 
 				trade := &dia.Trade{
-					Symbol:       baseCurrency,
-					Pair:         v.Market,
-					Price:        trade.Price,
-					Time:         trade.Time,
-					Volume:       volume,
-					Source:       s.exchangeName,
-					VerifiedPair: pair.Verified,
-					BaseToken:    pair.UnderlyingPair.BaseToken,
-					QuoteToken:   pair.UnderlyingPair.QuoteToken,
+					Symbol:         baseCurrency,
+					Pair:           v.Market,
+					Price:          trade.Price,
+					Time:           trade.Time,
+					Volume:         volume,
+					ForeignTradeID: strconv.Itoa(trade.ID),
+					Source:         s.exchangeName,
+					VerifiedPair:   pair.Verified,
+					BaseToken:      pair.UnderlyingPair.BaseToken,
+					QuoteToken:     pair.UnderlyingPair.QuoteToken,
 				}
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
+				} else {
+					log.Infoln("Got unverified trade", trade)
 				}
 
 				select {
