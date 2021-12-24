@@ -18,7 +18,7 @@
       "Symbol": "DOT",
       "Name": "Polkadot",
       "Decimals": 10,
-      "Blockchain": "Polygon",
+      "Blockchain": "Polkadot",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
@@ -404,6 +404,27 @@
       "Name": "Quasar Coin",
       "Decimals": 0,
       "Blockchain": "Quasar",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "FTM",
+      "Name": "Fantom",
+      "Decimals": 18,
+      "Blockchain": "Fantom",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "MOVR",
+      "Name": "MOVR",
+      "Decimals": 18,
+      "Blockchain": "Moonriver",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "BNB",
+      "Name": "BNB",
+      "Decimals": 18,
+      "Blockchain": "BinanceSmartChain",
       "Address": "0x0000000000000000000000000000000000000000"
     }
   ]

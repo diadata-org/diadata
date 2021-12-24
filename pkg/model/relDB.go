@@ -44,6 +44,7 @@ type RelDatastore interface {
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
 	// ----------------- blockchain methods -------------------
+	SetBlockchain(blockchain dia.BlockChain) error
 	GetBlockchain(name string) (dia.BlockChain, error)
 	GetAllBlockchains() ([]string, error)
 

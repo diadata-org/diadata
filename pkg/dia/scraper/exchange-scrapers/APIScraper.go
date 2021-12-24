@@ -26,17 +26,17 @@ var blockchains map[string]dia.BlockChain
 func init() {
 
 	blockchains = make(map[string]dia.BlockChain)
-	blockchains[dia.BITCOIN] = dia.BlockChain{Name: dia.BITCOIN, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
-	blockchains[dia.ETHEREUM] = dia.BlockChain{Name: dia.ETHEREUM, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
-	blockchains[dia.BINANCESMARTCHAIN] = dia.BlockChain{Name: dia.BINANCESMARTCHAIN, NativeToken: "", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.POLYGON] = dia.BlockChain{Name: dia.POLYGON, NativeToken: "MATIC", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.CELO] = dia.BlockChain{Name: dia.CELO, NativeToken: "CELO", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.FANTOM] = dia.BlockChain{Name: dia.FANTOM, NativeToken: "FTM", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.NEAR] = dia.BlockChain{Name: dia.NEAR, NativeToken: "NEAR", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.AURORA] = dia.BlockChain{Name: dia.AURORA, NativeToken: "AURORA", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.SOLANA] = dia.BlockChain{Name: dia.SOLANA, NativeToken: "SOL", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.FLOW] = dia.BlockChain{Name: dia.FLOW, NativeToken: "FLOW", VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.MOONRIVER] = dia.BlockChain{Name: dia.MOONRIVER, NativeToken: "MOVR", VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.BITCOIN] = dia.BlockChain{Name: dia.BITCOIN, NativeToken: dia.Asset{Symbol: "BTC"}, VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.ETHEREUM] = dia.BlockChain{Name: dia.ETHEREUM, NativeToken: dia.Asset{Symbol: "ETH"}, VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.BINANCESMARTCHAIN] = dia.BlockChain{Name: dia.BINANCESMARTCHAIN, NativeToken: dia.Asset{Symbol: "BNB"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.POLYGON] = dia.BlockChain{Name: dia.POLYGON, NativeToken: dia.Asset{Symbol: "MATIC"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.CELO] = dia.BlockChain{Name: dia.CELO, NativeToken: dia.Asset{Symbol: "CELO"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.FANTOM] = dia.BlockChain{Name: dia.FANTOM, NativeToken: dia.Asset{Symbol: "FTM"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.NEAR] = dia.BlockChain{Name: dia.NEAR, NativeToken: dia.Asset{Symbol: "NEAR"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.AURORA] = dia.BlockChain{Name: dia.AURORA, NativeToken: dia.Asset{Symbol: "AOA"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.SOLANA] = dia.BlockChain{Name: dia.SOLANA, NativeToken: dia.Asset{Symbol: "SOL"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.FLOW] = dia.BlockChain{Name: dia.FLOW, NativeToken: dia.Asset{Symbol: "FLOW"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.MOONRIVER] = dia.BlockChain{Name: dia.MOONRIVER, NativeToken: dia.Asset{Symbol: "MOVR"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)

@@ -1,6 +1,7 @@
 package configCollectors
 
 import (
+	"io/ioutil"
 	"os"
 	"os/user"
 
@@ -89,4 +90,27 @@ func NewConfigCollectors(exchange string, filetype string) *ConfigCollectors {
 		log.Fatal("error in NewConfigCollectors")
 	}
 	return cc
+}
+
+// ReadJSONFromConfig reads a json file from the config folder and returns the byte slice of items.
+func ReadJSONFromConfig(filename string) (content []byte, err error) {
+	var (
+		jsonFile *os.File
+	)
+	jsonFile, err = os.Open(ConfigFileConnectors(filename, ".json"))
+	if err != nil {
+		return
+	}
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
+	content, err = ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+	return
 }

@@ -12,14 +12,13 @@ var blockchains map[string]dia.BlockChain
 
 func init() {
 	blockchains = make(map[string]dia.BlockChain)
-	blockchains[dia.BITCOIN] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "BTC", VerificationMechanism: dia.PROOF_OF_WORK}
-	blockchains[dia.ETHEREUM] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: "ETH", VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.BITCOIN] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: dia.Asset{Symbol: "BTC"}, VerificationMechanism: dia.PROOF_OF_WORK}
+	blockchains[dia.ETHEREUM] = dia.BlockChain{Name: dia.BinanceExchange, NativeToken: dia.Asset{Symbol: "ETH"}, VerificationMechanism: dia.PROOF_OF_WORK}
 	// TODO move all this to single json
 	Exchanges = make(map[string]dia.Exchange)
 	Exchanges[dia.OKExExchange] = dia.Exchange{Name: dia.OKExExchange, Centralized: true}
 	Exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true}
 	Exchanges[dia.Deribit] = dia.Exchange{Name: dia.Deribit, Centralized: true}
-
 
 }
 

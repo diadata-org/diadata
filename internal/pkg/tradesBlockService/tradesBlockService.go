@@ -132,13 +132,24 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// as soon as there is no quotation in the cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
 
-				if _, ok = s.priceCache[t.BaseToken]; ok {
-					price = s.priceCache[t.BaseToken]
+				basetoken := t.BaseToken
+				// Tmp solution for prices on Solana:------
+				if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
+					basetoken = dia.Asset{
+						Symbol:     "USDC",
+						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Blockchain: "Ethereum",
+					}
+				}
+				// -----------------------------------------
+
+				if _, ok = s.priceCache[basetoken]; ok {
+					price = s.priceCache[basetoken]
 				} else {
-					quotation, err = s.datastore.GetAssetQuotationCache(t.BaseToken)
+					quotation, err = s.datastore.GetAssetQuotationCache(basetoken)
 					price = quotation.Price
-					s.priceCache[t.BaseToken] = price
-					log.Infof("quotation for %s from redis cache: %v", t.BaseToken.Symbol, price)
+					s.priceCache[basetoken] = price
+					log.Infof("quotation for %s from redis cache: %v", basetoken.Symbol, price)
 				}
 
 			}

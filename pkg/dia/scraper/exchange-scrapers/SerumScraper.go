@@ -185,17 +185,18 @@ func (s *SerumScraper) mainLoop() {
 						}
 						if event.EventFlags.Is(Fill) && event.EventFlags.Is(Bid) {
 							volume, price := parseEvent(&event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
+							// Remark: base and quote token is used the other way around by serum dex than we do at DIA.
 							trade := dia.Trade{
 								Symbol: marketForPair.baseAsset.symbol,
 								Pair:   pair,
-								QuoteToken: dia.Asset{
+								BaseToken: dia.Asset{
 									Symbol:     marketForPair.quoteAsset.symbol,
 									Name:       marketForPair.quoteAsset.name,
 									Address:    marketForPair.quoteAsset.mint,
 									Decimals:   marketForPair.quoteAsset.decimals,
 									Blockchain: dia.SOLANA,
 								},
-								BaseToken: dia.Asset{
+								QuoteToken: dia.Asset{
 									Symbol:     marketForPair.baseAsset.symbol,
 									Name:       marketForPair.baseAsset.name,
 									Address:    marketForPair.baseAsset.mint,
@@ -209,7 +210,7 @@ func (s *SerumScraper) mainLoop() {
 								Source:         s.exchangeName,
 								VerifiedPair:   true,
 							}
-							log.Infof("got trade -- timestamp: %v, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
+							log.Infof("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
 							s.chanTrades <- &trade
 						}
 					}

@@ -248,9 +248,13 @@ type Asset struct {
 // BlockChain is the type for blockchains. Uniquely defined by its @Name.
 type BlockChain struct {
 	Name                  string                `json:"Name"`
-	GenesisDate           time.Time             `json:"GenesisDate"`
-	NativeToken           string                `json:"NativeToken"`
+	// Genesis date is a Unix timestamp
+	GenesisDate           int64                 `json:"GenesisDate"`
+	NativeToken           Asset                 `json:"NativeToken"`
+	// Verificationmechanism is in short notation, such as pos for proof-of-stake
 	VerificationMechanism VerificationMechanism `json:"VerificationMechanism"`
+	// ChainID refers to EVM based chains and is thereby optional.
+	ChainID string `json:"ChainID"`
 }
 
 // Pair substitues the old dia.Pair. It includes the new asset type.

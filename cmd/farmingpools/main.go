@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	pool "github.com/diadata-org/diadata/pkg/dia/farming-pool-scraper"
 	"sync"
+
+	pool "github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"

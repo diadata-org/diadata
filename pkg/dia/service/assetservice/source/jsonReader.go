@@ -2,8 +2,6 @@ package source
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
@@ -45,7 +43,7 @@ func (jr *jsonReader) Done() chan bool {
 
 // fetchAssets fetches all assets from the json file and sends them into the assetChannel.
 func (jr *jsonReader) fetchAssets() {
-	data, err := readJSONFromConfig(jr.path + "/" + jr.filename)
+	data, err := configCollectors.ReadJSONFromConfig(jr.path + "/" + jr.filename)
 	if err != nil {
 		log.Error(err)
 	}
@@ -59,27 +57,4 @@ func (jr *jsonReader) fetchAssets() {
 		jr.assetChannel <- asset
 	}
 	jr.doneChannel <- true
-}
-
-// readJSONFromConfig reads a json file from the config folder and returns the slice of items.
-func readJSONFromConfig(filename string) (content []byte, err error) {
-	var (
-		jsonFile *os.File
-	)
-	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ".json"))
-	if err != nil {
-		return
-	}
-	defer func() {
-		cerr := jsonFile.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
-
-	content, err = ioutil.ReadAll(jsonFile)
-	if err != nil {
-		return
-	}
-	return
 }

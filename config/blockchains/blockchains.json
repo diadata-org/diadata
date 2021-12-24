@@ -1,0 +1,117 @@
+{
+    "Blockchains": [
+        {
+            "Name": "Bitcoin",
+            "GenesisDate": 1230940800,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pow"
+        },
+        {
+            "Name": "Ethereum",
+            "GenesisDate": 1435622400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pow",
+            "ChainID": "1"
+        },
+        {
+            "Name": "BinanceSmartChain",
+            "GenesisDate": 1598918400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "posa",
+            "ChainID": "56"
+        },
+        {
+            "Name": "Polygon",
+            "GenesisDate": 1555718400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000001010"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "137"
+        },
+        {
+            "Name": "Fantom",
+            "GenesisDate": 1540857600,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "250"
+        },
+        {
+            "Name": "Moonriver",
+            "GenesisDate": 1629936000,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "1285"
+        },
+        {
+            "Name": "ArbitrumOne",
+            "GenesisDate": 0,
+            "NativeToken": {
+                "Address": ""
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "42161"
+        },
+        {
+            "Name": "Avalanche",
+            "GenesisDate": 1600560000,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "43114"
+        },
+        {
+            "Name": "Celo",
+            "GenesisDate": 1585699200,
+            "NativeToken": {
+                "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "42220"
+        },
+        {
+            "Name": "Aurora",
+            "GenesisDate": 1525132800,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "1313161554"
+        },
+        {
+            "Name": "Near",
+            "GenesisDate": 0,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Solana",
+            "GenesisDate": 1554076800,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Flow",
+            "GenesisDate": 1602547200,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        }
+    ]
+}
