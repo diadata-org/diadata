@@ -16,7 +16,7 @@ const (
 	KrakenExchange     = "Kraken"
 	BitfinexExchange   = "Bitfinex"
 	BinanceExchange    = "Binance"
-	FTX                = "FTX"
+	FTXExchange        = "FTX"
 	Opyn               = "OPYN"
 	Premia             = "Premia"
 	BitBayExchange     = "BitBay"
@@ -76,6 +76,7 @@ func Exchanges() []string {
 		// FinageForex,
 		BitMaxExchange,
 		ZBExchange,
+		FTXExchange,
 		HuobiExchange,
 		BitBayExchange,
 		BittrexExchange,

@@ -14,6 +14,7 @@ require (
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/carterjones/signalr v0.3.5
+	github.com/cloudingcity/go-ftx v0.1.0
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.10.10
@@ -49,6 +50,7 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
+	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5
 	github.com/streamingfast/solana-go v0.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/swag v1.6.7
