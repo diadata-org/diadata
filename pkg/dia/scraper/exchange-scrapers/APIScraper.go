@@ -148,7 +148,7 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	case dia.OKExExchange:
 		return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
 	case dia.FTXExchange:
-		return NewFTXScrapper(Exchanges[dia.FTXExchange], scrape, relDB)
+		return NewFTXScraper(Exchanges[dia.FTXExchange], scrape, relDB)
 	case dia.HuobiExchange:
 		return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape, relDB)
 	case dia.LBankExchange:
