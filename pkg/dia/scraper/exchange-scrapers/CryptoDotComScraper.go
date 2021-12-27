@@ -4,9 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	ws "github.com/gorilla/websocket"
+	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -14,13 +19,83 @@ import (
 )
 
 const (
-	cryptoDotComAPIEndpoint            = "https://api.crypto.com/v2"
-	cryptoDotComWSEndpoint             = "wss://stream.crypto.com/v2/market"
-	cryptoDotComMaxConsecutiveErrCount = 10
+	cryptoDotComAPIEndpoint    = "https://api.crypto.com/v2"
+	cryptoDotComWSEndpoint     = "wss://stream.crypto.com/v2/market"
+	cryptoDotComSpotTradingBuy = "BUY"
+
+	// cryptoDotComWSRateLimitPerSec is a max request per second for sending websocket requests
+	cryptoDotComWSRateLimitPerSec = 10
+
+	// cryptoDotComTaskMaxRetry is a max retry value used when retrying subscribe/unsubscribe trades
+	cryptoDotComTaskMaxRetry = 20
+
+	// cryptoDotComRateLimitError is a rate limit error code
+	cryptoDotComRateLimitError = 10006
 )
 
-// Instrument represents a trading pair
-type Instrument struct {
+// cryptoDotComWSTask is a websocket task tracking subscription/unsubscription
+type cryptoDotComWSTask struct {
+	Method     string
+	Params     cryptoDotComWSRequestParams
+	RetryCount int
+}
+
+func (c *cryptoDotComWSTask) toString() string {
+	return fmt.Sprintf("method=%s, param=%s, retry=%d", c.Method, c.Params.toString(), c.RetryCount)
+}
+
+// cryptoDotComWSRequest is a websocket request
+type cryptoDotComWSRequest struct {
+	ID     int                         `json:"id"`
+	Method string                      `json:"method"`
+	Params cryptoDotComWSRequestParams `json:"params,omitempty"`
+	Nonce  int64                       `json:"nonce,omitempty"`
+}
+
+// cryptoDotComWSRequestParams is a websocket request param
+type cryptoDotComWSRequestParams struct {
+	Channels []string `json:"channels"`
+}
+
+func (c *cryptoDotComWSRequestParams) toString() string {
+	length := len(c.Channels)
+	if length == 1 {
+		return c.Channels[0]
+	}
+	if length > 1 {
+		return fmt.Sprintf("%s +%d more", c.Channels[0], length-1)
+	}
+
+	return ""
+}
+
+// cryptoDotComWSResponse is a websocket response
+type cryptoDotComWSResponse struct {
+	ID     int             `json:"id"`
+	Code   int             `json:"code"`
+	Method string          `json:"method"`
+	Result json.RawMessage `json:"result"`
+}
+
+// cryptoDotComWSSubscriptionResult is a trade result coming from websocket
+type cryptoDotComWSSubscriptionResult struct {
+	InstrumentName string            `json:"instrument_name"`
+	Subscription   string            `json:"subscription"`
+	Channel        string            `json:"channel"`
+	Data           []json.RawMessage `json:"data"`
+}
+
+// cryptoDotComWSInstrument represents a trade
+type cryptoDotComWSInstrument struct {
+	Price     float64 `json:"p"`
+	Quantity  float64 `json:"q"`
+	Side      string  `json:"s"`
+	TradeID   int     `json:"d"`
+	TradeTime int64   `json:"t"`
+}
+
+// cryptoDotComInstrument represents a trading pair
+type cryptoDotComInstrument struct {
 	InstrumentName          string `json:"instrument_name"`
 	QuoteCurrency           string `json:"quote_currency"`
 	BaseCurrency            string `json:"base_currency"`
@@ -33,17 +108,18 @@ type Instrument struct {
 	MinQuantity             string `json:"min_quantity"`
 }
 
-// InstrumentResponse is an API response for retrieving instruments
-type InstrumentResponse struct {
+// cryptoDotComInstrumentResponse is an API response for retrieving instruments
+type cryptoDotComInstrumentResponse struct {
 	Code   int `json:"code"`
 	Result struct {
-		Instruments []Instrument `json:"instruments"`
+		Instruments []cryptoDotComInstrument `json:"instruments"`
 	} `json:"result"`
 }
 
 // CryptoDotComScraper is a scraper for Crypto.com
 type CryptoDotComScraper struct {
 	ws *ws.Conn
+	rl ratelimit.Limiter
 
 	// signaling channels for session initialization and finishing
 	shutdown           chan nothing
@@ -60,10 +136,12 @@ type CryptoDotComScraper struct {
 	consecutiveErrCount int
 
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*CryptoDotComPairScraper
+	pairScrapers sync.Map
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
+	taskCount    int32
+	tasks        sync.Map
 }
 
 // NewCryptoDotComScraper returns a new Crypto.com scraper
@@ -71,14 +149,27 @@ func NewCryptoDotComScraper(exchange dia.Exchange, scrape bool, relDB *models.Re
 	s := &CryptoDotComScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*CryptoDotComPairScraper),
 		exchangeName: exchange.Name,
 		err:          nil,
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
 
+	conn, _, err := ws.DefaultDialer.Dial(cryptoDotComWSEndpoint, nil)
+	if err != nil {
+		log.Error(err)
+
+		return nil
+	}
+
+	s.rl = ratelimit.New(cryptoDotComWSRateLimitPerSec)
+	s.ws = conn
+
 	if scrape {
+		// Crypto.com recommends adding a 1-second sleep after establishing the websocket connection, and before requests are sent
+		// to avoid occurrences of rate-limit (`TOO_MANY_REQUESTS`) errors.
+		// https://exchange-docs.crypto.com/spot/index.html?javascript#websocket-subscriptions
+		time.Sleep(time.Duration(1) * time.Second)
 		go s.mainLoop()
 	}
 
@@ -112,7 +203,7 @@ func (s *CryptoDotComScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 		return nil, err
 	}
 
-	var res InstrumentResponse
+	var res cryptoDotComInstrumentResponse
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
@@ -123,9 +214,9 @@ func (s *CryptoDotComScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 
 	for _, i := range res.Result.Instruments {
 		pairs = append(pairs, dia.ExchangePair{
-			 Symbol:      i.BaseCurrency,
-			 ForeignName: i.InstrumentName,
-			 Exchange:    s.exchangeName,
+			Symbol:      i.BaseCurrency,
+			ForeignName: i.InstrumentName,
+			Exchange:    s.exchangeName,
 		})
 	}
 
@@ -143,13 +234,134 @@ func (s *CryptoDotComScraper) NormalizePair(pair dia.ExchangePair) (dia.Exchange
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from the Crypto.com scraper
 func (s *CryptoDotComScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
-	return nil, nil
+	if err := s.error(); err != nil {
+		return nil, err
+	}
+	if s.isClosed() {
+		return nil, errors.New("CryptoDotComScraper: Call ScrapePair on closed scraper")
+	}
+
+	ps := &CryptoDotComPairScraper{
+		parent: s,
+		pair:   pair,
+	}
+	if err := s.subscribe(pair); err != nil {
+		return nil, err
+	}
+
+	return ps, nil
 }
 
 func (s *CryptoDotComScraper) mainLoop() {
+	defer s.cleanup()
+
+	for {
+		select {
+		case <-s.shutdown:
+			log.Println("CryptoDotComScraper: Shutting down main loop")
+			return
+		default:
+		}
+
+		var res cryptoDotComWSResponse
+		if err := s.ws.ReadJSON(&res); err != nil {
+			s.setError(err)
+			log.Errorf("CryptoDotComScraper: Shutting down main loop due to facing non-retryable errors, err=%s", err.Error())
+
+			return
+		}
+		if res.Code == cryptoDotComRateLimitError {
+			if err := s.retryTask(res.ID); err != nil {
+				s.setError(err)
+				log.Errorf("CryptoDotComScraper: Shutting down main loop due to failing to retry a task, err=%s", err.Error())
+
+				return
+			}
+
+			continue
+		}
+		if res.Code != 0 {
+			log.Errorf("CryptoDotComScraper: Shutting down main loop due to non-retryable response code %d", res.Code)
+
+			return
+		}
+
+		switch res.Method {
+		case "public/heartbeat":
+			if err := s.ping(res.ID); err != nil {
+				s.setError(err)
+				log.Errorf("CryptoDotComScraper: Shutting down main loop due to heartbeat failure, err=%s", err.Error())
+
+				return
+			}
+		case "subscribe":
+			if len(res.Result) == 0 {
+				continue
+			}
+
+			var subscription cryptoDotComWSSubscriptionResult
+			if err := json.Unmarshal(res.Result, &subscription); err != nil {
+				s.setError(err)
+				log.Errorf("CryptoDotComScraper: Shutting down main loop due to response unmarshaling failure, err=%s", err.Error())
+
+				return
+			}
+			if subscription.Channel != "trade" {
+				continue
+			}
+
+			baseCurrency := strings.Split(subscription.InstrumentName, `_`)[0]
+			pair, err := s.db.GetExchangePairCache(s.exchangeName, subscription.InstrumentName)
+			if err != nil {
+				log.Error(err)
+			}
+
+			for _, data := range subscription.Data {
+				var i cryptoDotComWSInstrument
+				if err := json.Unmarshal(data, &i); err != nil {
+					s.setError(err)
+					log.Errorf("CryptoDotComScraper: Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
+
+					return
+				}
+
+				volume := i.Quantity
+				if i.Side != cryptoDotComSpotTradingBuy {
+					volume = -volume
+				}
+
+				trade := &dia.Trade{
+					Symbol:         baseCurrency,
+					Pair:           subscription.InstrumentName,
+					Price:          i.Price,
+					Time:           time.Unix(0, i.TradeTime*int64(time.Millisecond)),
+					Volume:         volume,
+					Source:         s.exchangeName,
+					ForeignTradeID: strconv.Itoa(i.TradeID),
+					VerifiedPair:   pair.Verified,
+					BaseToken:      pair.UnderlyingPair.BaseToken,
+					QuoteToken:     pair.UnderlyingPair.QuoteToken,
+				}
+				if pair.Verified {
+					log.Infoln("Got verified trade", trade)
+				}
+
+				select {
+				case <-s.shutdown:
+				case s.chanTrades <- trade:
+				}
+			}
+		}
+	}
 }
 
-func (s *CryptoDotComScraper) ping() {
+func (s *CryptoDotComScraper) ping(id int) error {
+	s.rl.Take()
+
+	return s.ws.WriteJSON(&cryptoDotComWSRequest{
+		ID:     id,
+		Method: "public/respond-heartbeat",
+	})
 }
 
 func (s *CryptoDotComScraper) cleanup() {
@@ -157,6 +369,7 @@ func (s *CryptoDotComScraper) cleanup() {
 		s.setError(err)
 	}
 
+	close(s.chanTrades)
 	s.close()
 	s.signalShutdownDone.Do(func() {
 		close(s.shutdownDone)
@@ -192,15 +405,62 @@ func (s *CryptoDotComScraper) close() {
 }
 
 func (s *CryptoDotComScraper) subscribe(pair dia.ExchangePair) error {
-	// TODO: enforce rate limit
+	taskID := int(atomic.AddInt32(&s.taskCount, 1))
+	task := cryptoDotComWSTask{
+		Method: "subscribe",
+		Params: cryptoDotComWSRequestParams{
+			Channels: []string{"trade." + pair.ForeignName},
+		},
+		RetryCount: 0,
+	}
+	s.tasks.Store(taskID, task)
+	s.pairScrapers.Store(pair.ForeignName, pair)
 
-	return nil
+	return s.send(taskID, task)
 }
 
 func (s *CryptoDotComScraper) unsubscribe(pair dia.ExchangePair) error {
-	// TODO: enforce rate limit
+	taskID := int(atomic.AddInt32(&s.taskCount, 1))
+	task := cryptoDotComWSTask{
+		Method: "unsubscribe",
+		Params: cryptoDotComWSRequestParams{
+			Channels: []string{"trade." + pair.ForeignName},
+		},
+		RetryCount: 0,
+	}
+	s.tasks.Store(taskID, task)
+	s.pairScrapers.Delete(pair.ForeignName)
 
-	return nil
+	return s.send(taskID, task)
+}
+
+func (s *CryptoDotComScraper) retryTask(taskID int) error {
+	val, ok := s.tasks.Load(taskID)
+	if !ok {
+		return fmt.Errorf("CryptoDotComScraper: Facing unknown task id, taskId=%d", taskID)
+	}
+
+	task := val.(cryptoDotComWSTask)
+	task.RetryCount += 1
+	if task.RetryCount > cryptoDotComTaskMaxRetry {
+		return fmt.Errorf("CryptoDotComScraper: Exeeding max retry, taskId=%d, %s", taskID, task.toString())
+	}
+
+	log.Warnf("CryptoDotComScraper: Retrying a task, taskId=%d, %s", taskID, task.toString())
+	s.tasks.Store(taskID, task)
+
+	return s.send(taskID, task)
+}
+
+func (s *CryptoDotComScraper) send(taskID int, task cryptoDotComWSTask) error {
+	s.rl.Take()
+
+	return s.ws.WriteJSON(&cryptoDotComWSRequest{
+		ID:     taskID,
+		Method: task.Method,
+		Params: task.Params,
+		Nonce:  time.Now().UnixNano() / 1000,
+	})
 }
 
 // CryptoDotComPairScraper implements PairScraper for Crypto.com
