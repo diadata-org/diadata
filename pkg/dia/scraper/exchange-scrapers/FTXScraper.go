@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	spotTradingPair        = "spot"
-	spotTradingBuy         = "buy"
-	maxConsecutiveErrCount = 10
+	ftxSpotTradingPair        = "spot"
+	ftxSpotTradingBuy         = "buy"
+	ftxMaxConsecutiveErrCount = 10
 )
 
 // FTXScraper is a scraper for FTX
@@ -104,7 +104,7 @@ func (s *FTXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error)
 	}
 
 	for _, m := range markets {
-		if m.Type != spotTradingPair {
+		if m.Type != ftxSpotTradingPair {
 			continue
 		}
 
@@ -166,7 +166,7 @@ func (s *FTXScraper) mainLoop() {
 		if err != nil {
 			s.consecutiveErrCount += 1
 			log.Errorf("FTXScraper: Main loop error %s", err.Error())
-			if s.consecutiveErrCount > maxConsecutiveErrCount {
+			if s.consecutiveErrCount > ftxMaxConsecutiveErrCount {
 				s.setError(err)
 				log.Error("FTXScraper: Shutting down main loop due to facing non-retryable errors")
 
@@ -193,7 +193,7 @@ func (s *FTXScraper) mainLoop() {
 
 			for _, trade := range v.Data {
 				volume := trade.Size
-				if trade.Side != spotTradingBuy {
+				if trade.Side != ftxSpotTradingBuy {
 					volume = -volume
 				}
 
