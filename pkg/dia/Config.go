@@ -16,7 +16,7 @@ const (
 	KrakenExchange       = "Kraken"
 	BitfinexExchange     = "Bitfinex"
 	BinanceExchange      = "Binance"
-	CryptoDotComExchange = "CryptoDotCom"
+	CryptoDotComExchange = "Crypto.com"
 	FTXExchange          = "FTX"
 	Opyn                 = "OPYN"
 	Premia               = "Premia"
