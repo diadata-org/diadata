@@ -28,12 +28,12 @@ func init() {
 	chainMap["137"] = dia.POLYGON
 	chainMap["250"] = dia.FANTOM
 	chainMap["1285"] = dia.MOONRIVER
+	chainMap["43114"] = dia.AVALANCHE
 
 	// chainMap["66"] = chainInfo{Name: "OKExChain", Client: ""}
 	// chainMap["128"] = chainInfo{Name: "HuobiECOChain", Client: ""}
 	// chainMap["288"] = chainInfo{Name: "Boba", Client: ""}
 	// chainMap["42161"] = chainInfo{Name: "Arbitrum", Client: ""}
-	// chainMap["43114"] = "Avalanche"
 
 }
 
@@ -114,6 +114,7 @@ func getClientMap() (map[string]*ethclient.Client, error) {
 	for key := range chainMap {
 		restClient, err := ethclient.Dial(utils.Getenv("ETH_URI_"+key, ""))
 		if err != nil {
+			log.Error("connecting to chainID: ", key)
 			return clientMap, err
 		}
 		clientMap[key] = restClient

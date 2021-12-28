@@ -37,6 +37,7 @@ func init() {
 	blockchains[dia.SOLANA] = dia.BlockChain{Name: dia.SOLANA, NativeToken: dia.Asset{Symbol: "SOL"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FLOW] = dia.BlockChain{Name: dia.FLOW, NativeToken: dia.Asset{Symbol: "FLOW"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.MOONRIVER] = dia.BlockChain{Name: dia.MOONRIVER, NativeToken: dia.Asset{Symbol: "MOVR"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.AVALANCHE] = dia.BlockChain{Name: dia.AVALANCHE, NativeToken: dia.Asset{Symbol: "AVAX"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)
@@ -82,7 +83,7 @@ func init() {
 	Exchanges[dia.SerumExchange] = dia.Exchange{Name: dia.SerumExchange, Centralized: false, BlockChain: blockchains[dia.SOLANA], Contract: common.HexToAddress(""), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.SolarbeamExchange] = dia.Exchange{Name: dia.SolarbeamExchange, Centralized: false, BlockChain: blockchains[dia.MOONRIVER], Contract: common.HexToAddress("0x049581aEB6Fe262727f290165C29BDAB065a1B68"), WatchdogDelay: watchdogDelay3Mins}
 	Exchanges[dia.TrisolarisExchange] = dia.Exchange{Name: dia.TrisolarisExchange, Centralized: false, BlockChain: blockchains[dia.AURORA], Contract: common.HexToAddress("0xc66F594268041dB60507F00703b152492fb176E7"), WatchdogDelay: watchdogDelay}
-	Exchanges[dia.AnyswapExchange] = dia.Exchange{Name: dia.AnyswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x6b7a87899490EcE95443e979cA9485CBE7E71522"), WatchdogDelay: 3600}
+	Exchanges[dia.AnyswapExchange] = dia.Exchange{Name: dia.AnyswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x6b7a87899490EcE95443e979cA9485CBE7E71522"), WatchdogDelay: watchdogDelayLong}
 
 	// Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: 360000}

@@ -21,9 +21,10 @@ import (
 )
 
 var (
-	anyswapEthereumContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
-	anyswapAPIURL                  = "https://bridgeapi.anyswap.exchange/v3/serverinfoV3?chainId=all&version=STABLEV3"
+	// anyswapEthereumContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+	anyswapAPIURL = "https://bridgeapi.anyswap.exchange/v3/serverinfoV3?chainId=all&version=STABLEV3"
 	// maps chainID to chain name.
+	// TO DO: import from postgres.
 	chainMap map[string]string
 	// maps chainID+address to the corresponding dia.Asset.
 	assetMap map[string]dia.Asset
@@ -76,7 +77,6 @@ type AnyswapScraper struct {
 	exchangeName     string
 	chanTrades       chan *dia.Trade
 	waitTime         int
-	clientMap        map[string]*ethclient.Client
 	anyswapAssetInfo map[string]map[string]interface{}
 }
 
@@ -106,6 +106,7 @@ func NewAnyswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	chainMap["137"] = dia.POLYGON
 	chainMap["250"] = dia.FANTOM
 	chainMap["1285"] = dia.MOONRIVER
+	chainMap["43114"] = dia.AVALANCHE
 
 	restClientMap, wsClientMap, err = getClientMaps()
 	if err != nil {
@@ -164,9 +165,15 @@ func (s *AnyswapScraper) ListenToChainOut(chainID string) {
 	var err error
 
 	// Fetch all addresses that can be bridged on chain with @chainID.
-	addresses, err := s.getAddressesByChain(chainID)
+	addresses, err := getAddressesByChain(chainID)
 	if err != nil {
 		log.Error("")
+	}
+
+	// Switch from anyToken to underlying token.
+	anyTokenMap, err := getAnyTokenMap()
+	if err != nil {
+		log.Error("get anyToken map: ", err)
 	}
 
 	// Listen to swaps out of current chain.
@@ -180,57 +187,64 @@ func (s *AnyswapScraper) ListenToChainOut(chainID string) {
 			rawSwap, ok := <-sink
 			if ok {
 
-				swap, err := s.processSwap(*rawSwap)
+				swap, err := s.processSwap(*rawSwap, anyTokenMap)
 				if err != nil {
 					log.Error("process swap: ", err)
-					log.Error("swap: ", rawSwap)
 				} else {
-					log.Infof("got swap -- ", swap)
+					log.Infof("got swap -- %v", swap)
 				}
 			}
-
 		}
 	}()
 }
 
 // processSwap returns a dia.Trade object from a rawSwap as emitted in LogAnySwapOut.
-func (s *AnyswapScraper) processSwap(rawSwap anyswap.AnyswapV4RouterLogAnySwapOut) (trade dia.Trade, err error) {
+func (s *AnyswapScraper) processSwap(rawSwap anyswap.AnyswapV4RouterLogAnySwapOut, anyTokenMap map[string]string) (trade dia.Trade, err error) {
 
 	// Get Basetoken
 	fromChainID := rawSwap.FromChainID.String()
-	log.Info("fromChainID: ", fromChainID)
-	if basetoken, ok := assetMap[fromChainID+rawSwap.Token.Hex()]; ok {
+	basetokenaddress := rawSwap.Token.Hex()
+
+	// If outToken is an anyToken, switch to the underlying asset.
+	if underlyingToken, ok := anyTokenMap[fromChainID+"-"+basetokenaddress]; ok {
+		basetokenaddress = underlyingToken
+	}
+
+	if basetoken, ok := assetMap[fromChainID+basetokenaddress]; ok {
 		trade.BaseToken = basetoken
 	} else {
-		basetoken, err = s.db.GetAsset(rawSwap.Token.Hex(), chainMap[fromChainID])
+		basetoken, err = s.db.GetAsset(common.HexToAddress(basetokenaddress).Hex(), chainMap[fromChainID])
 		if err != nil {
-			log.Errorf("get asset %s on chainID %v: %v", rawSwap.Token.Hex(), rawSwap.FromChainID, err)
+			log.Errorf("get base asset %s on chainID %v: %v", basetokenaddress, rawSwap.FromChainID, err)
 			return
 		}
 		trade.BaseToken = basetoken
-		assetMap[fromChainID+rawSwap.Token.Hex()] = basetoken
+		assetMap[fromChainID+basetokenaddress] = basetoken
 	}
 
 	// Get Quotetoken
 	toChainID := rawSwap.ToChainID.String()
-	toAddress := s.anyswapAssetInfo[fromChainID][strings.ToLower(rawSwap.Token.Hex())].(map[string]interface{})["destChains"].(map[string]interface{})[toChainID].(map[string]interface{})["address"].(string)
+	toAddress := s.anyswapAssetInfo[fromChainID][strings.ToLower(basetokenaddress)].(map[string]interface{})["destChains"].(map[string]interface{})[toChainID].(map[string]interface{})["address"].(string)
 	if quotetoken, ok := assetMap[toChainID+toAddress]; ok {
 		trade.QuoteToken = quotetoken
 	} else {
 		quotetoken, err = s.db.GetAsset(common.HexToAddress(toAddress).Hex(), chainMap[toChainID])
 		if err != nil {
-			log.Errorf("get asset %s on chainID %s: %v", toAddress, rawSwap.ToChainID, err)
+			log.Errorf("get quote asset %s on chainID %s: %v", toAddress, rawSwap.ToChainID, err)
 			return
 		}
 		trade.QuoteToken = quotetoken
-		assetMap[fromChainID+rawSwap.Token.Hex()] = quotetoken
+		assetMap[fromChainID+toAddress] = quotetoken
 	}
 
 	trade.Symbol = trade.QuoteToken.Symbol
 	trade.Pair = trade.QuoteToken.Symbol + "-" + trade.BaseToken.Symbol
 	trade.Price = float64(1)
 	trade.Volume, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(rawSwap.Amount), new(big.Float).SetFloat64(math.Pow10(int(trade.QuoteToken.Decimals)))).Float64()
+	trade.ForeignTradeID = rawSwap.Raw.TxHash.String()
+	trade.Time = time.Now()
 	trade.Source = dia.AnyswapExchange
+	trade.VerifiedPair = true
 	return
 }
 
@@ -272,15 +286,35 @@ func getClientMaps() (map[string]*ethclient.Client, map[string]*ethclient.Client
 }
 
 // getAddressesByChain returns all addresses of assets which can be bridged away from the chain with @chainID.
-func (s *AnyswapScraper) getAddressesByChain(chainID string) (addresses []common.Address, err error) {
+// This includes anyTokens.
+func getAddressesByChain(chainID string) (addresses []common.Address, err error) {
 	allAssetsAllChains, err := fetchEndpoint(anyswapAPIURL)
 	if err != nil {
 		return
 	}
 	for address := range allAssetsAllChains[chainID] {
 		addresses = append(addresses, common.HexToAddress(address))
+		anyAddress := allAssetsAllChains[chainID][address].(map[string]interface{})["anyToken"].(map[string]interface{})["address"].(string)
+		addresses = append(addresses, common.HexToAddress(anyAddress))
 	}
+
 	return
+}
+
+// getAnyTokenMap maps an anyToken to its underlying asset.
+func getAnyTokenMap() (map[string]string, error) {
+	anyTokenMap := make(map[string]string)
+	allAssetsAllChains, err := fetchEndpoint(anyswapAPIURL)
+	if err != nil {
+		return anyTokenMap, err
+	}
+	for chainID := range allAssetsAllChains {
+		for address := range allAssetsAllChains[chainID] {
+			anyAddress := allAssetsAllChains[chainID][address].(map[string]interface{})["anyToken"].(map[string]interface{})["address"].(string)
+			anyTokenMap[chainID+"-"+common.HexToAddress(anyAddress).Hex()] = common.HexToAddress(address).Hex()
+		}
+	}
+	return anyTokenMap, nil
 }
 
 // fetchEndpoint returns all assets available in the Anyswap bridge obtained through an API endpoint.

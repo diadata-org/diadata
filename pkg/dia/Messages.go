@@ -28,6 +28,7 @@ const (
 	SOLANA                                  = "Solana"
 	FLOW                                    = "Flow"
 	MOONRIVER                               = "Moonriver"
+	AVALANCHE                               = "Avalanche"
 	FIAT                                    = "Fiat"
 )
 
@@ -247,10 +248,10 @@ type Asset struct {
 
 // BlockChain is the type for blockchains. Uniquely defined by its @Name.
 type BlockChain struct {
-	Name                  string                `json:"Name"`
+	Name string `json:"Name"`
 	// Genesis date is a Unix timestamp
-	GenesisDate           int64                 `json:"GenesisDate"`
-	NativeToken           Asset                 `json:"NativeToken"`
+	GenesisDate int64 `json:"GenesisDate"`
+	NativeToken Asset `json:"NativeToken"`
 	// Verificationmechanism is in short notation, such as pos for proof-of-stake
 	VerificationMechanism VerificationMechanism `json:"VerificationMechanism"`
 	// ChainID refers to EVM based chains and is thereby optional.
