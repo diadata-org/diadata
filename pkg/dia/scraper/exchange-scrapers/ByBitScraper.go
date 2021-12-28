@@ -4,15 +4,19 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	ws "github.com/gorilla/websocket"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 var ByBitSocketURL string = "wss://stream.bybit.com/realtime"
@@ -133,7 +137,18 @@ func (s *ByBitScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 }
 
 func (s *ByBitScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
+	symbol := strings.ToUpper(pair.Symbol)
+	pair.Symbol = symbol
+
+	if helpers.NameForSymbol(symbol) == symbol {
+		if !helpers.SymbolIsName(symbol) {
+			return pair, errors.New("Foreign name can not be normalized:" + pair.ForeignName + " symbol:" + symbol)
+		}
+	}
+	if helpers.SymbolIsBlackListed(symbol) {
+		return pair, errors.New("Symbol is black listed:" + symbol)
+	}
+	return pair, nil
 }
 
 //Channel returns the channel to get trades
@@ -148,7 +163,44 @@ func (s *ByBitScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 
 //FetchAvailablePairs returns a list with all available trade pairs
 func (s *ByBitScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	return nil, nil
+	type APIResponse struct {
+		Name           string                 `json:"name"`
+		Alias          string                 `json:"alias"`
+		BaseCurrency   string                 `json:"base_currency"`
+		QuoteCurrency  string                 `json:"quote_currency"`
+		Status         string                 `json:"status,string"`
+		TakerFee       string                 `json:"taker_fee,string"`
+		MakerFee       string                 `json:"maker_fee,string"`
+		PriceScale     float64                `json:"price_scale"`
+		LeverageFilter map[string]interface{} `json:"leverage_filter"`
+		PriceFilter    map[string]interface{} `json:"price_filter"`
+		LotSizeFilter  map[string]interface{} `json:"lot_size_filter"`
+	}
+	data, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")
+	if err != nil {
+		return
+	}
+	var ar []APIResponse
+	err = json.Unmarshal(data, &ar)
+	if err == nil {
+		for _, p := range ar {
+			if p.Status != "Trading" {
+				continue
+			}
+			pairToNormalize := dia.ExchangePair{
+				Symbol:      p.BaseCurrency,
+				ForeignName: p.Name,
+				Exchange:    s.exchangeName,
+			}
+			pair, serr := s.NormalizePair(pairToNormalize)
+			if serr == nil {
+				pairs = append(pairs, pair)
+			} else {
+				log.Error(serr)
+			}
+		}
+	}
+	return
 }
 
 // Error returns an error when the channel Channel() is closed
