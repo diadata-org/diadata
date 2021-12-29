@@ -50,6 +50,7 @@ type Datastore interface {
 	GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
+	DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) error
 
 	Flush() error
 	ExecuteRedisPipe() error
@@ -193,11 +194,17 @@ const (
 	influxDBDefaultURL = "http://influxdb:8086"
 )
 
-// queryInfluxDB convenience function to query the database
+// queryInfluxDB convenience function to query the database.
 func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb.Result, err error) {
+	res, err = queryInfluxDBName(clnt, influxDbName, cmd)
+	return
+}
+
+// queryInfluxDBName is a wrapper for queryInfluxDB that allows for queries on the database with name @dbName.
+func queryInfluxDBName(clnt clientInfluxdb.Client, dbName string, cmd string) (res []clientInfluxdb.Result, err error) {
 	q := clientInfluxdb.Query{
 		Command:  cmd,
-		Database: influxDbName,
+		Database: dbName,
 	}
 	if response, err := clnt.Query(q); err == nil {
 		if response.Error() != nil {
@@ -647,6 +654,14 @@ func (datastore *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination strin
 			return
 		}
 	}
+	return
+}
+
+// DeleteInfluxMeasurement deletes data from influx database @dbName and measurement @tableName in the given time range.
+func (datastore *DB) DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) (err error) {
+	queryString := "DELETE FROM %s WHERE time>%d AND time<=%d"
+	query := fmt.Sprintf(queryString, tableName, timeInit.UnixNano(), timeFinal.UnixNano())
+	_, err = queryInfluxDBName(datastore.influxClient, dbName, query)
 	return
 }
 

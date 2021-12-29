@@ -37,9 +37,6 @@ func init() {
 
 }
 
-type assetInfo struct {
-}
-
 type AnyswapAssetSource struct {
 	assetChannel chan dia.Asset
 	doneChannel  chan bool
