@@ -241,7 +241,7 @@ func (s *AnyswapScraper) processSwap(rawSwap anyswap.AnyswapV4RouterLogAnySwapOu
 	trade.Symbol = trade.QuoteToken.Symbol
 	trade.Pair = trade.QuoteToken.Symbol + "-" + trade.BaseToken.Symbol
 	trade.Price = float64(1)
-	trade.Volume, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(rawSwap.Amount), new(big.Float).SetFloat64(math.Pow10(int(trade.QuoteToken.Decimals)))).Float64()
+	trade.Volume, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(rawSwap.Amount), new(big.Float).SetFloat64(math.Pow10(int(trade.BaseToken.Decimals)))).Float64()
 	trade.ForeignTradeID = rawSwap.Raw.TxHash.String()
 	trade.Time = time.Now()
 	trade.Source = dia.AnyswapExchange
