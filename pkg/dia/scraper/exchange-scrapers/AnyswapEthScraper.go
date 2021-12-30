@@ -192,6 +192,7 @@ func (s *AnyswapScraper) ListenToChainOut(chainID string) {
 					log.Error("process swap: ", err)
 				} else {
 					log.Infof("got swap -- %v", swap)
+					s.chanTrades <- &swap
 				}
 			}
 		}
