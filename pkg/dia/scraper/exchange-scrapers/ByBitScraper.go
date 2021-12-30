@@ -1,12 +1,10 @@
 package scrapers
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -20,6 +18,61 @@ import (
 )
 
 var ByBitSocketURL string = "wss://stream.bybit.com/realtime"
+
+type ByBitMarket struct {
+	Name           string `json:"name"`
+	Alias          string `json:"alias"`
+	Status         string `json:"status"`
+	BaseCurrency   string `json:"base_currency"`
+	QuoteCurrency  string `json:"quote_currency"`
+	PriceScale     int    `json:"price_scale"`
+	TakerFee       string `json:"taker_fee"`
+	MakerFee       string `json:"maker_fee"`
+	LeverageFilter struct {
+		MinLeverage  int    `json:"min_leverage"`
+		MaxLeverage  int    `json:"max_leverage"`
+		LeverageStep string `json:"leverage_step"`
+	} `json:"leverage_filter"`
+	PriceFilter struct {
+		MinPrice string `json:"min_price"`
+		MaxPrice string `json:"max_price"`
+		TickSize string `json:"tick_size"`
+	} `json:"price_filter"`
+	LotSizeFilter struct {
+		MaxTradingQty int `json:"max_trading_qty"`
+		MinTradingQty int `json:"min_trading_qty"`
+		QtyStep       int `json:"qty_step"`
+	} `json:"lot_size_filter"`
+}
+
+type ByBitMarketsResponse struct {
+	RetCode int           `json:"ret_code"`
+	RetMsg  string        `json:"ret_msg"`
+	ExtCode string        `json:"ext_code"`
+	ExtInfo string        `json:"ext_info"`
+	Result  []ByBitMarket `json:"result"`
+	TimeNow string        `json:"time_now"`
+}
+
+type ByBitTradeResponse struct {
+	Topic string `json:"topic"`
+	Data  []struct {
+		Timestamp     string `json:"timestamp"`
+		TradeTimeMs   int64  `json:"trade_time_ms"`
+		Symbol        string `json:"symbol"`
+		Side          string `json:"side"`
+		Size          string `json:"size"`
+		Price         string `json:"price"`
+		TickDirection string `json:"tick_direction"`
+		TradeID       string `json:"trade_id"`
+		CrossSeq      int    `json:"cross_seq"`
+	} `json:"data"`
+}
+
+type ByBitSubscribe struct {
+	OP   string   `json:"op"`
+	Args []string `json:"args"`
+}
 
 // ByBitScraper provides  methods needed to get Trade information from ByBit
 type ByBitScraper struct {
@@ -45,7 +98,7 @@ type ByBitScraper struct {
 }
 
 //NewByBitScraper get a scrapper for ByBit exchange
-func NewByBitScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ByBitScraper {
+func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ByBitScraper {
 	s := &ByBitScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -58,26 +111,30 @@ func NewByBitScraper(key string, secret string, exchange dia.Exchange, scrape bo
 		db:           relDB,
 	}
 
-	// Create HMAC instance from the secret key
-	h := hmac.New(sha256.New, []byte(secret))
+	/*
+	    In the case of needing access to private urls.
+	    // Create HMAC instance from the secret key
+	   	h := hmac.New(sha256.New, []byte(secret))
 
-	// Write Data to it
-	apiSecretBytes := []byte(secret)
-	// Generate expires.
-	expires := int((time.Now().UnixNano() + 1) * 1000)
-	expiresBytes := []byte(fmt.Sprintf("GET/realtime%d", expires))
-	data := append(apiSecretBytes, expiresBytes...)
-	h.Write([]byte(data))
+	   	// Write Data to it
+	   	apiSecretBytes := []byte(secret)
+	   	// Generate expires.
+	   	expires := int((time.Now().UnixNano() + 1) * 1000)
+	   	expiresBytes := []byte(fmt.Sprintf("GET/realtime%d", expires))
+	   	data := append(apiSecretBytes, expiresBytes...)
+	   	h.Write([]byte(data))
 
-	// Get the signature
-	signature := hex.EncodeToString(h.Sum(nil))
+	   	// Get the signature
+	   	signature := hex.EncodeToString(h.Sum(nil))
+
+	   	// Generate the ws url.
+	   	params := fmt.Sprintf("api_key=%s&expires=%d&signature=%s", secret, expires, signature)
+	*/
 
 	// Create the ws connection
 	var wsDialer ws.Dialer
 
-	// Generate the ws url.
-	params := fmt.Sprintf("api_key=%s&expires=%d&signature=%s", secret, expires, signature)
-	SwConn, _, err := wsDialer.Dial(ByBitSocketURL+"?"+params, nil)
+	SwConn, _, err := wsDialer.Dial(ByBitSocketURL, nil)
 	if err != nil {
 		println(err.Error())
 	}
@@ -91,9 +148,116 @@ func NewByBitScraper(key string, secret string, exchange dia.Exchange, scrape bo
 	return s
 }
 
+func (s *ByBitScraper) getMarkets() (markets []string) {
+	var bbm ByBitMarketsResponse
+	b, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	if err != nil {
+		log.Errorln("Error Getting markets", err)
+	}
+	err = json.Unmarshal(b, &bbm)
+	if err != nil {
+		log.Error("getting markets: ", err)
+	}
+
+	for _, m := range bbm.Result {
+		markets = append(markets, m.Name)
+	}
+	return
+}
+
+func (s *ByBitScraper) ping() {
+	a := &ByBitSubscribe{
+		OP: "ping",
+	}
+	log.Infoln("Ping: ", a.OP)
+	if err := s.wsClient.WriteJSON(a); err != nil {
+		log.Println(err.Error())
+	}
+}
+
+func (s *ByBitScraper) subscribe() {
+	markets := s.getMarkets()
+	for _, market := range markets {
+
+		a := &ByBitSubscribe{
+			OP:   "subscribe",
+			Args: []string{fmt.Sprintf("trade.%s", market)},
+		}
+		log.Println("subscribing", a)
+		if err := s.wsClient.WriteJSON(a); err != nil {
+			log.Println(err.Error())
+		}
+
+	}
+}
+
 // runs in a goroutine until s is closed
 func (s *ByBitScraper) mainLoop() {
-	// TODO
+	var err error
+	for {
+		message := &ByBitTradeResponse{}
+		if err = s.wsClient.ReadJSON(&message); err != nil {
+			log.Error(err.Error())
+			break
+		}
+
+		// the topic format is something like trade.BTCUSD
+		topic := strings.Split(message.Topic, ".")
+		if len(topic) == 2 && topic[0] == "trade" {
+			ps, ok := s.pairScrapers[topic[1]]
+			if ok {
+				mdData := message.Data
+				for _, v := range mdData {
+					var f64Price float64
+					var f64Volume float64
+					var exchangepair dia.ExchangePair
+					f64PriceString := v.Price
+					f64Price, err = strconv.ParseFloat(f64PriceString, 64)
+					if err == nil {
+						f64VolumeString := v.Size
+						f64Volume, err = strconv.ParseFloat(f64VolumeString, 64)
+						if err == nil {
+							timeStamp, _ := time.Parse(time.RFC3339, v.Timestamp)
+							if v.TradeID != "" {
+								if v.Side == "sell" {
+									f64Volume = -f64Volume
+								}
+
+								exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, v.Symbol)
+								if err != nil {
+									log.Error(err)
+								}
+								t := &dia.Trade{
+									Symbol:         ps.pair.Symbol,
+									Pair:           v.Symbol,
+									Price:          f64Price,
+									Volume:         f64Volume,
+									Time:           timeStamp,
+									ForeignTradeID: v.TradeID,
+									Source:         s.exchangeName,
+									VerifiedPair:   exchangepair.Verified,
+									BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+									QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+								}
+								if exchangepair.Verified {
+									log.Infoln("Got verified trade: ", t)
+								}
+								log.Info("got trade: ", t)
+								ps.parent.chanTrades <- t
+							}
+						} else {
+							log.Error("error parsing volume " + v.Size)
+						}
+					} else {
+						log.Error("error parsing price " + v.Price)
+					}
+				}
+			} else {
+				log.Error("Unknown Pair " + topic[1])
+			}
+		}
+	}
+	s.cleanup(err)
 }
 
 // Close channels for shutdown
@@ -163,27 +327,15 @@ func (s *ByBitScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 
 //FetchAvailablePairs returns a list with all available trade pairs
 func (s *ByBitScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	type APIResponse struct {
-		Name           string                 `json:"name"`
-		Alias          string                 `json:"alias"`
-		BaseCurrency   string                 `json:"base_currency"`
-		QuoteCurrency  string                 `json:"quote_currency"`
-		Status         string                 `json:"status,string"`
-		TakerFee       string                 `json:"taker_fee,string"`
-		MakerFee       string                 `json:"maker_fee,string"`
-		PriceScale     float64                `json:"price_scale"`
-		LeverageFilter map[string]interface{} `json:"leverage_filter"`
-		PriceFilter    map[string]interface{} `json:"price_filter"`
-		LotSizeFilter  map[string]interface{} `json:"lot_size_filter"`
-	}
+
 	data, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")
 	if err != nil {
 		return
 	}
-	var ar []APIResponse
+	var ar ByBitMarketsResponse
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
-		for _, p := range ar {
+		for _, p := range ar.Result {
 			if p.Status != "Trading" {
 				continue
 			}
