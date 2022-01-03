@@ -11,11 +11,11 @@ import (
 
 	"github.com/diadata-org/diadata/config/nftContracts/sorare"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/fatih/structs"
 )
 
@@ -249,14 +249,14 @@ type OpenSeaResponse struct {
 }
 
 type SorareScraper struct {
-	nftscraper NFTScraper
-	address    common.Address
+	nftscraper    NFTScraper
+	address       common.Address
 	apiURLOpensea string
 	ticker        *time.Ticker
 }
 
 func NewSorareScraper(rdb *models.RelDB) *SorareScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}

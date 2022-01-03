@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"flag"
-	"github.com/jackc/pgconn"
 	"sync"
 	"time"
+
+	"github.com/jackc/pgconn"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -70,7 +71,7 @@ func handleData(dataChannel chan dia.NFT, wg *sync.WaitGroup, rdb *models.RelDB)
 					log.Infof("nft %s from class %s already in db. continue.", nft.TokenID, nft.NFTClass.Name)
 					continue
 				} else {
-					log.Errorf("postgres error saving nft %s: %s", nft.NFTClass.Name, nft.TokenID)
+					log.Errorf("postgres error saving nft %s -- %s: %v", nft.NFTClass.Name, nft.TokenID, err)
 				}
 			} else {
 				log.Errorf("Error saving nft from class %s with id %s: %v", nft.NFTClass.Name, nft.TokenID, err)

@@ -274,16 +274,15 @@ type OpenSeaCryptokittiesResponse struct {
 }
 
 type CryptoKittiesScraper struct {
-	nftscraper NFTScraper
-	address    common.Address
+	nftscraper       NFTScraper
+	address          common.Address
 	apiURLOpensea    string
 	cryptokittiesURL string
 	ticker           *time.Ticker
 }
 
 func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
-	connection, err := ethclient.Dial("https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6")
-	// connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
