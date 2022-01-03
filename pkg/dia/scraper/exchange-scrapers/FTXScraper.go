@@ -15,13 +15,13 @@ import (
 )
 
 const (
-	spotTradingPair        = "spot"
-	spotTradingBuy         = "buy"
-	maxConsecutiveErrCount = 10
+	ftxSpotTradingPair        = "spot"
+	ftxSpotTradingBuy         = "buy"
+	ftxMaxConsecutiveErrCount = 10
 )
 
-// FTXScrapper is a scraper for FTX
-type FTXScrapper struct {
+// FTXScraper is a scraper for FTX
+type FTXScraper struct {
 	api *ftx.Client
 	ws  *stream.Conn
 
@@ -46,9 +46,9 @@ type FTXScrapper struct {
 	db           *models.RelDB
 }
 
-// NewFTXScrapper returns a new FTX scraper
-func NewFTXScrapper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *FTXScrapper {
-	s := &FTXScrapper{
+// NewFTXScraper returns a new FTX scraper
+func NewFTXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *FTXScraper {
+	s := &FTXScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*FTXPairScraper),
@@ -77,9 +77,9 @@ func NewFTXScrapper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *FT
 }
 
 // Close unsubscribes data and closes any existing WebSocket connections, as well as channels of FTXPairScraper
-func (s *FTXScrapper) Close() error {
+func (s *FTXScraper) Close() error {
 	if s.isClosed() {
-		return errors.New("FTXScrapper: Already closed")
+		return errors.New("FTXScraper: Already closed")
 	}
 
 	s.signalShutdown.Do(func() {
@@ -92,19 +92,19 @@ func (s *FTXScrapper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades
-func (s *FTXScrapper) Channel() chan *dia.Trade {
+func (s *FTXScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
 // FetchAvailablePairs returns all traded pairs on FTX
-func (s *FTXScrapper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (s *FTXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	markets, err := s.api.Markets.All()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, m := range markets {
-		if m.Type != spotTradingPair {
+		if m.Type != ftxSpotTradingPair {
 			continue
 		}
 
@@ -119,21 +119,21 @@ func (s *FTXScrapper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 }
 
 // FillSymbolData adds the name to the asset underlying @symbol on FTX
-func (s *FTXScrapper) FillSymbolData(symbol string) (dia.Asset, error) {
+func (s *FTXScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-func (s *FTXScrapper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *FTXScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from the FTX scraper
-func (s *FTXScrapper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (s *FTXScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	if err := s.error(); err != nil {
 		return nil, err
 	}
 	if s.isClosed() {
-		return nil, errors.New("FTXScrapper: Call ScrapePair on closed scraper")
+		return nil, errors.New("FTXScraper: Call ScrapePair on closed scraper")
 	}
 
 	ps := &FTXPairScraper{
@@ -149,7 +149,7 @@ func (s *FTXScrapper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *FTXScrapper) mainLoop() {
+func (s *FTXScraper) mainLoop() {
 	defer s.cleanup()
 
 	go s.ping()
@@ -157,7 +157,7 @@ func (s *FTXScrapper) mainLoop() {
 	for {
 		select {
 		case <-s.shutdown:
-			log.Println("FTXScrapper: Shutting down main loop")
+			log.Println("FTXScraper: Shutting down main loop")
 			return
 		default:
 		}
@@ -165,12 +165,12 @@ func (s *FTXScrapper) mainLoop() {
 		resp, err := s.ws.Recv()
 		if err != nil {
 			s.consecutiveErrCount += 1
-			log.Errorf("FTXScrapper: Main loop error %s", err.Error())
-			if s.consecutiveErrCount > maxConsecutiveErrCount {
+			log.Errorf("FTXScraper: Main loop error %s", err.Error())
+			if s.consecutiveErrCount > ftxMaxConsecutiveErrCount {
 				s.setError(err)
-				log.Error("FTXScrapper: Shutting down main loop due to facing non-retryable errors")
+				log.Error("FTXScraper: Shutting down main loop due to facing non-retryable errors")
 
-				// Signal to other subscribers that the scrapper is internally shut down.
+				// Signal to other subscribers that the scraper is internally shut down.
 				go s.signalShutdown.Do(func() {
 					close(s.shutdown)
 				})
@@ -193,7 +193,7 @@ func (s *FTXScrapper) mainLoop() {
 
 			for _, trade := range v.Data {
 				volume := trade.Size
-				if trade.Side != spotTradingBuy {
+				if trade.Side != ftxSpotTradingBuy {
 					volume = -volume
 				}
 
@@ -222,62 +222,63 @@ func (s *FTXScrapper) mainLoop() {
 	}
 }
 
-func (s *FTXScrapper) ping() {
+func (s *FTXScraper) ping() {
 	t := time.NewTicker(time.Duration(15) * time.Second)
 	for {
 		select {
 		case <-s.shutdown:
-			log.Println("FTXScrapper: Shutting down ping loop")
+			log.Println("FTXScraper: Shutting down ping loop")
 
 			return
 		case <-t.C:
 			if err := s.ws.Ping(); err != nil {
-				log.Warningf("FTXScrapper: Sending pings fail %s", err.Error())
+				log.Warningf("FTXScraper: Sending pings fail %s", err.Error())
 			}
 		}
 	}
 }
 
-func (s *FTXScrapper) cleanup() {
+func (s *FTXScraper) cleanup() {
 	if err := s.ws.Close(); err != nil {
 		s.setError(err)
 	}
 
+	close(s.chanTrades)
 	s.close()
 	s.signalShutdownDone.Do(func() {
 		close(s.shutdownDone)
 	})
 }
 
-func (s *FTXScrapper) error() error {
+func (s *FTXScraper) error() error {
 	s.errMutex.RLock()
 	defer s.errMutex.RUnlock()
 
 	return s.err
 }
 
-func (s *FTXScrapper) setError(err error) {
+func (s *FTXScraper) setError(err error) {
 	s.errMutex.Lock()
 	defer s.errMutex.Unlock()
 
 	s.err = err
 }
 
-func (s *FTXScrapper) isClosed() bool {
+func (s *FTXScraper) isClosed() bool {
 	s.closedMutex.RLock()
 	defer s.closedMutex.RUnlock()
 
 	return s.closed
 }
 
-func (s *FTXScrapper) close() {
+func (s *FTXScraper) close() {
 	s.closedMutex.Lock()
 	defer s.closedMutex.Unlock()
 
 	s.closed = true
 }
 
-func (s *FTXScrapper) subscribe(pair dia.ExchangePair) error {
+func (s *FTXScraper) subscribe(pair dia.ExchangePair) error {
 	if err := s.error(); err != nil {
 		return err
 	}
@@ -288,7 +289,7 @@ func (s *FTXScrapper) subscribe(pair dia.ExchangePair) error {
 	return s.ws.Subscribe(stream.ChannelTrades, pair.ForeignName)
 }
 
-func (s *FTXScrapper) unsubscribe(pair dia.ExchangePair) error {
+func (s *FTXScraper) unsubscribe(pair dia.ExchangePair) error {
 	if err := s.error(); err != nil {
 		return err
 	}
@@ -301,7 +302,7 @@ func (s *FTXScrapper) unsubscribe(pair dia.ExchangePair) error {
 
 // FTXPairScraper implements PairScraper for FTX
 type FTXPairScraper struct {
-	parent *FTXScrapper
+	parent *FTXScraper
 	pair   dia.ExchangePair
 	closed bool
 }
