@@ -94,7 +94,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 		}
 	}
 
-	scraper.lastBlockNumber = uint64(12453867)
+	// scraper.lastBlockNumber = uint64(12453867)
 	filterer, err := cryptopunk.NewCryptoPunksMarketFilterer(scraper.contractAddress, scraper.tradescraper.ethConnection)
 	if err != nil {
 		return err
