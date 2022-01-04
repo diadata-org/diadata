@@ -33,8 +33,6 @@ const (
 	openSeaNFTContractType = "ERC721"
 
 	OpenSea = "OpenSea"
-
-	alchemyapi = "https://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6"
 )
 
 type OpenSeaScraperConfig struct {
@@ -161,10 +159,9 @@ func init() {
 func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 	ctx := context.Background()
 
-	eth, err := ethclient.Dial(alchemyapi)
+	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
-		log.Errorf("unable to get ethereum client: %s", err.Error())
-		return nil
+		log.Error("Error connecting Eth Client")
 	}
 
 	s := &OpenSeaScraper{

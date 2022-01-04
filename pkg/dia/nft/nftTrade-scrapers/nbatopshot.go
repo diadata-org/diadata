@@ -174,8 +174,8 @@ func (scraper *NBATopshotScraper) GetAllMomentsPurchased(startheight uint64) (pu
 		}
 	}
 
-	log.Infof("make flow client at startheight %v: ", startheight)
-	log.Infof("currentIndex: %v\n", currentIndex)
+	// log.Infof("make flow client at startheight %v: ", startheight)
+	// log.Infof("currentIndex: %v\n", currentIndex)
 
 	flowClient, err := flowhelper.GetFlowClient(startheight)
 	if err != nil {
@@ -274,8 +274,8 @@ func (scraper *NBATopshotScraper) GetAllDepositMoments(startheight uint64) (depo
 		}
 	}
 
-	log.Infof("make flow client at startheight %v: ", startheight)
-	log.Infof("currentIndex: %v\n", currentIndex)
+	// log.Infof("make flow client at startheight %v: ", startheight)
+	// log.Infof("currentIndex: %v\n", currentIndex)
 
 	flowClient, err := flowhelper.GetFlowClient(startheight)
 	if err != nil {

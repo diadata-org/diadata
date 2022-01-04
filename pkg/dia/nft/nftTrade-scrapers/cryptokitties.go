@@ -11,11 +11,12 @@ import (
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
@@ -31,7 +32,7 @@ type CryptoKittiesScraper struct {
 }
 
 func NewCryptoKittiesScraper(rdb *models.RelDB) *CryptoKittiesScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}

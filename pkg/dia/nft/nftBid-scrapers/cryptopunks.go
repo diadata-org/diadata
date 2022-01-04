@@ -120,11 +120,11 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 		}, nil, nil)
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
-				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				log.Warn("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
-			fmt.Println("error filtering FilterPunkBought: ", err)
+			log.Error("error filtering FilterPunkBought: ", err)
 			return err
 		}
 
@@ -151,7 +151,7 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 				TxHash:        iterBid.Event.Raw.TxHash.Hex(),
 				Exchange:      "CryptopunkMarket",
 			}
-			fmt.Printf("got bid at time %v: %v\n", bid.Timestamp, bid)
+			log.Infof("got bid at time %v: %v\n", bid.Timestamp, bid)
 			scraper.GetBidChannel() <- bid
 		}
 		break

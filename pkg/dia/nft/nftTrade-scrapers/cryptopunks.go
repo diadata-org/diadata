@@ -12,13 +12,14 @@ import (
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	// "github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
@@ -34,14 +35,10 @@ type CryptoPunkScraper struct {
 }
 
 func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
-	// connection, err := ethclient.Dial("node url")
-	// if err != nil {
-	// 	log.Error("Error connecting Eth Client")
-	// }
 
 	tradeScraper := TradeScraper{
 		shutdown:      make(chan nothing),
@@ -128,11 +125,11 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 		}, nil, nil, nil)
 		if err != nil {
 			if err.Error() == "query returned more than 10000 results" {
-				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				log.Warn("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
-			fmt.Println("error filtering FilterPunkBought: ", err)
+			log.Error("error filtering FilterPunkBought: ", err)
 			return err
 		}
 
@@ -182,14 +179,14 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				if err != nil {
 					log.Error("could not find last bid: ", err)
 				}
-				fmt.Println("value is zero. Fetch from bids..")
-				fmt.Println(".. value of bid: ", bid.Value)
-				fmt.Println("block of bid: ", bid.BlockNumber)
-				fmt.Println("position in block: ", bid.BlockPosition)
-				fmt.Println("from address of bid: ", bid.FromAddress)
-				fmt.Println("----------")
-				fmt.Println("block of trade: ", iter.Event.Raw.BlockNumber)
-				fmt.Println("to address of trade: ", transferEvent.To.Hex())
+				log.Info("value is zero. Fetch from bids..")
+				log.Info(".. value of bid: ", bid.Value)
+				log.Info("block of bid: ", bid.BlockNumber)
+				log.Info("position in block: ", bid.BlockPosition)
+				log.Info("from address of bid: ", bid.FromAddress)
+				log.Info("----------")
+				log.Info("block of trade: ", iter.Event.Raw.BlockNumber)
+				log.Info("to address of trade: ", transferEvent.To.Hex())
 				if transferEvent.To.Hex() == bid.FromAddress {
 					price = bid.Value
 				} else {
@@ -212,18 +209,12 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			}
 			scraper.GetTradeChannel() <- trade
 
-			log.Infof("got trade: ")
-			log.Infof("iter: %v", iter)
+			log.Info("got trade: ")
 			log.Info("price: ", price)
 			log.Info("from address: ", iter.Event.FromAddress)
 			log.Info("to address: ", iter.Event.ToAddress)
-			log.Info("to address(from the tx Transfer event): ", transferEvent.To)
 			log.Info("tx: ", iter.Event.Raw.TxHash)
-			log.Info("blockNumber: ", big.NewInt(int64(iter.Event.Raw.BlockNumber)))
 			log.Info("id: ", iter.Event.PunkIndex.String())
-			log.Info("-----------------------------------------------")
-			log.Info(" ")
-			log.Info("-----------------------------------------------")
 		}
 		break
 	}

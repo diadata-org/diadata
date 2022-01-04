@@ -20,6 +20,9 @@ const (
 	FlowAPI9       = "access-001.mainnet9.nodes.onflow.org:9000"
 	FlowAPI10      = "access-001.mainnet10.nodes.onflow.org:9000"
 	FlowAPI11      = "access-001.mainnet11.nodes.onflow.org:9000"
+	FlowAPI12      = "access-001.mainnet12.nodes.onflow.org:9000"
+	FlowAPI13      = "access-001.mainnet13.nodes.onflow.org:9000"
+	FlowAPI14      = "access-001.mainnet14.nodes.onflow.org:9000"
 	FlowAPICurrent = "access.mainnet.nodes.onflow.org:9000"
 	RequestLimit   = uint64(249)
 )
@@ -36,6 +39,9 @@ var (
 	RootHeight9       = uint64(14892104)
 	RootHeight10      = uint64(15791891)
 	RootHeight11      = uint64(16755602)
+	RootHeight12      = uint64(17544523)
+	RootHeight13      = uint64(18587478)
+	RootHeight14      = uint64(19050753)
 	RootHeightCurrent = uint64(17544523)
 	RootHeights       = []uint64{
 		RootHeight1,
@@ -49,6 +55,9 @@ var (
 		RootHeight9,
 		RootHeight10,
 		RootHeight11,
+		RootHeight12,
+		RootHeight13,
+		RootHeight14,
 		RootHeightCurrent,
 	}
 )
@@ -59,6 +68,12 @@ func GetFlowClient(startheight uint64) (*client.Client, error) {
 	if startheight >= RootHeightCurrent {
 		fmt.Printf("make flow client at current level with: %s\n", FlowAPICurrent)
 		return client.New(FlowAPICurrent, grpc.WithInsecure())
+	} else if startheight >= RootHeight14 {
+		return client.New(FlowAPI14, grpc.WithInsecure())
+	} else if startheight >= RootHeight13 {
+		return client.New(FlowAPI13, grpc.WithInsecure())
+	} else if startheight >= RootHeight12 {
+		return client.New(FlowAPI12, grpc.WithInsecure())
 	} else if startheight >= RootHeight11 {
 		return client.New(FlowAPI11, grpc.WithInsecure())
 	} else if startheight >= RootHeight10 {
