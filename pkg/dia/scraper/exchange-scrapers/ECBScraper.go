@@ -188,7 +188,7 @@ func (s *ECBScraper) Update() error {
 					Source: "ECB",
 				}
 
-				log.Printf("writing trade %#v \n", t.Pair)
+				log.Printf("writing trade %#v ", t.Pair)
 
 				s.chanTrades <- t
 				c := valueCube.Currency
@@ -214,6 +214,15 @@ func (s *ECBScraper) Update() error {
 		if err != nil {
 			return err
 		}
+	}
+	err = s.datastore.ExecuteRedisPipe()
+	if err != nil {
+		log.Error("execute redis pipe: ", err)
+	}
+
+	err = s.datastore.FlushRedisPipe()
+	if err != nil {
+		log.Error("flush redis pipe: ", err)
 	}
 	log.Info("Update done")
 	return err
