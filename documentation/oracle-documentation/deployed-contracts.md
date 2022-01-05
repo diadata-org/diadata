@@ -6,6 +6,10 @@ description: Overview over deployed oracle contracts on our supported chains
 
 DIA operates oracles on multiple blockchains. Here, we provide an overview over the deployed oracle contracts on each supported chain.
 
+DIA Development Oracle contracts are smart contracts that provide a selected range of asset prices on various blockchains for live testing on a respective Mainnet and Testnet.\
+The contracts are upgraded and exchanged on a rolling basis and are not maintained indefinitely.\
+DIA Development Oracle contracts are not intended to be integrated in a dApp. DIA deploys dedicated contracts for dApps. Please request a dedicated oracle by contacting the team on [Discord](https://discord.com/invite/zFmXtPFgQj) or the [DIA DAO Forum](https://dao.diadata.org).
+
 ### Ethereum
 
 {% tabs %}
