@@ -29,6 +29,9 @@ const (
 	// cryptoDotComTaskMaxRetry is a max retry value used when retrying subscribe/unsubscribe trades
 	cryptoDotComTaskMaxRetry = 20
 
+	// cryptoDotComConnMaxRetry is a max retry value used when retrying to create a new connection
+	cryptoDotComConnMaxRetry = 50
+
 	// cryptoDotComRateLimitError is a rate limit error code
 	cryptoDotComRateLimitError = 10006
 )
@@ -142,6 +145,10 @@ type CryptoDotComScraper struct {
 	db           *models.RelDB
 	taskCount    int32
 	tasks        sync.Map
+
+	// used to handle connection retry
+	connMutex      sync.RWMutex
+	connRetryCount int
 }
 
 // NewCryptoDotComScraper returns a new Crypto.com scraper
@@ -155,21 +162,15 @@ func NewCryptoDotComScraper(exchange dia.Exchange, scrape bool, relDB *models.Re
 		db:           relDB,
 	}
 
-	conn, _, err := ws.DefaultDialer.Dial(cryptoDotComWSEndpoint, nil)
-	if err != nil {
+	if err := s.newConn(); err != nil {
 		log.Error(err)
 
 		return nil
 	}
 
 	s.rl = ratelimit.New(cryptoDotComWSRateLimitPerSec)
-	s.ws = conn
 
 	if scrape {
-		// Crypto.com recommends adding a 1-second sleep after establishing the websocket connection, and before requests are sent
-		// to avoid occurrences of rate-limit (`TOO_MANY_REQUESTS`) errors.
-		// https://exchange-docs.crypto.com/spot/index.html?javascript#websocket-subscriptions
-		time.Sleep(time.Duration(1) * time.Second)
 		go s.mainLoop()
 	}
 
@@ -245,7 +246,7 @@ func (s *CryptoDotComScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 		parent: s,
 		pair:   pair,
 	}
-	if err := s.subscribe(pair); err != nil {
+	if err := s.subscribe([]dia.ExchangePair{pair}); err != nil {
 		return nil, err
 	}
 
@@ -264,11 +265,19 @@ func (s *CryptoDotComScraper) mainLoop() {
 		}
 
 		var res cryptoDotComWSResponse
-		if err := s.ws.ReadJSON(&res); err != nil {
-			s.setError(err)
-			log.Errorf("CryptoDotComScraper: Shutting down main loop due to facing non-retryable errors, err=%s", err.Error())
+		if err := s.wsConn().ReadJSON(&res); err != nil {
+			log.Warnf("CryptoDotComScraper: Creating a new connection caused by err=%s", err.Error())
 
-			return
+			if retryErr := s.retryConnection(); retryErr != nil {
+			   s.setError(retryErr)
+			   log.Errorf("CryptoDotComScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
+
+			   return
+			}
+
+			log.Info("CryptoDotComScraper: Successfully created a new connection")
+
+			continue
 		}
 		if res.Code == cryptoDotComRateLimitError {
 			if err := s.retryTask(res.ID); err != nil {
@@ -355,17 +364,42 @@ func (s *CryptoDotComScraper) mainLoop() {
 	}
 }
 
+func (s *CryptoDotComScraper) newConn() error {
+	conn, _, err := ws.DefaultDialer.Dial(cryptoDotComWSEndpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	// Crypto.com recommends adding a 1-second sleep after establishing the websocket connection, and before requests are sent
+	// to avoid occurrences of rate-limit (`TOO_MANY_REQUESTS`) errors.
+	// https://exchange-docs.crypto.com/spot/index.html?javascript#websocket-subscriptions
+	time.Sleep(time.Duration(1) * time.Second)
+
+	defer s.connMutex.Unlock()
+	s.connMutex.Lock()
+	s.ws = conn
+
+	return nil
+}
+
+func (s *CryptoDotComScraper) wsConn() *ws.Conn {
+	defer s.connMutex.RUnlock()
+	s.connMutex.RLock()
+
+	return s.ws
+}
+
 func (s *CryptoDotComScraper) ping(id int) error {
 	s.rl.Take()
 
-	return s.ws.WriteJSON(&cryptoDotComWSRequest{
+	return s.wsConn().WriteJSON(&cryptoDotComWSRequest{
 		ID:     id,
 		Method: "public/respond-heartbeat",
 	})
 }
 
 func (s *CryptoDotComScraper) cleanup() {
-	if err := s.ws.Close(); err != nil {
+	if err := s.wsConn().Close(); err != nil {
 		s.setError(err)
 	}
 
@@ -404,34 +438,69 @@ func (s *CryptoDotComScraper) close() {
 	s.closed = true
 }
 
-func (s *CryptoDotComScraper) subscribe(pair dia.ExchangePair) error {
+func (s *CryptoDotComScraper) subscribe(pairs []dia.ExchangePair) error {
+	channels := make([]string, len(pairs))
+	for idx, pair := range pairs {
+		channels[idx] = "trade." + pair.ForeignName
+		s.pairScrapers.Store(pair.ForeignName, pair)
+	}
+
 	taskID := int(atomic.AddInt32(&s.taskCount, 1))
 	task := cryptoDotComWSTask{
 		Method: "subscribe",
 		Params: cryptoDotComWSRequestParams{
-			Channels: []string{"trade." + pair.ForeignName},
+			Channels: channels,
 		},
 		RetryCount: 0,
 	}
 	s.tasks.Store(taskID, task)
-	s.pairScrapers.Store(pair.ForeignName, pair)
 
 	return s.send(taskID, task)
 }
 
-func (s *CryptoDotComScraper) unsubscribe(pair dia.ExchangePair) error {
+func (s *CryptoDotComScraper) unsubscribe(pairs []dia.ExchangePair) error {
+	channels := make([]string, len(pairs))
+	for idx, pair := range pairs {
+		channels[idx] = "trade." + pair.ForeignName
+		s.pairScrapers.Delete(pair.ForeignName)
+	}
+
 	taskID := int(atomic.AddInt32(&s.taskCount, 1))
 	task := cryptoDotComWSTask{
 		Method: "unsubscribe",
 		Params: cryptoDotComWSRequestParams{
-			Channels: []string{"trade." + pair.ForeignName},
+			Channels: channels,
 		},
 		RetryCount: 0,
 	}
 	s.tasks.Store(taskID, task)
-	s.pairScrapers.Delete(pair.ForeignName)
 
 	return s.send(taskID, task)
+}
+
+func (s *CryptoDotComScraper) retryConnection() error {
+	s.connRetryCount += 1
+	if s.connRetryCount > cryptoDotComConnMaxRetry {
+		return errors.New("CryptoDotComPairScraper: Reached max retry connection")
+	}
+	if err := s.wsConn().Close(); err != nil {
+		return err
+	}
+	if err := s.newConn(); err != nil {
+		return err
+	}
+
+	var pairs []dia.ExchangePair
+	s.pairScrapers.Range(func(key, value interface{}) bool {
+		pair := value.(dia.ExchangePair)
+		pairs = append(pairs, pair)
+		return true
+	})
+	if err := s.subscribe(pairs); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *CryptoDotComScraper) retryTask(taskID int) error {
@@ -455,7 +524,7 @@ func (s *CryptoDotComScraper) retryTask(taskID int) error {
 func (s *CryptoDotComScraper) send(taskID int, task cryptoDotComWSTask) error {
 	s.rl.Take()
 
-	return s.ws.WriteJSON(&cryptoDotComWSRequest{
+	return s.wsConn().WriteJSON(&cryptoDotComWSRequest{
 		ID:     taskID,
 		Method: task.Method,
 		Params: task.Params,
@@ -489,7 +558,7 @@ func (p *CryptoDotComPairScraper) Close() error {
 	if p.closed {
 		return errors.New("CryptoDotComPairScraper: Already closed")
 	}
-	if err := p.parent.unsubscribe(p.pair); err != nil {
+	if err := p.parent.unsubscribe([]dia.ExchangePair{p.pair}); err != nil {
 		return err
 	}
 
