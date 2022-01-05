@@ -26,7 +26,6 @@ func main() {
 	/*
 	 * Read in Oracle address
 	 */
-	fmt.Println("--")
 
 	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
 	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys", "File with wallet secrets")
@@ -36,8 +35,6 @@ func main() {
 	var deviationPermille = flag.Int("deviationPermille", 10, "Permille of deviation to trigger an oracle update")
 	var chainId = flag.Int64("chainId", 137, "Chain-ID of the network to connect to")
 	flag.Parse()
-
-	fmt.Println("--")
 
 	/*
 	 * Read secrets for unlocking the ETH account

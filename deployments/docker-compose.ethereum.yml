@@ -250,11 +250,11 @@ services:
   diaoracleservice-avalanche:
     build:
       context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche
     networks:
       - scrapers-network
-    command: --deployedContract=0x226585bff09d87bb4d985520ae6681d2fe775e63 --secretsFile=/run/secrets/oracle_keys_avalanche --blockchainNode="https://api.avax.network/ext/bc/C/rpc" --chainId=43114 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+    command: --deployedContract=0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31 --secretsFile=/run/secrets/oracle_keys_avalanche --blockchainNode="https://api.avax.network/ext/bc/C/rpc" --chainId=43114 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
     logging:
       options:
         max-size: "50m"
