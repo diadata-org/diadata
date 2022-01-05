@@ -50,9 +50,9 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xf44b3c104f39209cd8420a1d3ca4338818aa72ab](https://polygonscan.com/address/0xf44b3c104f39209cd8420a1d3ca4338818aa72ab) | Key/Value Oracle V2 |
+| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf44b3c104f39209cd8420a1d3ca4338818aa72ab](https://polygonscan.com/address/0xf44b3c104f39209cd8420a1d3ca4338818aa72ab) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 
 
 {% endtab %}
@@ -104,7 +104,7 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://snowtrace.io/address/0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31">0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31</a></td><td>Key/Value Oracle V2</td><td></td></tr></tbody></table>
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://snowtrace.io/address/0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31">0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2">Key/Value Oracle V2</a></td><td></td></tr></tbody></table>
 {% endtab %}
 
 {% tab title="Fuji Testnet" %}
@@ -140,9 +140,9 @@ __
 
 {% tabs %}
 {% tab title="Moonriver" %}
-| Published Assets                     | Smart Contract Address                                                                                                         | Oracle Type         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x11f74b94afb5968119c98ea277a2b73208bb39ab](https://moonriver.moonscan.io/address/0x11f74b94afb5968119c98ea277a2b73208bb39ab) | Key/Value Oracle V2 |
+| Published Assets                     | Smart Contract Address                                                                                                         | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x11f74b94afb5968119c98ea277a2b73208bb39ab](https://moonriver.moonscan.io/address/0x11f74b94afb5968119c98ea277a2b73208bb39ab) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 
 {% tab title="Moonbeam Testnet" %}
@@ -156,7 +156,7 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://arbiscan.io/address/0xd041478644048d9281f88558e6088e9da97df624">0xd041478644048d9281f88558e6088e9da97df624</a></td><td>Key/Value Oracle V2</td><td></td></tr></tbody></table>
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://arbiscan.io/address/0xd041478644048d9281f88558e6088e9da97df624">0xd041478644048d9281f88558e6088e9da97df624</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2">Key/Value Oracle V2</a></td><td></td></tr></tbody></table>
 {% endtab %}
 {% endtabs %}
 

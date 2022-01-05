@@ -47,7 +47,7 @@ contract DIAOracleV2 {
 
 ```
 
-}
+Version 2 of the Key/Value oracle can be added as an interface in other contracts using all current Solidity versions with the visibility change of the `getValue()` function from `public` to `external`.
 
 ### DIA Key-Value Oracle Contract
 
