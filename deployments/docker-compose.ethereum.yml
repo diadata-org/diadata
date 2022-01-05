@@ -134,6 +134,20 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys_matic
+      
+  oraclev2service-matic:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleV2Service-matic
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oraclev2service-matic
+    networks:
+      - scrapers-network
+    command: --deployedContract=?? --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid" --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_matic
 
   oracleservice-matic-mumbai:
     build:

@@ -1,0 +1,15 @@
+FROM golang:1.14 as build
+
+WORKDIR $GOPATH
+
+COPY . .
+
+WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/oracleV2Service-matic
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/oracleV2Service-matic /bin/oracleV2Service-matic
+
+ENTRYPOINT ["oracleV2Service-matic"]
