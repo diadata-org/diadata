@@ -6,7 +6,7 @@ services:
       ethereum/client-go:stable
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
+    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "snap" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
     ports: 
       - mode: host
         target: 8545
