@@ -1,12 +1,13 @@
 version: '3.2'
 
 services:
+
   geth:
     image:
-      ethereum/client-go:stable
+      ethereum/client-go:v1.10.13
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "snap" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
+    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
     ports: 
       - mode: host
         target: 8545
@@ -23,771 +24,771 @@ services:
         delay: 2s
         window: 20s
 
-  oracleservice-eth:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-eth
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-eth
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef --chainId=1
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
+#   oracleservice-eth:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-eth
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-eth
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef --chainId=1
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys
 
-  oracleservice-ropsten:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-ropsten
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x1e27d6b118e2e618e1b902e85428a27f49edd5ec --secretsFile=/run/secrets/oracle_keys_ropsten --blockchainNode="https://ropsten.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=3
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_ropsten
+#   oracleservice-ropsten:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-ropsten
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x1e27d6b118e2e618e1b902e85428a27f49edd5ec --secretsFile=/run/secrets/oracle_keys_ropsten --blockchainNode="https://ropsten.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=3
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_ropsten
 
-  oracleservice-kovan:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-kovan
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xb73db1a6a85219742fbd0fc7cc275c62209aa660 --secretsFile=/run/secrets/oracle_keys_kovan --blockchainNode="https://kovan.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=42
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_kovan
+#   oracleservice-kovan:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-kovan
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xb73db1a6a85219742fbd0fc7cc275c62209aa660 --secretsFile=/run/secrets/oracle_keys_kovan --blockchainNode="https://kovan.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=42
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_kovan
 
-  oracleservice-xdai:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-xdai
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xcf2374824c2ff84f07ff4adca074dfedda5c7569 --secretsFile=/run/secrets/oracle_keys_xdai_generic --blockchainNode="https://rpc.xdaichain.com/" --sleepSeconds=300 --frequencySeconds=86400 --chainId=100
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_xdai_generic
+#   oracleservice-xdai:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-xdai
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xcf2374824c2ff84f07ff4adca074dfedda5c7569 --secretsFile=/run/secrets/oracle_keys_xdai_generic --blockchainNode="https://rpc.xdaichain.com/" --sleepSeconds=300 --frequencySeconds=86400 --chainId=100
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_xdai_generic
 
-  oracleservice-xdai-sokol:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-xdai-sokol
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78 --secretsFile=/run/secrets/oracle_keys_xdai_generic_sokol --blockchainNode="https://sokol.poa.network" --sleepSeconds=300 --frequencySeconds=86400 --chainId=77
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_xdai_generic_sokol
+#   oracleservice-xdai-sokol:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-xdai-sokol
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78 --secretsFile=/run/secrets/oracle_keys_xdai_generic_sokol --blockchainNode="https://sokol.poa.network" --sleepSeconds=300 --frequencySeconds=86400 --chainId=77
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_xdai_generic_sokol
 
-  oracleservice-bsc-testnet:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc-testnet
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc_testnet --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=3600 --chainId=97
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_bsc_testnet
+#   oracleservice-bsc-testnet:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc-testnet
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc_testnet --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=3600 --chainId=97
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_bsc_testnet
 
-  oracleservice-bsc:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc --blockchainNode="https://bsc-dataseed.binance.org/" --sleepSeconds=20 --frequencySeconds=86400 --chainId=56
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_bsc
+#   oracleservice-bsc:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-bsc
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf35bEE4B6727D2D1c9167C5fB4D51855D6bB693c --secretsFile=/run/secrets/oracle_keys_bsc --blockchainNode="https://bsc-dataseed.binance.org/" --sleepSeconds=20 --frequencySeconds=86400 --chainId=56
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_bsc
 
-  oracleservice-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-matic
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x8e687a93a969f0bf125f1154738ca6dcc36af57f --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid" --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_matic
+#   oracleservice-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-matic
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x8e687a93a969f0bf125f1154738ca6dcc36af57f --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid" --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_matic
 
-  oracleservice-matic-mumbai:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-matic
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-matic-mumbai
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xa3d2127f85041729fec05ca483b302ddb806d50a --secretsFile=/run/secrets/oracle_keys_matic_mumbai --blockchainNode="https://rpc-mumbai.matic.today" --sleepSeconds=20 --frequencySeconds=86400 --chainId=80001
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_matic_mumbai
+#   oracleservice-matic-mumbai:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-matic
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-matic-mumbai
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xa3d2127f85041729fec05ca483b302ddb806d50a --secretsFile=/run/secrets/oracle_keys_matic_mumbai --blockchainNode="https://rpc-mumbai.matic.today" --sleepSeconds=20 --frequencySeconds=86400 --chainId=80001
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_matic_mumbai
 
-  oracleservice-moonbeam:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-moonbeam
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-moonbeam
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41 --secretsFile=/run/secrets/oracle_keys_moonbeam --blockchainNode="https://rpc.testnet.moonbeam.network" --sleepSeconds=20 --frequencySeconds=86400 --chainId=1287
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_moonbeam
+#   oracleservice-moonbeam:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService-moonbeam
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-moonbeam
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x5425F5d4ba2B7dcb277C369cCbCb5f0E7185FB41 --secretsFile=/run/secrets/oracle_keys_moonbeam --blockchainNode="https://rpc.testnet.moonbeam.network" --sleepSeconds=20 --frequencySeconds=86400 --chainId=1287
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_moonbeam
 
-  diadahliaoracleservice-celo:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDahliaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadahliaoracleservice-celo
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x7d1e0d8b0810730e85828eae1ee1695a95eecf4b --secretsFile=/run/secrets/oracle_keys_dahlia_celo --blockchainNode="https://forno.celo.org" --chainId=42220 --sleepSeconds=10 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dahlia_celo
+#   diadahliaoracleservice-celo:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDahliaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadahliaoracleservice-celo
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x7d1e0d8b0810730e85828eae1ee1695a95eecf4b --secretsFile=/run/secrets/oracle_keys_dahlia_celo --blockchainNode="https://forno.celo.org" --chainId=42220 --sleepSeconds=10 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dahlia_celo
 
-  diaoracleservice-moonriver:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-moonriver
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x11f74b94afb5968119c98ea277a2b73208bb39ab --secretsFile=/run/secrets/oracle_keys_moonriver --blockchainNode="https://moonriver.api.onfinality.io/public" --chainId=1285 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_moonriver
+#   diaoracleservice-moonriver:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-moonriver
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x11f74b94afb5968119c98ea277a2b73208bb39ab --secretsFile=/run/secrets/oracle_keys_moonriver --blockchainNode="https://moonriver.api.onfinality.io/public" --chainId=1285 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_moonriver
 
-  diadotoracleservice-moonriver:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDotOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadotoracleservice-moonriver
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x07cdb153645d40ca90aa96e568936d5be967c480 --secretsFile=/run/secrets/oracle_keys_dot_moonriver --blockchainNode="https://moonriver.api.onfinality.io/public" --chainId=1285 --sleepSeconds=10 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dot_moonriver
+#   diadotoracleservice-moonriver:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDotOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadotoracleservice-moonriver
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x07cdb153645d40ca90aa96e568936d5be967c480 --secretsFile=/run/secrets/oracle_keys_dot_moonriver --blockchainNode="https://moonriver.api.onfinality.io/public" --chainId=1285 --sleepSeconds=10 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dot_moonriver
 
-  diaoracleservice-arbitrum:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-arbitrum
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xd041478644048d9281f88558e6088e9da97df624 --secretsFile=/run/secrets/oracle_keys_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=86400
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_arbitrum
+#   diaoracleservice-arbitrum:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-arbitrum
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xd041478644048d9281f88558e6088e9da97df624 --secretsFile=/run/secrets/oracle_keys_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=86400
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_arbitrum
 
-  oraclev2service-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleV2Service-matic
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oraclev2service-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf44b3c104f39209cd8420a1d3ca4338818aa72ab --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid" --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_matic
+#   oraclev2service-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleV2Service-matic
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oraclev2service-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf44b3c104f39209cd8420a1d3ca4338818aa72ab --secretsFile=/run/secrets/oracle_keys_matic --blockchainNode="https://polygon-mainnet.g.alchemy.com/v2/v4QY39R1qGD-v2-4Qk2W7e6tYkO_5Jid" --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_matic
 
 
 
-        #diasperaxoracleservice-arbitrum:
-        #build:
-        #context: $GOPATH
-        #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-        #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
-        #networks:
-        #- scrapers-network
-        #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
-        #logging:
-        #options:
-        #max-size: "50m"
-        #secrets:
-        #- oracle_keys_sperax_arbitrum
+#         #diasperaxoracleservice-arbitrum:
+#         #build:
+#         #context: $GOPATH
+#         #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#         #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
+#         #networks:
+#         #- scrapers-network
+#         #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://arb1.arbitrum.io/rpc" --chainId=42161 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
+#         #logging:
+#         #options:
+#         #max-size: "50m"
+#         #secrets:
+#         #- oracle_keys_sperax_arbitrum
 
-        #diasperaxoracleservice-arbitrum-rinkeby:
-        #build:
-        #context: $GOPATH
-        #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-        #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
-        #networks:
-        #- scrapers-network
-        #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://rinkeby.arbitrum.io/rpc" --chainId=421611 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
-        #logging:
-        #options:
-        #max-size: "50m"
-        #secrets:
-        #- oracle_keys_sperax_arbitrum
+#         #diasperaxoracleservice-arbitrum-rinkeby:
+#         #build:
+#         #context: $GOPATH
+#         #dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#         #image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diasperaxoracleservice-arbitrum
+#         #networks:
+#         #- scrapers-network
+#         #command: --deployedContract=0x18247845550ADd4193A3c3237e9019fdcbF22843 --secretsFile=/run/secrets/oracle_keys_sperax_arbitrum --blockchainNode="https://rinkeby.arbitrum.io/rpc" --chainId=421611 --sleepSeconds=20 --frequencySeconds=120 --deviationPermille=30
+#         #logging:
+#         #options:
+#         #max-size: "50m"
+#         #secrets:
+#         #- oracle_keys_sperax_arbitrum
 
-  diaoracleservice-avalanche:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31 --secretsFile=/run/secrets/oracle_keys_avalanche --blockchainNode="https://api.avax.network/ext/bc/C/rpc" --chainId=43114 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_avalanche
+#   diaoracleservice-avalanche:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31 --secretsFile=/run/secrets/oracle_keys_avalanche --blockchainNode="https://api.avax.network/ext/bc/C/rpc" --chainId=43114 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_avalanche
 
-  diaoracleservice-avalanche-fuji:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche-fuji
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x1cdfefc93d97e1b09e040a1f2d04b170eb60f4f4 --secretsFile=/run/secrets/oracle_keys_avalanche_fuji --blockchainNode="https://api.avax-test.network/ext/bc/C/rpc" --chainId=43113 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_avalanche_fuji
+#   diaoracleservice-avalanche-fuji:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-avalanche-fuji
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x1cdfefc93d97e1b09e040a1f2d04b170eb60f4f4 --secretsFile=/run/secrets/oracle_keys_avalanche_fuji --blockchainNode="https://api.avax-test.network/ext/bc/C/rpc" --chainId=43113 --deviationPermille=10 --sleepSeconds=20 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_avalanche_fuji
 
-  diaoracleservice-fantom:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-fantom
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f --secretsFile=/run/secrets/oracle_keys_fantom --blockchainNode="https://rpc.ftm.tools/" --chainId=250 --deviationPermille=10 --sleepSeconds=120 --frequencySeconds=3600
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_fantom
+#   diaoracleservice-fantom:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-fantom
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f --secretsFile=/run/secrets/oracle_keys_fantom --blockchainNode="https://rpc.ftm.tools/" --chainId=250 --deviationPermille=10 --sleepSeconds=120 --frequencySeconds=3600
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_fantom
 
-  diaoracleservice-metis:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-metis
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x6e6e633320ca9f2c8a8722c5f4a993d9a093462e --secretsFile=/run/secrets/oracle_keys_metis --blockchainNode="https://andromeda.metis.io/?owner=1088" --chainId=1088 --deviationPermille=50 --sleepSeconds=120 --frequencySeconds=7200
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_metis
+#   diaoracleservice-metis:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-metis
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x6e6e633320ca9f2c8a8722c5f4a993d9a093462e --secretsFile=/run/secrets/oracle_keys_metis --blockchainNode="https://andromeda.metis.io/?owner=1088" --chainId=1088 --deviationPermille=50 --sleepSeconds=120 --frequencySeconds=7200
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_metis
 
-  diaoracleservice-aurora:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-aurora
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f --secretsFile=/run/secrets/oracle_keys_aurora_testnet --blockchainNode="https://mainnet.aurora.dev" --chainId=1313161554 --deviationPermille=30 --sleepSeconds=120 --frequencySeconds=3600
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_aurora_testnet
+#   diaoracleservice-aurora:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-aurora
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f --secretsFile=/run/secrets/oracle_keys_aurora_testnet --blockchainNode="https://mainnet.aurora.dev" --chainId=1313161554 --deviationPermille=30 --sleepSeconds=120 --frequencySeconds=3600
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_aurora_testnet
 
-  diaoracleservice-aurora-testnet:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-aurora
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f --secretsFile=/run/secrets/oracle_keys_aurora_testnet --blockchainNode="https://testnet.aurora.dev" --chainId=1313161555 --deviationPermille=30 --sleepSeconds=120 --frequencySeconds=3600
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_aurora_testnet
+#   diaoracleservice-aurora-testnet:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-aurora
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf4e9c0697c6b35fbde5a17db93196afd7adfe84f --secretsFile=/run/secrets/oracle_keys_aurora_testnet --blockchainNode="https://testnet.aurora.dev" --chainId=1313161555 --deviationPermille=30 --sleepSeconds=120 --frequencySeconds=3600
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_aurora_testnet
 
-  diastrudeloracleservice-aurora:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://mainnet.aurora.dev" --chainId=1313161554 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_strudel_aurora
+#   diastrudeloracleservice-aurora:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://mainnet.aurora.dev" --chainId=1313161554 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_strudel_aurora
 
-  diastrudeloracleservice-aurora-testnet:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://testnet.aurora.dev" --chainId=1313161555 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_strudel_aurora
+#   diastrudeloracleservice-aurora-testnet:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStrudelOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastrudeloracleservice-aurora
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x230182ad3e21144cc091514b3ac0f5e94b8925a7 --secretsFile=/run/secrets/oracle_keys_strudel_aurora --blockchainNode="https://testnet.aurora.dev" --chainId=1313161555 --deviationPermille=0 --sleepSeconds=10 --frequencySeconds=120
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_strudel_aurora
 
-  diaoracleservice-shiden:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-shiden
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xce784f99f87dba11e0906e2fe954b08a8cc9815d --secretsFile=/run/secrets/oracle_keys_shiden --blockchainNode="https://rpc.shiden.astar.network:8545" --chainId=336 --sleepSeconds=20
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_shiden
+#   diaoracleservice-shiden:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-shiden
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xce784f99f87dba11e0906e2fe954b08a8cc9815d --secretsFile=/run/secrets/oracle_keys_shiden --blockchainNode="https://rpc.shiden.astar.network:8545" --chainId=336 --sleepSeconds=20
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_shiden
 
-  diaoracleservice-shiden-shibuya:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-shiden-shibuya
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x1232acd632dd75f874e357c77295da3f5cd7733e --secretsFile=/run/secrets/oracle_keys_shiden_shibuya --blockchainNode="https://rpc.shibuya.astar.network:8545" --chainId=81 --sleepSeconds=20
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_shiden_shibuya
+#   diaoracleservice-shiden-shibuya:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-shiden-shibuya
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x1232acd632dd75f874e357c77295da3f5cd7733e --secretsFile=/run/secrets/oracle_keys_shiden_shibuya --blockchainNode="https://rpc.shibuya.astar.network:8545" --chainId=81 --sleepSeconds=20
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_shiden_shibuya
 
-  oracleservice-plasm-dusty:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-plasm-dusty
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xfc450ac26d199e64f78d927d8502107c4e30d70b --secretsFile=/run/secrets/oracle_keys_plasm_dusty --blockchainNode="https://rpc.dusty.plasmnet.io:8545" --sleepSeconds=20 --frequencySeconds=86400 --chainId=80
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_plasm_dusty
+#   oracleservice-plasm-dusty:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-plasm-dusty
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xfc450ac26d199e64f78d927d8502107c4e30d70b --secretsFile=/run/secrets/oracle_keys_plasm_dusty --blockchainNode="https://rpc.dusty.plasmnet.io:8545" --sleepSeconds=20 --frequencySeconds=86400 --chainId=80
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_plasm_dusty
 
-  oracleservice-celo:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-celo
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xcd8e18890e416aa7ab09aa793b406c187747c687 --secretsFile=/run/secrets/oracle_keys_celo --blockchainNode="https://forno.celo.org" --sleepSeconds=20 --frequencySeconds=86400 --chainId=42220
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_celo
+#   oracleservice-celo:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice-celo
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xcd8e18890e416aa7ab09aa793b406c187747c687 --secretsFile=/run/secrets/oracle_keys_celo --blockchainNode="https://forno.celo.org" --sleepSeconds=20 --frequencySeconds=86400 --chainId=42220
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_celo
 
-  diacoingeckooracleservice-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xa14ce6091786a708cde547e1bf53911c78777ede --blockchainNode="https://rpc-mainnet.matic.network/" --secretsFile=/run/secrets/oracle_keys_matic_coingecko --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_matic_coingecko
+#   diacoingeckooracleservice-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xa14ce6091786a708cde547e1bf53911c78777ede --blockchainNode="https://rpc-mainnet.matic.network/" --secretsFile=/run/secrets/oracle_keys_matic_coingecko --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_matic_coingecko
 
-  diadfynoracleservice-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDfynOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadfynoracleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xe89DBC6Eb0106F85E50654187f739ce8250B6b4c --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --secretsFile=/run/secrets/oracle_keys_dfyn_matic --frequencySeconds=120 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dfyn_matic
+#   diadfynoracleservice-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDfynOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadfynoracleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xe89DBC6Eb0106F85E50654187f739ce8250B6b4c --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --secretsFile=/run/secrets/oracle_keys_dfyn_matic --frequencySeconds=120 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dfyn_matic
 
-  diaargooracleservice-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaArgoOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaargooracleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x987aeea14c3638766ef05f66e64f7ea38ddc8dcd --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --secretsFile=/run/secrets/oracle_keys_argo_matic --frequencySeconds=120 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_argo_matic
+#   diaargooracleservice-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaArgoOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaargooracleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x987aeea14c3638766ef05f66e64f7ea38ddc8dcd --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --secretsFile=/run/secrets/oracle_keys_argo_matic --frequencySeconds=120 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_argo_matic
 
-  diaargooracleservice-matic-mumbai:
-    depends_on: [diaargooracleservice-matic]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaargooracleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x987aeea14c3638766ef05f66e64f7ea38ddc8dcd --blockchainNode="https://rpc-mumbai.matic.today" --secretsFile=/run/secrets/oracle_keys_argo_matic --frequencySeconds=120 --chainId=80001
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_argo_matic
+#   diaargooracleservice-matic-mumbai:
+#     depends_on: [diaargooracleservice-matic]
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaargooracleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x987aeea14c3638766ef05f66e64f7ea38ddc8dcd --blockchainNode="https://rpc-mumbai.matic.today" --secretsFile=/run/secrets/oracle_keys_argo_matic --frequencySeconds=120 --chainId=80001
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_argo_matic
 
-  diacoingeckooracleservice-bsc:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-bsc
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x48140d0116964f05c97f08e0b3271d78b12506d8 --blockchainNode="https://bsc-dataseed.binance.org/" --secretsFile=/run/secrets/oracle_keys_bsc_coingecko --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=56
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_bsc_coingecko
+#   diacoingeckooracleservice-bsc:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-bsc
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x48140d0116964f05c97f08e0b3271d78b12506d8 --blockchainNode="https://bsc-dataseed.binance.org/" --secretsFile=/run/secrets/oracle_keys_bsc_coingecko --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=56
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_bsc_coingecko
 
-  diacoinmarketcaporacleservice-matic:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-matic
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xf7cd0f8a9d1fd0df200cf8a0a6875126457676b8 --blockchainNode="https://rpc-mainnet.matic.network/" --secretsFile=/run/secrets/oracle_keys_matic_coinmarketcap --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_matic_coinmarketcap
-      - Coinmarketcap-API.key
+#   diacoinmarketcaporacleservice-matic:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-matic
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xf7cd0f8a9d1fd0df200cf8a0a6875126457676b8 --blockchainNode="https://rpc-mainnet.matic.network/" --secretsFile=/run/secrets/oracle_keys_matic_coinmarketcap --numCoins=100 --sleepSeconds=20 --frequencySeconds=86400 --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_matic_coinmarketcap
+#       - Coinmarketcap-API.key
 
-  diacoingeckooracleservice-kovan:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-kovan
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x50e087d98a33ceb1ced159ad9255d6f228f2ef1c --numCoins=100 --secretsFile=/run/secrets/oracle_keys_kovan --blockchainNode="https://kovan.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=42
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_kovan
+#   diacoingeckooracleservice-kovan:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice-kovan
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x50e087d98a33ceb1ced159ad9255d6f228f2ef1c --numCoins=100 --secretsFile=/run/secrets/oracle_keys_kovan --blockchainNode="https://kovan.infura.io/v3/867c72bbf61a4002a28b8933fa601ffa" --sleepSeconds=300 --frequencySeconds=86400 --chainId=42
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_kovan
 
-  diajoosoracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaJoosOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diajoosoracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x07E4120dD7411a49e091a20FA0be33a183C35d60 --chainId=1
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
+#   diajoosoracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaJoosOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diajoosoracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x07E4120dD7411a49e091a20FA0be33a183C35d60 --chainId=1
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys
 
-  diaxdaioracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaXdaiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaxdaioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xa36514cd18ffcdec749c248b260d80be4dcdbbf1 --chainId=100
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_xdai
+#   diaxdaioracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaXdaiOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaxdaioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xa36514cd18ffcdec749c248b260d80be4dcdbbf1 --chainId=100
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_xdai
 
-  diawoworacleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaWowOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diawoworacleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x7f33a6f183f9e9f26290c1d74b9c638381eeb457 --secretsFile=/run/secrets/oracle_keys_wow_bsc --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_wow_bsc
+#   diawoworacleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaWowOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diawoworacleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x7f33a6f183f9e9f26290c1d74b9c638381eeb457 --secretsFile=/run/secrets/oracle_keys_wow_bsc --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_wow_bsc
 
-  diapcwsoracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaPcwsOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diapcwsoracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xfe210374bca3a37f879cc5462c7c7948803e6588 --secretsFile=/run/secrets/oracle_keys_pcws_bsc
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_pcws_bsc
+#   diapcwsoracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaPcwsOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diapcwsoracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xfe210374bca3a37f879cc5462c7c7948803e6588 --secretsFile=/run/secrets/oracle_keys_pcws_bsc
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_pcws_bsc
 
-  diadafioracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x35B49eDdB46dbc33336F3A0410008B7be98D4A3a --secretsFile=/run/secrets/oracle_keys_dafi_bsc --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dafi_bsc
+#   diadafioracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x35B49eDdB46dbc33336F3A0410008B7be98D4A3a --secretsFile=/run/secrets/oracle_keys_dafi_bsc --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dafi_bsc
 
-  diadafioracleservice-eth:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x09B114dAC9b0848819a59E944D631B98E06CDfA3 --secretsFile=/run/secrets/oracle_keys_dafi_eth --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30 --blockchainNode="http://159.69.120.42:8545" --chainId=1
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dafi_eth
+#   diadafioracleservice-eth:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDafiOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x09B114dAC9b0848819a59E944D631B98E06CDfA3 --secretsFile=/run/secrets/oracle_keys_dafi_eth --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30 --blockchainNode="http://159.69.120.42:8545" --chainId=1
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dafi_eth
 
-  diadafioracleservice-matic:
-    depends_on: [diadafioracleservice]
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x07dc1c67f3b99267a8ef83852e057d78338d5be6 --secretsFile=/run/secrets/oracle_keys_dafi_matic --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30 --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --chainId=137
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dafi_matic
+#   diadafioracleservice-matic:
+#     depends_on: [diadafioracleservice]
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadafioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x07dc1c67f3b99267a8ef83852e057d78338d5be6 --secretsFile=/run/secrets/oracle_keys_dafi_matic --frequencySeconds=30 --sleepSeconds=30 --deviationPermille=30 --blockchainNode="https://rpc-mainnet.matic.quiknode.pro" --chainId=137
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dafi_matic
 
-  diadowsoracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDowsOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadowsoracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xbe8c6782edea7b3871a4c9164601d29b8630ddae --secretsFile=/run/secrets/oracle_keys_dows_bsc --frequencySeconds=120 --sleepSeconds=120 --deviationBips=300 --blockchainNode="https://bsc-dataseed.binance.org/" --chainId=56
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_dows_bsc
+#   diadowsoracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaDowsOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diadowsoracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xbe8c6782edea7b3871a4c9164601d29b8630ddae --secretsFile=/run/secrets/oracle_keys_dows_bsc --frequencySeconds=120 --sleepSeconds=120 --deviationBips=300 --blockchainNode="https://bsc-dataseed.binance.org/" --chainId=56
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_dows_bsc
 
-  diaxdaioracleservice-sokol:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaXdaiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaxdaioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xba03d4bf8950128a7779c5c1e7899c6e39d29332 --chainId=77 --blockchainNode="https://sokol.poa.network" --secretsFile=/run/secrets/oracle_keys_cardstack_sokol
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_cardstack_sokol
+#   diaxdaioracleservice-sokol:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaXdaiOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaxdaioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0xba03d4bf8950128a7779c5c1e7899c6e39d29332 --chainId=77 --blockchainNode="https://sokol.poa.network" --secretsFile=/run/secrets/oracle_keys_cardstack_sokol
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_cardstack_sokol
 
-  diacoinmarketcaporacleservice-bsc:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-bsc
-    networks:
-      - scrapers-network
-    command: --numCoins=50 --deployedContract=0xbafee71d40babc12a3d0b2b8937ee62d3a070835 --blockchainNode="https://bsc-dataseed.binance.org/" --sleepSeconds=20 --frequencySeconds=86400 --secretsFile=/run/secrets/oracle_keys_bsc_cmc --chainId=56
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_bsc_cmc
-      - Coinmarketcap-API.key
+#   diacoinmarketcaporacleservice-bsc:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-bsc
+#     networks:
+#       - scrapers-network
+#     command: --numCoins=50 --deployedContract=0xbafee71d40babc12a3d0b2b8937ee62d3a070835 --blockchainNode="https://bsc-dataseed.binance.org/" --sleepSeconds=20 --frequencySeconds=86400 --secretsFile=/run/secrets/oracle_keys_bsc_cmc --chainId=56
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_bsc_cmc
+#       - Coinmarketcap-API.key
 
-  diacoinmarketcaporacleservice-bsc-testnet:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-bsc-testnet
-    networks:
-      - scrapers-network
-    command: --numCoins=50 --deployedContract=0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8 --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=86400 --secretsFile=/run/secrets/oracle_keys_cmc_bsc_testnet --chainId=97
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys_cmc_bsc_testnet
-      - Coinmarketcap-API.key
+#   diacoinmarketcaporacleservice-bsc-testnet:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice-bsc-testnet
+#     networks:
+#       - scrapers-network
+#     command: --numCoins=50 --deployedContract=0x42d44f1c45349d47d34976ce3a2ff0c3dd3210a8 --blockchainNode="https://data-seed-prebsc-1-s1.binance.org:8545" --sleepSeconds=20 --frequencySeconds=86400 --secretsFile=/run/secrets/oracle_keys_cmc_bsc_testnet --chainId=97
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys_cmc_bsc_testnet
+#       - Coinmarketcap-API.key
 
-  diascifioracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaScifiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diascifioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x814712cc9fa606a4b372b87cd27775959e052d9a --chainId=1
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
+#   diascifioracleservice:
+#     build:
+#       context: $GOPATH
+#       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaScifiOracleService
+#     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diascifioracleservice
+#     networks:
+#       - scrapers-network
+#     command: --deployedContract=0x814712cc9fa606a4b372b87cd27775959e052d9a --chainId=1
+#     logging:
+#       options:
+#         max-size: "50m"
+#     secrets:
+#       - oracle_keys
 
-secrets:
-  api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
-  oracle_keys:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
-  oracle_keys_xdai:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai.txt
-  oracle_keys_xdai_generic:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt
-  oracle_keys_xdai_generic_sokol:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt.sokol
-  oracle_keys_avalanche:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche.txt
-  oracle_keys_avalanche_fuji:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche_fuji.txt
-  oracle_keys_fantom:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_fantom.txt
-  oracle_keys_metis:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_metis.txt
-  oracle_keys_aurora_testnet:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_aurora_testnet.txt
-  oracle_keys_strudel_aurora:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_strudel_aurora.txt
-  oracle_keys_shiden:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden.txt
-  oracle_keys_shiden_shibuya:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden_shibuya.txt
-  oracle_keys_wow_bsc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_wow_bsc.txt
-  oracle_keys_pcws_bsc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_pcws_bsc.txt
-  oracle_keys_dafi_bsc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_bsc.txt
-  oracle_keys_dafi_eth:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_eth.txt
-  oracle_keys_dafi_matic:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_matic.txt
-  oracle_keys_dows_bsc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dows_bsc.txt
-  oracle_keys_cardstack_sokol:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cardstack_sokol.txt
-  oracle_keys_ropsten:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.ropsten2
-  oracle_keys_kovan:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.kovan
-  oracle_keys_bsc_testnet:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt.testnet
-  oracle_keys_bsc_testnet_defi100:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_defi100_bsc.txt.testnet
-  oracle_keys_bsc_defi100:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_defi100_bsc.txt
-  oracle_keys_bsc_cmc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc.txt
-  oracle_keys_cmc_bsc_testnet:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc_testnet.txt
-  oracle_keys_matic_coingecko:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coingecko_matic.txt
-  oracle_keys_dfyn_matic:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dfyn_matic.txt
-  oracle_keys_argo_matic:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_argo_matic.txt
-  oracle_keys_bsc_coingecko:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coingecko_bsc.txt
-  oracle_keys_matic_coinmarketcap:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coinmarketcap_matic.txt
-  oracle_keys_bsc:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt
-  oracle_keys_matic:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt
-  oracle_keys_moonriver:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonriver.txt
-  oracle_keys_dahlia_celo:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dahlia_celo.txt
-  oracle_keys_dot_moonriver:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dot_moonriver.txt
-  oracle_keys_arbitrum:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_arbitrum.txt
-  #oracle_keys_sperax_arbitrum:
-    #file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_sperax_arbitrum.txt
-  oracle_keys_matic_mumbai:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt.mumbai
-  oracle_keys_moonbeam:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonbeam.txt
-  oracle_keys_plasm_dusty:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_plasm.txt.dusty
-  oracle_keys_celo:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_celo.txt
-  Coinmarketcap-API.key:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
+# secrets:
+#   api_diadata:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
+#   oracle_keys:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
+#   oracle_keys_xdai:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai.txt
+#   oracle_keys_xdai_generic:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt
+#   oracle_keys_xdai_generic_sokol:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai_generic.txt.sokol
+#   oracle_keys_avalanche:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche.txt
+#   oracle_keys_avalanche_fuji:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_avalanche_fuji.txt
+#   oracle_keys_fantom:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_fantom.txt
+#   oracle_keys_metis:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_metis.txt
+#   oracle_keys_aurora_testnet:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_aurora_testnet.txt
+#   oracle_keys_strudel_aurora:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_strudel_aurora.txt
+#   oracle_keys_shiden:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden.txt
+#   oracle_keys_shiden_shibuya:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_shiden_shibuya.txt
+#   oracle_keys_wow_bsc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_wow_bsc.txt
+#   oracle_keys_pcws_bsc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_pcws_bsc.txt
+#   oracle_keys_dafi_bsc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_bsc.txt
+#   oracle_keys_dafi_eth:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_eth.txt
+#   oracle_keys_dafi_matic:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dafi_matic.txt
+#   oracle_keys_dows_bsc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dows_bsc.txt
+#   oracle_keys_cardstack_sokol:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cardstack_sokol.txt
+#   oracle_keys_ropsten:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.ropsten2
+#   oracle_keys_kovan:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt.kovan
+#   oracle_keys_bsc_testnet:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt.testnet
+#   oracle_keys_bsc_testnet_defi100:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_defi100_bsc.txt.testnet
+#   oracle_keys_bsc_defi100:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_defi100_bsc.txt
+#   oracle_keys_bsc_cmc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc.txt
+#   oracle_keys_cmc_bsc_testnet:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_cmc_bsc_testnet.txt
+#   oracle_keys_matic_coingecko:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coingecko_matic.txt
+#   oracle_keys_dfyn_matic:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dfyn_matic.txt
+#   oracle_keys_argo_matic:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_argo_matic.txt
+#   oracle_keys_bsc_coingecko:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coingecko_bsc.txt
+#   oracle_keys_matic_coinmarketcap:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_coinmarketcap_matic.txt
+#   oracle_keys_bsc:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_bsc.txt
+#   oracle_keys_matic:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt
+#   oracle_keys_moonriver:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonriver.txt
+#   oracle_keys_dahlia_celo:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dahlia_celo.txt
+#   oracle_keys_dot_moonriver:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_dot_moonriver.txt
+#   oracle_keys_arbitrum:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_arbitrum.txt
+#   #oracle_keys_sperax_arbitrum:
+#     #file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_sperax_arbitrum.txt
+#   oracle_keys_matic_mumbai:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_matic.txt.mumbai
+#   oracle_keys_moonbeam:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_moonbeam.txt
+#   oracle_keys_plasm_dusty:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_plasm.txt.dusty
+#   oracle_keys_celo:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_celo.txt
+#   Coinmarketcap-API.key:
+#     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
 
-volumes:
-  bitcoin:
+# volumes:
+#   bitcoin:
 
-networks:
-  scrapers-network:
+# networks:
+#   scrapers-network:
