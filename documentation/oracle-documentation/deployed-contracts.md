@@ -6,6 +6,10 @@ description: Overview over deployed oracle contracts on our supported chains
 
 DIA operates oracles on multiple blockchains. Here, we provide an overview over the deployed oracle contracts on each supported chain.
 
+DIA Development Oracle contracts are smart contracts that provide a selected range of asset prices on various blockchains for live testing on a respective Mainnet and Testnet.\
+The contracts are upgraded and exchanged on a rolling basis and are not maintained indefinitely.\
+DIA Development Oracle contracts are not intended to be integrated in a dApp. DIA deploys dedicated contracts for dApps. Please request a dedicated oracle by contacting the team on [Discord](https://discord.com/invite/zFmXtPFgQj) or the [DIA DAO Forum](https://dao.diadata.org).
+
 ### Ethereum
 
 {% tabs %}
@@ -50,9 +54,11 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 {% tabs %}
 {% tab title="Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                      | Oracle Type                                                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x8e68...f57f](https://polygonscan.com/address/0x8e687a93a969f0bf125f1154738ca6dcc36af57f) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                                   | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xf44b3c104f39209cd8420a1d3ca4338818aa72ab](https://polygonscan.com/address/0xf44b3c104f39209cd8420a1d3ca4338818aa72ab) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+
+
 {% endtab %}
 
 {% tab title="Mumbai Testnet" %}
@@ -102,7 +108,7 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://cchain.explorer.avax.network/address/0x226585bff09d87Bb4D985520aE6681D2Fe775e63">0x2265...5e63</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://snowtrace.io/address/0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31">0x1fe94dfcb35a020ca05ab94bfd6e60f14eecfa31</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2">Key/Value Oracle V2</a></td><td></td></tr></tbody></table>
 {% endtab %}
 
 {% tab title="Fuji Testnet" %}
@@ -134,13 +140,13 @@ __
 {% endtab %}
 {% endtabs %}
 
-### [Moonbeam](https://docs.moonbeam.network/learn/dapps-list/oracles/dia/)
+### [Moonriver](https://docs.moonbeam.network/learn/dapps-list/oracles/dia/)
 
 {% tabs %}
 {% tab title="Moonriver" %}
-| Published Assets                     | Smart Contract Address                                                                                                                         | Oracle Type                                                                                                                     |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xa5fb311F87c5b869c1a724fC6Bd93d7Adce1c870](https://blockscout.moonriver.moonbeam.network/address/0xa5fb311F87c5b869c1a724fC6Bd93d7Adce1c870) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                                                         | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x11f74b94afb5968119c98ea277a2b73208bb39ab](https://moonriver.moonscan.io/address/0x11f74b94afb5968119c98ea277a2b73208bb39ab) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 
 {% tab title="Moonbeam Testnet" %}
@@ -154,7 +160,7 @@ __
 
 {% tabs %}
 {% tab title="Mainnet" %}
-<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://arbiscan.io/address/0x6ba42c45174204a89ad2b7fe7b6416ad3c020d71">0x6Ba4...0D71</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://arbiscan.io/address/0xd041478644048d9281f88558e6088e9da97df624">0xd041478644048d9281f88558e6088e9da97df624</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2">Key/Value Oracle V2</a></td><td></td></tr></tbody></table>
 {% endtab %}
 {% endtabs %}
 
