@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/BancorNetwork"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeFour"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeOne"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeThree"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeZero"
-	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
+
+	ConverterRegistry "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/BancorNetwork"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeFour"
+	ConvertertypeOne "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeOne"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeThree"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/bancor/ConverterTypeZero"
+	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -105,13 +106,14 @@ type BancorScraper struct {
 
 func NewBancorScraper(exchange dia.Exchange, scrape bool) *BancorScraper {
 	var wsClient, restClient *ethclient.Client
+	var err error
 
-	wsClient, err := ethclient.Dial(wsDial)
+	restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	restClient, err = ethclient.Dial(restDial)
+	wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
 	if err != nil {
 		log.Fatal(err)
 	}
