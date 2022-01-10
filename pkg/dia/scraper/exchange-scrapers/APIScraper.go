@@ -54,6 +54,7 @@ func init() {
 	Exchanges[dia.SimexExchange] = dia.Exchange{Name: dia.SimexExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.OKExExchange] = dia.Exchange{Name: dia.OKExExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.FTXExchange] = dia.Exchange{Name: dia.FTXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
+	Exchanges[dia.CryptoDotComExchange] = dia.Exchange{Name: dia.CryptoDotComExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.HuobiExchange] = dia.Exchange{Name: dia.HuobiExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.LBankExchange] = dia.Exchange{Name: dia.LBankExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.GateIOExchange] = dia.Exchange{Name: dia.GateIOExchange, Centralized: true, WatchdogDelay: watchdogDelay}
@@ -148,6 +149,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewSimexScraper(Exchanges[dia.SimexExchange], scrape, relDB)
 	case dia.OKExExchange:
 		return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
+	case dia.CryptoDotComExchange:
+		return NewCryptoDotComScraper(Exchanges[dia.CryptoDotComExchange], scrape, relDB)
 	case dia.FTXExchange:
 		return NewFTXScraper(Exchanges[dia.FTXExchange], scrape, relDB)
 	case dia.HuobiExchange:
