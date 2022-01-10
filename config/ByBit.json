@@ -1,0 +1,712 @@
+{
+    "Coins": [
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EOS",
+            "ForeignName": "EOSUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRPUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BIT",
+            "ForeignName": "BITUSD",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EOS",
+            "ForeignName": "EOSUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCH",
+            "ForeignName": "BCHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XTZ",
+            "ForeignName": "XTZUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADA",
+            "ForeignName": "ADAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XEM",
+            "ForeignName": "XEMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATICUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETC",
+            "ForeignName": "ETCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNB",
+            "ForeignName": "BNBUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FIL",
+            "ForeignName": "FILUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOLUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XLM",
+            "ForeignName": "XLMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRX",
+            "ForeignName": "TRXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VET",
+            "ForeignName": "VETUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "THETA",
+            "ForeignName": "THETAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXSUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUNA",
+            "ForeignName": "LUNAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SANDUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KSM",
+            "ForeignName": "KSMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ATOM",
+            "ForeignName": "ATOMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AVAX",
+            "ForeignName": "AVAXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHZ",
+            "ForeignName": "CHZUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRV",
+            "ForeignName": "CRVUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRT",
+            "ForeignName": "GRTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SHIB1000",
+            "ForeignName": "SHIB1000USDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BSV",
+            "ForeignName": "BSVUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ICP",
+            "ForeignName": "ICPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FTM",
+            "ForeignName": "FTMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALGO",
+            "ForeignName": "ALGOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DYDX",
+            "ForeignName": "DYDXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEAR",
+            "ForeignName": "NEARUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SRM",
+            "ForeignName": "SRMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OMG",
+            "ForeignName": "OMGUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IOST",
+            "ForeignName": "IOSTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DASH",
+            "ForeignName": "DASHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FTT",
+            "ForeignName": "FTTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BIT",
+            "ForeignName": "BITUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GALA",
+            "ForeignName": "GALAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CELR",
+            "ForeignName": "CELRUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HBAR",
+            "ForeignName": "HBARUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ONE",
+            "ForeignName": "ONEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "C98",
+            "ForeignName": "C98USDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COTI",
+            "ForeignName": "COTIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALICE",
+            "ForeignName": "ALICEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGLD",
+            "ForeignName": "EGLDUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "RENUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KEEP",
+            "ForeignName": "KEEPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TLM",
+            "ForeignName": "TLMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RUNE",
+            "ForeignName": "RUNEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ILV",
+            "ForeignName": "ILVUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLOW",
+            "ForeignName": "FLOWUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WOO",
+            "ForeignName": "WOOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LRC",
+            "ForeignName": "LRCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENS",
+            "ForeignName": "ENSUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IOTX",
+            "ForeignName": "IOTXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHR",
+            "ForeignName": "CHRUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAT",
+            "ForeignName": "BATUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STORJ",
+            "ForeignName": "STORJUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SLP",
+            "ForeignName": "SLPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANKR",
+            "ForeignName": "ANKRUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LPT",
+            "ForeignName": "LPTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QTUM",
+            "ForeignName": "QTUMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRO",
+            "ForeignName": "CROUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SXP",
+            "ForeignName": "SXPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGGUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEC",
+            "ForeignName": "ZECUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IMX",
+            "ForeignName": "IMXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SFP",
+            "ForeignName": "SFPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZEN",
+            "ForeignName": "ZENUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTT",
+            "ForeignName": "BTTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GTC",
+            "ForeignName": "GTCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LIT",
+            "ForeignName": "LITUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RNDR",
+            "ForeignName": "RNDRUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SC",
+            "ForeignName": "SCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RSR",
+            "ForeignName": "RSRUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STX",
+            "ForeignName": "STXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MASK",
+            "ForeignName": "MASKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CTK",
+            "ForeignName": "CTKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BICO",
+            "ForeignName": "BICOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REQ",
+            "ForeignName": "REQUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KLAY",
+            "ForeignName": "KLAYUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPELL",
+            "ForeignName": "SPELLUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANT",
+            "ForeignName": "ANTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DUSK",
+            "ForeignName": "DUSKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AR",
+            "ForeignName": "ARUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PEOPLE",
+            "ForeignName": "PEOPLEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IOTA",
+            "ForeignName": "IOTAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CELO",
+            "ForeignName": "CELOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WAVES",
+            "ForeignName": "WAVESUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RVN",
+            "ForeignName": "RVNUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KNC",
+            "ForeignName": "KNCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSDM22",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSDH22",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSDM22",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSDH22",
+            "Exchange": "ByBit",
+            "Ignore": false
+        }
+    ]
+}
