@@ -74,11 +74,12 @@ func main() {
 		if err != nil {
 			log.Fatal("delete influx: ", err)
 		}
+		log.Infof("deleted from %v -- %v..", timeInit, endTime)
 		numCopied, err := ds.CopyInfluxMeasurements(fromDB, toDB, fromTable, toTable, timeInit, endTime)
 		if err != nil {
 			log.Errorf("copying in time range %v -- %v: %v", timeInit, endTime, err)
 		} else {
-			log.Infof("copied %v rows.", numCopied)
+			log.Infof("copied %v rows in time range %v -- %v.", numCopied, timeInit, endTime)
 		}
 		timeInit = endTime
 	}
