@@ -70,11 +70,11 @@ func main() {
 
 	for timeFinal.After(timeInit) {
 		endTime := timeInit.Add(time.Duration(stepSizeInt) * time.Minute)
-		err := ds.DeleteInfluxMeasurement(toDB, toTable, timeInit, endTime)
-		if err != nil {
-			log.Fatal("delete influx: ", err)
-		}
-		log.Infof("deleted from %v -- %v..", timeInit, endTime)
+		// err := ds.DeleteInfluxMeasurement(toDB, toTable, timeInit, endTime)
+		// if err != nil {
+		// 	log.Fatal("delete influx: ", err)
+		// }
+		// log.Infof("deleted from %v -- %v..", timeInit, endTime)
 		numCopied, err := ds.CopyInfluxMeasurements(fromDB, toDB, fromTable, toTable, timeInit, endTime)
 		if err != nil {
 			log.Errorf("copying in time range %v -- %v: %v", timeInit, endTime, err)
