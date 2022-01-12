@@ -3,8 +3,6 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -39,9 +37,9 @@ type ByBitMarket struct {
 		TickSize string `json:"tick_size"`
 	} `json:"price_filter"`
 	LotSizeFilter struct {
-		MaxTradingQty int `json:"max_trading_qty"`
-		MinTradingQty int `json:"min_trading_qty"`
-		QtyStep       int `json:"qty_step"`
+		MaxTradingQty float64 `json:"max_trading_qty"`
+		MinTradingQty float64 `json:"min_trading_qty"`
+		QtyStep       float64 `json:"qty_step"`
 	} `json:"lot_size_filter"`
 }
 
@@ -57,15 +55,15 @@ type ByBitMarketsResponse struct {
 type ByBitTradeResponse struct {
 	Topic string `json:"topic"`
 	Data  []struct {
-		Timestamp     string `json:"timestamp"`
-		TradeTimeMs   int64  `json:"trade_time_ms"`
-		Symbol        string `json:"symbol"`
-		Side          string `json:"side"`
-		Size          string `json:"size"`
-		Price         string `json:"price"`
-		TickDirection string `json:"tick_direction"`
-		TradeID       string `json:"trade_id"`
-		CrossSeq      int    `json:"cross_seq"`
+		Timestamp     string  `json:"timestamp"`
+		TradeTimeMs   int64   `json:"trade_time_ms"`
+		Symbol        string  `json:"symbol"`
+		Side          string  `json:"side"`
+		Size          float64 `json:"size"`
+		Price         float64 `json:"price"`
+		TickDirection string  `json:"tick_direction"`
+		TradeID       string  `json:"trade_id"`
+		CrossSeq      int     `json:"cross_seq"`
 	} `json:"data"`
 }
 
@@ -150,7 +148,7 @@ func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *B
 
 func (s *ByBitScraper) getMarkets() (markets []string) {
 	var bbm ByBitMarketsResponse
-	b, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	b, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 	}
@@ -176,33 +174,38 @@ func (s *ByBitScraper) ping() {
 }
 
 func (s *ByBitScraper) subscribe() {
-	markets := s.getMarkets()
-	for _, market := range markets {
-
-		a := &ByBitSubscribe{
-			OP:   "subscribe",
-			Args: []string{fmt.Sprintf("trade.%s", market)},
-		}
-		log.Println("subscribing", a)
-		if err := s.wsClient.WriteJSON(a); err != nil {
-			log.Println(err.Error())
-		}
-
+	// Subscribing to the all markets at once.
+	a := &ByBitSubscribe{
+		OP:   "subscribe",
+		Args: []string{"trade.*"},
+	}
+	log.Println("subscribing", a)
+	if err := s.wsClient.WriteJSON(a); err != nil {
+		log.Println(err.Error())
 	}
 }
 
 // runs in a goroutine until s is closed
 func (s *ByBitScraper) mainLoop() {
 	var err error
+
+	pingTimer := time.NewTicker(10 * time.Second)
+	go func() {
+		for range pingTimer.C {
+			go s.ping()
+		}
+	}()
+	s.subscribe()
 	for {
 		message := &ByBitTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
-			log.Error(err.Error())
-			break
+			log.Error("ws connection error: ", err.Error())
+			s.subscribe()
 		}
-
 		// the topic format is something like trade.BTCUSD
+		log.Info("got topic: ", message.Topic)
 		topic := strings.Split(message.Topic, ".")
+
 		if len(topic) == 2 && topic[0] == "trade" {
 			ps, ok := s.pairScrapers[topic[1]]
 			if ok {
@@ -211,46 +214,38 @@ func (s *ByBitScraper) mainLoop() {
 					var f64Price float64
 					var f64Volume float64
 					var exchangepair dia.ExchangePair
-					f64PriceString := v.Price
-					f64Price, err = strconv.ParseFloat(f64PriceString, 64)
-					if err == nil {
-						f64VolumeString := v.Size
-						f64Volume, err = strconv.ParseFloat(f64VolumeString, 64)
-						if err == nil {
-							timeStamp, _ := time.Parse(time.RFC3339, v.Timestamp)
-							if v.TradeID != "" {
-								if v.Side == "sell" {
-									f64Volume = -f64Volume
-								}
+					f64Price = v.Price
+					f64Volume = v.Size
 
-								exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, v.Symbol)
-								if err != nil {
-									log.Error(err)
-								}
-								t := &dia.Trade{
-									Symbol:         ps.pair.Symbol,
-									Pair:           v.Symbol,
-									Price:          f64Price,
-									Volume:         f64Volume,
-									Time:           timeStamp,
-									ForeignTradeID: v.TradeID,
-									Source:         s.exchangeName,
-									VerifiedPair:   exchangepair.Verified,
-									BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-									QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-								}
-								if exchangepair.Verified {
-									log.Infoln("Got verified trade: ", t)
-								}
-								log.Info("got trade: ", t)
-								ps.parent.chanTrades <- t
-							}
-						} else {
-							log.Error("error parsing volume " + v.Size)
+					timeStamp, _ := time.Parse(time.RFC3339, v.Timestamp)
+					if v.TradeID != "" {
+						if v.Side == "sell" {
+							f64Volume = -f64Volume
 						}
-					} else {
-						log.Error("error parsing price " + v.Price)
+
+						exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, v.Symbol)
+						if err != nil {
+							log.Error(err)
+						}
+						t := &dia.Trade{
+							Symbol:         ps.pair.Symbol,
+							Pair:           v.Symbol,
+							Price:          f64Price,
+							Volume:         f64Volume,
+							Time:           timeStamp,
+							ForeignTradeID: v.TradeID,
+							Source:         s.exchangeName,
+							VerifiedPair:   exchangepair.Verified,
+							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+						}
+						if exchangepair.Verified {
+							log.Infoln("Got verified trade: ", t)
+						}
+						log.Info("got trade: ", t)
+						ps.parent.chanTrades <- t
 					}
+
 				}
 			} else {
 				log.Error("Unknown Pair " + topic[1])
