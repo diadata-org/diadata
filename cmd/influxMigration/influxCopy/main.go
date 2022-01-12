@@ -84,6 +84,6 @@ func main() {
 		timeInit = endTime
 	}
 	log.Info("...done copying.")
-	time.Sleep(240 * time.Minute)
+	time.Sleep(24 * 60 * time.Minute)
 
 }
