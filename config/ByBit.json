@@ -683,30 +683,6 @@
             "ForeignName": "KNCUSDT",
             "Exchange": "ByBit",
             "Ignore": false
-        },
-        {
-            "Symbol": "BTC",
-            "ForeignName": "BTCUSDM22",
-            "Exchange": "ByBit",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BTC",
-            "ForeignName": "BTCUSDH22",
-            "Exchange": "ByBit",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETHUSDM22",
-            "Exchange": "ByBit",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETHUSDH22",
-            "Exchange": "ByBit",
-            "Ignore": false
         }
     ]
 }
