@@ -7,6 +7,12 @@
             "Address": "840"
         },
         {
+            "Symbol": "EUR",
+            "Exchange": "FTX",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "FTX",
             "Blockchain": "Bitcoin",
