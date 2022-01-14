@@ -140,9 +140,15 @@ __
 {% endtab %}
 {% endtabs %}
 
-### [Moonriver](https://docs.moonbeam.network/learn/dapps-list/oracles/dia/)
+### [Moonbeam](https://docs.moonbeam.network/learn/dapps-list/oracles/dia/)
 
 {% tabs %}
+{% tab title="Moonbeam" %}
+| Published Assets                     | Smart Contract Address                                                                                  | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1f1B...728f](https://blockscout.moonbeam.network/address/0x1f1BAe8D7a2957CeF5ffA0d957cfEDd6828D728f) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+
 {% tab title="Moonriver" %}
 | Published Assets                     | Smart Contract Address                                                                                                         | Oracle Type                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
