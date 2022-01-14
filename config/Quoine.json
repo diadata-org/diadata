@@ -1562,6 +1562,12 @@
     },
     {
       "Exchange": "Quoine",
+      "ForeignName": "USDTUSD",
+      "Ignore": true,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "Quoine",
       "ForeignName": "VZTBTC",
       "Ignore": false,
       "Symbol": "VZT"

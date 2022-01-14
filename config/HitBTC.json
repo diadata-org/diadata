@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Symbol": "USDT",
+      "ForeignName": "USDTUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "LEO",
       "ForeignName": "LEOUSD",
       "Exchange": "HitBTC",

@@ -65,6 +65,12 @@
             "Exchange": "Quoine",
             "Blockchain": "Ethereum",
             "Address": "0x8400D94A5cb0fa0D041a3788e395285d61c9ee5e"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "Quoine",
+            "Blockchain": "Fiat",
+            "Address": "840"
         }
     ]
 }

@@ -1,0 +1,22 @@
+{
+    "Tokens": [  
+        {
+            "Symbol": "USD",
+            "Exchange": "BitBay",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "BitBay",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "PLN",
+            "Exchange": "BitBay",
+            "Blockchain": "Fiat",
+            "Address": "985"
+        }
+    ]
+}

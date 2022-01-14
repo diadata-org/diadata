@@ -2012,6 +2012,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "USDT_USD",
+      "Ignore": true,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "WAVES_BTC",
       "Ignore": true,
       "Symbol": "WAVES"

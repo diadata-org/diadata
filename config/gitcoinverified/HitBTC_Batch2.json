@@ -343,6 +343,12 @@
             "Address": "0xF3E693175Db47264c99ECa0F1C1C4A2C1AeD3Bd7"
         },
         {
+            "Symbol": "USD",
+            "Exchange": "HitBTC",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
             "Symbol": "USE",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

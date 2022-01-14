@@ -547,6 +547,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "USD",
+            "Exchange": "GateIO",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
             "Symbol": "WINGS",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
