@@ -202,8 +202,10 @@ func getAPICall(params ...string) []interface{} {
 	if jsonErr != nil {
 		fmt.Println(jsonErr)
 	}
-	dataTemp := confirmTemp.Data.([]interface{})
-	return dataTemp
+	if confirmTemp.Data != nil {
+		return confirmTemp.Data.([]interface{})
+	}
+	return []interface{}{}
 }
 
 func (s *SimexScraper) cleanup(err error) {
