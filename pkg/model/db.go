@@ -44,7 +44,7 @@ type Datastore interface {
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
 	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
-	GetLastTrades(asset dia.Asset, exchange string, maxTrades int) ([]dia.Trade, error)
+	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(symbol dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)

@@ -45,7 +45,7 @@ func GetIndexBasket(constituentsAddresses []string) ([]models.CryptoIndexConstit
 			log.Error("Error when retrieveing supply for ", constituent.Asset.Symbol)
 			return nil, err
 		}
-		currLastTrade, err := db.GetLastTrades(constituent.Asset, "", 1)
+		currLastTrade, err := db.GetLastTrades(constituent.Asset, "", 1, false)
 		if err != nil {
 			log.Error("Error when retrieveing lst trades for ", constituent.Asset.Symbol)
 			return nil, err
@@ -188,7 +188,7 @@ func UpdateConstituentsMarketData(index string, currentConstituents *[]models.Cr
 			log.Error("Error when retrieveing supply for ", c.Asset.Symbol)
 			return err
 		}
-		currLastTrade, err := db.GetLastTrades(c.Asset, "", 1)
+		currLastTrade, err := db.GetLastTrades(c.Asset, "", 1, false)
 		if err != nil {
 			log.Error("Error when retrieveing last trades for ", c.Asset.Symbol)
 			return err

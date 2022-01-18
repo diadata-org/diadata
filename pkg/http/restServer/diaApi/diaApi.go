@@ -1308,7 +1308,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, err)
 	}
 
-	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000)
+	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000, true)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1344,7 +1344,7 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 		return
 	}
 
-	q, err := env.DataStore.GetLastTrades(asset, exchange, int(numTrades))
+	q, err := env.DataStore.GetLastTrades(asset, exchange, int(numTrades), true)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
