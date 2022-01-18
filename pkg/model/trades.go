@@ -190,11 +190,11 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 	var q string
 	if exchange == "" {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
-			" FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+			" FROM %s WHERE time<now() AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
 	} else {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
-			" FROM %s WHERE exchange='%s' and quotetokenaddress='%s' and quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+			" FROM %s WHERE time<now() AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
 	res, err := queryInfluxDB(datastore.influxClient, q)
@@ -212,7 +212,9 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTrades for %s on %s \n", asset.Symbol, exchange)
+		err = fmt.Errorf("Empty response for %s on %s", asset.Symbol, exchange)
+		log.Error(err)
+		return r, err
 	}
 	return r, nil
 }

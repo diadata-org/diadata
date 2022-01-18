@@ -1320,6 +1320,42 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 	}
 }
 
+// GetLastTrades returns last N trades of an asset. Defaults to N=1000.
+func (env *Env) GetLastTradesAsset(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	numTradesString := c.DefaultQuery("numTrades", "1000")
+	exchange := c.Query("exchange")
+	var numTrades int64
+	var err error
+	numTrades, err = strconv.ParseInt(numTradesString, 10, 64)
+	if err != nil {
+		numTrades = 1000
+	}
+	if numTrades > 5000 {
+		numTrades = 5000
+	}
+	// Make the address EIP55 compliant.
+	address = common.HexToAddress(address).Hex()
+
+	asset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	q, err := env.DataStore.GetLastTrades(asset, exchange, int(numTrades))
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		c.JSON(http.StatusOK, q)
+	}
+}
+
 // PostIndexRebalance Post data must now be a slice of (EThereum-)addresses
 func (env *Env) PostIndexRebalance(c *gin.Context) {
 	indexSymbol := c.Param("symbol")
