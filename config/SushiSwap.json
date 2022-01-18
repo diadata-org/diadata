@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "KP3R",
+            "ForeignName": "KP3R-ETH",
+            "Exchange": "SushiSwap",
+            "Ignore": false
+        },
+        {
             "Symbol": "SUSHI",
             "ForeignName": "SUSHI-USDT",
             "Exchange": "SushiSwap",

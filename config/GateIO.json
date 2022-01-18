@@ -1,7 +1,13 @@
 {
   "Coins": [
     {
-      "Exchange": "UniswapV2",
+      "Exchange": "GateIO",
+      "ForeignName": "FTM_USDT",
+      "Ignore": false,
+      "Symbol": "FTM"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "DOWS_USDT",
       "Ignore": false,
       "Symbol": "DOWS"
