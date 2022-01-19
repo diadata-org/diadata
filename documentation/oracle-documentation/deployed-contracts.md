@@ -98,9 +98,7 @@ __
 {% endtab %}
 
 {% tab title="Shiden Mainnet" %}
-| Published Assets                     | Smart Contract Address                                                                                         | Oracle Type                                                                                                                     |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0xCe78...815d](https://blockscout.com/shiden/address/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d/transactions) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+Currently under maintenance
 {% endtab %}
 
 {% tab title="Shibuya Testnet" %}
