@@ -37,6 +37,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "FTM",
+            "Exchange": "FTX",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "LRC",
             "Exchange": "FTX",
             "Blockchain": "Ethereum",

@@ -426,6 +426,20 @@
       "Decimals": 18,
       "Blockchain": "BinanceSmartChain",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "ASTR",
+      "Name": "Astar",
+      "Decimals": 18,
+      "Blockchain": "Astar",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "SDN",
+      "Name": "Shiden",
+      "Decimals": 18,
+      "Blockchain": "Shiden",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

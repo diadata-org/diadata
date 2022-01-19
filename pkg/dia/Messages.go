@@ -29,7 +29,9 @@ const (
 	FLOW                                    = "Flow"
 	MOONRIVER                               = "Moonriver"
 	AVALANCHE                               = "Avalanche"
+	ARBITRUM                                = "Arbitrum"
 	ASTAR                                   = "Astar"
+	SHIDEN                                  = "Shiden"
 	FIAT                                    = "Fiat"
 )
 

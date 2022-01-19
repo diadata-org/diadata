@@ -37,6 +37,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "FTM",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "LRC",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
@@ -275,6 +281,12 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
+        },
+        {
+            "Symbol": "SDN",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
         }
     ]
 }

@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "SDN_USDT",
+      "Ignore": false,
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ASTR_USDT",
       "Ignore": false,
       "Symbol": "ASTR"

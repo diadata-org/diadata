@@ -112,6 +112,23 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Astar",
+            "GenesisDate": 1642464000,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Shiden",
+            "GenesisDate": 1625097600,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum336"
         }
     ]
 }

@@ -166,7 +166,7 @@
             "Symbol": "FTM",
             "Exchange": "GateIO",
             "Blockchain": "Fantom",
-            "Address": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "FUEL",
@@ -461,6 +461,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x4156D3342D5c385a87D264F90653733592000581"
+        },
+        {
+            "Symbol": "SDN",
+            "Exchange": "GateIO",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SENC",

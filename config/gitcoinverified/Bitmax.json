@@ -177,8 +177,8 @@
         {
             "Symbol": "FTM",
             "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870"
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "GT",
