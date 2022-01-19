@@ -110,6 +110,10 @@ func setSupplies(tokenAddresses []string, lockedWalletsMap map[string][]string, 
 		if supp.Symbol == "SPICE" {
 			supp.CirculatingSupply = float64(1945426.80)
 		}
+		if supp.Symbol == "FTM" {
+			supp.CirculatingSupply = float64(2541152731)
+			supp.Supply = float64(3175000000)
+		}
 		if strings.ToLower(address) == "0xa1faa113cbe53436df28ff0aee54275c13b40975" {
 			supp.CirculatingSupply = float64(174136442)
 		}
