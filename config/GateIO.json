@@ -2,6 +2,24 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "ASTR_USDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ASTR_BTC",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ASTR_ETH",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SPA_USDT",
       "Ignore": false,
       "Symbol": "SPA"

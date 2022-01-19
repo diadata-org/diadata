@@ -7,6 +7,12 @@
       "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
     },
     {
+      "Symbol": "ASTR",
+      "Exchange": "Huobi",
+      "Blockchain": "Astar",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BTG",
       "Exchange": "Huobi",
       "Blockchain": "BitcoinGold",
@@ -35,12 +41,18 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
-  },
+    },
     {
       "Symbol": "STEEM",
       "Exchange": "Huobi",
       "Blockchain": "Steem",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "USDT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
     }
   ]
 }

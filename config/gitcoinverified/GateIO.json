@@ -19,6 +19,12 @@
             "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BCDN",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -551,6 +557,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
         },
         {
             "Symbol": "WINGS",

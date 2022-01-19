@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ASTRUSDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SPAUSDT",
       "Ignore": false,
       "Symbol": "SPA"
