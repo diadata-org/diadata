@@ -61,3 +61,4 @@ As of now, the following list of quotations is available in this oracle:
 * SDN
 * KSM
 * MOVR
+* ASTR

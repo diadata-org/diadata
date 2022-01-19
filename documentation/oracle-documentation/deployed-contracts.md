@@ -88,10 +88,16 @@ __
 {% endtab %}
 {% endtabs %}
 
-### Shiden
+### Astar/Shiden
 
 {% tabs %}
-{% tab title="Mainnet" %}
+{% tab title="Astar" %}
+| Published Assets                     | Smart Contract Address                                                                           | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xd793...Ec75](https://blockscout.com/astar/address/0xd79357ebb0cd724e391f2b49a8De0E31688fEc75) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+
+{% tab title="Shiden Mainnet" %}
 | Published Assets                     | Smart Contract Address                                                                                         | Oracle Type                                                                                                                     |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [DIA Asset Prices](crypto-assets.md) | [0xCe78...815d](https://blockscout.com/shiden/address/0xCe784F99f87dBa11E0906e2fE954b08a8cc9815d/transactions) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
