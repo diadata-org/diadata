@@ -3,12 +3,13 @@ package scrapers
 import (
 	"context"
 	"errors"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
@@ -63,12 +64,12 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -76,12 +77,12 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 		genesisBlock = genesisBlockUniswap
 	case dia.SushiSwapExchange:
 		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -2,14 +2,15 @@ package scrapers
 
 import (
 	"errors"
-	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
-	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3/uniswapV3Pair"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
+
+	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
+	UniswapV3Pair "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3/uniswapV3Pair"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -62,12 +63,12 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
 		exchangeFactoryContractAddress = exchange.Contract.String()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
+		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
+		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
 		if err != nil {
 			log.Fatal(err)
 		}

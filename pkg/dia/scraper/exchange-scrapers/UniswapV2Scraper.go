@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -31,8 +32,8 @@ var (
 )
 
 const (
-	restDial = "http://159.69.120.42:8545/"
-	wsDial   = "ws://159.69.120.42:8546/"
+	restDialEth = "http://159.69.120.42:8545/"
+	wsDialEth   = "ws://159.69.120.42:8546/"
 
 	restDialBSC = ""
 	wsDialBSC   = ""
@@ -112,196 +113,76 @@ type UniswapScraper struct {
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
-	var wsClient, restClient *ethclient.Client
-	var waitTime int
+	var s *UniswapScraper
 	var listenByAddress bool
-	var err error
+	exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("UNISWAP_WAIT_TIME", uniswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialEth, wsDialEth, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("SUSHISWAP_WAIT_TIME", sushiswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
-		if err != nil {
-			log.Fatal("dial websocket: ", err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
-		if err != nil {
-			log.Fatal("dial rest client: ", err)
-		}
-		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 600
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
 		listenByAddress = true
-
+		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		log.Infoln("Init ws and rest client for Polygon chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("DFYN_WAIT_TIME", dfynWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		log.Infoln("Init ws and rest client for Polygon chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_WS", wsDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("QUICKSWAP_WAIT_TIME", quickswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, quickswapWaitMilliseconds)
 	case dia.UbeswapExchange:
-		log.Infoln("Init ws and rest client for CELO chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("CELO_URI_REST", restDialCelo))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("CELO_WAIT_TIME", ubeswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialCelo, wsDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		log.Infoln("Init ws and rest client for Fantom chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		log.Infoln("Init ws and rest client for Fantom chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
-		log.Infoln("Init ws and rest client for Moonbeam chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_WS", wsDialMoonriver))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_REST", restDialMoonriver))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("MOONRIVER_WAIT_TIME", solarbeamWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 400
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
-		log.Infoln("Init ws and rest client for Aurora chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("AURORA_URI_WS", wsDialAurora))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("AURORA_URI_REST", restDialAurora))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTimeString := utils.Getenv("AURORA_WAIT_TIME", trisolarisWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 200
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialAurora, wsDialAurora, trisolarisWaitMilliseconds)
 	}
 
-	s := &UniswapScraper{
+	if scrape {
+		go s.mainLoop()
+	}
+	return s
+}
+
+// makeUniswapScraper returns a uniswap scraper as used in NewUniswapScraper.
+func makeUniswapScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string) *UniswapScraper {
+	var restClient, wsClient *ethclient.Client
+	var err error
+	var s *UniswapScraper
+
+	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
+	if err != nil {
+		log.Fatal("init ws client: ", err)
+	}
+
+	var waitTime int
+	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
+	waitTime, err = strconv.Atoi(waitTimeString)
+	if err != nil {
+		log.Error("could not parse wait time: ", err)
+		waitTime = 500
+	}
+
+	s = &UniswapScraper{
+		WsClient:        wsClient,
+		RestClient:      restClient,
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
 		pairScrapers:    make(map[string]*UniswapPairScraper),
@@ -310,12 +191,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		chanTrades:      make(chan *dia.Trade),
 		waitTime:        waitTime,
 		listenByAddress: listenByAddress,
-	}
-
-	s.WsClient = wsClient
-	s.RestClient = restClient
-	if scrape {
-		go s.mainLoop()
 	}
 	return s
 }
