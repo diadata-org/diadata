@@ -19,6 +19,10 @@
         {
             "Address": "0x6615CE60D71513aA4849269dD63821D324A23F8C",
             "ForeignName": "WBNB-pCWS"
+        },
+        {
+            "Address": "0x4eF5C01c4ceCD87CfdC604edA447e5890a0c1b9E",
+            "ForeignName": "D100-WBNB"
         }
     ]
 }

@@ -3,6 +3,7 @@ package source
 import (
 	"math/big"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
@@ -23,29 +24,22 @@ type UniswapPair struct {
 
 const (
 	restDial = "http://159.69.120.42:8545/"
-	wsDial   = "ws://159.69.120.42:8546/"
 
 	restDialBSC = ""
-	wsDialBSC   = ""
 
 	restDialPolygon = ""
-	wsDialPolygon   = ""
 
 	restDialCelo = ""
-	wsDialCelo   = ""
 
 	restDialFantom = ""
-	wsDialFantom   = ""
 
 	restDialMoonriver = ""
-	wsDialMoonriver   = ""
 
 	restDialAurora = ""
-	wsDialAurora   = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
-	pancakeswapWaitMilliseconds = "520"
+	pancakeswapWaitMilliseconds = "100"
 	dfynWaitMilliseconds        = "100"
 	ubeswapWaitMilliseconds     = "200"
 	spookyswapWaitMilliseconds  = "200"
@@ -55,7 +49,6 @@ const (
 )
 
 type UniswapAssetSource struct {
-	WsClient     *ethclient.Client
 	RestClient   *ethclient.Client
 	assetChannel chan dia.Asset
 	doneChannel  chan bool
@@ -65,279 +58,66 @@ type UniswapAssetSource struct {
 
 var exchangeFactoryContractAddress string
 
-func NewUniswapAssetSource(exchange dia.Exchange) *UniswapAssetSource {
-
-	var wsClient, restClient *ethclient.Client
-	var err error
-	var assetChannel = make(chan dia.Asset)
-	var doneChannel = make(chan bool)
-	var uas *UniswapAssetSource
+func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		log.Info(utils.Getenv("ETH_URI_REST", restDial))
-		log.Info(utils.Getenv("ETH_URI_WS", wsDial))
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var waitTime int
-		waitTimeString := utils.Getenv("UNISWAP_WAIT_TIME", uniswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.ETHEREUM,
-			waitTime:     waitTime,
-		}
+		uas = makeUniswapAssetSource(exchange, restDial, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDial))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("SUSHISWAP_WAIT_TIME", sushiswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.ETHEREUM,
-			waitTime:     waitTime,
-		}
+		uas = makeUniswapAssetSource(exchange, restDial, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("PANCAKESWAP_WAIT_TIME", pancakeswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 520
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.BINANCESMARTCHAIN,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		log.Infoln("Init rest client for Polygon chain")
-
-		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("DFYN_WAIT_TIME", dfynWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		uas = &UniswapAssetSource{
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.POLYGON,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		log.Infoln("Init rest client for Polygon chain")
-
-		restClient, err = ethclient.Dial(utils.Getenv("POLYGON_URI_REST", restDialPolygon))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("DFYN_WAIT_TIME", dfynWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		uas = &UniswapAssetSource{
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.POLYGON,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialPolygon, dfynWaitMilliseconds)
 	case dia.UbeswapExchange:
-		log.Infoln("Init ws and rest client for Celo chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("CELO_URI_WS", wsDialCelo))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("CELO_URI_REST", restDialCelo))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("UBESWAP_WAIT_TIME", ubeswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 200
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.CELO,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		log.Infoln("Init ws and rest client for Fantom chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spookyswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 200
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.FANTOM,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		log.Infoln("Init ws and rest client for Fantom chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_WS", wsDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("FANTOM_URI_REST", restDialFantom))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("FANTOM_WAIT_TIME", spiritswapWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 200
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.FANTOM,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialFantom, spiritswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
-		log.Infoln("Init ws and rest client for Moonriver chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_WS", wsDialMoonriver))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("MOONRIVER_URI_REST", restDialMoonriver))
-		if err != nil {
-			log.Fatal(err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("MOONRIVER_WAIT_TIME", solarbeamWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		uas = &UniswapAssetSource{
-			WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.MOONRIVER,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		uas = makeUniswapAssetSource(exchange, restDialMoonriver, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
-		log.Infoln("Init ws and rest client for Near chain")
-		// wsClient, err = ethclient.Dial(utils.Getenv("NEAR_URI_WS", wsDialNear))
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		restClient, err = ethclient.Dial(utils.Getenv("AURORA_URI_REST", restDialAurora))
-		if err != nil {
-			log.Fatal("init rest client: ", err)
-		}
-		var waitTime int
-		waitTimeString := utils.Getenv("AURORA_WAIT_TIME", trisolarisWaitMilliseconds)
-		waitTime, err = strconv.Atoi(waitTimeString)
-		if err != nil {
-			log.Error("could not parse wait time: ", err)
-			waitTime = 100
-		}
-		uas = &UniswapAssetSource{
-			// WsClient:     wsClient,
-			RestClient:   restClient,
-			assetChannel: assetChannel,
-			doneChannel:  doneChannel,
-			blockchain:   dia.AURORA,
-			waitTime:     waitTime,
-		}
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		uas = makeUniswapAssetSource(exchange, restDialAurora, trisolarisWaitMilliseconds)
 	}
+	exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	go func() {
 		uas.fetchAssets()
 	}()
 	return uas
 
+}
+
+// makeUniswapAssetSource returns an asset source as used in NewUniswapAssetSource.
+func makeUniswapAssetSource(exchange dia.Exchange, restDial string, waitMilliseconds string) *UniswapAssetSource {
+	var restClient *ethclient.Client
+	var err error
+	var assetChannel = make(chan dia.Asset)
+	var doneChannel = make(chan bool)
+	var uas *UniswapAssetSource
+	log.Infof("Init rest client for %s.", exchange.BlockChain.Name)
+	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+	var waitTime int
+	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
+	waitTime, err = strconv.Atoi(waitTimeString)
+	if err != nil {
+		log.Error("could not parse wait time: ", err)
+		waitTime = 500
+	}
+	uas = &UniswapAssetSource{
+		RestClient:   restClient,
+		assetChannel: assetChannel,
+		doneChannel:  doneChannel,
+		blockchain:   exchange.BlockChain.Name,
+		waitTime:     waitTime,
+	}
+	return uas
 }
 
 func (uas *UniswapAssetSource) Asset() chan dia.Asset {
@@ -369,9 +149,9 @@ func (uas *UniswapAssetSource) fetchAssets() {
 	checkMap := make(map[string]struct{})
 	for i := 0; i < numPairs; i++ {
 		time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
-		pair, err := uas.GetPairByID(int64(i))
+		pair, err := uas.GetPairByID(int64(numPairs - 1 - i))
 		if err != nil {
-			log.Errorln("Error getting pair with ID ", i)
+			log.Errorln("Error getting pair with ID ", numPairs-1-i)
 		}
 		asset0 := pair.Token0
 		asset1 := pair.Token1
