@@ -133,8 +133,15 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
 
 				basetoken := t.BaseToken
-				// Tmp solution for prices on Solana:------
+				// Tmp solution for prices on Solana and Metis:------
 				if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
+					basetoken = dia.Asset{
+						Symbol:     "USDC",
+						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Blockchain: "Ethereum",
+					}
+				}
+				if basetoken.Blockchain == dia.METIS && t.Source == dia.NetswapExchange && basetoken.Address == "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21" {
 					basetoken = dia.Asset{
 						Symbol:     "USDC",
 						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
