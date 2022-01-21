@@ -23,6 +23,12 @@ As of now, the following list of quotations is available in this oracle:
 * BTC
 * DIA
 * ETH
+* USDC
+* FTM
+* SDN
+* KSM
+* MOVR
+* ASTR
 
 **Binance Smart Chain:**
 
