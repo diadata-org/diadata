@@ -41,6 +41,7 @@ func init() {
 	blockchains[dia.ASTAR] = dia.BlockChain{Name: dia.ASTAR, NativeToken: dia.Asset{Symbol: "ASTR"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.SHIDEN] = dia.BlockChain{Name: dia.SHIDEN, NativeToken: dia.Asset{Symbol: "SDN"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.ARBITRUM] = dia.BlockChain{Name: dia.ARBITRUM, NativeToken: dia.Asset{Symbol: "ARB"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.METIS] = dia.BlockChain{Name: dia.METIS, NativeToken: dia.Asset{Symbol: "Metis"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)
@@ -89,6 +90,7 @@ func init() {
 	Exchanges[dia.TrisolarisExchange] = dia.Exchange{Name: dia.TrisolarisExchange, Centralized: false, BlockChain: blockchains[dia.AURORA], Contract: common.HexToAddress("0xc66F594268041dB60507F00703b152492fb176E7"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.ByBitExchange] = dia.Exchange{Name: dia.ByBitExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.AnyswapExchange] = dia.Exchange{Name: dia.AnyswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x6b7a87899490EcE95443e979cA9485CBE7E71522"), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.NetswapExchange] = dia.Exchange{Name: dia.NetswapExchange, Centralized: false, BlockChain: blockchains[dia.METIS], Contract: common.HexToAddress("0x70f51d68D16e8f9e418441280342BD43AC9Dff9f"), WatchdogDelay: watchdogDelayLong}
 
 	// Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: 360000}
@@ -219,6 +221,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewSerumScraper(Exchanges[dia.SerumExchange], scrape)
 	case dia.AnyswapExchange:
 		return NewAnyswapScraper(Exchanges[dia.AnyswapExchange], scrape, relDB)
+	case dia.NetswapExchange:
+		return NewUniswapScraper(Exchanges[dia.NetswapExchange], scrape)
 	// case dia.FinageForex:
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 

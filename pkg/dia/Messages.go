@@ -32,6 +32,7 @@ const (
 	ARBITRUM                                = "Arbitrum"
 	ASTAR                                   = "Astar"
 	SHIDEN                                  = "Shiden"
+	METIS                                   = "Metis"
 	FIAT                                    = "Fiat"
 )
 

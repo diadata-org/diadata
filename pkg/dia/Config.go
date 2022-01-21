@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	NetswapExchange      = "Netswap"
 	AnyswapExchange      = "Anyswap"
 	BalancerExchange     = "Balancer"
 	GnosisExchange       = "Gnosis"
@@ -91,6 +92,7 @@ func Exchanges() []string {
 		HitBTCExchange,
 		OKExExchange,
 
+		NetswapExchange,
 		AnyswapExchange,
 		DfynNetwork,
 		UbeswapExchange,

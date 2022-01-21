@@ -23,19 +23,14 @@ type UniswapPair struct {
 }
 
 const (
-	restDial = "http://159.69.120.42:8545/"
-
-	restDialBSC = ""
-
-	restDialPolygon = ""
-
-	restDialCelo = ""
-
-	restDialFantom = ""
-
+	restDial          = "http://159.69.120.42:8545/"
+	restDialBSC       = ""
+	restDialPolygon   = ""
+	restDialCelo      = ""
+	restDialFantom    = ""
 	restDialMoonriver = ""
-
-	restDialAurora = ""
+	restDialAurora    = ""
+	restDialMetis     = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -46,6 +41,7 @@ const (
 	spiritswapWaitMilliseconds  = "200"
 	solarbeamWaitMilliseconds   = "200"
 	trisolarisWaitMilliseconds  = "200"
+	metisWaitMilliseconds       = "200"
 )
 
 type UniswapAssetSource struct {
@@ -81,7 +77,10 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialMoonriver, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
 		uas = makeUniswapAssetSource(exchange, restDialAurora, trisolarisWaitMilliseconds)
+	case dia.NetswapExchange:
+		uas = makeUniswapAssetSource(exchange, restDialMetis, metisWaitMilliseconds)
 	}
+
 	exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	go func() {
