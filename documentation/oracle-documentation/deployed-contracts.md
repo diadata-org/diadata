@@ -14,7 +14,7 @@ DIA Development Oracle contracts are not intended to be integrated in a dApp. DI
 
 {% tabs %}
 {% tab title="Mainnet" %}
-<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef">0xD47F...23Ef</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract">CoinInfo Oracle</a></td><td></td></tr><tr><td><a href="crypto-index-value.md">SCIFI Index Value</a></td><td><a href="https://etherscan.io/address/0x814712cc9fa606a4b372b87cd27775959e052d9a">0x8147...2d9a</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
+<table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://etherscan.io/address/0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef">0xD47F...23Ef</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2">Key/Value Oracle V2</a></td><td></td></tr></tbody></table>
 {% endtab %}
 
 {% tab title="Ropsten Testnet" %}
