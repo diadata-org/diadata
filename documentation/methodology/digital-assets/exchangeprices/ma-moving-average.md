@@ -22,4 +22,4 @@ The result is then returned as the result of the filter operation.
 
 ### Implementation
 
-The filter is implemented as part of the FiltersBlockService [in this file in our Guthub repository](../../../../internal/pkg/filtersBlockService/FilterMA.go).
+The filter is implemented as part of the FiltersBlockService [in this file in our Github repository](../../../../internal/pkg/filtersBlockService/FilterMA.go).
