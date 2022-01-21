@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "m.USDT",
+            "ForeignName": "m.USDT-m.USDC",
+            "Exchange": "Netswap",
+            "Ignore": false
+        }
+    ]
+}
