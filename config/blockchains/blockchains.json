@@ -129,6 +129,15 @@
             },
             "VerificationMechanism": "pos",
             "ChainID": "Ethereum336"
+        },
+        {
+            "Name": "Metis",
+            "GenesisDate": 1637280000,
+            "NativeToken": {
+                "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum1088"
         }
     ]
 }
