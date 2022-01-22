@@ -582,9 +582,8 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 	defer wg.Wait()
 	pairs := make([]UniswapPair, int(numPairs.Int64()))
 	for i := 0; i < int(numPairs.Int64()); i++ {
-		if s.exchangeName == dia.PanCakeSwap {
-			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
-		}
+		// Sleep in order not to run into rate limits.
+		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()

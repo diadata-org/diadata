@@ -93,19 +93,19 @@ func Exchanges() []string {
 		OKExExchange,
 
 		NetswapExchange,
-		AnyswapExchange,
 		DfynNetwork,
 		UbeswapExchange,
 		SpookyswapExchange,
-		QuickswapExchange,
 		SpiritswapExchange,
 		SerumExchange,
 		SolarbeamExchange,
 		TrisolarisExchange,
+		AnyswapExchange,
 
 		SushiSwapExchange,
 		UniswapExchange,
 		UniswapExchangeV3,
+		QuickswapExchange,
 		PanCakeSwap,
 
 		CurveFIExchange,
