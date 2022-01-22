@@ -1,18 +1,84 @@
 {
-  "Tokens": [
+  "Batches": [
     {
-      "Symbol": "WBTC",
-      "Exchange": "CoinBase",
-      "Blockchain": "Ethereum",
-      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
-      
+      "Exchange": "Binance",
+      "BatchNumber": "1",
+      "VerifiedBy": ["baptistegarcin,slightlyskepticalpotat,jerrynoah"]      
     },
     {
-      "Symbol": "AAVE",
-      "Exchange": "CoinBase",
-      "Blockchain": "Ethereum",
-      "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
-      
+      "Exchange": "Kraken",
+      "BatchNumber": "1",
+      "VerifiedBy": ["jppade"]      
+    },
+    {
+      "Exchange": "Huobi",
+      "BatchNumber": "1",
+      "VerifiedBy": ["jppade"]      
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip","chemrah","ControlCplusControlV"]  
+    },
+    {
+      "Exchange": "KuCoin",
+      "BatchNumber": "2",
+      "VerifiedBy": ["echolon166","codegazer584","icebert04"]
+    },
+    {
+      "Exchange": "GateIO",
+      "BatchNumber": "1",
+      "VerifiedBy": ["tn024687","ControlCplusControlV","chemrah"] 
+    },
+    {
+      "Exchange": "ZB",
+      "BatchNumber": "1",
+      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"] 
+    },
+    {
+      "Exchange": "LBank",
+      "BatchNumber": "1",
+      "VerifiedBy": ["sidduHERE","antonyip","ControlCplusControlV"]      
+    },
+    {
+      "Exchange": "Bittrex",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip","tn024687","sidduHERE"] 
+    },
+    {
+      "Exchange": "HitBTC",
+      "BatchNumber": "1",
+      "VerifiedBy": ["goojal","sidduHERE", "codegazer584"]     
+    },
+    {
+      "Exchange": "HitBTC",
+      "BatchNumber": "2",
+      "VerifiedBy": ["antonyip", "goojal", "echolon166"]     
+    },
+    {
+      "Exchange": "OKEx",
+      "BatchNumber": "1",
+      "VerifiedBy": ["antonyip","sidduHERE", "manyrios"]      
+    },
+    {
+      "Exchange": "Quoine",
+      "BatchNumber": "1",
+      "VerifiedBy": ["echolon166", "antonyip", "0xGlacier"]      
+    },
+    {
+      "Exchange": "CREX24",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]       
+    },
+    {
+      "Exchange": "ByBit",
+      "BatchNumber": "2",
+      "VerifiedBy": ["sm67nono"]       
+    },
+    {
+      "Exchange": "STEX",
+      "BatchNumber": "1",
+      "VerifiedBy": [""]      
     }
   ]
 }
