@@ -1,0 +1,3286 @@
+{
+    "Coins": [
+        {
+            "Symbol": "DPI",
+            "ForeignName": "DPI-WBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DPI",
+            "ForeignName": "DPI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-cUNI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "cUNI",
+            "ForeignName": "cUNI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-rDAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-YFI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-UNI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-BED",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAI",
+            "ForeignName": "RAI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-UNI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-BED",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-BED",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BED",
+            "ForeignName": "BED-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BED",
+            "ForeignName": "BED-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BED",
+            "ForeignName": "BED-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BED",
+            "ForeignName": "BED-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-LINK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "B-50BAL-50GNO",
+            "ForeignName": "B-50BAL-50GNO-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-RGT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-RLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LPT",
+            "ForeignName": "LPT-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ZRX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AST",
+            "ForeignName": "AST-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TEL",
+            "ForeignName": "TEL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAT",
+            "ForeignName": "BAT-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RPL",
+            "ForeignName": "RPL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "APY",
+            "ForeignName": "APY-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-AMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SRM",
+            "ForeignName": "SRM-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-mUSD",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-RLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BANK",
+            "ForeignName": "BANK-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-TRU",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-GTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-1INCH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-xSUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-UNI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-xSUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "1INCH",
+            "ForeignName": "1INCH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-xSUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-xSUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-xSUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xSUSHI",
+            "ForeignName": "xSUSHI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sdveCRV-DAO",
+            "ForeignName": "sdveCRV-DAO-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xSNXa",
+            "ForeignName": "xSNXa-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-LINK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-LINK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-YFI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-UNI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-MATIC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-BLC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-SUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-SUSHI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-AAVE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DREV",
+            "ForeignName": "DREV-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFU",
+            "ForeignName": "YFU-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PIXEL",
+            "ForeignName": "PIXEL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STR",
+            "ForeignName": "STR-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAXG",
+            "ForeignName": "PAXG-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "M2",
+            "ForeignName": "M2-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wDGLD",
+            "ForeignName": "wDGLD-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-HEGIC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-ROOK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-ROOK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PERP",
+            "ForeignName": "PERP-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PERP",
+            "ForeignName": "PERP-ROOK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ROOK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAR",
+            "ForeignName": "PAR-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAR",
+            "ForeignName": "PAR-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAR",
+            "ForeignName": "PAR-MIMO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NMR",
+            "ForeignName": "NMR-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-RARI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-SWAP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "IDEX",
+            "ForeignName": "IDEX-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAZOR",
+            "ForeignName": "RAZOR-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEXG",
+            "ForeignName": "DEXG-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNO-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-eYyvDAI-27JUN21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-ePyvDAI-27JUN21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUSD",
+            "ForeignName": "LUSD-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCurveLUSD-30JUN21",
+            "ForeignName": "eYyvCurveLUSD-30JUN21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCurveLUSD-30JUN21",
+            "ForeignName": "ePyvCurveLUSD-30JUN21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-SNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-wNXM",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-REN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-LDO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-wNXM",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-REN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-LDO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-REN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-LDO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-LDO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LDO",
+            "ForeignName": "LDO-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LDO",
+            "ForeignName": "LDO-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LDO",
+            "ForeignName": "LDO-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-CREAM",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-HEGIC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PERP",
+            "ForeignName": "PERP-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PERP",
+            "ForeignName": "PERP-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALCX",
+            "ForeignName": "ALCX-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCurveLUSD-28SEP21",
+            "ForeignName": "eYyvCurveLUSD-28SEP21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCurveLUSD-28SEP21",
+            "ForeignName": "ePyvCurveLUSD-28SEP21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAL",
+            "ForeignName": "BAL-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXS-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXS-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXS-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCurveLUSD-27DEC21",
+            "ForeignName": "eYyvCurveLUSD-27DEC21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCurveLUSD-27DEC21",
+            "ForeignName": "ePyvCurveLUSD-27DEC21-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-wPE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCrvTriCrypto-15AUG21",
+            "ForeignName": "eYyvCrvTriCrypto-15AUG21-crvTricrypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCrvTriCrypto-15AUG21",
+            "ForeignName": "ePyvCrvTriCrypto-15AUG21-crvTricrypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-renBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-sBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "renBTC",
+            "ForeignName": "renBTC-sBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wNXM",
+            "ForeignName": "wNXM-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LDO",
+            "ForeignName": "LDO-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRT",
+            "ForeignName": "GRT-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UMA",
+            "ForeignName": "UMA-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POOL",
+            "ForeignName": "POOL-LQTY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CREAM",
+            "ForeignName": "CREAM-LQTY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HEGIC",
+            "ForeignName": "HEGIC-LQTY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LQTY",
+            "ForeignName": "LQTY-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LQTY",
+            "ForeignName": "LQTY-PERP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LQTY",
+            "ForeignName": "LQTY-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LQTY",
+            "ForeignName": "LQTY-ALCX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GEL",
+            "ForeignName": "GEL-DEXG",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-eYyvcrvSTETH-15OCT21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-ePyvcrvSTETH-15OCT21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAR",
+            "ForeignName": "PAR-sEUR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PAR",
+            "ForeignName": "PAR-EURS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sEUR",
+            "ForeignName": "sEUR-EURS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-SAND",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-MVI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-NFTX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-MVI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-NFTX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-NFTX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MUSE",
+            "ForeignName": "MUSE-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MUSE",
+            "ForeignName": "MUSE-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MUSE",
+            "ForeignName": "MUSE-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MVI",
+            "ForeignName": "MVI-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MUSE",
+            "ForeignName": "MUSE-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXS-COMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VSP",
+            "ForeignName": "VSP-vVSP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VSP",
+            "ForeignName": "VSP-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "vVSP",
+            "ForeignName": "vVSP-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-VUSD",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VUSD",
+            "ForeignName": "VUSD-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VSP",
+            "ForeignName": "VSP-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VSP",
+            "ForeignName": "VSP-SPC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VSP",
+            "ForeignName": "VSP-MET",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-SPC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-MET",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPC",
+            "ForeignName": "SPC-MET",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPC",
+            "ForeignName": "SPC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MET",
+            "ForeignName": "MET-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvDAI-08DEC23",
+            "ForeignName": "eYyvDAI-08DEC23-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvDAI-08DEC23",
+            "ForeignName": "ePyvDAI-08DEC23-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-eYyvDAI-16OCT21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-ePyvDAI-16OCT21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-AUDIO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-YGG",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-SAND",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-NFTX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-YGG",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-SAND",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-NFTX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-MUSE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-AXS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-SOCKS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-PUNK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-MEEB",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-GLYPH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-PUNK",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-MEEB",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-GLYPH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOCKS",
+            "ForeignName": "SOCKS-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-MEEB",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-GLYPH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MEEB",
+            "ForeignName": "MEEB-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MEEB",
+            "ForeignName": "MEEB-GLYPH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MEEB",
+            "ForeignName": "MEEB-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MEEB",
+            "ForeignName": "MEEB-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-GLYPH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GLYPH",
+            "ForeignName": "GLYPH-SAK3",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GLYPH",
+            "ForeignName": "GLYPH-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAK3",
+            "ForeignName": "SAK3-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvUSDC-29OCT21",
+            "ForeignName": "eYyvUSDC-29OCT21-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ePyvUSDC-29OCT21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvcrv3crypto-12NOV21",
+            "ForeignName": "eYyvcrv3crypto-12NOV21-crv3crypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvcrv3crypto-12NOV21",
+            "ForeignName": "ePyvcrv3crypto-12NOV21-crv3crypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGL",
+            "ForeignName": "EGL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wstETH",
+            "ForeignName": "wstETH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BPT",
+            "ForeignName": "BPT-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUDIO",
+            "ForeignName": "AUDIO-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YGG",
+            "ForeignName": "YGG-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NFTX",
+            "ForeignName": "NFTX-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AXS",
+            "ForeignName": "AXS-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ROBOT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FOUR",
+            "ForeignName": "FOUR-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VITA",
+            "ForeignName": "VITA-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-eYyvWBTC-26NOV21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-ePyvWBTC-26NOV21",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "⚗️",
+            "ForeignName": "⚗️-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MTA",
+            "ForeignName": "MTA-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PETAL",
+            "ForeignName": "PETAL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aKLIMA",
+            "ForeignName": "aKLIMA-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-eYyvUSDC-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvUSDC-28JAN22",
+            "ForeignName": "ePyvUSDC-28JAN22-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HND",
+            "ForeignName": "HND-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-eYyvcrvSTETH-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-ePyvcrvSTETH-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BOOK⚗️",
+            "ForeignName": "BOOK⚗️-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-eYyvDAI-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvDAI-28JAN22",
+            "ForeignName": "ePyvDAI-28JAN22-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wDGLD",
+            "ForeignName": "wDGLD-WBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wDGLD",
+            "ForeignName": "wDGLD-PAR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wDGLD",
+            "ForeignName": "wDGLD-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-PAR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRO",
+            "ForeignName": "GRO-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ALGLTMSTR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "alUSD3CRV-f",
+            "ForeignName": "alUSD3CRV-f-eYyvCurve-alUSD-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "alUSD3CRV-f",
+            "ForeignName": "alUSD3CRV-f-ePyvCurve-alUSD-28JAN22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRO",
+            "ForeignName": "GRO-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNN",
+            "ForeignName": "UNN-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM-3LP3CRV-f",
+            "ForeignName": "MIM-3LP3CRV-f-eYyvCurve-MIM-11FEB22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCurve-MIM-11FEB22",
+            "ForeignName": "ePyvCurve-MIM-11FEB22-MIM-3LP3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-KNX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eursCRV",
+            "ForeignName": "eursCRV-eYyvCurve-EURS-11FEB22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eursCRV",
+            "ForeignName": "eursCRV-ePyvCurve-EURS-11FEB22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FEI",
+            "ForeignName": "FEI-TRIBE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-eYyvcrvSTETH-15APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "steCRV",
+            "ForeignName": "steCRV-ePyvcrvSTETH-15APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-QUARTZ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANKH",
+            "ForeignName": "ANKH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANKH",
+            "ForeignName": "ANKH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MC",
+            "ForeignName": "MC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvUSDC-17DEC21",
+            "ForeignName": "eYyvUSDC-17DEC21-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvUSDC-17DEC21",
+            "ForeignName": "ePyvUSDC-17DEC21-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvcrv3crypto-29APR22",
+            "ForeignName": "eYyvcrv3crypto-29APR22-crv3crypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvcrv3crypto-29APR22",
+            "ForeignName": "ePyvcrv3crypto-29APR22-crv3crypto",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-FACTR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-ENS",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "HUB",
+            "ForeignName": "HUB-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUSD",
+            "ForeignName": "LUSD-FEI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-TEMP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM-3LP3CRV-f",
+            "ForeignName": "MIM-3LP3CRV-f-eYyvCurve-MIM-29APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM-3LP3CRV-f",
+            "ForeignName": "MIM-3LP3CRV-f-ePyvCurve-MIM-29APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bKRL",
+            "ForeignName": "bKRL-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-NOTE",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEXO",
+            "ForeignName": "NEXO-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVE-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX-GRT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX-CRV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-PRIME",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CBS",
+            "ForeignName": "CBS-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvUSDC-29APR22",
+            "ForeignName": "eYyvUSDC-29APR22-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvUSDC-29APR22",
+            "ForeignName": "ePyvUSDC-29APR22-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TEMP",
+            "ForeignName": "TEMP-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CGT",
+            "ForeignName": "CGT-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DMC",
+            "ForeignName": "DMC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-UNIX",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "3DOG",
+            "ForeignName": "3DOG-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCurve-alUSD-29APR22",
+            "ForeignName": "eYyvCurve-alUSD-29APR22-alUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "alUSD3CRV-f",
+            "ForeignName": "alUSD3CRV-f-ePyvCurve-alUSD-29APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-POP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-c0",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-GF",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TPS-stETH-7-11-2021",
+            "ForeignName": "TPS-stETH-7-11-2021-TYS-stETH-7-11-2021",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLX",
+            "ForeignName": "FLX-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-HDAO",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRE8R",
+            "ForeignName": "CRE8R-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PATH",
+            "ForeignName": "PATH-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PTT",
+            "ForeignName": "PTT-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AKITA",
+            "ForeignName": "AKITA-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-MTT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-CCM",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STRM",
+            "ForeignName": "STRM-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XY",
+            "ForeignName": "XY-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GSG",
+            "ForeignName": "GSG-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GUILD",
+            "ForeignName": "GUILD-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AAG",
+            "ForeignName": "AAG-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FART",
+            "ForeignName": "FART-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TPS-stETH-11-11-2021",
+            "ForeignName": "TPS-stETH-11-11-2021-TYS-stETH-11-11-2021",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TPS-stETH-13-11-2021",
+            "ForeignName": "TPS-stETH-13-11-2021-TYS-stETH-13-11-2021",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aDAI",
+            "ForeignName": "aDAI-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aDAI",
+            "ForeignName": "aDAI-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-aUSDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-aUSDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-bb-a-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-aUSDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-aUSDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USD",
+            "ForeignName": "bb-a-USD-bb-a-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USD",
+            "ForeignName": "bb-a-USD-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USD",
+            "ForeignName": "bb-a-USD-bb-a-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-bb-a-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-DAI",
+            "ForeignName": "bb-a-DAI-bb-a-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-FNT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-eYyvWBTC-29APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-ePyvWBTC-29APR22",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MTRL",
+            "ForeignName": "MTRL-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XMAS",
+            "ForeignName": "XMAS-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D2D",
+            "ForeignName": "D2D-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SPOOL",
+            "ForeignName": "SPOOL-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TYS-stETH-31-2-2022",
+            "ForeignName": "TYS-stETH-31-2-2022-TPS-stETH-31-2-2022",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TPS-stETH-30-7-2022",
+            "ForeignName": "TPS-stETH-30-7-2022-TYS-stETH-30-7-2022",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA-OCEAN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA-LRC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN-LRC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LRC",
+            "ForeignName": "LRC-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHN",
+            "ForeignName": "CHN-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-TST",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XFT",
+            "ForeignName": "XFT-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FNC",
+            "ForeignName": "FNC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aDAI",
+            "ForeignName": "aDAI-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDC",
+            "ForeignName": "bb-a-USDC-aUSDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-USDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-aUSDT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-bb-a-USD",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USDT",
+            "ForeignName": "bb-a-USDT-bb-a-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USD",
+            "ForeignName": "bb-a-USD-bb-a-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-USD",
+            "ForeignName": "bb-a-USD-bb-a-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bb-a-DAI",
+            "ForeignName": "bb-a-DAI-bb-a-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MUSK",
+            "ForeignName": "MUSK-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NITRO",
+            "ForeignName": "NITRO-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TMNT",
+            "ForeignName": "TMNT-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNT",
+            "ForeignName": "MNT-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvCurveLUSD-29APR22",
+            "ForeignName": "eYyvCurveLUSD-29APR22-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvCurveLUSD-29APR22",
+            "ForeignName": "ePyvCurveLUSD-29APR22-LUSD3CRV-f",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-AGV",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "⚗️",
+            "ForeignName": "⚗️-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GIV",
+            "ForeignName": "GIV-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-bRETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAIN",
+            "ForeignName": "RAIN-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D2D",
+            "ForeignName": "D2D-BAL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-MGG",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rETH",
+            "ForeignName": "rETH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-AVG",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-CARD",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MTRL",
+            "ForeignName": "MTRL-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MTRL",
+            "ForeignName": "MTRL-ELA",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SMPL",
+            "ForeignName": "SMPL-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALI",
+            "ForeignName": "ALI-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-PSP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "X",
+            "ForeignName": "X-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-PNT",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-DATA",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-OCEAN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-POLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVC",
+            "ForeignName": "CVC-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-DATA",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-OCEAN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-POLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PNT",
+            "ForeignName": "PNT-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATA",
+            "ForeignName": "DATA-OCEAN",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATA",
+            "ForeignName": "DATA-POLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATA",
+            "ForeignName": "DATA-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATA",
+            "ForeignName": "DATA-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DATA",
+            "ForeignName": "DATA-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN-POLY",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OCEAN",
+            "ForeignName": "OCEAN-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POLY",
+            "ForeignName": "POLY-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POLY",
+            "ForeignName": "POLY-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POLY",
+            "ForeignName": "POLY-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ENJ",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OHM",
+            "ForeignName": "OHM-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OHM",
+            "ForeignName": "OHM-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GLCH",
+            "ForeignName": "GLCH-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WETH",
+            "ForeignName": "WETH-WAMPL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eYyvDAI-29APR22",
+            "ForeignName": "eYyvDAI-29APR22-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ePyvDAI-29APR22",
+            "ForeignName": "ePyvDAI-29APR22-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XB",
+            "ForeignName": "XB-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-SET",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-SAWA",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-rETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI-RPL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rETH",
+            "ForeignName": "rETH-RPL",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TYS-RSPT-17-0-2022",
+            "ForeignName": "TYS-RSPT-17-0-2022-TPS-RSPT-17-0-2022",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-PIF",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RGG",
+            "ForeignName": "RGG-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KEEPER",
+            "ForeignName": "KEEPER-USDC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PDT",
+            "ForeignName": "PDT-DAI",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-SYNR",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-SATOSHISWAP",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-MEME",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COOL",
+            "ForeignName": "COOL-VBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PUNK",
+            "ForeignName": "PUNK-VBTC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VBTC",
+            "ForeignName": "VBTC-BAYC",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GENART",
+            "ForeignName": "GENART-WETH",
+            "Exchange": "BalancerV2",
+            "Ignore": false
+        }
+    ]
+}
