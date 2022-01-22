@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.14
 
 require (
-	github.com/diadata-org/diadata v1.3.6-rc-27
+	github.com/diadata-org/diadata v1.3.6-rc-28
 	github.com/segmentio/kafka-go v0.3.7
 	github.com/sirupsen/logrus v1.8.1
 )

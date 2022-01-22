@@ -23,6 +23,10 @@
         {
             "Address": "0x4eF5C01c4ceCD87CfdC604edA447e5890a0c1b9E",
             "ForeignName": "D100-WBNB"
+        },
+        {
+            "Address": "0x1Cb2Ec921f84EBCA394fedADc8EBdDc6071099D7",
+            "ForeignName": "DIA-BUSD"
         }
     ]
 }
