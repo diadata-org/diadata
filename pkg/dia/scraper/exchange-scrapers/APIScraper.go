@@ -46,6 +46,7 @@ func init() {
 
 	Exchanges = make(map[string]dia.Exchange)
 	Exchanges[dia.BalancerExchange] = dia.Exchange{Name: dia.BalancerExchange, Centralized: false, Contract: common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.BalancerV2Exchange] = dia.Exchange{Name: dia.BalancerV2Exchange, Centralized: false, Contract: common.HexToAddress("0xBA12222222228d8Ba445958a75a0704d566BF2C8"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false, Contract: common.HexToAddress("0x6F400810b62df8E13fded51bE75fF5393eaa841F"), BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.KrakenExchange] = dia.Exchange{Name: dia.KrakenExchange, Centralized: true, WatchdogDelay: watchdogDelay}
@@ -185,6 +186,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewGnosisScraper(Exchanges[dia.GnosisExchange], scrape)
 	case dia.BalancerExchange:
 		return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
+	case dia.BalancerV2Exchange:
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape)
 	case dia.MakerExchange:
 		return NewMakerScraper(Exchanges[dia.MakerExchange], scrape, relDB)
 	case dia.KuCoinExchange:
