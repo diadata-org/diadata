@@ -92,6 +92,7 @@ func init() {
 	Exchanges[dia.ByBitExchange] = dia.Exchange{Name: dia.ByBitExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.AnyswapExchange] = dia.Exchange{Name: dia.AnyswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x6b7a87899490EcE95443e979cA9485CBE7E71522"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.NetswapExchange] = dia.Exchange{Name: dia.NetswapExchange, Centralized: false, BlockChain: blockchains[dia.METIS], Contract: common.HexToAddress("0x70f51d68D16e8f9e418441280342BD43AC9Dff9f"), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.BitMexExchange] = dia.Exchange{Name: dia.BitMexExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 
 	// Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: 360000}
@@ -226,6 +227,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewAnyswapScraper(Exchanges[dia.AnyswapExchange], scrape, relDB)
 	case dia.NetswapExchange:
 		return NewUniswapScraper(Exchanges[dia.NetswapExchange], scrape)
+	case dia.BitMexExchange:
+		return NewBitMexScraper(Exchanges[dia.BitMexExchange], scrape, relDB)
 	// case dia.FinageForex:
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
