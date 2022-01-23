@@ -6,6 +6,11 @@
       "VerifiedBy": ["baptistegarcin,slightlyskepticalpotat,jerrynoah"]      
     },
     {
+      "Exchange": "ByBit",
+      "BatchNumber": "1",
+      "VerifiedBy": ["ControlCplusControlV"]      
+    },
+    {
       "Exchange": "Kraken",
       "BatchNumber": "1",
       "VerifiedBy": ["jppade"]      
