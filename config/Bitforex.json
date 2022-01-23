@@ -1,0 +1,1660 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BTC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ETH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LTC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ETC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BCH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-NEO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TRX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ABYSS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CTXC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-XLM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ADF",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-QTUM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BF",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ECOM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TPAY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MIR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DOGE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MGO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ABBC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CTC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EOS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-XRP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PLAT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BSV",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BEAM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GRIN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ATOM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-KREX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-OMI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ROOBEE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-QQQ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BRZ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MYO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-XSCC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DOT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CREDIT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-FIL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ADA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PLA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-NTB",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DSYS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ELAMA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MWC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-IQ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CAPP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SOLO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GEO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ZLW",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-FUND",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YOUC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TNC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BNTX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-IQN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MQL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-HMR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SUSHI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YFI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SUN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-UNI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PICKLE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YFBETA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MEME",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YTSLA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SHROOM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DZAR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GHST",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-QHC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-G999",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-REEC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-1INCH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EPAN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MASK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-POLS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LIT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-OM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PHA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RING",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RAZOR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CLIQ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-OCEAN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ANKR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AKRO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MANA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SAND",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-WHALE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AXS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-COCOS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RARI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PGT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-OGN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AUDIO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MCX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ANRX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SPDR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-KEN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-NDN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BSY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RLC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EXCC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ANS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-UPI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AKITA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SHIB",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PKOIN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-FREE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DEEZNUTS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BKC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-VEGA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BZZ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PLP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BONE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DACXI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ETL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-KISHU",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-REVV",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ELON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TKP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GERA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BABYDOGE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MBET",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DBX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-KSPC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EMAX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-POLL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RGP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DPET",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ZOON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EWT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ATRI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MMUI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MOM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YUCT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LORC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AVAX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LUNA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GRANX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BKR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PLENTY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CIND",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-UUSD",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YOU",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LSP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BMON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MUSK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SOL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-THG",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-NU",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-FIO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TORG",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GHC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YOOSHI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YFO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SENSO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MSD",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BROWN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ALICE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ILV",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-YGG",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BLUESPARROW",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-UNW",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-DON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CNG",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PYM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-HUH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GXP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CWAR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-REAL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-AURY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MBS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-PEOPLE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GOG",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CALO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-FREEROSS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-CBT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EXFI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SOS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-MYRA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-TCG2",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-EFI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-IMX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BTRST",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-QRDO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-BICO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-APX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-ROCO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-RACA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-LOOKS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-GODS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BF",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-UBEX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DAV",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-HQX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MIR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-DOGE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ISR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-NOIA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-EVED",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-BWXX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-KICKS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LINK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MWC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-FUND",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-YOUC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-TNC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SHAKE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MILK2",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-LON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-1INCH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-WISE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-EPAN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-ETL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-RGP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MMUI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-PLENTY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-MSD",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-ETH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-BCH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TRX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-BF",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TPAY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-DOGE",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-ABBC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-EOS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-XRP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-DASH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-ZEC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TOSC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-RVN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-MHC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-BEAM",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-GRIN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-VSYS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-EVED",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-BRZ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TOMO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-MATIC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-KICKS",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-BNB",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-LINK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-HT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-YO",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-XTZ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-WELL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-NTB",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-ELAMA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-MWC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-FZY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-CLBK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-MAZ",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-FUND",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TMCN",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TRAC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-TVK",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-ADX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-EXCC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-REL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-CBY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-PLP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-DACXI",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-GERA",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-DBX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-RGP",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-PLENTY",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-UNW",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-BTC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ETH",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-RON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-USDC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-REL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-SAFEMOON",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDT-WEMIX",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-REL",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC-HMR",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        }
+    ]
+}
