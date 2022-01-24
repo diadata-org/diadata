@@ -74,6 +74,11 @@
       "Exchange": "STEX",
       "BatchNumber": "1",
       "VerifiedBy": [""]      
+    },
+    {
+      "Exchange": "ByBit",
+      "BatchNumber": "1",
+      "VerifiedBy": ["rohithandique"]      
     }
   ]
 }
