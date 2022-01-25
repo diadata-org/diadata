@@ -13,6 +13,7 @@ const (
 	NetswapExchange      = "Netswap"
 	AnyswapExchange      = "Anyswap"
 	BalancerExchange     = "Balancer"
+	BalancerV2Exchange   = "BalancerV2"
 	GnosisExchange       = "Gnosis"
 	KrakenExchange       = "Kraken"
 	BitfinexExchange     = "Bitfinex"
@@ -115,6 +116,7 @@ func Exchanges() []string {
 		MakerExchange,
 		ZeroxExchange,
 		BalancerExchange,
+		BalancerV2Exchange,
 		BancorExchange,
 		UnknownExchange,
 	}
