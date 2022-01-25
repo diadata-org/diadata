@@ -3,12 +3,13 @@ package scrapers
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"math"
 	"math/big"
 	"sort"
 	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -17,6 +18,7 @@ import (
 	"go.uber.org/ratelimit"
 
 	balancervault "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancerv2/vault"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
@@ -27,8 +29,8 @@ const (
 	balancerV2StartBlockPoolRegister = 12272146
 	balancerV2FilterPageSize         = 50000
 	balancerV2VaultContract          = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
-	balancerV2RestDial               = "http://159.69.120.42:8545/"
-	balancerV2WSDial                 = "ws://159.69.120.42:8546/"
+	balancerV2RestDial               = ""
+	balancerV2WSDial                 = ""
 )
 
 // BalancerV2Swap is a swap information
@@ -81,14 +83,14 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 		tokensMap:    make(map[string]dia.Asset),
 	}
 
-	ws, err := ethclient.Dial(balancerV2WSDial)
+	ws, err := ethclient.Dial(utils.Getenv("ETH_URI_WS", balancerV2WSDial))
 	if err != nil {
 		log.Error(err)
 
 		return nil
 	}
 
-	rest, err := ethclient.Dial(balancerV2RestDial)
+	rest, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", balancerV2RestDial))
 	if err != nil {
 		log.Error(err)
 
@@ -238,6 +240,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 			select {
 			case <-s.shutdown:
 			case s.chanTrades <- trade:
+				log.Info("got trade: ", trade)
 			}
 		}
 	}
@@ -469,14 +472,15 @@ func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVault
 			End:   &endBlock,
 		}, nil, nil)
 		if err != nil {
-			return nil, err
+			log.Warn("filterpoolregistered: ", err)
+			continue
 		}
 
 		for it.Next() {
 			events = append(events, it.Event)
 		}
 		if err := it.Close(); err != nil {
-			return nil, err
+			log.Warn("closing iterator: ", it)
 		}
 
 		if endBlock == currBlock {
