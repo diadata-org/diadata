@@ -173,7 +173,6 @@ func (s *BalancerV2Scraper) mainLoop() {
 
 					continue
 				}
-
 				s.tokensMap[asset.Address] = asset
 				assetIn = asset
 			}
@@ -186,11 +185,9 @@ func (s *BalancerV2Scraper) mainLoop() {
 
 					continue
 				}
-
 				s.tokensMap[asset.Address] = asset
 				assetOut = asset
 			}
-
 			decimalsIn := int(assetIn.Decimals)
 			decimalsOut := int(assetOut.Decimals)
 			amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(event.AmountIn), new(big.Float).SetFloat64(math.Pow10(decimalsIn))).Float64()
@@ -205,28 +202,10 @@ func (s *BalancerV2Scraper) mainLoop() {
 			}
 
 			foreignName := swap.BuyToken + "-" + swap.SellToken
-			revForeignName := swap.SellToken + "-" + swap.BuyToken
-			pairScraper, hasPair := s.pairScrapers[foreignName]
-			revPairScraper, hasRevPair := s.pairScrapers[revForeignName]
-			if !hasPair && !hasRevPair {
-				log.Warnf("BalancerV2Scraper: Pair %s does not have a corresponding pair scraper", foreignName)
-
-				continue
-			}
-
-			var ps *BalancerV2PairScraper
 			volume := swap.BuyVolume
-			if hasPair {
-				ps = pairScraper
-			}
-			if hasRevPair {
-				ps = revPairScraper
-				volume = -volume
-			}
-
 			trade := &dia.Trade{
-				Symbol:         ps.pair.Symbol,
-				Pair:           ps.pair.ForeignName,
+				Symbol:         foreignName,
+				Pair:           swap.BuyToken,
 				Price:          swap.SellVolume / swap.BuyVolume,
 				Volume:         volume,
 				Time:           time.Unix(swap.Timestamp, 0),
