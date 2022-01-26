@@ -204,8 +204,8 @@ func (s *BalancerV2Scraper) mainLoop() {
 			foreignName := swap.BuyToken + "-" + swap.SellToken
 			volume := swap.BuyVolume
 			trade := &dia.Trade{
-				Symbol:         foreignName,
-				Pair:           swap.BuyToken,
+				Symbol:         swap.BuyToken,
+				Pair:           foreignName,
 				Price:          swap.SellVolume / swap.BuyVolume,
 				Volume:         volume,
 				Time:           time.Unix(swap.Timestamp, 0),
