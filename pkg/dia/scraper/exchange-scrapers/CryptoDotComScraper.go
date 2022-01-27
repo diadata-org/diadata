@@ -23,17 +23,20 @@ const (
 	cryptoDotComWSEndpoint     = "wss://stream.crypto.com/v2/market"
 	cryptoDotComSpotTradingBuy = "BUY"
 
-	// cryptoDotComWSRateLimitPerSec is a max request per second for sending websocket requests
+	// cryptoDotComWSRateLimitPerSec is a max request per second for sending websocket requests.
 	cryptoDotComWSRateLimitPerSec = 10
 
-	// cryptoDotComTaskMaxRetry is a max retry value used when retrying subscribe/unsubscribe trades
+	// cryptoDotComTaskMaxRetry is a max retry value used when retrying subscribe/unsubscribe trades.
 	cryptoDotComTaskMaxRetry = 20
 
-	// cryptoDotComConnMaxRetry is a max retry value used when retrying to create a new connection
+	// cryptoDotComConnMaxRetry is a max retry value used when retrying to create a new connection.
 	cryptoDotComConnMaxRetry = 50
 
-	// cryptoDotComRateLimitError is a rate limit error code
+	// cryptoDotComRateLimitError is a rate limit error code.
 	cryptoDotComRateLimitError = 10006
+
+	// cryptoDotComBackoffSeconds is the number of seconds it waits for the next ws reconnect.
+	cryptoDotComBackoffSeconds = 5
 )
 
 // cryptoDotComWSTask is a websocket task tracking subscription/unsubscription
@@ -269,10 +272,10 @@ func (s *CryptoDotComScraper) mainLoop() {
 			log.Warnf("CryptoDotComScraper: Creating a new connection caused by err=%s", err.Error())
 
 			if retryErr := s.retryConnection(); retryErr != nil {
-			   s.setError(retryErr)
-			   log.Errorf("CryptoDotComScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
+				s.setError(retryErr)
+				log.Errorf("CryptoDotComScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
 
-			   return
+				return
 			}
 
 			log.Info("CryptoDotComScraper: Successfully created a new connection")
@@ -373,7 +376,7 @@ func (s *CryptoDotComScraper) newConn() error {
 	// Crypto.com recommends adding a 1-second sleep after establishing the websocket connection, and before requests are sent
 	// to avoid occurrences of rate-limit (`TOO_MANY_REQUESTS`) errors.
 	// https://exchange-docs.crypto.com/spot/index.html?javascript#websocket-subscriptions
-	time.Sleep(time.Duration(1) * time.Second)
+	time.Sleep(time.Duration(cryptoDotComBackoffSeconds) * time.Second)
 
 	defer s.connMutex.Unlock()
 	s.connMutex.Lock()

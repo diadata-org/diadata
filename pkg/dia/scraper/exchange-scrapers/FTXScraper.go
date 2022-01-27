@@ -18,6 +18,7 @@ const (
 	ftxSpotTradingPair        = "spot"
 	ftxSpotTradingBuy         = "buy"
 	ftxMaxConsecutiveErrCount = 10
+	ftxBackoffSeconds         = 5
 )
 
 // FTXScraper is a scraper for FTX
@@ -177,7 +178,7 @@ func (s *FTXScraper) mainLoop() {
 
 				return
 			}
-
+			time.Sleep(time.Duration(ftxBackoffSeconds) * time.Second)
 			continue
 		}
 
