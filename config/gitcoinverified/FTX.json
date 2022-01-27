@@ -97,6 +97,24 @@
             "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
         },
         {
+            "Symbol": "AVAX",
+            "Exchange": "FTX",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BAL",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
+        },
+        {
+            "Symbol": "BAND",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55"
+        },
+        {
             "Symbol": "DOGE",
             "Exchange": "FTX",
             "Blockchain": "Dogechain",

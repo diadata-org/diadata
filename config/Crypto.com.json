@@ -1,600 +1,6 @@
 {
     "Coins": [
         {
-            "Symbol": "RSR",
-            "ForeignName": "RSR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "PERP",
-            "ForeignName": "PERP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MATIC",
-            "ForeignName": "MATIC_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SHIB",
-            "ForeignName": "SHIB_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SHIB",
-            "ForeignName": "SHIB_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GRT",
-            "ForeignName": "GRT_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QI",
-            "ForeignName": "QI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HOD",
-            "ForeignName": "HOD_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VET",
-            "ForeignName": "VET_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VET",
-            "ForeignName": "VET_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FIL",
-            "ForeignName": "FIL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KNC",
-            "ForeignName": "KNC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ICP",
-            "ForeignName": "ICP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "THETA",
-            "ForeignName": "THETA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BADGER",
-            "ForeignName": "BADGER_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FORTH",
-            "ForeignName": "FORTH_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BOND",
-            "ForeignName": "BOND_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "COMP",
-            "ForeignName": "COMP_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GLM",
-            "ForeignName": "GLM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ZRX",
-            "ForeignName": "ZRX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "REN",
-            "ForeignName": "REN_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ARPA",
-            "ForeignName": "ARPA_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ICX",
-            "ForeignName": "ICX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SUPER",
-            "ForeignName": "SUPER_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "YFI",
-            "ForeignName": "YFI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "REQ",
-            "ForeignName": "REQ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EPS",
-            "ForeignName": "EPS_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "POWR",
-            "ForeignName": "POWR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CHZ",
-            "ForeignName": "CHZ_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MATIC",
-            "ForeignName": "MATIC_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MATIC",
-            "ForeignName": "MATIC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "UNI",
-            "ForeignName": "UNI_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "UNI",
-            "ForeignName": "UNI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KSM",
-            "ForeignName": "KSM_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KSM",
-            "ForeignName": "KSM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EGLD",
-            "ForeignName": "EGLD_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HOT",
-            "ForeignName": "HOT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH",
-            "ForeignName": "BCH_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NMR",
-            "ForeignName": "NMR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ZIL",
-            "ForeignName": "ZIL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AXS",
-            "ForeignName": "AXS_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "IMX",
-            "ForeignName": "IMX_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CKB",
-            "ForeignName": "CKB_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SRM",
-            "ForeignName": "SRM_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FXS",
-            "ForeignName": "FXS_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WBTC",
-            "ForeignName": "WBTC_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WBTC",
-            "ForeignName": "WBTC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CRO",
-            "ForeignName": "CRO_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CRV",
-            "ForeignName": "CRV_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RAD",
-            "ForeignName": "RAD_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HOT",
-            "ForeignName": "HOT_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EGLD",
-            "ForeignName": "EGLD_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MKR",
-            "ForeignName": "MKR_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KAVA",
-            "ForeignName": "KAVA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SAND",
-            "ForeignName": "SAND_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SAND",
-            "ForeignName": "SAND_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MANA",
-            "ForeignName": "MANA_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MANA",
-            "ForeignName": "MANA_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GHST",
-            "ForeignName": "GHST_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VVS",
-            "ForeignName": "VVS_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FET",
-            "ForeignName": "FET_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CELR",
-            "ForeignName": "CELR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LUNA",
-            "ForeignName": "LUNA_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LUNA",
-            "ForeignName": "LUNA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LRC",
-            "ForeignName": "LRC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "INJ",
-            "ForeignName": "INJ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QTUM",
-            "ForeignName": "QTUM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DAI",
-            "ForeignName": "DAI_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OGN",
-            "ForeignName": "OGN_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SDN",
-            "ForeignName": "SDN_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ATOM",
-            "ForeignName": "ATOM_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ATOM",
-            "ForeignName": "ATOM_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "YGG",
-            "ForeignName": "YGG_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HBAR",
-            "ForeignName": "HBAR_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MKR",
-            "ForeignName": "MKR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ICP",
-            "ForeignName": "ICP_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ICX",
-            "ForeignName": "ICX_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ICX",
-            "ForeignName": "ICX_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DYDX",
-            "ForeignName": "DYDX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "TFUEL",
-            "ForeignName": "TFUEL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GRT",
-            "ForeignName": "GRT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ALICE",
-            "ForeignName": "ALICE_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BRZ",
-            "ForeignName": "BRZ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "C98",
-            "ForeignName": "C98_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEAR",
-            "ForeignName": "NEAR_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEO",
-            "ForeignName": "NEO_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEO",
-            "ForeignName": "NEO_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BAND",
-            "ForeignName": "BAND_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ILV",
-            "ForeignName": "ILV_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SC",
-            "ForeignName": "SC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NANO",
-            "ForeignName": "NANO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
             "Symbol": "1INCH",
             "ForeignName": "1INCH_USDT",
             "Exchange": "Crypto.com",
@@ -603,36 +9,6 @@
         {
             "Symbol": "AAVE",
             "ForeignName": "AAVE_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SNX",
-            "ForeignName": "SNX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE",
-            "ForeignName": "DOGE_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BICO",
-            "ForeignName": "BICO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "IQ",
-            "ForeignName": "IQ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KEEP",
-            "ForeignName": "KEEP_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
@@ -649,462 +25,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "RLC",
-            "ForeignName": "RLC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK",
-            "ForeignName": "LINK_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK",
-            "ForeignName": "LINK_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NEO",
-            "ForeignName": "NEO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DYDX",
-            "ForeignName": "DYDX_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL",
-            "ForeignName": "SOL_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK",
-            "ForeignName": "LINK_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK",
-            "ForeignName": "LINK_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OMG",
-            "ForeignName": "OMG_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "IOTX",
-            "ForeignName": "IOTX_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "IOTX",
-            "ForeignName": "IOTX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NU",
-            "ForeignName": "NU_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XLM",
-            "ForeignName": "XLM_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FLOW",
-            "ForeignName": "FLOW_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FLOW",
-            "ForeignName": "FLOW_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BNT",
-            "ForeignName": "BNT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RARI",
-            "ForeignName": "RARI_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RARI",
-            "ForeignName": "RARI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VTHO",
-            "ForeignName": "VTHO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MLN",
-            "ForeignName": "MLN_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "TRB",
-            "ForeignName": "TRB_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KLAY",
-            "ForeignName": "KLAY_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "COMP",
-            "ForeignName": "COMP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CQT",
-            "ForeignName": "CQT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EFI",
-            "ForeignName": "EFI_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WBTC",
-            "ForeignName": "WBTC_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OCEAN",
-            "ForeignName": "OCEAN_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RGT",
-            "ForeignName": "RGT_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XTZ",
-            "ForeignName": "XTZ_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XTZ",
-            "ForeignName": "XTZ_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ANKR",
-            "ForeignName": "ANKR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL",
-            "ForeignName": "SOL_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL",
-            "ForeignName": "SOL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DAI",
-            "ForeignName": "DAI_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DAI",
-            "ForeignName": "DAI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "PAXG",
-            "ForeignName": "PAXG_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ENJ",
-            "ForeignName": "ENJ_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ENJ",
-            "ForeignName": "ENJ_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FARM",
-            "ForeignName": "FARM_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QNT",
-            "ForeignName": "QNT_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QNT",
-            "ForeignName": "QNT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EOS",
-            "ForeignName": "EOS_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ALGO",
-            "ForeignName": "ALGO_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ALGO",
-            "ForeignName": "ALGO_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DAR",
-            "ForeignName": "DAR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RLY",
-            "ForeignName": "RLY_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDC",
-            "ForeignName": "USDC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETC",
-            "ForeignName": "ETC_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AVAX",
-            "ForeignName": "AVAX_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BTC",
-            "ForeignName": "BTC_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BTC",
-            "ForeignName": "BTC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "TRU",
-            "ForeignName": "TRU_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OMG",
-            "ForeignName": "OMG_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "PLA",
-            "ForeignName": "PLA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONE",
-            "ForeignName": "ONE_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONT",
-            "ForeignName": "ONT_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ENJ",
-            "ForeignName": "ENJ_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ENJ",
-            "ForeignName": "ENJ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CHR",
-            "ForeignName": "CHR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BOSON",
-            "ForeignName": "BOSON_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GTC",
-            "ForeignName": "GTC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "YFI",
-            "ForeignName": "YFI_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "STX",
-            "ForeignName": "STX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "YGG",
-            "ForeignName": "YGG_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XYO",
-            "ForeignName": "XYO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "HBAR",
-            "ForeignName": "HBAR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONE",
-            "ForeignName": "ONE_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONE",
-            "ForeignName": "ONE_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
             "Symbol": "ADA",
             "ForeignName": "ADA_BTC",
             "Exchange": "Crypto.com",
@@ -1113,348 +33,6 @@
         {
             "Symbol": "ADA",
             "ForeignName": "ADA_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WAXP",
-            "ForeignName": "WAXP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CRO",
-            "ForeignName": "CRO_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CRO",
-            "ForeignName": "CRO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CHZ",
-            "ForeignName": "CHZ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XTZ",
-            "ForeignName": "XTZ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "NKN",
-            "ForeignName": "NKN_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ENS",
-            "ForeignName": "ENS_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SKL",
-            "ForeignName": "SKL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MANA",
-            "ForeignName": "MANA_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MANA",
-            "ForeignName": "MANA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CTSI",
-            "ForeignName": "CTSI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "STORJ",
-            "ForeignName": "STORJ_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "CRV",
-            "ForeignName": "CRV_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FIL",
-            "ForeignName": "FIL_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VET",
-            "ForeignName": "VET_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "VET",
-            "ForeignName": "VET_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BAL",
-            "ForeignName": "BAL_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "TRIBE",
-            "ForeignName": "TRIBE_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BAND",
-            "ForeignName": "BAND_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WAVES",
-            "ForeignName": "WAVES_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RUNE",
-            "ForeignName": "RUNE_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AVAX",
-            "ForeignName": "AVAX_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AVAX",
-            "ForeignName": "AVAX_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ONT",
-            "ForeignName": "ONT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ATOM",
-            "ForeignName": "ATOM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE",
-            "ForeignName": "DOGE_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE",
-            "ForeignName": "DOGE_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GALA",
-            "ForeignName": "GALA_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AR",
-            "ForeignName": "AR_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BAT",
-            "ForeignName": "BAT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AGLD",
-            "ForeignName": "AGLD_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QTUM",
-            "ForeignName": "QTUM_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MASK",
-            "ForeignName": "MASK_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "JASMY",
-            "ForeignName": "JASMY_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "OXT",
-            "ForeignName": "OXT_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETC",
-            "ForeignName": "ETC_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "GALA",
-            "ForeignName": "GALA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KSM",
-            "ForeignName": "KSM_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AUDIO",
-            "ForeignName": "AUDIO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ELON",
-            "ForeignName": "ELON_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "POLS",
-            "ForeignName": "POLS_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AMP",
-            "ForeignName": "AMP_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "RADAR",
-            "ForeignName": "RADAR_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SUSHI",
-            "ForeignName": "SUSHI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BAT",
-            "ForeignName": "BAT_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "UMA",
-            "ForeignName": "UMA_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "QUICK",
-            "ForeignName": "QUICK_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "UNI",
-            "ForeignName": "UNI_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH",
-            "ForeignName": "BCH_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH",
-            "ForeignName": "BCH_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ZIL",
-            "ForeignName": "ZIL_CRO",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ALGO",
-            "ForeignName": "ALGO_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ALGO",
-            "ForeignName": "ALGO_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "POLY",
-            "ForeignName": "POLY_USDC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
@@ -1471,14 +49,212 @@
             "Ignore": false
         },
         {
+            "Symbol": "ALGO",
+            "ForeignName": "ALGO_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALGO",
+            "ForeignName": "ALGO_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALGO",
+            "ForeignName": "ALGO_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALGO",
+            "ForeignName": "ALGO_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ANKR",
+            "ForeignName": "ANKR_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAT",
+            "ForeignName": "BAT_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAT",
+            "ForeignName": "BAT_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCH",
+            "ForeignName": "BCH_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCH",
+            "ForeignName": "BCH_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BCH",
+            "ForeignName": "BCH_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHR",
+            "ForeignName": "CHR_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "COMP",
+            "ForeignName": "COMP_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "COTI",
             "ForeignName": "COTI_USDC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "MIR",
-            "ForeignName": "MIR_USDT",
+            "Symbol": "CRO",
+            "ForeignName": "CRO_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRO",
+            "ForeignName": "CRO_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRO",
+            "ForeignName": "CRO_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRV",
+            "ForeignName": "CRV_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CRV",
+            "ForeignName": "CRV_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOT_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOT_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOT_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOT_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGLD",
+            "ForeignName": "EGLD_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EGLD",
+            "ForeignName": "EGLD_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJ_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJ_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJ_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENJ",
+            "ForeignName": "ENJ_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "EOS",
+            "ForeignName": "EOS_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
@@ -1489,38 +265,326 @@
             "Ignore": false
         },
         {
-            "Symbol": "HNT",
-            "ForeignName": "HNT_USDT",
+            "Symbol": "ETC",
+            "ForeignName": "ETC_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "ILV",
-            "ForeignName": "ILV_USDT",
+            "Symbol": "ETC",
+            "ForeignName": "ETC_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "PENDLE",
-            "ForeignName": "PENDLE_USDT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "RNDR",
-            "ForeignName": "RNDR_USDT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_CRO",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "SLP",
-            "ForeignName": "SLP_USDT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "BNT",
-            "ForeignName": "BNT_CRO",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FIL",
+            "ForeignName": "FIL_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FIL",
+            "ForeignName": "FIL_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLOW",
+            "ForeignName": "FLOW_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FLOW",
+            "ForeignName": "FLOW_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FTM",
+            "ForeignName": "FTM_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FTM",
+            "ForeignName": "FTM_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRT",
+            "ForeignName": "GRT_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRT",
+            "ForeignName": "GRT_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KEEP",
+            "ForeignName": "KEEP_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KNC",
+            "ForeignName": "KNC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LRC",
+            "ForeignName": "LRC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MANA",
+            "ForeignName": "MANA_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OMG",
+            "ForeignName": "OMG_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OMG",
+            "ForeignName": "OMG_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QTUM",
+            "ForeignName": "QTUM_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "QTUM",
+            "ForeignName": "QTUM_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "REN",
+            "ForeignName": "REN_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RUNE",
+            "ForeignName": "RUNE_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SC",
+            "ForeignName": "SC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SDN",
+            "ForeignName": "SDN_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SNX",
+            "ForeignName": "SNX_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOL_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOL_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOL_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STORJ",
+            "ForeignName": "STORJ_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUSHI",
+            "ForeignName": "SUSHI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VET",
+            "ForeignName": "VET_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VET",
+            "ForeignName": "VET_CRO",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VET",
+            "ForeignName": "VET_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VET",
+            "ForeignName": "VET_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XLM",
+            "ForeignName": "XLM_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
@@ -1531,32 +595,38 @@
             "Ignore": false
         },
         {
-            "Symbol": "LPT",
-            "ForeignName": "LPT_USDC",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_USDC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "DERC",
-            "ForeignName": "DERC_USDT",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "CELR",
-            "ForeignName": "CELR_CRO",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "EFI",
-            "ForeignName": "EFI_USDT",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_CRO",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "GODS",
-            "ForeignName": "GODS_USDT",
+            "Symbol": "YFI",
+            "ForeignName": "YFI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YFI",
+            "ForeignName": "YFI_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         }
