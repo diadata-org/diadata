@@ -58,8 +58,8 @@ func init() {
 	Exchanges[dia.HitBTCExchange] = dia.Exchange{Name: dia.HitBTCExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.SimexExchange] = dia.Exchange{Name: dia.SimexExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.OKExExchange] = dia.Exchange{Name: dia.OKExExchange, Centralized: true, WatchdogDelay: watchdogDelay}
-	Exchanges[dia.FTXExchange] = dia.Exchange{Name: dia.FTXExchange, Centralized: true, WatchdogDelay: watchdogDelay}
-	Exchanges[dia.CryptoDotComExchange] = dia.Exchange{Name: dia.CryptoDotComExchange, Centralized: true, WatchdogDelay: watchdogDelay}
+	Exchanges[dia.FTXExchange] = dia.Exchange{Name: dia.FTXExchange, Centralized: true, WatchdogDelay: watchdogDelay3Mins}
+	Exchanges[dia.CryptoDotComExchange] = dia.Exchange{Name: dia.CryptoDotComExchange, Centralized: true, WatchdogDelay: watchdogDelay3Mins}
 	Exchanges[dia.HuobiExchange] = dia.Exchange{Name: dia.HuobiExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.LBankExchange] = dia.Exchange{Name: dia.LBankExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.GateIOExchange] = dia.Exchange{Name: dia.GateIOExchange, Centralized: true, WatchdogDelay: watchdogDelay}

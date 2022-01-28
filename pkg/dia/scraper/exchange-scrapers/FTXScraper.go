@@ -18,7 +18,7 @@ const (
 	ftxSpotTradingPair        = "spot"
 	ftxSpotTradingBuy         = "buy"
 	ftxMaxConsecutiveErrCount = 10
-	ftxBackoffSeconds         = 5
+	ftxBackoffSeconds         = 20
 )
 
 // FTXScraper is a scraper for FTX
@@ -63,7 +63,6 @@ func NewFTXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *FTX
 	ws, err := client.Connect()
 	if err != nil {
 		log.Error(err)
-
 		return nil
 	}
 
@@ -159,7 +158,6 @@ func (s *FTXScraper) mainLoop() {
 		select {
 		case <-s.shutdown:
 			log.Println("FTXScraper: Shutting down main loop")
-			return
 		default:
 		}
 
@@ -176,7 +174,6 @@ func (s *FTXScraper) mainLoop() {
 					close(s.shutdown)
 				})
 
-				return
 			}
 			time.Sleep(time.Duration(ftxBackoffSeconds) * time.Second)
 			continue
@@ -189,7 +186,7 @@ func (s *FTXScraper) mainLoop() {
 			baseCurrency := strings.Split(v.Market, `/`)[0]
 			pair, err := s.db.GetExchangePairCache(s.exchangeName, v.Market)
 			if err != nil {
-				log.Error(err)
+				log.Error("get exchange pair from cache: ", err)
 			}
 
 			for _, trade := range v.Data {

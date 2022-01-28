@@ -263,7 +263,6 @@ func (s *CryptoDotComScraper) mainLoop() {
 		select {
 		case <-s.shutdown:
 			log.Println("CryptoDotComScraper: Shutting down main loop")
-			return
 		default:
 		}
 
@@ -274,28 +273,19 @@ func (s *CryptoDotComScraper) mainLoop() {
 			if retryErr := s.retryConnection(); retryErr != nil {
 				s.setError(retryErr)
 				log.Errorf("CryptoDotComScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
-
-				return
 			}
 
 			log.Info("CryptoDotComScraper: Successfully created a new connection")
-
-			continue
 		}
 		if res.Code == cryptoDotComRateLimitError {
+			time.Sleep(time.Duration(cryptoDotComBackoffSeconds) * time.Second)
 			if err := s.retryTask(res.ID); err != nil {
 				s.setError(err)
 				log.Errorf("CryptoDotComScraper: Shutting down main loop due to failing to retry a task, err=%s", err.Error())
-
-				return
 			}
-
-			continue
 		}
 		if res.Code != 0 {
 			log.Errorf("CryptoDotComScraper: Shutting down main loop due to non-retryable response code %d", res.Code)
-
-			return
 		}
 
 		switch res.Method {
@@ -303,8 +293,6 @@ func (s *CryptoDotComScraper) mainLoop() {
 			if err := s.ping(res.ID); err != nil {
 				s.setError(err)
 				log.Errorf("CryptoDotComScraper: Shutting down main loop due to heartbeat failure, err=%s", err.Error())
-
-				return
 			}
 		case "subscribe":
 			if len(res.Result) == 0 {
@@ -315,8 +303,6 @@ func (s *CryptoDotComScraper) mainLoop() {
 			if err := json.Unmarshal(res.Result, &subscription); err != nil {
 				s.setError(err)
 				log.Errorf("CryptoDotComScraper: Shutting down main loop due to response unmarshaling failure, err=%s", err.Error())
-
-				return
 			}
 			if subscription.Channel != "trade" {
 				continue
@@ -325,7 +311,7 @@ func (s *CryptoDotComScraper) mainLoop() {
 			baseCurrency := strings.Split(subscription.InstrumentName, `_`)[0]
 			pair, err := s.db.GetExchangePairCache(s.exchangeName, subscription.InstrumentName)
 			if err != nil {
-				log.Error(err)
+				log.Error("get exchange pair from cache: ", err)
 			}
 
 			for _, data := range subscription.Data {
@@ -333,8 +319,6 @@ func (s *CryptoDotComScraper) mainLoop() {
 				if err := json.Unmarshal(data, &i); err != nil {
 					s.setError(err)
 					log.Errorf("CryptoDotComScraper: Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
-
-					return
 				}
 
 				volume := i.Quantity

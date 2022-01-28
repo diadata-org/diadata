@@ -219,8 +219,14 @@ func (s *ByBitScraper) mainLoop() {
 
 					timeStamp, _ := time.Parse(time.RFC3339, v.Timestamp)
 					if v.TradeID != "" {
-						if v.Side == "sell" {
+						if v.Side == "Sell" {
 							f64Volume = -f64Volume
+						}
+						// Volume is given in USD on API.
+						if f64Price != 0 {
+							f64Volume = f64Volume / f64Price
+						} else {
+							continue
 						}
 
 						exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, v.Symbol)
@@ -242,7 +248,6 @@ func (s *ByBitScraper) mainLoop() {
 						if exchangepair.Verified {
 							log.Infoln("Got verified trade: ", t)
 						}
-						log.Info("got trade: ", t)
 						ps.parent.chanTrades <- t
 					}
 
