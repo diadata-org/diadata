@@ -1,3 +1,5 @@
+// compiled using solidity 0.7.4
+
 pragma solidity 0.7.4;
 
 contract DIAOracleV2 {
