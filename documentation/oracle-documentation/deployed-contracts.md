@@ -184,6 +184,16 @@ __
 {% endtab %}
 {% endtabs %}
 
+### Evmos
+
+{% tabs %}
+{% tab title="Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                    | Oracle Type                                                                                                                           |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x70ea...cd07](https://evm.evmos.org/address/0x70eA682A109695D465DB975B40E8fDbBFda5cD07) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
+
 ### Celo
 
 | Contract Name | Contract Address                                                                                                           |
