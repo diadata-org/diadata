@@ -114,9 +114,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 	pairs, err := s.FetchAvailablePairs()
 	if err != nil {
 		s.setError(err)
-		log.Errorf("BalancerV2Scraper: Cannot fetch avaiable pairs ,err=%s", err.Error())
-
-		return
+		log.Fatalf("BalancerV2Scraper: Cannot fetch avaiable pairs ,err=%s", err.Error())
 	}
 
 	for _, pair := range pairs {
@@ -129,26 +127,20 @@ func (s *BalancerV2Scraper) mainLoop() {
 	filterer, err := balancervault.NewBalancerVaultFilterer(common.HexToAddress(balancerV2VaultContract), s.ws)
 	if err != nil {
 		s.setError(err)
-		log.Errorf("BalancerV2Scraper: Cannot create vault filter, err=%s", err.Error())
-
-		return
+		log.Fatal("BalancerV2Scraper: Cannot create vault filter, err=%s", err.Error())
 	}
 
 	currBlock, err := s.rest.BlockNumber(context.Background())
 	if err != nil {
 		s.setError(err)
-		log.Errorf("BalancerV2Scraper: Cannot get a current block number, err=%s", err.Error())
-
-		return
+		log.Fatal("BalancerV2Scraper: Cannot get a current block number, err=%s", err.Error())
 	}
 
 	sink := make(chan *balancervault.BalancerVaultSwap)
 	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &currBlock}, sink, nil, nil, nil)
 	if err != nil {
 		s.setError(err)
-		log.Errorf("BalancerV2Scraper: Cannot watch swap events, err=%s", err.Error())
-
-		return
+		log.Fatal("BalancerV2Scraper: Cannot watch swap events, err=%s", err.Error())
 	}
 
 	defer sub.Unsubscribe()
@@ -157,13 +149,9 @@ func (s *BalancerV2Scraper) mainLoop() {
 		select {
 		case <-s.shutdown:
 			log.Println("BalancerV2Scraper: Shutting down main loop")
-
-			return
 		case err := <-sub.Err():
 			s.setError(err)
 			log.Errorf("BalancerV2Scraper: Subscription error, err=%s", err.Error())
-
-			return
 		case event := <-sink:
 			assetIn, ok := s.tokensMap[event.TokenIn.Hex()]
 			if !ok {
