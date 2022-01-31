@@ -266,7 +266,7 @@ func (datastore *DB) SetInfluxClient(url string) {
 func createBatchInflux() clientInfluxdb.BatchPoints {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
-		Precision: "s",
+		Precision: "ns",
 	})
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
