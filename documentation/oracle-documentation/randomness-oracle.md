@@ -107,7 +107,7 @@ pragma solidity ^0.8.0;
 
 import "../DIARandomOracle.sol";
 
-contract TestRandomness {
+contract DiceGame {
   address public randomOracle;
   uint256 seed1 = 0;
   uint256 seed2 = 0;
@@ -176,3 +176,17 @@ Currently, the randomness oracle is deployed on the Aurora EVM.
 | Oracle Name       | Smart Contract Address                                                                                               |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Randomness Oracle | [0x9055...4b22](https://explorer.mainnet.aurora.dev/address/0x905506f6dA815e73CA13547B45d1998867104b22/transactions) |
+
+### Risk Mitigation
+
+It is important to understand the risks of the randomness oracle before using it and to be able to mitigate them.
+
+An extensive risk evaluation of the underlying [drand.love](https://drand.lo) protocol can be found [in their documentation](https://drand.love/docs/security-model/#notations). All risks listed there also affect the randomness guest oracle, as it serves as a underlying data provider.
+
+Additionally, there are new risks introduced by using the oracle.
+
+| Risk                                   | Possible Mitigation                                                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Oracle stops serving data              | Check that the oracle has recent updates in its history.                                          |
+| Specific Round is missed by the oracle | Have your dApp use the next round if a certain round is unavailable (but later ones exist).       |
+| Oracle serves compromised data         | Check the associated BLS signature provided by drand (Note: Currently not availabe on most EVMs). |
