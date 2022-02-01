@@ -45,6 +45,7 @@
     * [Polkadot Medianizer](documentation/oracle-documentation/polkadot-medianizer.md)
     * [Solana Oracle](documentation/oracle-documentation/solana-oracle.md)
     * [NEAR Request Oracle](documentation/oracle-documentation/near-request-oracle.md)
+    * [Randomness Oracle](documentation/oracle-documentation/randomness-oracle.md)
   * [Overview of Data Points](documentation/overview-of-data-points.md)
 * [Contributor Covenant Code of Conduct](code\_of\_conduct.md)
 * [Security Bounty Program](security-bounty-program.md)
