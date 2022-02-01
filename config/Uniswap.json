@@ -27518,6 +27518,13 @@
             
         },
         {
+            "Symbol":"SPICE",
+            "ForeignName": "SPICE-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+            
+        },
+        {
             "Symbol": "PRY",
             "ForeignName": "PRY-ETH",
             "Exchange": "UniswapV2",
