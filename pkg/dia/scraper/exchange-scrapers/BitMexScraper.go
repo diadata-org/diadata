@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,7 +34,7 @@ const (
 	bitMexRateLimitError = 429
 
 	// bitMexPingInterval is the number of seconds between ping messages
-	bitMexPingInterval = 30
+	bitMexPingInterval = 25
 )
 
 // bitMexWSTask is a websocket task tracking subscription/unsubscription
@@ -288,6 +289,9 @@ func (s *BitMexScraper) mainLoop() {
 		var subResult bitMexSubscriptionResult
 		if err := json.Unmarshal(msg, &subResult); err == nil {
 
+			if subResult.Status == 400 {
+				log.Warning(bytes.NewBuffer(msg))
+			}
 			if subResult.Table == "trade" {
 				s.handleTrades(subResult)
 				continue
