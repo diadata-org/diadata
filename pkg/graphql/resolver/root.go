@@ -258,6 +258,11 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		{
 			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
+	case "medir":
+		{
+			filterPoints = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
+		}
+
 	}
 
 	for _, fp := range filterPoints {

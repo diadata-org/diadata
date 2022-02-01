@@ -131,3 +131,37 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 	}
 	return filterPoints
 }
+
+func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+	var lastfp *dia.FilterPoint
+
+	for _, block := range tradeBlocks {
+		if len(block.Trades) > 0 {
+			medirFilter := filters.NewFilterMEDIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+
+			for _, trade := range block.Trades {
+
+				medirFilter.Compute(trade)
+			}
+
+			medirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
+			fp := medirFilter.FilterPointForBlock()
+			if fp != nil && fp.Value > 0 {
+				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				filterPoints = append(filterPoints, *fp)
+				lastfp = fp
+			} else {
+				if lastfp != nil {
+					lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+					filterPoints = append(filterPoints, *lastfp)
+				}
+			}
+		} else {
+			if lastfp != nil {
+				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				filterPoints = append(filterPoints, *lastfp)
+			}
+		}
+	}
+	return filterPoints
+}
