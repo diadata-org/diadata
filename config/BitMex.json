@@ -1,602 +1,281 @@
 {
     "Coins": [
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_Z14",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_H22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_F15",
+            "Symbol": "ADA",
+            "ForeignName": "ADA_H22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_Z14_F15",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_H15",
+            "Symbol": "BCH",
+            "ForeignName": "BCH_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_F15_H15",
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_Z14",
+            "Symbol": "BNB",
+            "ForeignName": "BNB_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_H15",
+            "Symbol": "LINK",
+            "ForeignName": "LINK_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_Z14_H15",
+            "Symbol": "SOL",
+            "ForeignName": "SOL_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_M15",
+            "Symbol": "DOGE",
+            "ForeignName": "DOGE_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_Z14_M15",
+            "Symbol": "DOT",
+            "ForeignName": "DOT_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_H15_M15",
+            "Symbol": "ADA",
+            "ForeignName": "ADA_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_Z14_H15",
+            "Symbol": "BNB",
+            "ForeignName": "BNB_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_G15",
+            "Symbol": "SOL",
+            "ForeignName": "SOL_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_F15_G15",
+            "Symbol": "ADA",
+            "ForeignName": "ADA_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_H15_G15",
+            "Symbol": "EOS",
+            "ForeignName": "EOS_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_U15",
+            "Symbol": "XRP",
+            "ForeignName": "XRP_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_H15_U15",
+            "Symbol": "BCH",
+            "ForeignName": "BCH_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_M15_U15",
+            "Symbol": "DOT",
+            "ForeignName": "DOT_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_G15",
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBT",
+            "Symbol": "LUNA",
+            "ForeignName": "LUNA_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL",
+            "Symbol": "AVAX",
+            "ForeignName": "AVAX_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBT30M",
+            "Symbol": "AXS",
+            "ForeignName": "AXS_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_24H",
+            "Symbol": "SHIB",
+            "ForeignName": "SHIB_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_H15",
+            "Symbol": "FTM",
+            "ForeignName": "FTM_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_J15",
+            "Symbol": "SAND",
+            "ForeignName": "SAND_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_J15",
+            "Symbol": "MANA",
+            "ForeignName": "MANA_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_J15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_K15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_K15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_M15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_K15_M15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBT_5M",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBT2H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_Z15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_U15_Z15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_U15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_M15_U15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_Z15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_M15_Z15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_U15_Z15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_N15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_N15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_Q15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_Q15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTC",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTC2H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XLT",
-            "ForeignName": "XLT_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_.ETHXBT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_.ETHXBT2H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_H16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_V15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_V15",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL10M",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL30M",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BVOL",
-            "ForeignName": "BVOL_.BVOL1H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_M16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBU",
-            "ForeignName": "XBU_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "A50",
-            "ForeignName": "A50_.A50",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "A50",
-            "ForeignName": "A50_G16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_48H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "A50",
-            "ForeignName": "A50_H16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_.FCTXBT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_.FCTXBT2H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_7D",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_U16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "A50",
-            "ForeignName": "A50_J16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "A50",
-            "ForeignName": "A50_K16",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBTPON",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBTPON24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_.ETHPON",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_.ETHPON24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_XBT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTCXBT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTCXBT2H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTCBON",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_.LTCBON24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBTBON",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_.XBTBON24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_XBT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USD",
-            "ForeignName": "USD_.USDBON",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USD",
-            "ForeignName": "USD_.USDBON24H",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
+
         {
             "Symbol": "XBT",
             "ForeignName": "XBT_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_.FCTPON",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_.FCTPON24H",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_EUR",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "DAO",
-            "ForeignName": "DAO_.DAOETH",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_G22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "DAO",
-            "ForeignName": "DAO_.DAOETH2H",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_H22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "FCT",
-            "ForeignName": "FCT_XBT",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_USDTH22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "DAO",
-            "ForeignName": "DAO_ETH",
+            "Symbol": "XBT",
+            "ForeignName": "XBT_M22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "LSK",
-            "ForeignName": "LSK_.LSKXBT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USD",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "LSK",
-            "ForeignName": "LSK_.LSKPON",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "LSK",
-            "ForeignName": "LSK_.LSKPON24H",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_H22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "LSK",
-            "ForeignName": "LSK_XBT",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDH22",
             "Exchange": "BitMex",
             "Ignore": false
         },
+
         {
-            "Symbol": "A50",
-            "ForeignName": "A50_M16",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDTH22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USD",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+
+        {
+            "Symbol": "LTC",
+            "ForeignName": "LTC_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
