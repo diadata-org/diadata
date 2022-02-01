@@ -108,7 +108,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 		}
 		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 	}
-	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
+	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified, basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 
 	log.Infoln("GetTradesByExchanges Query", query)
 	timeStart := time.Now()
@@ -129,7 +129,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
-	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s total trades at: %d", timeStart, timeEnd, time.Now(), len(r)))
 	return r, nil
 }
 
@@ -183,7 +183,7 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	var r []dia.Trade
 	// TO DO: Substitute select * with precise statment select estimatedUSDPrice, source,...
-	q := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume,verified  FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
+	q := fmt.Sprintf("SELECT time, estimatedUSDPrice, verified, foreignTradeID, pair, price,symbol, volume,verified,basetokenblockchain,basetokenaddress  FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
 	log.Debug(q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {

@@ -141,12 +141,12 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			return &sr, err
 		}
 
-		log.Println("All assets", assets)
+		log.Infoln("All assets having same symbol", assets)
 		asset = assets[0]
 
 	}
 
-	log.Println("asset", asset)
+	log.Infoln("Asset Selected", asset)
 
 	if blockShiftSeconds == 0 {
 		if endtime.After(time.Now()) {
@@ -258,6 +258,11 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		{
 			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
+	case "medir":
+		{
+			filterPoints = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
+		}
+
 	}
 
 	for _, fp := range filterPoints {

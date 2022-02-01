@@ -50,6 +50,13 @@ func (s *FilterMEDIR) compute(trade dia.Trade) {
 	s.lastTrade = &trade
 }
 
+func (s *FilterMEDIR) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+func (s *FilterMEDIR) FinalCompute(t time.Time) {
+	s.finalCompute(t)
+}
+
 func (s *FilterMEDIR) processDataPoint(trade dia.Trade) {
 	/// first remove extra value from buffer if already full
 	if len(s.previousPrices) >= s.memory {
@@ -80,6 +87,14 @@ func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
 	}
 }
 
+func (s *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
+	}
+}
 func (s *FilterMEDIR) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
