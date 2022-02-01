@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -43,6 +44,8 @@ type UniswapHistoryScraper struct {
 	pairmap       map[common.Address]UniswapPair
 	pairAddresses []common.Address
 	db            *models.RelDB
+	// If true, only pairs given in config file are scraped. Default is false.
+	listenByAddress bool
 }
 
 const (
@@ -50,86 +53,30 @@ const (
 	// genesisBlockUniswap            = uint64(10520000)
 	genesisBlockUniswap            = uint64(12120000)
 	filterQueryBlockNums           = 60
-	uniswapHistoryWaitMilliseconds = 500
+	uniswapHistoryWaitMilliseconds = "500"
 )
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *UniswapHistoryScraper {
 	log.Info("NewUniswapHistoryScraper: ", exchange.Name)
-	var wsClient, restClient *ethclient.Client
-	var waitTime int
-	var genesisBlock uint64
-	var err error
+	var s *UniswapHistoryScraper
+	var listenByAddress bool
+	exchangeFactoryContractAddress = exchange.Contract.Hex()
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTime = uniswapHistoryWaitMilliseconds
-		genesisBlock = genesisBlockUniswap
+		listenByAddress = false
+		s = makeUniswapHistoryScraper(exchange, listenByAddress, restDialEth, wsDialEth, uniswapHistoryWaitMilliseconds)
 	case dia.SushiSwapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTime = 100
+		listenByAddress = false
+		s = makeUniswapHistoryScraper(exchange, listenByAddress, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		log.Infoln("Init ws and rest client for BSC chain")
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS_BSC", wsDialBSC))
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST_BSC", restDialBSC))
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTime = 50
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = true
+		s = makeUniswapHistoryScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		log.Infoln("Init ws and rest client for Polygon chain")
-		wsClient, err = ethclient.Dial(wsDialPolygon)
-		if err != nil {
-			log.Fatal(err)
-		}
-		restClient, err = ethclient.Dial(restDialPolygon)
-		if err != nil {
-			log.Fatal(err)
-		}
-		waitTime = uniswapHistoryWaitMilliseconds
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
-
+		listenByAddress = false
+		s = makeUniswapHistoryScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	}
-
-	s := &UniswapHistoryScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*UniswapHistoryPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		waitTime:     waitTime,
-		genesisBlock: genesisBlock,
-		pairmap:      make(map[common.Address]UniswapPair),
-		db:           relDB,
-	}
-
-	s.WsClient = wsClient
-	s.RestClient = restClient
 
 	if scrape {
 		go s.mainLoop()
@@ -137,21 +84,97 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 	return s
 }
 
-func (s *UniswapHistoryScraper) loadPairMap() {
-	numPairs, err := s.getNumPairs()
+// makeUniswapScraper returns a uniswap scraper as used in NewUniswapScraper.
+func makeUniswapHistoryScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string) *UniswapHistoryScraper {
+	var restClient, wsClient *ethclient.Client
+	var err error
+	var s *UniswapHistoryScraper
+
+	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("init rest client: ", err)
 	}
-	// numPairs := 1
-	batchSize := 1000
+	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
+	if err != nil {
+		log.Fatal("init ws client: ", err)
+	}
 
-	log.Infof("load all %d pairs: ", numPairs)
+	var waitTime int
+	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
+	waitTime, err = strconv.Atoi(waitTimeString)
+	if err != nil {
+		log.Error("could not parse wait time: ", err)
+		waitTime = 500
+	}
 
+	s = &UniswapHistoryScraper{
+		WsClient:        wsClient,
+		RestClient:      restClient,
+		shutdown:        make(chan nothing),
+		shutdownDone:    make(chan nothing),
+		pairScrapers:    make(map[string]*UniswapHistoryPairScraper),
+		exchangeName:    exchange.Name,
+		error:           nil,
+		chanTrades:      make(chan *dia.Trade),
+		waitTime:        waitTime,
+		listenByAddress: listenByAddress,
+		genesisBlock:    genesisBlockUniswap,
+	}
+	return s
+}
+
+func (s *UniswapHistoryScraper) loadPairMap() {
 	var maps []map[common.Address]UniswapPair
-	var wg sync.WaitGroup
-	for k := 0; k < numPairs/batchSize; k++ {
-		time.Sleep(8 * time.Second)
-		for i := batchSize * k; i < batchSize*(k+1); i++ {
+
+	if s.listenByAddress {
+
+		// Collect all pair addresses from json file.
+		pairAddresses, err := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
+		if err != nil {
+			log.Error("fetch pool addresses from config file: ", err)
+		}
+		numPairs := len(pairAddresses)
+		log.Infof("listening to %d pools: %v", numPairs, pairAddresses)
+		for _, pairAddress := range pairAddresses {
+			uniPair, err := s.GetPairByAddress(pairAddress)
+			if err != nil {
+				log.Errorf("get pair with address %s: %v", pairAddress.Hex(), err)
+			}
+			auxmap := make(map[common.Address]UniswapPair)
+			auxmap[pairAddress] = uniPair
+			maps = append(maps, auxmap)
+		}
+
+	} else {
+		numPairs, err := s.getNumPairs()
+		if err != nil {
+			log.Fatal(err)
+		}
+		// numPairs := 1
+		batchSize := 1000
+
+		log.Infof("load all %d pairs: ", numPairs)
+
+		var wg sync.WaitGroup
+		for k := 0; k < numPairs/batchSize; k++ {
+			time.Sleep(8 * time.Second)
+			for i := batchSize * k; i < batchSize*(k+1); i++ {
+				wg.Add(1)
+				auxmap := make(map[common.Address]UniswapPair)
+				go func(index int, w *sync.WaitGroup) {
+					defer w.Done()
+					pair, err := s.GetPairByID(int64(index))
+					if err != nil {
+						log.Error(err)
+					}
+					auxmap[pair.Address] = pair
+				}(i, &wg)
+				maps = append(maps, auxmap)
+			}
+			wg.Wait()
+		}
+		for i := numPairs - numPairs%batchSize; i < numPairs; i++ {
 			wg.Add(1)
 			auxmap := make(map[common.Address]UniswapPair)
 			go func(index int, w *sync.WaitGroup) {
@@ -165,23 +188,10 @@ func (s *UniswapHistoryScraper) loadPairMap() {
 			maps = append(maps, auxmap)
 		}
 		wg.Wait()
-	}
-	for i := numPairs - numPairs%batchSize; i < numPairs; i++ {
-		wg.Add(1)
-		auxmap := make(map[common.Address]UniswapPair)
-		go func(index int, w *sync.WaitGroup) {
-			defer w.Done()
-			pair, err := s.GetPairByID(int64(index))
-			if err != nil {
-				log.Error(err)
-			}
-			auxmap[pair.Address] = pair
-		}(i, &wg)
-		maps = append(maps, auxmap)
-	}
-	wg.Wait()
 
-	log.Info("len: ", len(maps))
+		log.Info("len: ", len(maps))
+	}
+
 	pairmap := make(map[common.Address]UniswapPair)
 	for _, m := range maps {
 		for i, j := range m {
