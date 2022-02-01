@@ -35,9 +35,10 @@ const (
 	TopicFiltersBlockHistorical = 4
 	TopicTradesHistorical       = 5
 	TopicTradesBlockHistorical  = 6
-	TopicFiltersBlockDone       = 14
 
-	TopicSuppliesBlock = 7
+	TopicTradesEstimation = 7
+
+	TopicFiltersBlockDone = 14
 
 	retryDelay           = 2 * time.Second
 	TopicOptionOrderBook = 13
@@ -61,6 +62,7 @@ func getTopic(topic int) string {
 		4:  "filtersBlockHistorical",
 		5:  "tradesHistorical",
 		6:  "tradesBlockHistorical",
+		7:  "tradesEstimation",
 		14: "filtersblockHistoricalDone",
 	}
 	result, ok := topicMap[topic]
