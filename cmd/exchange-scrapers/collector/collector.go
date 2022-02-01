@@ -42,7 +42,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 			lastTradeTime = time.Now()
 			// Trades are sent to the tradesblockservice through a kafka channel - either through trades topic
 			// or historical trades topic.
-			if mode == "current" || mode == "historical" {
+			if mode == "current" || mode == "historical" || mode == "estimation" {
 				err := kafkaHelper.WriteMessage(w, t)
 				if err != nil {
 					log.Error(err)
@@ -64,9 +64,12 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 var (
 	exchange         = flag.String("exchange", "", "which exchange")
 	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
-	// mode==storeTrades: trades are not forwarded to TBS and FBS and stored as raw trades in influx.
-	// mode==historical: trades are sent through kafka to TBS in tradesHistorical topic.
-	mode = flag.String("mode", "current", "either storeTrades, current or historical")
+	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
+	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
+	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
+	//						but estimatedUSDPrice is filled by tradesEstimationService.
+	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
+	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation")
 )
 
 func init() {
@@ -83,6 +86,8 @@ func init() {
 
 // main manages all PairScrapers and handles incoming trade information
 func main() {
+
+	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
 
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
@@ -115,6 +120,8 @@ func main() {
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 	case "historical":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
+	case "estimation":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	}
 
 	defer func() {
