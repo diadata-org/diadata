@@ -129,7 +129,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
-	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s total trades at: %d", timeStart, timeEnd, time.Now(), len(r)))
 	return r, nil
 }
 
