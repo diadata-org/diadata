@@ -14,7 +14,7 @@ import (
 // the corresponding asset is returned as well.
 func parseTrade(row []interface{}, fullBasetoken bool) *dia.Trade {
 	if len(row) > 10 {
-		t, err := time.Parse(time.RFC3339, row[0].(string))
+		t, err := time.Parse(time.RFC3339Nano, row[0].(string))
 		if err == nil {
 
 			var estimatedUSDPrice float64
