@@ -233,7 +233,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
-	// log.Info("time spent for process: ", time.Since(tInit))
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {

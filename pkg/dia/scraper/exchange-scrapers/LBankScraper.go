@@ -1,9 +1,8 @@
 package scrapers
 
 import (
+	"encoding/json"
 	"errors"
-	"hash/fnv"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -17,6 +16,11 @@ import (
 
 var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
 
+const (
+	timeZoneLBank      = "Asia/Singapore"
+	timeFormatResponse = "2006-01-02T15:04:05"
+)
+
 type ResponseLBank struct {
 	Pair   string      `json:"pair"`
 	Trade  interface{} `json:"trade"`
@@ -29,6 +33,15 @@ type SubscribeLBank struct {
 	Action    string `json:"action"`
 	Subscribe string `json:"subscribe"`
 	Pair      string `json:"pair"`
+}
+
+type SubscribePing struct {
+	Action string `json:"action"`
+}
+
+type PongMessage struct {
+	Action string `json:"action"`
+	Value  string `json:"pong"`
 }
 
 type LBankScraper struct {
@@ -77,72 +90,109 @@ func NewLBankScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *L
 // runs in a goroutine until s is closed
 func (s *LBankScraper) mainLoop() {
 	var err error
-
+	defer s.cleanup(err)
+	// Wait until all pairs are subscribed in order to prevent concurrent ws write.
+	time.Sleep(10 * time.Second)
+	err = s.subscribePing()
+	if err != nil {
+		log.Fatal("subscribe ping: ", err)
+	}
 	for {
-		message := &ResponseLBank{}
+		var message map[string]interface{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
-			println(err.Error())
-			break
+			log.Error("read ping: ", err)
 		}
-		ps, ok := s.pairScrapers[strings.ToUpper(message.Pair)]
+		if messageType, ok := message["type"]; ok {
+			if messageType == "trade" {
+				pair := strings.ToUpper(message["pair"].(string))
+				ps, ok := s.pairScrapers[pair]
+				if ok {
+					var exchangepair dia.ExchangePair
+					var timestamp time.Time
 
-		if ok {
-			var f64Price float64
-			var f64Volume float64
-			var exchangepair dia.ExchangePair
+					tradeMap := message["trade"].(map[string]interface{})
+					f64Price := tradeMap["price"].(float64)
+					f64Volume := tradeMap["volume"].(float64)
+					if tradeMap["direction"] == "sell" {
+						f64Volume = -f64Volume
+					}
+					timestamp, err = parseAsianTime(message["TS"].(string))
+					if err != nil {
+						log.Error("parse time: ", err)
+					}
 
-			switch message.Trade.(type) {
-			case []interface{}:
-				md := message.Trade.([]interface{})
-				f64Price = md[1].(float64)
-				f64Volume = md[2].(float64)
-				if md[3] == "sell" {
-					f64Volume = -f64Volume
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, pair)
+					if err != nil {
+						log.Error(err)
+					}
+					t := &dia.Trade{
+						Symbol:       ps.pair.Symbol,
+						Pair:         pair,
+						Price:        f64Price,
+						Volume:       f64Volume,
+						Time:         timestamp,
+						Source:       s.exchangeName,
+						VerifiedPair: exchangepair.Verified,
+						BaseToken:    exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					}
+					if exchangepair.Verified {
+						log.Infoln("Got verified trade", t)
+					}
+					ps.parent.chanTrades <- t
 				}
-			case map[string]interface{}:
-				md := message.Trade.(map[string]interface{})
-				f64Price = md["price"].(float64)
-				f64Volume = md["volume"].(float64)
-				if md["direction"] == "sell" {
-					f64Volume = -f64Volume
+			}
+		} else {
+			if pingMessage, ok := message["ping"]; ok {
+				var pongMessageMarshalled []byte
+				pongMessage := PongMessage{
+					Action: "pong",
+					Value:  pingMessage.(string),
+				}
+				pongMessageMarshalled, err = json.Marshal(pongMessage)
+				if err != nil {
+					log.Error("marshal pong: ", err)
+				}
+				err = s.pong(pongMessageMarshalled)
+				if err != nil {
+					log.Error("send pong: ", err)
 				}
 			}
-
-			timeStamp := time.Now().UTC()
-
-			// TO DO: does the format of the pair correspond to the one saved in postgres?
-			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, strings.ToUpper(message.Pair))
-			if err != nil {
-				log.Error(err)
-			}
-			t := &dia.Trade{
-				Symbol:         ps.pair.Symbol,
-				Pair:           strings.ToUpper(message.Pair),
-				Price:          f64Price,
-				Volume:         f64Volume,
-				Time:           timeStamp,
-				ForeignTradeID: strconv.FormatInt(int64(hash(timeStamp.String())), 16),
-				Source:         s.exchangeName,
-				VerifiedPair:   exchangepair.Verified,
-				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-			}
-			if exchangepair.Verified {
-				log.Infoln("Got verified trade", t)
-			}
-			ps.parent.chanTrades <- t
 		}
 	}
-	s.cleanup(err)
+
 }
 
-func hash(s string) uint32 {
-	h := fnv.New32a()
-	_, err := h.Write([]byte(s))
+// Pong sends the string "pong" to the server.
+func (s *LBankScraper) pong(message []byte) error {
+	err := s.wsClient.WriteMessage(1, message)
 	if err != nil {
-		log.Error(err)
+		return err
 	}
-	return h.Sum32()
+	return nil
+}
+
+func (s *LBankScraper) subscribePing() error {
+	a := &SubscribePing{
+		Action: "ping",
+	}
+	return s.wsClient.WriteJSON(a)
+}
+
+func parseAsianTime(timestring string) (time.Time, error) {
+	IST, err := time.LoadLocation(timeZoneLBank)
+	if err != nil {
+		return time.Time{}, err
+	}
+	timestampAsia, err := time.ParseInLocation(timeFormatResponse, timestring, IST)
+	if err != nil {
+		return time.Time{}, err
+	}
+	UTC, err := time.LoadLocation("UTC")
+	if err != nil {
+		return time.Time{}, err
+	}
+	return timestampAsia.In(UTC), nil
 }
 
 func (s *LBankScraper) cleanup(err error) {
