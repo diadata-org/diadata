@@ -117,7 +117,7 @@ contract DiceGame {
     randomOracle = oracle;
   }
 
-  function getRandomValue(uint256 _round) external view returns (string memory) {
+  function getRandomValue(uint256 _round) public view returns (string memory) {
     return DIARandomOracle(randomOracle).getRandomValueFromRound(_round);
   }
   
@@ -145,7 +145,7 @@ contract DiceGame {
     
     require(DIARandomOracle(randomOracle).getLastRound() >= _round, "Wait for the randmoness round to roll your dice.");
     
-    string memory rand = DIARandomOracle(randomOracle).getRandomValueFromRound(_round);
+    string memory rand = getRandomValue(_round);
     uint256 player1result = (uint256(keccak256(abi.encodePacked(rand))) + seed1) % 6;
     uint256 player2result = (uint256(keccak256(abi.encodePacked(rand))) + seed2) % 6;
     
