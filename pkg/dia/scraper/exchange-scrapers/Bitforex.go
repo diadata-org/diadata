@@ -21,6 +21,7 @@ const (
 	bitForexPingMessage         = "ping_p"
 	bitForexPongMessage         = "pong_p"
 	bitForexInitialTradeReqSize = 10
+	bitForexWSBucketSize        = 50
 
 	// bitForexConnMaxRetry is a max retry value used when retrying to create a new connection
 	bitForexConnMaxRetry = 50
@@ -453,8 +454,38 @@ func (s *BitforexScraper) retryConnection() error {
 	return nil
 }
 
+// divideIntoBuckets divides a []bitForexWSRequest slice into multiple buckets
+func (s *BitforexScraper) divideIntoBuckets(requests []bitForexWSRequest, bucketSize int) [][]bitForexWSRequest {
+	var bucket []bitForexWSRequest
+	var buckets [][]bitForexWSRequest
+	count := 1
+	for _, request := range requests {
+		bucket = append(bucket, request)
+		if count%bucketSize == 0 {
+			buckets = append(buckets, bucket)
+			bucket = []bitForexWSRequest{}
+		}
+
+		count++
+	}
+
+	if len(bucket) > 0 {
+		buckets = append(buckets, bucket)
+	}
+
+	return buckets
+}
+
 func (s *BitforexScraper) send(requests []bitForexWSRequest) error {
-	return s.wsConn().WriteJSON(requests)
+	buckets := s.divideIntoBuckets(requests, bitForexWSBucketSize)
+	for _, bucket := range buckets {
+		err := s.wsConn().WriteJSON(bucket)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *BitforexScraper) sendMessage(msg []byte) error {
