@@ -52,8 +52,8 @@ const (
 	genesisBlockUniswap = uint64(10019990)
 	// genesisBlockUniswap            = uint64(10520000)
 	// genesisBlockUniswap            = uint64(12575772)
-	filterQueryBlockNums           = 20
-	uniswapHistoryWaitMilliseconds = "500"
+	filterQueryBlockNums           = 50
+	uniswapHistoryWaitMilliseconds = "1000"
 )
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
@@ -265,7 +265,10 @@ func (s *UniswapHistoryScraper) mainLoop() {
 		}
 		startblock = endblock
 		endblock = startblock + filterQueryBlockNums
+		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
 	}
+
+	time.Sleep(20 * 24 * time.Hour)
 
 	// ---------------------------------------------------------------------------
 	// Concurrent block scraping

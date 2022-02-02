@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 	"sync"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -30,6 +31,15 @@ var (
 	tol = float64(0.1)
 )
 
+const (
+	priceFrame = 1000 * 120
+)
+
+type pricetime struct {
+	Price     float64
+	Timestamp time.Time
+}
+
 type TradesEstimationService struct {
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -38,6 +48,7 @@ type TradesEstimationService struct {
 	error        error
 	closed       bool
 	started      bool
+	priceCache   map[dia.Asset]pricetime
 	datastore    models.Datastore
 }
 
@@ -48,6 +59,7 @@ func NewTradesEstimationService(datastore models.Datastore) *TradesEstimationSer
 		chanTrades:   make(chan *dia.Trade),
 		error:        nil,
 		started:      false,
+		priceCache:   make(map[dia.Asset]pricetime),
 		datastore:    datastore,
 	}
 	go s.mainLoop()
@@ -71,6 +83,8 @@ func (s *TradesEstimationService) mainLoop() {
 func (s *TradesEstimationService) process(t dia.Trade) {
 
 	var verifiedTrade bool
+	var price float64
+	var err error
 
 	// Price estimation can only be done for verified pairs.
 	if t.VerifiedPair {
@@ -79,8 +93,18 @@ func (s *TradesEstimationService) process(t dia.Trade) {
 			t.EstimatedUSDPrice = t.Price
 			verifiedTrade = true
 		} else {
-			// Look for historic price of base token at trade time...
-			price, err := s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
+			// Check if price cache is still valid:
+			_, ok := s.priceCache[t.BaseToken]
+			if ok && t.Time.Sub(s.priceCache[t.BaseToken].Timestamp) < time.Duration(priceFrame*time.Millisecond) {
+				price = s.priceCache[t.BaseToken].Price
+			} else {
+				// Look for historic price of base token at trade time...
+				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
+				s.priceCache[t.BaseToken] = pricetime{
+					Price:     price,
+					Timestamp: t.Time,
+				}
+			}
 			if err != nil {
 				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
 			} else {
