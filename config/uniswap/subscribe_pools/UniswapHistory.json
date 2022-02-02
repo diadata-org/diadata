@@ -1,0 +1,52 @@
+{
+    "Pools": [
+        {
+            "Address": "0x86fef14c27c78deaeb4349fd959caa11fc5b5d75",
+            "ForeignName": "ETH-RARI"
+        },
+        {
+            "Address": "0xcd4a2f72e3d646e8addab74a68c2175d6a36b0e3",
+            "ForeignName": "ETH-DAFI"
+        },
+        {
+            "Address": "0x70ec2fa6eccf4010eaf572d1c1a7bcbc72dec983",
+            "ForeignName": "ETH-ROOK" 
+        },
+        {
+            "Address": "0x3c70f4faea49e50adc8305f2e1aa0ea326a54ffc",
+            "ForeignName": "ETH-INJ"
+        },
+        {
+            "Address": "0x2e81ec0b8b4022fac83a21b2f2b4b8f5ed744d70",
+            "ForeignName": "ETH-GRT" 
+        },
+        {
+            "Address": "0xdfa42ba0130425b21a1568507b084cc246fb0c8f",
+            "ForeignName": "USDC-GRT"
+        },
+        {
+            "Address": "0x84e34df6f8f85f15d24ec8e347d32f1184089a14",
+            "ForeignName": "ETH-Yf-DAI"
+        },
+        {
+            "Address": "0x1e45eae7461c56529e5cc335f6b1f797576f8a27",
+            "ForeignName": "USDC-SCIFI" 
+        },
+        {
+            "Address": "0x1287f7d44369dd1a4bffcc78ab0931b7d7905ace",
+            "ForeignName": "USDC-GBI"
+        },
+        {
+            "Address": "0xc0fc2e4cbaf48b36948971c4afd487a90272ddfe",
+            "ForeignName": "ETH-UTK"
+        },
+        {
+            "Address": "0xe4f8f3cb9b33247789e4984a457bb69a1a621df3",
+            "ForeignName": "ETH-SNOW"
+        },
+        {
+            "Address": "0x25647e01bd0967c1b9599fa3521939871d1d0888",
+            "ForeignName": "ETH-SUPER"
+        }
+    ]
+}

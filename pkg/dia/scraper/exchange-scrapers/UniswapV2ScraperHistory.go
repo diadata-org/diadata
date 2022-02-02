@@ -13,7 +13,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum"
@@ -41,6 +40,7 @@ type UniswapHistoryScraper struct {
 	chanTrades    chan *dia.Trade
 	waitTime      int
 	genesisBlock  uint64
+	finalBlock    uint64
 	pairmap       map[common.Address]UniswapPair
 	pairAddresses []common.Address
 	db            *models.RelDB
@@ -49,10 +49,10 @@ type UniswapHistoryScraper struct {
 }
 
 const (
-	// genesisBlockUniswap            = uint64(10019990)
+	genesisBlockUniswap = uint64(10019990)
 	// genesisBlockUniswap            = uint64(10520000)
-	genesisBlockUniswap            = uint64(12120000)
-	filterQueryBlockNums           = 60
+	// genesisBlockUniswap            = uint64(12575772)
+	filterQueryBlockNums           = 20
 	uniswapHistoryWaitMilliseconds = "500"
 )
 
@@ -65,7 +65,7 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapHistoryScraper(exchange, listenByAddress, restDialEth, wsDialEth, uniswapHistoryWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		listenByAddress = false
@@ -108,6 +108,17 @@ func makeUniswapHistoryScraper(exchange dia.Exchange, listenByAddress bool, rest
 		waitTime = 500
 	}
 
+	startblockstring := utils.Getenv("FIRST_BLOCK", "")
+	startblock, err := strconv.ParseUint(startblockstring, 10, 64)
+	if err != nil {
+		log.Fatal("parse startblock: ", err)
+	}
+	finalblockstring := utils.Getenv("FINAL_BLOCK", "")
+	finalblock, err := strconv.ParseUint(finalblockstring, 10, 64)
+	if err != nil {
+		log.Fatal("parse final block: ", err)
+	}
+
 	s = &UniswapHistoryScraper{
 		WsClient:        wsClient,
 		RestClient:      restClient,
@@ -119,7 +130,8 @@ func makeUniswapHistoryScraper(exchange dia.Exchange, listenByAddress bool, rest
 		chanTrades:      make(chan *dia.Trade),
 		waitTime:        waitTime,
 		listenByAddress: listenByAddress,
-		genesisBlock:    genesisBlockUniswap,
+		genesisBlock:    uint64(startblock),
+		finalBlock:      uint64(finalblock),
 	}
 	return s
 }
@@ -130,7 +142,7 @@ func (s *UniswapHistoryScraper) loadPairMap() {
 	if s.listenByAddress {
 
 		// Collect all pair addresses from json file.
-		pairAddresses, err := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
+		pairAddresses, err := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName + "History")
 		if err != nil {
 			log.Error("fetch pool addresses from config file: ", err)
 		}
@@ -209,7 +221,7 @@ func (s *UniswapHistoryScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
@@ -233,15 +245,15 @@ func (s *UniswapHistoryScraper) mainLoop() {
 		log.Infof("%d pairs loaded.", len(addresses))
 	}
 
-	latestBlock, err := s.RestClient.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		log.Error("get current block number: ", err)
-	}
-
+	// latestBlock, err := s.RestClient.BlockByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	log.Error("get current block number: ", err)
+	// }
+	finalBlock := s.finalBlock
 	startblock := s.genesisBlock
 	endblock := startblock + uint64(filterQueryBlockNums)
 
-	for startblock < latestBlock.NumberU64() {
+	for startblock < finalBlock {
 		err := s.fetchSwaps(startblock, endblock)
 		if err != nil {
 			if strings.Contains(err.Error(), "EOF") {
@@ -314,7 +326,6 @@ func (s *UniswapHistoryScraper) fetchSwaps(startblock uint64, endblock uint64) e
 		return err
 	}
 	log.Info("time passed for filter logs: ", time.Since(t))
-
 	for _, logg := range logs {
 
 		pairFilterer, err := uniswap.NewUniswapV2PairFilterer(common.Address{}, s.RestClient)
@@ -322,15 +333,15 @@ func (s *UniswapHistoryScraper) fetchSwaps(startblock uint64, endblock uint64) e
 			log.Error(err)
 		}
 
-		// blockdata, err := s.RestClient.BlockByNumber(context.Background(), big.NewInt(int64(logg.BlockNumber)))
-		// if err != nil {
-		// 	log.Info("get block by number: ", err)
-		// }
-
-		blockdata, err := ethhelper.GetBlockData(int64(logg.BlockNumber), s.db, s.RestClient)
+		blockdata, err := s.RestClient.BlockByNumber(context.Background(), big.NewInt(int64(logg.BlockNumber)))
 		if err != nil {
-			return err
+			log.Info("get block by number: ", err)
 		}
+
+		// blockdata, err := ethhelper.GetBlockData(int64(logg.BlockNumber), s.db, s.RestClient)
+		// if err != nil {
+		// 	return err
+		// }
 
 		swap, err := pairFilterer.ParseSwap(logg)
 		if err != nil {
@@ -353,13 +364,16 @@ func (s *UniswapHistoryScraper) fetchSwaps(startblock uint64, endblock uint64) e
 			Decimals:   swp.Pair.Token1.Decimals,
 			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 		}
-		var timestamp time.Time
-		switch blockdata.Data["Time"].(type) {
-		case float64:
-			timestamp = time.Unix(int64(blockdata.Data["Time"].(float64)), 0)
-		case uint64:
-			timestamp = time.Unix(int64(blockdata.Data["Time"].(uint64)), 0)
-		}
+
+		timestamp := time.Unix(int64(blockdata.Time()), 0)
+
+		// var timestamp time.Time
+		// switch blockdata.Data["Time"].(type) {
+		// case float64:
+		// 	timestamp = time.Unix(int64(blockdata.Data["Time"].(float64)), 0)
+		// case uint64:
+		// 	timestamp = time.Unix(int64(blockdata.Data["Time"].(uint64)), 0)
+		// }
 		t := &dia.Trade{
 			Symbol:     swp.Pair.Token0.Symbol,
 			Pair:       swp.Pair.ForeignName,
