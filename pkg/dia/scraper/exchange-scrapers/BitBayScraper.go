@@ -15,7 +15,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
-var BitBaySocketURL string = "wss://api.bitbay.net/websocket/"
+var BitBaySocketURL string = "wss://api.zonda.exchange/websocket/"
 
 type BitBaySubscribe struct {
 	Action string `json:"action"`
@@ -374,9 +374,9 @@ type BitBayMarket struct {
 }
 
 type BitBayWSResponse struct {
-	Action  string  `json:"action"`
-	Message Message `json:"message"`
-	SeqNo   int     `json:"seqNo"`
+	Action    string  `json:"action"`
+	Message   Message `json:"message"`
+	SeqNo     int     `json:"seqNo"`
 	Timestamp string  `json:"timestamp"`
 	Topic     string  `json:"topic"`
 }
