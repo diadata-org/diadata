@@ -4,7 +4,6 @@ import (
 	"errors"
 	"math"
 	"math/big"
-	"strings"
 	"sync"
 	"time"
 
@@ -177,7 +176,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						VerifiedPair:   true,
 					}
 					// If we need quotation of a base token, reverse pair
-					if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
+					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
