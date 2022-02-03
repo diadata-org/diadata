@@ -17,6 +17,7 @@ const (
 	GnosisExchange       = "Gnosis"
 	KrakenExchange       = "Kraken"
 	BitfinexExchange     = "Bitfinex"
+	BitforexExchange     = "Bitforex"
 	BinanceExchange      = "Binance"
 	CryptoDotComExchange = "Crypto.com"
 	FTXExchange          = "FTX"
@@ -69,6 +70,7 @@ func Exchanges() []string {
 
 		LoopringExchange,
 		BitfinexExchange,
+		BitforexExchange,
 		SimexExchange,
 
 		BinanceExchange,
