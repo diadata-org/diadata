@@ -41,6 +41,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 3. Set the required environment variables using the following commands:
 
 ```sh
+export USE_ENV=true
 export INFLUXURL=http://localhost:8086
 export INFLUXUSER=test
 export INFLUXPASSWORD=test
