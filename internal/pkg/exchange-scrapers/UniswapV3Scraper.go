@@ -4,7 +4,6 @@ import (
 	"errors"
 	"math"
 	"math/big"
-	"strings"
 	"sync"
 	"time"
 
@@ -100,6 +99,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
+	log.Info("reverse assets: ", reversePairs)
 
 	time.Sleep(4 * time.Second)
 	s.run = true
@@ -165,7 +165,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 							Source:         s.exchangeName,
 						}
 						// If we need quotation of a base token, reverse pair
-						if utils.Contains(reversePairs, strings.ToLower(pair.Token1.Address.Hex())) {
+						if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
 							tSwapped, err := dia.SwapTrade(*t)
 							if err == nil {
 								t = &tSwapped
