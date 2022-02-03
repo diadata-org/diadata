@@ -97,10 +97,11 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 func (s *UniswapV3Scraper) mainLoop() {
 
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName)
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
+	log.Infof("reverse the following tokens on %s: %v", s.exchangeName, reversePairs)
 
 	time.Sleep(4 * time.Second)
 	s.run = true
@@ -126,14 +127,6 @@ func (s *UniswapV3Scraper) mainLoop() {
 			log.Info("skip pair: ", pair.ForeignName)
 			continue
 		}
-		if helpers.SymbolIsBlackListed(pair.Token0.Symbol) || helpers.SymbolIsBlackListed(pair.Token1.Symbol) {
-			if helpers.SymbolIsBlackListed(pair.Token0.Symbol) {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token0.Symbol)
-			} else {
-				log.Infof("skip pair %s. symbol %s is blacklisted", pair.ForeignName, pair.Token1.Symbol)
-			}
-			continue
-		}
 		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 			continue
@@ -141,7 +134,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 		pair.normalizeUniPair()
 		// ps, ok := s.pairScrapers[pair.ForeignName]
 
-		log.Info(": found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
+		log.Info("found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
 		sink, err := s.GetSwapsChannel(pair.Address)
 		if err != nil {
 			log.Error("error fetching swaps channel: ", err)
