@@ -62,6 +62,7 @@ const (
 	SolarbeamExchange    = "Solarbeam"
 	TrisolarisExchange   = "Trisolaris"
 	ByBitExchange        = "ByBit"
+	BitMexExchange       = "BitMex"
 	// FinageForex        = "FinageForex"
 )
 
@@ -121,6 +122,7 @@ func Exchanges() []string {
 		BalancerV2Exchange,
 		BancorExchange,
 		UnknownExchange,
+		BitMexExchange,
 	}
 }
 
