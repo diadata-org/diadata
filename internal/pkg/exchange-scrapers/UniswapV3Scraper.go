@@ -96,7 +96,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 func (s *UniswapV3Scraper) mainLoop() {
 
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("reverse_tokens")
+	reversePairs, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
