@@ -38,6 +38,20 @@ services:
     secrets:
       - oracle_keys_ethereum
 
+  diaoracleservice-evmos:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaOracleV2Service
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diaoracleservice-evmos
+    networks:
+      - scrapers-network
+    command: --deployedContract=0x70ea682a109695d465db975b40e8fdbbfda5cd07 --secretsFile=/run/secrets/oracle_keys_evmos_testnet --blockchainNode="https://ethereum.rpc.evmos.dev" --chainId=9000 --deviationPermille=0 --sleepSeconds=20 --frequencySeconds=86400
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_evmos_testnet
+
   oracleservice-ropsten:
     build:
       context: $GOPATH
@@ -375,6 +389,34 @@ services:
         max-size: "50m"
     secrets:
       - oracle_keys_utopiansworld_metis
+
+  diastandardoracleservice-metis:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaStandardOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diastandardoracleservice-metis
+    networks:
+      - scrapers-network
+    command: --deployedContract="0xf21CD2C0AB8B7b4BB16ead27713355c7668D72B3" --secretsFile=/run/secrets/oracle_keys_standard_metis --blockchainNode="https://andromeda.metis.io/?owner=1088" --chainId=1088 --sleepSeconds=10 --frequencySeconds=120 --deviationPermille=10
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_standard_metis
+
+  diamethaneoracleservice-metis:
+    build:
+      context: $GOPATH
+      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaMethaneOracleService
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diamethaneoracleservice-metis
+    networks:
+      - scrapers-network
+    command: --deployedContract="0x57e185dc3228b3fc228fef18f9ca5de92e42b32c" --secretsFile=/run/secrets/oracle_keys_methane_metis --blockchainNode="https://andromeda.metis.io/?owner=1088" --chainId=1088 --sleepSeconds=10 --frequencySeconds=120 --deviationPermille=10
+    logging:
+      options:
+        max-size: "50m"
+    secrets:
+      - oracle_keys_methane_metis
 
   diaoracleservice-aurora:
     build:
@@ -788,6 +830,8 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
   oracle_keys_ethereum:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_ethereum.txt
+  oracle_keys_evmos_testnet:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_evmos_testnet.txt
   oracle_keys_xdai:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_xdai.txt
   oracle_keys_xdai_generic:
@@ -804,6 +848,10 @@ secrets:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_metis.txt
   oracle_keys_utopiansworld_metis:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_utopiansworld_metis.txt
+  oracle_keys_standard_metis:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_standard_metis.txt
+  oracle_keys_methane_metis:
+    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_methane_metis.txt
   oracle_keys_aurora_testnet:
     file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys_aurora_testnet.txt
   oracle_keys_strudel_aurora:
