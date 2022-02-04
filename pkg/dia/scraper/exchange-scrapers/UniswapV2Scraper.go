@@ -25,7 +25,8 @@ import (
 
 var (
 	exchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
-	reversePairs                   *[]string
+	reverseBasetokens              *[]string
+	reverseQuotetokens             *[]string
 	mainBaseAssets                 = []string{
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7",
 	}
@@ -207,11 +208,16 @@ func (s *UniswapScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
+	reverseBasetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName + "Basetoken")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
-	log.Info("reverse pairs: ", reversePairs)
+	log.Info("reverse pairs: ", reverseBasetokens)
+	reverseQuotetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse quotetokens: ", reverseQuotetokens)
 
 	// wait for all pairs have added into s.PairScrapers
 	time.Sleep(4 * time.Second)
@@ -342,7 +348,14 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 					VerifiedPair:   true,
 				}
 				// If we need quotation of a base token, reverse pair
-				if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
+				if utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()) {
+					tSwapped, err := dia.SwapTrade(*t)
+					if err == nil {
+						t = &tSwapped
+					}
+				}
+				// If we don't need quotation of quote token, reverse pair.
+				if utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()) {
 					tSwapped, err := dia.SwapTrade(*t)
 					if err == nil {
 						t = &tSwapped
@@ -356,8 +369,8 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 							t = &tSwapped
 						}
 					}
-
 				}
+
 				if price > 0 {
 					log.Info("tx hash: ", swap.ID)
 					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)

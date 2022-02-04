@@ -221,7 +221,7 @@ func (s *UniswapHistoryScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
+	reverseBasetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
@@ -392,7 +392,7 @@ func (s *UniswapHistoryScraper) fetchSwaps(startblock uint64, endblock uint64) e
 			VerifiedPair:   true,
 		}
 		// If we need quotation of a base token, reverse pair
-		if utils.Contains(reversePairs, swp.Pair.Token1.Address.Hex()) {
+		if utils.Contains(reverseBasetokens, swp.Pair.Token1.Address.Hex()) {
 			tSwapped, err := dia.SwapTrade(*t)
 			if err == nil {
 				t = &tSwapped

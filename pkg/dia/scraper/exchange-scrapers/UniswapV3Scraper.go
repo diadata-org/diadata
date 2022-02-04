@@ -96,11 +96,11 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 func (s *UniswapV3Scraper) mainLoop() {
 
 	var err error
-	reversePairs, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName)
+	reverseBasetokens, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName)
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
-	log.Infof("reverse the following tokens on %s: %v", s.exchangeName, reversePairs)
+	log.Infof("reverse the following tokens on %s: %v", s.exchangeName, reverseBasetokens)
 
 	time.Sleep(4 * time.Second)
 	s.run = true
@@ -176,7 +176,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						VerifiedPair:   true,
 					}
 					// If we need quotation of a base token, reverse pair
-					if utils.Contains(reversePairs, pair.Token1.Address.Hex()) {
+					if utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()) {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
