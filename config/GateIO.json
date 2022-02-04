@@ -2019,13 +2019,13 @@
     {
       "Exchange": "GateIO",
       "ForeignName": "USDC_CNYX",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "GateIO",
       "ForeignName": "USDC_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {

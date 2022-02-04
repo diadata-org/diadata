@@ -1545,25 +1545,25 @@
     {
       "Exchange": "Quoine",
       "ForeignName": "USDCBTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
       "ForeignName": "USDCETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
       "ForeignName": "USDCQASH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "Quoine",
       "ForeignName": "USDTUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDT"
     },
     {

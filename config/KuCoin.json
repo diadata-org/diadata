@@ -2602,7 +2602,7 @@
             "Symbol": "USDC",
             "ForeignName": "USDC-USDT",
             "Exchange": "KuCoin",
-            "Ignore": true
+            "Ignore": false
         },
         {
             "Symbol": "CTI",
