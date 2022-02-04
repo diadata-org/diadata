@@ -212,7 +212,7 @@ func (s *UniswapScraper) mainLoop() {
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
-	log.Info("reverse pairs: ", reverseBasetokens)
+	log.Info("reverse basetokens: ", reverseBasetokens)
 	reverseQuotetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName + "Quotetoken")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)

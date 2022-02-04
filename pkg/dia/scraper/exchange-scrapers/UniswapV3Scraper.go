@@ -96,11 +96,16 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 func (s *UniswapV3Scraper) mainLoop() {
 
 	var err error
-	reverseBasetokens, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName)
+	reverseBasetokens, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName + "Basetoken")
 	if err != nil {
-		log.Error("error getting tokens for which pairs should be reversed: ", err)
+		log.Error("error getting basetokens for which pairs should be reversed: ", err)
 	}
-	log.Infof("reverse the following tokens on %s: %v", s.exchangeName, reverseBasetokens)
+	log.Infof("reverse the following basetokens on %s: %v", s.exchangeName, reverseBasetokens)
+	reverseQuotetokens, err = getReverseTokensFromConfig("uniswapv3/reverse_tokens/" + s.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting quotetokens for which pairs should be reversed: ", err)
+	}
+	log.Infof("reverse the following quotetokens on %s: %v", s.exchangeName, reverseQuotetokens)
 
 	time.Sleep(4 * time.Second)
 	s.run = true
@@ -177,6 +182,13 @@ func (s *UniswapV3Scraper) mainLoop() {
 					}
 					// If we need quotation of a base token, reverse pair
 					if utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
+						}
+					}
+					// If we need quotation of a base token, reverse pair
+					if utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()) {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
