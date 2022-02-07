@@ -57,8 +57,10 @@ func main() {
 	key := lines[0]
 	key_password := lines[1]
 
-	symbols := []string{"BTC", "ETH", "DIA", "USDC", "SDN", "FTM", "MOVR", "KSM"}
-	oldPrices := make(map[string]float64)
+	//BTC,ETH,DIA,USDC,SDN,FTM,KSM,Metis
+	addresses := []string{"0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419","0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x9E32b13ce7f2E80A01932B42553652E053D6ed8e"}
+	blockchains := []string{"Bitcoin","Ethereum","Ethereum","Ethereum","Shiden","Fantom","Kusama","Ethereum"}
+	oldPrices := make(map[int]float64)
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -88,10 +90,11 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				for _, s := range symbols {
-					oldPrice := oldPrices[s]
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, *deviationPermille, auth, contract, conn, s)
-					oldPrices[s] = oldPrice
+				for i, address := range addresses {
+					blockchain := blockchains[i]
+					oldPrice := oldPrices[i]
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, *deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
 					}
@@ -103,15 +106,15 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, symbol string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 
 	// Get quotation for token and update Oracle
-	rawQ, err := getQuotationFromDia(symbol)
+	rawQ, err := getAssetQuotationFromDia(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", symbol, err)
+		log.Fatalf("Failed to retrieve %s quotation data on chain %s from DIA: %v", address, blockchain, err)
 		return oldPrice, err
 	}
-	rawQ.Name = symbol
+	rawQ.Name = rawQ.Symbol
 
 	// Check for deviation
 	newPrice := rawQ.Price
@@ -199,6 +202,28 @@ func updateOracle(
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
+}
+
+func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
+	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var quotation models.Quotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &quotation, nil
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
