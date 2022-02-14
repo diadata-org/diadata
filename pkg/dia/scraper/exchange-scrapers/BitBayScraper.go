@@ -92,7 +92,7 @@ func NewBitBayScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 
 func (s *BitBayScraper) getMarkets() (markets []string) {
 	var bbm BitBayMarkets
-	b, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	b, _, err := utils.GetRequest("https://api.zonda.exchange/rest/trading/ticker")
 	if err != nil {
 		log.Errorln("Error Getting markets", err)
 	}
@@ -298,7 +298,7 @@ func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	}
 	var bitbayResponse items
 
-	data, _, err := utils.GetRequest("https://api.bitbay.net/rest/trading/ticker")
+	data, _, err := utils.GetRequest("https://api.zonda.exchange/rest/trading/ticker")
 	if err != nil {
 		return
 	}
