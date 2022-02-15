@@ -108,11 +108,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	log.Info("time spent for create and compute filters: ", time.Since(t0))
 	log.Info("filter begin time: ", tb.TradesBlockData.BeginTime)
 	resultFilters := []dia.FilterPoint{}
-	// log.Info("all filter keys: ")
-	// for key := range s.filters {
-	// 	log.Info(key)
-	// }
-	// log.Info("--------------------------")
 
 	t0 = time.Now()
 
@@ -127,7 +122,19 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
 
+	for key := range s.filters {
+		if key.Identifier == "Ethereum-0xdAC17F958D2ee523a2206206994597C13D831ec7" {
+			log.Infof("filter points for USDT on Ethereum from source %s: %v", key.Source, resultFilters)
+		}
+	}
+
 	resultFilters = addMissingPoints(s.previousBlockFilters, resultFilters)
+
+	for key := range s.filters {
+		if key.Identifier == "Ethereum-0xdAC17F958D2ee523a2206206994597C13D831ec7" {
+			log.Infof("filter points for USDT on Ethereum from source %s after addMissingPoints %v", key.Source, resultFilters)
+		}
+	}
 
 	s.previousBlockFilters = resultFilters
 
@@ -239,7 +246,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 				missingPoints++
 			}
 		} else {
-			log.Info("ignoring old filter", filter.Asset.Symbol)
+			// log.Warn("ignoring old filter", filter.Asset.Symbol)
 		}
 	}
 	if missingPoints != 0 {
