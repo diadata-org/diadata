@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -107,6 +106,7 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
+
 			var filterpoint dia.FilterPoint
 			filterpoint.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
@@ -121,10 +121,11 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 			if res[0].Series[0].Values[i][3] != nil {
 				filterpoint.Asset.Symbol = res[0].Series[0].Values[i][3].(string)
 			}
-			filterpoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return allFilters, err
-			}
+			log.Infoln("res[0].Series[0].Values[i]", res[0].Series[0].Values[i])
+			// filterpoint.Value, err = res[0].Series[0].Values[i][4].(json.Number).Float64()
+			// if err != nil {
+			// 	return allFilters, err
+			// }
 			allFilters = append(allFilters, filterpoint)
 		}
 	} else {
