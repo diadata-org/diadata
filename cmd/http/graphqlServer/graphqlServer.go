@@ -42,15 +42,15 @@ func main() {
 	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseStringDescriptions())
 
 	mux := http.NewServeMux()
-
-	mux.Handle("/graphql/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "graphql")
+	mux.Handle(urlFolderPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
 			return
 		}
 	}))
 
-	mux.Handle("/graphql/query", &relay.Handler{Schema: diaSchema})
+	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
 	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
