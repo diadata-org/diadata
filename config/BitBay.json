@@ -805,6 +805,24 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDC",
+            "ForeignName": "USDCGBP",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCEUR",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCPLN",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
             "Symbol": "XRP",
             "ForeignName": "XRPGBP",
             "Exchange": "BitBay",

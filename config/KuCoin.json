@@ -1177,12 +1177,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "USDT",
-            "ForeignName": "USDT-USDC",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "ETH",
             "ForeignName": "ETH-PAX",
             "Exchange": "KuCoin",

@@ -7,6 +7,12 @@
             "Address": "840"
         },
         {
+            "Symbol": "GBP",
+            "Exchange": "BitBay",
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
             "Symbol": "EUR",
             "Exchange": "BitBay",
             "Blockchain": "Fiat",
