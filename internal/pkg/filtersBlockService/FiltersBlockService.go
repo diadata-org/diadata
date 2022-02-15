@@ -122,19 +122,11 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
 
-	for key := range s.filters {
-		if key.Identifier == "Ethereum-0xdAC17F958D2ee523a2206206994597C13D831ec7" {
-			log.Infof("filter points for USDT on Ethereum from source %s: %v", key.Source, resultFilters)
-		}
-	}
+	log.Info("resultFilters for USDT on Ethereum: ", resultFilters)
 
 	resultFilters = addMissingPoints(s.previousBlockFilters, resultFilters)
 
-	for key := range s.filters {
-		if key.Identifier == "Ethereum-0xdAC17F958D2ee523a2206206994597C13D831ec7" {
-			log.Infof("filter points for USDT on Ethereum from source %s after addMissingPoints %v", key.Source, resultFilters)
-		}
-	}
+	log.Info("resultFilters for USDT on Ethereum after addMissingPoints: ", resultFilters)
 
 	s.previousBlockFilters = resultFilters
 
