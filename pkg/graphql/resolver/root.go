@@ -239,7 +239,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 		}
 	} else if *filter == "ema" {
-		filterPoints, err = r.DS.GetFilter("mair120", "Binance", asset, "", starttime, endtime)
+		filterPoints, err = r.DS.GetFilter("MA120", "", asset, "", starttime, endtime)
 		if err != nil {
 			log.Errorln("Error getting filter", err)
 		}

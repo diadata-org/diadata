@@ -80,9 +80,8 @@ type FilterPoint struct {
 	Value    float64
 }
 
-func (datastore *DB) GetFilter(filter string, exchange string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.FilterPoint, error) {
+func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.FilterPoint, error) {
 	var allFilters []dia.FilterPoint
-	exchangeQuery := "and exchange='" + exchange + "' "
 	table := ""
 	//	5m 30m 1h 4h 1d 1w
 	if scale != "" {
@@ -97,8 +96,8 @@ func (datastore *DB) GetFilter(filter string, exchange string, topAsset dia.Asse
 	}
 
 	q := fmt.Sprintf("SELECT time,exchange,filter,symbol,value FROM %s"+
-		" WHERE filter='%s' %sand address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
-		table, filter, exchangeQuery, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
+		" WHERE filter='%s' and address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
+		table, filter, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
