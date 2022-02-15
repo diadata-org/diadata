@@ -18,6 +18,99 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	numMaxRetryCG    = 4
+	waitRetrySeconds = 60
+)
+
+type CGCoin struct {
+	Address    string       `json:"contract_address"`
+	MarketData CGMarketData `json:"market_data"`
+	Platform   string       `json:"asset_platform_id"`
+}
+
+type CGMarketData struct {
+	TotalSupply       float64 `json:"total_supply"`
+	CirculatingSupply float64 `json:"circulating_supply"`
+}
+
+func GetETHSuppliesFromCG() (supplies []dia.Supply, err error) {
+	IDs, err := getAllIDsCG()
+	if err != nil {
+		return
+	}
+	for i, ID := range IDs {
+		if i < 2000 {
+			continue
+		} else if i > 2010 {
+			break
+		}
+
+		retries := 0
+		var coin CGCoin
+		var err error
+		var status int
+		for retries < numMaxRetryCG {
+			coin, status, err = getCGCoinInfo(ID)
+			if err != nil {
+				if status == 429 {
+					time.Sleep(time.Duration(waitRetrySeconds) * time.Second)
+					log.Info("rate limitation: sleep")
+					retries++
+				} else {
+					log.Error("get coin info: ", err)
+					break
+				}
+			} else {
+				time.Sleep(1000 * time.Millisecond)
+				break
+			}
+		}
+		if coin.Address != "" && coin.Platform == "ethereum" {
+			supply := dia.Supply{
+				Asset: dia.Asset{
+					Address:    common.HexToAddress(coin.Address).Hex(),
+					Blockchain: dia.ETHEREUM,
+				},
+				Supply:            coin.MarketData.TotalSupply,
+				CirculatingSupply: coin.MarketData.CirculatingSupply,
+			}
+			supplies = append(supplies, supply)
+		}
+	}
+	return
+}
+
+func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
+	var resp []byte
+	resp, status, err = utils.GetRequest("https://api.coingecko.com/api/v3/coins/" + id)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(resp, &coin)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func getAllIDsCG() (IDs []string, err error) {
+	resp, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/list")
+	if err != nil {
+		return
+	}
+	var data []interface{}
+	err = json.Unmarshal(resp, &data)
+	if err != nil {
+		return
+	}
+	for _, item := range data {
+		token := item.(map[string]interface{})
+		IDs = append(IDs, token["id"].(string))
+	}
+	return
+}
+
 // GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
 func GetLockedWalletsFromConfig(filename string) (allAssetsMap map[string][]string, err error) {
 
