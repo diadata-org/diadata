@@ -246,6 +246,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	switch *filter {
+	case "ema":
+		{
+			filterPoints = queryhelper.FilterEMA(filterPoints, asset, int(blockSizeSeconds))
+		}
 
 	case "mair":
 		{
