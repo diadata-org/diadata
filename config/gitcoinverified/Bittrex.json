@@ -193,6 +193,18 @@
             "Address": "0xC86D054809623432210c107af2e3F619DcFbf652"
         },
         {
+            "Symbol": "USD",
+            "Exchange": "Bittrex",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
             "Symbol": "VEE",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",

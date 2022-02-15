@@ -1406,6 +1406,12 @@
     },
     {
       "Exchange": "Bittrex",
+      "ForeignName": "USDC-USD",
+      "Ignore": false,
+      "Symbol": "USDC"
+    },
+    {
+      "Exchange": "Bittrex",
       "ForeignName": "VEE-BTC",
       "Ignore": false,
       "Symbol": "VEE"
