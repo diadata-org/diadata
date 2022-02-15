@@ -122,7 +122,7 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 			// if res[0].Series[0].Values[i][3] != nil {
 			// 	filterpoint.Asset.Symbol = res[0].Series[0].Values[i][3].(string)
 			// }
-			if res[0].Series[0].Values[i][3] != nil {
+			if res[0].Series[0].Values[i][4] != nil {
 				filterpoint.Value, err = res[0].Series[0].Values[i][4].(json.Number).Float64()
 			} else {
 				log.Errorln("res[0].Series[0].Values[i][4]", res[0].Series[0].Values[i][4])
