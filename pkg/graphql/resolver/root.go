@@ -147,96 +147,103 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	log.Infoln("Asset Selected", asset)
+	var filterPoints []dia.FilterPoint
 
-	if blockShiftSeconds == 0 {
-		if endtime.After(time.Now()) {
-			endtime = time.Now()
-		}
-		maxStartTime := endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
+	if *filter != "ema" {
 
-		if starttime.Before(maxStartTime) {
-			starttime = maxStartTime
-		}
+		if blockShiftSeconds == 0 {
+			if endtime.After(time.Now()) {
+				endtime = time.Now()
+			}
+			maxStartTime := endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
 
-		trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
-		if err != nil {
-			return &sr, err
-		}
-		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
-	} else {
-		if endtime.After(time.Now()) {
-			endtime = time.Now()
-		}
-		totalTimeDiff := (blockSizeSeconds + (blockShiftSeconds * 999)) * int64(time.Second)
-		maxStartTime := endtime.Add(-time.Duration(totalTimeDiff))
+			if starttime.Before(maxStartTime) {
+				starttime = maxStartTime
+			}
 
-		if starttime.Before(maxStartTime) {
-			starttime = maxStartTime
-		}
-
-		var trades []dia.Trade
-		if blockShiftSeconds <= blockSizeSeconds {
-			trades, err = r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
+			trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
 			if err != nil {
 				return &sr, err
 			}
+			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
 		} else {
-			// In this case, fetch trades by time window and batch the Influx API requests.
+			if endtime.After(time.Now()) {
+				endtime = time.Now()
+			}
+			totalTimeDiff := (blockSizeSeconds + (blockShiftSeconds * 999)) * int64(time.Second)
+			maxStartTime := endtime.Add(-time.Duration(totalTimeDiff))
 
-			timeInit := starttime
-			timeFinal := endtime
-
-			// Make time windows for which trades from influx have to be fetched.
-			var startTimes, endTimes []time.Time
-			for timeFinal.After(timeInit) {
-				startTimes = append(startTimes, timeInit)
-				endTimes = append(endTimes, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
-				timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
+			if starttime.Before(maxStartTime) {
+				starttime = maxStartTime
 			}
 
-			// Determine number of batches.
-			var numBatches int
-			batchSize := int(r.InfluxBatchSize)
-			if len(startTimes) < int(r.InfluxBatchSize) {
-				numBatches = 1
-				batchSize = len(startTimes)
+			var trades []dia.Trade
+			if blockShiftSeconds <= blockSizeSeconds {
+				trades, err = r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
+				if err != nil {
+					return &sr, err
+				}
 			} else {
-				numBatches = len(startTimes) / int(r.InfluxBatchSize)
-			}
+				// In this case, fetch trades by time window and batch the Influx API requests.
 
-			// Iterate over batches.
-			for i := 0; i < numBatches; i++ {
-				var tradesBatch []dia.Trade
-				var err error
-				lowerIndex := i * batchSize
-				upperIndex := (i + 1) * batchSize
-				tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
-				if err != nil {
-					log.Error("fetch trades batch from influx: ", err)
+				timeInit := starttime
+				timeFinal := endtime
+
+				// Make time windows for which trades from influx have to be fetched.
+				var startTimes, endTimes []time.Time
+				for timeFinal.After(timeInit) {
+					startTimes = append(startTimes, timeInit)
+					endTimes = append(endTimes, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
+					timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
 				}
-				trades = append(trades, tradesBatch...)
-			}
-			// Add remaining trades if existent.
-			if len(startTimes)%int(r.InfluxBatchSize) > 0 {
-				var tradesBatch []dia.Trade
-				var err error
-				lowerIndex := numBatches * (batchSize)
-				upperIndex := len(startTimes)
-				tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
-				if err != nil {
-					log.Error("fetch trades batch from influx: ", err)
+
+				// Determine number of batches.
+				var numBatches int
+				batchSize := int(r.InfluxBatchSize)
+				if len(startTimes) < int(r.InfluxBatchSize) {
+					numBatches = 1
+					batchSize = len(startTimes)
+				} else {
+					numBatches = len(startTimes) / int(r.InfluxBatchSize)
 				}
-				trades = append(trades, tradesBatch...)
+
+				// Iterate over batches.
+				for i := 0; i < numBatches; i++ {
+					var tradesBatch []dia.Trade
+					var err error
+					lowerIndex := i * batchSize
+					upperIndex := (i + 1) * batchSize
+					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
+					if err != nil {
+						log.Error("fetch trades batch from influx: ", err)
+					}
+					trades = append(trades, tradesBatch...)
+				}
+				// Add remaining trades if existent.
+				if len(startTimes)%int(r.InfluxBatchSize) > 0 {
+					var tradesBatch []dia.Trade
+					var err error
+					lowerIndex := numBatches * (batchSize)
+					upperIndex := len(startTimes)
+					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
+					if err != nil {
+						log.Error("fetch trades batch from influx: ", err)
+					}
+					trades = append(trades, tradesBatch...)
+				}
+
 			}
+			log.Println("Generating blocks, Total Trades", len(trades))
+			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)
+			log.Println("Total TradeBlocks", len(tradeBlocks))
 
 		}
-		log.Println("Generating blocks, Total Trades", len(trades))
-		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)
-		log.Println("Total TradeBlocks", len(tradeBlocks))
-
+	} else if *filter == "ema" {
+		filterPoints, err = r.DS.GetFilter("mair120", "Binance", asset, "", starttime, endtime)
+		if err != nil {
+			log.Errorln("Error getting filter", err)
+		}
 	}
-
-	var filterPoints []dia.FilterPoint
 
 	switch *filter {
 

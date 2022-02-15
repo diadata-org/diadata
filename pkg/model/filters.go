@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -69,4 +70,67 @@ func (datastore *DB) GetFilterPoints(filter string, exchange string, symbol stri
 	return &Points{
 		DataPoints: res,
 	}, err
+}
+
+type FilterPoint struct {
+	Time     time.Time
+	Exchange string
+	Filter   string
+	Symbol   string
+	Value    float64
+}
+
+func (datastore *DB) GetFilter(filter string, exchange string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.FilterPoint, error) {
+	var allFilters []dia.FilterPoint
+	exchangeQuery := "and exchange='" + exchange + "' "
+	table := ""
+	//	5m 30m 1h 4h 1d 1w
+	if scale != "" {
+		if filter == "VOL120" {
+			table = "a_year.filters_sum_"
+		} else {
+			table = "a_year.filters_mean_"
+		}
+		table = table + scale
+	} else {
+		table = influxDbFiltersTable
+	}
+
+	q := fmt.Sprintf("SELECT time,exchange,filter,symbol,value FROM %s"+
+		" WHERE filter='%s' %sand address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
+		table, filter, exchangeQuery, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("GetFilterPoints", err)
+	}
+	log.Info("GetFilterPoints query: ", q, " returned ", len(res))
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			var filterpoint dia.FilterPoint
+			filterpoint.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return allFilters, err
+			}
+			// if res[0].Series[0].Values[i][1] != nil {
+			// 	filterpoint.Exchange = res[0].Series[0].Values[i][1].(string)
+			// }
+			if res[0].Series[0].Values[i][2] != nil {
+				filterpoint.Name = res[0].Series[0].Values[i][2].(string)
+			}
+			if res[0].Series[0].Values[i][3] != nil {
+				filterpoint.Asset.Symbol = res[0].Series[0].Values[i][3].(string)
+			}
+			filterpoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return allFilters, err
+			}
+			allFilters = append(allFilters, filterpoint)
+		}
+	} else {
+		return allFilters, errors.New("no filter points in time range")
+	}
+
+	return allFilters, err
 }
