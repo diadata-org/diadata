@@ -122,11 +122,24 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
 
-	log.Info("resultFilters for USDT on Ethereum: ", resultFilters)
+	for _, filter := range resultFilters {
+		if filter.Asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.Asset.Blockchain == "Ethereum" {
+			log.Info("resultFilters for USDT on Ethereum: ", filter)
+		}
+	}
 
 	resultFilters = addMissingPoints(s.previousBlockFilters, resultFilters)
 
-	log.Info("resultFilters for USDT on Ethereum after addMissingPoints: ", resultFilters)
+	log.Info("------------------------------------------------------------------------")
+	log.Info("------------------------------------------------------------------------")
+
+	for _, filter := range resultFilters {
+		if filter.Asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.Asset.Blockchain == "Ethereum" {
+			log.Info("resultFilters for USDT on Ethereum after addMissingPoints: ", filter)
+		}
+	}
+	log.Info("------------------------------------------------------------------------")
+	log.Info("------------------------------------------------------------------------")
 
 	s.previousBlockFilters = resultFilters
 
