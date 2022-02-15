@@ -361,9 +361,15 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 						t = &tSwapped
 					}
 				}
-				// Reverse almost all pairs ETH-XXX on Uniswap and Sushiswap
+				// Reverse almost all pairs ETH-XXX and USDT-XXX on Uniswap and Sushiswap
 				if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
 					if token0.Address == "0x0000000000000000000000000000000000000000" && !utils.Contains(&mainBaseAssets, token1.Address) {
+						tSwapped, err := dia.SwapTrade(*t)
+						if err == nil {
+							t = &tSwapped
+						}
+					}
+					if token0.Address == mainBaseAssets[0] {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
