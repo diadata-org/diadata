@@ -39,13 +39,7 @@ func GetETHSuppliesFromCG() (supplies []dia.Supply, err error) {
 	if err != nil {
 		return
 	}
-	for i, ID := range IDs {
-		if i < 2000 {
-			continue
-		} else if i > 2010 {
-			break
-		}
-
+	for _, ID := range IDs {
 		retries := 0
 		var coin CGCoin
 		var err error
