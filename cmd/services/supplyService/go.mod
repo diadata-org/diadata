@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/services/supplyService
 go 1.14
 
 require (
-	github.com/diadata-org/diadata v1.3.6-rc-62
+	github.com/diadata-org/diadata v1.3.6-rc-65
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/sirupsen/logrus v1.8.1
 )
