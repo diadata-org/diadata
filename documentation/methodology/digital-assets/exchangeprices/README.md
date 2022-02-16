@@ -30,9 +30,9 @@ Filters are calculated for each asset on each exchange individually, as well as 
 
 | Filter Name                                                    | Community Approval   |
 | -------------------------------------------------------------- | -------------------- |
-| [MA](ma-moving-average.md)                                     | Approval in Progress |
-| [MAIR](mair-moving-average-with-interquartile-range-filter.md) | Approval Outstanding |
-| [MEDIR](medir-median-with-interquartile-range-filter.md)       | Approval Outstanding |
+| [MA](ma-moving-average.md)                                     | Crowd-approved       |
+| [MAIR](mair-moving-average-with-interquartile-range-filter.md) | Crowd-approved       |
+| [MEDIR](medir-median-with-interquartile-range-filter.md)       | Crowd-approved       |
 | [VWAP](vwap-volume-weighted-average-price.md)                  | Approval Outstanding |
 
 ## Outliers and Market Manipulation
