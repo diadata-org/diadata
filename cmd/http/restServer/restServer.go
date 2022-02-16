@@ -120,7 +120,8 @@ func main() {
 			userID := loginVals.Username
 			password := loginVals.Password
 
-			if userID == config.ApiKey && password == config.SecretKey { // Temporary: only 1 valid key so far.
+			if userID == utils.Getenv("HTTP_BASIC_AUTH_USER", config.ApiKey) &&
+				password == utils.Getenv("HTTP_BASIC_AUTH_PASSWD", config.SecretKey) { // Temporary: only 1 valid key so far.
 				return &User{
 					UserName:  userID,
 					LastName:  "Bo-Yi",
