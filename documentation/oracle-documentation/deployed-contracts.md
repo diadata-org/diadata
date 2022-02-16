@@ -194,6 +194,16 @@ __
 {% endtab %}
 {% endtabs %}
 
+### Fuse
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                       | Oracle Tyle                                                                                                                           |
+| ------------------------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x61a5...320e](https://explorer.fuse.io/address/0x61a598Cd6340B8edcb4faE7Eabcd117Ff371320e) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
+
 ### Celo
 
 | Contract Name | Contract Address                                                                              |
