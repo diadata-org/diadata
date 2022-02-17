@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -110,6 +111,85 @@ type oldCryptoIndex struct {
 	Constituents      []oldCryptoIndexConstituent
 }
 
+// func pain() {
+
+// 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
+// 	timeInitString := utils.Getenv("TIME_INIT", "1608338769")
+// 	timeInitInt, err := strconv.ParseInt(timeInitString, 10, 64)
+// 	if err != nil {
+// 		log.Error("parse timeInit: ", err)
+// 	}
+// 	timeInit := time.Unix(timeInitInt, 0)
+
+// 	timeFinalString := utils.Getenv("TIME_FINAL", "1645093427")
+// 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
+// 	if err != nil {
+// 		log.Error("parse timeFinal: ", err)
+// 	}
+// 	timeFinal := time.Unix(timeFinalInt, 0)
+// 	log.Info("timeInit: ", timeInit)
+// 	log.Info("timeFinal: ", timeFinal)
+
+// 	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "30")
+// 	stepSize, err := strconv.ParseInt(stepSizeString, 10, 64)
+// 	if err != nil {
+// 		log.Error("parse timeFinal: ", err)
+// 	}
+
+// 	indexName := utils.Getenv("INDEX_NAME", "GBI")
+
+// 	ds, err := models.NewDataStore()
+// 	if err != nil {
+// 		log.Fatal("datastore: ", err)
+// 	}
+
+// 	rdb, err := models.NewRelDataStore()
+// 	if err != nil {
+// 		log.Fatal("relational datastore: ", err)
+// 	}
+
+// 	assetMap, err := getAssetMap(symbolsMap, rdb)
+// 	if err != nil {
+// 		log.Error("get asset map: ", err)
+// 	}
+
+// 	for timeFinal.After(timeInit) {
+// 		endTime := timeInit.Add(time.Duration(stepSize) * time.Minute)
+
+// 		// Fetch old index values.
+// 		log.Infof("fetch index values in time range %v -- %v ...", timeInit, endTime)
+// 		oldIndexVals, err := getOldIndexFromAPI(indexName, timeInit, endTime)
+// 		if err != nil {
+// 			log.Errorf("fetch index values in time range %v -- %v: %v", timeInit, endTime, err)
+// 		}
+// 		log.Infof("...fetch done. Found %d values.", len(oldIndexVals))
+
+// 		for i := range oldIndexVals {
+
+// 			// Fix GBI values.
+// 			if indexName == "GBI" {
+// 				log.Infof("amend GBI values for i=%d", i)
+// 				oldIndexVals[i] = amendGBI(oldIndexVals[i], assetMap, ds)
+// 			}
+
+// 			// Map old index to new index values.
+// 			newIndexVal := assignIndexVal(oldIndexVals[i], assetMap)
+
+// 			// Save new index values.
+// 			err = ds.SetCryptoIndex(&newIndexVal)
+// 			if err != nil {
+// 				log.Error("set crypto index: ", err)
+// 			}
+
+// 		}
+
+// 		timeInit = endTime
+// 	}
+// 	log.Info("...done copying.")
+// 	time.Sleep(24 * 60 * time.Minute)
+
+// }
+
 func main() {
 
 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
@@ -130,12 +210,18 @@ func main() {
 	log.Info("timeFinal: ", timeFinal)
 
 	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "30")
-	stepSizeInt, err := strconv.ParseInt(stepSizeString, 10, 64)
+	stepSize, err := strconv.ParseInt(stepSizeString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
 	}
 
-	indexName := utils.Getenv("INDEX_NAME", "GBI")
+	indexName := utils.Getenv("INDEX_NAME", "SCIFI")
+
+	numRangesString := utils.Getenv("NUM_RANGES", "12")
+	numRanges, err := strconv.Atoi(numRangesString)
+	if err != nil {
+		log.Error("parse num ranges: ", err)
+	}
 
 	ds, err := models.NewDataStore()
 	if err != nil {
@@ -152,8 +238,36 @@ func main() {
 		log.Error("get asset map: ", err)
 	}
 
+	a := timeInit
+	b := timeFinal
+	totalSize := b.Sub(a)
+	sizeRange := totalSize / time.Duration(numRanges)
+	starttimes := []time.Time{}
+	endtimes := []time.Time{}
+	starttime := timeInit
+	for k := 0; k < numRanges; k++ {
+		starttimes = append(starttimes, starttime)
+		endtimes = append(endtimes, starttime.Add(sizeRange))
+		starttime = starttime.Add(sizeRange)
+	}
+
+	var wg sync.WaitGroup
+	for i := 0; i < len(starttimes); i++ {
+
+		wg.Add(1)
+		go func(starttime, endtime time.Time, index int, w *sync.WaitGroup) {
+			defer w.Done()
+			processIndexVals(starttime, endtime, stepSize, indexName, assetMap, ds)
+		}(starttimes[i], endtimes[i], i, &wg)
+
+	}
+	wg.Wait()
+
+}
+
+func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexName string, assetMap map[string]dia.Asset, ds *models.DB) {
 	for timeFinal.After(timeInit) {
-		endTime := timeInit.Add(time.Duration(stepSizeInt) * time.Minute)
+		endTime := timeInit.Add(time.Duration(stepSize) * time.Minute)
 
 		// Fetch old index values.
 		log.Infof("fetch index values in time range %v -- %v ...", timeInit, endTime)
@@ -186,7 +300,6 @@ func main() {
 	}
 	log.Info("...done copying.")
 	time.Sleep(24 * 60 * time.Minute)
-
 }
 
 func amendGBI(oldIndex oldCryptoIndex, assetMap map[string]dia.Asset, ds *models.DB) (oldIndexUpdated oldCryptoIndex) {
