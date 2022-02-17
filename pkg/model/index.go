@@ -70,9 +70,9 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 	var retval []CryptoIndex
 	var q string
 	if maxResults > 0 {
-		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT %d", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name, maxResults)
+		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"name\" = '%s' ORDER BY time DESC LIMIT %d", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name, maxResults)
 	} else {
-		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"name\" = '%s' ORDER BY time DESC", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
