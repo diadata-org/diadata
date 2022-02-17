@@ -156,15 +156,18 @@ func main() {
 		endTime := timeInit.Add(time.Duration(stepSizeInt) * time.Minute)
 
 		// Fetch old index values.
+		log.Infof("fetch index values in time range %v -- %v ...", timeInit, endTime)
 		oldIndexVals, err := getOldIndexFromAPI(indexName, timeInit, endTime)
 		if err != nil {
 			log.Errorf("fetch index values in time range %v -- %v: %v", timeInit, endTime, err)
 		}
+		log.Infof("...fetch done. Found %d values.", len(oldIndexVals))
 
 		for i := range oldIndexVals {
 
 			// Fix GBI values.
 			if indexName == "GBI" {
+				log.Infof("amend GBI values for i=%d", i)
 				oldIndexVals[i] = amendGBI(oldIndexVals[i], assetMap, ds)
 			}
 
@@ -291,7 +294,7 @@ func getAssetMap(symbolsMap map[string]string, rdb *models.RelDB) (map[string]di
 		asset, err := rdb.GetAsset(symbolsMap[key], dia.ETHEREUM)
 		if err != nil {
 			log.Error("get asset: ", symbolsMap[key])
-			// return assetMap, err
+			return assetMap, err
 		}
 		assetMap[key] = asset
 	}
