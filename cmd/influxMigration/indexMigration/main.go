@@ -113,14 +113,14 @@ type oldCryptoIndex struct {
 func main() {
 
 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
-	timeInitString := utils.Getenv("TIME_INIT", "1629116997")
+	timeInitString := utils.Getenv("TIME_INIT", "1608338769")
 	timeInitInt, err := strconv.ParseInt(timeInitString, 10, 64)
 	if err != nil {
 		log.Error("parse timeInit: ", err)
 	}
 	timeInit := time.Unix(timeInitInt, 0)
 
-	timeFinalString := utils.Getenv("TIME_FINAL", "1631807179")
+	timeFinalString := utils.Getenv("TIME_FINAL", "1645093427")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -129,13 +129,13 @@ func main() {
 	log.Info("timeInit: ", timeInit)
 	log.Info("timeFinal: ", timeFinal)
 
-	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "720")
+	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "30")
 	stepSizeInt, err := strconv.ParseInt(stepSizeString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
 	}
 
-	indexName := utils.Getenv("INDEX_NAME", "SCIFI")
+	indexName := utils.Getenv("INDEX_NAME", "GBI")
 
 	ds, err := models.NewDataStore()
 	if err != nil {
@@ -276,7 +276,7 @@ func getOldIndexFromAPI(name string, timeInit, timeFinal time.Time) (indexVals [
 	var resp []byte
 	timeInitString := strconv.Itoa(int(timeInit.Unix()))
 	timeFinalString := strconv.Itoa(int(timeFinal.Unix()))
-	resp, _, err = utils.GetRequest("https://api.diadata.org/v1/index/" + name + "?starttime=" + timeInitString + "&endtime=" + timeFinalString)
+	resp, _, err = utils.GetRequest("https://api.diadata.org/v1/index/" + name + "?starttime=" + timeInitString + "&endtime=" + timeFinalString + "&maxResults=0")
 	if err != nil {
 		return
 	}
