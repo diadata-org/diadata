@@ -65,7 +65,7 @@ func (datastore *DB) GetLastPriceBefore(asset dia.Asset, filter string, exchange
 	// q := fmt.Sprintf("SELECT LAST(value) FROM %s WHERE filter='%s' AND symbol='%s' AND %s AND time < %d",
 	// 	table, filter, symbol, exchangeQuery, timestamp.UnixNano())
 
-	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND address='%s' AND blockchain='%s' AND %s AND time > %d ORDER BY ASC LIMIT 1",
+	q := fmt.Sprintf("SELECT value FROM %s WHERE filter='%s' AND address='%s' AND blockchain='%s' AND %s AND time<now() AND time > %d ORDER BY ASC LIMIT 1",
 		table, filter, asset.Address, asset.Blockchain, exchangeQuery, timestamp.UnixNano())
 
 	res, err := queryInfluxDB(datastore.influxClient, q)
