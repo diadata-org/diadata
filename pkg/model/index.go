@@ -261,24 +261,39 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 		currentConstituent := CryptoIndexConstituent{}
 		//TODO: Do we need time?
 		currentConstituent.Address = res[0].Series[0].Values[0][1].(string)
-		currentConstituent.CappingFactor, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][2] != nil {
+			currentConstituent.CappingFactor, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
-		currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][3] != nil {
+			currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
+
 		currentConstituent.Name = res[0].Series[0].Values[0][4].(string)
-		currentConstituent.Percentage, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][5] != nil {
+			currentConstituent.Percentage, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
-		currentConstituent.Price, err = res[0].Series[0].Values[0][6].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][6] != nil {
+			currentConstituent.Price, err = res[0].Series[0].Values[0][6].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
+
 		currentConstituent.Symbol = res[0].Series[0].Values[0][7].(string)
+
 		currentConstituent.Weight, err = res[0].Series[0].Values[0][8].(json.Number).Float64()
 		if err != nil {
 			return retval, err
