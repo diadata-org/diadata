@@ -2,8 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -14,6 +14,11 @@ import (
 /*const (
 	IndexNormalization = float64(9507172.247746756)
 )*/
+
+var (
+	CONSTITUENTS_SERIAL_SEPARATOR       = ","
+	CONSTITUENTS_SERIAL_ASSET_SEPARATOR = "-"
+)
 
 // CryptoIndex is the container for API endpoint CryptoIndex
 type CryptoIndex struct {
@@ -70,7 +75,7 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor,\"blockchain\" from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -160,19 +165,20 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name
 				return retval, err
 			}
 			constituentsSerial := res[0].Series[0].Values[i][1].(string)
-			blockchain := res[0].Series[0].Values[i][6].(string)
 
 			// Get constituents
 			var constituents []CryptoIndexConstituent
-			for _, constituentAddress := range strings.Split(constituentsSerial, ",") {
-				if constituentAddress == "" {
+			for _, constituent := range strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_SEPARATOR) {
+				if constituent == "" {
 					log.Info("Skipping empty Address")
 					continue
 				}
 				// Address and blockchain is sufficient information for constituent getter.
+				constituentAddress := strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[0]
+				constituentBlockchain := strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[1]
 				constituentAsset := dia.Asset{
 					Address:    constituentAddress,
-					Blockchain: blockchain,
+					Blockchain: constituentBlockchain,
 				}
 				curr, err := datastore.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
 				if err != nil {
@@ -193,9 +199,9 @@ func (datastore *DB) SetCryptoIndex(index *CryptoIndex) error {
 	constituentsSerial := ""
 	for _, c := range index.Constituents {
 		if constituentsSerial != "" {
-			constituentsSerial += ","
+			constituentsSerial += CONSTITUENTS_SERIAL_SEPARATOR
 		}
-		constituentsSerial += c.Asset.Address
+		constituentsSerial += c.Asset.Address + CONSTITUENTS_SERIAL_ASSET_SEPARATOR + c.Asset.Blockchain
 	}
 	fields := map[string]interface{}{
 		"price":        index.Price,
@@ -207,7 +213,6 @@ func (datastore *DB) SetCryptoIndex(index *CryptoIndex) error {
 		"symbol":     index.Asset.Symbol,
 		"name":       index.Asset.Name,
 		"address":    index.Asset.Address,
-		"decimals":   strconv.Itoa(int(index.Asset.Decimals)),
 		"blockchain": index.Asset.Blockchain,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexTable, tags, fields, index.CalculationTime)
@@ -232,6 +237,7 @@ func (datastore *DB) SetCryptoIndex(index *CryptoIndex) error {
 	return err
 }
 
+// GetCryptoIndexConstituentPrice returns the price of cryptoindexconstituent by @symbol. Not used at the moment.
 func (datastore *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
 	startdate := date.Add(-24 * time.Hour)
 	q := fmt.Sprintf("SELECT price from %s where time > %d and time <= %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, startdate.UnixNano(), date.UnixNano(), symbol)
@@ -255,7 +261,7 @@ func (datastore *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Tim
 func (datastore *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, asset dia.Asset, indexSymbol string) ([]CryptoIndexConstituent, error) {
 	//func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
-	queryString := "SELECT \"address\",cappingfactor,circulatingsupply,\"name\",percentage,price,\"symbol\",weight,numbasetokens,\"decimals\",\"blockchain\"" +
+	queryString := "SELECT \"address\",cappingfactor,circulatingsupply,\"name\",percentage,price,\"symbol\",weight,numbasetokens,\"blockchain\"" +
 		" from %s WHERE time > %d and time < %d and address = '%s' and blockchain = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1"
 	q := fmt.Sprintf(queryString, influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain, indexSymbol)
 	//q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
@@ -299,12 +305,7 @@ func (datastore *DB) GetCryptoIndexConstituents(starttime time.Time, endtime tim
 		} else {
 			currentConstituent.NumBaseTokens = 0
 		}
-		decimals, err := res[0].Series[0].Values[0][10].(json.Number).Int64()
-		if err != nil {
-			return retval, err
-		}
-		currentConstituent.Asset.Decimals = uint8(decimals)
-		currentConstituent.Asset.Blockchain = res[0].Series[0].Values[0][11].(string)
+		currentConstituent.Asset.Blockchain = res[0].Series[0].Values[0][10].(string)
 
 		// Get price yesterday
 		priceYesterday, err := datastore.GetLastPriceBefore(currentConstituent.Asset, "MAIR120", "", endtime.AddDate(0, 0, -1))
@@ -328,7 +329,6 @@ func (datastore *DB) GetCryptoIndexConstituents(starttime time.Time, endtime tim
 }
 
 func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset) error {
-	log.Error("Const ", constituent)
 	fields := map[string]interface{}{
 		"percentage":        constituent.Percentage,
 		"price":             constituent.Price,
@@ -341,7 +341,6 @@ func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstitue
 		"name":        constituent.Asset.Name,
 		"symbol":      constituent.Asset.Symbol,
 		"address":     constituent.Asset.Address,
-		"decimals":    strconv.Itoa(int(constituent.Asset.Decimals)),
 		"blockchain":  constituent.Asset.Blockchain,
 		"cryptoindex": index.Symbol,
 	}
@@ -364,11 +363,8 @@ func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstitue
 func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
 	if asset.Address != "" && asset.Blockchain != "" {
 		trade, err = datastore.GetTradeInflux(asset, "", time)
-		if err != nil {
-			return
-		}
 		return
 	}
-	// In case no address/blockchain is given, implement getPrice method for asset here.
+	err = errors.New("asset's address or blockchain missing")
 	return
 }

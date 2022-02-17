@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,7 +15,8 @@ var (
 )
 
 // Get supply and price information for the index constituents
-func GetIndexBasket(constituentsAddresses []string) ([]models.CryptoIndexConstituent, error) {
+func GetIndexBasket(assets []dia.Asset) ([]models.CryptoIndexConstituent, error) {
+
 	db, err := models.NewDataStore()
 	if err != nil {
 		log.Error("Error connecting to datastore")
@@ -28,8 +30,8 @@ func GetIndexBasket(constituentsAddresses []string) ([]models.CryptoIndexConstit
 
 	var constituents []models.CryptoIndexConstituent
 	// fetch Ethereum assets by address
-	for _, address := range constituentsAddresses {
-		asset, err := relDB.GetAsset(address, "Ethereum")
+	for _, assetStripped := range assets {
+		asset, err := relDB.GetAsset(assetStripped.Address, assetStripped.Blockchain)
 		if err != nil {
 			log.Error("error fetching asset from asset table")
 			return nil, err

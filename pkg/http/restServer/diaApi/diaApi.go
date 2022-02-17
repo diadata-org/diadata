@@ -1356,7 +1356,8 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 	}
 }
 
-// PostIndexRebalance Post data must now be a slice of (EThereum-)addresses
+// PostIndexRebalance Post data must be of the type [][]string.
+// Each entry of the 2-d slice corresponds to an asset and has the format [Blockchain, Address].
 func (env *Env) PostIndexRebalance(c *gin.Context) {
 	indexSymbol := c.Param("symbol")
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -1364,14 +1365,23 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
 		return
 	}
-	var constituentsAddresses []string
-	err = json.Unmarshal(body, &constituentsAddresses)
+	var assetlist [][]string
+	var assets []dia.Asset
+	err = json.Unmarshal(body, &assetlist)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
+	// Cast assetlist to []dia.Asset
+	for _, asset := range assetlist {
+		assets = append(assets, dia.Asset{
+			Blockchain: asset[0],
+			Address:    asset[1],
+		})
+	}
+
 	// Get constituents information
-	constituents, err := indexCalculationService.GetIndexBasket(constituentsAddresses)
+	constituents, err := indexCalculationService.GetIndexBasket(assets)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)

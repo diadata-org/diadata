@@ -163,6 +163,11 @@ func main() {
 
 		for i := range oldIndexVals {
 
+			// Fix GBI values.
+			if indexName == "GBI" {
+				oldIndexVals[i] = amendGBI(oldIndexVals[i], assetMap, ds)
+			}
+
 			// Map old index to new index values.
 			newIndexVal := assignIndexVal(oldIndexVals[i], assetMap)
 
@@ -179,6 +184,34 @@ func main() {
 	log.Info("...done copying.")
 	time.Sleep(24 * 60 * time.Minute)
 
+}
+
+func amendGBI(oldIndex oldCryptoIndex, assetMap map[string]dia.Asset, ds *models.DB) (oldIndexUpdated oldCryptoIndex) {
+	// 1. look for wrong numBaseTokens in SPICE
+	// 2. Correct numBaseTokens
+	// 3. Fetch correct price for SPICE
+	// 4. Calculate Index (numBaseTokens, price)
+	for i := range oldIndex.Constituents {
+		if oldIndex.Constituents[i].Symbol == "SPICE" {
+			if oldIndex.Constituents[i].NumBaseTokens > float64(1390505109261745600) {
+				oldIndex.Constituents[i].NumBaseTokens = float64(102974575097533460)
+				newPrice, err := ds.GetLastPriceBefore(assetMap["SPICE"], "MAIR120", "", oldIndex.CalculationTime)
+				if err != nil {
+					log.Error("fetch price for SPICE: ", err)
+				}
+				oldIndex.Constituents[i].Price = newPrice.Price
+			}
+		}
+	}
+
+	oldIndex.Value = GetOldIndexValue("GBI", oldIndex.Constituents)
+
+	for i := range oldIndex.Constituents {
+		currPercentage := (oldIndex.Constituents[i].Price * oldIndex.Constituents[i].NumBaseTokens * 1e-16) / oldIndex.Value //1e-16 because index value is 100 at start
+		oldIndex.Constituents[i].Percentage = currPercentage
+	}
+
+	return
 }
 
 // assignIndexVal assigns a crypto index in the new format to a crypto index in the old format.
@@ -218,6 +251,21 @@ func assignConstituent(oldConstituent oldCryptoIndexConstituent, assetMap map[st
 	newConstituent.CappingFactor = oldConstituent.CappingFactor
 	newConstituent.NumBaseTokens = oldConstituent.NumBaseTokens
 	return
+}
+
+func GetOldIndexValue(indexSymbol string, currentConstituents []oldCryptoIndexConstituent) float64 {
+	indexValue := 0.0
+	if indexSymbol == "SCIFI" {
+		for _, constituent := range currentConstituents {
+			indexValue += constituent.Price * constituent.CirculatingSupply * constituent.CappingFactor
+		}
+	} else {
+		// GBI etc
+		for _, constituent := range currentConstituents {
+			indexValue += constituent.Price * constituent.NumBaseTokens * 1e-16 //1e-16 because index value is 100 at start
+		}
+	}
+	return indexValue
 }
 
 // getOldIndexFromAPI returns index values from api.diadata in the given time range.
