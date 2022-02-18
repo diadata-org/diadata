@@ -282,7 +282,6 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexName s
 
 			// Fix GBI values.
 			if indexName == "GBI" {
-				log.Infof("amend GBI values for i=%d", i)
 				oldIndexVals[i] = amendGBI(oldIndexVals[i], assetMap, ds)
 			}
 
@@ -304,7 +303,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexName s
 	time.Sleep(24 * 60 * time.Minute)
 }
 
-func amendGBI(oldIndex oldCryptoIndex, assetMap map[string]dia.Asset, ds *models.DB) (oldIndexUpdated oldCryptoIndex) {
+func amendGBI(oldIndex oldCryptoIndex, assetMap map[string]dia.Asset, ds *models.DB) oldCryptoIndex {
 	// 1. look for wrong numBaseTokens in SPICE
 	// 2. Correct numBaseTokens
 	// 3. Fetch correct price for SPICE
@@ -329,7 +328,7 @@ func amendGBI(oldIndex oldCryptoIndex, assetMap map[string]dia.Asset, ds *models
 		oldIndex.Constituents[i].Percentage = currPercentage
 	}
 
-	return
+	return oldIndex
 }
 
 // assignIndexVal assigns a crypto index in the new format to a crypto index in the old format.
