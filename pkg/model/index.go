@@ -75,7 +75,7 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -229,7 +229,7 @@ func (datastore *DB) SetCryptoIndex(index *CryptoIndex) error {
 	}
 
 	for i := range index.Constituents {
-		err = datastore.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset)
+		err = datastore.SetCryptoIndexConstituent(&index.Constituents[i], index.Asset, index.CalculationTime)
 		if err != nil {
 			return err
 		}
@@ -328,7 +328,7 @@ func (datastore *DB) GetCryptoIndexConstituents(starttime time.Time, endtime tim
 	return retval, nil
 }
 
-func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset) error {
+func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, index dia.Asset, timestamp time.Time) error {
 	fields := map[string]interface{}{
 		"percentage":        constituent.Percentage,
 		"price":             constituent.Price,
@@ -344,7 +344,7 @@ func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstitue
 		"blockchain":  constituent.Asset.Blockchain,
 		"cryptoindex": index.Symbol,
 	}
-	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())
+	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, timestamp)
 	if err != nil {
 		log.Error("Adding Crypto Index Constituent point to Influx batch: ", err)
 		return err
