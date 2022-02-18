@@ -192,6 +192,18 @@ type oldCryptoIndex struct {
 
 func main() {
 
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("datastore: ", err)
+	}
+
+	rdb, err := models.NewRelDataStore()
+	if err != nil {
+		log.Fatal("relational datastore: ", err)
+	}
+
+	indexName := utils.Getenv("INDEX_NAME", "SCIFI")
+
 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
 	timeInitString := utils.Getenv("TIME_INIT", "1608338769")
 	timeInitInt, err := strconv.ParseInt(timeInitString, 10, 64)
@@ -209,46 +221,41 @@ func main() {
 	log.Info("timeInit: ", timeInit)
 	log.Info("timeFinal: ", timeFinal)
 
-	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "30")
-	stepSize, err := strconv.ParseInt(stepSizeString, 10, 64)
-	if err != nil {
-		log.Error("parse timeFinal: ", err)
-	}
-
-	indexName := utils.Getenv("INDEX_NAME", "SCIFI")
-
 	numRangesString := utils.Getenv("NUM_RANGES", "12")
 	numRanges, err := strconv.Atoi(numRangesString)
 	if err != nil {
 		log.Error("parse num ranges: ", err)
 	}
 
-	ds, err := models.NewDataStore()
-	if err != nil {
-		log.Fatal("datastore: ", err)
+	starttimes, endtimes := makeTimeRanges(timeInit, timeFinal, numRanges)
+
+	// Make new starttimes if necessary
+	for i := range starttimes {
+		initIndex, err := ds.GetCryptoIndex(starttimes[i], endtimes[i], indexName)
+		if err != nil {
+			log.Error("get crypto index: ", err)
+		}
+		if len(initIndex) > 0 {
+			// Last recorded timestamp in respective time-range.
+			newInitStarttime := initIndex[0].CalculationTime
+			// Add respective time advancement to starttime.
+			starttimes[i] = starttimes[i].Add(newInitStarttime.Sub(starttimes[i]))
+		}
 	}
 
-	rdb, err := models.NewRelDataStore()
+	for i := 0; i < len(starttimes); i++ {
+		log.Infof("time-range: [%v, %v].", starttimes[i], endtimes[i])
+	}
+
+	stepSizeString := utils.Getenv("STEP_SIZE_MINUTES", "10")
+	stepSize, err := strconv.ParseInt(stepSizeString, 10, 64)
 	if err != nil {
-		log.Fatal("relational datastore: ", err)
+		log.Error("parse timeFinal: ", err)
 	}
 
 	assetMap, err := getAssetMap(symbolsMap, rdb)
 	if err != nil {
 		log.Error("get asset map: ", err)
-	}
-
-	a := timeInit
-	b := timeFinal
-	totalSize := b.Sub(a)
-	sizeRange := totalSize / time.Duration(numRanges)
-	starttimes := []time.Time{}
-	endtimes := []time.Time{}
-	starttime := timeInit
-	for k := 0; k < numRanges; k++ {
-		starttimes = append(starttimes, starttime)
-		endtimes = append(endtimes, starttime.Add(sizeRange))
-		starttime = starttime.Add(sizeRange)
 	}
 
 	var wg sync.WaitGroup
@@ -264,6 +271,21 @@ func main() {
 
 	wg.Wait()
 
+}
+
+// makeTimeRanges returns @numRanges start- and endtimes partitioning [@timeInit, @timeFinal] in intervals of identical size.
+func makeTimeRanges(timeInit, timeFinal time.Time, numRanges int) (starttimes, endtimes []time.Time) {
+	a := timeInit
+	b := timeFinal
+	totalSize := b.Sub(a)
+	sizeRange := totalSize / time.Duration(numRanges)
+	starttime := timeInit
+	for k := 0; k < numRanges; k++ {
+		starttimes = append(starttimes, starttime)
+		endtimes = append(endtimes, starttime.Add(sizeRange))
+		starttime = starttime.Add(sizeRange)
+	}
+	return
 }
 
 func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexName string, assetMap map[string]dia.Asset, ds *models.DB) {
