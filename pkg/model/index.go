@@ -72,10 +72,31 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+// GetCryptoIndexTime returns the latest recorded timestamp in the range [@starttime, @endtime].
+func (datastore *DB) GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error) {
+	var timestamp time.Time
+	q := fmt.Sprintf("SELECT value FROM %s WHERE time > %d AND time <= %d AND symbol = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return timestamp, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		// Calculation time
+		timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+		if err != nil {
+			return timestamp, err
+		}
+	} else {
+		return timestamp, errors.New("no index in given time-range")
+	}
+	return timestamp, nil
+}
+
 func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"symbol\" = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err

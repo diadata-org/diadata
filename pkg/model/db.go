@@ -134,10 +134,11 @@ type Datastore interface {
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
 	// Crypto Index methods
+	GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error)
 	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
 	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset) error
+	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
 	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
@@ -1105,10 +1106,10 @@ func (datastore *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endti
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' and \"blockchain\"='%s' ORDER BY time DESC LIMIT 1"
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' AND \"blockchain\"='%s' AND time<now() ORDER BY time DESC LIMIT 1"
 		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain)
 	} else {
-		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d and time < %d and \"address\" = '%s' and \"blockchain\"='%s'"
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d AND time < %d AND \"address\" = '%s' AND \"blockchain\"='%s'"
 		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain)
 	}
 	res, err := queryInfluxDB(datastore.influxClient, q)
