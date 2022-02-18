@@ -255,12 +255,13 @@ func main() {
 	for i := 0; i < len(starttimes); i++ {
 
 		wg.Add(1)
-		go func(starttime, endtime time.Time, index int, w *sync.WaitGroup) {
+		go func(starttime, endtime time.Time, step int64, name string, aMap map[string]dia.Asset, datastore *models.DB, w *sync.WaitGroup) {
 			defer w.Done()
-			processIndexVals(starttime, endtime, stepSize, indexName, assetMap, ds)
-		}(starttimes[i], endtimes[i], i, &wg)
+			processIndexVals(starttime, endtime, step, name, aMap, datastore)
+		}(starttimes[i], endtimes[i], stepSize, indexName, assetMap, ds, &wg)
 
 	}
+
 	wg.Wait()
 
 }
@@ -293,6 +294,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexName s
 			if err != nil {
 				log.Error("set crypto index: ", err)
 			}
+			log.Infof("successfully set index %s at time %v with value %v.", newIndexVal.Asset.Symbol, newIndexVal.CalculationTime, newIndexVal.Value)
 
 		}
 
