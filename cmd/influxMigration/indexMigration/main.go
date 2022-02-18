@@ -227,19 +227,26 @@ func main() {
 		log.Error("parse num ranges: ", err)
 	}
 
+	log.Infof("make %d time-ranges..", numRanges)
 	starttimes, endtimes := makeTimeRanges(timeInit, timeFinal, numRanges)
+	log.Info("..done making time-ranges.")
 
 	// Make new starttimes if necessary
 	for i := range starttimes {
+		log.Infof("get latest index from time-range %d..", i)
 		initIndex, err := ds.GetCryptoIndex(starttimes[i], endtimes[i], indexName)
 		if err != nil {
 			log.Error("get crypto index: ", err)
 		}
+		log.Infof("..get latest index done.")
 		if len(initIndex) > 0 {
 			// Last recorded timestamp in respective time-range.
 			newInitStarttime := initIndex[0].CalculationTime
 			// Add respective time advancement to starttime.
 			starttimes[i] = starttimes[i].Add(newInitStarttime.Sub(starttimes[i]))
+			log.Infof("new starttime for time-range %d: %v", i, starttimes[i])
+		} else {
+			log.Infof("take old starttime for time-range %d: %v", i, starttimes[i])
 		}
 	}
 
