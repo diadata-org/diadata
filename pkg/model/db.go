@@ -141,6 +141,9 @@ type Datastore interface {
 	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
 	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
+	GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent
+	IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex
+
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
 	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)
 	// Token methods
@@ -1119,9 +1122,11 @@ func (datastore *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endti
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			currentSupply := dia.Supply{Asset: asset}
-			currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
+			if res[0].Series[0].Values[i][0] != nil {
+				currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+				if err != nil {
+					return retval, err
+				}
 			}
 			currentSupply.Supply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
@@ -1131,17 +1136,23 @@ func (datastore *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endti
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.Source = res[0].Series[0].Values[i][3].(string)
-			if err != nil {
-				return retval, err
+			if res[0].Series[0].Values[i][3] != nil {
+				currentSupply.Source = res[0].Series[0].Values[i][3].(string)
+				if err != nil {
+					return retval, err
+				}
 			}
-			currentSupply.Asset.Name = res[0].Series[0].Values[i][4].(string)
-			if err != nil {
-				log.Error("error getting symbol name from influx: ", err)
+			if res[0].Series[0].Values[i][4] != nil {
+				currentSupply.Asset.Name = res[0].Series[0].Values[i][4].(string)
+				if err != nil {
+					log.Error("error getting symbol name from influx: ", err)
+				}
 			}
-			currentSupply.Asset.Symbol = res[0].Series[0].Values[i][5].(string)
-			if err != nil {
-				log.Error("error getting symbol name from influx: ", err)
+			if res[0].Series[0].Values[i][5] != nil {
+				currentSupply.Asset.Symbol = res[0].Series[0].Values[i][5].(string)
+				if err != nil {
+					log.Error("error getting symbol name from influx: ", err)
+				}
 			}
 			retval = append(retval, currentSupply)
 		}

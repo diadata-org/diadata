@@ -93,10 +93,10 @@ func (datastore *DB) GetCryptoIndexTime(starttime, endtime time.Time, symbol str
 	return timestamp, nil
 }
 
-func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
+func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
 	// TO DO: Query constituents address and blockchain in order to query prices below
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"symbol\" = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	q := fmt.Sprintf("SELECT constituents,symbol,price,value,divisor from %s WHERE time > %d and time <= %d and \"symbol\" = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -106,7 +106,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			// Get index fields
 			currentIndex := CryptoIndex{}
-			currentIndex.Asset.Name = res[0].Series[0].Values[i][2].(string)
+			currentIndex.Asset.Symbol = res[0].Series[0].Values[i][2].(string)
 			// Divisor and Value
 			divisor := 9507172.247746756
 			// Check if divisor exists in DB, otherwise use the default value
@@ -171,14 +171,13 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name
 			} else {
 				currentIndex.Price30d = price30d.EstimatedUSDPrice
 			}
-			// TODO: Volume
 			// Circulating supply
-			diaSupply, err := datastore.GetLatestSupply(currentIndex.Asset.Name)
-			if err != nil {
+			diaSupply, err := datastore.GetSupplyInflux(currentIndex.Asset, time.Time{}, time.Time{})
+			if err != nil || len(diaSupply) < 1 {
 				log.Error(err)
 				currentIndex.CirculatingSupply = 0
 			} else {
-				currentIndex.CirculatingSupply = diaSupply.CirculatingSupply
+				currentIndex.CirculatingSupply = diaSupply[0].CirculatingSupply
 			}
 			// Calculation time
 			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
@@ -186,7 +185,6 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name
 				return retval, err
 			}
 			constituentsSerial := res[0].Series[0].Values[i][1].(string)
-
 			// Get constituents
 			var constituents []CryptoIndexConstituent
 			for _, constituent := range strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_SEPARATOR) {
@@ -195,13 +193,13 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name
 					continue
 				}
 				// Address and blockchain is sufficient information for constituent getter.
-				constituentAddress := strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[0]
-				constituentBlockchain := strings.Split(constituentsSerial, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[1]
+				constituentAddress := strings.Split(constituent, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[0]
+				constituentBlockchain := strings.Split(constituent, CONSTITUENTS_SERIAL_ASSET_SEPARATOR)[1]
 				constituentAsset := dia.Asset{
 					Address:    constituentAddress,
 					Blockchain: constituentBlockchain,
 				}
-				curr, err := datastore.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, name)
+				curr, err := datastore.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, symbol)
 				if err != nil {
 					return retval, err
 				}
@@ -388,4 +386,56 @@ func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.
 	}
 	err = errors.New("asset's address or blockchain missing")
 	return
+}
+
+func (datastore *DB) GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent {
+	var constituents []CryptoIndexConstituent
+	cryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), index.Symbol)
+	if err != nil {
+		log.Error("get crypto index: ", err)
+		return constituents
+	}
+	for _, constituent := range cryptoIndex[0].Constituents {
+		curr, err := datastore.GetCryptoIndexConstituents(time.Now().Add(-5*time.Hour), time.Now(), constituent.Asset, index.Symbol)
+		if err != nil {
+			log.Error("get crypto index constituents: ", err)
+			return constituents
+		}
+		if len(curr) > 0 {
+			constituents = append(constituents, curr[0])
+		}
+	}
+	return constituents
+}
+
+func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex {
+
+	var price float64
+	tradeObject, err := datastore.GetIndexPrice(indexAsset, time.Now())
+	if err == nil {
+		// Quotation does exist
+		price = tradeObject.EstimatedUSDPrice
+	}
+	var circSupply float64
+	supplyObject, err := datastore.GetSupplyInflux(indexAsset, time.Time{}, time.Time{})
+	if err == nil && len(supplyObject) > 0 {
+		// Supply does exist
+		circSupply = supplyObject[0].CirculatingSupply
+	}
+
+	currCryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), indexAsset.Symbol)
+	if err != nil {
+		log.Error(err)
+	}
+	index := CryptoIndex{
+		Asset:             indexAsset,
+		Price:             price,
+		CirculatingSupply: circSupply,
+		Value:             indexValue,
+		CalculationTime:   time.Now(),
+		Constituents:      currentConstituents,
+		Divisor:           currCryptoIndex[0].Divisor,
+	}
+	log.Info("Index: ", index)
+	return index
 }
