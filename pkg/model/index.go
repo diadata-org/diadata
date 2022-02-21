@@ -384,11 +384,12 @@ func (datastore *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstitue
 	return err
 }
 
-// GetIndexPrice returns the price of index represented by @asset.
+// GetIndexPrice returns the last price of index represented by @asset with respect to the
+// time-range [time-window, time].
 // If @asset only consists of a symbol, a different method for price retrieval has to be implemented.
-func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.Trade, err error) {
+func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time, window time.Duration) (trade *dia.Trade, err error) {
 	if asset.Address != "" && asset.Blockchain != "" {
-		trade, err = datastore.GetTradeInflux(asset, "", time)
+		trade, err = datastore.GetTradeInflux(asset, "", time, window)
 		return
 	}
 	err = errors.New("asset's address or blockchain missing")
@@ -419,7 +420,7 @@ func (datastore *DB) GetCurrentIndexCompositionForIndex(index dia.Asset) []Crypt
 func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex {
 
 	var price float64
-	tradeObject, err := datastore.GetIndexPrice(indexAsset, time.Now())
+	tradeObject, err := datastore.GetIndexPrice(indexAsset, time.Now(), time.Duration(5*time.Hour))
 	if err == nil {
 		// Quotation does exist
 		price = tradeObject.EstimatedUSDPrice

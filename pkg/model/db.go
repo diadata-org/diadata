@@ -42,7 +42,7 @@ type Datastore interface {
 	GetFirstTradeDate(table string) (time.Time, error)
 	SaveTradeInflux(t *dia.Trade) error
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
-	GetTradeInflux(dia.Asset, string, time.Time) (*dia.Trade, error)
+	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
@@ -140,7 +140,7 @@ type Datastore interface {
 	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
 	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
-	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
+	GetIndexPrice(asset dia.Asset, time time.Time, window time.Duration) (*dia.Trade, error)
 	GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent
 	IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex
 	UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error
@@ -506,16 +506,17 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	return err
 }
 
-// GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp.
-func (datastore *DB) GetTradeInflux(asset dia.Asset, exchange string, timestamp time.Time) (*dia.Trade, error) {
+// GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp in the time-range [endtime-window, endtime].
+func (datastore *DB) GetTradeInflux(asset dia.Asset, exchange string, endtime time.Time, window time.Duration) (*dia.Trade, error) {
+	starttime := endtime.Add(-window)
 	retval := dia.Trade{}
 	var q string
 	if exchange != "" {
-		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and echange='%s' and time < %d order by desc limit 1"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, exchange, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND exchange='%s' AND time >= %d AND time < %d ORDER BY DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, exchange, starttime.UnixNano(), endtime.UnixNano())
 	} else {
-		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' and time < %d order by desc limit 1"
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND and time >= %d AND time < %d ORDER BY DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 	}
 
 	/// TODO
