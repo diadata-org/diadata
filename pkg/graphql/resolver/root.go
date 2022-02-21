@@ -114,6 +114,8 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	symbol := *args.Symbol.Value
 	starttime := args.StartTime.Value.Time
 	endtime := args.EndTime.Value.Time
+	starttimeimmutable := args.StartTime.Value.Time
+	endtimeimmutable := args.EndTime.Value.Time
 	exchanges := args.Exchanges
 	var exchangesString []string
 	if exchanges != nil {
@@ -239,7 +241,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 		}
 	} else if *filter == "ema" {
-		filterPoints, err = r.DS.GetFilter("MA120", asset, "", starttime, endtime)
+		filterPoints, err = r.DS.GetFilter("MA120", asset, "", starttimeimmutable, endtimeimmutable)
 		if err != nil {
 			log.Errorln("Error getting filter", err)
 		}
