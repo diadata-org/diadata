@@ -95,8 +95,8 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 		table = influxDbFiltersTable
 	}
 
-	q := fmt.Sprintf("SELECT time,exchange,filter,symbol,value FROM %s"+
-		" WHERE filter='%s' and address='%s' and blockchain='%s' and time>%d and time<%d ORDER BY DESC",
+	q := fmt.Sprintf("SELECT last(*) FROM %s"+
+		" WHERE filter='%s' and address='%s' and blockchain='%s' and time>%d and time<%d and allExchanges=true group by time(1d) ORDER BY DESC",
 		table, filter, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 
 	res, err := queryInfluxDB(datastore.influxClient, q)
@@ -116,14 +116,14 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 			// if res[0].Series[0].Values[i][1] != nil {
 			// 	filterpoint.Exchange = res[0].Series[0].Values[i][1].(string)
 			// }
-			if res[0].Series[0].Values[i][2] != nil {
-				filterpoint.Name = res[0].Series[0].Values[i][2].(string)
-			}
+			// if res[0].Series[0].Values[i][2] != nil {
+			// 	filterpoint.Name = res[0].Series[0].Values[i][2].(string)
+			// }
 			// if res[0].Series[0].Values[i][3] != nil {
 			// 	filterpoint.Asset.Symbol = res[0].Series[0].Values[i][3].(string)
 			// }
-			if res[0].Series[0].Values[i][4] != nil {
-				filterpoint.Value, err = res[0].Series[0].Values[i][4].(json.Number).Float64()
+			if res[0].Series[0].Values[i][2] != nil {
+				filterpoint.Value, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			} else {
 				log.Errorln("res[0].Series[0].Values[i][4]", res[0].Series[0].Values[i][4])
 			}
