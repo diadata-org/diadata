@@ -35,7 +35,7 @@ func main() {
 			Blockchain: dia.ETHEREUM,
 		},
 	}
-	indexTicker := time.NewTicker(300 * time.Second)
+	indexTicker := time.NewTicker(120 * time.Second)
 	go func() {
 		for range indexTicker.C {
 			for _, index := range indexAssets {
