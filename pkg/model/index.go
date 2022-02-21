@@ -132,6 +132,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 			} else {
 				currentIndex.Price = currentPrice
 			}
+			log.Infof("get trade price 1h for %s..", currentIndex.Asset.Symbol)
 			price1h, err := datastore.GetTradePrice1h(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 1h: ", err)
@@ -140,6 +141,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 				currentIndex.Price1h = price1h.EstimatedUSDPrice
 			}
 
+			log.Infof("get trade price 24h for %s..", currentIndex.Asset.Symbol)
 			price24h, err := datastore.GetTradePrice24h(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 24h: ", err)
@@ -148,6 +150,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 				currentIndex.Price24h = price24h.EstimatedUSDPrice
 			}
 
+			log.Infof("get trade price 7d for %s..", currentIndex.Asset.Symbol)
 			price7d, err := datastore.GetTradePrice7d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 7d: ", err)
@@ -156,6 +159,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 				currentIndex.Price7d = price7d.EstimatedUSDPrice
 			}
 
+			log.Infof("get trade price 14d for %s..", currentIndex.Asset.Symbol)
 			price14d, err := datastore.GetTradePrice14d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 14d: ", err)
@@ -164,6 +168,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 				currentIndex.Price14d = price14d.EstimatedUSDPrice
 			}
 
+			log.Infof("get trade price 30d for %s..", currentIndex.Asset.Symbol)
 			price30d, err := datastore.GetTradePrice30d(currentIndex.Asset, "")
 			if err != nil {
 				log.Error("error index price 30d: ", err)
@@ -172,6 +177,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 				currentIndex.Price30d = price30d.EstimatedUSDPrice
 			}
 			// Circulating supply
+			log.Infof("get supply for %s..", currentIndex.Asset.Symbol)
 			diaSupply, err := datastore.GetSupplyInflux(currentIndex.Asset, time.Time{}, time.Time{})
 			if err != nil || len(diaSupply) < 1 {
 				log.Error(err)
@@ -199,6 +205,7 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 					Address:    constituentAddress,
 					Blockchain: constituentBlockchain,
 				}
+				log.Infof("get constituent asset %s..", constituentAsset.Symbol)
 				curr, err := datastore.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentAsset, symbol)
 				if err != nil {
 					return retval, err
@@ -390,6 +397,7 @@ func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time) (trade *dia.
 
 func (datastore *DB) GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent {
 	var constituents []CryptoIndexConstituent
+	log.Infof("get crypto index %s from influx..", index.Symbol)
 	cryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), index.Symbol)
 	if err != nil {
 		log.Error("get crypto index: ", err)

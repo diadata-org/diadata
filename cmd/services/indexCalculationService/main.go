@@ -41,6 +41,7 @@ func main() {
 			for _, index := range indexAssets {
 
 				// Get current constituents.
+				log.Infof("get current index composition for %s...", index.Symbol)
 				currentConstituents := ds.GetCurrentIndexCompositionForIndex(index)
 				log.Info(currentConstituents)
 
