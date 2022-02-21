@@ -143,6 +143,7 @@ type Datastore interface {
 	GetIndexPrice(asset dia.Asset, time time.Time) (*dia.Trade, error)
 	GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent
 	IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex
+	UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error
 
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
 	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)

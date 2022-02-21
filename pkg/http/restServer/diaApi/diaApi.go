@@ -1410,7 +1410,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	if indexSymbol == "SCIFI" {
 		// Determine new divisor
 		currIndexRawValue := currIndex[0].Value * currIndex[0].Divisor
-		newIndexRawValue = indexCalculationService.GetIndexValue(indexSymbol, constituents)
+		newIndexRawValue = models.GetIndexValue(indexSymbol, constituents)
 		newDivisor = (newIndexRawValue * currIndex[0].Divisor) / currIndexRawValue
 		newIndexValue = newIndexRawValue / newDivisor
 	} else {

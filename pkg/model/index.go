@@ -439,3 +439,52 @@ func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexCons
 	log.Info("Index: ", index)
 	return index
 }
+
+func (datastore *DB) UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error {
+
+	for i, c := range *currentConstituents {
+		currSupply, err := datastore.GetSupplyInflux(c.Asset, time.Time{}, time.Time{})
+		if err != nil {
+			log.Error("Error when retrieveing supply for ", c.Asset.Symbol)
+			return err
+		}
+		currLastTrade, err := datastore.GetLastTrades(c.Asset, "", 1, false)
+		if err != nil {
+			log.Error("Error when retrieveing last trades for ", c.Asset.Symbol)
+			return err
+		}
+		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice
+		(*currentConstituents)[i].CirculatingSupply = currSupply[0].CirculatingSupply
+	}
+
+	// Calculate current percentages: 1. get index value 2. Determine percentage of each asset
+	currIndexValue := GetIndexValue(index, *currentConstituents)
+	if index == "SCIFI" {
+		for i := range *currentConstituents {
+			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].CirculatingSupply * (*currentConstituents)[i].CappingFactor) / currIndexValue
+			(*currentConstituents)[i].Percentage = currPercentage
+		}
+	} else {
+		// GBI
+		for i := range *currentConstituents {
+			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].NumBaseTokens * 1e-16) / currIndexValue //1e-16 because index value is 100 at start
+			(*currentConstituents)[i].Percentage = currPercentage
+		}
+	}
+	return nil
+}
+
+func GetIndexValue(indexSymbol string, currentConstituents []CryptoIndexConstituent) float64 {
+	indexValue := 0.0
+	if indexSymbol == "SCIFI" {
+		for _, constituent := range currentConstituents {
+			indexValue += constituent.Price * constituent.CirculatingSupply * constituent.CappingFactor
+		}
+	} else {
+		// GBI etc
+		for _, constituent := range currentConstituents {
+			indexValue += constituent.Price * constituent.NumBaseTokens * 1e-16 //1e-16 because index value is 100 at start
+		}
+	}
+	return indexValue
+}

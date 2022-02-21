@@ -3,7 +3,6 @@ package main
 import (
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
@@ -46,11 +45,11 @@ func main() {
 				log.Info(currentConstituents)
 
 				// Compute new index.
-				err := indexCalculationService.UpdateConstituentsMarketData(index.Symbol, &currentConstituents)
+				err := ds.UpdateConstituentsMarketData(index.Symbol, &currentConstituents)
 				if err != nil {
 					log.Error(err)
 				}
-				indexValue := indexCalculationService.GetIndexValue(index.Symbol, currentConstituents)
+				indexValue := models.GetIndexValue(index.Symbol, currentConstituents)
 				index := ds.IndexValueCalculation(currentConstituents, index, indexValue)
 
 				// Save index.
