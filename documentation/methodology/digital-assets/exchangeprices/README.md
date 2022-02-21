@@ -28,12 +28,13 @@ Depending on the use case, other filters can be useful as well. DIA includes fil
 
 Filters are calculated for each asset on each exchange individually, as well as for each asset on all exchanges combined. This combined filter result represents the result closest to the true "whole market" that can be determined by this system.
 
-| Filter Name                                                    | Community Approval   |
-| -------------------------------------------------------------- | -------------------- |
-| [MA](ma-moving-average.md)                                     | Crowd-approved       |
-| [MAIR](mair-moving-average-with-interquartile-range-filter.md) | Crowd-approved       |
-| [MEDIR](medir-median-with-interquartile-range-filter.md)       | Crowd-approved       |
-| [VWAP](vwap-volume-weighted-average-price.md)                  | Approval Outstanding |
+| Filter Name                                                                       | Community Approval   |
+| --------------------------------------------------------------------------------- | -------------------- |
+| [MA](ma-moving-average.md)                                                        | Crowd-approved       |
+| [MAIR](mair-moving-average-with-interquartile-range-filter.md)                    | Crowd-approved       |
+| [MEDIR](medir-median-with-interquartile-range-filter.md)                          | Crowd-approved       |
+| [VWAP](vwap-volume-weighted-average-price.md)                                     | Crowd-approved       |
+| [VWAPIR](vwapir-volume-weighted-average-price-with-interquartile-range-filter.md) | Approval Outstanding |
 
 ## Outliers and Market Manipulation
 
