@@ -125,7 +125,7 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 			if res[0].Series[0].Values[i][2] != nil {
 				filterpoint.Value, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			} else {
-				log.Errorln("res[0].Series[0].Values[i][4]", res[0].Series[0].Values[i][4])
+				log.Errorln("res[0].Series[0].Values[i][2]", res[0].Series[0].Values[i][2])
 			}
 			if err != nil {
 				return allFilters, err
