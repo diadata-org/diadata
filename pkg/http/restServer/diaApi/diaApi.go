@@ -22,6 +22,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var DECIMALS_CACHE = make(map[dia.Asset]uint8)
+
 type Env struct {
 	DataStore models.Datastore
 	RelDB     models.RelDB
@@ -1197,6 +1199,17 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
+	maxResultsString := c.Query("maxResults")
+	var maxResults int
+	var err error
+	if maxResultsString != "" {
+		maxResults, err = strconv.Atoi(maxResultsString)
+		if err != nil {
+			log.Error("parse maxResults: ", err)
+		}
+	} else {
+		maxResults = 1
+	}
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -1237,12 +1250,36 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol)
+	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol, maxResults)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
+
+	// Fetch decimals from local cache implementation.
+	for i := range q {
+		q[i].Asset.Decimals = env.getDecimalsFromCache(DECIMALS_CACHE, q[i].Asset)
+		for j := range q[i].Constituents {
+			q[i].Constituents[j].Asset.Decimals = env.getDecimalsFromCache(DECIMALS_CACHE, q[i].Constituents[j].Asset)
+		}
+	}
+
 	c.JSON(http.StatusOK, q)
+}
+
+// getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
+// Postgres, in which latter case it also adds the decimals to the local cache.
+// Remember that maps are always passed by reference.
+func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.Asset) uint8 {
+	if decimals, ok := localCache[asset]; ok {
+		return decimals
+	}
+	fullAsset, err := env.RelDB.GetAsset(asset.Address, asset.Blockchain)
+	if err != nil {
+		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", asset.Address, asset.Blockchain)
+	}
+	localCache[asset] = fullAsset.Decimals
+	return fullAsset.Decimals
 }
 
 // GetBenchmarkedIndexValue Get benchmarked Index values
@@ -1397,7 +1434,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol, 1)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
