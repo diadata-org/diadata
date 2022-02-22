@@ -57,6 +57,8 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 		s.fill(trade.Time, *s.lastTrade)
 	}
 	s.fill(trade.Time, trade)
+	log.Println("FilterEMA compute: filled order ", s.currentTime, trade)
+
 	s.lastTrade = &trade
 }
 
