@@ -180,15 +180,16 @@ func (s *UniswapV3Scraper) mainLoop() {
 						Source:         s.exchangeName,
 						VerifiedPair:   true,
 					}
-					// If we need quotation of a base token, reverse pair
-					if utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()) {
+
+					switch {
+					case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
+						// If we need quotation of a base token, reverse pair
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
 						}
-					}
-					// If we need quotation of a base token, reverse pair
-					if utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()) {
+					case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
+						// If we need quotation of a base token, reverse pair
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped

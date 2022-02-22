@@ -347,22 +347,22 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 					Source:         s.exchangeName,
 					VerifiedPair:   true,
 				}
-				// If we need quotation of a base token, reverse pair
-				if utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()) {
+
+				switch {
+				case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
+					// If we need quotation of a base token, reverse pair
 					tSwapped, err := dia.SwapTrade(*t)
 					if err == nil {
 						t = &tSwapped
 					}
-				}
-				// If we don't need quotation of quote token, reverse pair.
-				if utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()) {
+				case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
+					// If we don't need quotation of quote token, reverse pair.
 					tSwapped, err := dia.SwapTrade(*t)
 					if err == nil {
 						t = &tSwapped
 					}
-				}
-				// Reverse almost all pairs ETH-XXX and USDT-XXX on Uniswap and Sushiswap
-				if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
+				case s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange:
+					// Reverse almost all pairs ETH-XXX and USDT-XXX on Uniswap and Sushiswap
 					if token0.Address == "0x0000000000000000000000000000000000000000" && !utils.Contains(&mainBaseAssets, token1.Address) {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
@@ -375,8 +375,8 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 							t = &tSwapped
 						}
 					}
-				}
 
+				}
 				if price > 0 {
 					log.Info("tx hash: ", swap.ID)
 					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
