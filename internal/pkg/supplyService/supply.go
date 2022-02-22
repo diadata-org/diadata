@@ -85,6 +85,10 @@ func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
 	if err != nil {
 		return
 	}
+	if id == "ethereum" {
+		coin.Address = "0x0000000000000000000000000000000000000000"
+		coin.Platform = "ethereum"
+	}
 	return
 }
 
