@@ -35,7 +35,7 @@ func main() {
 			Blockchain: dia.ETHEREUM,
 		},
 	}
-	indexTicker := time.NewTicker(120 * time.Second)
+	indexTicker := time.NewTicker(300 * time.Second)
 	go func() {
 		for range indexTicker.C {
 			for _, index := range indexAssets {
@@ -43,7 +43,7 @@ func main() {
 				// Get current constituents.
 				log.Infof("get current index composition for %s...", index.Symbol)
 				currentConstituents := ds.GetCurrentIndexCompositionForIndex(index)
-				log.Info(currentConstituents)
+				log.Info("current composition: ", currentConstituents)
 
 				// Compute new index.
 				err := ds.UpdateConstituentsMarketData(index.Symbol, &currentConstituents)

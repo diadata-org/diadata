@@ -40,23 +40,23 @@ func (datastore *DB) GetTradePriceBefore(asset dia.Asset, exchange string, times
 }
 
 func (datastore *DB) GetTradePrice1h(asset dia.Asset, exchange string) (*dia.Trade, error) {
-	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-1*time.Hour), time.Duration(4*time.Hour))
+	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-1*time.Hour), time.Duration(1*time.Hour))
 }
 
 func (datastore *DB) GetTradePrice24h(asset dia.Asset, exchange string) (*dia.Trade, error) {
-	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-24*time.Hour), time.Duration(7*24*time.Hour))
+	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-24*time.Hour), time.Duration(12*time.Hour))
 }
 
 func (datastore *DB) GetTradePrice7d(asset dia.Asset, exchange string) (*dia.Trade, error) {
-	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-7*24*time.Hour), time.Duration(14*24*time.Hour))
+	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-7*24*time.Hour), time.Duration(12*time.Hour))
 }
 
 func (datastore *DB) GetTradePrice14d(asset dia.Asset, exchange string) (*dia.Trade, error) {
-	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-14*24*time.Hour), time.Duration(28*24*time.Hour))
+	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-14*24*time.Hour), time.Duration(12*time.Hour))
 }
 
 func (datastore *DB) GetTradePrice30d(asset dia.Asset, exchange string) (*dia.Trade, error) {
-	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-30*24*time.Hour), time.Duration(60*24*time.Hour))
+	return datastore.GetTradePriceBefore(asset, exchange, time.Now().Add(-30*24*time.Hour), time.Duration(12*time.Hour))
 }
 
 func (datastore *DB) GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error) {

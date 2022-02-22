@@ -420,7 +420,7 @@ func (datastore *DB) GetCurrentIndexCompositionForIndex(index dia.Asset) []Crypt
 func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex {
 
 	var price float64
-	tradeObject, err := datastore.GetIndexPrice(indexAsset, time.Now(), time.Duration(5*time.Hour))
+	tradeObject, err := datastore.GetIndexPrice(indexAsset, time.Now(), time.Duration(7*24*time.Hour))
 	if err == nil {
 		// Quotation does exist
 		price = tradeObject.EstimatedUSDPrice
