@@ -178,7 +178,7 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 			log.Println("index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
 
 		} else {
-			log.Println("Compute index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
+			log.Println("Compute index%5  %v  points %v ", index%5, point.Value)
 			maFilter.Compute(point)
 		}
 	}
