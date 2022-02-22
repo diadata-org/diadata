@@ -66,9 +66,14 @@ func (e *CryptoIndex) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string) ([]CryptoIndex, error) {
+func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string, maxResults int) ([]CryptoIndex, error) {
 	var retval []CryptoIndex
-	q := fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time < %d and \"name\" = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	var q string
+	if maxResults > 0 {
+		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"name\" = '%s' ORDER BY time DESC LIMIT %d", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name, maxResults)
+	} else {
+		q = fmt.Sprintf("SELECT constituents,\"name\",price,value,divisor from %s WHERE time > %d and time <= %d and \"name\" = '%s' ORDER BY time DESC", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), name)
+	}
 	res, err := queryInfluxDB(db.influxClient, q)
 	if err != nil {
 		return retval, err
@@ -166,7 +171,7 @@ func (db *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, name string
 					log.Info("Skipping empty Symbol")
 					continue
 				}
-				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24 * time.Hour), endtime, constituentSymbol, name)
+				curr, err := db.GetCryptoIndexConstituents(currentIndex.CalculationTime.Add(-24*time.Hour), endtime, constituentSymbol, name)
 				if err != nil {
 					return retval, err
 				}
@@ -236,10 +241,16 @@ func (db *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (flo
 }
 
 func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string, indexSymbol string) ([]CryptoIndexConstituent, error) {
-//func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
+	//func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time, symbol string) ([]CryptoIndexConstituent, error) {
 	var retval []CryptoIndexConstituent
+	var q string
+	// Before creation time of GBI, the cryptoindex field was empty as only SCIFI existed.
+	if time.Unix(0, 1612967347877612670).After(endtime) {
+		q = fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	} else {
+		q = fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol, indexSymbol)
+	}
 
-	q := fmt.Sprintf("SELECT address,cappingfactor,circulatingsupply,\"name\",percentage,price,symbol,weight,numbasetokens from %s WHERE time > %d and time < %d and symbol = '%s' and cryptoindex = '%s' ORDER BY time DESC LIMIT 1", influxDbCryptoIndexConstituentsTable, starttime.UnixNano(), endtime.UnixNano(), symbol, indexSymbol)
 	res, err := queryInfluxDB(db.influxClient, q)
 
 	if err != nil {
@@ -250,24 +261,39 @@ func (db *DB) GetCryptoIndexConstituents(starttime time.Time, endtime time.Time,
 		currentConstituent := CryptoIndexConstituent{}
 		//TODO: Do we need time?
 		currentConstituent.Address = res[0].Series[0].Values[0][1].(string)
-		currentConstituent.CappingFactor, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][2] != nil {
+			currentConstituent.CappingFactor, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
-		currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][3] != nil {
+			currentConstituent.CirculatingSupply, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
+
 		currentConstituent.Name = res[0].Series[0].Values[0][4].(string)
-		currentConstituent.Percentage, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][5] != nil {
+			currentConstituent.Percentage, err = res[0].Series[0].Values[0][5].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
-		currentConstituent.Price, err = res[0].Series[0].Values[0][6].(json.Number).Float64()
-		if err != nil {
-			return retval, err
+
+		if res[0].Series[0].Values[0][6] != nil {
+			currentConstituent.Price, err = res[0].Series[0].Values[0][6].(json.Number).Float64()
+			if err != nil {
+				return retval, err
+			}
 		}
+
 		currentConstituent.Symbol = res[0].Series[0].Values[0][7].(string)
+
 		currentConstituent.Weight, err = res[0].Series[0].Values[0][8].(json.Number).Float64()
 		if err != nil {
 			return retval, err
@@ -312,9 +338,9 @@ func (db *DB) SetCryptoIndexConstituent(constituent *CryptoIndexConstituent, ind
 		"numbasetokens":     constituent.NumBaseTokens,
 	}
 	tags := map[string]string{
-		"name":    constituent.Name,
-		"symbol":  constituent.Symbol,
-		"address": constituent.Address,
+		"name":        constituent.Name,
+		"symbol":      constituent.Symbol,
+		"address":     constituent.Address,
 		"cryptoindex": indexSymbol,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbCryptoIndexConstituentsTable, tags, fields, time.Now())

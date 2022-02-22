@@ -1,5 +1,5 @@
 ---
-description: This page contains information about the VWAP pricing methodology
+description: This page contains information about the VWAP pricing methodology.
 ---
 
 # VWAP: Volume Weighted Average Price

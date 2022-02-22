@@ -1249,6 +1249,17 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
+	maxResultsString := c.Query("maxResults")
+	var maxResults int
+	var err error
+	if maxResultsString != "" {
+		maxResults, err = strconv.Atoi(maxResultsString)
+		if err != nil {
+			log.Error("parse maxResults: ", err)
+		}
+	} else {
+		maxResults = 1
+	}
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -1289,7 +1300,7 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol)
+	q, err := env.DataStore.GetCryptoIndex(starttime, endtime, symbol, maxResults)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
@@ -1356,7 +1367,7 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Get old index
-	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol)
+	currIndex, err := env.DataStore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexSymbol, 1)
 	if err != nil {
 		log.Error(err)
 		restApi.SendError(c, http.StatusInternalServerError, err)
