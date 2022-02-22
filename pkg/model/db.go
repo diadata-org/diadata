@@ -515,7 +515,7 @@ func (datastore *DB) GetTradeInflux(asset dia.Asset, exchange string, endtime ti
 		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND exchange='%s' AND time >= %d AND time < %d ORDER BY DESC LIMIT 1"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, exchange, starttime.UnixNano(), endtime.UnixNano())
 	} else {
-		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND and time >= %d AND time < %d ORDER BY DESC LIMIT 1"
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND time >= %d AND time < %d ORDER BY DESC LIMIT 1"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 	}
 
