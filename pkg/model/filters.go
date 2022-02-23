@@ -109,6 +109,8 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 
 			var filterpoint dia.FilterPoint
+			var lastFP dia.FilterPoint
+
 			filterpoint.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
 				return allFilters, err
@@ -124,13 +126,14 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 			// }
 			if res[0].Series[0].Values[i][2] != nil {
 				filterpoint.Value, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+				lastFP = filterpoint
 			} else {
 				log.Errorln("res[0].Series[0].Values[i][2]", res[0].Series[0].Values[i][2])
 			}
 			if err != nil {
 				return allFilters, err
 			}
-			allFilters = append(allFilters, filterpoint)
+			allFilters = append(allFilters, lastFP)
 		}
 	} else {
 		return allFilters, errors.New("no filter points in time range")
