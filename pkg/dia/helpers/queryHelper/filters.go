@@ -167,8 +167,8 @@ func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoi
 }
 
 func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+	emaFilter := filters.NewFilterEMA(asset, "", points[0].Time, blockSize)
 	for index, point := range points {
-		emaFilter := filters.NewFilterEMA(asset, "", point.Time, blockSize)
 		if index%5 == 0 {
 			emaFilter.FinalCompute(point.Time)
 			fp := emaFilter.FilterPointForBlock()
