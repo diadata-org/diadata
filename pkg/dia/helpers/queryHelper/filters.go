@@ -168,18 +168,20 @@ func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoi
 
 func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
 	for index, point := range points {
-		maFilter := filters.NewFilterEMA(asset, "", time.Unix(point.Time.UnixNano()/1e9, 10), blockSize)
+		emaFilter := filters.NewFilterEMA(asset, "", time.Unix(point.Time.UnixNano()/1e9, 10), blockSize)
 		if index%5 == 0 {
-			maFilter.FinalCompute(time.Unix(point.Time.UnixNano()/1e9, 0))
-			fp := maFilter.FilterPointForBlock()
+			emaFilter.FinalCompute(time.Unix(point.Time.UnixNano()/1e9, 0))
+			fp := emaFilter.FilterPointForBlock()
 			if fp != nil {
 				filterPoints = append(filterPoints, *fp)
+				log.Println("append index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
+
 			}
 			log.Println("index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
 
 		} else {
 			log.Println("Compute index%5  %v  points %v ", index%5, point.Value)
-			maFilter.Compute(point)
+			emaFilter.Compute(point)
 		}
 	}
 	return filterPoints

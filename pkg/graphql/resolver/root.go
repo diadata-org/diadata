@@ -149,7 +149,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	log.Infoln("Asset Selected", asset)
-	var filterPoints []dia.FilterPoint
+	var filterPoints, emaFilterPoints []dia.FilterPoint
 
 	if *filter != "ema" {
 
@@ -241,7 +241,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 		}
 	} else if *filter == "ema" {
-		filterPoints, err = r.DS.GetFilter("MA120", asset, "", starttimeimmutable, endtimeimmutable)
+		emaFilterPoints, err = r.DS.GetFilter("MA120", asset, "", starttimeimmutable, endtimeimmutable)
 		if err != nil {
 			log.Errorln("Error getting filter", err)
 		}
@@ -250,7 +250,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	switch *filter {
 	case "ema":
 		{
-			filterPoints = queryhelper.FilterEMA(filterPoints, asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
 		}
 
 	case "mair":
