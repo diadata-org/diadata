@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "GLMR",
+            "Exchange": "GateIO",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ABT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

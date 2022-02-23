@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "GLMR",
+            "Exchange": "Binance",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BUSD",
             "Exchange": "Binance",
             "Blockchain": "BinanceSmartChain",

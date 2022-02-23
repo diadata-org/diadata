@@ -241,6 +241,12 @@
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
+            "Symbol": "GLMR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GMB",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

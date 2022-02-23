@@ -440,6 +440,13 @@
       "Decimals": 18,
       "Blockchain": "Shiden",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "GLMR",
+      "Name": "Moonbeam",
+      "Decimals": 18,
+      "Blockchain": "Moonbeam",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }
