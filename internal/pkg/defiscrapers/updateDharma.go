@@ -58,6 +58,9 @@ func fetchDHARMAMarkets() (dharmaRate DHARMAMArket, err error) {
 	}
 	jsonValue, _ := json.Marshal(jsonData)
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/0age/dharma-dai-subgraph", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		return DHARMAMArket{}, err
+	}
 	err = json.Unmarshal(jsondata, &dharmaRate)
 	log.Println(dharmaRate)
 	return

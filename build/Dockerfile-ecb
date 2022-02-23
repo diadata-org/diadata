@@ -1,16 +1,13 @@
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/exchange-scrapers/ecb
-
+COPY ./cmd/exchange-scrapers/ecb ./
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/ecb /bin/ecb
-COPY --from=build /go/src/github.com/diadata-org/diadata/config/ /config/
+COPY --from=build /config/ /config/
 
 CMD ["ecb"]

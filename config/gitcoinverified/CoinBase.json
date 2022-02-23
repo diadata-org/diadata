@@ -1,0 +1,34 @@
+{
+    "Tokens": [  
+        {
+            "Symbol": "USD",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "GBP",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
+            "Symbol": "GTC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        }
+    ]
+}

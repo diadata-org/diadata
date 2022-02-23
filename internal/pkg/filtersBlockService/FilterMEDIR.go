@@ -1,18 +1,19 @@
-// FilterMEDIR implements a trimmed median. Outliers are eliminated using interquartile range
-// see: https://en.wikipedia.org/wiki/Interquartile_range
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
-// FilterMEDIR contains the configuration parameters of the filter
+// FilterMEDIR contains the configuration parameters of the filter.
+// It implements a trimmed median. Outliers are eliminated using interquartile range
+// see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMEDIR struct {
-	symbol         string
+	asset          dia.Asset
 	exchange       string
 	currentTime    time.Time
 	previousPrices []float64
@@ -24,9 +25,9 @@ type FilterMEDIR struct {
 }
 
 //NewFilterMEDIR creates a FilterMEDIR
-func NewFilterMEDIR(symbol string, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
+func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
 	s := &FilterMEDIR{
-		symbol:         symbol,
+		asset:          asset,
 		exchange:       exchange,
 		previousPrices: []float64{},
 		currentTime:    currentTime,
@@ -34,34 +35,6 @@ func NewFilterMEDIR(symbol string, exchange string, currentTime time.Time, memor
 		filterName:     "MEDIR" + strconv.Itoa(memory),
 	}
 	return s
-}
-
-func (s *FilterMEDIR) processDataPoint(price float64) {
-	/// first remove extra value from buffer if already full
-	if len(s.previousPrices) >= s.memory {
-		s.previousPrices = s.previousPrices[0 : s.memory-1]
-	}
-	s.previousPrices = append([]float64{price}, s.previousPrices...)
-}
-func (s *FilterMEDIR) finalCompute(t time.Time) float64 {
-	if s.lastTrade == nil {
-		return 0.0
-	}
-	cleanPrices := removeOutliers(s.previousPrices)
-	s.value = computeMedian(cleanPrices)
-	s.previousPrices = []float64{}
-	return s.value
-}
-func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" || s.filterName != dia.FilterKing {
-		return nil
-	}
-	return &dia.FilterPoint{
-		Symbol: s.symbol,
-		Value:  s.value,
-		Name:   s.filterName,
-		Time:   s.currentTime,
-	}
 }
 
 func (s *FilterMEDIR) compute(trade dia.Trade) {
@@ -72,17 +45,62 @@ func (s *FilterMEDIR) compute(trade dia.Trade) {
 			return
 		}
 	}
-	s.processDataPoint(trade.EstimatedUSDPrice)
+	s.processDataPoint(trade)
 	s.currentTime = trade.Time
 	s.lastTrade = &trade
 }
 
+func (s *FilterMEDIR) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+func (s *FilterMEDIR) FinalCompute(t time.Time) {
+	s.finalCompute(t)
+}
+
+func (s *FilterMEDIR) processDataPoint(trade dia.Trade) {
+	/// first remove extra value from buffer if already full
+	if len(s.previousPrices) >= s.memory {
+		s.previousPrices = s.previousPrices[0 : s.memory-1]
+	}
+	s.previousPrices = append([]float64{trade.EstimatedUSDPrice}, s.previousPrices...)
+}
+
+func (s *FilterMEDIR) finalCompute(t time.Time) float64 {
+	if s.lastTrade == nil {
+		return 0.0
+	}
+	cleanPrices, _ := removeOutliers(s.previousPrices)
+	s.value = computeMedian(cleanPrices)
+	s.previousPrices = []float64{}
+	return s.value
+}
+
+func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
+	if s.exchange != "" || s.filterName != dia.FilterKing {
+		return nil
+	}
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
+	}
+}
+
+func (s *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
+	return &dia.FilterPoint{
+		Asset: s.asset,
+		Value: s.value,
+		Name:  s.filterName,
+		Time:  s.currentTime,
+	}
+}
 func (s *FilterMEDIR) save(ds models.Datastore) error {
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.symbol, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
 		if err != nil {
-			log.Errorln("FilterMAIR: Error:", err)
+			log.Errorln("FilterMEDIR: Error:", err)
 		}
 		return err
 	} else {

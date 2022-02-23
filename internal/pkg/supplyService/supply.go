@@ -18,27 +18,123 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
-func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
+var (
+	numMaxRetryCG    = 4
+	waitRetrySeconds = 60
+)
 
-	var fileName string
+type CGCoin struct {
+	Address    string       `json:"contract_address"`
+	MarketData CGMarketData `json:"market_data"`
+	Platform   string       `json:"asset_platform_id"`
+}
+
+type CGMarketData struct {
+	TotalSupply       float64 `json:"total_supply"`
+	CirculatingSupply float64 `json:"circulating_supply"`
+}
+
+func GetETHSuppliesFromCG() (supplies []dia.Supply, err error) {
+	IDs, err := getAllIDsCG()
+	if err != nil {
+		return
+	}
+	for _, ID := range IDs {
+		retries := 0
+		var coin CGCoin
+		var err error
+		var status int
+		for retries < numMaxRetryCG {
+			coin, status, err = getCGCoinInfo(ID)
+			if err != nil {
+				if status == 429 {
+					time.Sleep(time.Duration(waitRetrySeconds) * time.Second)
+					log.Info("rate limitation: sleep")
+					retries++
+				} else {
+					log.Error("get coin info: ", err)
+					break
+				}
+			} else {
+				time.Sleep(1000 * time.Millisecond)
+				break
+			}
+		}
+		if coin.Address != "" && coin.Platform == "ethereum" {
+			supply := dia.Supply{
+				Asset: dia.Asset{
+					Address:    common.HexToAddress(coin.Address).Hex(),
+					Blockchain: dia.ETHEREUM,
+				},
+				Supply:            coin.MarketData.TotalSupply,
+				CirculatingSupply: coin.MarketData.CirculatingSupply,
+			}
+			supplies = append(supplies, supply)
+		}
+	}
+	return
+}
+
+func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
+	var resp []byte
+	resp, status, err = utils.GetRequest("https://api.coingecko.com/api/v3/coins/" + id)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(resp, &coin)
+	if err != nil {
+		return
+	}
+	if id == "ethereum" {
+		coin.Address = "0x0000000000000000000000000000000000000000"
+		coin.Platform = "ethereum"
+	}
+	return
+}
+
+func getAllIDsCG() (IDs []string, err error) {
+	resp, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/list")
+	if err != nil {
+		return
+	}
+	var data []interface{}
+	err = json.Unmarshal(resp, &data)
+	if err != nil {
+		return
+	}
+	for _, item := range data {
+		token := item.(map[string]interface{})
+		IDs = append(IDs, token["id"].(string))
+	}
+	return
+}
+
+// GetLockedWalletsFromConfig returns a map which maps an asset to the list of its locked wallets
+func GetLockedWalletsFromConfig(filename string) (allAssetsMap map[string][]string, err error) {
+
+	var jsonFile *os.File
+
 	executionMode := os.Getenv("EXEC_MODE")
 	if executionMode == "production" {
-		fileName = fmt.Sprintf("/config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("/config/token_supply/%s.json", filename))
 	} else {
-		fileName = fmt.Sprintf("../../../config/token_supply/%s.json", filename)
+		jsonFile, err = os.Open(fmt.Sprintf("../../../config/token_supply/%s.json", filename))
 	}
-	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		log.Errorln("Error opening file", err)
-		return map[string][]string{}, err
+		return
 	}
-	defer jsonFile.Close()
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	byteData, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		log.Error(err)
-		return map[string][]string{}, err
+		return
 	}
 
 	type lockedAsset struct {
@@ -49,10 +145,13 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		AllAssets []lockedAsset `json:"lockedWallets"`
 	}
 	var allAssets lockedAssetList
-	json.Unmarshal(byteData, &allAssets)
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return
+	}
+
 	// make map[string][]string from allAssets. This accounts for erroneous addition of new entry
 	// for already existing asset in config file.
-	allAssetsMap := make(map[string][]string)
 	var diff []string
 	for _, asset := range allAssets.AllAssets {
 		if _, ok := allAssetsMap[asset.Address]; !ok {
@@ -63,7 +162,7 @@ func GetLockedWalletsFromConfig(filename string) (map[string][]string, error) {
 		}
 	}
 
-	return allAssetsMap, nil
+	return
 }
 
 // GetWalletBalance returns balance of token with address @tokenAddr in wallet with address @walletAddr
@@ -81,7 +180,7 @@ func GetWalletBalance(walletAddr string, tokenAddr string, c *ethclient.Client) 
 
 	walletBal, err := instance.BalanceOf(&bind.CallOpts{}, common.HexToAddress(walletAddr))
 	if err != nil {
-		log.Errorf("Failed to retrieve token owner balance from wallet %s: %v \n", walletAddr, err)
+		log.Errorf("failed to retrieve token owner balance from wallet %s: %v \n", walletAddr, err)
 		return
 	}
 
@@ -127,7 +226,8 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 	// Subtract locked wallets' balances from total supply for circulating supply
 	circulatingSupply := totalSupp
 	for _, walletAddress := range lockedWallets {
-		balance, err := GetWalletBalance(walletAddress, tokenAddress, client)
+		var balance float64
+		balance, err = GetWalletBalance(walletAddress, tokenAddress, client)
 		if err != nil {
 			log.Errorf("error getting wallet balance for wallet %s \n", walletAddress)
 		}
@@ -138,10 +238,15 @@ func GetTotalSupplyfromMainNet(tokenAddress string, lockedWallets []string, clie
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	asset := dia.Asset{
+		Symbol:     symbol,
+		Name:       name,
+		Decimals:   decimals,
+		Address:    common.HexToAddress(tokenAddress).Hex(),
+		Blockchain: dia.ETHEREUM,
+	}
 	supply = dia.Supply{
-		Symbol:            symbol,
-		Name:              name,
+		Asset:             asset,
 		Supply:            totalSupp,
 		CirculatingSupply: circulatingSupply,
 		Source:            "diadata.org",

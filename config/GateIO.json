@@ -2,15 +2,45 @@
   "Coins": [
     {
       "Exchange": "GateIO",
-      "ForeignName": "FTM_USDT",
+      "ForeignName": "GLMR_USDT",
       "Ignore": false,
-      "Symbol": "FTM"
+      "Symbol": "GLMR"
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "DOWS_USDT",
+      "ForeignName": "SDN_USDT",
       "Ignore": false,
-      "Symbol": "DOWS"
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ASTR_USDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ASTR_BTC",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ASTR_ETH",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SPA_USDT",
+      "Ignore": false,
+      "Symbol": "SPA"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GHST_USDT",
+      "Ignore": false,
+      "Symbol": "GHST"
     },
     {
       "Exchange": "GateIO",
@@ -20,9 +50,21 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "SDN_USDT",
+      "ForeignName": "FTM_USDT",
       "Ignore": false,
-      "Symbol": "SDN"
+      "Symbol": "FTM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "CELO_USDT",
+      "Ignore": false,
+      "Symbol": "CELO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "DOWS_USDT",
+      "Ignore": false,
+      "Symbol": "DOWS"
     },
     {
       "Exchange": "GateIO",
@@ -1983,18 +2025,24 @@
     {
       "Exchange": "GateIO",
       "ForeignName": "USDC_CNYX",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "GateIO",
       "ForeignName": "USDC_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "GateIO",
       "ForeignName": "USDT_CNYX",
+      "Ignore": true,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "USDT_USD",
       "Ignore": true,
       "Symbol": "USDT"
     },

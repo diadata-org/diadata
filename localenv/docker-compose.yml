@@ -1,0 +1,52 @@
+version: "3.3"
+services:
+#  redis:
+#    image: redis:latest
+#    ports:
+#    - "6379:6379"
+#  influxdb:
+#    image: influxdb
+#    ports:
+#      - "8086:8086"
+#  zookeeper:
+#    image: "confluentinc/cp-zookeeper"
+#    ports:
+#    - "2181:2181"
+#    environment:
+#    - ZOOKEEPER_CLIENT_PORT=2181
+#    - ZOOKEEPER_TICK_TIME=2000
+#  kafka:
+#    image: "confluentinc/cp-kafka"
+#    ports:
+#    - "9094:9094"
+#    environment:
+#      HOSTNAME_COMMAND "docker info | grep ^Name: | cut -d' ' -f 2"
+#    - KAFKA_BROKER_ID=1
+#    - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+#    - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9094
+#    - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+#    - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
+#    - KAFKA_MESSAGE_MAX_BYTES=10000000
+#    - KAFKA_DELETE_TOPIC_ENABLE=true
+#    - ALLOW_PLAINTEXT_LISTENER=yes
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "27017:27017"
+      - "5432:5432"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./pginit.sql:/docker-entrypoint-initdb.d/init.sql
+
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080
+
+ #   depends_on:
+ #     - zookeeper

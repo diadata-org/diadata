@@ -2,6 +2,30 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "GLMRUSDT",
+            "Ignore": false,
+            "Symbol": "GLMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BUSDUSDT",
+            "Ignore": false,
+            "Symbol": "BUSD"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GHSTUSDT",
+            "Ignore": false,
+            "Symbol": "GHST"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "MOVRUSDT",
+            "Ignore": false,
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "FTMUSDT",
             "Ignore": false,
             "Symbol": "FTM"
@@ -11,6 +35,12 @@
             "ForeignName": "KP3RUSDT",
             "Ignore": false,
             "Symbol": "KP3R"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CELOUSDT",
+            "Ignore": false,
+            "Symbol": "CELO"
         },
         {
             "Exchange": "Binance",

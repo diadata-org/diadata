@@ -80,12 +80,6 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "QTUMETH",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "QTUMEUR",
       "Ignore": false,
       "Symbol": "QTUM"
@@ -98,15 +92,27 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "QTUMXBT",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "USDTZUSD",
       "Ignore": false,
       "Symbol": "USDT"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "USDTEUR",
+      "Ignore": false,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "USDCUSD",
+      "Ignore": false,
+      "Symbol": "USDC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "USDCEUR",
+      "Ignore": false,
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Kraken",

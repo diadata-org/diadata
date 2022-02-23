@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"io/ioutil"
 	"math/big"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/oracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"

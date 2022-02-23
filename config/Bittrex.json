@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Bittrex",
+      "ForeignName": "CUSD-USDT",
+      "Ignore": false,
+      "Symbol": "CUSD"
+    },
+    {
+      "Exchange": "Bittrex",
       "ForeignName": "ABY-BTC",
       "Ignore": false,
       "Symbol": "ABY"
@@ -1400,9 +1406,9 @@
     },
     {
       "Exchange": "Bittrex",
-      "ForeignName": "USDT-USD",
+      "ForeignName": "USDC-USD",
       "Ignore": false,
-      "Symbol": "USDT"
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Bittrex",

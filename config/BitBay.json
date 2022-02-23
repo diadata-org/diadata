@@ -746,6 +746,18 @@
         },
         {
             "Symbol": "USDT",
+            "ForeignName": "USDTUSD",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDTEUR",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
             "ForeignName": "USDTPLN",
             "Exchange": "BitBay",
             "Ignore": false
@@ -789,6 +801,24 @@
         {
             "Symbol": "USDC",
             "ForeignName": "USDCUSD",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCGBP",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCEUR",
+            "Exchange": "BitBay",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCPLN",
             "Exchange": "BitBay",
             "Ignore": false
         },

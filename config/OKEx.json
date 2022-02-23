@@ -14,6 +14,18 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "GHST-USDT",
+      "Ignore": false,
+      "Symbol": "GHST"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "FTM-USDT",
+      "Ignore": false,
+      "Symbol": "FTM"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "GRT-USDT",
       "Ignore": false,
       "Symbol": "GRT"
@@ -2427,13 +2439,13 @@
     {
       "Exchange": "OKEx",
       "ForeignName": "USDC-BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {
       "Exchange": "OKEx",
       "ForeignName": "USDC-USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDC"
     },
     {

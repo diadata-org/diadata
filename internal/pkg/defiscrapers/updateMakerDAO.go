@@ -2,14 +2,14 @@ package defiscrapers
 
 import (
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/erc20contract"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/jugcontract"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/potcontract"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/erc20contract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/jugcontract"
-	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/makerdao/potcontract"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -197,7 +197,7 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 
 	asset := &dia.DefiRate{
 		Timestamp:     time.Now(),
-		Asset:         fmt.Sprintf("DAI"),
+		Asset:         "DAI",
 		Protocol:      proto.protocol.Name,
 		LendingRate:   daiLendingApy,
 		BorrowingRate: 0,
@@ -233,7 +233,7 @@ func (proto *MakerdaoProtocol) UpdateRate() error {
 
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
-			Asset:         fmt.Sprintf("%s", col.name),
+			Asset:         col.name,
 			Protocol:      proto.protocol.Name,
 			LendingRate:   0,
 			BorrowingRate: apy,

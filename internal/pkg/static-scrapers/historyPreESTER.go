@@ -51,32 +51,43 @@ func GetHistoricPreESTER() error {
 		"=&removedItemList=&mergeFilter=&activeTab=MMSR&showHide=&MAX_DOWNLOAD_SERIES=500&" +
 		"SERIES_MAX_NUM=50&node=9693657&legendPub=published&legendNor=&exportType=sdmx&ajaxTab=true"
 	pathPreESTERAbs, _ := filepath.Abs(pathPreESTER)
-	os.MkdirAll(filepath.Dir(pathPreESTERAbs), os.ModePerm)
-
-	err := utils.DownloadResource(pathPreESTERAbs, linkPreESTER)
+	err := os.MkdirAll(filepath.Dir(pathPreESTERAbs), os.ModePerm)
 	if err != nil {
-		fmt.Println(err)
+		return err
+	}
+
+	err = utils.DownloadResource(pathPreESTERAbs, linkPreESTER)
+	if err != nil {
+		return err
 	}
 	return err
 }
 
 // WriteHistoricPreESTER makes a GET request to fetch the historic data of the SOFR index
 // and writes it into the redis database.
-func WriteHistoricPreESTER(ds models.Datastore) error {
+func WriteHistoricPreESTER(ds models.Datastore) (err error) {
 	log.Printf("Writing historic Pre-ESTER data")
 
 	// The path relative to the calling main / executable
 	absPath, _ := filepath.Abs(pathPreESTER)
-	xmlFile, err := os.Open(absPath)
-
+	xmlFile, err := os.Open(absPath) //nolint:gosec
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	defer xmlFile.Close()
+	defer func() {
+		cerr := xmlFile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 	var myVar CMessageGroupPre
-	xml.Unmarshal(byteValue, &myVar)
+	err = xml.Unmarshal(byteValue, &myVar)
+	if err != nil {
+		return
+	}
 
 	// A slice containing all historic data. Value data is in the 8th row of series
 	histDataSlice := myVar.CDataSetPre.CSeriesPre[7].CObsPre
@@ -111,11 +122,14 @@ func WriteHistoricPreESTER(ds models.Datastore) error {
 			Source:          "ECB",
 		}
 
-		ds.SetInterestRate(&t)
+		err = ds.SetInterestRate(&t)
+		if err != nil {
+			log.Error(err)
+		}
 
 	}
 
 	log.Info("Writing historic Pre-ESTER data complete.")
 
-	return err
+	return
 }

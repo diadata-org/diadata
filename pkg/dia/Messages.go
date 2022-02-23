@@ -19,8 +19,22 @@ const (
 	PROOF_OF_WORK     VerificationMechanism = "pow"
 	BITCOIN                                 = "Bitcoin"
 	ETHEREUM                                = "Ethereum"
-	FLOW                                    = "Flow"
 	BINANCESMARTCHAIN                       = "BinanceSmartChain"
+	POLYGON                                 = "Polygon"
+	CELO                                    = "Celo"
+	FANTOM                                  = "Fantom"
+	NEAR                                    = "Near"
+	AURORA                                  = "Aurora"
+	SOLANA                                  = "Solana"
+	FLOW                                    = "Flow"
+	MOONRIVER                               = "Moonriver"
+	MOONBEAM                                = "Moonbeam"
+	AVALANCHE                               = "Avalanche"
+	ARBITRUM                                = "Arbitrum"
+	ASTAR                                   = "Astar"
+	SHIDEN                                  = "Shiden"
+	METIS                                   = "Metis"
+	FIAT                                    = "Fiat"
 )
 
 type VerificationMechanism string
@@ -213,41 +227,119 @@ type EthereumBlockData struct {
 }
 
 type Exchange struct {
-	Name          string
-	Centralized   bool
-	Contract      common.Address
-	BlockChain    BlockChain
-	WatchdogDelay int
+	Name          string         `json:"Name"`
+	Centralized   bool           `json:"Centralized"`
+	Contract      common.Address `json:"Contract"`
+	BlockChain    BlockChain     `json:"BlockChain"`
+	WatchdogDelay int            `json:"WatchdogDelay"`
 }
 
 type Supply struct {
-	Symbol            string
-	Name              string
+	Asset             Asset
 	Supply            float64
 	CirculatingSupply float64
 	Source            string
 	Time              time.Time
 }
 
-type Pair struct {
-	Symbol      string
-	ForeignName string
-	Exchange    string
-	Ignore      bool
+// Asset is the data type for all assets, ranging from fiat to crypto.
+type Asset struct {
+	Symbol     string
+	Name       string
+	Address    string
+	Decimals   uint8
+	Blockchain string
 }
 
-type Pairs []Pair
+// BlockChain is the type for blockchains. Uniquely defined by its @Name.
+type BlockChain struct {
+	Name string `json:"Name"`
+	// Genesis date is a Unix timestamp
+	GenesisDate int64 `json:"GenesisDate"`
+	NativeToken Asset `json:"NativeToken"`
+	// Verificationmechanism is in short notation, such as pos for proof-of-stake
+	VerificationMechanism VerificationMechanism `json:"VerificationMechanism"`
+	// ChainID refers to EVM based chains and is thereby optional.
+	ChainID string `json:"ChainID"`
+}
+
+// Pair substitues the old dia.Pair. It includes the new asset type.
+type Pair struct {
+	BaseToken  Asset
+	QuoteToken Asset
+}
+
+// ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
+func (p *Pair) ForeignName() string {
+	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
+}
+
+// MarshalBinary is a custom marshaller for BlockChain type
+func (bc *BlockChain) MarshalBinary() ([]byte, error) {
+	return json.Marshal(bc)
+}
+
+// UnmarshalBinary is a custom unmarshaller for BlockChain type
+func (bc *BlockChain) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &bc); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalBinary is a custom marshaller for Asset type
+func (a *Asset) MarshalBinary() ([]byte, error) {
+	return json.Marshal(a)
+}
+
+// UnmarshalBinary is a custom unmarshaller for Asset type
+func (a *Asset) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &a); err != nil {
+		return err
+	}
+	return nil
+}
+
+// ExchangePair is the container for a pair as used by exchanges.
+// Across exchanges, these pairs cannot be uniquely mapped on asset pairs.
+type ExchangePair struct {
+	Symbol         string
+	ForeignName    string
+	Exchange       string
+	Verified       bool
+	UnderlyingPair Pair
+}
+
+// MarshalBinary is a custom marshaller for ExchangePair type
+func (ep *ExchangePair) MarshalBinary() ([]byte, error) {
+	return json.Marshal(ep)
+}
+
+// UnmarshalBinary is a custom unmarshaller for ExchangePair type
+func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &ep); err != nil {
+		return err
+	}
+	return nil
+}
+
+type Pairs []ExchangePair
 
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
-	Symbol            string
-	Pair              string
+	// TO DO: Deprecated fields. Delete as soon as token-to-type branch is deployed.
+	Symbol string
+	Pair   string
+	// Final fields for trade
+	QuoteToken        Asset
+	BaseToken         Asset
 	Price             float64
 	Volume            float64 // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time
 	ForeignTradeID    string
-	EstimatedUSDPrice float64 // will be filled by the TradeBlock Service
+	EstimatedUSDPrice float64 // will be filled by the TradesBlockService
 	Source            string
+	VerifiedPair      bool // will be filled by the pairDiscoveryService
 }
 
 type ItinToken struct {
@@ -351,11 +443,12 @@ type FiltersBlockData struct {
 	FiltersNumber   int
 }
 
+// FilterPoint contains the resulting value of a filter applied to an asset.
 type FilterPoint struct {
-	Symbol string
-	Value  float64
-	Name   string
-	Time   time.Time
+	Asset Asset
+	Value float64
+	Name  string
+	Time  time.Time
 }
 
 type IndexBlock struct {

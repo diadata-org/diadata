@@ -39,7 +39,7 @@ func (s *RateScraper) UpdateSAFR() error {
 	log.Printf("SAFRScraper update")
 
 	// Get rss from fed webpage
-	XMLdata, err := utils.GetRequest("https://apps.newyorkfed.org/rss/feeds/sofr-avg-ind")
+	XMLdata, _, err := utils.GetRequest("https://apps.newyorkfed.org/rss/feeds/sofr-avg-ind")
 	if err != nil {
 		return err
 	}

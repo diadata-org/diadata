@@ -2,6 +2,24 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "USDT-USD",
+      "Ignore": false,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "USDT-EUR",
+      "Ignore": false,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "USDT-GBP",
+      "Ignore": false,
+      "Symbol": "USDT"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "GTC-USD",
       "Ignore": false,
       "Symbol": "GTC"

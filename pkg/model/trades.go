@@ -2,23 +2,42 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	log "github.com/sirupsen/logrus"
 )
 
-func parseTrade(row []interface{}) *dia.Trade {
-	if len(row) > 7 {
+// parseTrade parses a trade as retreived from influx. If fullAsset=true blockchain and address of
+// the corresponding asset is returned as well.
+func parseTrade(row []interface{}, fullBasetoken bool) *dia.Trade {
+	if len(row) > 10 {
 		t, err := time.Parse(time.RFC3339, row[0].(string))
 		if err == nil {
+
 			var estimatedUSDPrice float64
 			v, o := row[1].(json.Number)
 			if o {
 				estimatedUSDPrice, _ = v.Float64()
 			} else {
 				log.Errorln("error on parsing row 1", row)
+			}
+
+			source, o := row[2].(string)
+			if !o {
+				log.Errorln("error on parsing row 2", row)
+			}
+
+			foreignTradeID, o := row[3].(string)
+			if !o {
+				log.Errorln("error on parsing row 3", row)
+			}
+
+			pair, o := row[4].(string)
+			if !o {
+				log.Errorln("error on parsing row 4", row)
 			}
 
 			var price float64
@@ -29,34 +48,25 @@ func parseTrade(row []interface{}) *dia.Trade {
 				log.Errorln("error on parsing row 5", row)
 			}
 
-			var volume float64
-			v, o = row[7].(json.Number)
-			if o {
-				volume, _ = v.Float64()
-			} else {
-				log.Errorln("error on parsing row 6", row)
-			}
-
-			foreignTradeID, o := row[3].(string)
-			if !o {
-				log.Errorln("error on parsing row 3", row)
-			}
-
 			symbol, o := row[6].(string)
 			if !o {
 				log.Errorln("error on parsing row 6", row)
 			}
 
-			pair, o := row[4].(string)
-			if !o {
-				log.Errorln("error on parsing row 4", row)
+			var volume float64
+			v, o = row[7].(json.Number)
+			if o {
+				volume, _ = v.Float64()
+			} else {
+				log.Errorln("error on parsing row 7", row)
 			}
-
-			source, o := row[2].(string)
-			if !o {
-				log.Errorln("error on parsing row 2", row)
+			var verified bool
+			ver, ok := row[8].(string)
+			if ok {
+				if ver == "true" {
+					verified = true
+				}
 			}
-
 			trade := dia.Trade{
 				Symbol:            symbol,
 				Pair:              pair,
@@ -66,29 +76,124 @@ func parseTrade(row []interface{}) *dia.Trade {
 				Price:             price,
 				Volume:            volume,
 				ForeignTradeID:    foreignTradeID,
+				VerifiedPair:      verified,
 			}
+
+			if fullBasetoken {
+				basetokenblockchain, o := row[9].(string)
+				if !o {
+					log.Errorln("error on parsing row 9", row)
+				}
+				basetokenaddress, o := row[10].(string)
+				if !o {
+					log.Errorln("error on parsing row 10", row)
+				}
+				trade.BaseToken.Blockchain = basetokenblockchain
+				trade.BaseToken.Address = basetokenaddress
+			}
+
 			return &trade
 		}
-		log.Errorln("Parsing ", t)
 
 	}
 	return nil
 }
 
+func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
+	var r []dia.Trade
+	subQuery := ""
+	if len(exchanges) > 0 {
+		for _, exchange := range exchanges {
+			subQuery = subQuery + fmt.Sprintf("%s|", exchange)
+		}
+		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
+	}
+	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified, basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
+
+	log.Infoln("GetTradesByExchanges Query", query)
+	timeStart := time.Now()
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	timeEnd := time.Now()
+	if err != nil {
+		return r, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			t := parseTrade(row, false)
+			if t != nil {
+				r = append(r, *t)
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		return nil, fmt.Errorf("no trades found")
+	}
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s total trades at: %d", timeStart, timeEnd, time.Now(), len(r)))
+	return r, nil
+}
+
+// GetTradesByExchangesBatched executes multiple select queries on the trades table in one batch.
+// The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
+func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
+	var r []dia.Trade
+	if len(startTimes) != len(endTimes) {
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+	}
+	var query string
+	for i := range startTimes {
+		subQuery := ""
+		if len(exchanges) > 0 {
+			for _, exchange := range exchanges {
+				subQuery = subQuery + fmt.Sprintf("%s|", exchange)
+			}
+			subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
+		}
+		query = query + fmt.Sprintf("SELECT time, estimatedUSDPrice, exchange, foreignTradeID, pair, price,symbol, volume,verified, basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
+	}
+
+	log.Infoln("GetTradesByExchanges Queries:", query)
+	timeStart := time.Now()
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	timeEnd := time.Now()
+	if err != nil {
+		return r, err
+	}
+
+	if len(res) > 0 {
+		for i := range res {
+			if len(res[i].Series) > 0 {
+				for _, row := range res[i].Series[0].Values {
+					t := parseTrade(row, false)
+					if t != nil {
+						r = append(r, *t)
+					}
+				}
+			}
+		}
+	} else {
+		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		return nil, fmt.Errorf("no trades found")
+	}
+	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
+	return r, nil
+}
+
 // GetAllTrades returns at most @maxTrades trades from influx with timestamp > @t. Only used by replayInflux option.
-func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
+func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
+	var r []dia.Trade
 	// TO DO: Substitute select * with precise statment select estimatedUSDPrice, source,...
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
+	q := fmt.Sprintf("SELECT time, estimatedUSDPrice, exchange, foreignTradeID, pair, price,symbol, volume,verified,basetokenblockchain,basetokenaddress  FROM %s WHERE time > %d LIMIT %d", influxDbTradesTable, t.Unix()*1000000000, maxTrades)
 	log.Debug(q)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
 		return r, err
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
-			t := parseTrade(row)
+			t := parseTrade(row, false)
+			log.Errorln("row trade parseTrade", row)
 			if t != nil {
 				r = append(r, *t)
 			}
@@ -99,10 +204,25 @@ func (db *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	return r, nil
 }
 
-func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE exchange='%s' and symbol='%s' ORDER BY DESC LIMIT %d", influxDbTradesTable, exchange, symbol, maxTrades)
-	res, err := queryInfluxDB(db.influxClient, q)
+// GetLastTrades returns the last @maxTrades of @asset on @exchange.
+// If exchange is empty string it returns trades from all exchanges.
+// If fullAsset=true, blockchain and address of both involved assets is returned as well
+func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error) {
+	var r []dia.Trade
+	var queryString string
+	var q string
+	if exchange == "" {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
+			"\"basetokenblockchain\",\"basetokenaddress\"" +
+			" FROM %s WHERE time<now() AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
+	} else {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
+			"\"basetokenblockchain\",\"basetokenaddress\"" +
+			" FROM %s WHERE time<now() AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
+	}
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
 		return r, err
@@ -110,35 +230,16 @@ func (db *DB) GetLastTrades(symbol string, exchange string, maxTrades int) ([]di
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
-			t := parseTrade(row)
+			t := parseTrade(row, fullAsset)
 			if t != nil {
+				t.QuoteToken = asset
 				r = append(r, *t)
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTrades for %s on %s \n", symbol, exchange)
-	}
-	return r, nil
-}
-
-func (db *DB) GetLastTradesAllExchanges(symbol string, maxTrades int) ([]dia.Trade, error) {
-	r := []dia.Trade{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' ORDER BY DESC LIMIT %d", influxDbTradesTable, symbol, maxTrades)
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		log.Errorln("GetLastTrades", err)
+		err = fmt.Errorf("Empty response for %s on %s", asset.Symbol, exchange)
+		log.Error(err)
 		return r, err
-	}
-
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			t := parseTrade(row)
-			if t != nil {
-				r = append(r, *t)
-			}
-		}
-	} else {
-		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", symbol)
 	}
 	return r, nil
 }

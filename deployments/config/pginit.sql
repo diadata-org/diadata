@@ -43,14 +43,19 @@ CREATE TABLE exchangesymbol (
 
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
-    blockchain_id integer primary key generated always as identity,
+    blockchain_id UUID DEFAULT gen_random_uuid(),
     name text not null,
-    genesisdate timestamp,
-    nativetoken text,
+    genesisdate numeric,
+    nativetoken_id UUID REFERENCES asset(asset_id),
 	verificationmechanism text,
+    chain_id text,
     UNIQUE(name)
 );
 
+CREATE TABLE assetvolume (
+    asset_id UUID primary key,
+    volume decimal
+);
 
 ---------------------------------------
 ------- tables for NFT storage --------
@@ -162,3 +167,12 @@ CREATE TABLE blockdata (
     UNIQUE(blockchain, block_number),
     UNIQUE(blockdata_id)
 );
+
+CREATE TABLE assetpriceident (
+    priceident_id UUID DEFAULT gen_random_uuid(),
+    asset_id uuid REFERENCES asset(asset_id),
+    group_id numeric not null,
+    rank_in_group numeric not null,
+    UNIQUE(asset_id),
+    UNIQUE(group_id, rank_in_group)
+)

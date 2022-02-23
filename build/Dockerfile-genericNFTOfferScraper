@@ -1,17 +1,13 @@
 ARG protocol
-
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build-117:latest as build
 
 WORKDIR $GOPATH/src/
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/nftOffer-scrapers
-RUN go install
+COPY ./cmd/nftOfferscraper ./
+RUN go mod tidy && go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/nftOffer-scrapers /bin/nftOffer-scrapers
-COPY --from=build /go/src/github.com/diadata-org/diadata/config /config/
+COPY --from=build /go/bin/nftOfferscraper /bin/nftOfferscraper
 
-CMD ["nftofferscraper"]
+CMD ["nftOfferscraper"]

@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers"
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
-	defiscraper "github.com/diadata-org/diadata/internal/pkg/defiscrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,7 +21,10 @@ func handleDefiInterestRate(c chan *dia.DefiRate, wg *sync.WaitGroup, ds models.
 			log.Error("error")
 			return
 		}
-		ds.SetDefiRateInflux(t)
+		err := ds.SetDefiRateInflux(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 
@@ -35,7 +38,10 @@ func handleDefiState(c chan *dia.DefiProtocolState, wg *sync.WaitGroup, ds model
 			log.Error("error")
 			return
 		}
-		ds.SetDefiStateInflux(t)
+		err := ds.SetDefiStateInflux(t)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 
@@ -50,8 +56,13 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	} else {
 
-		sRate := defiscraper.SpawnDefiScraper(ds, *rateType)
-		defer sRate.Close()
+		sRate := defiscrapers.SpawnDefiScraper(ds, *rateType)
+		defer func() {
+			err := sRate.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(2)

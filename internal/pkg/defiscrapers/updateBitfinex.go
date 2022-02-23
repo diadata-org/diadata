@@ -31,8 +31,6 @@ const (
 	VOLUME
 	HIGH
 	LOW
-	_PLACE_HOLDER1
-	_PLACE_HOLDER2
 	FRR_AMOUNT_AVAILABLE
 )
 
@@ -91,12 +89,15 @@ func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProto
 	go func() {
 		for {
 			for _, wsConn := range proto.WsConnections {
-				select {
+
 				// Reconnect websocket connection on restart
-				case <-wsConn.restart:
+				for range wsConn.restart {
 					// Try to close the connection first
 					if wsConn.conn != nil {
-						wsConn.conn.Close()
+						err := wsConn.conn.Close()
+						if err != nil {
+							log.Error(err)
+						}
 					}
 					go wsConn.connectWebsocket()
 				}
@@ -113,7 +114,10 @@ func NewBitfinex(scraper *DefiScraper, protocol dia.DefiProtocol) *BitfinexProto
 // Fetch all funding symbols from Bitfinex api in bulk
 func fetchFundingSymbols() (fundingSymbols []string, err error) {
 	fundingSymbols = make([]string, 0)
-	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	jsondata, _, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	if err != nil {
+		log.Error(err)
+	}
 	log.Debugf("%s", jsondata)
 	resp := make([][]interface{}, 0)
 	err = json.Unmarshal(jsondata, &resp)
@@ -136,19 +140,22 @@ func (ws *BitfinexWSSConnection) pingWebsocket() {
 	if err != nil {
 		return
 	}
-	w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "f` + ws.symbol + `" }`))
+	_, err = w.Write([]byte(`{ "event": "subscribe", "channel": "ticker", "symbol": "f` + ws.symbol + `" }`))
+	if err != nil {
+		return
+	}
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
 		ws.restart <- true
 	}()
-	for {
-		select {
-		case <-ticker.C:
-			ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
+	for range ticker.C {
+		err = ws.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		if err != nil {
+			log.Error(err)
+		}
+		if err := ws.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			return
 		}
 	}
 }
@@ -159,8 +166,18 @@ func (ws *BitfinexWSSConnection) fetchingForever() {
 
 	}()
 	ws.conn.SetReadLimit(maxMessageSize)
-	ws.conn.SetReadDeadline(time.Now().Add(pongWait))
-	ws.conn.SetPongHandler(func(string) error { ws.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	err := ws.conn.SetReadDeadline(time.Now().Add(pongWait))
+	if err != nil {
+		log.Error(err)
+	}
+	ws.conn.SetPongHandler(func(string) error {
+		err = ws.conn.SetReadDeadline(time.Now().Add(pongWait))
+		if err != nil {
+			log.Error(err)
+		}
+		return nil
+	})
+
 	for {
 		_, message, err := ws.conn.ReadMessage()
 		if err != nil {
@@ -172,7 +189,7 @@ func (ws *BitfinexWSSConnection) fetchingForever() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		resp := make([]interface{}, 0)
-		if err := json.Unmarshal(message, &resp); err != nil {
+		if err = json.Unmarshal(message, &resp); err != nil {
 			continue
 		}
 		event, ok := resp[1].([]interface{})
@@ -227,7 +244,10 @@ func (proto *BitfinexProtocol) UpdateRate() error {
 func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	// Fetch market prices in bulk, so we don't be affected by Bitfinex api rate limits
 	// See https://docs.bitfinex.com/reference#rest-public-tickers
-	jsondata, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	jsondata, _, err := utils.GetRequest("https://api-pub.bitfinex.com/v2/tickers?symbols=ALL")
+	if err != nil {
+		return 0, err
+	}
 	log.Debugf("%s", jsondata)
 	priceList := make([][]interface{}, 0)
 	err = json.Unmarshal(jsondata, &priceList)
@@ -236,14 +256,17 @@ func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	}
 	for _, symbol := range symbols {
 		// We need to make an api call for every funding symbol
-		jsondata, err := utils.GetRequest(fmt.Sprintf("https://api-pub.bitfinex.com/v2/stats1/funding.size:1m:f%s/last", symbol))
+		jsondata, _, err := utils.GetRequest(fmt.Sprintf("https://api-pub.bitfinex.com/v2/stats1/funding.size:1m:f%s/last", symbol))
+		if err != nil {
+			log.Error(err)
+		}
 		resp := make([]float64, 0)
 		err = json.Unmarshal(jsondata, &resp)
 		if err != nil {
 			return 0, err
 		}
 		if len(resp) != 2 {
-			return 0, fmt.Errorf("Unexpected response from bitfinex stats api")
+			return 0, fmt.Errorf("unexpected response from bitfinex stats api")
 		}
 		symTotal := resp[1]
 		// Find price for funding symbols
@@ -261,7 +284,7 @@ func fetchTotalLocked(symbols []string) (amount float64, err error) {
 	return
 }
 func (proto *BitfinexProtocol) UpdateState() error {
-	log.Print("Updating DEFI state for %+v\n ", proto.protocol)
+	log.Printf("Updating DEFI state for %+v\n ", proto.protocol)
 	totalSupplyUSD, err := fetchTotalLocked(proto.fundingSymbols)
 	if err != nil {
 		log.Errorf("BitfinexProtocol: While parsing totalSupplyUSD: %v", err)

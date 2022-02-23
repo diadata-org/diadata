@@ -1,0 +1,232 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ADT",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xD0D6D6C5Fe4a677D343cC433536BB717bAe167dD"
+        },
+        {
+            "Symbol": "ADX",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xADE00C28244d5CE17D72E40330B1c318cD12B7c3"
+        },
+        {
+            "Symbol": "ANT",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
+            "Symbol": "ARK",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ark",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BFT",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x01fF50f8b7f74E4f00580d9596cd3D0d6d6E326f"
+        },
+        {
+            "Symbol": "CUSD",
+            "Exchange": "Bittrex",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
+            "Symbol": "DNT",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0AbdAce70D3790235af448C88547603b945604ea"
+        },
+        {
+            "Symbol": "DTA",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x69b148395Ce0015C13e36BFfBAd63f49EF874E03"
+        },
+        {
+            "Symbol": "ENG",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xf0Ee6b27b759C9893Ce4f094b49ad28fd15A23e4"
+        },
+        {
+            "Symbol": "ENJ",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c"
+        },
+        {
+            "Symbol": "GAME",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x63f88A2298a5c4AEE3c216Aa6D926B184a4b2437"
+        },
+        {
+            "Symbol": "GNO",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x6810e776880C02933D47DB1b9fc05908e5386b96"
+        },
+        {
+            "Symbol": "HMQ",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xcbCC0F036ED4788F63FC0fEE32873d6A7487b908"
+        },
+        {
+            "Symbol": "HYDRO",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x946112efaB61C3636CBD52DE2E1392D7A75A6f01"
+        },
+        {
+            "Symbol": "LRC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Symbol": "MOC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x865ec58b06bF6305B886793AA20A2da31D034E68"
+        },
+        {
+            "Symbol": "MTL",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xF433089366899D83a9f26A773D59ec7eCF30355e"
+        },
+        {
+            "Symbol": "NGC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x72dD4b6bd852A3AA172Be4d6C5a6dbEc588cf131"
+        },
+        {
+            "Symbol": "NMR",
+            "Exchange": "Bittrex",
+            "Blockchain": "Numeraire",
+            "Address": "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"
+        },
+        {
+            "Symbol": "OMG",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
+        },
+        {
+            "Symbol": "PAY",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+        },
+        {
+            "Symbol": "PMA",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x846C66cf71C43f80403B51fE3906B3599D63336f"
+        },
+        {
+            "Symbol": "POWR",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x595832F8FC6BF59c85C527fEC3740A1b7a361269"
+        },
+        {
+            "Symbol": "PTOY",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x8Ae4BF2C33a8e667de34B54938B0ccD03Eb8CC06"
+        },
+        {
+            "Symbol": "REPv2",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x221657776846890989a759BA2973e427DfF5C9bB"
+        },
+        {
+            "Symbol": "RLC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x607F4C5BB672230e8672085532f7e901544a7375"
+        },
+        {
+            "Symbol": "SNT",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
+        },
+        {
+            "Symbol": "SPC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x86ed939B500E121C0C5f493F399084Db596dAd20"
+        },
+        {
+            "Symbol": "SRN",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x68d57c9a1C35f63E2c83eE8e49A64e9d70528D25"
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Symbol": "UPP",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xC86D054809623432210c107af2e3F619DcFbf652"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "Bittrex",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "VEE",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x340D2bdE5Eb28c1eed91B2f790723E3B160613B7"
+        },
+        {
+            "Symbol": "VIB",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
+        },
+        {
+            "Symbol": "WINGS",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
+        },
+        {
+            "Symbol": "ZRX",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498"
+        }
+    ]
+}

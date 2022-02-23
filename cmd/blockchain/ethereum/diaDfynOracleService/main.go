@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaDfynOracleService"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -13,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDfynOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -111,7 +111,7 @@ func periodicOracleUpdateHelper(sleepSeconds int, oldPrice float64, deviationBip
 
 	log.Println("In periodic block")
 	log.Println(oldPrice)
-	if (newPrice > (oldPrice * (1 + float64(deviationBips) / 10000))) || (newPrice < (oldPrice * (1 - float64(deviationBips) / 10000))) {
+	if (newPrice > (oldPrice * (1 + float64(deviationBips)/10000))) || (newPrice < (oldPrice * (1 - float64(deviationBips)/10000))) {
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawDfynQ, auth, contract, conn)
 		if err != nil {

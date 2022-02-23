@@ -4,7 +4,8 @@ import (
 	"flag"
 	"sync"
 
-	pool "github.com/diadata-org/diadata/internal/pkg/farming-pool-scraper"
+	pool "github.com/diadata-org/diadata/pkg/dia/scraper/farming-pool-scraper"
+
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +21,12 @@ func main() {
 		log.Errorln("NewDataStore:", err)
 	} else {
 		sRate := pool.SpawnPoolScraper(ds, *poolName)
-		defer sRate.Close()
+		defer func() {
+			err := sRate.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 
 		// Send rates to the database while the scraper scrapes
 		wg.Add(2)
@@ -40,6 +46,9 @@ func handlerate(c chan *models.FarmingPool, wg *sync.WaitGroup, ds models.Datast
 			return
 		}
 		log.Print("Write pool info: ", pr)
-		ds.SetFarmingPool(pr)
+		err := ds.SetFarmingPool(pr)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }

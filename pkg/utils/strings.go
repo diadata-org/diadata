@@ -14,6 +14,7 @@ func UniqueStrings(s []string) []string {
 	for _, val := range s {
 		if _, ok := set[val]; !ok {
 			sUnique = append(sUnique, val)
+			set[val] = struct{}{}
 		}
 	}
 	return sUnique
