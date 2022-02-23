@@ -2,7 +2,7 @@
     "Coins": [
         {
             "Exchange": "KuCoin",
-            "ForeignName": "GLMRUSDT",
+            "ForeignName": "GLMR-USDT",
             "Ignore": false,
             "Symbol": "GLMR"
         },

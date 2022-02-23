@@ -2,7 +2,7 @@
   "Coins": [
     {
       "Exchange": "GateIO",
-      "ForeignName": "GLMRUSDT",
+      "ForeignName": "GLMR_USDT",
       "Ignore": false,
       "Symbol": "GLMR"
     },
