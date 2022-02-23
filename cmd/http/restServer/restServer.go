@@ -256,10 +256,10 @@ func main() {
 		// Endpoints for fiat currencies
 		diaGroup.GET("/fiatQuotations", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetFiatQuotations))
 
-		// Endpoints for stocks
-		dia.GET("/stockSymbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockSymbols))
-		dia.GET("/stockQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
-		dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
+		// // Endpoints for stocks
+		// dia.GET("/stockSymbols", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockSymbols))
+		// dia.GET("/stockQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
+		// dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetStockQuotation))
 
 		// Endpoints for foreign sources
 		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
@@ -269,10 +269,6 @@ func main() {
 		// Gold asset
 		diaGroup.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
 		diaGroup.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
-
-		// External supply reports
-		dia.GET("/diaTotalSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaTotalSupply))
-		dia.GET("/diaCirculatingSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
 
 		// Index
 		diaGroup.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
