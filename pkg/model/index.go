@@ -325,8 +325,10 @@ func (datastore *DB) GetCryptoIndexValues(starttime time.Time, endtime time.Time
 					return indices, err
 				}
 			}
-			if divisor != 0 {
+			if divisor != 0 && currentIndex.CalculationTime.After(time.Unix(0, 1645522022949984161)) {
 				currentIndex.Value = val / divisor
+			} else {
+				currentIndex.Value = val
 			}
 
 			// Address and Blockchain
