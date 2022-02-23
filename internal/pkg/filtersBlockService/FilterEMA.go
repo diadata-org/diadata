@@ -63,11 +63,14 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 
 func (e *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
 	log.Println("FilterEMA fill ", trade)
+	log.Println("FilterEMA e.multiplier ", e.multiplier)
 
 	if e.value == 0 { // this is a proxy for "uninitialized"
 		e.value = trade.Value
 	} else {
 		e.value = (trade.Value * float64(e.multiplier)) + (e.value * (1 - float64(e.multiplier)))
+		log.Println("FilterEMA e.value and multiplier ", e.value, e.multiplier)
+
 	}
 	log.Println("FilterEMA e.value ", e.value)
 
@@ -81,14 +84,14 @@ func (e *FilterEMA) finalCompute(t time.Time) float64 {
 	return e.value
 }
 
-func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
-	log.Println("FilterPointForBlock", s.value, s.currentTime, s.asset)
+func (e *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
+	log.Println("FilterPointForBlock", e.value, e.currentTime, e.asset)
 
 	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  "EMA" + strconv.Itoa(s.param),
-		Time:  s.currentTime,
+		Asset: e.asset,
+		Value: e.value,
+		Name:  "EMA" + strconv.Itoa(e.param),
+		Time:  e.currentTime,
 	}
 
 }
