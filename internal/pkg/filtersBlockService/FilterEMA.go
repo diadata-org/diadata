@@ -81,8 +81,8 @@ func (e *FilterEMA) finalCompute(t time.Time) float64 {
 	return e.value
 }
 
-func (s *FilterEMA) FilterPointForBlock() dia.FilterPoint {
-	return dia.FilterPoint{
+func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
+	return &dia.FilterPoint{
 		Asset: s.asset,
 		Value: s.value,
 		Name:  "EMA" + strconv.Itoa(s.param),

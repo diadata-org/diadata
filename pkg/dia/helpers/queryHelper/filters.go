@@ -173,7 +173,7 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 			emaFilter.FinalCompute(time.Unix(point.Time.UnixNano()/1e9, 0))
 			fp := emaFilter.FilterPointForBlock()
 			if fp.Value > 0 {
-				filterPoints = append(filterPoints, fp)
+				filterPoints = append(filterPoints, *fp)
 				log.Println("append index%5  %v  points %v filterPoints %v filterPoints size %v", index%5, point.Value, fp.Value, len(filterPoints))
 
 			}
