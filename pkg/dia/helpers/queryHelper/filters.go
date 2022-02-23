@@ -170,7 +170,7 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 	for index, point := range points {
 		emaFilter := filters.NewFilterEMA(asset, "", time.Unix(point.Time.UnixNano()/1e9, 10), blockSize)
 		if index%5 == 0 {
-			emaFilter.FinalCompute(time.Unix(point.Time.UnixNano()/1e9, 0))
+			emaFilter.FinalCompute(point.Time)
 			fp := emaFilter.FilterPointForBlock()
 			if fp.Value > 0 {
 				filterPoints = append(filterPoints, *fp)
