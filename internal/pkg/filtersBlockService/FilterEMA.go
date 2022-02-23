@@ -49,7 +49,7 @@ func (s *FilterEMA) Compute(trade dia.FilterPoint) {
 func (s *FilterEMA) compute(trade dia.FilterPoint) {
 	s.modified = true
 	if s.lastTrade != nil {
-		if trade.Time.After(s.currentTime) {
+		if trade.Time.Before(s.currentTime) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
 		}
@@ -82,12 +82,15 @@ func (e *FilterEMA) finalCompute(t time.Time) float64 {
 }
 
 func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
+	log.Println("FilterPointForBlock", s.value, s.currentTime, s.asset)
+
 	return &dia.FilterPoint{
 		Asset: s.asset,
 		Value: s.value,
 		Name:  "EMA" + strconv.Itoa(s.param),
 		Time:  s.currentTime,
 	}
+
 }
 
 func (s *FilterEMA) filterPointForBlock() *dia.FilterPoint {
