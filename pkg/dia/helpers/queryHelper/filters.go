@@ -172,9 +172,9 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 		if index%5 == 0 {
 			emaFilter.FinalCompute(time.Unix(point.Time.UnixNano()/1e9, 0))
 			fp := emaFilter.FilterPointForBlock()
-			if fp != nil {
-				filterPoints = append(filterPoints, *fp)
-				log.Println("append index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
+			if fp.Value > 0 {
+				filterPoints = append(filterPoints, fp)
+				log.Println("append index%5  %v  points %v filterPoints %v filterPoints size %v", index%5, point.Value, fp.Value, len(filterPoints))
 
 			}
 			log.Println("index%5  %v  points %v filterPoints %v", index%5, point.Value, fp.Value)
@@ -185,7 +185,7 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 		}
 	}
 	for _, fp := range filterPoints {
-		log.Println("FilterEMA Filter point", fp)
+		log.Println("FilterEMAFilter point", fp)
 
 	}
 
