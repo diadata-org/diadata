@@ -184,5 +184,10 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 			emaFilter.Compute(point)
 		}
 	}
+	for _, fp := range filterPoints {
+		log.Println("FilterEMA Filter point", fp)
+
+	}
+
 	return filterPoints
 }
