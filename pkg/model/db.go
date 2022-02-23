@@ -137,6 +137,7 @@ type Datastore interface {
 	GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error)
 	GetCryptoIndex(time.Time, time.Time, string, int) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
+	GetCryptoIndexValues(starttime time.Time, endtime time.Time, symbol string, maxResults int) ([]CryptoIndex, error)
 	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
 	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
 	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)

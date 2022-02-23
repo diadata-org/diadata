@@ -269,6 +269,7 @@ func main() {
 
 		// Index
 		diaGroup.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
+		diaGroup.GET("/indexValue/:symbol", diaApiEnv.GetCryptoIndexValues)
 		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
 		// Endpoints for NFTs

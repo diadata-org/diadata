@@ -1267,6 +1267,78 @@ func (env *Env) GetCryptoIndex(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
+func (env *Env) GetCryptoIndexValues(c *gin.Context) {
+	symbol := c.Param("symbol")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+	maxResults := 0
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		starttime = time.Now().Add(time.Duration(-4 * time.Hour))
+		endtime = time.Now()
+		maxResults = 1
+	} else if starttimeStr == "" && endtimeStr != "" {
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+		starttime = endtime.AddDate(0, 0, -1)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtime = starttime.AddDate(0, 0, 1)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	q, err := env.DataStore.GetCryptoIndexValues(starttime, endtime, symbol, maxResults)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// local return type
+	type indexVals struct {
+		Symbol          string
+		Address         string
+		Blockchain      string
+		Value           float64
+		CalculationTime time.Time
+	}
+	var returnIndices []indexVals
+	for _, index := range q {
+		tmp := indexVals{
+			Symbol:          index.Asset.Symbol,
+			Address:         index.Asset.Address,
+			Blockchain:      index.Asset.Blockchain,
+			Value:           index.Value,
+			CalculationTime: index.CalculationTime,
+		}
+		returnIndices = append(returnIndices, tmp)
+	}
+
+	c.JSON(http.StatusOK, returnIndices)
+}
+
 // getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
 // Postgres, in which latter case it also adds the decimals to the local cache.
 // Remember that maps are always passed by reference.
