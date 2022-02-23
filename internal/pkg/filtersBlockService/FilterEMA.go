@@ -70,9 +70,8 @@ func (e *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
 		e.value = trade.Value
 	} else {
 		e.value = (trade.Value * float64(e.multiplier)) + (e.value * (1 - float64(e.multiplier)))
-		log.Println("FilterEMA e.value ", e.value)
-
 	}
+	log.Println("FilterEMA e.value ", e.value)
 
 }
 
