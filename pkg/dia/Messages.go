@@ -28,6 +28,7 @@ const (
 	SOLANA                                  = "Solana"
 	FLOW                                    = "Flow"
 	MOONRIVER                               = "Moonriver"
+	MOONBEAM                                = "Moonbeam"
 	AVALANCHE                               = "Avalanche"
 	ARBITRUM                                = "Arbitrum"
 	ASTAR                                   = "Astar"

@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Exchange": "KuCoin",
+            "ForeignName": "GLMRUSDT",
+            "Ignore": false,
+            "Symbol": "GLMR"
+        },
+        {
             "Symbol": "GHST",
             "ForeignName": "GHST-USDT",
             "Exchange": "KuCoin",

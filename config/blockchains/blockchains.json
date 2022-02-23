@@ -45,6 +45,15 @@
             "ChainID": "Ethereum250"
         },
         {
+            "Name": "Moonbeam",
+            "GenesisDate": 1639798604,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum1284"
+        },
+        {
             "Name": "Moonriver",
             "GenesisDate": 1629936000,
             "NativeToken": {
