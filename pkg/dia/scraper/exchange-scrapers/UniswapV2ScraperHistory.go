@@ -221,10 +221,11 @@ func (s *UniswapHistoryScraper) mainLoop() {
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
-	reverseBasetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName)
+	reverseBasetokens, err = getReverseTokensFromConfig("uniswap/reverse_tokens/" + s.exchangeName + "Basetoken")
 	if err != nil {
 		log.Error("error getting tokens for which pairs should be reversed: ", err)
 	}
+	log.Info("reverse pairs with following base tokens: ", reverseBasetokens)
 
 	// wait for all pairs have added into s.PairScrapers
 	time.Sleep(4 * time.Second)

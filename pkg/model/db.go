@@ -135,7 +135,7 @@ type Datastore interface {
 	GetPaxgQuotationGrams() (*Quotation, error)
 	// Crypto Index methods
 	GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error)
-	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
+	GetCryptoIndex(time.Time, time.Time, string, int) ([]CryptoIndex, error)
 	SetCryptoIndex(index *CryptoIndex) error
 	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
 	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
