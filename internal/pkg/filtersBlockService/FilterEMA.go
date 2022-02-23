@@ -23,7 +23,6 @@ type FilterEMA struct {
 	modified        bool
 	filterName      string
 	multiplier      float64
-	count           uint8
 }
 
 // NewFilterEMA returns a moving average filter.
@@ -49,7 +48,7 @@ func (s *FilterEMA) Compute(trade dia.FilterPoint) {
 func (s *FilterEMA) compute(trade dia.FilterPoint) {
 	s.modified = true
 	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
+		if trade.Time.After(s.currentTime) {
 			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
 			return
 		}
