@@ -39,6 +39,7 @@ func NewFilterEMA(asset dia.Asset, exchange string, currentTime time.Time, block
 		currentTime:     currentTime,
 		filterName:      "EMA" + strconv.Itoa(blockSize),
 		multiplier:      multiplier,
+		param:           blockSize,
 	}
 	return s
 }
@@ -77,7 +78,6 @@ func (s *FilterEMA) FinalCompute(t time.Time) float64 {
 }
 
 func (e *FilterEMA) finalCompute(t time.Time) float64 {
-
 	return e.value
 }
 

@@ -279,11 +279,11 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	for _, fp := range filterPoints {
+		log.Println("Filter point", fp)
 		sr = append(sr, &FilterPointResolver{q: fp})
 
 	}
 
-	// log.Println("Filter point", fp)
 	// log.Println("Start Time", trades[len(trades)-1].Time)
 	// log.Println("End Time", trades[0].Time)
 
