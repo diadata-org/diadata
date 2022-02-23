@@ -64,6 +64,8 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 }
 
 func (e *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
+	log.Println("FilterEMA fill ", trade)
+
 	if e.value == 0 { // this is a proxy for "uninitialized"
 		e.value = trade.Value
 	} else {
