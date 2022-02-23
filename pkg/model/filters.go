@@ -96,7 +96,7 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 	}
 
 	q := fmt.Sprintf("SELECT last(*) FROM %s"+
-		" WHERE filter='%s' and address='%s' and blockchain='%s' and time>%d and time<%d and allExchanges=true group by time(1d) ORDER BY DESC",
+		" WHERE filter='%s' and address='%s' and blockchain='%s' and time>%d and time<%d and allExchanges=true group by time(1d) fill(previous) ORDER BY DESC",
 		table, filter, topAsset.Address, topAsset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 
 	res, err := queryInfluxDB(datastore.influxClient, q)
