@@ -22,14 +22,12 @@ type FilterEMA struct {
 	value           float64
 	modified        bool
 	filterName      string
-	multiplier      int
+	multiplier      float64
 	count           uint8
 }
 
 // NewFilterEMA returns a moving average filter.
 func NewFilterEMA(asset dia.Asset, exchange string, currentTime time.Time, blockSize int) *FilterEMA {
-
-	multiplier := 2 / (blockSize + 1)
 
 	s := &FilterEMA{
 		asset:           asset,
@@ -38,7 +36,7 @@ func NewFilterEMA(asset dia.Asset, exchange string, currentTime time.Time, block
 		previousVolumes: []float64{},
 		currentTime:     currentTime,
 		filterName:      "EMA" + strconv.Itoa(blockSize),
-		multiplier:      multiplier,
+		multiplier:      2 / (float64(blockSize) + 1),
 		param:           blockSize,
 	}
 	return s
