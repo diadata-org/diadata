@@ -37,6 +37,12 @@
             "Address": "0x4a527d8fc13C5203AB24BA0944F4Cb14658D1Db6"
         },
         {
+            "Symbol": "MOVR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+        },
+        {
             "Symbol": "MTC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

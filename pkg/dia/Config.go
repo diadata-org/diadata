@@ -69,6 +69,11 @@ const (
 func Exchanges() []string {
 	return []string{
 
+		HuobiExchange,
+		CoinBaseExchange,
+		GateIOExchange,
+		HitBTCExchange,
+		OKExExchange,
 		BittrexExchange,
 		KrakenExchange,
 		KuCoinExchange,
@@ -81,8 +86,6 @@ func Exchanges() []string {
 		BinanceExchange,
 		LBankExchange,
 		QuoineExchange,
-		CREX24Exchange,
-		STEXExchange,
 
 		// FinageForex,
 		ByBitExchange,
@@ -90,11 +93,8 @@ func Exchanges() []string {
 		CryptoDotComExchange,
 		ZBExchange,
 		FTXExchange,
-		HuobiExchange,
-		CoinBaseExchange,
-		GateIOExchange,
-		HitBTCExchange,
-		OKExExchange,
+		CREX24Exchange,
+		STEXExchange,
 
 		NetswapExchange,
 		DfynNetwork,

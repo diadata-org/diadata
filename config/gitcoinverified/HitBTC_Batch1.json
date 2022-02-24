@@ -331,6 +331,12 @@
             "Address": "0x4270bb238f6DD8B1c3ca01f96CA65b2647c06D3C"
         },
         {
+            "Symbol": "FTM",
+            "Exchange": "HitBTC",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FTX",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

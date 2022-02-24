@@ -193,6 +193,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "KP3R",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"
+        },
+        {
             "Symbol": "LEND",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

@@ -73,6 +73,12 @@
             "Address": "0x1410434b0346f5bE678d0FB554E5c7ab620f8f4a"
         },
         {
+            "Symbol": "KP3R",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"
+        },
+        {
             "Symbol": "LET",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -89,6 +95,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x653430560bE843C4a3D143d0110e896c2Ab8ac0D"
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "OKEx",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
         },
         {
             "Symbol": "NAS",
