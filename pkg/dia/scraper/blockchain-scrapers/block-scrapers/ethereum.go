@@ -7,6 +7,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -14,19 +15,20 @@ import (
 
 const (
 	followDist = 2
+	restDial   = ""
 )
 
 type EthereumScraper struct {
-	blockscraper BlockScraper
-	client       *ethclient.Client
+	blockscraper    BlockScraper
+	client          *ethclient.Client
 	ticker          *time.Ticker
 	lastBlockNumber int64
 }
 
 func NewEthereumScraper(rdb *models.RelDB) *EthereumScraper {
-	connection, err := ethhelper.NewETHClient()
+	connection, err := ethclient.Dial(utils.Getenv("URI_REST_ETH", restDial))
 	if err != nil {
-		log.Error("Error connecting Eth Client")
+		log.Fatal("init rest client: ", err)
 	}
 
 	blockScraper := BlockScraper{
