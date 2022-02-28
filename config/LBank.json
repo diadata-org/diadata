@@ -464,6 +464,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "UPS_USDT",
+      "Ignore": true,
+      "Symbol": "UPS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "USDT_LBCN",
       "Ignore": true,
       "Symbol": "USDT"

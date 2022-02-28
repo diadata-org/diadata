@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
 	"log"
 	"math/big"
 	"net/http"
@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoinmarketcapOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -46,12 +46,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 2 {
@@ -79,17 +85,18 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
-			}
+		for range ticker.C {
+			err := periodicOracleUpdateHelper(numCoins, *sleepSeconds, auth, contract, conn)
+			log.Fatalf("failed periodic update %v: ", err)
 		}
 	}()
 	select {}
@@ -143,12 +150,18 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 1 {
@@ -156,8 +169,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	}
 	apiKey := lines[0]
 
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest", nil)
 	if err != nil {
 		log.Print(err)
 		return nil, err
@@ -174,20 +186,15 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	req.Header.Add("X-CMC_PRO_API_KEY", apiKey)
 	req.URL.RawQuery = q.Encode()
 
-	response, err := client.Do(req)
+	contents, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		log.Print("Error sending request to server: ", err)
 		return nil, err
 	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on coinmarketcap api with return code %d", statusCode)
+	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on coinmarketcap api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	type CoinMarketCapListing struct {
 		Data []struct {
 			Symbol string `json:"symbol"`
@@ -196,7 +203,7 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 	var quotations CoinMarketCapListing
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("Error on coinmarketcap api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on coinmarketcap api with return code %d", statusCode)
 	}
 	var symbols []string
 	for _, dataEntry := range quotations.Data {
@@ -206,19 +213,14 @@ func getTopCoinsFromCoinmarketcap(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/foreignQuotation/" + source + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.ForeignQuotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {

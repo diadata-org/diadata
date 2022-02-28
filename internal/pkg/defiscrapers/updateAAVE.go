@@ -43,7 +43,7 @@ type Reserve struct {
 	StableBorrowRate   string `json:"stableBorrowRate"`
 	VariableBorrowRate string `json:"variableBorrowRate"`
 	TotalLiquidity     string `json:"totalLiquidity"`
-	Decimals           int    `json:decimals`
+	Decimals           int    `json:"decimals"`
 }
 
 func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
@@ -72,8 +72,13 @@ func fetchAAVEMarkets() (aaverate AAVEMarket, err error) {
 	}
 	jsonValue, _ := json.Marshal(jsonData)
 	jsondata, err := utils.PostRequest("https://api.thegraph.com/subgraphs/name/aave/protocol-raw", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		return AAVEMarket{}, err
+	}
 	err = json.Unmarshal(jsondata, &aaverate)
-	// log.Println(aaverate)
+	if err != nil {
+		return AAVEMarket{}, err
+	}
 	return
 }
 
@@ -140,18 +145,18 @@ func (proto *AAVEProtocol) UpdateRate() error {
 	return nil
 }
 
-func getAssetByAddress(address string) (reserve Reserve, err error) {
-	markets, err := fetchAAVEMarkets()
-	if err != nil {
-		return
-	}
-	for _, market := range markets.Data.Reserves {
-		if market.ID == address {
-			reserve = market
-		}
-	}
-	return
-}
+// func getAssetByAddress(address string) (reserve Reserve, err error) {
+// 	markets, err := fetchAAVEMarkets()
+// 	if err != nil {
+// 		return
+// 	}
+// 	for _, market := range markets.Data.Reserves {
+// 		if market.ID == address {
+// 			reserve = market
+// 		}
+// 	}
+// 	return
+// }
 
 func (proto *AAVEProtocol) UpdateState() error {
 	log.Printf("Updating DEFI state for %+v\n ", proto.protocol.Name)
@@ -161,6 +166,9 @@ func (proto *AAVEProtocol) UpdateState() error {
 	}
 
 	PriceETH, err := utils.GetCoinPrice("ETH")
+	if err != nil {
+		log.Error(err)
+	}
 	totalSupplyUSD := totalSupplyETH * PriceETH
 
 	// ethMarket, err := getAssetByAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")

@@ -2,12 +2,12 @@ package defiscrapers
 
 import (
 	"fmt"
+	"github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
 
-	compoundcontract "github.com/diadata-org/diadata/internal/pkg/defiscrapers/compound"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -15,10 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	cTokenDecimals = 8
 )
 
 type CompoundRate struct {
@@ -129,9 +125,12 @@ func NewCreamFinance(scraper *DefiScraper, protocol dia.DefiProtocol) *CompoundP
 	return &CompoundProtocol{scraper: scraper, protocol: protocol, decimals: decimals, assets: assets, connection: connection}
 }
 
-func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error) {
+func (proto *CompoundProtocol) fetch(asset string) (CompoundRate, error) {
 	var contract *compoundcontract.CTokenCaller
-	contract, err = compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	contract, err := compoundcontract.NewCTokenCaller(common.HexToAddress(proto.assets[asset]), proto.connection)
+	if err != nil {
+		return CompoundRate{}, err
+	}
 
 	// Get decimals of underlying token for computation of tvl
 	var decs *big.Int
@@ -140,37 +139,47 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 	} else {
 		var cContract *compoundcontract.CErc20Caller
 		cContract, err = compoundcontract.NewCErc20Caller(common.HexToAddress(proto.assets[asset]), proto.connection)
-		address, _ := cContract.Underlying(&bind.CallOpts{})
+		if err != nil {
+			return CompoundRate{}, err
+		}
+		var address common.Address
+		address, err = cContract.Underlying(&bind.CallOpts{})
+		if err != nil {
+			log.Error(err)
+		}
 		var underlyingContract *compoundcontract.CErc20Caller
 		underlyingContract, err = compoundcontract.NewCErc20Caller(address, proto.connection)
+		if err != nil {
+			return CompoundRate{}, err
+		}
 		decs, _ = underlyingContract.Decimals(&bind.CallOpts{})
 	}
 
 	supplyInterestRate, err := contract.SupplyRatePerBlock(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	borrowInterestRate, err := contract.BorrowRatePerBlock(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalSupply, err := contract.TotalSupply(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalBorrow, err := contract.TotalBorrows(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	totalReserves, err := contract.TotalReserves(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
 	cash, err := contract.GetCash(&bind.CallOpts{})
 	if err != nil {
-		return
+		return CompoundRate{}, err
 	}
-	rate = CompoundRate{
+	rate := CompoundRate{
 		Symbol:        asset,
 		Decimal:       int(decs.Int64()),
 		BorrowRate:    proto.calculateAPY(borrowInterestRate),
@@ -180,18 +189,15 @@ func (proto *CompoundProtocol) fetch(asset string) (rate CompoundRate, err error
 		TotalReserves: totalReserves,
 		Cash:          cash,
 	}
-	return
+	return rate, nil
 }
 
 func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	// https://compound.finance/docs#protocol-math
 	//Calculate APY
-	var blocksPerDay float64
-	var daysPerYear float64
-	var ethMantissa float64
-	ethMantissa = 1e18
-	blocksPerDay = 4 * 60 * 24
-	daysPerYear = 365
+	ethMantissa := 1e18
+	blocksPerDay := float64(4 * 60 * 24)
+	daysPerYear := float64(365)
 
 	rateInt, err := strconv.ParseFloat(rate.String(), 64)
 	if err != nil {
@@ -201,11 +207,12 @@ func (proto *CompoundProtocol) calculateAPY(rate *big.Int) float64 {
 	return rates * 100
 }
 
-func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
+func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate) {
 	for asset := range proto.assets {
 		Compoundrate, err := proto.fetch(asset)
 		if err != nil {
 			log.Errorf("error fetching asset %s: %v", asset, err)
+			continue
 		}
 		rates = append(rates, Compoundrate)
 	}
@@ -214,11 +221,8 @@ func (proto *CompoundProtocol) fetchALL() (rates []CompoundRate, err error) {
 
 func (proto *CompoundProtocol) UpdateRate() error {
 	log.Printf("Updating DEFI Rate for %+v\n ", proto.protocol.Name)
-	markets, err := proto.fetchALL()
-	if err != nil {
-		log.Error("error fetching rates %+v\n ", err)
-		return err
-	}
+	markets := proto.fetchALL()
+
 	for _, market := range markets {
 		asset := &dia.DefiRate{
 			Timestamp:     time.Now(),
@@ -238,10 +242,8 @@ func (proto *CompoundProtocol) UpdateRate() error {
 func (proto *CompoundProtocol) getTotalSupply() (float64, error) {
 	// total supply for a market is explained here:
 	// https://compound.finance/docs/ctokens#get-cash
-	markets, err := proto.fetchALL()
-	if err != nil {
-		return 0, err
-	}
+	markets := proto.fetchALL()
+
 	sum := float64(0)
 	for i := 0; i < len(markets); i++ {
 		supply, err := strconv.ParseFloat(markets[i].Cash.String(), 64)

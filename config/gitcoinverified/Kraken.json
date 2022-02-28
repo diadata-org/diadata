@@ -1,0 +1,22 @@
+{
+  "Tokens": [
+    {
+      "Symbol": "REP",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x221657776846890989a759BA2973e427DfF5C9bB"
+    },
+    {
+      "Symbol": "USDC",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    },
+    {
+      "Symbol": "MOVR",
+      "Exchange": "Kraken",
+      "Blockchain": "Moonriver",
+      "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    }
+  ]
+}

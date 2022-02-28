@@ -1,0 +1,32 @@
+{
+    "Pools": [
+        {
+            "Address": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "ForeignName": "WBNB-BUSD"
+        },
+        {
+            "Address": "0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE",
+            "ForeignName": "USDT-WBNB"
+        },
+        {
+            "Address": "0xA99b9bCC6a196397DA87FA811aEd293B1b488f44",
+            "ForeignName": "WOW-BUSD"
+        },
+        {
+            "Address": "0x73cAbBe6E05290A09B9432eb765521941C870E4D",
+            "ForeignName": "WOW-WBNB"
+        },
+        {
+            "Address": "0x6615CE60D71513aA4849269dD63821D324A23F8C",
+            "ForeignName": "WBNB-pCWS"
+        },
+        {
+            "Address": "0x4eF5C01c4ceCD87CfdC604edA447e5890a0c1b9E",
+            "ForeignName": "D100-WBNB"
+        },
+        {
+            "Address": "0x1Cb2Ec921f84EBCA394fedADc8EBdDc6071099D7",
+            "ForeignName": "DIA-BUSD"
+        }
+    ]
+}

@@ -1,10 +1,11 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/pkg/dia"
 	"math"
 	"testing"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 )
 
 func TestFilterMEDIRInternalRemoveOutliers(t *testing.T) {
@@ -20,7 +21,7 @@ func TestFilterMEDIRInternalRemoveOutliers(t *testing.T) {
 		{[]float64{50, 50, 50, 200, 50, 50, 50}, []float64{50, 50, 50, 50, 50, 50}},
 	}
 	for i, c := range cases {
-		cd := removeOutliers(c.samples)
+		cd, _ := removeOutliers(c.samples)
 		if len(cd) != len(c.filteredSamples) {
 			t.Errorf("Filter sample data %d failed expected:%d samples got %d", i, len(c.filteredSamples), len(cd))
 		} else {
@@ -49,7 +50,11 @@ func TestFilterMEDIRMedianCleanOutliers(t *testing.T) {
 	for i, c := range cases {
 		memory := 20
 		d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-		f := NewFilterMEDIR("XRP", "", d, memory)
+		assetXRP := dia.Asset{
+			Symbol: "XRP",
+			Name:   "XRP",
+		}
+		f := NewFilterMEDIR(assetXRP, "", d, memory)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)

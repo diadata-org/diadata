@@ -1,0 +1,22 @@
+{
+    "Coins": [
+        {
+            "Symbol": "DFYN",
+            "ForeignName": "DFYN-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARGO",
+            "ForeignName": "ARGO-ETH",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH-SNOW",
+            "Exchange": "UniswapV2",
+            "Ignore": false
+        }
+    ]
+}

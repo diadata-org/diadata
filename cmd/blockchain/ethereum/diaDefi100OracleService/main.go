@@ -6,17 +6,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"math/big"
 	"net/http"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaDefi100OracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -50,12 +50,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 	if len(lines) != 2 {
@@ -83,16 +89,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+		for range ticker.C {
+			err = periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
 			}
 		}
 	}()
@@ -136,27 +145,21 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 
 // getDefiMCFromCoingecko returns the market cap of the top 100 defi tokens
 func getDefiMCFromCoingecko() (float64, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://api.coingecko.com/api/v3/global/decentralized_finance_defi", nil)
+
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://api.coingecko.com/api/v3/global/decentralized_finance_defi", nil)
 	if err != nil {
 		log.Print(err)
 		return 0.0, err
 	}
-
-	response, err := client.Do(req)
+	contents, statusCode, err := utils.HTTPRequest(req)
 	if err != nil {
 		log.Print("Error sending request to server: ", err)
 		return 0.0, err
 	}
+	if statusCode != 200 {
+		return 0.0, fmt.Errorf("error on coingecko api with return code %d", statusCode)
+	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on coingecko api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return 0.0, err
-	}
 	type CoingeckoData struct {
 		Data struct {
 			DefiMarketCap string `json:"defi_market_cap"`
@@ -165,30 +168,25 @@ func getDefiMCFromCoingecko() (float64, error) {
 	var rawdata CoingeckoData
 	err = json.Unmarshal(contents, &rawdata)
 	if err != nil {
-		return 0.0, fmt.Errorf("Error on unmarshaling data from coingecko:", contents)
+		return 0.0, fmt.Errorf("error on unmarshaling data from coingecko")
 	}
 	marketCap, err := strconv.ParseFloat(rawdata.Data.DefiMarketCap, 64)
 	if err != nil {
-		log.Error("Error parsing string %s to float", rawdata.Data.DefiMarketCap)
+		log.Errorf("Error parsing string %s to float", rawdata.Data.DefiMarketCap)
 	}
 
 	return marketCap, nil
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
+	}
+	if statusCode != 200 {
+		return nil, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.Quotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {

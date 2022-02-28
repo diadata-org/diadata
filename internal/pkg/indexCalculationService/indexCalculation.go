@@ -3,47 +3,62 @@ package indexCalculationService
 import (
 	"math"
 	"sort"
+	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
-var (MAX_RELATIVE_CAP float64 = 0.3)
+var (
+	MAX_RELATIVE_CAP float64 = 0.3
+)
 
 // Get supply and price information for the index constituents
-func GetIndexBasket(symbolsList []string) ([]models.CryptoIndexConstituent, error) {
+func GetIndexBasket(assets []dia.Asset) ([]models.CryptoIndexConstituent, error) {
+
 	db, err := models.NewDataStore()
+	if err != nil {
+		log.Error("Error connecting to datastore")
+		return nil, err
+	}
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Error("Error connecting to datastore")
 		return nil, err
 	}
 
 	var constituents []models.CryptoIndexConstituent
+	// fetch Ethereum assets by address
+	for _, assetStripped := range assets {
+		asset, err := relDB.GetAsset(assetStripped.Address, assetStripped.Blockchain)
+		if err != nil {
+			log.Error("error fetching asset from asset table")
+			return nil, err
+		}
+		constituent := models.CryptoIndexConstituent{Asset: asset}
+		constituents = append(constituents, constituent)
+	}
 
-	for _, symbol := range symbolsList {
-		currQuotation, err := db.GetQuotation(symbol)
+	for _, constituent := range constituents {
+
+		currSupply, err := db.GetSupplyInflux(constituent.Asset, time.Time{}, time.Time{})
 		if err != nil {
-			log.Error("Error when retrieveing quotation for ", symbol)
+			log.Error("Error when retrieveing supply for ", constituent.Asset.Symbol)
 			return nil, err
 		}
-		currSupply, err := db.GetLatestSupply(symbol)
+		currLastTrade, err := db.GetLastTrades(constituent.Asset, "", 1, false)
 		if err != nil {
-			log.Error("Error when retrieveing supply for ", symbol)
-			return nil, err
-		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(symbol, 1)
-		if err != nil {
-			log.Error("Error when retrieveing lst trades for ", symbol)
+			log.Error("Error when retrieveing lst trades for ", constituent.Asset.Symbol)
 			return nil, err
 		}
 		newConstituent := models.CryptoIndexConstituent{
-			Address:            "-",
-			Name:								currQuotation.Name,
-			Symbol:							currSupply.Symbol,
-			Price:							currLastTrade[0].EstimatedUSDPrice,
-			CirculatingSupply:	currSupply.CirculatingSupply,
-			Weight:             0.0,
-			CappingFactor:      0.0,
-			NumBaseTokens:      0.0,
+			Asset:             constituent.Asset,
+			Price:             currLastTrade[0].EstimatedUSDPrice,
+			CirculatingSupply: currSupply[0].CirculatingSupply,
+			Weight:            0.0,
+			CappingFactor:     0.0,
+			NumBaseTokens:     0.0,
 		}
 		constituents = append(constituents, newConstituent)
 	}
@@ -65,7 +80,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 		for _, constituent := range *constituents {
 			marketCap := constituent.CirculatingSupply * constituent.Price
 			marketCaps = append(marketCaps, MarketCap{
-				constituent.Symbol,
+				constituent.Asset.Symbol,
 				marketCap,
 				0.0,
 				1.0,
@@ -85,7 +100,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 		offendor := marketCaps[numOffendors]
 		uncappedConstituentsMc := 0.0
 
-		for (offendor.RawMarketCap * math.Pow((1 - MAX_RELATIVE_CAP), float64(numOffendors)) > MAX_RELATIVE_CAP * sumMarketCap) {
+		for offendor.RawMarketCap*math.Pow((1-MAX_RELATIVE_CAP), float64(numOffendors)) > MAX_RELATIVE_CAP*sumMarketCap {
 			marketCaps[numOffendors].RelativeCap = MAX_RELATIVE_CAP
 			sumMarketCap -= offendor.RawMarketCap
 			numOffendors += 1
@@ -98,16 +113,16 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 
 		// 3. Go through all non-offending constitutes and fix their relative cap
 		for i, constituent := range marketCaps[numOffendors:] {
-			marketCaps[i + numOffendors].RelativeCap = constituent.RawMarketCap / sumMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors))
-			marketCaps[i + numOffendors].CappingFactor = 1.0
+			marketCaps[i+numOffendors].RelativeCap = constituent.RawMarketCap / sumMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors))
+			marketCaps[i+numOffendors].CappingFactor = 1.0
 			uncappedConstituentsMc += constituent.RawMarketCap
 		}
 		// 4. Go through all offending constitutes and set a capping factor (i.e. factor to multiply their MC)
 		for i, constituent := range marketCaps[:numOffendors] {
 			if uncappedConstituentsMc != 0 {
-				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors))) * uncappedConstituentsMc
+				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors))) * uncappedConstituentsMc
 			} else {
-				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP * float64(numOffendors)))
+				marketCaps[i].CappingFactor = MAX_RELATIVE_CAP / (constituent.RawMarketCap * (1 - MAX_RELATIVE_CAP*float64(numOffendors)))
 			}
 		}
 
@@ -140,7 +155,7 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 		// 6. Final step! Set data in the output struct
 		for i, mc := range marketCaps {
 			for j, constituent := range *constituents {
-				if mc.Symbol == constituent.Symbol {
+				if mc.Symbol == constituent.Asset.Symbol {
 					(*constituents)[j].CappingFactor = marketCaps[i].CappingFactor
 					(*constituents)[j].Weight = marketCaps[i].RelativeCap
 				}
@@ -153,65 +168,12 @@ func CalculateWeights(indexSymbol string, constituents *[]models.CryptoIndexCons
 
 		numConstituents := float64(len(*constituents))
 		for i, constituent := range *constituents {
-			if "SPICE" == constituent.Symbol {
+			if constituent.Asset.Symbol == "SPICE" {
 				(*constituents)[i].Weight = 0.025
 			} else {
-				(*constituents)[i].Weight = (1-0.025) / (numConstituents - 1)
+				(*constituents)[i].Weight = (1 - 0.025) / (numConstituents - 1)
 			}
 		}
 		return nil
 	}
-}
-
-func UpdateConstituentsMarketData(indexSymbol string, currentConstituents *[]models.CryptoIndexConstituent) error {
-	db, err := models.NewDataStore()
-	if err != nil {
-		log.Error("Error connecting to datastore")
-		return err
-	}
-	for i, c := range *currentConstituents {
-		currSupply, err := db.GetLatestSupply(c.Symbol)
-		if err != nil {
-			log.Error("Error when retrieveing supply for ", c.Symbol)
-			return err
-		}
-		currLastTrade, err := db.GetLastTradesAllExchanges(c.Symbol, 1)
-		if err != nil {
-			log.Error("Error when retrieveing last trades for ", c.Symbol)
-			return err
-		}
-		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice
-		(*currentConstituents)[i].CirculatingSupply = currSupply.CirculatingSupply
-	}
-
-	// Calculate current percentages: 1. get index value 2. Determine percentage of each asset
-	currIndexValue := GetIndexValue(indexSymbol, *currentConstituents)
-	if indexSymbol == "SCIFI" {
-		for i, _ := range *currentConstituents {
-			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].CirculatingSupply * (*currentConstituents)[i].CappingFactor) / currIndexValue
-			(*currentConstituents)[i].Percentage = currPercentage
-		}
-	} else {
-		// GBI
-		for i, _ := range *currentConstituents {
-			currPercentage := ((*currentConstituents)[i].Price * (*currentConstituents)[i].NumBaseTokens * 1e-16) / currIndexValue //1e-16 because index value is 100 at start
-			(*currentConstituents)[i].Percentage = currPercentage
-		}
-	}
-	return nil
-}
-
-func GetIndexValue(indexSymbol string, currentConstituents []models.CryptoIndexConstituent) float64 {
-	indexValue := 0.0
-	if indexSymbol == "SCIFI" {
-		for _, constituent := range currentConstituents {
-			indexValue += constituent.Price * constituent.CirculatingSupply * constituent.CappingFactor
-		}
-	} else {
-		// GBI etc
-		for _, constituent := range currentConstituents {
-			indexValue += constituent.Price * constituent.NumBaseTokens * 1e-16 //1e-16 because index value is 100 at start
-		}
-	}
-	return indexValue
 }

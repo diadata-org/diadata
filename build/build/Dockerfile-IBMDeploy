@@ -1,0 +1,42 @@
+# This file is a template, and might need editing before it works on your project.
+# This Dockerfile installs a compiled binary into a bare system.
+# You must either commit your compiled binary into source control (not recommended)
+# or build the binary first as part of a CI/CD pipeline.
+
+FROM ubuntu:20.04
+ARG IBM_Api_Key
+ARG IBM_Api_Region='us-south'
+
+RUN apt-get update && apt-get install -y apt-transport-https curl gnupg wget git && \
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list && \
+# "install" helm
+wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz && \
+tar xfvz helm-v3.5.4-linux-amd64.tar.gz && \
+mv linux-amd64/helm /usr/local/bin/ && \
+apt-get update && apt-get install -y kubectl
+
+RUN curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64 && \
+chmod +x ./kops && \
+mv ./kops /usr/local/bin/
+
+##check with
+#kubectl config current-context
+##should return main-net
+
+RUN wget https://download.clis.cloud.ibm.com/ibm-cloud-cli/1.5.1/IBM_Cloud_CLI_1.5.1_amd64.tar.gz && \
+tar xfvz IBM_Cloud_CLI_1.5.1_amd64.tar.gz && \
+cd Bluemix_CLI && chmod +x install &&  ./install
+
+RUN ibmcloud login --apikey $IBM_Api_Key -r eu-de && \
+ibmcloud plugin install container-service && \
+ibmcloud plugin install container-registry && \
+ibmcloud plugin install observe-service
+
+
+# check if it worked
+# RUN helm init
+
+##should return: Happy Helming!
+
+## CMD [ "kubectl" ]

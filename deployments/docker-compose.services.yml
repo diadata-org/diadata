@@ -10,6 +10,7 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+      - postgres-network
     logging:
       options:
         max-size: "50m"
@@ -27,6 +28,7 @@ services:
       - kafka-network
       - redis-network
       - influxdb-network
+      - postgres-network
     environment:
       - EXEC_MODE=production
     logging:
@@ -112,8 +114,11 @@ services:
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_pairdiscoveryservice:latest
     networks:
       - redis-network
+      - postgres-network
     environment:
       - EXEC_MODE=production
+    secrets:
+      - postgres_credentials
     logging:
       options:
         max-size: "50m"
@@ -126,6 +131,9 @@ services:
     networks:
       - redis-network
       - influxdb-network
+      - postgres-network
+    secrets:
+      - postgres_credentials
     environment:
       - EXEC_MODE=production
     logging:
@@ -142,3 +150,10 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+  postgres-network:
+    external:
+        name: postgres_postgres-network
+
+secrets:
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt

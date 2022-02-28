@@ -6,11 +6,12 @@ import (
 	"sync"
 	"time"
 
+	blockscrapers "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/block-scrapers"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/block-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,12 +26,12 @@ func main() {
 
 	scraperType := flag.String("blockchain", "Ethereum", "which blockchain")
 	flag.Parse()
-	var blockscraper scrapers.BlockScraperInterface
+	var blockscraper blockscrapers.BlockScraperInterface
 
 	switch *scraperType {
 	case "Ethereum":
 		log.Println("Block-scraper: Start scraping block data from Ethereum")
-		blockscraper = scrapers.NewEthereumScraper(rdb)
+		blockscraper = blockscrapers.NewEthereumScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -52,7 +53,6 @@ func handleBlockData(blockdatachannel chan dia.BlockData, wg *sync.WaitGroup, rd
 			log.Error("blockdatachannel error")
 			return
 		}
-		log.Infof("got block number %v: %v", blockdata.BlockNumber, blockdata.Data)
 		err := rdb.SetBlockData(blockdata)
 		if err != nil {
 			var pgErr *pgconn.PgError

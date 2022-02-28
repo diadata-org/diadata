@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "FTM",
+            "ForeignName": "FTM-SPIRIT",
+            "Exchange": "Spiritswap",
+            "Ignore": false
+        }
+    ]
+}

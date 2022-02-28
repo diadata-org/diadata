@@ -1,0 +1,11 @@
+{
+    "Coins": [
+
+        {
+      "Exchange": "Influx",
+      "ForeignName": "DUMMY",
+      "Ignore": false,
+      "Symbol": "DUM"
+    }
+    ]
+}

@@ -6,11 +6,10 @@ import (
 	"time"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 // SetStockQuotationInflux stores a stock quotation to an influx batch.
-func (db *DB) SetStockQuotation(sq StockQuotation) error {
+func (datastore *DB) SetStockQuotation(sq StockQuotation) error {
 	fields := map[string]interface{}{
 		"priceAsk": sq.PriceAsk,
 		"priceBid": sq.PriceBid,
@@ -27,9 +26,9 @@ func (db *DB) SetStockQuotation(sq StockQuotation) error {
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("Write influx batch: ", err)
 	}

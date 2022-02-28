@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
-	log "github.com/sirupsen/logrus"
 )
 
 // SetNFTClass stores @nftClass in postgres.
