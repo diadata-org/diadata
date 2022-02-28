@@ -1113,10 +1113,10 @@ func (datastore *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endti
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' AND \"blockchain\"='%s' AND time<now() ORDER BY time DESC LIMIT 1"
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' AND \"blockchain\"='%s' AND time<now() ORDER BY DESC LIMIT 1"
 		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain)
 	} else {
-		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d AND time < %d AND \"address\" = '%s' AND \"blockchain\"='%s'"
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d AND time < %d AND \"address\" = '%s' AND \"blockchain\"='%s' ORDER BY DESC"
 		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain)
 	}
 	res, err := queryInfluxDB(datastore.influxClient, q)

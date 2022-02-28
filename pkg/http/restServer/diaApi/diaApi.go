@@ -245,6 +245,52 @@ func (env *Env) GetSupply(c *gin.Context) {
 	}
 }
 
+// GetSupply returns latest supply of token with @symbol
+func (env *Env) GetAssetSupply(c *gin.Context) {
+	address := c.Param("address")
+	blockchain := c.Param("blockchain")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+	var starttime, endtime time.Time
+	if starttimeStr != "" && endtimeStr != "" {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			log.Error("parse starttime: ", err)
+		} else {
+			starttime = time.Unix(starttimeInt, 0)
+		}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			log.Error("parse starttime: ", err)
+		} else {
+			endtime = time.Unix(endtimeInt, 0)
+		}
+	}
+
+	values, err := env.DataStore.GetSupplyInflux(dia.Asset{Address: address, Blockchain: blockchain}, starttime, endtime)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+			return
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	// Fetch decimals from local cache implementation.
+	for i := range values {
+		values[i].Asset.Decimals = env.getDecimalsFromCache(DECIMALS_CACHE, values[i].Asset)
+	}
+
+	if len(values) == 1 {
+		c.JSON(http.StatusOK, values[0])
+	} else {
+		c.JSON(http.StatusOK, values)
+	}
+
+}
+
 // GetSupplies returns a time range of supplies of token with @symbol
 func (env *Env) GetSupplies(c *gin.Context) {
 	symbol := c.Param("symbol")
