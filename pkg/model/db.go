@@ -33,6 +33,12 @@ type Datastore interface {
 	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
 	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
+
+	SetDiaTotalSupply(totalSupply float64) error
+	GetDiaTotalSupply() (float64, error)
+	SetDiaCirculatingSupply(circulatingSupply float64) error
+	GetDiaCirculatingSupply() (float64, error)
+
 	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)

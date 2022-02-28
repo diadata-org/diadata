@@ -276,6 +276,10 @@ func main() {
 		diaGroup.GET("/indexValue/:symbol", diaApiEnv.GetCryptoIndexValues)
 		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
+		// External supply reports
+		diaGroup.GET("/diaTotalSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaTotalSupply))
+		diaGroup.GET("/diaCirculatingSupply", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
+
 		// Endpoints for NFTs
 		diaGroup.GET("/AllNFTClasses/:blockchain", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetAllNFTClasses))
 		diaGroup.GET("/NFTClasses/:limit/:offset", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetNFTClasses))
