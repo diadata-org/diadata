@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/diadata-org/diadata/pkg/model"
+	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
@@ -35,6 +35,12 @@ type candlestickMessage struct {
 	Source       string
 }
 
+type vwapResult struct {
+	ForeignName string
+	Value       float64
+	Timestamp   time.Time
+}
+
 func getCandleStickMessageIdent(message candlestickMessage) string {
 	return message.Source + "-" + message.ForeignName
 }
@@ -42,10 +48,10 @@ func getCandleStickMessageIdent(message candlestickMessage) string {
 func main() {
 
 	wg := sync.WaitGroup{}
-	/*ds, err := models.NewDataStore()
+	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore error: ", err)
-	}*/
+	}
 	ticker := time.NewTicker(time.Duration(tickerDurationSeconds * time.Second))
 
 	assets := flag.String("assets", "BTC,ETH", "asset symbols to query (from BTC, ETH, SOL, GLMR, DOT")
@@ -67,6 +73,12 @@ func main() {
 			log.Error("makeVWAP: ", err)
 		}
 		log.Info("vwap: ", vwap)
+		for key, value := range vwap {
+			err = ds.SetVWAP(key, value, t)
+			if err != nil {
+				log.Error("set VWAP: ", err)
+			}
+		}
 	}
 }
 
