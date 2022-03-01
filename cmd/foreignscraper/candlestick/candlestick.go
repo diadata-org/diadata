@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,6 +19,11 @@ import (
 	_ "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	tickerDurationSeconds = 60
+	outlierThreshold      = 0.03
 )
 
 type candlestickMessage struct {
@@ -28,6 +35,10 @@ type candlestickMessage struct {
 	Source       string
 }
 
+func getCandleStickMessageIdent(message candlestickMessage) string {
+	return message.Source + "-" + message.ForeignName
+}
+
 func main() {
 
 	wg := sync.WaitGroup{}
@@ -35,9 +46,10 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}*/
+	ticker := time.NewTicker(time.Duration(tickerDurationSeconds * time.Second))
 
 	assets := flag.String("assets", "BTC,ETH", "asset symbols to query (from BTC, ETH, SOL, GLMR, DOT")
-	exchanges := flag.String("exchanges", "GateIO", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, Gateio")
+	exchanges := flag.String("exchanges", "Binance,GateIO,Kucoin,Huobi", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, GateIO")
 	flag.Parse()
 	cChan := make(chan candlestickMessage)
 
@@ -46,11 +58,15 @@ func main() {
 		go handleExchangeScraper(exchange, *assets, cChan, &wg)
 	}
 	defer wg.Wait()
-	for {
-		// TO DO: Handle data every n minutes.
-		log.Info("data: ", <-cChan)
+	for t := range ticker.C {
+		channelData := getRecentDataFromChannel(cChan, t)
+		pairData := getPairData(channelData)
+		vwap, err := makeVWAP(pairData, outlierThreshold)
+		if err != nil {
+			log.Error("makeVWAP: ", err)
+		}
+		log.Info("vwap: ", vwap)
 	}
-
 }
 
 func handleExchangeScraper(exchange string, assets string, candleChan chan candlestickMessage, wg *sync.WaitGroup) {
@@ -111,12 +127,12 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		data := messageMap["data"].(map[string]interface{})["k"].(map[string]interface{})
+		timeUnix := messageMap["data"].(map[string]interface{})["E"].(float64)
 
 		closingPriceString := data["c"].(string)
 		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
 		volumeString := data["V"].(string)
 		volume, err := strconv.ParseFloat(volumeString, 64)
-		timeUnix := data["t"].(float64)
 
 		candleStickMessage := candlestickMessage{
 			ForeignName:  data["s"].(string),
@@ -208,7 +224,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 		return err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	bodyMap := make(map[string]interface{})
 	err = json.Unmarshal(body, &bodyMap)
 	if err != nil {
@@ -216,7 +232,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 	}
 	token := bodyMap["data"].(map[string]interface{})["token"].(string)
 
-	conn, _, err := ws.DefaultDialer.Dial(wsBaseString + token, nil)
+	conn, _, err := ws.DefaultDialer.Dial(wsBaseString+token, nil)
 	if err != nil {
 		return err
 	}
@@ -277,7 +293,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 	log.Info("Entered Huobi handler")
 	wsBaseString := "wss://api.huobi.pro/ws"
-	
+
 	conn, _, err := ws.DefaultDialer.Dial(wsBaseString, nil)
 	if err != nil {
 		return err
@@ -292,14 +308,14 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 	for {
 		_, zippedMessage, err := conn.ReadMessage()
 		bytesReader := bytes.NewReader([]byte(zippedMessage))
-		gzreader, err := gzip.NewReader(bytesReader);
+		gzreader, err := gzip.NewReader(bytesReader)
 		if err != nil {
-    	return err
+			return err
 		}
 
-		message, err := ioutil.ReadAll(gzreader);
+		message, err := ioutil.ReadAll(gzreader)
 		if err != nil {
-    	return err
+			return err
 		}
 
 		if err != nil {
@@ -350,6 +366,117 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 	return nil
 }
 
-func makeCandle(candleData []candlestickMessage) {
+// getRecentDataFromChannel returns the most recent data for each identifier
+// Source-ForeignName sitting in the channel @candleChan. It reads data from the channel
+// until the first data point hits @endtime.
+func getRecentDataFromChannel(candleChan chan candlestickMessage, endtime time.Time) map[string]candlestickMessage {
+	lastCandleData := make(map[string]candlestickMessage)
+	for message := range candleChan {
+		// log.Info("message: ", message)
+		// Channels are passed by reference. As the channel is continuously written to,
+		// we need to stop fetching from it as soon as endtime is passed.
+		if message.Timestamp.After(endtime) {
+			return lastCandleData
+		}
+		messageIdent := getCandleStickMessageIdent(message)
+		if _, ok := lastCandleData[messageIdent]; !ok {
+			lastCandleData[messageIdent] = message
+		} else {
+			if message.Timestamp.After(lastCandleData[messageIdent].Timestamp) {
+				lastCandleData[messageIdent] = message
+			}
+		}
+	}
+	return lastCandleData
+}
 
+// makeCandle returns the VWAP of a trading pair in USD.
+// It discards everything above 30 basis points from the median.
+func getPairData(candleData map[string]candlestickMessage) map[string][]candlestickMessage {
+	pairData := make(map[string][]candlestickMessage)
+	for key, value := range candleData {
+		pair := strings.Split(key, "-")[1]
+		if _, ok := pairData[pair]; !ok {
+			pairData[pair] = []candlestickMessage{value}
+		} else {
+			pairData[pair] = append(pairData[pair], value)
+		}
+	}
+	return pairData
+}
+
+// makeVWAP takes a map with foreign names as keys and []candlestickMessage as values,
+// containing all values of the underlying pair across sources, i.e. (at most) one value per source.
+func makeVWAP(pairData map[string][]candlestickMessage, threshold float64) (map[string]float64, error) {
+	vwapMap := make(map[string]float64)
+	for key, value := range pairData {
+		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), threshold)
+		if err != nil {
+			return vwapMap, err
+		}
+		vwapMap[key], err = vwap(cleanedPrices, cleanedVolumes)
+		if err != nil {
+			return vwapMap, err
+		}
+	}
+	return vwapMap, nil
+}
+
+// vwap returns the volume weighted average price for the slices @prices and @volumes.
+func vwap(prices []float64, volumes []float64) (float64, error) {
+	if len(prices) != len(volumes) {
+		return 0, errors.New("number of prices does not equal number of volumes ")
+	}
+	avg := float64(0)
+	totalVolume := float64(0)
+	for i := 0; i < len(prices); i++ {
+		avg += prices[i] * math.Abs(volumes[i])
+		totalVolume += math.Abs(volumes[i])
+	}
+	return avg / totalVolume, nil
+}
+
+// discardOutliers discards every data point from @prices and @volumes that deviates from
+// te price median by more than @threshold.
+func discardOutliers(prices []float64, volumes []float64, threshold float64) (newPrices []float64, newVolumes []float64, err error) {
+	if len(prices) != len(volumes) {
+		err = errors.New("number of prices does not equal number of volumes ")
+		return
+	}
+	median := computeMedian(prices)
+	for i := 0; i < len(prices); i++ {
+		if math.Abs(prices[i]-median) < threshold {
+			newPrices = append(newPrices, prices[i])
+			newVolumes = append(newVolumes, volumes[i])
+		}
+	}
+	return
+}
+
+// computeMedian returns the median of @samples.
+func computeMedian(samples []float64) (median float64) {
+	var length = len(samples)
+	if length > 0 {
+		sort.Float64s(samples)
+		if length%2 == 0 {
+			median = (samples[length/2-1] + samples[length/2]) / 2
+		} else {
+			median = samples[(length+1)/2-1]
+		}
+	}
+	return
+}
+
+func getPrices(messages []candlestickMessage) (prices []float64) {
+	for _, message := range messages {
+		prices = append(prices, message.ClosingPrice)
+	}
+	return
+}
+
+func getVolumes(messages []candlestickMessage) (volumes []float64) {
+	for _, message := range messages {
+		volumes = append(volumes, message.Volume)
+	}
+	return
 }
