@@ -186,12 +186,12 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 			}
 			// Circulating supply
 			log.Infof("get supply for %s..", currentIndex.Asset.Symbol)
-			diaSupply, err := datastore.GetSupplyInflux(currentIndex.Asset, time.Time{}, time.Time{})
-			if err != nil || len(diaSupply) < 1 {
+			diaSupply, err := datastore.GetSupplyCache(currentIndex.Asset)
+			if err != nil {
 				log.Error(err)
 				currentIndex.CirculatingSupply = 0
 			} else {
-				currentIndex.CirculatingSupply = diaSupply[0].CirculatingSupply
+				currentIndex.CirculatingSupply = diaSupply.CirculatingSupply
 			}
 			// Calculation time
 			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
