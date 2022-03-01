@@ -3,7 +3,6 @@ package indexCalculationService
 import (
 	"math"
 	"sort"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -42,7 +41,7 @@ func GetIndexBasket(assets []dia.Asset) ([]models.CryptoIndexConstituent, error)
 
 	for _, constituent := range constituents {
 
-		currSupply, err := db.GetSupplyInflux(constituent.Asset, time.Time{}, time.Time{})
+		currSupply, err := db.GetSupplyCache(constituent.Asset)
 		if err != nil {
 			log.Error("Error when retrieveing supply for ", constituent.Asset.Symbol)
 			return nil, err
@@ -55,7 +54,7 @@ func GetIndexBasket(assets []dia.Asset) ([]models.CryptoIndexConstituent, error)
 		newConstituent := models.CryptoIndexConstituent{
 			Asset:             constituent.Asset,
 			Price:             currLastTrade[0].EstimatedUSDPrice,
-			CirculatingSupply: currSupply[0].CirculatingSupply,
+			CirculatingSupply: currSupply.CirculatingSupply,
 			Weight:            0.0,
 			CappingFactor:     0.0,
 			NumBaseTokens:     0.0,

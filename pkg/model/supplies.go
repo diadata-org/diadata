@@ -60,6 +60,14 @@ func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time, relD
 	}
 }
 
+func (datastore *DB) GetSupplyCache(asset dia.Asset) (supply dia.Supply, err error) {
+	err = datastore.redisClient.Get(getKeySupply(asset)).Scan(&supply)
+	if err != nil {
+		return
+	}
+	return supply, nil
+}
+
 func (datastore *DB) SetSupply(supply *dia.Supply) error {
 	key := getKeySupply(supply.Asset)
 	log.Debug("setting ", key, supply)

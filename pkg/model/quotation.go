@@ -264,14 +264,11 @@ func (datastore *DB) GetAssetsMarketCap(asset dia.Asset) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	supply, err := datastore.GetSupplyInflux(asset, time.Time{}, time.Time{})
+	supply, err := datastore.GetSupplyCache(asset)
 	if err != nil {
 		return 0, err
 	}
-	if len(supply) > 0 {
-		return price * supply[0].CirculatingSupply, nil
-	}
-	return 0, errors.New("no circulating supply available")
+	return price * supply.CirculatingSupply, nil
 }
 
 // GetTopAssetByVolume returns the asset with highest volume among all assets with symbol @symbol.

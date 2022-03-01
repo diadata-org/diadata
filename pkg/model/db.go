@@ -30,6 +30,7 @@ type Datastore interface {
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
 	GetLatestSupply(string, *RelDB) (*dia.Supply, error)
+	GetSupplyCache(asset dia.Asset) (dia.Supply, error)
 	GetSupply(string, time.Time, time.Time, *RelDB) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
 	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)

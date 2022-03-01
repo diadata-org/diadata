@@ -516,10 +516,10 @@ func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexCons
 		price = tradeObject.EstimatedUSDPrice
 	}
 	var circSupply float64
-	supplyObject, err := datastore.GetSupplyInflux(indexAsset, time.Time{}, time.Time{})
-	if err == nil && len(supplyObject) > 0 {
+	supplyObject, err := datastore.GetSupplyCache(indexAsset)
+	if err == nil {
 		// Supply does exist
-		circSupply = supplyObject[0].CirculatingSupply
+		circSupply = supplyObject.CirculatingSupply
 	}
 
 	currCryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexAsset.Symbol, 1)
@@ -542,7 +542,7 @@ func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexCons
 func (datastore *DB) UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error {
 
 	for i, c := range *currentConstituents {
-		currSupply, err := datastore.GetSupplyInflux(c.Asset, time.Time{}, time.Time{})
+		currSupply, err := datastore.GetSupplyCache(c.Asset)
 		if err != nil {
 			log.Error("Error when retrieveing supply for ", c.Asset.Symbol)
 			return err
@@ -553,7 +553,7 @@ func (datastore *DB) UpdateConstituentsMarketData(index string, currentConstitue
 			return err
 		}
 		(*currentConstituents)[i].Price = currLastTrade[0].EstimatedUSDPrice
-		(*currentConstituents)[i].CirculatingSupply = currSupply[0].CirculatingSupply
+		(*currentConstituents)[i].CirculatingSupply = currSupply.CirculatingSupply
 	}
 
 	// Calculate current percentages: 1. get index value 2. Determine percentage of each asset
