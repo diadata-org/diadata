@@ -489,13 +489,13 @@ func (datastore *DB) GetIndexPrice(asset dia.Asset, time time.Time, window time.
 func (datastore *DB) GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent {
 	var constituents []CryptoIndexConstituent
 	log.Infof("get crypto index %s from influx..", index.Symbol)
-	cryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), index.Symbol, 1)
+	cryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), index.Symbol, 1)
 	if err != nil {
 		log.Error("get crypto index: ", err)
 		return constituents
 	}
 	for _, constituent := range cryptoIndex[0].Constituents {
-		curr, err := datastore.GetCryptoIndexConstituents(time.Now().Add(-5*time.Hour), time.Now(), constituent.Asset, index.Symbol)
+		curr, err := datastore.GetCryptoIndexConstituents(time.Now().Add(-24*time.Hour), time.Now(), constituent.Asset, index.Symbol)
 		if err != nil {
 			log.Error("get crypto index constituents: ", err)
 			return constituents
