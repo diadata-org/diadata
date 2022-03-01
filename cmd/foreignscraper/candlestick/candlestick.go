@@ -306,41 +306,43 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		log.Printf("recv Huobi: %s", message)
+		//log.Printf("recv Huobi: %s", message)
+
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
 			return err
 		}
-		// Check if we got a status msg
-		if messageMap["type"] != "message" {
+
+		// Check if we got a ping
+		if messageMap["ping"] != nil {
+			pingNumber := messageMap["ping"].(float64)
+			fmt.Println(pingNumber)
+			msgToWrite := fmt.Sprintf("{\"pong\":%d", pingNumber)
+			conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 			continue
 		}
-		result := messageMap["data"].(map[string]interface{})
-		candles := result["candles"].([]interface{})
 
-		closingPriceString := candles[2].(string)
-		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
-		if err != nil {
-			return err
+		if messageMap["tick"] == nil {
+			continue
 		}
-		volumeString := candles[5].(string)
-		volume, err := strconv.ParseFloat(volumeString, 64)
-		if err != nil {
-			return err
-		}
-		timeUnix := result["time"].(float64)
-		timeUnix /= 1e9
 
-		foreignNameString := result["symbol"].(string)
-		foreignNameFiltered := strings.Split(foreignNameString, "-")[0]
+		result := messageMap["tick"].(map[string]interface{})
+
+		closingPrice := result["close"].(float64)
+		volume := result["amount"].(float64)
+		timeUnix := messageMap["ts"].(float64)
+		timeUnix /= 1e3
+
+		foreignNameString := messageMap["ch"].(string)
+		foreignNameFiltered := strings.Split(foreignNameString, ".")[1]
 
 		candleStickMessage := candlestickMessage{
-			ForeignName:  foreignNameFiltered + "USDT",
+			ForeignName:  strings.ToUpper(foreignNameFiltered),
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
-			Source:       "Kucoin",
+			Source:       "Huobi",
 		}
 
 		candleChan <- candleStickMessage
