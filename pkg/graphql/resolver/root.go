@@ -31,7 +31,7 @@ func (r *DiaResolver) GetQuotation(ctx context.Context, args struct{ Symbol grap
 }
 
 func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql.NullString }) (*SupplyResolver, error) {
-	q, err := r.DS.GetLatestSupply(*args.Symbol.Value)
+	q, err := r.DS.GetLatestSupply(*args.Symbol.Value, &r.RelDB)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql
 func (r *DiaResolver) GetSupplies(ctx context.Context, args struct{ Symbol graphql.NullString }) (*[]*SupplyResolver, error) {
 	starttime := time.Unix(1, 0)
 	endtime := time.Now()
-	q, err := r.DS.GetSupply(*args.Symbol.Value, starttime, endtime)
+	q, err := r.DS.GetSupply(*args.Symbol.Value, starttime, endtime, &r.RelDB)
 	if err != nil {
 		return nil, err
 	}

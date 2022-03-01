@@ -21,8 +21,8 @@ func getKeyDiaCirculatingSupply() string {
 	return "dia_diaCirculatingSupply"
 }
 
-func (datastore *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
-	val, err := datastore.GetSupply(symbol, time.Time{}, time.Time{})
+func (datastore *DB) GetLatestSupply(symbol string, relDB *RelDB) (*dia.Supply, error) {
+	val, err := datastore.GetSupply(symbol, time.Time{}, time.Time{}, relDB)
 	if err != nil {
 		log.Error(err)
 		return &dia.Supply{}, err
@@ -30,14 +30,11 @@ func (datastore *DB) GetLatestSupply(symbol string) (*dia.Supply, error) {
 	return &val[0], err
 }
 
-func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]dia.Supply, error) {
-	relDB, err := NewRelDataStore()
-	if err != nil {
-		log.Errorln("NewDataStore:", err)
-	}
+func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time, relDB *RelDB) ([]dia.Supply, error) {
+
 	// First get asset with @symbol with largest market cap.
-	topAsset, err := datastore.GetTopAssetByVolume(symbol, relDB)
-	if err != nil {
+	topAsset, err := relDB.GetTopAssetByVolume(symbol)
+	if err != nil || len(topAsset) < 1 {
 		log.Error(err)
 		return []dia.Supply{}, err
 	}
@@ -54,7 +51,7 @@ func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time) ([]d
 		retArray = append(retArray, s)
 		return retArray, nil
 	default:
-		value, err := datastore.GetSupplyInflux(topAsset, starttime, endtime)
+		value, err := datastore.GetSupplyInflux(topAsset[0], starttime, endtime)
 		if err != nil {
 			log.Errorf("Error: %v on GetSupply %v\n", err, symbol)
 			return []dia.Supply{}, err

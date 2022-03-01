@@ -233,7 +233,7 @@ func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
 	symbol := c.Param("symbol")
-	s, err := env.DataStore.GetLatestSupply(symbol)
+	s, err := env.DataStore.GetLatestSupply(symbol, &env.RelDB)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -317,7 +317,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	s, err := env.DataStore.GetSupply(symbol, starttime, endtime)
+	s, err := env.DataStore.GetSupply(symbol, starttime, endtime, &env.RelDB)
 	if len(s) == 0 {
 		c.JSON(http.StatusOK, make([]string, 0))
 		return
