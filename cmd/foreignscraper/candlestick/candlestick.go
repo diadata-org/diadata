@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -71,6 +74,12 @@ func handleExchangeScraper(exchange string, assets string, candleChan chan candl
 		err := scrapeKucoin(assets, candleChan)
 		if err != nil {
 			log.Error("Kucoin scraper: ", err)
+		}
+	case "Huobi":
+		log.Println("Huobi Scraper: Start scraping")
+		err := scrapeHuobi(assets, candleChan)
+		if err != nil {
+			log.Error("Huobi scraper: ", err)
 		}
 	default:
 		log.Errorf("Unknown scraper name %s", exchange)
@@ -143,7 +152,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		log.Printf("recv GateIO: %s", message)
+		//log.Printf("recv GateIO: %s", message)
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
@@ -179,7 +188,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			ForeignName:  strings.ToUpper(foreignNameFiltered) + "USDT",
 			ClosingPrice: closingPrice,
 			Volume:       volume,
-			Timestamp:    time.Unix(int64(timeUnix/1000), 0),
+			Timestamp:    time.Unix(int64(timeUnix), 0),
 			Source:       "GateIO",
 		}
 
@@ -257,7 +266,81 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
-			Source:       "GateIO",
+			Source:       "Kucoin",
+		}
+
+		candleChan <- candleStickMessage
+	}
+	return nil
+}
+
+func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
+	log.Info("Entered Huobi handler")
+	wsBaseString := "wss://api.huobi.pro/ws"
+	
+	conn, _, err := ws.DefaultDialer.Dial(wsBaseString, nil)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	for _, asset := range strings.Split(assets, ",") {
+		msgToWrite := fmt.Sprintf("{\"sub\":\"market.%susdt.kline.1min\",\"id\":\"id1\"}", strings.ToLower(asset))
+		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
+	}
+
+	for {
+		_, zippedMessage, err := conn.ReadMessage()
+		bytesReader := bytes.NewReader([]byte(zippedMessage))
+		gzreader, err := gzip.NewReader(bytesReader);
+		if err != nil {
+    	return err
+		}
+
+		message, err := ioutil.ReadAll(gzreader);
+		if err != nil {
+    	return err
+		}
+
+		if err != nil {
+			log.Errorln("read:", err)
+			return err
+		}
+		log.Printf("recv Huobi: %s", message)
+		messageMap := make(map[string]interface{})
+		err = json.Unmarshal(message, &messageMap)
+		if err != nil {
+			return err
+		}
+		// Check if we got a status msg
+		if messageMap["type"] != "message" {
+			continue
+		}
+		result := messageMap["data"].(map[string]interface{})
+		candles := result["candles"].([]interface{})
+
+		closingPriceString := candles[2].(string)
+		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
+		if err != nil {
+			return err
+		}
+		volumeString := candles[5].(string)
+		volume, err := strconv.ParseFloat(volumeString, 64)
+		if err != nil {
+			return err
+		}
+		timeUnix := result["time"].(float64)
+		timeUnix /= 1e9
+
+		foreignNameString := result["symbol"].(string)
+		foreignNameFiltered := strings.Split(foreignNameString, "-")[0]
+
+		candleStickMessage := candlestickMessage{
+			ForeignName:  foreignNameFiltered + "USDT",
+			ClosingPrice: closingPrice,
+			Volume:       volume,
+			Timestamp:    time.Unix(int64(timeUnix), 0),
+			Source:       "Kucoin",
 		}
 
 		candleChan <- candleStickMessage
