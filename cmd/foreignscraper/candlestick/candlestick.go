@@ -123,12 +123,6 @@ func handleExchangeScraper(exchange string, assets string, candleChan chan candl
 		if err != nil {
 			log.Error("HitBTC scraper: ", err)
 		}
-	case "Coinbase":
-		log.Println("Coinbase Scraper: Start scraping")
-		err := scrapeCoinbase(assets, candleChan)
-		if err != nil {
-			log.Error("Coinbase scraper: ", err)
-		}
 	default:
 		log.Errorf("Unknown scraper name %s", exchange)
 	}
@@ -307,6 +301,7 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
+		//log.Printf("recv Binance: %s", message)
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		data := messageMap["data"].(map[string]interface{})["k"].(map[string]interface{})
@@ -325,7 +320,9 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			Source:       "Binance",
 		}
 
-		candleChan <- candleStickMessage
+		go func () {
+			candleChan <- candleStickMessage
+		}()
 
 	}
 	return nil
