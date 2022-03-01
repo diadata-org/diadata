@@ -110,6 +110,16 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 			// Get index fields
 			currentIndex := CryptoIndex{}
+
+			// Address
+			if res[0].Series[0].Values[i][7] != nil {
+				currentIndex.Asset.Address = res[0].Series[0].Values[i][7].(string)
+			}
+			// Blockchain
+			if res[0].Series[0].Values[i][8] != nil {
+				currentIndex.Asset.Blockchain = res[0].Series[0].Values[i][8].(string)
+			}
+
 			// Symbol
 			if res[0].Series[0].Values[i][2] != nil {
 				currentIndex.Asset.Symbol = res[0].Series[0].Values[i][2].(string)
@@ -202,14 +212,6 @@ func (datastore *DB) GetCryptoIndex(starttime time.Time, endtime time.Time, symb
 			// Name
 			if res[0].Series[0].Values[i][6] != nil {
 				currentIndex.Asset.Name = res[0].Series[0].Values[i][6].(string)
-			}
-			// Address
-			if res[0].Series[0].Values[i][7] != nil {
-				currentIndex.Asset.Address = res[0].Series[0].Values[i][7].(string)
-			}
-			// Blockchain
-			if res[0].Series[0].Values[i][8] != nil {
-				currentIndex.Asset.Blockchain = res[0].Series[0].Values[i][8].(string)
 			}
 
 			// Get constituents
