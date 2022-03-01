@@ -7,7 +7,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -50,7 +49,7 @@ func main() {
 	ticker := time.NewTicker(time.Duration(tickerDurationSeconds * time.Second))
 
 	assets := flag.String("assets", "BTC,ETH", "asset symbols to query (from BTC, ETH, SOL, GLMR, DOT")
-	exchanges := flag.String("exchanges", "Binance", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, Gateio")
+	exchanges := flag.String("exchanges", "Binance,GateIO,Kucoin,Huobi", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, GateIO")
 	flag.Parse()
 	cChan := make(chan candlestickMessage)
 
@@ -225,7 +224,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 		return err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	bodyMap := make(map[string]interface{})
 	err = json.Unmarshal(body, &bodyMap)
 	if err != nil {
