@@ -315,10 +315,6 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 
 		message, err := ioutil.ReadAll(gzreader)
 		if err != nil {
-			return err
-		}
-
-		if err != nil {
 			log.Errorln("read:", err)
 			return err
 		}
@@ -332,9 +328,8 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 
 		// Check if we got a ping
 		if messageMap["ping"] != nil {
-			pingNumber := messageMap["ping"].(float64)
-			fmt.Println(pingNumber)
-			msgToWrite := fmt.Sprintf("{\"pong\":%d", pingNumber)
+			pingNumber := int(messageMap["ping"].(float64))
+			msgToWrite := fmt.Sprintf("{\"pong\":%d}", pingNumber)
 			conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 			continue
 		}
@@ -361,7 +356,9 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 			Source:       "Huobi",
 		}
 
-		candleChan <- candleStickMessage
+		go func() {
+			candleChan <- candleStickMessage
+		}()
 	}
 	return nil
 }
