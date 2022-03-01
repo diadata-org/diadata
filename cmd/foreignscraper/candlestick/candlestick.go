@@ -117,9 +117,96 @@ func handleExchangeScraper(exchange string, assets string, candleChan chan candl
 		if err != nil {
 			log.Error("OKEx scraper: ", err)
 		}
+	case "HitBTC":
+		log.Println("HitBTC Scraper: Start scraping")
+		err := scrapeHitbtc(assets, candleChan)
+		if err != nil {
+			log.Error("HitBTC scraper: ", err)
+		}
+	case "Coinbase":
+		log.Println("Coinbase Scraper: Start scraping")
+		err := scrapeCoinbase(assets, candleChan)
+		if err != nil {
+			log.Error("Coinbase scraper: ", err)
+		}
 	default:
 		log.Errorf("Unknown scraper name %s", exchange)
 	}
+}
+
+func scrapeHitbtc(assets string, candleChan chan candlestickMessage) error {
+	log.Info("Entered HitBTC handler")
+	wsBaseString := "wss://api.hitbtc.com/api/3/ws/public"
+
+	conn, _, err := ws.DefaultDialer.Dial(wsBaseString, nil)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	for _, asset := range strings.Split(assets, ",") {
+		msgToWrite := fmt.Sprintf("{\"method\":\"subscribe\",\"ch\":\"candles/M1\",\"params\":{\"symbols\":[\"%sUSDT\"],\"limit\":10},\"id\": 1}", strings.ToUpper(asset))
+		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
+	}
+
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Errorln("read:", err)
+			return err
+		}
+		//log.Printf("recv HitBTC: %s", message)
+		messageMap := make(map[string]interface{})
+		err = json.Unmarshal(message, &messageMap)
+		if err != nil {
+			return err
+		}
+
+		// Check if we got a status msg
+		if messageMap["result"] != nil {
+			continue
+		}
+		// or the initial snapshot
+		if messageMap["snapshot"] != nil {
+			continue
+		}
+
+		update := messageMap["update"].(map[string]interface{})
+		assetKey := ""
+		for k := range update {
+			assetKey = k
+			break
+		}
+
+		content := update[assetKey].([]interface{})
+		result := content[0].(map[string]interface{})
+
+		closingPriceString := result["c"].(string)
+		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
+		if err != nil {
+			return err
+		}
+		volumeString := result["v"].(string)
+		volume, err := strconv.ParseFloat(volumeString, 64)
+		if err != nil {
+			return err
+		}
+		timeUnix := result["t"].(float64)
+
+		foreignNameString := assetKey
+
+		candleStickMessage := candlestickMessage{
+			ForeignName:  strings.ToUpper(foreignNameString),
+			ClosingPrice: closingPrice,
+			Volume:       volume,
+			Timestamp:    time.Unix(int64(timeUnix)/1000, 0),
+			Source:       "HitBTC",
+		}
+
+		go func() {
+			candleChan <- candleStickMessage
+		}()
+	}
+	return nil
 }
 
 func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
@@ -270,6 +357,10 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 		if err != nil {
 			return err
 		}
+		if messageMap["error"] != nil {
+			log.Errorf("error GateIO: %s", message)
+			continue
+		}
 		result := messageMap["result"].(map[string]interface{})
 
 		// Check if we got a status msg
@@ -304,7 +395,9 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			Source:       "GateIO",
 		}
 
-		candleChan <- candleStickMessage
+		go func() {
+			candleChan <- candleStickMessage
+		}()
 	}
 	return nil
 }
@@ -380,8 +473,14 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 			Timestamp:    time.Unix(int64(timeUnix), 0),
 			Source:       "Kucoin",
 		}
+		
+		// send a ping for every msg TODO: set to timer
+		msgToWrite := fmt.Sprintf("{\"id\":%d,\"type\":\"ping\"}", 1)
+		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 
-		candleChan <- candleStickMessage
+		go func() {
+			candleChan <- candleStickMessage
+		}()
 	}
 	return nil
 }
@@ -517,6 +616,7 @@ func makeVWAP(pairData map[string][]candlestickMessage, threshold float64) (map[
 
 // vwap returns the volume weighted average price for the slices @prices and @volumes.
 func vwap(prices []float64, volumes []float64) (float64, error) {
+	//log.Info("prices, volumes: ", prices, volumes)
 	if len(prices) != len(volumes) {
 		return 0, errors.New("number of prices does not equal number of volumes ")
 	}
