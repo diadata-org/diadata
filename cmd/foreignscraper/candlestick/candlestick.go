@@ -24,7 +24,7 @@ import (
 
 const (
 	tickerDurationSeconds = 60
-	outlierThreshold      = 0.03
+	outlierThreshold      = 1
 )
 
 type candlestickMessage struct {
@@ -62,6 +62,7 @@ func main() {
 	for t := range ticker.C {
 		channelData := getRecentDataFromChannel(cChan, t)
 		pairData := getPairData(channelData)
+		log.Info("pair data: ", pairData)
 		vwap, err := makeVWAP(pairData, outlierThreshold)
 		if err != nil {
 			log.Error("makeVWAP: ", err)
@@ -513,7 +514,11 @@ func vwap(prices []float64, volumes []float64) (float64, error) {
 		avg += prices[i] * math.Abs(volumes[i])
 		totalVolume += math.Abs(volumes[i])
 	}
-	return avg / totalVolume, nil
+	if totalVolume > 0 {
+		return avg / totalVolume, nil
+	} else {
+		return 0, errors.New("no volume")
+	}
 }
 
 // discardOutliers discards every data point from @prices and @volumes that deviates from
