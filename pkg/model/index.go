@@ -522,7 +522,7 @@ func (datastore *DB) IndexValueCalculation(currentConstituents []CryptoIndexCons
 		circSupply = supplyObject[0].CirculatingSupply
 	}
 
-	currCryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-5*time.Hour), time.Now(), indexAsset.Symbol, 1)
+	currCryptoIndex, err := datastore.GetCryptoIndex(time.Now().Add(-24*time.Hour), time.Now(), indexAsset.Symbol, 1)
 	if err != nil {
 		log.Error(err)
 	}
