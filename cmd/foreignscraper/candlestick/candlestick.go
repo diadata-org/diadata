@@ -18,14 +18,20 @@ import (
 	"time"
 
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
-	tickerDurationSeconds = 60
-	outlierBasisPoints    = float64(30)
-	bufferSize            = 10000
+	tickerDurationDefault     = "60"
+	outlierBasisPointsDefault = "30"
+	bufferSize                = 10000
+)
+
+var (
+	tickerDurationSeconds int64
+	outlierBasisPoints    float64
 )
 
 type candlestickMessage struct {
@@ -49,7 +55,19 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	ticker := time.NewTicker(time.Duration(tickerDurationSeconds * time.Second))
+
+	tickerDurationString := utils.Getenv("TICKER_DURATION", tickerDurationDefault)
+	tickerDurationSeconds, err = strconv.ParseInt(tickerDurationString, 10, 64)
+	if err != nil {
+		log.Error("parse ticker duration from env variable: ", err)
+	}
+	ticker := time.NewTicker(time.Duration(tickerDurationSeconds) * time.Second)
+
+	outlierBasisPointsString := utils.Getenv("BASIS_POINTS", outlierBasisPointsDefault)
+	outlierBasisPoints, err = strconv.ParseFloat(outlierBasisPointsString, 64)
+	if err != nil {
+		log.Error("parse basis points from env variable: ", err)
+	}
 
 	assets := flag.String("assets", "BTC,ETH", "asset symbols to query (from BTC, ETH, SOL, GLMR, DOT")
 	exchanges := flag.String("exchanges", "Binance,GateIO,Kucoin,Huobi", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, GateIO")
@@ -560,7 +578,7 @@ func getRecentDataFromChannel(candleChan chan candlestickMessage, endtime time.T
 		if message.ScrapeTime.After(endtime) {
 			return lastCandleData
 		}
-		if endtime.Sub(message.Timestamp) > time.Duration(tickerDurationSeconds*time.Second) || message.Timestamp.Sub(endtime) > 0 {
+		if endtime.Sub(message.Timestamp) > time.Duration(tickerDurationSeconds)*time.Second || message.Timestamp.Sub(endtime) > 0 {
 			continue
 		}
 		messageIdent := getCandleStickMessageIdent(message)
@@ -592,10 +610,10 @@ func getPairData(candleData map[string]candlestickMessage) map[string][]candlest
 
 // makeVWAP takes a map with foreign names as keys and []candlestickMessage as values,
 // containing all values of the underlying pair across sources, i.e. (at most) one value per source.
-func makeVWAP(pairData map[string][]candlestickMessage, threshold float64) (map[string]float64, error) {
+func makeVWAP(pairData map[string][]candlestickMessage, basispoints float64) (map[string]float64, error) {
 	vwapMap := make(map[string]float64)
 	for key, value := range pairData {
-		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), threshold)
+		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), basispoints)
 		if err != nil {
 			return vwapMap, err
 		}
