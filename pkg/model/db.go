@@ -137,7 +137,8 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
-	SetVWAP(foreignName string, value float64, timestamp time.Time) error
+	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
+	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)
 
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
@@ -206,6 +207,7 @@ const (
 	influxDbStockQuotationsTable         = "stockquotations"
 	influxDBAssetQuotationsTable         = "assetQuotations"
 	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
+	influxDbVwapFireflyTable             = "VwapFirefly"
 
 	influxDBDefaultURL = "http://influxdb:8086"
 )
@@ -1297,7 +1299,7 @@ func (datastore *DB) getZSETLastValue(key string) (float64, int64, error) {
 	return value, unixTime, err
 }
 
-func (datastore *DB) SetVWAP(foreignName string, value float64, timestamp time.Time) error {
+func (datastore *DB) SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error {
 	// Create a point and add to batch
 	tags := map[string]string{
 		"foreignName": foreignName,
@@ -1305,11 +1307,42 @@ func (datastore *DB) SetVWAP(foreignName string, value float64, timestamp time.T
 	fields := map[string]interface{}{
 		"value": value,
 	}
-	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, timestamp)
+	pt, err := clientInfluxdb.NewPoint(influxDbVwapFireflyTable, tags, fields, timestamp)
 	if err != nil {
 		log.Errorln("new filter influx:", err)
 	} else {
 		datastore.addPoint(pt)
 	}
 	return err
+}
+
+func (datastore *DB) GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) (values []float64, timestamps []time.Time, err error) {
+
+	influxQuery := "SELECT value FROM %s WHERE time > %d AND time <= %d AND foreignName = '%s' ORDER BY DESC"
+	q := fmt.Sprintf(influxQuery, influxDbVwapFireflyTable, starttime.UnixNano(), endtime.UnixNano(), foreignName)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			var value float64
+			var timestamp time.Time
+			timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return
+			}
+			value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+
+			values = append(values, value)
+			timestamps = append(timestamps, timestamp)
+		}
+	} else {
+		err = errors.New("no data available in given time range")
+		return
+	}
+	return
 }

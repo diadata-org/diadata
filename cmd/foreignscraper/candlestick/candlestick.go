@@ -73,7 +73,7 @@ func main() {
 		}
 		log.Info("vwap: ", vwap)
 		for key, value := range vwap {
-			err = ds.SetVWAP(key, value, t)
+			err = ds.SetVWAPFirefly(key, value, t)
 			if err != nil {
 				log.Error("set VWAP: ", err)
 			}
