@@ -267,7 +267,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			ForeignName:  foreignNameFiltered + "USDT",
 			ClosingPrice: closingPrice,
 			Volume:       volume,
-			Timestamp:    timeParsed,
+			Timestamp:    timeParsed.Add(1 * time.Minute),
 			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
@@ -334,7 +334,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 	}
 	defer conn.Close()
 	for _, asset := range strings.Split(assets, ",") {
-		msgToWrite := fmt.Sprintf("{\"time\":30,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
+		msgToWrite := fmt.Sprintf("{\"time\":10,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 	}
 
