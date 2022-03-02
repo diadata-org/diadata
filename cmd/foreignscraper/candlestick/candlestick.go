@@ -33,6 +33,7 @@ type candlestickMessage struct {
 	ClosingPrice float64
 	Volume       float64
 	Timestamp    time.Time
+	ScrapeTime   time.Time
 	Source       string
 }
 
@@ -198,6 +199,7 @@ func scrapeHitbtc(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix)/1000, 0),
+			ScrapeTime:   time.Now(),
 			Source:       "HitBTC",
 		}
 
@@ -274,6 +276,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    timeParsed,
+			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
 
@@ -322,6 +325,7 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix/1000), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Binance",
 		}
 
@@ -394,6 +398,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "GateIO",
 		}
 
@@ -473,6 +478,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Kucoin",
 		}
 		
@@ -550,6 +556,7 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Huobi",
 		}
 
