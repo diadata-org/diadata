@@ -275,7 +275,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			ForeignName:  foreignNameFiltered + "USDT",
 			ClosingPrice: closingPrice,
 			Volume:       volume,
-			Timestamp:    timeParsed,
+			Timestamp:    timeParsed.Add(1 * time.Minute),
 			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
