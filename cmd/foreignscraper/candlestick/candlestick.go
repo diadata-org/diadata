@@ -34,6 +34,7 @@ type candlestickMessage struct {
 	ClosingPrice float64
 	Volume       float64
 	Timestamp    time.Time
+	ScrapeTime   time.Time
 	Source       string
 }
 
@@ -87,45 +88,50 @@ func main() {
 func handleExchangeScraper(exchange string, assets string, candleChan chan candlestickMessage, wg *sync.WaitGroup) {
 	defer wg.Done()
 	log.Printf("Entered Exchange handler for %s", exchange)
-	switch exchange {
-	case "Binance":
-		log.Println("Binance Scraper: Start scraping")
-		err := scrapeBinance(assets, candleChan)
-		if err != nil {
-			log.Error("Binance scraper: ", err)
+	for {
+		switch exchange {
+		case "Binance":
+			log.Println("Binance Scraper: Start scraping")
+			err := scrapeBinance(assets, candleChan)
+			if err != nil {
+				log.Error("Binance scraper: ", err)
+			}
+		case "GateIO":
+			log.Println("Gateio Scraper: Start scraping")
+			err := scrapeGateio(assets, candleChan)
+			if err != nil {
+				log.Error("GateIO scraper: ", err)
+			}
+		case "Kucoin":
+			log.Println("Kucoin Scraper: Start scraping")
+			err := scrapeKucoin(assets, candleChan)
+			if err != nil {
+				log.Error("Kucoin scraper: ", err)
+			}
+		case "Huobi":
+			log.Println("Huobi Scraper: Start scraping")
+			err := scrapeHuobi(assets, candleChan)
+			if err != nil {
+				log.Error("Huobi scraper: ", err)
+			}
+		case "OKEx":
+			log.Println("OKEx Scraper: Start scraping")
+			err := scrapeOkex(assets, candleChan)
+			if err != nil {
+				log.Error("OKEx scraper: ", err)
+			}
+		case "HitBTC":
+			log.Println("HitBTC Scraper: Start scraping")
+			err := scrapeHitbtc(assets, candleChan)
+			if err != nil {
+				log.Error("HitBTC scraper: ", err)
+			}
+		default:
+			log.Errorf("Unknown scraper name %s", exchange)
+			return
 		}
-	case "GateIO":
-		log.Println("Gateio Scraper: Start scraping")
-		err := scrapeGateio(assets, candleChan)
-		if err != nil {
-			log.Error("GateIO scraper: ", err)
-		}
-	case "Kucoin":
-		log.Println("Kucoin Scraper: Start scraping")
-		err := scrapeKucoin(assets, candleChan)
-		if err != nil {
-			log.Error("Kucoin scraper: ", err)
-		}
-	case "Huobi":
-		log.Println("Huobi Scraper: Start scraping")
-		err := scrapeHuobi(assets, candleChan)
-		if err != nil {
-			log.Error("Huobi scraper: ", err)
-		}
-	case "OKEx":
-		log.Println("OKEx Scraper: Start scraping")
-		err := scrapeOkex(assets, candleChan)
-		if err != nil {
-			log.Error("OKEx scraper: ", err)
-		}
-	case "HitBTC":
-		log.Println("HitBTC Scraper: Start scraping")
-		err := scrapeHitbtc(assets, candleChan)
-		if err != nil {
-			log.Error("HitBTC scraper: ", err)
-		}
-	default:
-		log.Errorf("Unknown scraper name %s", exchange)
+		log.Info("Sleeping 30sec for exchange ", exchange)
+		time.Sleep(30 * time.Second)
 	}
 }
 
@@ -194,6 +200,7 @@ func scrapeHitbtc(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix)/1000, 0),
+			ScrapeTime:   time.Now(),
 			Source:       "HitBTC",
 		}
 
@@ -270,6 +277,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    timeParsed,
+			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
 
@@ -318,6 +326,7 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix/1000), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Binance",
 		}
 
@@ -390,6 +399,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "GateIO",
 		}
 
@@ -469,6 +479,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Kucoin",
 		}
 
@@ -546,6 +557,7 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
 			Source:       "Huobi",
 		}
 
