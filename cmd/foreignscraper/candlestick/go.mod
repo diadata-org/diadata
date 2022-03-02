@@ -7,5 +7,3 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
