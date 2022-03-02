@@ -137,6 +137,8 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
+	SetVWAP(foreignName string, value float64, timestamp time.Time) error
+
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
@@ -1293,4 +1295,21 @@ func (datastore *DB) getZSETLastValue(key string) (float64, int64, error) {
 		}
 	}
 	return value, unixTime, err
+}
+
+func (datastore *DB) SetVWAP(foreignName string, value float64, timestamp time.Time) error {
+	// Create a point and add to batch
+	tags := map[string]string{
+		"foreignName": foreignName,
+	}
+	fields := map[string]interface{}{
+		"value": value,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, timestamp)
+	if err != nil {
+		log.Errorln("new filter influx:", err)
+	} else {
+		datastore.addPoint(pt)
+	}
+	return err
 }
