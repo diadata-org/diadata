@@ -2,8 +2,8 @@ package main
 
 import (
 	"bytes"
-	"compress/gzip"
 	"compress/flate"
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -25,6 +25,7 @@ import (
 const (
 	tickerDurationSeconds = 60
 	outlierThreshold      = 1
+	bufferSize            = 10000
 )
 
 type candlestickMessage struct {
@@ -58,7 +59,7 @@ func main() {
 	assets := flag.String("assets", "BTC,ETH", "asset symbols to query (from BTC, ETH, SOL, GLMR, DOT")
 	exchanges := flag.String("exchanges", "Binance,GateIO,Kucoin,Huobi", "exchanges to query (from Binance, Kucoin, Coinbase, Huobi, Okex, GateIO")
 	flag.Parse()
-	cChan := make(chan candlestickMessage)
+	cChan := make(chan candlestickMessage, bufferSize)
 
 	for _, exchange := range strings.Split(*exchanges, ",") {
 		wg.Add(1)
@@ -320,7 +321,7 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			Source:       "Binance",
 		}
 
-		go func () {
+		go func() {
 			candleChan <- candleStickMessage
 		}()
 
@@ -470,7 +471,7 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 			Timestamp:    time.Unix(int64(timeUnix), 0),
 			Source:       "Kucoin",
 		}
-		
+
 		// send a ping for every msg TODO: set to timer
 		msgToWrite := fmt.Sprintf("{\"id\":%d,\"type\":\"ping\"}", 1)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
@@ -626,7 +627,7 @@ func vwap(prices []float64, volumes []float64) (float64, error) {
 	if totalVolume > 0 {
 		return avg / totalVolume, nil
 	} else {
-		return 0, errors.New("no volume")
+		return 0, nil
 	}
 }
 
