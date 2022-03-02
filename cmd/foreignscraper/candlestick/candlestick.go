@@ -24,7 +24,7 @@ import (
 
 const (
 	tickerDurationSeconds = 60
-	outlierThreshold      = 1
+	outlierBasisPoints    = float64(30)
 	bufferSize            = 10000
 )
 
@@ -36,12 +36,6 @@ type candlestickMessage struct {
 	Timestamp    time.Time
 	ScrapeTime   time.Time
 	Source       string
-}
-
-type vwapResult struct {
-	ForeignName string
-	Value       float64
-	Timestamp   time.Time
 }
 
 func getCandleStickMessageIdent(message candlestickMessage) string {
@@ -71,7 +65,7 @@ func main() {
 		channelData := getRecentDataFromChannel(cChan, t)
 		pairData := getPairData(channelData)
 		log.Info("pair data: ", pairData)
-		vwap, err := makeVWAP(pairData, outlierThreshold)
+		vwap, err := makeVWAP(pairData, outlierBasisPoints)
 		if err != nil {
 			log.Error("makeVWAP: ", err)
 		}
@@ -204,11 +198,8 @@ func scrapeHitbtc(assets string, candleChan chan candlestickMessage) error {
 			Source:       "HitBTC",
 		}
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
 	}
-	return nil
 }
 
 func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
@@ -281,11 +272,9 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			Source:       "OKEx",
 		}
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
+
 	}
-	return nil
 }
 
 func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
@@ -330,12 +319,9 @@ func scrapeBinance(assets string, candleChan chan candlestickMessage) error {
 			Source:       "Binance",
 		}
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
 
 	}
-	return nil
 }
 
 func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
@@ -403,11 +389,8 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			Source:       "GateIO",
 		}
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
 	}
-	return nil
 }
 
 func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
@@ -487,11 +470,9 @@ func scrapeKucoin(assets string, candleChan chan candlestickMessage) error {
 		msgToWrite := fmt.Sprintf("{\"id\":%d,\"type\":\"ping\"}", 1)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
+
 	}
-	return nil
 }
 
 func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
@@ -561,11 +542,8 @@ func scrapeHuobi(assets string, candleChan chan candlestickMessage) error {
 			Source:       "Huobi",
 		}
 
-		go func() {
-			candleChan <- candleStickMessage
-		}()
+		candleChan <- candleStickMessage
 	}
-	return nil
 }
 
 // getRecentDataFromChannel returns the most recent data for each identifier
@@ -579,6 +557,9 @@ func getRecentDataFromChannel(candleChan chan candlestickMessage, endtime time.T
 		// we need to stop fetching from it as soon as endtime is passed.
 		if message.Timestamp.After(endtime) {
 			return lastCandleData
+		}
+		if endtime.Sub(message.ScrapeTime) > time.Duration(tickerDurationSeconds*time.Second) {
+			continue
 		}
 		messageIdent := getCandleStickMessageIdent(message)
 		if _, ok := lastCandleData[messageIdent]; !ok {
@@ -644,13 +625,14 @@ func vwap(prices []float64, volumes []float64) (float64, error) {
 }
 
 // discardOutliers discards every data point from @prices and @volumes that deviates from
-// te price median by more than @threshold.
-func discardOutliers(prices []float64, volumes []float64, threshold float64) (newPrices []float64, newVolumes []float64, err error) {
+// the price median by more than @basispoints basis points.
+func discardOutliers(prices []float64, volumes []float64, basispoints float64) (newPrices []float64, newVolumes []float64, err error) {
 	if len(prices) != len(volumes) {
 		err = errors.New("number of prices does not equal number of volumes ")
 		return
 	}
 	median := computeMedian(prices)
+	threshold := basispoints * float64(0.0001) * median
 	for i := 0; i < len(prices); i++ {
 		if math.Abs(prices[i]-median) < threshold {
 			newPrices = append(newPrices, prices[i])
