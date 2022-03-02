@@ -1353,6 +1353,65 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 }
 
 // -----------------------------------------------------------------------------
+// CUSTOMIZED PRODUCTS
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetVwapFirefly(c *gin.Context) {
+	foreignname := c.Param("ticker")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	var starttime, endtime time.Time
+	if starttimeStr == "" || endtimeStr == "" {
+		starttime = time.Now().Add(time.Duration(-4 * time.Hour))
+		endtime = time.Now()
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	type vwapObj struct {
+		Ticker    string
+		Value     float64
+		Timestamp time.Time
+	}
+	values, timestamps, err := env.DataStore.GetVWAPFirefly(foreignname, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	if starttimeStr == "" || endtimeStr == "" {
+		response := vwapObj{
+			Ticker:    foreignname,
+			Value:     values[0],
+			Timestamp: timestamps[0],
+		}
+		c.JSON(http.StatusOK, response)
+	} else {
+		var response []vwapObj
+		for i := 0; i < len(values); i++ {
+			tmp := vwapObj{
+				Ticker:    foreignname,
+				Value:     values[i],
+				Timestamp: timestamps[i],
+			}
+			response = append(response, tmp)
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+// -----------------------------------------------------------------------------
 // CRYPTO INDEX
 // -----------------------------------------------------------------------------
 

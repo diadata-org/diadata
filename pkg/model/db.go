@@ -207,7 +207,7 @@ const (
 	influxDbStockQuotationsTable         = "stockquotations"
 	influxDBAssetQuotationsTable         = "assetQuotations"
 	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
-	influxDbVwapFireflyTable             = "VwapFirefly"
+	influxDbVwapFireflyTable             = "vwapFirefly"
 
 	influxDBDefaultURL = "http://influxdb:8086"
 )
@@ -1300,7 +1300,6 @@ func (datastore *DB) getZSETLastValue(key string) (float64, int64, error) {
 }
 
 func (datastore *DB) SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error {
-	// Create a point and add to batch
 	tags := map[string]string{
 		"foreignName": foreignName,
 	}

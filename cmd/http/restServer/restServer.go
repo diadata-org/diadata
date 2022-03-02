@@ -267,6 +267,9 @@ func main() {
 		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignQuotation))
 		diaGroup.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
 
+		// Endpoints for customized products
+		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetVwapFirefly))
+
 		// Gold asset
 		diaGroup.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
 		diaGroup.GET("/goldPaxgGrams", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
