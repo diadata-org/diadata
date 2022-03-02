@@ -62,7 +62,9 @@ func main() {
 	}
 	defer wg.Wait()
 	for t := range ticker.C {
+		log.Info("channel before takeout: ", len(cChan))
 		channelData := getRecentDataFromChannel(cChan, t)
+		log.Info("channel after takeout: ", len(cChan))
 		pairData := getPairData(channelData)
 		log.Info("pair data: ", pairData)
 		vwap, err := makeVWAP(pairData, outlierBasisPoints)
@@ -555,10 +557,10 @@ func getRecentDataFromChannel(candleChan chan candlestickMessage, endtime time.T
 		// log.Info("message: ", message)
 		// Channels are passed by reference. As the channel is continuously written to,
 		// we need to stop fetching from it as soon as endtime is passed.
-		if message.Timestamp.After(endtime) {
+		if message.ScrapeTime.After(endtime) {
 			return lastCandleData
 		}
-		if endtime.Sub(message.ScrapeTime) > time.Duration(tickerDurationSeconds*time.Second) {
+		if endtime.Sub(message.Timestamp) > time.Duration(tickerDurationSeconds*time.Second) || message.Timestamp.Sub(endtime) > 0 {
 			continue
 		}
 		messageIdent := getCandleStickMessageIdent(message)
