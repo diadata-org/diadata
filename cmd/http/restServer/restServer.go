@@ -67,7 +67,8 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
-	cachingTimeShort = time.Minute * 2
+	cachingTime20Secs = 20 * time.Second
+	cachingTimeShort  = time.Minute * 2
 	// cachingTimeMedium = time.Minute * 10
 	cachingTimeLong = time.Minute * 100
 )
@@ -268,7 +269,7 @@ func main() {
 		diaGroup.GET("/foreignSymbols/:source", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetForeignSymbols))
 
 		// Endpoints for customized products
-		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetVwapFirefly))
+		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePage(memoryStore, cachingTime20Secs, diaApiEnv.GetVwapFirefly))
 
 		// Gold asset
 		diaGroup.GET("/goldPaxgOunces", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
