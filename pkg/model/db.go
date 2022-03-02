@@ -1312,6 +1312,12 @@ func (datastore *DB) SetVWAPFirefly(foreignName string, value float64, timestamp
 	} else {
 		datastore.addPoint(pt)
 	}
+
+	err = datastore.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("Write influx batch: ", err)
+	}
+
 	return err
 }
 
