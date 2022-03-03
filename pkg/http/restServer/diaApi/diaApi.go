@@ -1491,6 +1491,7 @@ func (env *Env) GetCryptoIndexValues(c *gin.Context) {
 	symbol := c.Param("symbol")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
+	frequency := c.Query("frequency")
 	maxResults := 0
 
 	// Set times depending on what is given by the query parameters
@@ -1530,7 +1531,13 @@ func (env *Env) GetCryptoIndexValues(c *gin.Context) {
 		endtime = time.Unix(endtimeInt, 0)
 	}
 
-	q, err := env.DataStore.GetCryptoIndexValues(starttime, endtime, symbol, maxResults)
+	var q []models.CryptoIndex
+	var err error
+	if frequency != "" {
+		q, err = env.DataStore.GetCryptoIndexValuesSpaced(starttime, endtime, symbol, frequency)
+	} else {
+		q, err = env.DataStore.GetCryptoIndexValues(starttime, endtime, symbol, maxResults)
+	}
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
