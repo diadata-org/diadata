@@ -207,12 +207,12 @@ func main() {
 	diaGroup := r.Group("/v1")
 	{
 		// Endpoints for cryptocurrencies/exchanges
-		diaGroup.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
+		diaGroup.GET("/quotation/:symbol", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetQuotation))
 		diaGroup.GET("/assetQuotation/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetAssetQuotation))
 		diaGroup.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
 		diaGroup.GET("/lastTradesAsset/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLastTradesAsset))
-		diaGroup.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
-		diaGroup.GET("/assetSupply/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetAssetSupply))
+		diaGroup.GET("/supply/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
+		diaGroup.GET("/assetSupply/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetSupply))
 		diaGroup.GET("/supplies/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
 		//  Deprectated - > split up in specific endpoints
 		// diaGroup.GET("/symbol/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
