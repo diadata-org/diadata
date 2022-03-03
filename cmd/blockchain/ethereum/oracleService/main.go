@@ -267,7 +267,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 // ------------------------------------------------------------------------------------------------
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
@@ -284,7 +284,7 @@ func getQuotationFromDia(symbol string) (*models.Quotation, error) {
 }
 
 func getSupplyFromDia(symbol string) (*dia.Supply, error) {
-	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "/v1/supply/" + symbol)
+	contents, statusCode, err := utils.GetRequest(dia.BaseUrl + "v1/supply/" + symbol)
 	if err != nil {
 		return nil, err
 	}
