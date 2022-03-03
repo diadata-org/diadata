@@ -1,20 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"flag"
 	"fmt"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaDfynOracleService"
 	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
-	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -23,56 +22,43 @@ import (
 )
 
 func main() {
-	/*
-	 * Read in Oracle address
-	 */
-	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys_dfyn", "File with wallet secrets")
-	var blockchainNode = flag.String("blockchainNode", "https://matic-mainnet-full-rpc.bwarelabs.com", "Node address for blockchain connection")
-	var sleepSeconds = flag.Int("sleepSeconds", 1, "Number of seconds to sleep between calls")
-	var frequencySeconds = flag.Int("frequencySeconds", 120, "Number of seconds to sleep between checking oracle runs")
-	var deviationBips = flag.Int("deviationBips", 1, "Permille of deviation to trigger an oracle update")
-	var chainId = flag.Int64("chainId", 137, "Chain-ID of the network to connect to")
-	flag.Parse()
-
-	/*
-	 * Read secrets for unlocking the ETH account
-	 */
-	var lines []string
-	file, err := os.Open(*secretsFile) // Read in key information
+	key := utils.Getenv("PRIVATE_KEY", "")
+	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to parse sleepSeconds: %v")
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chainId: %v")
 	}
-	if len(lines) != 2 {
-		log.Fatal("Secrets file should have exactly two lines")
+	deviationBips, err := strconv.Atoi(utils.Getenv("DEVIATION_BIPS", "10"))
+	if err != nil {
+		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
-	key := lines[0]
-	key_password := lines[1]
 
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
 
-	conn, err := ethclient.Dial(*blockchainNode)
+	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(*chainId))
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
 	var contract *diaDfynOracleService.DIADfynOracle
-	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
+	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
@@ -80,13 +66,13 @@ func main() {
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
+	ticker := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	oldPrice := 0.0
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				oldPrice, err = periodicOracleUpdateHelper(*sleepSeconds, oldPrice, *deviationBips, auth, contract, conn)
+				oldPrice, err = periodicOracleUpdateHelper(sleepSeconds, oldPrice, deviationBips, auth, contract, conn)
 				if err != nil {
 					log.Println(err)
 				}
@@ -211,7 +197,7 @@ func updateOracle(
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	response, err := http.Get(dia.BaseUrl + "v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}

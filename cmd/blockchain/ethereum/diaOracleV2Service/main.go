@@ -12,7 +12,6 @@ import (
 	"time"
 
 	diaOracleServiceV2 "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -43,8 +42,9 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
-	addresses := []string{"0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0CFe474a39fC4607F49e0aB5c41F05967bdA8c39", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"}
-	blockchains := []string{"Bitcoin", "Ethereum", "Ethereum", "Ethereum", "Shiden", "Fantom", "Fantom", "Kusama", "Astar"}
+	//BTC,ETH,DIA,USDC,SDN,FTM,KSM,ASTR,Metis
+	addresses := []string{"0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000","0x9E32b13ce7f2E80A01932B42553652E053D6ed8e"}
+	blockchains := []string{"Bitcoin", "Ethereum", "Ethereum", "Ethereum", "Shiden", "Fantom", "Kusama", "Astar", "Ethereum"}
 	oldPrices := make(map[int]float64)
 
 	/*
@@ -198,28 +198,6 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 
 	defer response.Body.Close()
 	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	var quotation models.Quotation
-	err = quotation.UnmarshalBinary(contents)
-	if err != nil {
-		return nil, err
-	}
-	return &quotation, nil
-}
-
-func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
 	}
 	contents, err := ioutil.ReadAll(response.Body)

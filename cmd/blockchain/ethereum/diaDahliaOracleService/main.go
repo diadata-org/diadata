@@ -193,25 +193,3 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 	}
 	return &quotation, nil
 }
-
-func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/quotation/" + strings.ToUpper(symbol))
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	var quotation models.Quotation
-	err = quotation.UnmarshalBinary(contents)
-	if err != nil {
-		return nil, err
-	}
-	return &quotation, nil
-}
