@@ -208,7 +208,7 @@ func main() {
 	{
 		// Endpoints for cryptocurrencies/exchanges
 		diaGroup.GET("/quotation/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetQuotation))
-		diaGroup.GET("/assetQuotation/:blockchain/:address", diaApiEnv.GetAssetQuotation)
+		diaGroup.GET("/assetQuotation/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetAssetQuotation))
 		diaGroup.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
 		diaGroup.GET("/lastTradesAsset/:blockchain/:address", cache.CachePage(memoryStore, cachingTimeLong, diaApiEnv.GetLastTradesAsset))
 		diaGroup.GET("/supply/:symbol", cache.CachePage(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
