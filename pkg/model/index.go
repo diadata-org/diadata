@@ -349,6 +349,81 @@ func (datastore *DB) GetCryptoIndexValues(starttime time.Time, endtime time.Time
 	return indices, nil
 }
 
+// GetCryptoIndexValuesSpaced returns a slice of CryptoIndex spaced by @frequency. Here, @frequency should be a string
+// formatted such that it is readable by an influx query, i.e. 4h, 10d,...
+func (datastore *DB) GetCryptoIndexValuesSpaced(starttime time.Time, endtime time.Time, symbol string, frequency string) ([]CryptoIndex, error) {
+	var indices []CryptoIndex
+	var address string
+	var blockchain string
+
+	// First get address and blockchain of index with @symbol:
+	q0 := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE time > %d AND time <= %d AND \"symbol\" = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+	res0, err := queryInfluxDB(datastore.influxClient, q0)
+	if err != nil {
+		return indices, err
+	}
+	if len(res0) > 0 && len(res0[0].Series) > 0 {
+		if res0[0].Series[0].Values[0][1] != nil {
+			address = res0[0].Series[0].Values[0][1].(string)
+		}
+		if res0[0].Series[0].Values[0][2] != nil {
+			blockchain = res0[0].Series[0].Values[0][2].(string)
+		}
+	}
+
+	q := fmt.Sprintf("SELECT LAST(*) FROM %s WHERE time > %d AND time <= %d AND \"symbol\" = '%s' GROUP BY time(%s) ORDER BY DESC", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), symbol, frequency)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return indices, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			if res[0].Series[0].Values[i][2] == nil || res[0].Series[0].Values[i][4] == nil {
+				log.Warn("nil entry")
+				continue
+			}
+			// Get index fields
+			currentIndex := CryptoIndex{}
+
+			// Calculation time
+			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return indices, err
+			}
+
+			// Value
+			val, err := res[0].Series[0].Values[i][4].(json.Number).Float64()
+			if err != nil {
+				return indices, err
+			}
+
+			// Divisor
+			divisor := 9507172.247746756
+			// Check if divisor exists in DB, otherwise use the default value
+			if res[0].Series[0].Values[i][2] != nil {
+				divisor, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+				if err != nil {
+					return indices, err
+				}
+			}
+			if divisor != 0 && currentIndex.CalculationTime.After(time.Unix(0, 1645522022949984161)) {
+				currentIndex.Value = val / divisor
+			} else {
+				currentIndex.Value = val
+			}
+
+			currentIndex.Asset.Address = address
+			currentIndex.Asset.Blockchain = blockchain
+			currentIndex.Asset.Symbol = symbol
+
+			indices = append(indices, currentIndex)
+
+		}
+	}
+	return indices, nil
+}
+
 // GetCryptoIndexConstituentPrice returns the price of cryptoindexconstituent by @symbol. Not used at the moment.
 func (datastore *DB) GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error) {
 	startdate := date.Add(-24 * time.Hour)
