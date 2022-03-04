@@ -1,15 +1,15 @@
-FROM golang:1.14 as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH
 
-COPY . .
-
-WORKDIR $GOPATH/src/github.com/diadata-org/diadata/cmd/blockchain/ethereum/diaArgoOracleService
+WORKDIR $GOPATH/src/
+COPY ./cmd/blockchain/ethereum/diaArgoOracleService ./
 
 RUN go install
 
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/diaArgoOracleService /bin/diaArgoOracleService
+COPY --from=build /config/ /config/
 
-ENTRYPOINT ["diaArgoOracleService"]
+CMD ["diaArgoOracleService"]
