@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleService"
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -39,7 +38,29 @@ func main() {
 		log.Fatalf("Failed to parse chainId: %v")
 	}
 
-	symbols := []string{"USDC", "USDT", "BUSD", "DAI", "WBTC", "ETH", "BNB", "SOLAR", "MOVR"}
+	addresses := []string{
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
+		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
+		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
+		"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", //WBTC
+		"0x0000000000000000000000000000000000000000", //ETH
+		"0x0000000000000000000000000000000000000000", //BNB
+		"0x6bD193Ee6D2104F14F94E2cA6efefae561A4334B", //SOLAR
+		"0x98878B06940aE243284CA214f92Bb71a2b032B8A", //WMOVR
+	}
+
+	blockchains := []string{
+		"Ethereum", //USDC
+		"Ethereum", //USDT
+		"BinanceSmartChain", //BUSD
+		"Ethereum", //DAI
+		"Ethereum", //WBTC
+		"Ethereum", //ETH
+		"BinanceSmartChain", //BNB
+		"Moonriver", //SOLAR
+		"Moonriver", //WMOVR
+	}
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -69,8 +90,9 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				for _, s := range symbols {
-					err = periodicOracleUpdateHelper(auth, contract, conn, s)
+				for i, address := range addresses {
+					blockchain := blockchains[i]
+					err = periodicOracleUpdateHelper(auth, contract, conn, blockchain, address)
 					if err != nil {
 						log.Println(err)
 					}
@@ -82,14 +104,14 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, symbol string) error {
+func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, blockchain string, address string) error {
 	// Get quotation for token and update Oracle
-	rawQ, err := getQuotationFromDia(symbol)
+	rawQ, err := getAssetQuotationFromDia(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", symbol, err)
+		log.Fatalf("Failed to retrieve %s quotation data on chain %s from DIA: %v", address, blockchain, err)
 		return err
 	}
-	rawQ.Name = symbol
+	rawQ.Name = rawQ.Symbol
 
 	err = updateQuotation(rawQ, auth, contract, conn)
 	if err != nil {
@@ -171,12 +193,8 @@ func updateOracle(
 	return nil
 }
 
-func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	urlBase := dia.BaseUrl
-	if symbol == "SOLAR" {
-		urlBase = "https://rest.diadata.org/"
-	}
-	response, err := http.Get(urlBase + "v1/quotation/" + strings.ToUpper(symbol))
+func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
+	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
