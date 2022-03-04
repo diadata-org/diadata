@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/blockchain/diaDafiOracleService
+module github.com/diadata-org/diadata/blockchain/diaArgoOracleService
 
 go 1.14
 
