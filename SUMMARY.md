@@ -19,6 +19,7 @@
         * [MEDIR: Median with Interquartile Range Filter](documentation/methodology/digital-assets/exchangeprices/medir-median-with-interquartile-range-filter.md)
         * [VWAP: Volume Weighted Average Price](documentation/methodology/digital-assets/exchangeprices/vwap-volume-weighted-average-price.md)
         * [VWAPIR: Volume Weighted Average Price with Interquartile Range Filter](documentation/methodology/digital-assets/exchangeprices/vwapir-volume-weighted-average-price-with-interquartile-range-filter.md)
+        * [EMA: Exponential Moving Average](documentation/methodology/digital-assets/exchangeprices/ema-exponential-moving-average.md)
       * [Circulating Supply Numbers](documentation/methodology/digital-assets/supplynumbers.md)
       * [Return Rates in Crypto Farming](documentation/methodology/digital-assets/return-rates-in-crypto-farming.md)
       * [Crypto Volatility Index](documentation/methodology/digital-assets/cvi.md)
