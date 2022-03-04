@@ -3,7 +3,7 @@ FROM us.icr.io/dia-registry/devops/build:latest as build
 WORKDIR $GOPATH
 
 WORKDIR $GOPATH/src/
-COPY ./cmd/blockchain/ethereum/diaiCardOracleService ./
+COPY ./cmd/blockchain/ethereum/diaCardOracleService ./
 
 RUN go install
 

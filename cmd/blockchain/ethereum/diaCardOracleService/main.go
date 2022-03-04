@@ -192,7 +192,7 @@ func updateOracle(
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/quotation/" + strings.ToUpper(symbol))
+	response, err := http.Get(dia.BaseUrl + "v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
