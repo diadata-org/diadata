@@ -106,12 +106,9 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 		log.Fatalf("Failed to retrieve BNB quotation data from DIA: %v", err)
 		return err
 	}
-	rawBNBS, err := getSupplyFromDia("BNB")
-	if err != nil {
-		log.Fatalf("Failed to retrieve BNB supply data from DIA: %v", err)
-		return err
-	}
-	err = updateQuotation(rawBNBQ, rawBNBS, auth, contract, conn)
+	var rawBNBS dia.Supply
+  rawBNBS.CirculatingSupply = 0.0
+	err = updateQuotation(rawBNBQ, &rawBNBS, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update BNB Oracle: %v", err)
 		return err
@@ -175,12 +172,9 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 		log.Fatalf("Failed to retrieve USDC quotation data from DIA: %v", err)
 		return err
 	}
-	rawUSDCS, err := getSupplyFromDia("USDC")
-	if err != nil {
-		log.Fatalf("Failed to retrieve USDC supply data from DIA: %v", err)
-		return err
-	}
-	err = updateQuotation(rawUSDCQ, rawUSDCS, auth, contract, conn)
+	var rawUSDCS dia.Supply
+  rawUSDCS.CirculatingSupply = 0.0
+	err = updateQuotation(rawUSDCQ, &rawUSDCS, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update USDC Oracle: %v", err)
 		return err
