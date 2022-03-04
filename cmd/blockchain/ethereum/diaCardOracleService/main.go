@@ -1,21 +1,20 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"flag"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaXdaiOracleService"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaCardOracleService"
 	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
-	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,75 +22,59 @@ import (
 )
 
 func main() {
-	/*
-	 * Read in Oracle address
-	 */
-	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var secretsFile = flag.String("secretsFile", "/run/secrets/oracle_keys_xdai", "File with wallet secrets")
-	var blockchainNode = flag.String("blockchainNode", "https://rpc.xdaichain.com/", "Node address for blockchain connection")
-	var sleepSeconds = flag.Int("sleepSeconds", 120, "Number of seconds to sleep between calls")
-	var frequencySeconds = flag.Int("frequencySeconds", 86400, "Number of seconds to sleep between full oracle runs")
-	var chainId = flag.Int64("chainId", 100, "Chain-ID of the network to connect to")
-	flag.Parse()
-
-	/*
-	 * Read secrets for unlocking the ETH account
-	 */
-	var lines []string
-	file, err := os.Open(*secretsFile) // Read in key information
+	key := utils.Getenv("PRIVATE_KEY", "")
+	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to parse sleepSeconds: %v")
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chainId: %v")
 	}
-	if len(lines) != 2 {
-		log.Fatal("Secrets file should have exactly two lines")
-	}
-	key := lines[0]
-	key_password := lines[1]
 
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
 
-	conn, err := ethclient.Dial(*blockchainNode)
+	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(*chainId))
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaXdaiOracleService.DIAXDAIOracle
-	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
+	var contract *diaCardOracleService.DIAXDAIOracle
+	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+	periodicOracleUpdateHelper(sleepSeconds, auth, contract, conn)
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(time.Duration(*frequencySeconds) * time.Second)
+	ticker := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				periodicOracleUpdateHelper(*sleepSeconds, auth, contract, conn)
+				periodicOracleUpdateHelper(sleepSeconds, auth, contract, conn)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaXdaiOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contract *diaCardOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
 
 	// Get quotation for CARD coin and update Oracle
 	rawCardQ, err := getQuotationFromDia("CARD")
@@ -123,10 +106,10 @@ func periodicOracleUpdateHelper(sleepSeconds int, auth *bind.TransactOpts, contr
 	return nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaXdaiOracleService.DIAXDAIOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaCardOracleService.DIAXDAIOracle) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaXdaiOracleService.NewDIAXDAIOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaCardOracleService.NewDIAXDAIOracle(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -134,7 +117,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaXdaiOracleService.DeployDIAXDAIOracle(auth, conn)
+		addr, tx, *contract, err = diaCardOracleService.DeployDIAXDAIOracle(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -146,7 +129,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaXdaiOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaCardOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
@@ -159,7 +142,7 @@ func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contr
 	return nil
 }
 
-func updatePair(quoteQuotation *models.Quotation, baseQuotation *models.Quotation, auth *bind.TransactOpts, contract *diaXdaiOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
+func updatePair(quoteQuotation *models.Quotation, baseQuotation *models.Quotation, auth *bind.TransactOpts, contract *diaCardOracleService.DIAXDAIOracle, conn *ethclient.Client) error {
 	symbol := quoteQuotation.Symbol + "/" + baseQuotation.Symbol
 	price := quoteQuotation.Price / baseQuotation.Price
 	timestamp := time.Now().Unix()
@@ -174,7 +157,7 @@ func updatePair(quoteQuotation *models.Quotation, baseQuotation *models.Quotatio
 
 func updateOracle(
 	client *ethclient.Client,
-	contract *diaXdaiOracleService.DIAXDAIOracle,
+	contract *diaCardOracleService.DIAXDAIOracle,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
