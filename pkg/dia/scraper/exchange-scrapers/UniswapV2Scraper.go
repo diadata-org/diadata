@@ -348,6 +348,7 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 					VerifiedPair:   true,
 				}
 
+				// TO DO: Refactor approach for reversing pairs.
 				switch {
 				case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
 					// If we need quotation of a base token, reverse pair
@@ -362,19 +363,25 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 						t = &tSwapped
 					}
 				case token0.Address == "0x0000000000000000000000000000000000000000" && !utils.Contains(&mainBaseAssets, token1.Address):
-					// Reverse almost all pairs ETH-XXX and USDT-XXX on Uniswap and Sushiswap
+					// Reverse almost all pairs ETH-XXX ...
 					if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
 						}
 					}
-				case token0.Address == mainBaseAssets[0]:
+				// ...and USDT-XXX on Ethereum, i.e. Uniswap and Sushiswap
+				case token0.Address == mainBaseAssets[0] && token0.Blockchain == dia.ETHEREUM:
 					tSwapped, err := dia.SwapTrade(*t)
 					if err == nil {
 						t = &tSwapped
 					}
-
+				// Reverse USDC-XXX pairs on Fantom
+				case token0.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" && token0.Blockchain == dia.FANTOM:
+					tSwapped, err := dia.SwapTrade(*t)
+					if err == nil {
+						t = &tSwapped
+					}
 				}
 				if price > 0 {
 					log.Info("tx hash: ", swap.ID)
