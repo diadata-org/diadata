@@ -44,6 +44,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "AXS_USDT",
+      "Ignore": true,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "BCH_BTC",
       "Ignore": true,
       "Symbol": "BCH"
@@ -65,6 +71,12 @@
       "ForeignName": "BNB_USDT",
       "Ignore": true,
       "Symbol": "BNB"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "BOSON_USDT",
+      "Ignore": true,
+      "Symbol": "BOSON"
     },
     {
       "Exchange": "LBank",
@@ -257,6 +269,12 @@
       "ForeignName": "IIC_ETH",
       "Ignore": true,
       "Symbol": "IIC"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "ILV_USDT",
+      "Ignore": true,
+      "Symbol": "ILV"
     },
     {
       "Exchange": "LBank",

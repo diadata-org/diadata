@@ -314,6 +314,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "fetusdt",
+      "Ignore": false,
+      "Symbol": "FET"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "funbtc",
       "Ignore": false,
       "Symbol": "FUN"
@@ -410,6 +416,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "ilvusdt",
+      "Ignore": false,
+      "Symbol": "ILV"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "inkbtc",
       "Ignore": false,
       "Symbol": "INK"
@@ -431,6 +443,12 @@
       "ForeignName": "kanusdt",
       "Ignore": false,
       "Symbol": "KAN"
+    },
+    {
+      "Exchange": "ZB",
+      "ForeignName": "kiltusdt",
+      "Ignore": false,
+      "Symbol": "KILT"
     },
     {
       "Exchange": "ZB",

@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ANTUSDT",
+      "Ignore": false,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AXSUSDT",
+      "Ignore": false,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SDNUSDT",
       "Ignore": false,
       "Symbol": "SDN"
@@ -164,6 +176,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "FLOWUSDT",
+      "Ignore": false,
+      "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "IOTABTC",
       "Ignore": false,
       "Symbol": "MIOTA"
@@ -245,6 +263,12 @@
       "ForeignName": "QTUMUSDT",
       "Ignore": false,
       "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SANDUSDT",
+      "Ignore": false,
+      "Symbol": "SAND"
     },
     {
       "Exchange": "Huobi",

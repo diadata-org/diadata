@@ -7,6 +7,18 @@
       "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
     },
     {
+      "Symbol": "ANT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+    },
+    {
+      "Symbol": "AXS",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+    },
+    {
       "Symbol": "ASTR",
       "Exchange": "Huobi",
       "Blockchain": "Astar",
@@ -23,6 +35,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+    },
+    {
+      "Symbol": "FLOW",
+      "Exchange": "Huobi",
+      "Blockchain": "Flow",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "LSK",
@@ -47,6 +65,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+    },
+    {
+      "Symbol": "SAND",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
     },
     {
       "Symbol": "STEEM",

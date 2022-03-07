@@ -31,6 +31,12 @@
             "Address": "0x4DC3643DbC642b72C158E7F3d2ff232df61cb6CE"
         },
         {
+            "Symbol": "ANT",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
             "Symbol": "APPC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -47,6 +53,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x27054b13b1B798B345b591a4d22e6562d47eA75a"
+        },
+        {
+            "Symbol": "AXS",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
         },
         {
             "Symbol": "BAL",
@@ -145,6 +157,24 @@
             "Address": "0xf3Db5Fa2C66B7aF3Eb0C0b782510816cbe4813b8"
         },
         {
+            "Symbol": "FET",
+            "Exchange": "Binance",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FIL",
+            "Exchange": "Binance",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FLOW",
+            "Exchange": "Binance",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "Binance",
             "Blockchain": "Fantom",
@@ -179,6 +209,12 @@
             "Exchange": "Binance",
             "Blockchain": "GXChain",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ILV",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E"
         },
         {
             "Symbol": "INS",
@@ -289,6 +325,12 @@
             "Address": "0x701C244b988a513c945973dEFA05de933b23Fe1D"
         },
         {
+            "Symbol": "OCEAN",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x967da4048cD07aB37855c090aAF366e4ce1b9F48"
+        },
+        {
             "Symbol": "PERP",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -353,6 +395,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x4156D3342D5c385a87D264F90653733592000581"
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
         },
         {
             "Symbol": "SC",
@@ -437,6 +485,12 @@
             "Exchange": "Binance",
             "Blockchain": "Verge",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "YGG",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x25f8087EAD173b73D6e8B84329989A8eEA16CF73"
         }
     ]
 }
