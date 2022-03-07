@@ -140,12 +140,107 @@ func handleExchangeScraper(exchange string, assets string, candleChan chan candl
 			if err != nil {
 				log.Error("HitBTC scraper: ", err)
 			}
+		case "Kraken":
+			log.Println("Kraken Scraper: Start scraping")
+			err := scrapeKraken(assets, candleChan)
+			if err != nil {
+				log.Error("Kraken scraper: ", err)
+			}
 		default:
 			log.Errorf("Unknown scraper name %s", exchange)
 			return
 		}
 		log.Info("Sleeping 30sec for exchange ", exchange)
 		time.Sleep(30 * time.Second)
+	}
+}
+
+func scrapeKraken(assets string, candleChan chan candlestickMessage) error {
+	log.Info("Entered Kraken handler")
+	wsBaseString := "wss://ws.kraken.com"
+
+	conn, _, err := ws.DefaultDialer.Dial(wsBaseString, nil)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	for _, asset := range strings.Split(assets, ",") {
+		assetName := asset
+		if strings.ToUpper(asset) == "BTC" {
+			assetName = "XBT"
+		}
+		baseAsset := "USDT"
+		if strings.ToUpper(asset) == "GLMR" {
+			baseAsset = "USD"
+		}
+		msgToWrite := fmt.Sprintf("{\"event\":\"subscribe\",\"pair\":[\"%s/%s\"],\"subscription\":{\"interval\":1,\"name\":\"ohlc\"}}", strings.ToUpper(assetName), strings.ToUpper(baseAsset))
+		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
+	}
+
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Errorln("read:", err)
+			return err
+		}
+		//log.Printf("recv Kraken: %s", message)
+		messageMap := make(map[string]interface{})
+		messageList := make([]interface{}, 3)
+		err = json.Unmarshal(message, &messageMap)
+		if err != nil {
+			// We have a real result here
+			err = json.Unmarshal(message, &messageList)
+			if err != nil {
+				return err
+			}
+		}
+
+		// Check if we got a status msg
+		if messageMap["event"] == "systemStatus" {
+			continue
+		}
+		if messageMap["event"] == "heartbeat" {
+			continue
+		}
+		if messageMap["event"] == "subscriptionStatus" {
+			continue
+		}
+
+		content := messageList[1].([]interface{})
+
+		closingPriceString := content[5].(string)
+		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
+		if err != nil {
+			return err
+		}
+		volumeString := content[7].(string)
+		volume, err := strconv.ParseFloat(volumeString, 64)
+		if err != nil {
+			return err
+		}
+
+		timeUnixString := content[1].(string)
+		timeUnix, err := strconv.ParseFloat(timeUnixString, 64)
+		if err != nil {
+			return err
+		}
+		
+		pairString := messageList[3].(string)
+		assetString := strings.Split(pairString, "/")[0]
+		if assetString == "XBT" {
+			assetString = "BTC"
+		}
+
+		candleStickMessage := candlestickMessage{
+			ForeignName:  assetString,
+			ClosingPrice: closingPrice,
+			Volume:       volume,
+			Timestamp:    time.Unix(int64(timeUnix), 0),
+			ScrapeTime:   time.Now(),
+			Source:       "Kraken",
+		}
+
+		candleChan <- candleStickMessage
 	}
 }
 
