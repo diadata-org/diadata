@@ -153,8 +153,8 @@
         {
             "Symbol": "FET",
             "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85"
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "FLEX",

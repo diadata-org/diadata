@@ -1,6 +1,18 @@
 {
   "Coins": [
     {
+      "Symbol": "YGG",
+      "ForeignName": "YGGUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FLOW",
+      "ForeignName": "FLOWUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "FTM",
       "ForeignName": "FTMUSDT",
       "Exchange": "HitBTC",
@@ -3873,6 +3885,12 @@
     {
       "Symbol": "FIL",
       "ForeignName": "FILUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIL",
+      "ForeignName": "FILUSDT",
       "Exchange": "HitBTC",
       "Ignore": false
     },

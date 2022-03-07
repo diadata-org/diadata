@@ -109,6 +109,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BOSON",
+            "ForeignName": "BOSON_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "BTC",
             "ForeignName": "BTC_USDC",
             "Exchange": "Crypto.com",
@@ -301,6 +307,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "FET",
+            "ForeignName": "FET_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "FIL",
             "ForeignName": "FIL_USDT",
             "Exchange": "Crypto.com",
@@ -333,6 +345,12 @@
         {
             "Symbol": "FTM",
             "ForeignName": "FTM_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GLM",
+            "ForeignName": "GLM_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },

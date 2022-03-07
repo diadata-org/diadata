@@ -2,6 +2,30 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "FET-USD",
+      "Ignore": false,
+      "Symbol": "FET"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "AXS-USD",
+      "Ignore": false,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "GRT-USD",
+      "Ignore": false,
+      "Symbol": "GRT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "RARI-USD",
+      "Ignore": false,
+      "Symbol": "RARI"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "USDT-USD",
       "Ignore": false,
       "Symbol": "USDT"

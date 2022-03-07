@@ -7,10 +7,28 @@
             "Address": "0x87026F792D09960232CA406E80C89BD35BAfE566"
         },
         {
+            "Symbol": "FET",
+            "Exchange": "ZB",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ILV",
+            "Exchange": "ZB",
+            "Blockchain": "Ethereum",
+            "Address": "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E"
+          },
+        {
             "Symbol": "KAN",
             "Exchange": "ZB",
             "Blockchain": "Ethereum",
             "Address": "0x1410434b0346f5bE678d0FB554E5c7ab620f8f4a"
+        },
+        {
+            "Symbol": "KILT",
+            "Exchange": "ZB",
+            "Blockchain": "Kilt",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "KNC",

@@ -147,6 +147,22 @@
             },
             "VerificationMechanism": "pos",
             "ChainID": "Ethereum1088"
+        },
+        {
+            "Name": "Fetch",
+            "GenesisDate": 1601510400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Kilt",
+            "GenesisDate": 1636502400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
         }
     ]
 }

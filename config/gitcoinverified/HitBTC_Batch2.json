@@ -427,6 +427,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "YGG",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x25f8087EAD173b73D6e8B84329989A8eEA16CF73"
+        },
+        {
             "Symbol": "YCC",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

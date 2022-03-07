@@ -34,6 +34,8 @@ const (
 	ASTAR                                   = "Astar"
 	SHIDEN                                  = "Shiden"
 	METIS                                   = "Metis"
+	KILT                                    = "Kilt"
+	FETCH                                   = "Fetch"
 	FIAT                                    = "Fiat"
 )
 
