@@ -1,0 +1,11 @@
+{
+    "Coins": [
+        {
+            "Symbol": "WMATIC",
+            "ForeignName": "WMATIC-WETH",
+            "Exchange": "Uniswap-polygon",
+            "Ignore": false
+        }
+    ]
+}
+

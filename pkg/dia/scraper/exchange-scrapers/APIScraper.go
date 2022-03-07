@@ -71,7 +71,7 @@ func init() {
 	Exchanges[dia.FilterKing] = dia.Exchange{Name: dia.FilterKing, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BancorExchange] = dia.Exchange{Name: dia.BancorExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelayLong} //API is used instead of contracts
 	Exchanges[dia.UniswapExchange] = dia.Exchange{Name: dia.UniswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: watchdogDelay}
-	Exchanges[dia.UniswapExchangeV3] = dia.Exchange{Name: dia.UniswapExchangeV3, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.UniswapExchangeV3] = dia.Exchange{Name: dia.UniswapExchangeV3, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x1F98431c8aD98523631AE4a59f267346ea31F984"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.LoopringExchange] = dia.Exchange{Name: dia.LoopringExchange, Centralized: true, BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelay} //API is used instead of contracts
 	Exchanges[dia.CurveFIExchange] = dia.Exchange{Name: dia.CurveFIExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x7002B727Ef8F5571Cb5F9D70D13DBEEb4dFAe9d1"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.MakerExchange] = dia.Exchange{Name: dia.MakerExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelay} //API is used instead of contracts
@@ -95,6 +95,12 @@ func init() {
 	Exchanges[dia.AnyswapExchange] = dia.Exchange{Name: dia.AnyswapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x6b7a87899490EcE95443e979cA9485CBE7E71522"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.NetswapExchange] = dia.Exchange{Name: dia.NetswapExchange, Centralized: false, BlockChain: blockchains[dia.METIS], Contract: common.HexToAddress("0x70f51d68D16e8f9e418441280342BD43AC9Dff9f"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.BitMexExchange] = dia.Exchange{Name: dia.BitMexExchange, Centralized: true, WatchdogDelay: watchdogDelay}
+
+	Exchanges[dia.SushiSwapExchangePolygon] = dia.Exchange{Name: dia.SushiSwapExchangePolygon, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0xc35dadb65012ec5796536bd9864ed8773abc74c4"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.UniswapPolygon] = dia.Exchange{Name: dia.UniswapPolygon, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0x1F98431c8aD98523631AE4a59f267346ea31F984"), WatchdogDelay: watchdogDelay}
+
+	Exchanges[dia.SushiSwapExchangeFantom] = dia.Exchange{Name: dia.SushiSwapExchangeFantom, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.SushiSwapExchangeArbitrum] = dia.Exchange{Name: dia.SushiSwapExchangeArbitrum, Centralized: false, BlockChain: blockchains[dia.ARBITRUM], Contract: common.HexToAddress("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"), WatchdogDelay: watchdogDelay}
 
 	// Exchanges[dia.FinageForex] = dia.Exchange{Name: dia.FinageForex, Centralized: true, BlockChain: blockchains[dia.FIAT], WatchdogDelay: watchdogDelay}
 	Exchanges["Influx"] = dia.Exchange{Name: "Influx", WatchdogDelay: 360000}
@@ -213,6 +219,12 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape)
 	case dia.UbeswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape)
+	case dia.SushiSwapExchangePolygon:
+		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangePolygon], scrape)
+
+	case dia.UniswapPolygon:
+		return NewUniswapV3Scraper(Exchanges[dia.UniswapPolygon], scrape)
+
 	case dia.SpookyswapExchange:
 		return NewUniswapScraper(Exchanges[dia.SpookyswapExchange], scrape)
 	case dia.QuickswapExchange:
