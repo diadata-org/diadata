@@ -231,7 +231,7 @@ func scrapeKraken(assets string, candleChan chan candlestickMessage) error {
 		}
 
 		candleStickMessage := candlestickMessage{
-			ForeignName:  assetString,
+			ForeignName:  assetString + strings.Split(pairString, "/")[1],
 			ClosingPrice: closingPrice,
 			Volume:       volume,
 			Timestamp:    time.Unix(int64(timeUnix), 0),
