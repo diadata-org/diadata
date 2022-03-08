@@ -460,7 +460,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		//log.Printf("recv GateIO: %s", message)
+		log.Printf("recv GateIO: %s", message)
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
