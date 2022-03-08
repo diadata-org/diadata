@@ -83,7 +83,14 @@ func main() {
 		channelData := getRecentDataFromChannel(cChan, t)
 		log.Info("channel after takeout: ", len(cChan))
 		pairData := getPairData(channelData)
-		log.Info("pair data: ", pairData)
+		// log.Info("pair data: ", pairData)
+		for key, values := range pairData {
+			var currExchanges string
+			for _, value := range values {
+				currExchanges += value.Source + " , "
+			}
+			log.Infof("%s market on exchanges: %s", key, currExchanges)
+		}
 		vwap, err := makeVWAP(pairData, outlierBasisPoints)
 		if err != nil {
 			log.Error("makeVWAP: ", err)
@@ -182,7 +189,7 @@ func scrapeKraken(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		//log.Printf("recv Kraken: %s", message)
+		// log.Printf("recv Kraken: %s", message)
 		messageMap := make(map[string]interface{})
 		messageList := make([]interface{}, 3)
 		err = json.Unmarshal(message, &messageMap)
@@ -223,7 +230,7 @@ func scrapeKraken(assets string, candleChan chan candlestickMessage) error {
 		if err != nil {
 			return err
 		}
-		
+
 		pairString := messageList[3].(string)
 		assetString := strings.Split(pairString, "/")[0]
 		if assetString == "XBT" {
@@ -352,7 +359,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 		result := data[0].([]interface{})
 
 		arg := messageMap["arg"].(map[string]interface{})
-		
+
 		closingPriceString := result[4].(string)
 		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
 		if err != nil {
@@ -377,7 +384,7 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 			ForeignName:  foreignNameFiltered + "USDT",
 			ClosingPrice: closingPrice,
 			Volume:       volume,
-			Timestamp:    time.Unix(int64(timeUnix/1000), 0).Add(1* time.Minute),
+			Timestamp:    time.Unix(int64(timeUnix/1000), 0).Add(1 * time.Minute),
 			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
@@ -443,7 +450,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 	}
 	defer conn.Close()
 	for _, asset := range strings.Split(assets, ",") {
-		msgToWrite := fmt.Sprintf("{\"time\":5,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
+		msgToWrite := fmt.Sprintf("{\"time\":5,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USDT\"]}", asset)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 	}
 
@@ -701,8 +708,9 @@ func getPairData(candleData map[string]candlestickMessage) map[string][]candlest
 // containing all values of the underlying pair across sources, i.e. (at most) one value per source.
 func makeVWAP(pairData map[string][]candlestickMessage, basispoints float64) (map[string]float64, error) {
 	vwapMap := make(map[string]float64)
+	// key is a market, such as BTCUSDT, and value is a slice of data on this market from various exchanges.
 	for key, value := range pairData {
-		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), basispoints)
+		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), basispoints, value)
 		if err != nil {
 			return vwapMap, err
 		}
@@ -735,7 +743,7 @@ func vwap(prices []float64, volumes []float64) (float64, error) {
 
 // discardOutliers discards every data point from @prices and @volumes that deviates from
 // the price median by more than @basispoints basis points.
-func discardOutliers(prices []float64, volumes []float64, basispoints float64) (newPrices []float64, newVolumes []float64, err error) {
+func discardOutliers(prices []float64, volumes []float64, basispoints float64, values []candlestickMessage) (newPrices []float64, newVolumes []float64, err error) {
 	if len(prices) != len(volumes) {
 		err = errors.New("number of prices does not equal number of volumes ")
 		return
@@ -746,6 +754,8 @@ func discardOutliers(prices []float64, volumes []float64, basispoints float64) (
 		if math.Abs(prices[i]-median) < threshold {
 			newPrices = append(newPrices, prices[i])
 			newVolumes = append(newVolumes, volumes[i])
+		} else {
+			log.Warnf("discard %s on %s", values[i].ForeignName, values[i].Source)
 		}
 	}
 	return
