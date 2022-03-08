@@ -443,7 +443,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 	}
 	defer conn.Close()
 	for _, asset := range strings.Split(assets, ",") {
-		msgToWrite := fmt.Sprintf("{\"time\":5,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
+		msgToWrite := fmt.Sprintf("{\"time\":5,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USDT\"]}", asset)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 	}
 
@@ -453,7 +453,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		//log.Printf("recv GateIO: %s", message)
+		log.Printf("recv GateIO: %s", message)
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
