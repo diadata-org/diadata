@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "AXS-USDT",
+      "Ignore": false,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GLM-USDT",
+      "Ignore": false,
+      "Symbol": "GLM"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "FTM-USDT",
       "Ignore": false,
       "Symbol": "FTM"
@@ -818,6 +830,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "FLOW-USDT",
+      "Ignore": true,
+      "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "FUN-BTC",
       "Ignore": true,
       "Symbol": "FUN"
@@ -1019,6 +1037,12 @@
       "ForeignName": "ICX-USDT",
       "Ignore": true,
       "Symbol": "ICX"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ILV-USDT",
+      "Ignore": true,
+      "Symbol": "ILV"
     },
     {
       "Exchange": "OKEx",
@@ -2699,6 +2723,12 @@
       "ForeignName": "YEE-USDT",
       "Ignore": true,
       "Symbol": "YEE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "YGG-USDT",
+      "Ignore": false,
+      "Symbol": "YGG"
     },
     {
       "Exchange": "OKEx",

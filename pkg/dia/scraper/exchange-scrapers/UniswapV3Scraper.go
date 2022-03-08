@@ -20,10 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-var (
-	UniswapV3FactoryContractAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
-)
-
 type UniswapV3Swap struct {
 	ID        string
 	Timestamp int64
@@ -56,6 +52,8 @@ type UniswapV3Scraper struct {
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
+	log.Info("NewUniswapScraper Address ", exchange.Contract.Hash().String())
+
 	var wsClient, restClient *ethclient.Client
 	var err error
 
@@ -419,7 +417,7 @@ func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 	// filter from contract created https://etherscan.io/tx/0x1e20cd6d47d7021ae7e437792823517eeadd835df09dde17ab45afd7a5df4603
 
 	poolsCount := 0
-	contract, err := uniswapcontractv3.NewUniswapV3Filterer(common.HexToAddress(UniswapV3FactoryContractAddress), s.WsClient)
+	contract, err := uniswapcontractv3.NewUniswapV3Filterer(common.HexToAddress(exchangeFactoryContractAddress), s.WsClient)
 	if err != nil {
 		log.Error(err)
 	}

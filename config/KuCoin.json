@@ -3487,6 +3487,12 @@
             "Ignore": true
         },
         {
+            "Symbol": "FLOW",
+            "ForeignName": "FLOW-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": true
+        },
+        {
             "Symbol": "FLUX",
             "ForeignName": "FLUX-USDT",
             "Exchange": "KuCoin",

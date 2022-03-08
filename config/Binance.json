@@ -2,6 +2,24 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "AXSUSDT",
+            "Ignore": false,
+            "Symbol": "AXS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ANTUSDT",
+            "Ignore": false,
+            "Symbol": "ANT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "OCEANUSDT",
+            "Ignore": false,
+            "Symbol": "OCEAN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GLMRUSDT",
             "Ignore": false,
             "Symbol": "GLMR"
@@ -29,6 +47,12 @@
             "ForeignName": "FTMUSDT",
             "Ignore": false,
             "Symbol": "FTM"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "FILUSDT",
+            "Ignore": false,
+            "Symbol": "FIL"
         },
         {
             "Exchange": "Binance",
@@ -788,6 +812,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "FETUSDT",
+            "Ignore": true,
+            "Symbol": "FET"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "FLOWUSDT",
+            "Ignore": true,
+            "Symbol": "FLOW"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "FUELBTC",
             "Ignore": true,
             "Symbol": "FUEL"
@@ -923,6 +959,12 @@
             "ForeignName": "ICXUSDT",
             "Ignore": false,
             "Symbol": "ICX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ILVUSDT",
+            "Ignore": true,
+            "Symbol": "ILV"
         },
         {
             "Exchange": "Binance",
@@ -1730,6 +1772,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "SANDUSDT",
+            "Ignore": true,
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SALTBTC",
             "Ignore": true,
             "Symbol": "SALT"
@@ -2249,6 +2297,12 @@
             "ForeignName": "XZCETH",
             "Ignore": true,
             "Symbol": "XZC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "YGGUSDT",
+            "Ignore": true,
+            "Symbol": "YGG"
         },
         {
             "Exchange": "Binance",

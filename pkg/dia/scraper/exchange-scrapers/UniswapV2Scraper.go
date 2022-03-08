@@ -156,6 +156,13 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.NetswapExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
+	case dia.SushiSwapExchangePolygon:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
+	case dia.SushiSwapExchangeFantom:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, metisWaitMilliseconds)
+
 	}
 
 	if scrape {

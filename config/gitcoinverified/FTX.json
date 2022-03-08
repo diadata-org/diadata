@@ -1,5 +1,11 @@
 {
-    "Tokens": [  
+    "Tokens": [ 
+        {
+            "Symbol": "AXS",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+        },
         {
             "Symbol": "USD",
             "Exchange": "FTX",
@@ -227,6 +233,12 @@
             "Exchange": "FTX",
             "Blockchain": "Ethereum",
             "Address": "0x41e5560054824eA6B0732E656E3Ad64E20e94E45"
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
         },
         {
             "Symbol": "SC",

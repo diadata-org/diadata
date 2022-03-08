@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "WMATIC",
+            "ForeignName": "WMATIC-WETH",
+            "Exchange": "SushiSwap-polygon",
+            "Ignore": false
+        }
+    ]
+}

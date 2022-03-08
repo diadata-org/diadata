@@ -319,6 +319,18 @@
             "Address": "0x23352036E911A22Cfc692B5E2E196692658ADED9"
         },
         {
+            "Symbol": "FIL",
+            "Exchange": "HitBTC",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FLOW",
+            "Exchange": "HitBTC",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FLP",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

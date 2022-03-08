@@ -37,6 +37,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AXS",
+            "ForeignName": "AXS/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "BAL",
             "ForeignName": "BAL/USD",
             "Exchange": "FTX",
@@ -327,6 +333,12 @@
         {
             "Symbol": "RUNE",
             "ForeignName": "RUNE/USDT",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SAND",
+            "ForeignName": "SAND/USD",
             "Exchange": "FTX",
             "Ignore": false
         },

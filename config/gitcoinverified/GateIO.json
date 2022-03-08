@@ -25,6 +25,12 @@
             "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
         },
         {
+            "Symbol": "ANT",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
             "Symbol": "ASTR",
             "Exchange": "GateIO",
             "Blockchain": "Astar",
@@ -59,6 +65,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x970E035E2a013cf4bECD67E300d65BC32A56D826"
+        },
+        {
+            "Symbol": "BOSON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xC477D038d5420C6A9e0b031712f61c5120090de9"
         },
         {
             "Symbol": "BOT",
@@ -169,6 +181,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "FLOW",
+            "Exchange": "GateIO",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "GateIO",
             "Blockchain": "Fantom",
@@ -203,6 +221,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
+            "Symbol": "GLM",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
         },
         {
             "Symbol": "GNX",
@@ -373,6 +397,12 @@
             "Address": "0x701C244b988a513c945973dEFA05de933b23Fe1D"
         },
         {
+            "Symbol": "OCEAN",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x967da4048cD07aB37855c090aAF366e4ce1b9F48"
+        },
+        {
             "Symbol": "OCN",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -419,6 +449,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x99ea4dB9EE77ACD40B119BD1dC4E33e1C070b80d"
+        },
+        {
+            "Symbol": "RARI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
         },
         {
             "Symbol": "RDN",

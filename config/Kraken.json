@@ -74,6 +74,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "KILTUSD",
+      "Ignore": false,
+      "Symbol": "KILT"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "QTUMEUR",
       "Ignore": false,
       "Symbol": "QTUM"

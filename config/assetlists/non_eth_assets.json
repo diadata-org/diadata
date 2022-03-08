@@ -447,6 +447,20 @@
       "Decimals": 18,
       "Blockchain": "Moonbeam",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "FET",
+      "Name": "Fetch.ai",
+      "Decimals": 18,
+      "Blockchain": "Fetch",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "KILT",
+      "Name": "Kilt",
+      "Decimals": 18,
+      "Blockchain": "Kilt",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

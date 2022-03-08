@@ -8,6 +8,42 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "ANT_USDT",
+      "Ignore": false,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "BOSON_USDT",
+      "Ignore": false,
+      "Symbol": "BOSON"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "FLOW_USDT",
+      "Ignore": false,
+      "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GLM_USDT",
+      "Ignore": false,
+      "Symbol": "GLM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OCEAN_USDT",
+      "Ignore": false,
+      "Symbol": "OCEAN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "RARI_USDT",
+      "Ignore": false,
+      "Symbol": "RARI"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SDN_USDT",
       "Ignore": false,
       "Symbol": "SDN"
