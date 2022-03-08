@@ -52,6 +52,8 @@ type UniswapV3Scraper struct {
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
+	log.Info("NewUniswapScraper Address ", exchange.Contract.Hash().String())
+
 	var wsClient, restClient *ethclient.Client
 	var err error
 
