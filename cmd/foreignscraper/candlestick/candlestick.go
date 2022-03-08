@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"compress/flate"
 	"compress/gzip"
 	"encoding/json"
 	"errors"
@@ -319,7 +318,7 @@ func scrapeHitbtc(assets string, candleChan chan candlestickMessage) error {
 
 func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 	log.Info("Entered OKExhandler")
-	wsBaseString := "wss://real.okex.com:8443/ws/v3"
+	wsBaseString := "wss://ws.okx.com:8443/ws/v5/public"
 
 	conn, _, err := ws.DefaultDialer.Dial(wsBaseString, nil)
 	if err != nil {
@@ -327,68 +326,63 @@ func scrapeOkex(assets string, candleChan chan candlestickMessage) error {
 	}
 	defer conn.Close()
 	for _, asset := range strings.Split(assets, ",") {
-		msgToWrite := fmt.Sprintf("{\"op\":\"subscribe\",\"args\":[\"spot/candle60s:%s-USDT\"]}", strings.ToUpper(asset))
+		//{"op": "subscribe","args": [{"channel": "candle1m","instId": "GLMR-USDT"}]}
+		msgToWrite := fmt.Sprintf("{\"op\":\"subscribe\",\"args\":[{\"channel\": \"candle1m\",\"instId\":\"%s-USDT\"}]}", strings.ToUpper(asset))
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 	}
 
 	for {
-		_, zippedMessage, err := conn.ReadMessage()
+		_, message, err := conn.ReadMessage()
 		if err != nil {
 			return err
 		}
-		bytesReader := bytes.NewReader([]byte(zippedMessage))
-		gzreader := flate.NewReader(bytesReader)
 
-		message, err := ioutil.ReadAll(gzreader)
-		if err != nil {
-			log.Errorln("read:", err)
-			return err
-		}
 		//log.Printf("recv OKEx: %s", message)
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
 			return err
 		}
+
 		// Check if we got a status msg
-		if messageMap["table"] != "spot/candle60s" {
+		if messageMap["event"] == "subscribe" {
 			continue
 		}
 		data := messageMap["data"].([]interface{})
-		result := data[0].(map[string]interface{})
-		candle := result["candle"].([]interface{})
+		result := data[0].([]interface{})
 
-		closingPriceString := candle[4].(string)
+		arg := messageMap["arg"].(map[string]interface{})
+		
+		closingPriceString := result[4].(string)
 		closingPrice, err := strconv.ParseFloat(closingPriceString, 64)
 		if err != nil {
 			return err
 		}
-		volumeString := candle[5].(string)
+		volumeString := result[5].(string)
 		volume, err := strconv.ParseFloat(volumeString, 64)
 		if err != nil {
 			return err
 		}
-		timeIso := candle[0].(string)
-		layout := "2006-01-02T15:04:05.000Z"
-		timeParsed, err := time.Parse(layout, timeIso)
+
+		timeUnixString := result[0].(string)
+		timeUnix, err := strconv.ParseFloat(timeUnixString, 64)
 		if err != nil {
 			return err
 		}
 
-		foreignNameString := result["instrument_id"].(string)
+		foreignNameString := arg["instId"].(string)
 		foreignNameFiltered := strings.Split(foreignNameString, "-")[0]
 
 		candleStickMessage := candlestickMessage{
 			ForeignName:  foreignNameFiltered + "USDT",
 			ClosingPrice: closingPrice,
 			Volume:       volume,
-			Timestamp:    timeParsed.Add(1 * time.Minute),
+			Timestamp:    time.Unix(int64(timeUnix/1000), 0).Add(1* time.Minute),
 			ScrapeTime:   time.Now(),
 			Source:       "OKEx",
 		}
 
 		candleChan <- candleStickMessage
-
 	}
 }
 
@@ -449,7 +443,7 @@ func scrapeGateio(assets string, candleChan chan candlestickMessage) error {
 	}
 	defer conn.Close()
 	for _, asset := range strings.Split(assets, ",") {
-		msgToWrite := fmt.Sprintf("{\"time\":10,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
+		msgToWrite := fmt.Sprintf("{\"time\":5,\"channel\":\"spot.candlesticks\",\"event\":\"subscribe\",\"payload\":[\"1m\",\"%s_USD\"]}", asset)
 		conn.WriteMessage(ws.TextMessage, []byte(msgToWrite))
 	}
 
