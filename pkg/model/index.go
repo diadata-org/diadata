@@ -411,6 +411,11 @@ func (datastore *DB) GetCryptoIndexValuesSpaced(starttime time.Time, endtime tim
 				currentIndex.Value = val / divisor
 			} else {
 				currentIndex.Value = val
+				// Because the values are grouped corresponding to @frequency, the timestamp corresponding
+				// to the resulting value can be before the above timestamp.
+				if val > 1000000000 {
+					currentIndex.Value = val / divisor
+				}
 			}
 
 			currentIndex.Asset.Address = address
