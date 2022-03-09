@@ -98,19 +98,7 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "USDTEUR",
-      "Ignore": false,
-      "Symbol": "USDT"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "USDCUSD",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "USDCEUR",
       "Ignore": false,
       "Symbol": "USDC"
     },
