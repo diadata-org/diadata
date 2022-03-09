@@ -7,7 +7,6 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	//jwt "github.com/blockstatecom/gin-jwt"
-	_ "github.com/diadata-org/diadata/api/docs"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	"github.com/diadata-org/diadata/pkg/http/restServer/diaApi"
