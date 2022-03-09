@@ -94,6 +94,7 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 	if s.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && s.asset.Blockchain == dia.ETHEREUM {
+		log.Info("exchange in finalCompute: ", s.exchange)
 		log.Info("estimatedUSDPrices in finalCompute for USDT: ", s.previousPrices)
 		log.Info("volumes in finalCompute for USDT: ", s.previousVolumes)
 	}

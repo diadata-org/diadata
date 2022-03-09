@@ -113,7 +113,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	for _, filters := range s.filters {
 		for _, f := range filters {
-			log.Info("filter for final compute: ", f)
 			f.finalCompute(tb.TradesBlockData.EndTime)
 			fp := f.filterPointForBlock()
 			if fp != nil {
