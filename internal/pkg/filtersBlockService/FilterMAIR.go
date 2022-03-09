@@ -93,6 +93,10 @@ func (s *FilterMAIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == nil {
 		return 0.0
 	}
+	if s.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && s.asset.Blockchain == dia.ETHEREUM {
+		log.Info("estimatedUSDPrices in finalCompute for USDT: ", s.previousPrices)
+		log.Info("volumes in finalCompute for USDT: ", s.previousPrices)
+	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
 	s.processDataPoint(*s.lastTrade)
