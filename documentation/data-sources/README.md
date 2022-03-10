@@ -5,3 +5,5 @@ On one hand, DIA’s direct integration into centralised and decentralised marke
 On the other hand, DIA acts as a connectivity layer for high relevance data sources that pre-aggregate market data. The ecosystem of premium data sources that can be accessed via DIA is constantly growing and adheres to the highest quality standards.
 
 Explore DIA's data sources:
+
+[![image-text](https://content.diadata.org/wp-content/uploads/2022/03/natively-aggregated.svg)](natively-sourced-data.md)[![image-text](https://content.diadata.org/wp-content/uploads/2022/03/premium-data.svg)](premium-providers.md)
