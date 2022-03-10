@@ -102,7 +102,7 @@ func (filter *FilterMAIRS) finalCompute(t time.Time) float64 {
 	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
-	filter.processDataPoint(*filter.lastTrade)
+	// filter.processDataPoint(*filter.lastTrade)
 	cleanPrices, bounds := removeOutliers(filter.prices)
 	mean, err := computeMean(cleanPrices, filter.volumes[bounds[0]:bounds[1]])
 	if err != nil {
