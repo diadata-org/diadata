@@ -184,11 +184,11 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 	_, ok := s.filters[fa]
 	if !ok {
 		s.filters[fa] = []Filter{
-			// Prices are written into redis in MA filter
 			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterTLT(asset, exchange),
 			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMAIRS(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 		}
 	}

@@ -9,10 +9,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FilterMAIR implements a trimmed moving average.
+// FilterMAIRS implements a trimmed moving average with shift.
 // Outliers are eliminated using interquartile range.
 // see: https://en.wikipedia.org/wiki/Interquartile_range
-type FilterMAIR struct {
+type FilterMAIRS struct {
 	asset       dia.Asset
 	exchange    string
 	currentTime time.Time
@@ -25,29 +25,29 @@ type FilterMAIR struct {
 	modified    bool
 }
 
-//NewFilterMAIR returns a FilterMAIR
-func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
-	filter := &FilterMAIR{
+//NewFilterMAIRS returns a FilterMAIRS
+func NewFilterMAIRS(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIRS {
+	filter := &FilterMAIRS{
 		asset:       asset,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
 		currentTime: currentTime,
 		memory:      memory,
-		filterName:  "MAIR" + strconv.Itoa(memory),
+		filterName:  "MAIRS" + strconv.Itoa(memory),
 	}
 	return filter
 }
 
-func (filter *FilterMAIR) Compute(trade dia.Trade) {
+func (filter *FilterMAIRS) Compute(trade dia.Trade) {
 	filter.compute(trade)
 }
 
-func (filter *FilterMAIR) compute(trade dia.Trade) {
+func (filter *FilterMAIRS) compute(trade dia.Trade) {
 	filter.modified = true
 	if filter.lastTrade != nil {
 		if trade.Time.Before(filter.currentTime) {
-			log.Errorln("FilterMAIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
+			log.Errorln("FilterMAIRS: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
 	}
@@ -56,7 +56,7 @@ func (filter *FilterMAIR) compute(trade dia.Trade) {
 }
 
 // fill fills up the 120 seconds slots with trades.
-func (filter *FilterMAIR) fill(trade dia.Trade) {
+func (filter *FilterMAIRS) fill(trade dia.Trade) {
 	// filter.currentTime is the timestamp of the last filled trade.
 	// It is initialized with begin time of tradesblock upon creation of the filter.
 	diff := int(trade.Time.Sub(filter.currentTime).Seconds())
@@ -78,7 +78,7 @@ func (filter *FilterMAIR) fill(trade dia.Trade) {
 	filter.currentTime = trade.Time
 }
 
-func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
+func (filter *FilterMAIRS) processDataPoint(trade dia.Trade) {
 	/// first remove extra value from buffer if already full
 	if len(filter.prices) >= filter.memory {
 		filter.prices = filter.prices[0 : filter.memory-1]
@@ -88,18 +88,17 @@ func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
-func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
+func (filter *FilterMAIRS) FinalCompute(t time.Time) float64 {
 	return filter.finalCompute(t)
 }
 
-func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
+func (filter *FilterMAIRS) finalCompute(t time.Time) float64 {
 	if filter.lastTrade == nil {
 		return 0.0
 	}
 	if filter.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.asset.Blockchain == dia.ETHEREUM {
-		log.Info("MAIR -- exchange in finalCompute: ", filter.exchange)
-		log.Info("MAIR -- estimatedUSDPrices in finalCompute for USDT: ", filter.prices)
-
+		log.Info("MAIRS -- exchange in finalCompute: ", filter.exchange)
+		log.Info("MAIRS -- estimatedUSDPrices in finalCompute for USDT: ", filter.prices)
 	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
@@ -110,10 +109,16 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 	filter.value = mean
+	// Reduce the filter values to the last recorded value for the next tradesblock.
+	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
+		log.Info("shift MAIRS filter to next block.")
+		filter.prices = []float64{filter.prices[0]}
+		filter.volumes = []float64{filter.volumes[0]}
+	}
 	return filter.value
 }
 
-func (filter *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMAIRS) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
 		Asset: filter.asset,
 		Value: filter.value,
@@ -122,7 +127,7 @@ func (filter *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
 	}
 }
 
-func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMAIRS) filterPointForBlock() *dia.FilterPoint {
 	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
@@ -134,22 +139,12 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 	}
 }
 
-func (filter *FilterMAIR) save(ds models.Datastore) error {
+func (filter *FilterMAIRS) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
 		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
-			log.Errorln("FilterMAIR: Error:", err)
-		}
-		// log.Infof("set price for %s: %v", filter.asset.Symbol, filter.value)
-
-		// Additionally, the price across exchanges is saved in influx as a quotation.
-		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
-		if filter.exchange == "" {
-			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
-			if err != nil {
-				log.Errorln("FilterMAIR: Error:", err)
-			}
+			log.Errorln("FilterMAIRS: Error:", err)
 		}
 		return err
 	}
