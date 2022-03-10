@@ -111,7 +111,6 @@ func (filter *FilterMAIRS) finalCompute(t time.Time) float64 {
 	filter.value = mean
 	// Reduce the filter values to the last recorded value for the next tradesblock.
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
-		log.Info("shift MAIRS filter to next block.")
 		filter.prices = []float64{filter.prices[0]}
 		filter.volumes = []float64{filter.volumes[0]}
 	}
