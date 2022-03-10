@@ -49,6 +49,8 @@ func main() {
 		"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", //WBTC
 		"0x0000000000000000000000000000000000000000", //ASTR
 		"0x0000000000000000000000000000000000000000", //SDN
+		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
+		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
 	}
 	blockchains := []string{
 		"Ethereum",
@@ -57,6 +59,8 @@ func main() {
 		"Ethereum",
 		"Astar",
 		"Shiden",
+		"Ethereum",
+		"BinanceSmartChain",
 	}
 	oldPrices := make(map[int]float64)
 
