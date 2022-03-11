@@ -1755,7 +1755,11 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	// Calculate Base Amount for each constituent
+	log.Info("newIndexValue: ", newIndexValue)
+	log.Infof("got the following %d constituents", len(constituents))
 	for i, constituent := range constituents {
+		log.Infof("constituent %d: %v", i, constituent)
+		log.Infof("constituent price: %d", constituent.Price)
 		constituents[i].NumBaseTokens = ((constituent.Weight * newIndexValue) / constituent.Price) * 1e16 //((Weight * IndexPrice) / TokenPrice) * 1e18  (divided by 100 because index level is 100 = 1 usd)
 	}
 
