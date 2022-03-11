@@ -39,27 +39,27 @@ func GetIndexBasket(assets []dia.Asset) ([]models.CryptoIndexConstituent, error)
 		constituents = append(constituents, constituent)
 	}
 
-	for _, constituent := range constituents {
+	for i := range constituents {
 
-		currSupply, err := db.GetSupplyCache(constituent.Asset)
+		currSupply, err := db.GetSupplyCache(constituents[i].Asset)
 		if err != nil {
-			log.Error("Error when retrieveing supply for ", constituent.Asset.Symbol)
+			log.Error("Error when retrieveing supply for ", constituents[i].Asset.Symbol)
 			return nil, err
 		}
-		currLastTrade, err := db.GetLastTrades(constituent.Asset, "", 1, false)
+		currLastTrade, err := db.GetLastTrades(constituents[i].Asset, "", 1, false)
 		if err != nil {
-			log.Error("Error when retrieveing lst trades for ", constituent.Asset.Symbol)
+			log.Error("Error when retrieveing lst trades for ", constituents[i].Asset.Symbol)
 			return nil, err
 		}
 		newConstituent := models.CryptoIndexConstituent{
-			Asset:             constituent.Asset,
+			Asset:             constituents[i].Asset,
 			Price:             currLastTrade[0].EstimatedUSDPrice,
 			CirculatingSupply: currSupply.CirculatingSupply,
 			Weight:            0.0,
 			CappingFactor:     0.0,
 			NumBaseTokens:     0.0,
 		}
-		constituents = append(constituents, newConstituent)
+		constituents[i] = newConstituent
 	}
 	return constituents, nil
 }
