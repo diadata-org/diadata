@@ -11,27 +11,59 @@ import (
 
 // FilterVWAP ...
 type FilterVWAP struct {
-	asset           dia.Asset
-	exchange        string
-	currentTime     time.Time
-	previousPrices  []float64
-	previousVolumes []float64
-	lastTrade       *dia.Trade
-	param           int
-	value           float64
-	modified        bool
+	asset       dia.Asset
+	exchange    string
+	currentTime time.Time
+	prices      []float64
+	volumes     []float64
+	lastTrade   dia.Trade
+	param       int
+	value       float64
+	filterName  string
+	modified    bool
 }
 
 // NewFilterVWAP ...
 func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAP {
 	s := &FilterVWAP{
-		asset:          asset,
-		exchange:       exchange,
-		previousPrices: []float64{},
-		currentTime:    currentTime,
-		param:          param,
+		asset:       asset,
+		exchange:    exchange,
+		prices:      []float64{},
+		volumes:     []float64{},
+		currentTime: currentTime,
+		param:       param,
+		filterName:  "VWAP" + strconv.Itoa(param),
 	}
 	return s
+}
+
+// Compute ...
+func (s *FilterVWAP) Compute(trade dia.Trade) {
+	s.compute(trade)
+}
+
+func (filter *FilterVWAP) compute(trade dia.Trade) {
+	filter.modified = true
+	if filter.lastTrade != (dia.Trade{}) {
+		if trade.Time.Before(filter.currentTime) {
+			log.Errorln("FilterVWAP: Ignoring Trade out of order ", filter.currentTime, trade.Time)
+			return
+		}
+	}
+	filter.fill(trade)
+	filter.lastTrade = trade
+}
+
+// fill just adds a trade to the prices and volumes slices.
+func (filter *FilterVWAP) fill(trade dia.Trade) {
+	// filter.currentTime is the timestamp of the last filled trade.
+	filter.processDataPoint(trade)
+	filter.currentTime = trade.Time
+}
+
+func (filter *FilterVWAP) processDataPoint(trade dia.Trade) {
+	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
 // FinalCompute ...
@@ -40,32 +72,29 @@ func (s *FilterVWAP) FinalCompute(t time.Time) float64 {
 }
 
 func (s *FilterVWAP) finalCompute(t time.Time) float64 {
-	// if s.lastTrade == nil {
-	// 	return 0.0
-	// } else {
-	// 	s.fill(t, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)
-	// }
-	if s.lastTrade == nil {
+	if s.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}
 
-	var total float64 = 0
 	var totalVolume float64 = 0
 	var priceVolume []float64
+	var totalPriceVolume float64 = 0
 
-	for index, price := range s.previousPrices {
-		priceVolume = append(priceVolume, price*math.Abs(s.previousVolumes[index]))
+	for index, price := range s.prices {
+		priceVolume = append(priceVolume, price*math.Abs(s.volumes[index]))
 	}
 
-	for _, v := range s.previousVolumes {
-		totalVolume += v
+	for _, v := range s.volumes {
+		totalVolume += math.Abs(v)
 	}
 
 	for _, v := range priceVolume {
-		total += v
+		totalPriceVolume += v
 	}
 
-	s.value = total / totalVolume
+	if totalVolume > 0 {
+		s.value = totalPriceVolume / totalVolume
+	}
 
 	return s.value
 }
@@ -90,55 +119,4 @@ func (s *FilterVWAP) filterPointForBlock() *dia.FilterPoint {
 			Asset: s.asset,
 		}
 	}
-}
-
-func (s *FilterVWAP) fill(t time.Time, price float64, volume float64) {
-	volume = math.Abs(volume)
-	diff := int(t.Sub(s.currentTime).Seconds())
-	if diff > 1 {
-		for diff > 1 {
-			s.previousPrices = append([]float64{price}, s.previousPrices...)
-			s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
-			diff--
-		}
-	} else {
-
-		if diff == 0.0 {
-			if len(s.previousPrices) >= 1 {
-				s.previousPrices = s.previousPrices[1:]
-				s.previousVolumes = s.previousVolumes[1:]
-			}
-		}
-		s.previousPrices = append([]float64{price}, s.previousPrices...)
-		s.previousVolumes = append([]float64{volume}, s.previousVolumes...)
-
-	}
-
-	if len(s.previousPrices) > s.param {
-		s.previousPrices = s.previousPrices[0:s.param]
-		s.previousVolumes = s.previousVolumes[0:s.param]
-
-	}
-	s.currentTime = t
-}
-
-// Compute ...
-func (s *FilterVWAP) Compute(trade dia.Trade) {
-	s.compute(trade)
-}
-
-func (s *FilterVWAP) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterVWAP: Ignoring Trade out of order ", s.currentTime, trade.Time)
-			return
-		} else {
-			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice, s.lastTrade.Volume)
-		}
-	}
-
-	s.fill(trade.Time, trade.EstimatedUSDPrice, trade.Volume)
-	s.lastTrade = &trade
-
 }
