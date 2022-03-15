@@ -25,12 +25,15 @@ import (
 )
 
 const (
-	balancerV2RateLimitPerSec        = 50
-	balancerV2StartBlockPoolRegister = 12272146
-	balancerV2FilterPageSize         = 50000
-	balancerV2VaultContract          = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
-	balancerV2RestDial               = ""
-	balancerV2WSDial                 = ""
+	balancerV2RateLimitPerSec = 50
+	balancerV2FilterPageSize  = 50000
+	balancerV2RestDial        = ""
+	balancerV2WSDial          = ""
+)
+
+var (
+	balancerV2VaultContract          = ""
+	balancerV2StartBlockPoolRegister = 16896080
 )
 
 // BalancerV2Swap is a swap information
@@ -73,6 +76,7 @@ type BalancerV2Scraper struct {
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
 func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper {
+	balancerV2VaultContract = exchange.Contract.Hex()
 	scraper := &BalancerV2Scraper{
 		exchangeName: exchange.Name,
 		err:          nil,
@@ -81,6 +85,15 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 		pairScrapers: make(map[string]*BalancerV2PairScraper),
 		chanTrades:   make(chan *dia.Trade),
 		tokensMap:    make(map[string]dia.Asset),
+	}
+
+	switch exchange.Name {
+	case dia.BalancerV2Exchange:
+		balancerV2StartBlockPoolRegister = 12272146
+		break
+	case dia.BeetsExchange:
+		balancerV2StartBlockPoolRegister = 16896080
+		break
 	}
 
 	ws, err := ethclient.Dial(utils.Getenv("ETH_URI_WS", balancerV2WSDial))
@@ -110,7 +123,6 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 
 func (s *BalancerV2Scraper) mainLoop() {
 	defer s.cleanup()
-
 	pairs, err := s.FetchAvailablePairs()
 	if err != nil {
 		s.setError(err)
@@ -444,6 +456,7 @@ func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVault
 		}
 
 		for it.Next() {
+			log.Infoln("event", it.Event)
 			events = append(events, it.Event)
 		}
 		if err := it.Close(); err != nil {
