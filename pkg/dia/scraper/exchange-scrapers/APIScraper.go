@@ -45,12 +45,13 @@ func init() {
 	blockchains[dia.METIS] = dia.BlockChain{Name: dia.METIS, NativeToken: dia.Asset{Symbol: "Metis"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.KILT] = dia.BlockChain{Name: dia.KILT, NativeToken: dia.Asset{Symbol: "KILT"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FETCH] = dia.BlockChain{Name: dia.FETCH, NativeToken: dia.Asset{Symbol: "FET"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.FUSE] = dia.BlockChain{Name: dia.FUSE, NativeToken: dia.Asset{Symbol: "FUSE"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)
 	Exchanges[dia.BalancerExchange] = dia.Exchange{Name: dia.BalancerExchange, Centralized: false, Contract: common.HexToAddress("0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd"), WatchdogDelay: watchdogDelay}
-	Exchanges[dia.BalancerV2Exchange] = dia.Exchange{Name: dia.BalancerV2Exchange, Centralized: false, Contract: common.HexToAddress("0xBA12222222228d8Ba445958a75a0704d566BF2C8"), WatchdogDelay: watchdogDelay}
-	Exchanges[dia.BeetsExchange] = dia.Exchange{Name: dia.BeetsExchange, Centralized: false, Contract: common.HexToAddress("0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.BalancerV2Exchange] = dia.Exchange{Name: dia.BalancerV2Exchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0xBA12222222228d8Ba445958a75a0704d566BF2C8"), WatchdogDelay: watchdogDelay}
+	Exchanges[dia.BeetsExchange] = dia.Exchange{Name: dia.BeetsExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false, Contract: common.HexToAddress("0x6F400810b62df8E13fded51bE75fF5393eaa841F"), BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.KrakenExchange] = dia.Exchange{Name: dia.KrakenExchange, Centralized: true, WatchdogDelay: watchdogDelay}

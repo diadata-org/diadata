@@ -438,7 +438,7 @@ func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVault
 	}
 
 	var offset uint64 = balancerV2FilterPageSize
-	var startBlock uint64 = balancerV2StartBlockPoolRegister
+	var startBlock uint64 = uint64(balancerV2StartBlockPoolRegister)
 	var endBlock = startBlock + offset
 	var events []*balancervault.BalancerVaultPoolRegistered
 	for {

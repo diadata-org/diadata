@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "FUSE_USDT",
+      "Ignore": false,
+      "Symbol": "FUSE"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GLMR_USDT",
       "Ignore": false,
       "Symbol": "GLMR"

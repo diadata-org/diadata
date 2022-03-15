@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "FUSE",
+            "ForeignName": "FUSE/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "LBA",
             "ForeignName": "LBA/BTC",
             "Exchange": "Bitmax",

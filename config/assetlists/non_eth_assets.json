@@ -461,6 +461,13 @@
       "Decimals": 18,
       "Blockchain": "Kilt",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "FUSE",
+      "Name": "Fuse",
+      "Decimals": 18,
+      "Blockchain": "Fuse",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

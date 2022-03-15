@@ -27,6 +27,15 @@
             "ChainID": "Ethereum56"
         },
         {
+            "Name": "Fuse",
+            "GenesisDate": 1552645377,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum122"
+        },
+        {
             "Name": "Polygon",
             "GenesisDate": 1555718400,
             "NativeToken": {

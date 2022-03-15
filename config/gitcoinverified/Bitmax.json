@@ -157,6 +157,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "FIL",
+            "Exchange": "Bitmax",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FLEX",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -169,9 +175,9 @@
             "Address": "0xE5CAeF4Af8780E59Df925470b050Fb23C43CA68C"
         },
         {
-            "Symbol": "FIL",
+            "Symbol": "FUSE",
             "Exchange": "Bitmax",
-            "Blockchain": "Filecoin",
+            "Blockchain": "Fuse",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

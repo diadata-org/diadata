@@ -36,6 +36,7 @@ const (
 	METIS                                   = "Metis"
 	KILT                                    = "Kilt"
 	FETCH                                   = "Fetch"
+	FUSE                                    = "Fuse"
 	FIAT                                    = "Fiat"
 )
 

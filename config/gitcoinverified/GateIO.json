@@ -205,6 +205,12 @@
             "Address": "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b"
         },
         {
+            "Symbol": "FUSE",
+            "Exchange": "GateIO",
+            "Blockchain": "Fuse",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GAS",
             "Exchange": "GateIO",
             "Blockchain": "NEO",
