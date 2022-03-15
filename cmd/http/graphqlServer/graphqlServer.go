@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -42,7 +43,10 @@ func main() {
 	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseStringDescriptions())
 
 	mux := http.NewServeMux()
-	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "graphql")
+	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "/graphql")
+	if !strings.HasPrefix(urlFolderPrefix, "/") {
+		urlFolderPrefix = "/" + urlFolderPrefix
+	}
 	mux.Handle(urlFolderPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
