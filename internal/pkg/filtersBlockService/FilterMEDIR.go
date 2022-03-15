@@ -13,92 +13,96 @@ import (
 // It implements a trimmed median. Outliers are eliminated using interquartile range
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMEDIR struct {
-	asset          dia.Asset
-	exchange       string
-	currentTime    time.Time
-	previousPrices []float64
-	lastTrade      *dia.Trade
-	memory         int
-	value          float64
-	filterName     string
-	modified       bool
+	asset       dia.Asset
+	exchange    string
+	currentTime time.Time
+	prices      []float64
+	lastTrade   dia.Trade
+	memory      int
+	value       float64
+	filterName  string
+	modified    bool
 }
 
 //NewFilterMEDIR creates a FilterMEDIR
 func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
-	s := &FilterMEDIR{
-		asset:          asset,
-		exchange:       exchange,
-		previousPrices: []float64{},
-		currentTime:    currentTime,
-		memory:         memory,
-		filterName:     "MEDIR" + strconv.Itoa(memory),
+	filter := &FilterMEDIR{
+		asset:       asset,
+		exchange:    exchange,
+		prices:      []float64{},
+		currentTime: currentTime,
+		memory:      memory,
+		filterName:  "MEDIR" + strconv.Itoa(memory),
 	}
-	return s
+	return filter
 }
 
-func (s *FilterMEDIR) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterMEDIR: Ignoring Trade out of order ", s.currentTime, trade.Time)
+func (filter *FilterMEDIR) compute(trade dia.Trade) {
+	if trade.QuoteToken.Address == "0x0000000000000000000000000000000000000000" && trade.QuoteToken.Blockchain == dia.ETHEREUM {
+		log.Info("got ETH trade: ", trade)
+	}
+	filter.modified = true
+	if filter.lastTrade != (dia.Trade{}) {
+		if trade.Time.Before(filter.currentTime) {
+			log.Errorln("FilterMEDIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
 	}
-	s.processDataPoint(trade)
-	s.currentTime = trade.Time
-	s.lastTrade = &trade
+	filter.processDataPoint(trade)
+	filter.lastTrade = trade
+	filter.currentTime = trade.Time
 }
 
-func (s *FilterMEDIR) Compute(trade dia.Trade) {
-	s.compute(trade)
+func (filter *FilterMEDIR) Compute(trade dia.Trade) {
+	filter.compute(trade)
 }
-func (s *FilterMEDIR) FinalCompute(t time.Time) {
-	s.finalCompute(t)
+func (filter *FilterMEDIR) FinalCompute(t time.Time) {
+	filter.finalCompute(t)
 }
 
-func (s *FilterMEDIR) processDataPoint(trade dia.Trade) {
+func (filter *FilterMEDIR) processDataPoint(trade dia.Trade) {
 	/// first remove extra value from buffer if already full
-	if len(s.previousPrices) >= s.memory {
-		s.previousPrices = s.previousPrices[0 : s.memory-1]
+	if len(filter.prices) >= filter.memory {
+		filter.prices = filter.prices[0 : filter.memory-1]
 	}
-	s.previousPrices = append([]float64{trade.EstimatedUSDPrice}, s.previousPrices...)
+	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
 }
 
-func (s *FilterMEDIR) finalCompute(t time.Time) float64 {
-	if s.lastTrade == nil {
+func (filter *FilterMEDIR) finalCompute(t time.Time) float64 {
+	if filter.lastTrade == (dia.Trade{}) {
+		log.Info("last trade emtpy")
 		return 0.0
 	}
-	cleanPrices, _ := removeOutliers(s.previousPrices)
-	s.value = computeMedian(cleanPrices)
-	s.previousPrices = []float64{}
-	return s.value
+	cleanPrices, _ := removeOutliers(filter.prices)
+	filter.value = computeMedian(cleanPrices)
+	filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+	return filter.value
 }
 
-func (s *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" || s.filterName != dia.FilterKing {
+func (filter *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
+	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  s.filterName,
-		Time:  s.currentTime,
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
 
-func (s *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  s.filterName,
-		Time:  s.currentTime,
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
-func (s *FilterMEDIR) save(ds models.Datastore) error {
-	if s.modified {
-		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
+func (filter *FilterMEDIR) save(ds models.Datastore) error {
+	if filter.modified {
+		filter.modified = false
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMEDIR: Error:", err)
 		}
