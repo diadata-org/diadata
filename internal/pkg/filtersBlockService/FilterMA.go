@@ -13,143 +13,138 @@ import (
 // FilterMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterMA struct {
-	asset           dia.Asset
-	exchange        string
-	currentTime     time.Time
-	previousPrices  []float64
-	previousVolumes []float64
-	lastTrade       *dia.Trade
-	param           int
-	value           float64
-	modified        bool
-	filterName      string
+	asset       dia.Asset
+	exchange    string
+	currentTime time.Time
+	prices      []float64
+	volumes     []float64
+	lastTrade   dia.Trade
+	memory      int
+	value       float64
+	modified    bool
+	filterName  string
 }
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
-func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterMA {
-	s := &FilterMA{
-		asset:           asset,
-		exchange:        exchange,
-		previousPrices:  []float64{},
-		previousVolumes: []float64{},
-		currentTime:     currentTime,
-		param:           param,
-		filterName:      "MA" + strconv.Itoa(param),
+func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMA {
+	filter := &FilterMA{
+		asset:       asset,
+		exchange:    exchange,
+		prices:      []float64{},
+		volumes:     []float64{},
+		currentTime: currentTime,
+		memory:      memory,
+		filterName:  "MA" + strconv.Itoa(memory),
 	}
-	return s
+	return filter
 }
 
-func (s *FilterMA) Compute(trade dia.Trade) {
-	s.compute(trade)
+func (filter *FilterMA) Compute(trade dia.Trade) {
+	filter.compute(trade)
 }
 
-func (s *FilterMA) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
+func (filter *FilterMA) compute(trade dia.Trade) {
+	filter.modified = true
+	if filter.lastTrade != (dia.Trade{}) {
+		if trade.Time.Before(filter.currentTime) {
+			log.Errorln("FilterMA: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
-		s.fill(trade.Time, *s.lastTrade)
 	}
-	s.fill(trade.Time, trade)
-	s.lastTrade = &trade
+	filter.fill(trade)
+	filter.lastTrade = trade
 }
 
-func (s *FilterMA) fill(t time.Time, trade dia.Trade) {
-	// Time difference of trade time and @currentTime in seconds.
-	// Initially, @currentTime is the begin time of the filtersBlock.
-	diff := int(t.Sub(s.currentTime).Seconds())
-	// log.Infof("diff for asset %s: %v ", s.asset.Symbol, diff)
-	currPrice := trade.EstimatedUSDPrice
-	currVolume := trade.Volume
+// fill fills up the 120 seconds slots with trades.
+func (filter *FilterMA) fill(trade dia.Trade) {
+	// filter.currentTime is the timestamp of the last filled trade.
+	// It is initialized with begin time of tradesblock upon creation of the filter.
+	diff := int(trade.Time.Sub(filter.currentTime).Seconds())
 	if diff > 1 {
-
 		for diff > 1 {
-			s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
-			s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
+			filter.processDataPoint(trade)
 			diff--
 		}
 	} else {
-		// If timestamp @t is the same as @trade.Time, shift slices and prepend @trade.
 		if diff == 0.0 {
-			if len(s.previousPrices) >= 1 {
-				s.previousPrices = s.previousPrices[1:]
-				s.previousVolumes = s.previousVolumes[1:]
+			if len(filter.prices) >= 1 {
+				/// Remove latest data point and update with newer
+				filter.prices = filter.prices[1:]
+				filter.volumes = filter.volumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{currPrice}, s.previousPrices...)
-		s.previousVolumes = append([]float64{currVolume}, s.previousVolumes...)
+		filter.processDataPoint(trade)
 	}
-
-	if len(s.previousPrices) > s.param {
-		s.previousPrices = s.previousPrices[0:s.param]
-	}
-	if len(s.previousVolumes) > s.param {
-		s.previousVolumes = s.previousVolumes[0:s.param]
-	}
-	s.currentTime = t
+	filter.currentTime = trade.Time
 }
 
-func (s *FilterMA) FinalCompute(t time.Time) float64 {
-	return s.finalCompute(t)
+func (filter *FilterMA) processDataPoint(trade dia.Trade) {
+	/// first remove extra value from buffer if already full
+	if len(filter.prices) >= filter.memory {
+		filter.prices = filter.prices[0 : filter.memory-1]
+		filter.volumes = filter.volumes[0 : filter.memory-1]
+	}
+	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
-func (s *FilterMA) finalCompute(t time.Time) float64 {
-	if s.lastTrade == nil {
+func (filter *FilterMA) FinalCompute(t time.Time) float64 {
+	return filter.finalCompute(t)
+}
+
+func (filter *FilterMA) finalCompute(t time.Time) float64 {
+	if filter.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}
-	s.fill(t, *s.lastTrade)
+	filter.fill(filter.lastTrade)
 	var totalVolume float64
 	var totalPrice float64
-	for priceIndex, price := range s.previousPrices {
-		totalPrice += price * math.Abs(s.previousVolumes[priceIndex])
-		totalVolume += math.Abs(s.previousVolumes[priceIndex])
+	for priceIndex, price := range filter.prices {
+		totalPrice += price * math.Abs(filter.volumes[priceIndex])
+		totalVolume += math.Abs(filter.volumes[priceIndex])
 	}
-	if s.asset.Symbol == "USDT" || s.asset.Symbol == "USDC" {
-		// log.Infof("total price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice)
-		// log.Infof("total Volume for %s on %s: %v", s.asset.Symbol, s.exchange, totalVolume)
-		// log.Infof("resulting price for %s on %s: %v", s.asset.Symbol, s.exchange, totalPrice/totalVolume)
+	if filter.asset.Symbol == "USDT" || filter.asset.Symbol == "USDC" {
 		var nonweightedPrice float64
-		for _, price := range s.previousPrices {
+		for _, price := range filter.prices {
 			nonweightedPrice += price
 		}
-		// log.Infof("average on non-volume-weighted prices for %s on %s: %v", s.asset.Symbol, s.exchange, nonweightedPrice/float64(len(s.previousPrices)))
-		// log.Info("prices in filtersblock: ", s.previousPrices)
-		// log.Info("volumes in filtersblock: ", s.previousVolumes)
-		// log.Info("-------------------------------------------------------------------------")
 	}
-	s.value = totalPrice / totalVolume
-	return s.value
+	if totalVolume > 0 {
+		filter.value = totalPrice / totalVolume
+	}
+	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
+		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		filter.volumes = []float64{filter.lastTrade.Volume}
+	}
+	return filter.value
 }
 
-func (s *FilterMA) FilterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  "MA" + strconv.Itoa(s.param),
-		Time:  s.currentTime,
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
 	}
 }
 
-func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" || s.filterName != dia.FilterKing {
+func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
+	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  "MA" + strconv.Itoa(s.param),
-		Time:  s.currentTime,
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
 	}
 }
 
-func (s *FilterMA) save(ds models.Datastore) error {
-
-	if s.modified {
-		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
+func (filter *FilterMA) save(ds models.Datastore) error {
+	if filter.modified {
+		filter.modified = false
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

@@ -18,7 +18,7 @@ type FilterMAIR struct {
 	currentTime time.Time
 	prices      []float64
 	volumes     []float64
-	lastTrade   *dia.Trade
+	lastTrade   dia.Trade
 	memory      int
 	value       float64
 	filterName  string
@@ -45,14 +45,14 @@ func (filter *FilterMAIR) Compute(trade dia.Trade) {
 
 func (filter *FilterMAIR) compute(trade dia.Trade) {
 	filter.modified = true
-	if filter.lastTrade != nil {
+	if filter.lastTrade != (dia.Trade{}) {
 		if trade.Time.Before(filter.currentTime) {
 			log.Errorln("FilterMAIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
 	}
 	filter.fill(trade)
-	filter.lastTrade = &trade
+	filter.lastTrade = trade
 }
 
 // fill fills up the 120 seconds slots with trades.
@@ -93,23 +93,27 @@ func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
 }
 
 func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
-	if filter.lastTrade == nil {
+	if filter.lastTrade == (dia.Trade{}) {
 		return 0.0
-	}
-	if filter.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.asset.Blockchain == dia.ETHEREUM {
-		log.Info("MAIR -- exchange in finalCompute: ", filter.exchange)
-		log.Info("MAIR -- estimatedUSDPrices in finalCompute for USDT: ", filter.prices)
-
 	}
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
-	filter.processDataPoint(*filter.lastTrade)
+	filter.processDataPoint(filter.lastTrade)
+	if filter.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.asset.Blockchain == dia.ETHEREUM {
+		log.Info("MAIR -- exchange in finalCompute: ", filter.exchange)
+		log.Info("MAIR -- estimatedUSDPrices in finalCompute for USDT: ", filter.prices)
+	}
 	cleanPrices, bounds := removeOutliers(filter.prices)
 	mean, err := computeMean(cleanPrices, filter.volumes[bounds[0]:bounds[1]])
 	if err != nil {
 		return 0.0
 	}
 	filter.value = mean
+	// Reduce the filter values to the last recorded value for the next tradesblock.
+	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
+		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		filter.volumes = []float64{filter.lastTrade.Volume}
+	}
 	return filter.value
 }
 
@@ -140,16 +144,6 @@ func (filter *FilterMAIR) save(ds models.Datastore) error {
 		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
-		}
-		// log.Infof("set price for %s: %v", filter.asset.Symbol, filter.value)
-
-		// Additionally, the price across exchanges is saved in influx as a quotation.
-		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
-		if filter.exchange == "" {
-			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
-			if err != nil {
-				log.Errorln("FilterMAIR: Error:", err)
-			}
 		}
 		return err
 	}
