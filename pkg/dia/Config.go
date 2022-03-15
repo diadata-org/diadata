@@ -132,6 +132,7 @@ func Exchanges() []string {
 		BancorExchange,
 		UnknownExchange,
 		BitMexExchange,
+		BeetsExchange,
 	}
 }
 

@@ -456,7 +456,6 @@ func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVault
 		}
 
 		for it.Next() {
-			log.Infoln("event", it.Event)
 			events = append(events, it.Event)
 		}
 		if err := it.Close(); err != nil {
