@@ -295,7 +295,7 @@ func (s *BalancerV2Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err
 func (s *BalancerV2Scraper) assetFromToken(token common.Address) (dia.Asset, error) {
 	cached, ok := s.cachedAssets.Load(token.Hex())
 	if !ok {
-		asset, err := ethhelper.ETHAddressToAsset(token, s.rest, dia.ETHEREUM)
+		asset, err := ethhelper.ETHAddressToAsset(token, s.rest, Exchanges[s.exchangeName].BlockChain.Name)
 		if err != nil {
 			return dia.Asset{}, err
 		}
