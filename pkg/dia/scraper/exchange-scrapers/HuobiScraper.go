@@ -112,10 +112,6 @@ func NewHuobiScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *H
 
 // runs in a goroutine until s is closed
 func (s *HuobiScraper) mainLoop() {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
 	for {
 		message := &ResponseType{}
 		_, testRead, err := s.wsClient.NextReader()
@@ -173,7 +169,7 @@ func (s *HuobiScraper) mainLoop() {
 								f64Volume = -f64Volume
 							}
 
-							exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, forName)
+							exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, forName)
 							if err != nil {
 								log.Error(err)
 							}

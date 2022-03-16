@@ -97,10 +97,6 @@ func NewSimexScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *S
 
 // runs in a goroutine until s is closed
 func (s *SimexScraper) mainLoop() {
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		panic("Couldn't initialize relDB, error: " + err.Error())
-	}
 
 	//wait for all pairscrapers have been created
 	time.Sleep(7 * time.Second)
@@ -154,7 +150,7 @@ func (s *SimexScraper) mainLoop() {
 						}
 
 						timeStamp, _ := time.Parse(layout, tradeReturn["created_at"].(string))
-						exchangepair, err := relDB.GetExchangePairCache(s.exchangeName, key)
+						exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, key)
 						if err != nil {
 							log.Error("Error Getting ExchangePair from cache", err)
 						}
