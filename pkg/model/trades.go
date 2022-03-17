@@ -214,12 +214,12 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 	if exchange == "" {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
 			"\"basetokenblockchain\",\"basetokenaddress\"" +
-			" FROM %s WHERE time<now() AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+			" FROM %s WHERE time<now() AND time>now()-30d AND quotetokenaddress='%s' AND quotetokenblockchain='%s' AND estimatedUSDPrice>0 ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
 	} else {
 		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
 			"\"basetokenblockchain\",\"basetokenaddress\"" +
-			" FROM %s WHERE time<now() AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' ORDER BY DESC LIMIT %d"
+			" FROM %s WHERE time<now() AND time>now()-30d AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' AND estimatedUSDPrice>0 ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
 	res, err := queryInfluxDB(datastore.influxClient, q)
