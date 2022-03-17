@@ -87,7 +87,7 @@ func main() {
 		for key, values := range pairData {
 			var currExchanges string
 			for _, value := range values {
-				currExchanges += value.Source + " , "
+				currExchanges += value.Source + ", "
 			}
 			log.Infof("%s market on exchanges: %s", key, currExchanges)
 		}
@@ -189,7 +189,7 @@ func scrapeKraken(assets string, candleChan chan candlestickMessage) error {
 			log.Errorln("read:", err)
 			return err
 		}
-		// log.Printf("recv Kraken: %s", message)
+		//log.Printf("recv Kraken: %s", message)
 		messageMap := make(map[string]interface{})
 		messageList := make([]interface{}, 3)
 		err = json.Unmarshal(message, &messageMap)
