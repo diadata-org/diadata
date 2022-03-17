@@ -19,6 +19,12 @@
         "Address": "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E"
       },
       {
+        "Symbol": "METIS",
+        "Exchange": "LBank",
+        "Blockchain": "Metis",
+        "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    },
+      {
         "Symbol": "UPS",
         "Exchange": "LBank",
         "Blockchain": "Solana",

@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "METIS",
+            "ForeignName": "METIS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVR-USDT",
             "Exchange": "KuCoin",

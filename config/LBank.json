@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "LBank",
+      "ForeignName": "METIS_USDT",
+      "Ignore": true,
+      "Symbol": "METIS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "AAA_BTC",
       "Ignore": true,
       "Symbol": "AAA"

@@ -331,6 +331,12 @@
             "Address": "0xc690F7C7FcfFA6a82b79faB7508c466FEfdfc8c5"
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "GateIO",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Symbol": "MCO",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
