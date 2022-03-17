@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaWowOracleService"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -12,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -42,6 +42,18 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
+	addresses := []string{
+		"0x0000000000000000000000000000000000000000",//BNB
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
+		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
+	}
+	blockchains := []string{
+		"BinanceSmartChain",
+		"Ethereum",
+		"BinanceSmartChain",
+	}
+	oldPrices := make(map[int]float64)
+
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
@@ -56,23 +68,30 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaWowOracleService.DIAWowOracle
+	var contract *diaOracleServiceV2.DIAOracleV2
 	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
+
 	/*
 	 * Update Oracle periodically with top coins
 	 */
 	ticker := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
-	oldPrice := 0.0
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				oldPrice, err = periodicOracleUpdateHelper(sleepSeconds, oldPrice, deviationPermille, auth, contract, conn)
-				if err != nil {
-					log.Println(err)
+				for i, address := range addresses {
+					blockchain := blockchains[i]
+					oldPrice := oldPrices[i]
+					log.Println("old price", oldPrice)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrices[i] = oldPrice
+					if err != nil {
+						log.Println(err)
+					}
+					time.Sleep(time.Duration(sleepSeconds) * time.Second)
 				}
 			}
 		}
@@ -80,35 +99,24 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(sleepSeconds int, oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaWowOracleService.DIAWowOracle, conn *ethclient.Client) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 
-	// Get asset quotation for WOW coin and update Oracle
-	// WOW
-	rawWowQ, err := getAssetQuotationFromDia("BinanceSmartChain", "0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A")
+	// Get quotation for token and update Oracle
+	rawQ, err := getAssetQuotationFromDia(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve WOW quotation data from DIA: %v", err)
+		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldPrice, err
 	}
-	rawWowQ.Name = "WOW"
-
-	// BNB
-	rawBnbQ, err := getAssetQuotationFromDia("BinanceSmartChain", "0x0000000000000000000000000000000000000000")
-	if err != nil {
-		log.Fatalf("Failed to retrieve BNB quotation data from DIA: %v", err)
-		return oldPrice, err
-	}
-	rawBnbQ.Name = "BNB"
+	rawQ.Name = rawQ.Symbol
 
 	// Check for deviation
-	newPrice := rawWowQ.Price / rawBnbQ.Price
+	newPrice := rawQ.Price
 
-	//log.Println("In periodic block")
-	//log.Println(oldPrice)
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updatePair(rawWowQ, rawBnbQ, auth, contract, conn)
+		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
-			log.Fatalf("Failed to update WOW/BNB Oracle: %v", err)
+			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
 		}
 		return newPrice, nil
@@ -117,10 +125,10 @@ func periodicOracleUpdateHelper(sleepSeconds int, oldPrice float64, deviationPer
 	return oldPrice, nil
 }
 
-func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaWowOracleService.DIAWowOracle) error {
+func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaOracleServiceV2.DIAOracleV2) error {
 	var err error
 	if deployedContract != "" {
-		*contract, err = diaWowOracleService.NewDIAWowOracle(common.HexToAddress(deployedContract), conn)
+		*contract, err = diaOracleServiceV2.NewDIAOracleV2(common.HexToAddress(deployedContract), conn)
 		if err != nil {
 			return err
 		}
@@ -128,7 +136,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 		// deploy contract
 		var addr common.Address
 		var tx *types.Transaction
-		addr, tx, *contract, err = diaWowOracleService.DeployDIAWowOracle(auth, conn)
+		addr, tx, *contract, err = diaOracleServiceV2.DeployDIAOracleV2(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
@@ -140,7 +148,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaWowOracleService.DIAWowOracle, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
@@ -153,22 +161,9 @@ func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contr
 	return nil
 }
 
-func updatePair(quoteQuotation *models.Quotation, baseQuotation *models.Quotation, auth *bind.TransactOpts, contract *diaWowOracleService.DIAWowOracle, conn *ethclient.Client) error {
-	symbol := quoteQuotation.Symbol + "/" + baseQuotation.Symbol
-	price := quoteQuotation.Price / baseQuotation.Price
-	timestamp := time.Now().Unix()
-	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
-	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
-		return err
-	}
-
-	return nil
-}
-
 func updateOracle(
 	client *ethclient.Client,
-	contract *diaWowOracleService.DIAWowOracle,
+	contract *diaOracleServiceV2.DIAOracleV2,
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
@@ -189,7 +184,7 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 800725,
+		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
