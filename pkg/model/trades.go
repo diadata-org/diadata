@@ -126,7 +126,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		log.Errorf("Empty response GetTradesByExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
 	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s total trades at: %d", timeStart, timeEnd, time.Now(), len(r)))
@@ -152,7 +152,7 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 		query = query + fmt.Sprintf("SELECT time, estimatedUSDPrice, exchange, foreignTradeID, pair, price,symbol, volume,verified, basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
 
-	log.Infoln("GetTradesByExchanges Queries:", query)
+	log.Infoln("GetTradesByExchangesBatched Queries:", query)
 	timeStart := time.Now()
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	timeEnd := time.Now()
@@ -172,7 +172,7 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetLastTradesAllExchanges for %s \n", asset.Symbol)
+		log.Errorf("Empty response GetTradesByExchangesBatched for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
 	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
