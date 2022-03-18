@@ -43,20 +43,10 @@ func main() {
 	}
 
 	addresses := []string{
-		"0x0000000000000000000000000000000000000000",//BNB
-		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
-		"0x0000000000000000000000000000000000000000",//BTC
-		"0x0000000000000000000000000000000000000000",//ETH
-		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
-		"0x0000000000000000000000000000000000000000",//FUSE
+		"0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",//Metis
 	}
 	blockchains := []string{
-		"BinanceSmartChain",
-		"Ethereum",
-		"Bitcoin",
-		"Ethereum",
-		"BinanceSmartChain",
-		"Fuse",
+		"Metis",
 	}
 	oldPrices := make(map[int]float64)
 
@@ -204,7 +194,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
