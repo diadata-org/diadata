@@ -272,12 +272,11 @@
             "Exchange": "BitMex",
             "Ignore": false
         },
-
         {
             "Symbol": "LTC",
             "ForeignName": "LTC_USDT",
             "Exchange": "BitMex",
             "Ignore": false
-        },
+        }
     ]
 }
