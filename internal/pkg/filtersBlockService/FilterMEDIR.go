@@ -38,9 +38,6 @@ func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, mem
 }
 
 func (filter *FilterMEDIR) compute(trade dia.Trade) {
-	if trade.QuoteToken.Address == "0x0000000000000000000000000000000000000000" && trade.QuoteToken.Blockchain == dia.ETHEREUM {
-		log.Info("got ETH trade: ", trade)
-	}
 	filter.modified = true
 	if filter.lastTrade != (dia.Trade{}) {
 		if trade.Time.Before(filter.currentTime) {

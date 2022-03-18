@@ -115,6 +115,12 @@
             "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "OKEx",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Symbol": "MOF",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

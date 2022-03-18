@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -356,6 +357,25 @@ func (datastore *DB) GetCryptoIndexValuesSpaced(starttime time.Time, endtime tim
 	var address string
 	var blockchain string
 
+	// parse influx frequency notation
+	var addDuration time.Duration
+	dstring := frequency[:len(frequency)-1]
+	d, err := strconv.Atoi(dstring)
+	if err != nil {
+		log.Error("parse duration: ", err)
+	}
+	timeunit := frequency[len(frequency)-1:]
+	switch timeunit {
+	case "d":
+		addDuration = time.Duration(d) * 24 * time.Hour
+	case "h":
+		addDuration = time.Duration(d) * time.Hour
+	case "m":
+		addDuration = time.Duration(d) * time.Minute
+	case "s":
+		addDuration = time.Duration(d) * time.Second
+	}
+
 	// First get address and blockchain of index with @symbol:
 	q0 := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE time > %d AND time <= %d AND \"symbol\" = '%s' ORDER BY DESC LIMIT 1", influxDbCryptoIndexTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
 	res0, err := queryInfluxDB(datastore.influxClient, q0)
@@ -390,6 +410,13 @@ func (datastore *DB) GetCryptoIndexValuesSpaced(starttime time.Time, endtime tim
 			currentIndex.CalculationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {
 				return indices, err
+			}
+			// Amend time to end of block
+			currentIndex.CalculationTime = currentIndex.CalculationTime.Add(addDuration)
+			if i == 0 {
+				if currentIndex.CalculationTime.After(endtime) {
+					currentIndex.CalculationTime = endtime
+				}
 			}
 
 			// Value

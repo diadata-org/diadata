@@ -99,10 +99,6 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
 	filter.processDataPoint(filter.lastTrade)
-	if filter.asset.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && filter.asset.Blockchain == dia.ETHEREUM {
-		log.Info("MAIR -- exchange in finalCompute: ", filter.exchange)
-		log.Info("MAIR -- estimatedUSDPrices in finalCompute for USDT: ", filter.prices)
-	}
 	cleanPrices, bounds := removeOutliers(filter.prices)
 	mean, err := computeMean(cleanPrices, filter.volumes[bounds[0]:bounds[1]])
 	if err != nil {
@@ -145,7 +141,6 @@ func (filter *FilterMAIR) save(ds models.Datastore) error {
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
-		// log.Infof("set price for %s: %v", filter.asset.Symbol, filter.value)
 
 		// Additionally, the price across exchanges is saved in influx as a quotation.
 		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.

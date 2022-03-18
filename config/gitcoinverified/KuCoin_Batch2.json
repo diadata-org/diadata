@@ -31,6 +31,12 @@
             "Address": "0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074"
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Symbol": "MITX",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

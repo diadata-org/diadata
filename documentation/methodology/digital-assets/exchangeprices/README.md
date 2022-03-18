@@ -28,13 +28,14 @@ Depending on the use case, other filters can be useful as well. DIA includes fil
 
 Filters are calculated for each asset on each exchange individually, as well as for each asset on all exchanges combined. This combined filter result represents the result closest to the true "whole market" that can be determined by this system.
 
-| Filter Name                                                                       | Community Approval   |
-| --------------------------------------------------------------------------------- | -------------------- |
-| [MA](ma-moving-average.md)                                                        | Crowd-approved       |
-| [MAIR](mair-moving-average-with-interquartile-range-filter.md)                    | Crowd-approved       |
-| [MEDIR](medir-median-with-interquartile-range-filter.md)                          | Crowd-approved       |
-| [VWAP](vwap-volume-weighted-average-price.md)                                     | Crowd-approved       |
-| [VWAPIR](vwapir-volume-weighted-average-price-with-interquartile-range-filter.md) | Approval Outstanding |
+| Filter Name                                                                       | Community Approval                                                                                                             |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| [MA](ma-moving-average.md)                                                        | [Crowd-approved](https://vote.diadata.org/#/proposal/0x8d74d825c46958afb24cc3591c587b6101f3bd0903e595f9bb293a0947a9ab3f)       |
+| [MAIR](mair-moving-average-with-interquartile-range-filter.md)                    | [Crowd-approved](https://vote.diadata.org/#/proposal/0xb7f22a1b4fe36ec2973834accc5aa6704ffecb8fc0f08bb6a61e88cce0af907e)       |
+| [MEDIR](medir-median-with-interquartile-range-filter.md)                          | [Crowd-approved](https://vote.diadata.org/#/proposal/0xa8f1e6f4173c3358c99d085ccb15053ed4df6bc243f95c0a5ac7b37123b3b439)       |
+| [VWAP](vwap-volume-weighted-average-price.md)                                     | [Crowd-approved](https://vote.diadata.org/#/proposal/0x69be5d17d80c87480aff9be9effe3617cc4dcac0ef593ba6baa4651b45228f50)       |
+| [VWAPIR](vwapir-volume-weighted-average-price-with-interquartile-range-filter.md) | [Crowd-approved](https://vote.diadata.org/#/proposal/0x4df8660f951780cd128126ecc3cbd1c693dbece7efb5c2143ee700666f0d75be)       |
+| [EMA](ema-exponential-moving-average.md)                                          | [Approval Outstanding](https://vote.diadata.org/#/proposal/0xa67dc7135ce32ab0e3b9c2aeb6ba2ff495f37e99969e58934f3b43a2f6461406) |
 
 ## Outliers and Market Manipulation
 
