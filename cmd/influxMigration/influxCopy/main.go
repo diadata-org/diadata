@@ -62,6 +62,12 @@ func main() {
 		log.Error("parse timeFinal: ", err)
 	}
 
+	sleepTimeString := utils.Getenv("SLEEP_TIME_SECONDS", "2")
+	sleepTimeInt, err := strconv.ParseInt(sleepTimeString, 10, 64)
+	if err != nil {
+		log.Error("parse timeFinal: ", err)
+	}
+
 	ds, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal("datastore: ", err)
@@ -82,6 +88,7 @@ func main() {
 			log.Infof("copied %v rows in time range %v -- %v.", numCopied, timeInit, endTime)
 		}
 		timeInit = endTime
+		time.Sleep(time.Duration(sleepTimeInt) * time.Second)
 	}
 	log.Info("...done copying.")
 	time.Sleep(24 * 60 * time.Minute)
