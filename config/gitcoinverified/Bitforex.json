@@ -1,0 +1,109 @@
+{
+    "Tokens": [  
+        {
+            "Symbol": "ETH",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "QRDO",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0x4123a133ae3c521FD134D7b13A2dEC35b56c2463"
+        },
+        {
+            "Symbol": "BICO",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0xF17e65822b568B3903685a7c9F496CF7656Cc6C2"
+        },
+        {
+            "Symbol": "LOOKS",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0xf4d2888d29D722226FafA5d9B24F9164c092421E"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "Bitforex",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "NOIA",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0xa8c8CfB141A3bB59FEA1E2ea6B79b5ECBCD7b6ca"
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Symbol": "1INCH",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0x111111111117dC0aa78b770fA6A738034120C302"
+        },
+        {
+            "Symbol": "BCH",
+            "Exchange": "Bitforex",
+            "Blockchain": "BitcoinCash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TRX",
+            "Exchange": "Bitforex",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "EOS",
+            "Exchange": "Bitforex",
+            "Blockchain": "EOS.IO",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DASH",
+            "Exchange": "Bitforex",
+            "Blockchain": "Dash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Bitforex",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "RVN",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ravencoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Bitforex",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        }
+        
+    ]
+}
+
+ 

@@ -314,7 +314,6 @@ func (s *BitMexScraper) mainLoop() {
 						s.setError(err)
 						log.Errorf("BitMexScraper: Shutting down main loop due to failing to retry a task, err=%s", err.Error())
 
-						return
 					}
 
 				}
@@ -364,7 +363,6 @@ func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) 
 					BaseToken:      pair.UnderlyingPair.BaseToken,
 					QuoteToken:     pair.UnderlyingPair.QuoteToken,
 				}
-				// fmt.Println("trade:", trade)
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
 				}

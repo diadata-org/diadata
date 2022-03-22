@@ -114,7 +114,7 @@ func NewBitforexScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 	}
 
 	if err := s.newConn(); err != nil {
-		log.Error(err)
+		log.Error("s.newConn()", err)
 
 		return nil
 	}
@@ -264,7 +264,7 @@ func (s *BitforexScraper) mainLoop() {
 			baseCurrency, foreignName := s.extractSymbol(res.Param.BusinessType)
 			pair, err := s.db.GetExchangePairCache(s.exchangeName, foreignName)
 			if err != nil {
-				log.Error(err)
+				log.Error("GetExchangePairCache", err)
 			}
 
 			var trades []bitForexTradeResult
@@ -272,7 +272,6 @@ func (s *BitforexScraper) mainLoop() {
 				s.setError(err)
 				log.Errorf("BitforexScraper: Shutting down main loop due to response unmarshaling failure, err=%s", err.Error())
 
-				return
 			}
 
 			for _, trade := range trades {
